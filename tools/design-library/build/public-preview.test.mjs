@@ -126,3 +126,17 @@ test('C13: a background picture bound by slot shows in the preview, on every scr
   const filled = structuredClone(pack); filled.templates[0].tree.steps[0].content.tokens['bg-image'] = 'url("data:image/png;base64,AAAA")';
   assert.throws(() => publicPreview(filled, renderer, [{ id: 'monster', bytes }]), /empty picture slot/);
 });
+
+test('winter previews embed declared fonts and preserve fullscreen geometry with an inert dismiss control', () => {
+  const design = JSON.parse(readFileSync(new URL('../../../pro/modules/display-types/templates/winter-gift-atelier.json', import.meta.url)));
+  const markup = publicPreview({ templates: [design] }, renderer, [], { designId: design.id, designOnly: true });
+  const dom = new JSDOM(markup);
+  const fonts = dom.window.document.querySelector('[data-preview-fonts]');
+  assert.match(fonts.textContent, /font-family:"Instrument Serif"/);
+  assert.doesNotMatch(fonts.textContent, /https?:/);
+  const root = dom.window.document.querySelector('template').content.querySelector('.wc-root');
+  assert.equal(root.style.minBlockSize, '900px');
+  assert.equal(root.style.padding, 'var(--wc-pad)');
+  assert.equal(root.querySelector('.wc-close').disabled, true);
+  dom.window.close();
+});

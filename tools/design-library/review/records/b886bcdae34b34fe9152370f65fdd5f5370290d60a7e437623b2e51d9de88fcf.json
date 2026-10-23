@@ -1,0 +1,47 @@
+{
+  "id": "winter-winter-windows",
+  "revision": "5efa99dfd31d55499074f3f64ba4676b27a04f9a8b00d80b6271133db1e25d1e",
+  "base_id": "757700a96647c0c91f0d98125a4b5ad191f8374d649dd5aa1e4bf7fc4cf78d80",
+  "decision": "approved",
+  "reviewer": "Codex visual and WordPress review",
+  "note": "Full viewport winter landscape and centered stacked offer restored; phone panorama stays readable above the action.",
+  "at": "2026-10-23T11:24:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-1.jpg",
+          "sha256": "f195f8b15c79ecdc8574565d6754a70ac90abacf70371fa897a30f7c00ff065e"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-1.jpg",
+          "sha256": "fc85a120c9baab8cf32f05aaf5c08b54d0b1894aaeaac0ca768a6521156e21d3"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "b886bcdae34b34fe9152370f65fdd5f5370290d60a7e437623b2e51d9de88fcf"
+}

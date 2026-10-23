@@ -6,7 +6,7 @@
   "tokens": {
     "bg": "#174f41",
     "fg": "#fff0c9",
-    "muted": "#fff0c9",
+    "muted": "fg",
     "accent": "#fff0c9",
     "accent-fg": "#174f41",
     "border": "#fff0c9",
@@ -15,20 +15,22 @@
     "heading-font": "\"Instrument Serif\", Georgia, serif",
     "heading-size": "3rem",
     "heading-weight": "400",
-    "text-size": "1rem",
-    "leading": "1.55",
-    "tracking": "-.02em",
+    "text-size": ".9375rem",
+    "leading": "1.65",
+    "tracking": "-.025em",
     "pad": "0",
     "gap": "0",
-    "radius": "0",
-    "width": "25rem",
+    "radius": "10px",
+    "width": "23.125rem",
     "align": "start",
     "close-fg": "fg",
     "close-bg": "bg",
     "close-border": "border",
     "close-radius": "50%",
     "error-fg": "#991b1b",
-    "error-bg": "#fff1f2"
+    "error-bg": "#fff1f2",
+    "placeholder": "fg",
+    "heading-leading": ".98"
   },
   "tree": {
     "v": 2,
@@ -48,7 +50,7 @@
                   "text": "THE CHRISTMAS EXPRESS",
                   "role": "eyebrow",
                   "tokens": {
-                    "text-size": ".75rem",
+                    "text-size": "1.416667rem",
                     "tracking": ".12em"
                   },
                   "id": "n1"
@@ -65,8 +67,8 @@
                 }
               ],
               "tokens": {
-                "pad": "3.5rem 1rem 1rem",
-                "gap": "1rem",
+                "pad": "50px 12px 15px",
+                "gap": "10px",
                 "radius": "0",
                 "align": "center"
               },
@@ -82,14 +84,18 @@
                 {
                   "type": "heading",
                   "narrow": {
-                    "heading-size": "2.35rem"
+                    "heading-size": "2.1875rem",
+                    "heading-leading": "0.95"
                   },
                   "text": "All aboard\nfor Christmas.",
                   "role": "headline",
                   "tokens": {
-                    "heading-size": "2.4rem",
-                    "heading-font": "\"Instrument Serif\", Georgia, serif",
-                    "heading-weight": "400"
+                    "heading-size": "2.1875rem",
+                    "heading-font": "Georgia, serif",
+                    "heading-weight": "400",
+                    "heading-style": "italic",
+                    "heading-leading": "0.95",
+                    "tracking": "-0.05em"
                   },
                   "id": "n3"
                 },
@@ -109,18 +115,19 @@
                     {
                       "type": "text",
                       "narrow": {
-                        "text-size": "2rem"
+                        "text-size": "6.1875rem"
                       },
-                      "text": "18",
-                      "role": "fine_print",
+                      "text": "%b",
+                      "role": "body",
                       "tokens": {
-                        "text-size": "2.5rem",
-                        "leading": "1",
+                        "text-size": "7.25rem",
+                        "leading": ".8",
                         "align": "center",
-                        "muted": "fg"
+                        "muted": "fg",
+                        "font": "\"DM Sans\", Arial, sans-serif"
                       },
-                      "size": "2xl",
-                      "id": "n5"
+                      "id": "n5",
+                      "emphasis": "18"
                     },
                     {
                       "type": "text",
@@ -146,14 +153,14 @@
                 }
               ],
               "tokens": {
-                "pad": "2.25rem",
-                "gap": "1rem",
+                "pad": "25px 23px 10px",
+                "gap": "18px",
                 "radius": "0",
                 "align": "center"
               },
               "narrow": {
-                "pad": "1.5rem",
-                "gap": ".85rem"
+                "pad": "23px 18px 9px",
+                "gap": "1.1rem"
               },
               "decorations": {
                 "label": "Festive sparkles",
@@ -176,27 +183,54 @@
                     "color": "fg"
                   }
                 ]
-              }
+              },
+              "edges": "all"
             },
             {
               "type": "panel",
               "children": [
                 {
-                  "type": "countdown",
-                  "layout": "boxes",
-                  "density": "compact",
-                  "days_label": "Days",
-                  "hours_label": "Hrs",
-                  "minutes_label": "Mins",
-                  "seconds_label": "Secs",
-                  "role": "countdown_units",
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "n9002",
+                      "role": "fine_print",
+                      "text": "CHRISTMAS ORDERS CLOSE IN",
+                      "tokens": {
+                        "text-size": ".875rem",
+                        "font": "\"DM Sans\", Arial, sans-serif"
+                      }
+                    },
+                    {
+                      "type": "countdown",
+                      "layout": "boxes",
+                      "density": "compact",
+                      "days_label": "Days",
+                      "hours_label": "Hrs",
+                      "minutes_label": "Mins",
+                      "seconds_label": "Secs",
+                      "role": "countdown_units",
+                      "tokens": {
+                        "text-size": "1.15rem",
+                        "tracking": "normal",
+                        "radius": ".1rem",
+                        "input-bg": "transparent",
+                        "countdown-size": "1.5625rem",
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "heading-weight": "700",
+                        "border": "transparent",
+                        "align": "start"
+                      },
+                      "id": "n8",
+                      "narrow": {
+                        "countdown-size": "1.5625rem"
+                      }
+                    }
+                  ],
                   "tokens": {
-                    "text-size": "1.15rem",
-                    "tracking": "normal",
-                    "radius": ".1rem",
-                    "input-bg": "transparent"
-                  },
-                  "id": "n8"
+                    "gap": ".6875rem"
+                  }
                 },
                 {
                   "type": "button",
@@ -204,10 +238,11 @@
                   "action": "link",
                   "role": "cta_label",
                   "tokens": {
-                    "text-size": "1rem",
+                    "text-size": ".875rem",
                     "radius": ".15rem",
                     "border": "fg",
-                    "tracking": "normal"
+                    "tracking": "normal",
+                    "leading": "1.4"
                   },
                   "id": "n9"
                 },
@@ -223,13 +258,13 @@
                 }
               ],
               "tokens": {
-                "pad": "2.25rem",
-                "gap": "1rem",
+                "pad": "20px 22px 10px",
+                "gap": "18px",
                 "radius": "0",
                 "align": "center"
               },
               "narrow": {
-                "pad": "1.5rem",
+                "pad": "20px 18px 10px",
                 "gap": ".85rem"
               },
               "edges": "block-start",

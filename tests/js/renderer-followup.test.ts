@@ -9,7 +9,7 @@ const template: Template = { tokens: {}, tree: treeFixture({ steps: [
     { type: 'field', name: 'email' }, { type: 'button', label: 'Send', action: 'submit' },
   ] },
   { type: 'stack', children: [
-    { type: 'code', text: 'HELLO10', copy: true, copy_label: 'Copy this code', copied_label: 'Ready to use', copy_failed_label: 'Select HELLO10 manually' },
+    { type: 'code', text: 'HELLO10', copy: true, layout: 'inline', copy_label: 'Copy this code', copied_label: 'Ready to use', copy_failed_label: 'Select HELLO10 manually' },
     { type: 'followup', label: 'Open guide', href: '#guide' },
   ] },
 ] }) };
@@ -27,6 +27,7 @@ describe('actions after submission', () => {
     const root = mounted.root!;
     const copy = root.querySelector('button')!;
     copy.click();
+    expect(copy.parentElement?.classList.contains('wc-code-inline')).toBe(true);
     expect(writeText).toHaveBeenCalledWith('HELLO10');
     expect(copy.disabled).toBe(true);
     expect(root.querySelector('[role=status]')?.textContent).toBe('');

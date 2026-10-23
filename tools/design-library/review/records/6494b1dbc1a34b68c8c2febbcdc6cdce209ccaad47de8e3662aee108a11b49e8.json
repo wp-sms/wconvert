@@ -1,0 +1,47 @@
+{
+  "id": "winter-ribbon-reminder",
+  "revision": "f25ad7e44422b49aaa7a32b1490318d4b5154dd9b792e2217b54ae53e0cd364a",
+  "base_id": "ef7fdcd97572079af5ccc9899053070d5b307642093eaab0cf81945abace7a78",
+  "decision": "approved",
+  "reviewer": "Codex visual and WordPress review",
+  "note": "Red wrapping reminder keeps copy, clock and action grouped; the bar wraps into a deliberate phone stack.",
+  "at": "2026-10-23T11:24:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-3.jpg",
+          "sha256": "2e030529e3fdc716b9592ad5e535863dd5d6a8ab5fb4cf8f2d8ef9fde260bc22"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-3.jpg",
+          "sha256": "e1abe92dff5411a09efb2f1263c3df4ff8cfd8ab25827c06e03c59fae1dfec4b"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "6494b1dbc1a34b68c8c2febbcdc6cdce209ccaad47de8e3662aee108a11b49e8"
+}

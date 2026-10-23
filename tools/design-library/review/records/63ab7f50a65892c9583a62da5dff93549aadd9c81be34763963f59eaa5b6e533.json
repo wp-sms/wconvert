@@ -1,0 +1,47 @@
+{
+  "id": "winter-santa-letter",
+  "revision": "daebf9b1181015c89bbbfaab80c17ade4e164cc7aa87179259c79174017447df",
+  "base_id": "e629947b1d4572346f294cf0fdd7cff6b47788139cdbec00c834fe327703d027",
+  "decision": "approved",
+  "reviewer": "Codex visual and WordPress review",
+  "note": "Santa letter framing and italic Georgia headline restored on entry and acknowledgement; copy control wraps before splitting MERRY15.",
+  "at": "2026-10-23T11:24:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-10.jpg",
+          "sha256": "17d6490c0a95cc7dd6954e526999b81a2ccb066ff8ff466b8c93ae7abc82fdb0"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-10.jpg",
+          "sha256": "008a2fe876c16a38a80c3534892a1592834818c6ba882a46ba43b0d79a123163"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "63ab7f50a65892c9583a62da5dff93549aadd9c81be34763963f59eaa5b6e533"
+}

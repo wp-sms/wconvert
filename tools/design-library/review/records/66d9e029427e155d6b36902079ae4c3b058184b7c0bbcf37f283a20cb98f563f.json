@@ -1,0 +1,47 @@
+{
+  "id": "winter-dear-december",
+  "revision": "3e5011f80a955f48466038966eceb8c87120df23fca2025a322af6ef18c76af3",
+  "base_id": "411991694985812e392baf4b4798b859054163bb59da1af7f162389f21f7e5dc",
+  "decision": "approved",
+  "reviewer": "Codex visual and WordPress review",
+  "note": "Letter styling restored with red rule, serif headline and signature; acknowledgement retains the letter palette.",
+  "at": "2026-10-23T11:24:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-3.jpg",
+          "sha256": "2e030529e3fdc716b9592ad5e535863dd5d6a8ab5fb4cf8f2d8ef9fde260bc22"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-3.jpg",
+          "sha256": "e1abe92dff5411a09efb2f1263c3df4ff8cfd8ab25827c06e03c59fae1dfec4b"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "66d9e029427e155d6b36902079ae4c3b058184b7c0bbcf37f283a20cb98f563f"
+}

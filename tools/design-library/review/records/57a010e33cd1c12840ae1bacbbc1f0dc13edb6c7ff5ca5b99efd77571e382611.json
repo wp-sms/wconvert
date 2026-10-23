@@ -1,0 +1,43 @@
+{
+  "id": "halloween-after-dark-offer",
+  "revision": "77bc5d399777a7383d7a847f8e09deb71f3a0f6d2791cf38ca605a00815b4748",
+  "base_id": "d3757300b5d683edb45382a23d75cc011b438c0eeef01c83963023423d0c75e4",
+  "decision": "approved",
+  "reviewer": "Codex visual and WordPress review",
+  "note": "Reviewed shared-renderer before/after: fullscreen art and offer retain their original hierarchy with safe word wrapping. WordPress coupon/action route passes at both widths.",
+  "at": "2026-10-23T11:24:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/shared-renderer-3.jpg",
+          "sha256": "aaacebbc8d691f7f5944df3b09518da6095875684c1993c49a9d86ea8fd1d60a"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "57a010e33cd1c12840ae1bacbbc1f0dc13edb6c7ff5ca5b99efd77571e382611"
+}

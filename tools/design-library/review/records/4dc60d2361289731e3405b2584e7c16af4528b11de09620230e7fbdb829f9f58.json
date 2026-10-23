@@ -1,0 +1,47 @@
+{
+  "id": "winter-softer-beginning",
+  "revision": "949adb3a216462a30c83c3702bfba92a421f9b4abd3aa6a1bcdffea9324e4b42",
+  "base_id": "dfac752a28e7c9e8217640b3cbda325310ee0fa974fdfc03e9ae9133a7517eb6",
+  "decision": "approved",
+  "reviewer": "Codex visual and WordPress review",
+  "note": "Soft landscape and calm new-year signup restored with matching acknowledgement colours.",
+  "at": "2026-10-23T11:24:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-7.jpg",
+          "sha256": "0cbe0c1d76aeae60b840039260bf125f180712abbbab8928e4f68fc39fc24afe"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-7.jpg",
+          "sha256": "1fa3a95540b20188432cd465e99e9987588b253ba537a66ac98b6c9d990f2c19"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "4dc60d2361289731e3405b2584e7c16af4528b11de09620230e7fbdb829f9f58"
+}

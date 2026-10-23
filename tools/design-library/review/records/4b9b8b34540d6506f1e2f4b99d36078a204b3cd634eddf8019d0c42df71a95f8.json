@@ -1,0 +1,47 @@
+{
+  "id": "equipment-hire-enquiry",
+  "revision": "bfa993c644d665900cf4d7efdca7aa06fbe0484a0470bdb6cb556ddd92ae8b14",
+  "base_id": "2f3f452805552552ddc467da8e00167c3dd4ef4d1ddf11b75f22ed61f9fde433",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 133069b98aa4f6ea86d5008238d1e6bbc2210ab1, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-23T11:17:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/equipment-hire-enquiry-320.png",
+          "sha256": "3593c7f2222459980ec6a91af14c6088fef5ae9046398d9b1e2ba9c29a6988d5"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/equipment-hire-enquiry-1440.png",
+          "sha256": "36089b61613076692e132403276fd6169b5e8d6eed45f0397af28aae7cd67374"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "4b9b8b34540d6506f1e2f4b99d36078a204b3cd634eddf8019d0c42df71a95f8"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "venue-visit-request",
+  "revision": "bbe87c5dfc8cb64b540b2ef7a9ee07f17c58e4d528deb190b46e059fcd8ed040",
+  "base_id": "96e610dd2eef6883f5072d42fe40274a1fde6986a11afae39fff1eba3a0333cd",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 133069b98aa4f6ea86d5008238d1e6bbc2210ab1, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-23T11:17:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/venue-visit-request-320.png",
+          "sha256": "ebea4270783c255d75cfef83ef1347dc98aa78921c87890c0c1b7ec0ddeb8a56"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/venue-visit-request-1440.png",
+          "sha256": "68657a9be407f41da431de4e07680d67ef5f2931751f66a4e9cfda996e03917b"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "9b417bcc5ff2ecc8871d9c2ee8c6e675677ac079ace1efb09ed0e627b39072d9"
+}

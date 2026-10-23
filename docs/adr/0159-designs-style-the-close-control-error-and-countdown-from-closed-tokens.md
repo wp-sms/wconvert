@@ -30,8 +30,12 @@ the gzip ceilings sat within a few dozen bytes of the bundles.
   `close-border` set to `transparent`. A colour may name one of the design's
   own (`"close-fg": "fg"`), so the × follows a theme.
 - **The invalid field's ring follows `error-fg`**, falling back to today's red.
+**Amended by the winter fidelity extension of [ADR 0067](0067-the-editor-starts-with-the-preview-and-the-selected-element.md):** `close-inset` is a closed appearance token for
+the control’s inset; its default remains 0.5rem. This allows an arched card to
+keep the control inside its painted surface.
+
 - **The container still draws the ×.** Its tap size (32 px, 44 px on coarse
-  pointers), place, label, glyph and the bar rule are unchanged (ADR 0155, ADR
+  pointers), label, glyph and the bar rule are unchanged (ADR 0155, ADR
   0158); a design may colour it but cannot remove it. Under forced colours the
   system's ink draws its edge, so a bare × keeps one.
 - **A `countdown` may be `boxes`**: a box per unit with its word under it, the

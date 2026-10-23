@@ -6,29 +6,31 @@
   "tokens": {
     "bg": "#dce8e6",
     "fg": "#365c59",
-    "muted": "#365c59",
+    "muted": "fg",
     "accent": "#365b55",
-    "accent-fg": "#fff8e7",
+    "accent-fg": "#fff4dd",
     "border": "#365c59",
     "input-bg": "transparent",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Instrument Serif\", Georgia, serif",
     "heading-size": "3rem",
     "heading-weight": "400",
-    "text-size": "1rem",
-    "leading": "1.55",
-    "tracking": "-.02em",
+    "text-size": ".9375rem",
+    "leading": "1.65",
+    "tracking": "-.025em",
     "pad": "0",
     "gap": "0",
-    "radius": "0",
-    "width": "29rem",
+    "radius": "0px",
+    "width": "28.75rem",
     "align": "start",
     "close-fg": "fg",
     "close-bg": "bg",
     "close-border": "border",
     "close-radius": "50%",
     "error-fg": "#991b1b",
-    "error-bg": "#fff1f2"
+    "error-bg": "#fff1f2",
+    "placeholder": "fg",
+    "heading-leading": ".98"
   },
   "tree": {
     "v": 2,
@@ -45,7 +47,7 @@
               "text": "THOUGHTFUL DOESN’T HAVE TO TAKE LONG",
               "role": "eyebrow",
               "tokens": {
-                "text-size": ".75rem",
+                "text-size": ".833333rem",
                 "tracking": ".12em"
               },
               "id": "n1"
@@ -53,14 +55,18 @@
             {
               "type": "heading",
               "narrow": {
-                "heading-size": "2.35rem"
+                "heading-size": "2.875rem",
+                "heading-leading": "0.98"
               },
               "text": "A little more time.\n15% off digital gifts.",
               "role": "headline",
               "tokens": {
-                "heading-size": "3rem",
+                "heading-size": "3.6875rem",
                 "heading-font": "\"Instrument Serif\", Georgia, serif",
-                "heading-weight": "400"
+                "heading-weight": "400",
+                "heading-style": "normal",
+                "heading-leading": "0.98",
+                "tracking": "-0.025em"
               },
               "id": "n2"
             },
@@ -71,21 +77,47 @@
               "id": "n3"
             },
             {
-              "type": "countdown",
-              "layout": "boxes",
-              "density": "compact",
-              "days_label": "Days",
-              "hours_label": "Hrs",
-              "minutes_label": "Mins",
-              "seconds_label": "Secs",
-              "role": "countdown_units",
+              "type": "stack",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "n9002",
+                  "role": "fine_print",
+                  "text": "DIGITAL GIFT OFFER ENDS IN",
+                  "tokens": {
+                    "text-size": ".875rem",
+                    "font": "\"DM Sans\", Arial, sans-serif"
+                  }
+                },
+                {
+                  "type": "countdown",
+                  "layout": "boxes",
+                  "density": "compact",
+                  "days_label": "Days",
+                  "hours_label": "Hrs",
+                  "minutes_label": "Mins",
+                  "seconds_label": "Secs",
+                  "role": "countdown_units",
+                  "tokens": {
+                    "text-size": "1.15rem",
+                    "tracking": "normal",
+                    "radius": ".1rem",
+                    "input-bg": "transparent",
+                    "countdown-size": "2.75rem",
+                    "font": "\"Instrument Serif\", Georgia, serif",
+                    "heading-weight": "400",
+                    "border": "transparent",
+                    "align": "start"
+                  },
+                  "id": "n4",
+                  "narrow": {
+                    "countdown-size": "2rem"
+                  }
+                }
+              ],
               "tokens": {
-                "text-size": "1.15rem",
-                "tracking": "normal",
-                "radius": ".1rem",
-                "input-bg": "transparent"
-              },
-              "id": "n4"
+                "gap": ".6875rem"
+              }
             },
             {
               "type": "code",
@@ -95,7 +127,8 @@
               "copy_failed_label": "Select and copy this code",
               "text": "MERRY15",
               "role": "code_value",
-              "id": "n5"
+              "id": "n5",
+              "layout": "inline"
             },
             {
               "type": "button",
@@ -103,10 +136,11 @@
               "action": "link",
               "role": "cta_label",
               "tokens": {
-                "text-size": "1rem",
+                "text-size": ".875rem",
                 "radius": ".15rem",
                 "border": "fg",
-                "tracking": "normal"
+                "tracking": "normal",
+                "leading": "1.4"
               },
               "id": "n6"
             },
@@ -122,13 +156,13 @@
             }
           ],
           "tokens": {
-            "pad": "3.5rem 2rem 2rem",
-            "gap": "1rem",
+            "pad": "56px 40px 35px",
+            "gap": "1.25rem",
             "radius": "0"
           },
           "narrow": {
-            "pad": "3.5rem 1.5rem 1.5rem",
-            "gap": ".85rem"
+            "pad": "56px 27px 29px",
+            "gap": "1.1rem"
           }
         }
       }

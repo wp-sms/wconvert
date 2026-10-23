@@ -1,0 +1,47 @@
+{
+  "id": "winter-holiday-post",
+  "revision": "3e3bc8d2ce7b0d1c99a7f8886d350c3b71cb14f4119feb1eb15a601d5f96e4ed",
+  "base_id": "b50c0bf1acb80bcdcfc51e2fbe0d108006bd0f70ac1dde65acb67a005f8ee65d",
+  "decision": "approved",
+  "reviewer": "Codex visual and WordPress review",
+  "note": "Holiday post uses its warm paper palette and clear copy/action grouping through the bar transition.",
+  "at": "2026-10-23T11:24:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-9.jpg",
+          "sha256": "d22e0be5d733704db93faaec5cbbbbb5d8e8274559f2588384cc39376ddab7e6"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-9.jpg",
+          "sha256": "08b54d23fa3d2619e6127ac38f581fc5e5e4e393615b187b0373d86476704a88"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "0114a9c65f778cea8f8b66b815322880872505a7e7f6738d4c47fd22c730bd42"
+}

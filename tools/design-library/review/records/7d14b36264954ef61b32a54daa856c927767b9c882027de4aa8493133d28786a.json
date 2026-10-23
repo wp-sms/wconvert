@@ -1,0 +1,47 @@
+{
+  "id": "agency-project-enquiry",
+  "revision": "ec4fbe9458fa0d4e9e4139aed32b66f678771377ecf5829da2c6095e4399489a",
+  "base_id": "ac80c4013e7f6e134b68b2928317291a654a2321ff666fb7ef5a3a3b622ceea1",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 133069b98aa4f6ea86d5008238d1e6bbc2210ab1, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-23T11:17:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/agency-project-enquiry-320.png",
+          "sha256": "cfaf7736ebb0d0f31344a9eefee3bc62971e0e18903a6b1f2373d98021ee2e87"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/agency-project-enquiry-1440.png",
+          "sha256": "03b2bd7557305ca2d3be12e699b8b71de6cb8a9efcacfc163f5129b36d826c9a"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "7d14b36264954ef61b32a54daa856c927767b9c882027de4aa8493133d28786a"
+}

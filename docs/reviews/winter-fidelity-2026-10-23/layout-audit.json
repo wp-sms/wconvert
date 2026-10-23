@@ -1,0 +1,66 @@
+{
+  "normal": {
+    "designs": {
+      "total": 880,
+      "failures": [],
+      "widths": [
+        320,
+        390,
+        520,
+        640,
+        768,
+        960,
+        1280,
+        1440
+      ],
+      "rtl": true
+    },
+    "campaigns": {
+      "total": 880,
+      "failures": [],
+      "widths": [
+        320,
+        390,
+        520,
+        640,
+        768,
+        960,
+        1280,
+        1440
+      ],
+      "rtl": true
+    }
+  },
+  "longCopy": {
+    "designs": {
+      "total": 880,
+      "failures": [],
+      "widths": [
+        320,
+        390,
+        520,
+        640,
+        768,
+        960,
+        1280,
+        1440
+      ],
+      "rtl": true
+    },
+    "campaigns": {
+      "total": 880,
+      "failures": [],
+      "widths": [
+        320,
+        390,
+        520,
+        640,
+        768,
+        960,
+        1280,
+        1440
+      ],
+      "rtl": true
+    }
+  }
+}

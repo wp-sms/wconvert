@@ -4,31 +4,34 @@
   "display_type": "slide_in",
   "tier": "pro",
   "tokens": {
-    "bg": "#f3eddf",
-    "fg": "#465545",
-    "muted": "#465545",
-    "accent": "#465545",
-    "accent-fg": "#fff8e7",
+    "bg": "#efe9dd",
+    "fg": "#435547",
+    "muted": "fg",
+    "accent": "#52634a",
+    "accent-fg": "#fff4dd",
     "border": "#465545",
     "input-bg": "transparent",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Instrument Serif\", Georgia, serif",
     "heading-size": "3rem",
     "heading-weight": "400",
-    "text-size": "1rem",
-    "leading": "1.55",
-    "tracking": "-.02em",
+    "text-size": ".9375rem",
+    "leading": "1.65",
+    "tracking": "-.025em",
     "pad": "0",
     "gap": "0",
-    "radius": "0",
-    "width": "25rem",
+    "radius": "100px 100px 6px 6px",
+    "width": "23.125rem",
     "align": "start",
     "close-fg": "fg",
     "close-bg": "bg",
     "close-border": "border",
     "close-radius": "50%",
     "error-fg": "#991b1b",
-    "error-bg": "#fff1f2"
+    "error-bg": "#fff1f2",
+    "placeholder": "fg",
+    "heading-leading": ".98",
+    "close-inset": "28px"
   },
   "tree": {
     "v": 2,
@@ -45,50 +48,131 @@
               "text": "OUR WINTER HOURS",
               "role": "eyebrow",
               "tokens": {
-                "text-size": ".75rem",
-                "tracking": ".12em"
+                "text-size": ".833333rem",
+                "tracking": ".12em",
+                "align": "center"
               },
               "id": "n1"
             },
             {
               "type": "heading",
               "narrow": {
-                "heading-size": "2.35rem"
+                "heading-size": "2.875rem",
+                "heading-leading": "0.98"
               },
               "text": "Your holiday\nopening hours.",
               "role": "headline",
               "tokens": {
-                "heading-size": "3rem",
+                "heading-size": "2.875rem",
                 "heading-font": "\"Instrument Serif\", Georgia, serif",
-                "heading-weight": "400"
+                "heading-weight": "400",
+                "heading-style": "normal",
+                "heading-leading": "0.98",
+                "tracking": "-0.025em",
+                "align": "center"
               },
               "id": "n2"
             },
             {
-              "type": "text",
-              "text": "24 December · 10 am – 2 pm",
-              "role": "body",
-              "id": "n3"
+              "type": "split",
+              "start": [
+                {
+                  "type": "text",
+                  "text": "24 December",
+                  "role": "body",
+                  "id": "n3",
+                  "tokens": {
+                    "text-size": ".875rem"
+                  }
+                }
+              ],
+              "end": [
+                {
+                  "type": "text",
+                  "id": "n9002",
+                  "text": "10 am – 2 pm",
+                  "role": "body",
+                  "tokens": {
+                    "align": "end",
+                    "text-size": ".875rem"
+                  }
+                }
+              ],
+              "ratio": 0.5,
+              "basis": "6rem",
+              "tokens": {
+                "gap": "0"
+              }
             },
             {
               "type": "divider",
               "id": "n4"
             },
             {
-              "type": "text",
-              "text": "25–26 December · Closed",
-              "role": "body",
-              "id": "n5"
+              "type": "split",
+              "start": [
+                {
+                  "type": "text",
+                  "text": "25–26 December",
+                  "role": "body",
+                  "id": "n5",
+                  "tokens": {
+                    "text-size": ".875rem"
+                  }
+                }
+              ],
+              "end": [
+                {
+                  "type": "text",
+                  "id": "n9004",
+                  "text": "Closed",
+                  "role": "body",
+                  "tokens": {
+                    "align": "end",
+                    "text-size": ".875rem"
+                  }
+                }
+              ],
+              "ratio": 0.5,
+              "basis": "6rem",
+              "tokens": {
+                "gap": "0"
+              }
             },
             {
               "type": "divider",
               "id": "n6"
             },
             {
-              "type": "text",
-              "text": "27 December · 10 am – 6 pm",
-              "role": "body",
-              "id": "n7"
+              "type": "split",
+              "start": [
+                {
+                  "type": "text",
+                  "text": "27 December",
+                  "role": "body",
+                  "id": "n7",
+                  "tokens": {
+                    "text-size": ".875rem"
+                  }
+                }
+              ],
+              "end": [
+                {
+                  "type": "text",
+                  "id": "n9006",
+                  "text": "10 am – 6 pm",
+                  "role": "body",
+                  "tokens": {
+                    "align": "end",
+                    "text-size": ".875rem"
+                  }
+                }
+              ],
+              "ratio": 0.5,
+              "basis": "6rem",
+              "tokens": {
+                "gap": "0"
+              }
             },
             {
               "type": "text",
@@ -102,10 +186,11 @@
               "action": "link",
               "role": "cta_label",
               "tokens": {
-                "text-size": "1rem",
+                "text-size": ".875rem",
                 "radius": ".15rem",
                 "border": "fg",
-                "tracking": "normal"
+                "tracking": "normal",
+                "leading": "1.4"
               },
               "id": "n9"
             },
@@ -121,13 +206,13 @@
             }
           ],
           "tokens": {
-            "pad": "3.5rem 2rem 2rem",
-            "gap": "1rem",
-            "radius": "0"
+            "pad": "64px 28px 30px",
+            "gap": "1.25rem",
+            "radius": "100px 100px 6px 6px"
           },
           "narrow": {
-            "pad": "3.5rem 1.5rem 1.5rem",
-            "gap": ".85rem"
+            "pad": "64px 23px 25px",
+            "gap": "1.1rem"
           }
         }
       }

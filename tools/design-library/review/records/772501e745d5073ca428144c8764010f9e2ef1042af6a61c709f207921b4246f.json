@@ -1,0 +1,39 @@
+{
+  "id": "collection-launch-a-collection",
+  "revision": "d0f6a7d63d30d834576392c5e3fd096d507c895c3ff451d683be993ee493c5e1",
+  "base_id": "dbbcead94742ac43694bc14749fde5c9f947243051ab627a2421ccdafee7abad",
+  "decision": "approved",
+  "reviewer": "Codex visual and WordPress review",
+  "note": "Reviewed Introduce a collection: membership, order, entitlement and catalogue delivery unchanged; all dependencies current after the documented fidelity/shared-renderer reviews.",
+  "at": "2026-10-23T11:25:09Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "772501e745d5073ca428144c8764010f9e2ef1042af6a61c709f207921b4246f"
+}

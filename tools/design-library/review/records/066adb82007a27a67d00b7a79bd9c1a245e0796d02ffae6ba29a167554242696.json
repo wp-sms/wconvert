@@ -1,0 +1,47 @@
+{
+  "id": "winter-first-page",
+  "revision": "bdd67db2586bb251d91cf396b5bf70e2d8a4351017478da2fc0e84ba4e630324",
+  "base_id": "1d157963b932a8d3800b569098ee4ab4f7d4704678056b0f4dd15731ff6e325e",
+  "decision": "approved",
+  "reviewer": "Codex visual and WordPress review",
+  "note": "First-page date and offer remain grouped with the countdown; mobile keeps a sensible reading order.",
+  "at": "2026-10-23T11:24:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-8.jpg",
+          "sha256": "38da9d3ac2a78456aac97b9066b95563c57f1d56cc6161fa71cc04e01d40d732"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-8.jpg",
+          "sha256": "ac19bed9a382dced9ee763f904f88e8b499ffdb0e15cc05a6aa6b61fd0b18848"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "066adb82007a27a67d00b7a79bd9c1a245e0796d02ffae6ba29a167554242696"
+}

@@ -297,6 +297,7 @@ final class TemplateLabels
         return [
             'split.ratio' => __('How the space is divided', 'wconvert'),
             'split.basis' => __('Minimum column width', 'wconvert'),
+            'grid.basis' => __('Minimum column width', 'wconvert'),
             /*
              * ================================================================
              * FOUR ENTRIES FOR ONE CONTROL, BECAUSE THE KEY IS PER LAYOUT.
@@ -393,6 +394,10 @@ final class TemplateLabels
             'split.ratio.0.5' => __('Even', 'wconvert'),
             /* translators: a side-by-side split. The LOGICAL second pane is narrower — it reads “left” in a right-to-left locale. */
             'split.ratio.0.65' => __('Narrow right', 'wconvert'),
+            'grid.basis.8rem' => __('Small (8rem)', 'wconvert'),
+            'grid.basis.12rem' => __('Compact (12rem)', 'wconvert'),
+            'grid.basis.16rem' => __('Roomy (16rem)', 'wconvert'),
+            'grid.basis.20rem' => __('Wide (20rem)', 'wconvert'),
             'split.basis.12rem' => __('Compact (12rem)', 'wconvert'),
             'split.basis.16rem' => __('Roomy (16rem)', 'wconvert'),
             'split.basis.20rem' => __('Wide (20rem)', 'wconvert'),
@@ -506,6 +511,7 @@ final class TemplateLabels
             'text.size' => __('Size', 'wconvert'),
             /* translators: how a picture fills the space it is given. */
             'image.fit' => __('Picture fit', 'wconvert'),
+            'code.layout' => __('Code layout', 'wconvert'),
             'code.copy' => __('Copy button', 'wconvert'),
             /* translators: how a countdown is drawn — as one line of digits, or as a box per unit. */
             'countdown.layout' => __('Countdown style', 'wconvert'),
@@ -562,6 +568,8 @@ final class TemplateLabels
             'question.answer_type.text' => __('Short answer', 'wconvert'),
             'question.required.false' => __('Optional', 'wconvert'),
             'question.required.true' => __('Required', 'wconvert'),
+            'code.layout.stack' => __('Stacked', 'wconvert'),
+            'code.layout.inline' => __('Code and button together', 'wconvert'),
             'code.copy.false' => __('Code only', 'wconvert'),
             'code.copy.true' => __('Code and copy button', 'wconvert'),
             /* translators: a countdown drawn as one line of digits, such as 2d 14:05:09. */
@@ -815,12 +823,18 @@ final class TemplateLabels
             'accent-fg' => __('Button text', 'wconvert'),
             'border' => __('Borders', 'wconvert'),
             /* translators: the background colour of a text box a visitor types into. Separate from the design's own background, so a form on a dark panel stays readable. */
+            'placeholder' => __('Field example text', 'wconvert'),
             'input-bg' => __('Field background', 'wconvert'),
             'font' => __('Font', 'wconvert'),
             /* translators: a second typeface used only for headings, where the design wants one different from its body text. */
             'heading-font' => __('Heading font', 'wconvert'),
             'heading-size' => __('Heading size', 'wconvert'),
             'heading-weight' => __('Heading weight', 'wconvert'),
+            'heading-leading' => __('Heading line spacing', 'wconvert'),
+            'heading-style' => __('Heading style', 'wconvert'),
+            'image-height' => __('Image height', 'wconvert'),
+            'bg-size' => __('Background image size', 'wconvert'),
+            'countdown-size' => __('Countdown number size', 'wconvert'),
             /* translators: the space between letters in a heading. Typographers call it tracking; "letter spacing" is the phrase a merchant knows. */
             'tracking' => __('Heading letter spacing', 'wconvert'),
             'text-size' => __('Text size', 'wconvert'),
@@ -848,6 +862,7 @@ final class TemplateLabels
             /* translators: the colour of the outline around the button that closes a popup. */
             'close-border' => __('Close button outline', 'wconvert'),
             /* translators: the shape of the button that closes a popup — round, rounded square or square. */
+            'close-inset' => __('Close button inset', 'wconvert'),
             'close-radius' => __('Close button shape', 'wconvert'),
             /* translators: the colour of the message shown when a visitor's entry is refused, such as an invalid email. */
             'error-fg' => __('Error text', 'wconvert'),
@@ -960,6 +975,11 @@ final class TemplateLabels
              * medium is offering a chip that changes nothing.
              */
             /* translators: a heading weight — the same thickness as body text. */
+            'heading-style.normal' => __('Upright', 'wconvert'),
+            'heading-style.italic' => __('Italic', 'wconvert'),
+            'bg-size.cover' => __('Fill the panel', 'wconvert'),
+            'bg-size.contain' => __('Show the whole image', 'wconvert'),
+            'bg-size.100% auto' => __('Fit the width', 'wconvert'),
             'heading-weight.400' => __('Regular', 'wconvert'),
             /* translators: a heading weight, between regular and bold. */
             'heading-weight.600' => __('Semibold', 'wconvert'),

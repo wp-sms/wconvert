@@ -6,29 +6,31 @@
   "tokens": {
     "bg": "#633e40",
     "fg": "#ffead2",
-    "muted": "#ffead2",
+    "muted": "fg",
     "accent": "#efcfa2",
-    "accent-fg": "#633e40",
+    "accent-fg": "#593537",
     "border": "#ffead2",
     "input-bg": "transparent",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Instrument Serif\", Georgia, serif",
     "heading-size": "3rem",
     "heading-weight": "400",
-    "text-size": "1rem",
-    "leading": "1.55",
-    "tracking": "-.02em",
+    "text-size": ".9375rem",
+    "leading": "1.65",
+    "tracking": "-.025em",
     "pad": "0",
     "gap": "0",
-    "radius": "0",
-    "width": "29rem",
+    "radius": "0px",
+    "width": "23.125rem",
     "align": "start",
     "close-fg": "fg",
     "close-bg": "bg",
     "close-border": "border",
     "close-radius": "50%",
     "error-fg": "#991b1b",
-    "error-bg": "#fff1f2"
+    "error-bg": "#fff1f2",
+    "placeholder": "fg",
+    "heading-leading": ".98"
   },
   "tree": {
     "v": 2,
@@ -68,7 +70,7 @@
                   "text": "THE CANDLE CLUB",
                   "role": "eyebrow",
                   "tokens": {
-                    "text-size": ".75rem",
+                    "text-size": ".833333rem",
                     "tracking": ".12em"
                   },
                   "id": "n2"
@@ -76,14 +78,18 @@
                 {
                   "type": "heading",
                   "narrow": {
-                    "heading-size": "2.35rem"
+                    "heading-size": "2.875rem",
+                    "heading-leading": "0.98"
                   },
                   "text": "A warmer December.\n15% off candles.",
                   "role": "headline",
                   "tokens": {
-                    "heading-size": "3rem",
+                    "heading-size": "2.875rem",
                     "heading-font": "\"Instrument Serif\", Georgia, serif",
-                    "heading-weight": "400"
+                    "heading-weight": "400",
+                    "heading-style": "normal",
+                    "heading-leading": "0.98",
+                    "tracking": "-0.025em"
                   },
                   "id": "n3"
                 },
@@ -94,42 +100,51 @@
                   "id": "n4"
                 },
                 {
-                  "type": "field",
-                  "name": "email",
-                  "label": "Email address",
-                  "placeholder": "",
-                  "required": true,
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "field",
+                      "name": "email",
+                      "label": "Email address",
+                      "placeholder": "you@example.com",
+                      "required": true,
+                      "tokens": {
+                        "input-bg": "transparent",
+                        "text-size": "1rem",
+                        "radius": ".15rem",
+                        "border": "fg"
+                      },
+                      "id": "n5"
+                    },
+                    {
+                      "type": "button",
+                      "label": "Get my 15% code",
+                      "action": "submit",
+                      "submission": "primary",
+                      "role": "cta_label",
+                      "tokens": {
+                        "text-size": ".875rem",
+                        "radius": ".15rem",
+                        "border": "fg",
+                        "tracking": "normal",
+                        "leading": "1.4"
+                      },
+                      "id": "n6"
+                    },
+                    {
+                      "type": "consent",
+                      "hidden": true,
+                      "text": "I agree to receive marketing emails. Unsubscribe anytime.",
+                      "role": "consent_text",
+                      "tokens": {
+                        "text-size": ".875rem"
+                      },
+                      "id": "n7"
+                    }
+                  ],
                   "tokens": {
-                    "input-bg": "transparent",
-                    "text-size": "1rem",
-                    "radius": ".15rem",
-                    "border": "fg"
-                  },
-                  "id": "n5"
-                },
-                {
-                  "type": "button",
-                  "label": "Get my 15% code",
-                  "action": "submit",
-                  "submission": "primary",
-                  "role": "cta_label",
-                  "tokens": {
-                    "text-size": "1rem",
-                    "radius": ".15rem",
-                    "border": "fg",
-                    "tracking": "normal"
-                  },
-                  "id": "n6"
-                },
-                {
-                  "type": "consent",
-                  "hidden": true,
-                  "text": "I agree to receive marketing emails. Unsubscribe anytime.",
-                  "role": "consent_text",
-                  "tokens": {
-                    "text-size": ".875rem"
-                  },
-                  "id": "n7"
+                    "gap": ".625rem"
+                  }
                 },
                 {
                   "type": "text",
@@ -143,13 +158,13 @@
                 }
               ],
               "tokens": {
-                "pad": "2.25rem",
-                "gap": "1rem",
+                "pad": "33px 29px 28px",
+                "gap": "1.25rem",
                 "radius": "0"
               },
               "narrow": {
-                "pad": "1.5rem",
-                "gap": ".85rem"
+                "pad": "33px 29px 28px",
+                "gap": "1.1rem"
               }
             }
           ],
@@ -183,9 +198,15 @@
                   "text": "Thank you.\nRequest received.",
                   "role": "success_headline",
                   "tokens": {
-                    "heading-size": "2.5rem"
+                    "heading-size": "2.8125rem",
+                    "heading-leading": "1.05",
+                    "heading-style": "normal",
+                    "heading-font": "\"Instrument Serif\", Georgia, serif"
                   },
-                  "id": "n10"
+                  "id": "n10",
+                  "narrow": {
+                    "heading-size": "2.625rem"
+                  }
                 },
                 {
                   "type": "text",
@@ -201,7 +222,8 @@
                   "copy_failed_label": "Select and copy this code",
                   "text": "MERRY15",
                   "role": "code_value",
-                  "id": "n12"
+                  "id": "n12",
+                  "layout": "inline"
                 },
                 {
                   "type": "button",
@@ -210,18 +232,20 @@
                   "role": "close_label",
                   "tokens": {
                     "accent": "bg",
-                    "accent-fg": "fg"
+                    "accent-fg": "fg",
+                    "text-size": ".875rem",
+                    "leading": "1.4"
                   },
                   "id": "n13"
                 }
               ],
               "tokens": {
-                "pad": "2.25rem",
-                "gap": "1rem",
+                "pad": "48px 35px",
+                "gap": "1.25rem",
                 "radius": "0"
               },
               "narrow": {
-                "pad": "1.5rem",
+                "pad": "32px 26px",
                 "gap": ".85rem"
               }
             }

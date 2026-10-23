@@ -1,6 +1,10 @@
 import type { JourneyGraph, TemplateScreen } from '@renderer/types';
 import { matches, screenQuestionIds, type Answers } from './journey-rules';
 
+// Only editor traces consume branch explanations; visitor routing uses indices and answers.
+declare const __WCONVERT_VISITOR__: boolean;
+const TRACE = typeof __WCONVERT_VISITOR__ === 'undefined' || !__WCONVERT_VISITOR__;
+
 export interface GraphDecision { readonly edge: string; readonly from: string; readonly to: string; readonly kind: 'answer' | 'default' | 'hidden'; readonly priority?: number; }
 export interface GraphTrace { readonly indices: readonly number[]; readonly answers: Answers; readonly decisions: readonly GraphDecision[]; readonly hidden: readonly string[]; }
 
@@ -36,7 +40,7 @@ export function graphTrace(steps: readonly TemplateScreen[], graph: JourneyGraph
     if (shown) {
       indices.push(index);
       for (const question of screenQuestionIds(screen)) if (answers[question] !== undefined) active[question] = answers[question];
-    } else hidden.push(id);
+    } else if (TRACE) hidden.push(id);
     const outgoing = graph.edges.filter(edge => edge.from === id);
     const choices = outgoing.filter(edge => edge.kind === 'answer');
     const priority = shown ? choices.findIndex(edge => edge.when && matches(edge.when, active)) : -1;
@@ -47,7 +51,7 @@ export function graphTrace(steps: readonly TemplateScreen[], graph: JourneyGraph
       : outgoing.find(item => item.kind === 'hidden') ?? fallback;
     if (!edge) break;
     // A skipped screen's decision says it was skipped, whichever edge it continued on.
-    decisions.push({ edge: edge.id, from: id, to: edge.to, kind: shown ? edge.kind : 'hidden', ...(priority >= 0 ? { priority } : {}) });
+    if (TRACE) decisions.push({ edge: edge.id, from: id, to: edge.to, kind: shown ? edge.kind : 'hidden', ...(priority >= 0 ? { priority } : {}) });
     id = edge.to;
   }
   return { indices, answers: active, decisions, hidden };

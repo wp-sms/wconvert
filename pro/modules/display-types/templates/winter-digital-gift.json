@@ -6,29 +6,31 @@
   "tokens": {
     "bg": "#f1d2ab",
     "fg": "#714b39",
-    "muted": "#714b39",
+    "muted": "fg",
     "accent": "#754b3a",
-    "accent-fg": "#fff8e7",
+    "accent-fg": "#fff4dd",
     "border": "#714b39",
-    "input-bg": "transparent",
+    "input-bg": "#efc68e",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Instrument Serif\", Georgia, serif",
     "heading-size": "3rem",
     "heading-weight": "400",
-    "text-size": "1rem",
-    "leading": "1.55",
-    "tracking": "-.02em",
+    "text-size": ".9375rem",
+    "leading": "1.65",
+    "tracking": "-.025em",
     "pad": "0",
     "gap": "0",
-    "radius": "0",
-    "width": "25rem",
+    "radius": "0px",
+    "width": "23.125rem",
     "align": "start",
     "close-fg": "fg",
     "close-bg": "bg",
     "close-border": "border",
     "close-radius": "50%",
     "error-fg": "#991b1b",
-    "error-bg": "#fff1f2"
+    "error-bg": "#fff1f2",
+    "placeholder": "fg",
+    "heading-leading": ".98"
   },
   "tree": {
     "v": 2,
@@ -46,24 +48,25 @@
                 {
                   "type": "heading",
                   "narrow": {
-                    "heading-size": "2.35rem"
+                    "heading-size": "2.875rem"
                   },
                   "text": "Digital\ngift cards",
                   "role": "headline",
                   "tokens": {
-                    "heading-size": "3.8rem",
+                    "heading-size": "2.875rem",
                     "heading-font": "\"Instrument Serif\", Georgia, serif",
-                    "heading-weight": "400"
+                    "heading-weight": "400",
+                    "heading-leading": ".95"
                   },
                   "id": "n1"
                 }
               ],
               "tokens": {
-                "pad": "2.25rem",
+                "pad": "34px 30px",
                 "gap": "1rem",
                 "radius": "0",
                 "bg": "accent",
-                "fg": "accent-fg"
+                "fg": "input-bg"
               },
               "narrow": {
                 "pad": "1.5rem",
@@ -78,7 +81,7 @@
                   "text": "A THOUGHTFUL DIGITAL GIFT",
                   "role": "eyebrow",
                   "tokens": {
-                    "text-size": ".75rem",
+                    "text-size": ".833333rem",
                     "tracking": ".12em"
                   },
                   "id": "n2"
@@ -86,14 +89,18 @@
                 {
                   "type": "heading",
                   "narrow": {
-                    "heading-size": "2.35rem"
+                    "heading-size": "2.875rem",
+                    "heading-leading": "0.98"
                   },
                   "text": "Good gifts.\nNo wrapping.",
                   "role": "headline",
                   "tokens": {
-                    "heading-size": "3rem",
+                    "heading-size": "2.875rem",
                     "heading-font": "\"Instrument Serif\", Georgia, serif",
-                    "heading-weight": "400"
+                    "heading-weight": "400",
+                    "heading-style": "normal",
+                    "heading-leading": "0.98",
+                    "tracking": "-0.025em"
                   },
                   "id": "n3"
                 },
@@ -104,21 +111,47 @@
                   "id": "n4"
                 },
                 {
-                  "type": "countdown",
-                  "layout": "boxes",
-                  "density": "compact",
-                  "days_label": "Days",
-                  "hours_label": "Hrs",
-                  "minutes_label": "Mins",
-                  "seconds_label": "Secs",
-                  "role": "countdown_units",
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "n9002",
+                      "role": "fine_print",
+                      "text": "DIGITAL GIFT OFFER ENDS IN",
+                      "tokens": {
+                        "text-size": ".875rem",
+                        "font": "\"DM Sans\", Arial, sans-serif"
+                      }
+                    },
+                    {
+                      "type": "countdown",
+                      "layout": "boxes",
+                      "density": "compact",
+                      "days_label": "Days",
+                      "hours_label": "Hrs",
+                      "minutes_label": "Mins",
+                      "seconds_label": "Secs",
+                      "role": "countdown_units",
+                      "tokens": {
+                        "text-size": "1.15rem",
+                        "tracking": "normal",
+                        "radius": ".1rem",
+                        "input-bg": "transparent",
+                        "countdown-size": "2.125rem",
+                        "font": "\"Instrument Serif\", Georgia, serif",
+                        "heading-weight": "400",
+                        "border": "transparent",
+                        "align": "start"
+                      },
+                      "id": "n5",
+                      "narrow": {
+                        "countdown-size": "1.75rem"
+                      }
+                    }
+                  ],
                   "tokens": {
-                    "text-size": "1.15rem",
-                    "tracking": "normal",
-                    "radius": ".1rem",
-                    "input-bg": "transparent"
-                  },
-                  "id": "n5"
+                    "gap": ".6875rem"
+                  }
                 },
                 {
                   "type": "button",
@@ -126,10 +159,11 @@
                   "action": "link",
                   "role": "cta_label",
                   "tokens": {
-                    "text-size": "1rem",
+                    "text-size": ".875rem",
                     "radius": ".15rem",
                     "border": "fg",
-                    "tracking": "normal"
+                    "tracking": "normal",
+                    "leading": "1.4"
                   },
                   "id": "n6"
                 },
@@ -145,13 +179,13 @@
                 }
               ],
               "tokens": {
-                "pad": "2.25rem",
-                "gap": "1rem",
+                "pad": "28px 29px",
+                "gap": "1.25rem",
                 "radius": "0"
               },
               "narrow": {
-                "pad": "1.5rem",
-                "gap": ".85rem"
+                "pad": "27px",
+                "gap": "1.1rem"
               }
             }
           ],

@@ -6,29 +6,31 @@
   "tokens": {
     "bg": "#efd3c8",
     "fg": "#244b3a",
-    "muted": "#244b3a",
+    "muted": "fg",
     "accent": "#244b3a",
-    "accent-fg": "#fff8e7",
+    "accent-fg": "#fff4dd",
     "border": "#244b3a",
     "input-bg": "transparent",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Instrument Serif\", Georgia, serif",
     "heading-size": "3rem",
     "heading-weight": "400",
-    "text-size": "1rem",
-    "leading": "1.55",
-    "tracking": "-.02em",
+    "text-size": ".9375rem",
+    "leading": "1.65",
+    "tracking": "-.025em",
     "pad": "0",
     "gap": "0",
-    "radius": "0",
-    "width": "27rem",
+    "radius": "0px",
+    "width": "26.25rem",
     "align": "start",
     "close-fg": "fg",
     "close-bg": "bg",
     "close-border": "border",
     "close-radius": "50%",
     "error-fg": "#991b1b",
-    "error-bg": "#fff1f2"
+    "error-bg": "#fff1f2",
+    "placeholder": "fg",
+    "heading-leading": ".98"
   },
   "tree": {
     "v": 2,
@@ -41,7 +43,7 @@
           "type": "panel",
           "children": [
             {
-              "type": "row",
+              "type": "stack",
               "children": [
                 {
                   "type": "image",
@@ -56,7 +58,7 @@
                 }
               ],
               "tokens": {
-                "gap": "1rem",
+                "gap": "0",
                 "align": "center"
               }
             },
@@ -65,7 +67,7 @@
               "text": "A LITTLE SOMETHING, FROM US",
               "role": "eyebrow",
               "tokens": {
-                "text-size": ".75rem",
+                "text-size": ".833333rem",
                 "tracking": ".12em"
               },
               "id": "n2"
@@ -73,30 +75,61 @@
             {
               "type": "heading",
               "narrow": {
-                "heading-size": "2.35rem"
+                "heading-size": "1.9375rem",
+                "heading-leading": "0.98"
               },
               "text": "Small gift.\nBig feeling.",
               "role": "headline",
               "tokens": {
-                "heading-size": "3rem",
-                "heading-font": "\"Instrument Serif\", Georgia, serif",
-                "heading-weight": "400"
+                "heading-size": "2.3125rem",
+                "heading-font": "\"DM Sans\", Arial, sans-serif",
+                "heading-weight": "700",
+                "heading-style": "normal",
+                "heading-leading": "0.98",
+                "tracking": "-0.055em"
               },
               "id": "n3"
             },
             {
-              "type": "heading",
-              "narrow": {
-                "heading-size": "4rem"
-              },
-              "text": "15%",
-              "role": "headline",
+              "type": "panel",
+              "children": [
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "narrow": {
+                        "heading-size": "5.625rem"
+                      },
+                      "text": "15",
+                      "role": "headline",
+                      "tokens": {
+                        "heading-size": "5.625rem",
+                        "heading-font": "\"Instrument Serif\", Georgia, serif",
+                        "heading-weight": "400"
+                      },
+                      "id": "n4"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n9001",
+                      "text": "% off",
+                      "role": "body",
+                      "tokens": {
+                        "text-size": ".875rem"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "6px"
+                  }
+                }
+              ],
               "tokens": {
-                "heading-size": "5rem",
-                "heading-font": "\"DM Sans\", Arial, sans-serif",
-                "heading-weight": "400"
-              },
-              "id": "n4"
+                "pad": "0 max(0px,calc((100% - 150px)/2))",
+                "gap": "0",
+                "radius": "0"
+              }
             },
             {
               "type": "text",
@@ -112,7 +145,8 @@
               "copy_failed_label": "Select and copy this code",
               "text": "MERRY15",
               "role": "code_value",
-              "id": "n6"
+              "id": "n6",
+              "layout": "inline"
             },
             {
               "type": "button",
@@ -120,10 +154,11 @@
               "action": "link",
               "role": "cta_label",
               "tokens": {
-                "text-size": "1rem",
-                "radius": ".15rem",
+                "text-size": ".875rem",
+                "radius": "30px",
                 "border": "fg",
-                "tracking": "normal"
+                "tracking": "normal",
+                "leading": "1.4"
               },
               "id": "n7"
             },
@@ -139,14 +174,14 @@
             }
           ],
           "tokens": {
-            "pad": "3.5rem 2rem 2rem",
-            "gap": "1rem",
+            "pad": "35px 38px",
+            "gap": "1.25rem",
             "radius": "0",
             "align": "center"
           },
           "narrow": {
-            "pad": "3.5rem 1.5rem 1.5rem",
-            "gap": ".85rem"
+            "pad": "30px 23px",
+            "gap": "1.1rem"
           }
         }
       }

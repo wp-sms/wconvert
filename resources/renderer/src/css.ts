@@ -100,11 +100,12 @@ export const SHADOW_CSS = [
    *
    * `none` is a legal layer in the list, so the default costs no branch.
    */
-  `.wc-root{font-family:var(--wc-font,system-ui,sans-serif);font-size:var(--wc-text-size,1rem);line-height:var(--wc-leading,1.5);color:var(--wc-fg,#111827);background:var(--wc-bg,#fff);background-image:linear-gradient(var(--wc-overlay,#0000),var(--wc-overlay,#0000)),var(--wc-bg-image,none);background-size:cover;background-position:var(--wc-image-position,center);border-radius:var(--wc-radius,.5rem);padding:var(--wc-pad,1.5rem);container:wc/inline-size;text-align:var(--wc-align,start);inline-size:min(var(--wc-width,${A_DESIGNS_OWN_WIDTH}),100%);max-block-size:85vh;overflow:auto;position:relative;box-shadow:var(--wc-shadow,0 10px 40px rgba(0,0,0,.18))}`,
+  `.wc-root{font-family:var(--wc-font,system-ui,sans-serif);font-size:var(--wc-text-size,1rem);line-height:var(--wc-leading,1.5);color:var(--wc-fg,#111827);background:var(--wc-bg,#fff);background-image:linear-gradient(var(--wc-overlay,#0000),var(--wc-overlay,#0000)),var(--wc-bg-image,none);background-size:var(--wc-bg-size,cover);background-repeat:no-repeat;background-position:var(--wc-image-position,center);border-radius:var(--wc-radius,.5rem);padding:var(--wc-pad,1.5rem);container:wc/inline-size;text-align:var(--wc-align,start);inline-size:min(var(--wc-width,${A_DESIGNS_OWN_WIDTH}),100%);max-block-size:85vh;overflow:auto;position:relative;box-shadow:var(--wc-shadow,0 10px 40px rgba(0,0,0,.18))}`,
 
   // Resolve inherited typography at each scope, so a local bag changes its own text.
   `.wc-stack,.wc-row,.wc-grid,.wc-split,.wc-panel,.wc-media,.wc-leaf{font-family:var(--wc-font,system-ui,sans-serif);font-size:var(--wc-text-size,1rem);line-height:var(--wc-leading,1.5);color:var(--wc-fg,#111827);text-align:var(--wc-align,start)}`,
 
+  `.wc-leaf{min-inline-size:0;overflow-wrap:anywhere}`,
   `.wc-stack{display:flex;flex-direction:column;gap:var(--wc-gap,.75rem)}`,
   `.wc-row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--wc-gap,.75rem)}`,
 
@@ -121,7 +122,7 @@ export const SHADOW_CSS = [
    * It is the only route to a three-up: `split` is hard-coded to exactly two
    * panes, and a benefit list has three benefits.
    */
-  `.wc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(8rem,1fr));gap:var(--wc-gap,.75rem)}`,
+  `.wc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--wc-basis,8rem)),1fr));gap:var(--wc-gap,.75rem)}`,
 
   /*
    * ==========================================================================
@@ -145,7 +146,7 @@ export const SHADOW_CSS = [
    * Without that, one `bg-image` on the design would be painted again, cover
    * and centred, inside every panel in it.
    */
-  `.wc-panel{display:flex;flex-direction:column;gap:var(--wc-gap,.75rem);min-block-size:var(--wc-min,0);padding:var(--wc-pad,1.5rem);border-radius:var(--wc-radius,.5rem);color:var(--wc-fg,#111827);background:var(--wc-bg,#fff);background-image:linear-gradient(var(--wc-overlay,#0000),var(--wc-overlay,#0000)),var(--wc-bg-image,none);background-size:cover;background-position:var(--wc-image-position,center)}`,
+  `.wc-panel{display:flex;flex-direction:column;gap:var(--wc-gap,.75rem);min-block-size:var(--wc-min,0);padding:var(--wc-pad,1.5rem);border-radius:var(--wc-radius,.5rem);color:var(--wc-fg,#111827);background:var(--wc-bg,#fff);background-image:linear-gradient(var(--wc-overlay,#0000),var(--wc-overlay,#0000)),var(--wc-bg-image,none);background-size:var(--wc-bg-size,cover);background-repeat:no-repeat;background-position:var(--wc-image-position,center)}`,
   /*
    * Two edge treatments, and the widths are different because the jobs are.
    * `block-start` is a GRAPHIC — the accent rule over a result panel, which is
@@ -211,7 +212,7 @@ export const SHADOW_CSS = [
    * pseudo-element sits between the two — no extra markup, and the children
    * take `position:relative` to clear it.
    */
-  `.wc-media{position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:var(--wc-gap,.75rem);min-block-size:var(--wc-min,0);padding:var(--wc-pad,1.5rem);border-radius:var(--wc-radius,.5rem);overflow:hidden;color:var(--wc-fg,#111827);background:var(--wc-bg,#fff);background-image:var(--wc-bg-image,none);background-size:cover;background-position:var(--wc-image-position,center)}`,
+  `.wc-media{position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:var(--wc-gap,.75rem);min-block-size:var(--wc-min,0);padding:var(--wc-pad,1.5rem);border-radius:var(--wc-radius,.5rem);overflow:hidden;color:var(--wc-fg,#111827);background:var(--wc-bg,#fff);background-image:var(--wc-bg-image,none);background-size:var(--wc-bg-size,cover);background-repeat:no-repeat;background-position:var(--wc-image-position,center)}`,
   `.wc-media::before{content:"";position:absolute;inset:0;background:var(--wc-overlay,#0000);pointer-events:none}`,
   `.wc-media>*{position:relative}`,
   /*
@@ -290,7 +291,7 @@ export const SHADOW_CSS = [
    * looks slack, and the bigger `heading-size` gets the worse it reads — which
    * is the direction both this token and the library moved.
    */
-  `.wc-heading{margin:0;font-family:var(--wc-heading-font,var(--wc-font,system-ui,sans-serif));font-size:var(--wc-heading-size,1.5rem);font-weight:var(--wc-heading-weight,700);letter-spacing:var(--wc-tracking,normal);line-height:1.12}`,
+  `.wc-heading{margin:0;font-family:var(--wc-heading-font,var(--wc-font,system-ui,sans-serif));font-size:var(--wc-heading-size,1.5rem);font-weight:var(--wc-heading-weight,700);letter-spacing:var(--wc-tracking,normal);line-height:var(--wc-heading-leading,1.12);font-style:var(--wc-heading-style,normal)}`,
   /*
    * **A sub-heading is smaller, or `level` is a control that does nothing.**
    * `render.ts` draws an `h3` for `level: 2` and an `h2` otherwise, and both
@@ -406,17 +407,18 @@ export const SHADOW_CSS = [
    * row. The digits and words are in `em`, so a bar's smaller type draws
    * smaller boxes; their padding is not.
    */
+  `.wc-countdown:not(.wc-boxes){font-size:var(--wc-countdown-size,var(--wc-text-size,1rem))}`,
   `.wc-countdown.wc-boxes{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:var(--wc-align,start)}`,
   `.wc-unit{flex:1 0 max(calc(25% - .375rem),min(calc(50% - .25rem),calc((16rem - 100%)*999)));max-inline-size:6em;display:grid;justify-items:center;padding:.5rem .25rem;background:var(--wc-input-bg,var(--wc-bg,#fff));border:1px solid var(--wc-border,#e5e7eb);border-radius:var(--wc-radius,.5rem)}`,
-  `.wc-unit>.wc-count{font-size:1.75em;line-height:1.1}`,
+  `.wc-unit>.wc-count{font-size:var(--wc-countdown-size,1.75em);line-height:1.1;white-space:nowrap}`,
   `.wc-unit>small{font-size:max(.8125rem,.35em);font-weight:400;letter-spacing:normal;color:var(--wc-muted,#6b7280)}`,
   `.wc-unit[hidden]{display:none}`,
   `.wc-boxes:has(>.wc-unit[hidden])>.wc-unit{flex-basis:calc(33.33% - .34rem)}`,
   `.wc-boxes.wc-compact{gap:.375rem;flex-wrap:nowrap}`,
-  `.wc-compact>.wc-unit{flex:0 0 auto!important;inline-size:3.25rem;max-inline-size:none;padding:.3rem .15rem;min-inline-size:0}`,
-  `.wc-compact>.wc-unit>.wc-count{font-size:1.35rem;line-height:1.15;letter-spacing:normal}`,
+  `.wc-compact>.wc-unit{flex:0 0 auto!important;inline-size:max(2.1875rem,calc(var(--wc-countdown-size,2.166667rem)*1.5));max-inline-size:none;padding:.3rem .15rem;min-inline-size:0}`,
+  `.wc-compact>.wc-unit>.wc-count{font-size:var(--wc-countdown-size,1.35rem);line-height:1.15;letter-spacing:normal}`,
   `.wc-compact>.wc-unit>small{font-size:.75rem;max-inline-size:100%;overflow-wrap:anywhere;text-align:center}`,
-  `@container (max-width:32rem){.wc-compact>.wc-unit{inline-size:2.1875rem}.wc-compact>.wc-unit>.wc-count{font-size:1.15rem}}`,
+  `@container (max-width:32rem){.wc-compact>.wc-unit{inline-size:max(2.1875rem,calc(var(--wc-countdown-size,1.458333rem)*1.5))}.wc-compact>.wc-unit>.wc-count{font-size:var(--wc-countdown-size,1.15rem)}}`,
 
   /*
    * ==========================================================================
@@ -443,6 +445,12 @@ export const SHADOW_CSS = [
    */
   `[role=status]:empty{display:none}`,
   `.wc-code{display:block;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:1.125em;font-weight:700;letter-spacing:.12em;text-align:center;-webkit-user-select:all;user-select:all;padding-block:.625rem;padding-inline:1rem;border:1px dashed var(--wc-border,#e5e7eb);border-radius:calc(var(--wc-radius,.5rem)/2)}`,
+
+  // An inline coupon keeps Copy secondary to the campaign's converting CTA.
+  `.wc-code-inline{display:flex;flex-wrap:wrap;align-items:center;border:1px dashed var(--wc-border,#e5e7eb);border-radius:calc(var(--wc-radius,.5rem)/2);gap:.5rem;padding:.375rem}`,
+  `.wc-code-inline>.wc-code{flex:1 1 10ch;min-inline-size:min(100%,10ch);border:0;padding:.375rem;overflow-wrap:anywhere}`,
+  `.wc-code-inline>.wc-button{inline-size:auto;background:transparent;color:var(--wc-fg,#111827);border:0;padding:.625rem;box-shadow:none}`,
+  `.wc-code-inline>[role=status]{flex-basis:100%}.wc-code-inline>[role=status]:empty{display:none}`,
 
   `.wc-rating{display:flex;flex-wrap:wrap;align-items:center;gap:.375rem}`,
   `.wc-stars{display:inline-flex;color:var(--wc-border,#e5e7eb)}`,
@@ -494,7 +502,7 @@ export const SHADOW_CSS = [
    */
   `.wc-strong{font-weight:700}`,
   `.wc-italic{font-style:italic}`,
-  `.wc-image{display:block;inline-size:100%;block-size:auto;object-fit:cover;object-position:var(--wc-image-position,center);border-radius:var(--wc-radius,.5rem)}`,
+  `.wc-image{display:block;inline-size:100%;block-size:var(--wc-image-height,auto);object-fit:cover;object-position:var(--wc-image-position,center);border-radius:var(--wc-radius,.5rem)}`,
   /*
    * A picture that IS one side of a split fills that side.
    *
@@ -506,7 +514,7 @@ export const SHADOW_CSS = [
    *
    * `object-fit` is already `cover`, so filling crops rather than distorts.
    */
-  `.wc-pane>.wc-image:only-child{block-size:100%}`,
+  `.wc-pane>.wc-image:only-child{block-size:var(--wc-image-height,100%)}`,
   /*
    * ==========================================================================
    * A CIRCLE, BECAUSE `--wc-radius` IS GLOBAL AND AN AVATAR IS NOT.
@@ -671,6 +679,7 @@ export const SHADOW_CSS = [
   // changed shape — which is the one state that must not be. It follows the
   // design's error colour, so a dark card does not get a red ring it cannot
   // show; a design that sets none keeps the red it always had.
+  `.wc-input::placeholder{color:var(--wc-placeholder,revert);opacity:1}`,
   `.wc-input[aria-invalid]{box-shadow:inset 0 0 0 2px var(--wc-error-fg,#b91c1c)}`,
 
   // Container chrome, not vocabulary: a template cannot omit the way out. It
@@ -678,7 +687,7 @@ export const SHADOW_CSS = [
   // soft disc over a photograph — but its size, place, label and glyph stay
   // here (ADR 0155, ADR 0159). The fallbacks are today's literals, so a design
   // that sets none draws exactly what it always did.
-  `.wc-close{position:absolute;inset-block-start:.5rem;inset-inline-end:.5rem;inline-size:2rem;block-size:2rem;cursor:pointer;color:var(--wc-close-fg,#1f2937);background:var(--wc-close-bg,#ffffff);border:1px solid var(--wc-close-border,#64748b);border-radius:var(--wc-close-radius,50%);display:grid;place-items:center;padding:0;z-index:1}`,
+  `.wc-close{position:absolute;inset-block-start:var(--wc-close-inset,.5rem);inset-inline-end:var(--wc-close-inset,.5rem);inline-size:2rem;block-size:2rem;cursor:pointer;color:var(--wc-close-fg,#1f2937);background:var(--wc-close-bg,#ffffff);border:1px solid var(--wc-close-border,#64748b);border-radius:var(--wc-close-radius,50%);display:grid;place-items:center;padding:0;z-index:1}`,
   // A bare × has no edge of its own once forced colours drop its background.
   // The system's own ink draws one, so the way out is still a visible target.
   `@media (forced-colors:active){.wc-close{border-color:CanvasText}}`,
@@ -767,7 +776,7 @@ export const SHADOW_CSS = [
    * desktop, and the viewport would call it wide. `.wc-root` is the container,
    * declared above.
    * --------------------------------------------------------------------- */
-  `@container wc (max-width:24rem){[data-narrow]{${'bg fg muted accent accent-fg border input-bg font heading-font heading-size heading-weight tracking text-size leading radius pad gap width align bg-image image-position overlay shadow motion backdrop close-fg close-bg close-border close-radius error-fg error-bg'.split(' ').map(name => `--wc-${name}:var(--wc-n-${name})!important`).join(';')}}}`,
+  `@container wc (max-width:24rem){[data-narrow]{${'bg fg muted placeholder accent accent-fg border input-bg font heading-font heading-size heading-weight heading-leading heading-style image-height bg-size countdown-size tracking text-size leading radius pad gap width align bg-image image-position overlay shadow motion backdrop close-fg close-bg close-border close-radius close-inset error-fg error-bg'.split(' ').map(name => `--wc-${name}:var(--wc-n-${name})!important`).join(';')}}}`,
 ].join('');
 
 let premiumStyles = '';

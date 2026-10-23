@@ -1,0 +1,47 @@
+{
+  "id": "weekend-observations",
+  "revision": "e7dda2bd04e49a33ebb87777ccedd794b2ab676368e899de8d32a4a8890b2cd3",
+  "base_id": "61370effd56e263f6be22c191377a400f5ddadda2945b6d4260cc45ebf290dcb",
+  "decision": "approved",
+  "reviewer": "Codex visual and WordPress review",
+  "note": "Numbered editorial items use one space instead of three; both screen compositions remain readable and the native signup/retry/acknowledgement passes at phone and desktop widths.",
+  "at": "2026-10-23T11:32:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-export-spacing-2026-10-23/README.md",
+          "sha256": "6f30791df1d1fd3e8bfb43f3feb5df6e414501265efbecf5e1300e8f8328a072"
+        },
+        {
+          "path": "docs/reviews/winter-export-spacing-2026-10-23/weekend-320.png",
+          "sha256": "924d0be74c817dcde8b3e9e92e15b826edcf28e83ac10c4ea379f33391d30aec"
+        },
+        {
+          "path": "docs/reviews/winter-export-spacing-2026-10-23/weekend-1440.png",
+          "sha256": "3d3543d430393bb6dc0263a3948383be3700e3c5aa22fe551b4c4d963e3cc2fb"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-export-spacing-2026-10-23/results.json",
+          "sha256": "14319df56111ae91619204ff79add1dc8ef792577c3f70a17060eece1d1dcafc"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-export-spacing-2026-10-23/results.json",
+          "sha256": "14319df56111ae91619204ff79add1dc8ef792577c3f70a17060eece1d1dcafc"
+        }
+      ]
+    }
+  },
+  "record_id": "becbb56d804347fa1327d0feba6a6844c87c58419f273f9e62b11fbebcce4ccd"
+}

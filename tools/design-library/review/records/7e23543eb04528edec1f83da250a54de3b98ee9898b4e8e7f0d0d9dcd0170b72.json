@@ -1,0 +1,47 @@
+{
+  "id": "halloween-midnight-offer",
+  "revision": "343966db81156f06fe5fcab99d8338fe0f74568676d07be85ee39eba652f229f",
+  "base_id": "86029514278cb8d78a86c4cfd7639bedb900ee0f11f242ebe6defa2f2f277bdb",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 133069b98aa4f6ea86d5008238d1e6bbc2210ab1, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-23T11:17:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/halloween-midnight-offer-320.png",
+          "sha256": "065ee26c7a92a80b046694646c9c8652f121c83772aad278e46c9d91d7607f4e"
+        },
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/halloween-midnight-offer-1440.png",
+          "sha256": "268a3029d5698d207f1c04900c3c350cc5ca675a5f222f5d6afd3202b0c64f5c"
+        },
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/review.md",
+          "sha256": "ef35ba6c37ecb334228f59a65f5a6cc2b9d0288a28c7be3ebfbbd1b6c712aa4d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/results.json",
+          "sha256": "402c3d44b9b37fac483320a2b09b33b4ddf782431f7e7095c4f478614447b64b"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/results.json",
+          "sha256": "402c3d44b9b37fac483320a2b09b33b4ddf782431f7e7095c4f478614447b64b"
+        }
+      ]
+    }
+  },
+  "record_id": "7e23543eb04528edec1f83da250a54de3b98ee9898b4e8e7f0d0d9dcd0170b72"
+}

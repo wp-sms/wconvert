@@ -1,4 +1,5 @@
 import { chromium } from 'playwright';
+import { previewFonts } from './preview-fonts.mjs';
 import { publicPreview } from './public-preview.mjs';
 import { cacheKey, cached, codeOf, remember } from './cache.mjs';
 
@@ -39,7 +40,7 @@ export async function galleryArtwork(designs, renderer) {
     }, { base64, mime, width, height, type, quality });
     for (const entry of designs) {
       const design = entry.pack.templates[0];
-      const key = cacheKey(CODE, renderer, entry.pack, (entry.media ?? []).map(item => [item.id, item.bytes.toString('base64')]));
+      const key = cacheKey(CODE, renderer, previewFonts(entry.pack.templates), entry.pack, (entry.media ?? []).map(item => [item.id, item.bytes.toString('base64')]));
       const hit = cached('gallery', key);
       if (hit) { entry.gallery = hit; continue; }
       // Downscale premium pictures before any public HTML is built from them.

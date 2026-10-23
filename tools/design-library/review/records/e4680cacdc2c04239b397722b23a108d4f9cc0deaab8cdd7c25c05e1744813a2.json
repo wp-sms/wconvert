@@ -1,0 +1,47 @@
+{
+  "id": "topic-reading-list",
+  "revision": "9f81b30dd02b55824a25c57f436da07cdb8b210e3f0b1919a4db00a0ed4d8c21",
+  "base_id": "8ec8015a329390cd416fbb61b5cc99e0069deb0db499569a9548798fc40e7f0a",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 133069b98aa4f6ea86d5008238d1e6bbc2210ab1, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-23T11:17:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/topic-reading-list-320.png",
+          "sha256": "e135b3cd8700705704781a715540efb6a4f210aaf645045d17a682d9f6893ab1"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/topic-reading-list-1440.png",
+          "sha256": "3556c20ca57cfe193544bfb6bcc552d2444601b25da39ef21fba202d81076462"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "e4680cacdc2c04239b397722b23a108d4f9cc0deaab8cdd7c25c05e1744813a2"
+}

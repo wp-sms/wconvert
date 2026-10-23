@@ -6,21 +6,21 @@
   "tokens": {
     "bg": "#f9edb8",
     "fg": "#183d32",
-    "muted": "#183d32",
+    "muted": "fg",
     "accent": "#183d32",
-    "accent-fg": "#fff8e7",
+    "accent-fg": "#fff5d9",
     "border": "#183d32",
     "input-bg": "#b93c2f",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Instrument Serif\", Georgia, serif",
     "heading-size": "3rem",
     "heading-weight": "400",
-    "text-size": "1rem",
-    "leading": "1.55",
-    "tracking": "-.02em",
+    "text-size": ".9375rem",
+    "leading": "1.65",
+    "tracking": "-.025em",
     "pad": "0",
     "gap": "0",
-    "radius": "0",
+    "radius": "0px",
     "width": "100%",
     "align": "start",
     "close-fg": "#fff5d9",
@@ -28,7 +28,9 @@
     "close-border": "border",
     "close-radius": "50%",
     "error-fg": "#991b1b",
-    "error-bg": "#fff1f2"
+    "error-bg": "#fff1f2",
+    "placeholder": "fg",
+    "heading-leading": ".98"
   },
   "tree": {
     "v": 2,
@@ -38,8 +40,18 @@
         "name": "Offer",
         "kind": "content",
         "content": {
-          "type": "stack",
+          "type": "panel",
           "children": [
+            {
+              "type": "panel",
+              "children": [],
+              "tokens": {
+                "pad": "9px 0",
+                "gap": "0",
+                "radius": "0",
+                "bg-image": "repeating-linear-gradient(90deg,var(--wc-fg) 0 18px,transparent 18px 36px)"
+              }
+            },
             {
               "type": "panel",
               "children": [
@@ -48,7 +60,7 @@
                   "text": "SOMETHING GOOD IS JUST BEGINNING",
                   "role": "eyebrow",
                   "tokens": {
-                    "text-size": ".75rem",
+                    "text-size": ".833333rem",
                     "tracking": ".12em"
                   },
                   "id": "n1"
@@ -56,34 +68,44 @@
                 {
                   "type": "heading",
                   "narrow": {
-                    "heading-size": "3.9rem"
+                    "heading-size": "clamp(5.125rem,19cqi,7.5rem)",
+                    "heading-leading": ".85",
+                    "tracking": "-0.09em"
                   },
                   "text": "HELLO,\n2027.",
                   "role": "headline",
                   "tokens": {
-                    "heading-size": "clamp(5rem,18cqi,14rem)",
+                    "heading-size": "clamp(5.9375rem,20cqi,16.25rem)",
                     "heading-font": "\"DM Sans\", Arial, sans-serif",
-                    "heading-weight": "400",
-                    "fg": "input-bg"
+                    "heading-weight": "700",
+                    "fg": "input-bg",
+                    "heading-style": "normal",
+                    "heading-leading": ".75",
+                    "tracking": "-.09em"
                   },
                   "id": "n2"
                 },
                 {
                   "type": "text",
-                  "text": "a fresh start looks good on you.",
+                  "text": "%i",
                   "role": "body",
-                  "id": "n3"
+                  "id": "n3",
+                  "italic": "a fresh start looks good on you.",
+                  "tokens": {
+                    "font": "Georgia, serif",
+                    "text-size": "1.5625rem"
+                  }
                 }
               ],
               "tokens": {
-                "pad": "4rem 3rem",
-                "gap": "1rem",
+                "pad": "43px 8%",
+                "gap": "25px",
                 "radius": "0",
                 "align": "center"
               },
               "narrow": {
-                "pad": "1.5rem",
-                "gap": ".85rem"
+                "pad": "48px 5% 34px",
+                "gap": "1.1rem"
               },
               "decorations": {
                 "label": "Festive sparkles",
@@ -106,7 +128,8 @@
                     "color": "fg"
                   }
                 ]
-              }
+              },
+              "min": "380px"
             },
             {
               "type": "panel",
@@ -129,12 +152,13 @@
                           "action": "link",
                           "role": "cta_label",
                           "tokens": {
-                            "text-size": "1rem",
+                            "text-size": ".875rem",
                             "radius": ".15rem",
                             "border": "fg",
                             "tracking": "normal",
                             "accent": "fg",
-                            "accent-fg": "bg"
+                            "accent-fg": "bg",
+                            "leading": "1.4"
                           },
                           "id": "n5"
                         }
@@ -149,21 +173,47 @@
                       "type": "stack",
                       "children": [
                         {
-                          "type": "countdown",
-                          "layout": "boxes",
-                          "density": "compact",
-                          "days_label": "Days",
-                          "hours_label": "Hrs",
-                          "minutes_label": "Mins",
-                          "seconds_label": "Secs",
-                          "role": "countdown_units",
+                          "type": "stack",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "n9002",
+                              "role": "fine_print",
+                              "text": "NEW YEAR OFFER ENDS IN",
+                              "tokens": {
+                                "text-size": ".875rem",
+                                "font": "\"DM Sans\", Arial, sans-serif"
+                              }
+                            },
+                            {
+                              "type": "countdown",
+                              "layout": "boxes",
+                              "density": "compact",
+                              "days_label": "Days",
+                              "hours_label": "Hrs",
+                              "minutes_label": "Mins",
+                              "seconds_label": "Secs",
+                              "role": "countdown_units",
+                              "tokens": {
+                                "text-size": "1.15rem",
+                                "tracking": "normal",
+                                "radius": ".1rem",
+                                "input-bg": "transparent",
+                                "countdown-size": "2rem",
+                                "font": "\"DM Sans\", Arial, sans-serif",
+                                "heading-weight": "700",
+                                "border": "transparent",
+                                "align": "center"
+                              },
+                              "id": "n6",
+                              "narrow": {
+                                "countdown-size": "1.625rem"
+                              }
+                            }
+                          ],
                           "tokens": {
-                            "text-size": "1.15rem",
-                            "tracking": "normal",
-                            "radius": ".1rem",
-                            "input-bg": "transparent"
-                          },
-                          "id": "n6"
+                            "gap": ".6875rem"
+                          }
                         }
                       ],
                       "tokens": {
@@ -171,7 +221,7 @@
                       }
                     }
                   ],
-                  "ratio": "0.5",
+                  "ratio": 0.5,
                   "basis": "20rem",
                   "tokens": {
                     "gap": "0"
@@ -179,7 +229,7 @@
                 }
               ],
               "tokens": {
-                "pad": "2.25rem",
+                "pad": "24px 35px",
                 "gap": "1rem",
                 "radius": "0",
                 "bg": "accent",
@@ -187,7 +237,7 @@
                 "muted": "accent-fg"
               },
               "narrow": {
-                "pad": "1.5rem",
+                "pad": "25px",
                 "gap": ".85rem"
               }
             },
@@ -215,10 +265,25 @@
                 "pad": "1.5rem",
                 "gap": ".85rem"
               }
+            },
+            {
+              "type": "panel",
+              "children": [],
+              "tokens": {
+                "pad": "9px 0",
+                "gap": "0",
+                "radius": "0",
+                "bg-image": "repeating-linear-gradient(90deg,var(--wc-fg) 0 18px,transparent 18px 36px)"
+              }
             }
           ],
           "tokens": {
-            "gap": "0"
+            "pad": "22px 28px",
+            "gap": "0",
+            "radius": "0"
+          },
+          "narrow": {
+            "pad": "14px"
           }
         }
       }

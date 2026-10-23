@@ -318,6 +318,7 @@ function layout(
     min?: string | number;
     notch?: boolean;
     decorations?: import('./types').Decorations;
+    basis?: string;
   },
   scoped: Tokens,
   at: string | null,
@@ -325,6 +326,7 @@ function layout(
   const element = document.createElement('div');
 
   element.className = `wc-${node.type}`;
+  if (node.type === 'grid') element.style.setProperty(TOKEN_PREFIX + 'basis', node.basis ?? '8rem');
 
   /*
    * **The floor under a box that draws a picture**, and it is declared by the
@@ -1038,7 +1040,7 @@ function code(node: CodeNode, at: string | null): HTMLElement {
   const value = words('span', 'wc-code', node.text);
   const href = safeHref(node.apply_href);
   if (!node.copy && href === null) return value;
-  const wrapper = wrap('div', 'wc-stack', value);
+  const wrapper = wrap('div', node.layout === 'inline' ? 'wc-code-inline' : 'wc-stack', value);
   if (node.copy) {
     const copy = words('button', 'wc-button', node.copy_label || 'Copy code') as HTMLButtonElement;
     copy.type = 'button';

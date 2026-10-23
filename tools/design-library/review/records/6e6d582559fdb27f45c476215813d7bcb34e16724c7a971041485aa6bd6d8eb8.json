@@ -1,0 +1,55 @@
+{
+  "id": "seasonal-service-link",
+  "revision": "4f76e5a18a160ccbf2a2cc492f3a15d0de886ea52cf6ff8aeaea14292ac05b2d",
+  "base_id": "ea0f99b8c6b14ba64b3453e3a57d491932213859cc63886df025afb50ac97e62",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 133069b98aa4f6ea86d5008238d1e6bbc2210ab1, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-23T11:17:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/seasonal-service-link-320.png",
+          "sha256": "c092a39a7ca7616dc415db70ebd6449711328a49d9d4483779195fbd148ba1fd"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/seasonal-service-link-1440.png",
+          "sha256": "1eaeef3e74b2d6048274531bec0230e99d759401a28f5ac592f01924f465a8d6"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/review.md",
+          "sha256": "83d5e893a7999c3cfde4ef3519dc791cdad0ab7005efba425467d5e085687ae0"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json",
+          "sha256": "3722746304da03cb7f7e8ff6c411258f6f132c7f1949503691e30d7344ef0370"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+          "sha256": "bf614c2913787167fbf45e1727ec5715a1ac8e50417c53b4627aa04595f761c9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+          "sha256": "bf614c2913787167fbf45e1727ec5715a1ac8e50417c53b4627aa04595f761c9"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json",
+          "sha256": "3722746304da03cb7f7e8ff6c411258f6f132c7f1949503691e30d7344ef0370"
+        }
+      ]
+    }
+  },
+  "record_id": "6e6d582559fdb27f45c476215813d7bcb34e16724c7a971041485aa6bd6d8eb8"
+}

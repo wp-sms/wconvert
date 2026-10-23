@@ -70,6 +70,14 @@ The inspector shows the selected node's readers; a layout also includes readers
 used by descendants. Global design settings still offer the full vocabulary. [ADR 0075](0075-draft-history-and-template-content-choices-stay-predictable.md) adds
 amount/unit inputs and local-draft CSS/colour text entry by existing value kind,
 without changing token names, inheritance or validation semantics.
+The winter prototype fidelity review added closed controls for heading line height
+and italic style, image height, background picture sizing, compact countdown
+number size, and dismiss-control inset. These use the existing token bags and
+mobile overrides. Grid minimum column width uses the same bounded layout choices
+as other column layouts. Discount codes may place the copy action inline, keeping
+it visually secondary to the campaign CTA while preserving selectable text and
+clipboard-failure feedback.
+
 Typography is reapplied at styled elements so inherited computed CSS does not
 prevent a local font or text-size token from taking effect.
 
@@ -81,7 +89,11 @@ that desktop value, then the nearest ancestor. The renderer threads ancestor
 mobile overrides when materializing a child's narrow bag. Overriding a child's
 size therefore does not reset its parent's mobile color or font.
 Global design settings apply to all sizes and say so in mobile view. Fonts remain
-site-provided under ADR 0055; the prototype's bundled reference fonts do not ship.
+site-provided under ADR 0055; the prototype's bundled reference fonts do not ship in the plugin. Inert catalogue
+previews and design review pages embed licensed local reference faces for declared
+fonts, so blocked external font requests cannot silently alter the preview. This
+does not enable external font delivery on merchant sites; that remains subject to
+the acknowledgment in ADR 0160.
 Mobile editing also keeps a visible reminder that text and blocks are shared
 across sizes, including before any node is selected (ADR 0072).
 

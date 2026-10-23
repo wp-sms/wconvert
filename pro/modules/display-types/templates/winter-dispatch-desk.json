@@ -6,29 +6,31 @@
   "tokens": {
     "bg": "#efe8d5",
     "fg": "#394f4c",
-    "muted": "#394f4c",
-    "accent": "#8d4535",
-    "accent-fg": "#fbecd1",
+    "muted": "fg",
+    "accent": "#3c5650",
+    "accent-fg": "#fff4dd",
     "border": "#394f4c",
-    "input-bg": "transparent",
+    "input-bg": "#8d4535",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Instrument Serif\", Georgia, serif",
     "heading-size": "3rem",
     "heading-weight": "400",
-    "text-size": "1rem",
-    "leading": "1.55",
-    "tracking": "-.02em",
+    "text-size": ".9375rem",
+    "leading": "1.65",
+    "tracking": "-.025em",
     "pad": "0",
     "gap": "0",
-    "radius": "0",
-    "width": "46rem",
+    "radius": "0px",
+    "width": "53.125rem",
     "align": "start",
     "close-fg": "fg",
     "close-bg": "bg",
     "close-border": "border",
     "close-radius": "50%",
     "error-fg": "#991b1b",
-    "error-bg": "#fff1f2"
+    "error-bg": "#fff1f2",
+    "placeholder": "fg",
+    "heading-leading": ".98"
   },
   "tree": {
     "v": 2,
@@ -41,41 +43,64 @@
           "type": "split",
           "start": [
             {
-              "type": "panel",
+              "type": "media",
               "children": [
                 {
-                  "type": "text",
-                  "narrow": {
-                    "text-size": "2rem"
-                  },
-                  "text": "18",
-                  "role": "fine_print",
+                  "type": "stack",
+                  "children": [],
                   "tokens": {
-                    "text-size": "2.5rem",
-                    "leading": "1",
-                    "align": "center",
-                    "muted": "fg"
-                  },
-                  "size": "2xl",
-                  "id": "n1"
+                    "gap": "0"
+                  }
                 },
                 {
-                  "type": "text",
-                  "text": "December\nChristmas order cutoff",
-                  "role": "body",
-                  "id": "n2"
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "text",
+                      "narrow": {
+                        "text-size": "5rem"
+                      },
+                      "text": "18",
+                      "role": "body",
+                      "tokens": {
+                        "text-size": "10rem",
+                        "leading": ".9",
+                        "align": "center",
+                        "muted": "fg",
+                        "font": "\"Instrument Serif\", Georgia, serif"
+                      },
+                      "id": "n1"
+                    },
+                    {
+                      "type": "text",
+                      "text": "December\nChristmas order cutoff",
+                      "role": "body",
+                      "id": "n2"
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "20px"
+                  }
+                },
+                {
+                  "type": "stack",
+                  "children": [],
+                  "tokens": {
+                    "gap": "0"
+                  }
                 }
               ],
               "tokens": {
-                "pad": "2.25rem",
-                "gap": "1rem",
+                "pad": "38px 25px",
+                "gap": "20px",
                 "radius": "0",
-                "bg": "accent",
+                "bg": "input-bg",
                 "fg": "accent-fg",
-                "align": "center"
+                "align": "center",
+                "muted": "accent-fg"
               },
               "narrow": {
-                "pad": "1.5rem",
+                "pad": "23px",
                 "gap": ".85rem"
               }
             }
@@ -89,7 +114,7 @@
                   "text": "FROM THE DISPATCH DESK",
                   "role": "eyebrow",
                   "tokens": {
-                    "text-size": ".75rem",
+                    "text-size": ".833333rem",
                     "tracking": ".12em"
                   },
                   "id": "n3"
@@ -97,14 +122,18 @@
                 {
                   "type": "heading",
                   "narrow": {
-                    "heading-size": "2.35rem"
+                    "heading-size": "2.625rem",
+                    "heading-leading": "0.98"
                   },
                   "text": "Plan your\nChristmas delivery.",
                   "role": "headline",
                   "tokens": {
-                    "heading-size": "3rem",
+                    "heading-size": "3.3125rem",
                     "heading-font": "\"Instrument Serif\", Georgia, serif",
-                    "heading-weight": "400"
+                    "heading-weight": "400",
+                    "heading-style": "normal",
+                    "heading-leading": "0.98",
+                    "tracking": "-0.025em"
                   },
                   "id": "n4"
                 },
@@ -115,21 +144,47 @@
                   "id": "n5"
                 },
                 {
-                  "type": "countdown",
-                  "layout": "boxes",
-                  "density": "compact",
-                  "days_label": "Days",
-                  "hours_label": "Hrs",
-                  "minutes_label": "Mins",
-                  "seconds_label": "Secs",
-                  "role": "countdown_units",
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "n9002",
+                      "role": "fine_print",
+                      "text": "CHRISTMAS ORDERS CLOSE IN",
+                      "tokens": {
+                        "text-size": ".875rem",
+                        "font": "\"DM Sans\", Arial, sans-serif"
+                      }
+                    },
+                    {
+                      "type": "countdown",
+                      "layout": "boxes",
+                      "density": "compact",
+                      "days_label": "Days",
+                      "hours_label": "Hrs",
+                      "minutes_label": "Mins",
+                      "seconds_label": "Secs",
+                      "role": "countdown_units",
+                      "tokens": {
+                        "text-size": "1.15rem",
+                        "tracking": "normal",
+                        "radius": ".1rem",
+                        "input-bg": "transparent",
+                        "countdown-size": "2.125rem",
+                        "font": "\"Instrument Serif\", Georgia, serif",
+                        "heading-weight": "400",
+                        "border": "transparent",
+                        "align": "start"
+                      },
+                      "id": "n6",
+                      "narrow": {
+                        "countdown-size": "1.75rem"
+                      }
+                    }
+                  ],
                   "tokens": {
-                    "text-size": "1.15rem",
-                    "tracking": "normal",
-                    "radius": ".1rem",
-                    "input-bg": "transparent"
-                  },
-                  "id": "n6"
+                    "gap": ".6875rem"
+                  }
                 },
                 {
                   "type": "button",
@@ -137,10 +192,11 @@
                   "action": "link",
                   "role": "cta_label",
                   "tokens": {
-                    "text-size": "1rem",
+                    "text-size": ".875rem",
                     "radius": ".15rem",
                     "border": "fg",
-                    "tracking": "normal"
+                    "tracking": "normal",
+                    "leading": "1.4"
                   },
                   "id": "n7"
                 },
@@ -156,17 +212,17 @@
                 }
               ],
               "tokens": {
-                "pad": "2.25rem",
-                "gap": "1rem",
+                "pad": "38px 42px",
+                "gap": "1.25rem",
                 "radius": "0"
               },
               "narrow": {
-                "pad": "1.5rem",
-                "gap": ".85rem"
+                "pad": "30px 26px",
+                "gap": "1.1rem"
               }
             }
           ],
-          "ratio": "0.35",
+          "ratio": 0.0,
           "basis": "20rem",
           "tokens": {
             "gap": "0"
