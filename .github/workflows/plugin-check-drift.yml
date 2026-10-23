@@ -66,6 +66,11 @@ jobs:
 
       - run: npm run build
 
+      # Not for the ZIP — the stage runs its own install and never copies this
+      # vendor/. bin/build.sh checks the design library before it stages, and
+      # that check loads the plugin's classes through the root autoloader.
+      - run: composer install --no-interaction --no-progress
+
       - name: Stage the free tree
         run: bash bin/build.sh free
 
