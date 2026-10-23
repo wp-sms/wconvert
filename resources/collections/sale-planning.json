@@ -18,7 +18,7 @@
     {
       "setup_id": "sale-deadline",
       "stage": "during",
-      "setup_hash": "836d01c7bd7d6c014ed1d6632ba82f1f87fe5fd946c3eab5d420c1b49cc71ff2",
+      "setup_hash": "cde6e1ca56415bbcb340ddefae16d925ef534ab68cece7d5398cc1dd04c5fc43",
       "design_hash": "9c345ebb5bff7e47f337e4079d45353694f464276090ba3510cd631385883aad"
     },
     {
@@ -41,6 +41,6 @@
     }
   ],
   "dependencies_current": true,
-  "revision": "37a7d4f0af0898777f9498156f6a752c0edce8a0138465ec3413f83e260235d1",
+  "revision": "f278eaf2075789c99d537b5379e5333870d17eb72559a6470c895446edc2e51c",
   "status": "published"
 }

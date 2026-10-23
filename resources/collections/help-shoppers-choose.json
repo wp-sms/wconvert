@@ -12,47 +12,47 @@
     {
       "setup_id": "recommend-accessory",
       "stage": "any",
-      "setup_hash": "382238823d1c6f34af6f38cfb2deb7a3cea589deb6cc1ee33c80412ece631280",
+      "setup_hash": "97b1436fdf753650f06cd257a4bf57bd908ddc1cb4cbc64babe3006420281699",
       "design_hash": "aeee64fce2435c10710e0ecfb379ca61d3f8384b28ab1f2445658a4e0d9bcc03"
     },
     {
       "setup_id": "explore-compatible-extras",
       "stage": "any",
-      "setup_hash": "88dca4a3a693cdd3784ba4164bfbccae57cff05fd13cd3b1d9ab4300d804d25d",
+      "setup_hash": "d215971aa937be9b60c3f54be88f5ebaff968f212923b60386a592da5ebe4ac3",
       "design_hash": "cbab584f5977c35f3732d2b104d56bff98a80083e7b6e859c3799b4ff4bac840"
     },
     {
       "setup_id": "add-useful-extras",
       "stage": "any",
-      "setup_hash": "b182091e91a1224c639f74cc2d8813c439b7ef0600febc230143f65b79fdc2f6",
+      "setup_hash": "67f92d48b832aae964c6edbd11ee8edbeba971365cdcd443ec6326c695f874ef",
       "design_hash": "efee3e5109441272ac8cdd5c652fe677bff2d10dff939279c4a73aecb291d0d5"
     },
     {
       "setup_id": "basket-cross-sells",
       "stage": "any",
-      "setup_hash": "20d274dd56881c686ab40b91f3258c2ea7278a061e8caacdd94f79bb47a485f4",
+      "setup_hash": "c4040aee956649280dd3e14199c4a333081187d6536e0d34d8292bfff923a289",
       "design_hash": "80926b1e1a4954ff43866c674eb2dafa0b608b119bc21a4a23632125b695993d"
     },
     {
       "setup_id": "coffee-taste-finder",
       "stage": "any",
-      "setup_hash": "4f03b922b7dfc1f8c215d8fb0a0623a7877c5f5c43af3b56bd398ec9797679ae",
+      "setup_hash": "36a036f20d02aae48b3a102127dc5f4d8658afb4a7cd141a9e1e7f5501336c89",
       "design_hash": "9b214034fabc90988860eea8081cd49cadac5f74f4d5de7fb3c2042463e5c66a"
     },
     {
       "setup_id": "shopping-guidance",
       "stage": "any",
-      "setup_hash": "7b09af0ee424de83700161b7f73623a461069c1a59638b456d7d52397fab9e9d",
+      "setup_hash": "49236b2034f91125a33798a6a197b7d010e917bc0dd2e011f96d509eb599c8b9",
       "design_hash": "7b3219d5a9f76005dc5d29da3d553ec9aa99cbbdb3be79337e8388b5fd851dbe"
     },
     {
       "setup_id": "upholstery-samples",
       "stage": "any",
-      "setup_hash": "1baf4a7cf3acd9f125bc85b33be25f28ac16af331c309ccd3eb8f0111845217a",
+      "setup_hash": "1fbbefae0ed623110af28b3f2816d1fefc1236f0da222c5901375a09825a9445",
       "design_hash": "e9c38c705f2e3d462e5d2dd426cb0e2df535c9e5b7e890c98f292760bd6e966e"
     }
   ],
   "dependencies_current": true,
-  "revision": "f101a1042f64d40e50851e79fa7043744c50f8519a92f5b1fa0c402d76d85d04",
+  "revision": "80ae06a20d5dae0ebacbee5d21a5af90d7dfe6721203f49933bc12936c810eec",
   "status": "published"
 }

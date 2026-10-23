@@ -1,0 +1,712 @@
+{
+  "schema": 1,
+  "compared_with": "1cffa2c4c32c5f980f1687112f6913a0dcae597e",
+  "collections": [
+    "black-friday-2026",
+    "black-friday-cyber-monday-2026",
+    "christmas-new-year-2026",
+    "halloween-2026",
+    "help-shoppers-choose",
+    "prepare-a-visit",
+    "sale-planning",
+    "useful-store-details"
+  ],
+  "items": [
+    {
+      "collection": "sale-planning",
+      "setup": "sale-deadline",
+      "file": "pro/modules/display-types/playbooks/sale-deadline.php",
+      "before": "836d01c7bd7d6c014ed1d6632ba82f1f87fe5fd946c3eab5d420c1b49cc71ff2",
+      "after": "cde6e1ca56415bbcb340ddefae16d925ef534ab68cece7d5398cc1dd04c5fc43",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "black-friday-2026",
+      "setup": "sale-deadline",
+      "file": "pro/modules/display-types/playbooks/sale-deadline.php",
+      "before": "836d01c7bd7d6c014ed1d6632ba82f1f87fe5fd946c3eab5d420c1b49cc71ff2",
+      "after": "cde6e1ca56415bbcb340ddefae16d925ef534ab68cece7d5398cc1dd04c5fc43",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "help-shoppers-choose",
+      "setup": "recommend-accessory",
+      "file": "pro/modules/cart-recovery/playbooks/recommend-accessory.php",
+      "before": "382238823d1c6f34af6f38cfb2deb7a3cea589deb6cc1ee33c80412ece631280",
+      "after": "97b1436fdf753650f06cd257a4bf57bd908ddc1cb4cbc64babe3006420281699",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "help-shoppers-choose",
+      "setup": "explore-compatible-extras",
+      "file": "pro/modules/cart-recovery/playbooks/explore-compatible-extras.php",
+      "before": "88dca4a3a693cdd3784ba4164bfbccae57cff05fd13cd3b1d9ab4300d804d25d",
+      "after": "d215971aa937be9b60c3f54be88f5ebaff968f212923b60386a592da5ebe4ac3",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "help-shoppers-choose",
+      "setup": "add-useful-extras",
+      "file": "pro/modules/cart-recovery/playbooks/add-useful-extras.php",
+      "before": "b182091e91a1224c639f74cc2d8813c439b7ef0600febc230143f65b79fdc2f6",
+      "after": "67f92d48b832aae964c6edbd11ee8edbeba971365cdcd443ec6326c695f874ef",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "help-shoppers-choose",
+      "setup": "basket-cross-sells",
+      "file": "pro/modules/cart-recovery/playbooks/basket-cross-sells.php",
+      "before": "20d274dd56881c686ab40b91f3258c2ea7278a061e8caacdd94f79bb47a485f4",
+      "after": "c4040aee956649280dd3e14199c4a333081187d6536e0d34d8292bfff923a289",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "help-shoppers-choose",
+      "setup": "coffee-taste-finder",
+      "file": "pro/modules/journeys/playbooks/coffee-taste-finder.php",
+      "before": "4f03b922b7dfc1f8c215d8fb0a0623a7877c5f5c43af3b56bd398ec9797679ae",
+      "after": "36a036f20d02aae48b3a102127dc5f4d8658afb4a7cd141a9e1e7f5501336c89",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "help-shoppers-choose",
+      "setup": "shopping-guidance",
+      "file": "pro/modules/cart-recovery/playbooks/shopping-guidance.php",
+      "before": "7b09af0ee424de83700161b7f73623a461069c1a59638b456d7d52397fab9e9d",
+      "after": "49236b2034f91125a33798a6a197b7d010e917bc0dd2e011f96d509eb599c8b9",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "help-shoppers-choose",
+      "setup": "upholstery-samples",
+      "file": "pro/modules/display-types/playbooks/upholstery-samples.php",
+      "before": "1baf4a7cf3acd9f125bc85b33be25f28ac16af331c309ccd3eb8f0111845217a",
+      "after": "1fbbefae0ed623110af28b3f2816d1fefc1236f0da222c5901375a09825a9445",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "prepare-a-visit",
+      "setup": "accessible-visit-note",
+      "file": "pro/modules/display-types/playbooks/accessible-visit-note.php",
+      "before": "8bedd8afd3553bb583b45c0ed41522241daf1766504d395b9d0c6de51f9ef69d",
+      "after": "b3effaa2322221991e3e8c18b43942dccd2caa531bc8f5eab41e255681b4c2e0",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "prepare-a-visit",
+      "setup": "callback-slip",
+      "file": "pro/modules/display-types/playbooks/callback-slip.php",
+      "before": "3f7a71036fa0bd4e5536fcfd1357266385bb09802b15731e2977c0c3775cc69d",
+      "after": "2f74ed7d30c6e3c7df2cfbefe8aaf15a57cc653afdd27b6f135fc872addcc794",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "useful-store-details",
+      "setup": "launch-index",
+      "file": "pro/modules/display-types/playbooks/launch-index.php",
+      "before": "3b5358d7540716a40dfe2510b9154bbe891ab32ead8c445a210711519db58a3c",
+      "after": "35f98d6f025b141294a7021cca211ff453e987c25900c9c0fa6b36df7289df7f",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "halloween-2026",
+      "setup": "halloween-sale-countdown",
+      "file": "pro/modules/display-types/playbooks/halloween-sale-countdown.php",
+      "before": "df569ec8a5abeb3ffc2507ddc4be949892383f4a16ed502efc9432e6c351becb",
+      "after": "272a357b16bda6ad0965ce953f78bae80babef50bc34a99de69dfc1c3531d0a4",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "black-friday-cyber-monday-2026",
+      "setup": "bf-midnight-atelier",
+      "file": "pro/modules/display-types/playbooks/bf-midnight-atelier.php",
+      "before": "53794e237cffd03e0a2b706a19207448325cc427c7ceb006f57589846f2ec790",
+      "after": "232214f40cd41ee64697c74b20dc9b60cc0dfa7575b2554d1da287db89ea0c1e",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "black-friday-cyber-monday-2026",
+      "setup": "bf-good-deal-receipt",
+      "file": "pro/modules/display-types/playbooks/bf-good-deal-receipt.php",
+      "before": "c2623882cef8d0dfe87c39429a9dedee4d305051c4e5e6e614ada97be228a39b",
+      "after": "5e89b868936160cdb8124ff54d2e861eb441a7a5890f2841592f7545878753bf",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "black-friday-cyber-monday-2026",
+      "setup": "bf-blackout-strip",
+      "file": "pro/modules/display-types/playbooks/bf-blackout-strip.php",
+      "before": "e9e07b5cab6370fdfbcf0e3d4585c484fd56a8442f1d871dcf43e3d69d823d6a",
+      "after": "5b4837629723c24bc3f4f763a6ffd549ef1fd336346a72c57765cd7482be092f",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "black-friday-cyber-monday-2026",
+      "setup": "bf-velvet-rope",
+      "file": "pro/modules/display-types/playbooks/bf-velvet-rope.php",
+      "before": "87f0c99cd684d5f2aab0db697ccb457763bf7653d5d506cda58102baba0c1818",
+      "after": "c5c532ee45552cbdb35b046709e4c7c843f80c8405838b2cd2a1285d5ec63ca9",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "black-friday-cyber-monday-2026",
+      "setup": "bf-little-black-gift",
+      "file": "pro/modules/display-types/playbooks/bf-little-black-gift.php",
+      "before": "83259a9dce6dd1392e16b0d82af10a83497075ca49993a17bfecac4239aa98c1",
+      "after": "b6f52b69717f2b243889de9d7e89ad679f3b214289b284f95d61a5964870c0f5",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "black-friday-cyber-monday-2026",
+      "setup": "cm-chrome-hour",
+      "file": "pro/modules/display-types/playbooks/cm-chrome-hour.php",
+      "before": "f693dcd233a0de82646975669741dbb45ca2f612f3460caad9dec5c0709aa39c",
+      "after": "5f89d0bb2e7e80f3e05b337fdbac317f08990a76539646d5657f797b9ef7c13c",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "black-friday-cyber-monday-2026",
+      "setup": "cm-system-upgrade",
+      "file": "pro/modules/display-types/playbooks/cm-system-upgrade.php",
+      "before": "de460ce242b34bc917d34cf0d2525615453e69a71e4f313451c40dfd729aedd1",
+      "after": "3a1e71b9cc6375d2fd5def79fb2d179f1b1168a2c96c04a05ca295668140d69e",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "black-friday-cyber-monday-2026",
+      "setup": "cm-command-save",
+      "file": "pro/modules/display-types/playbooks/cm-command-save.php",
+      "before": "7b205f29534e2a0c47d7d6fa7d939d2abbed28c44a55532db99720a5438a73a2",
+      "after": "ccedfeb821ccd1a119962ebbcf55ebe3063885bc1673b35fe5e59289c6dc6c38",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "black-friday-cyber-monday-2026",
+      "setup": "cm-pixel-drop",
+      "file": "pro/modules/display-types/playbooks/cm-pixel-drop.php",
+      "before": "0187c3cb0a88c86819df40510d47f19aeb1055373845bec4a7307bda92e848c0",
+      "after": "6e141c6b5e768f8ad0c74ad788c7ee19013f4b0c96907ada5438f29a39d919de",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "black-friday-cyber-monday-2026",
+      "setup": "cm-electric-aisle",
+      "file": "pro/modules/display-types/playbooks/cm-electric-aisle.php",
+      "before": "e47b8e766631fbe15f1159c23e7f066fc4de05511fd2ff8609f80fa93d8b1bd1",
+      "after": "045260da038d6802d139d3376de59b44ff0078f4d1aa6f123e3badc6c4f805d9",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "black-friday-cyber-monday-2026",
+      "setup": "cm-night-shift",
+      "file": "pro/modules/display-types/playbooks/cm-night-shift.php",
+      "before": "4ad39f3a92d6d1171ab32032e7eb50817a8a728dda9f36228ad999d24399fe97",
+      "after": "1a324f8d413140996bc22a57ac4c145d7499beaef98d936cb938de83ec438dc1",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "black-friday-cyber-monday-2026",
+      "setup": "bf-final-markdown",
+      "file": "pro/modules/display-types/playbooks/bf-final-markdown.php",
+      "before": "1dec499f3c58f1ea0ebcb9fcd9e8da1643ab59d68f6e484d70eb86d225e441ab",
+      "after": "b975344de4d863e3963743c60c1bc35d32c1c607c7c1d44f982a349f05b84f80",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "black-friday-cyber-monday-2026",
+      "setup": "bf-closing-time",
+      "file": "pro/modules/display-types/playbooks/bf-closing-time.php",
+      "before": "6d19a3aa2b93df0cb0b366edfb391f48a1a4a00514ec157f9d71535c62ae130c",
+      "after": "71035209be998ed0109d9dea10b4799bfd21d6d23a3092d76a7d262abdf02fd4",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "black-friday-cyber-monday-2026",
+      "setup": "cm-midnight-transmission",
+      "file": "pro/modules/display-types/playbooks/cm-midnight-transmission.php",
+      "before": "12319584bb27fa0a698d61fd5f519482c2a2ff6d08ff7dbb26bf0e6d63d92bc4",
+      "after": "32d160d43b439ee49c0527889603504acf42f91589d2fb7d1469a94d1472421e",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "black-friday-cyber-monday-2026",
+      "setup": "bf-weekend-curtain",
+      "file": "pro/modules/display-types/playbooks/bf-weekend-curtain.php",
+      "before": "9a578fcdde34773cff14fcab6efae2243304ac33d91b1f8f0e8419603ef26f2a",
+      "after": "49dc5c4109092a2e3a08742fac47e0797a1ea467b407e843992ee020dcfa7a87",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-ribbon-room",
+      "file": "pro/modules/display-types/playbooks/winter-ribbon-room.php",
+      "before": "18940bc15b64f8c4b333aea532c4b71933f2e782a634d3db8dc468191b345be3",
+      "after": "71c490b4200ba35c0bc99a450e5faeb7472e892568cc72c9cab4a9f3cebc8ea9",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-winter-windows",
+      "file": "pro/modules/display-types/playbooks/winter-winter-windows.php",
+      "before": "1b20c180e8325a325e66106124d497dde9ee687aa9df84cad53733193a3a8dda",
+      "after": "b36a226cae51ce175f66d3ed3b0a5da484af9cc936080529a087815ad9cb0319",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-ornament-edit",
+      "file": "pro/modules/display-types/playbooks/winter-ornament-edit.php",
+      "before": "ff19006782b02c30a3d6b1724f795ca0b7495f41d09644cfc6ec5ccbf4808239",
+      "after": "2830c371c893c0d71a4443def822da194bb5b50b1b421b616c5ff4a044bcdebc",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-candle-club",
+      "file": "pro/modules/display-types/playbooks/winter-candle-club.php",
+      "before": "d36c5f18142e17699e853e22dc7274c58ba0724e2d5b8e02dfe80e0c579e48a9",
+      "after": "087ca73387d6417c3494e04d3622f09d8d7763ec741fbe46a0cfb5c51ecf32b2",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-wrapped-in-colour",
+      "file": "pro/modules/display-types/playbooks/winter-wrapped-in-colour.php",
+      "before": "0e25e6aa0458450fd6e316a0e221eb5663c6abc347165301af1ac68f79e87526",
+      "after": "ede9ba10fd9acd7a5e68d1ab3bcddc9a33fb73b2fc2304bcd026b1c618db7ec6",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-ribbon-reminder",
+      "file": "pro/modules/display-types/playbooks/winter-ribbon-reminder.php",
+      "before": "af38b85ce8c349422507e63a3904ab5c50ed7ddee88b02638a641b6cb7749b6d",
+      "after": "e5a749754bda7d2e616814cc31d0367aa699ec05d1f98f1a8cb5f813837cf63f",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-gift-atelier",
+      "file": "pro/modules/display-types/playbooks/winter-gift-atelier.php",
+      "before": "7f8218ede99d69d0eb01cf455aa211f6939f1a3cd77c4735726c8bba7486690b",
+      "after": "1ef1733094149bc7ab126c28920c9679e87b4d3fdff72e885f2a28cd3c873978",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-winter-postcards",
+      "file": "pro/modules/display-types/playbooks/winter-winter-postcards.php",
+      "before": "6f0340a948efe2994e8ed58a9c314ff0901c63d82548cc8c8cebaacb746971cc",
+      "after": "8c5011629c3f31a16fe6d31edcdd0343af714163804fad913161ace859f92281",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-snowglobe-society",
+      "file": "pro/modules/display-types/playbooks/winter-snowglobe-society.php",
+      "before": "e7f17bb53d0585c870ef3da2723164e9baa699c078df22796c8c3868135490db",
+      "after": "b56d001d04aebec8584b1f85b485ba7c9e49acd04541523b092c859f6486d129",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-after-hours-atelier",
+      "file": "pro/modules/display-types/playbooks/winter-after-hours-atelier.php",
+      "before": "165a108e79076001b7f04a93334c4917db4bac6e3c687cf5495f7f611ede16a2",
+      "after": "7091e46bb2c7649d42199924c3969f5670576f6282249f5dc6465850cf5b35ca",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-first-light-access",
+      "file": "pro/modules/display-types/playbooks/winter-first-light-access.php",
+      "before": "ab2c7a355b277ad4eaf2d45c049775efe4e00b1a78c9cbf151546fb148931f71",
+      "after": "0bb77bc057fa452f2f65fcb5c3e4492838fbb9169ccbfee78c74f09c51c55737",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-advent-letter",
+      "file": "pro/modules/display-types/playbooks/winter-advent-letter.php",
+      "before": "55b0ef9b791edcaf7670db9793481307a6d22145ffbed86f63cc932b4b7396d4",
+      "after": "b2744a2416a6cf1b5f7ec8d814f575fb038f99e3f9c585609971e2b414f99f0e",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-last-sleigh",
+      "file": "pro/modules/display-types/playbooks/winter-last-sleigh.php",
+      "before": "a55a4ba4d8a668f53cb71571ea5ac7a0ece7d72351aaf9e86df9e9e6183e065c",
+      "after": "f18454d1062b32efc317f4c0563b8f8c684b3bf6f462fadfc2a6435db85a73d2",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-before-the-bow",
+      "file": "pro/modules/display-types/playbooks/winter-before-the-bow.php",
+      "before": "f198bce349f79bf70e5a2f24fce96433e911a7121d64410281e3640dca06b025",
+      "after": "d93e4d68b2b6fb5ae88f6d75de41fc0ef486a96b9d29c7a25404b93c3d288dd4",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-dispatch-desk",
+      "file": "pro/modules/display-types/playbooks/winter-dispatch-desk.php",
+      "before": "65f131cae26dbdd04826aeb5711965f33e6887a1d361f1ec485a917e74e336ff",
+      "after": "1d245e286fb2f3a9622e1fb13d685b18dfbec011eb5b5cca0930ea80aa005ed0",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-digital-gift",
+      "file": "pro/modules/display-types/playbooks/winter-digital-gift.php",
+      "before": "39af20af9d939754086369130d4418bfe5120aa70d2ac0dc97d5935c906cbe0d",
+      "after": "00df568c55947c74ce5f7b2d4c0e2032cee77abb2056fe9d118f37c746721601",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-pickup-window",
+      "file": "pro/modules/display-types/playbooks/winter-pickup-window.php",
+      "before": "1f50eb63689b2da9f84a2ab8d1e4449c34462505ee6128b037667f6ee5f6b00a",
+      "after": "b17a45ce92a7010666f6b5dd4758910d393f1f69a065e686e4b9e193650d59d2",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-final-sparkle",
+      "file": "pro/modules/display-types/playbooks/winter-final-sparkle.php",
+      "before": "74290a0476c307dc14a37ca5af9d5e88363860cc027af0c8cf255d8f46367861",
+      "after": "52f41495d59a7ac56421f75aa7efc00b7b49548a97fe8445611b9a065e4fdd69",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-softer-beginning",
+      "file": "pro/modules/display-types/playbooks/winter-softer-beginning.php",
+      "before": "a15fcf0a8709b0d891f4882afb9dafee38e2a87bf18ed26874dcfa5a535a735a",
+      "after": "318cb9aa4b160f7165fe63f97372cbea74a53808f4cc28c5c5c16dfa8c853870",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-midnight-garden",
+      "file": "pro/modules/display-types/playbooks/winter-midnight-garden.php",
+      "before": "470f4beb25e3654f27e400a68e985bb11cdf1b38d6129b124acbf28375c75c70",
+      "after": "a7c44b0679604b1f784d95336605bc556b9fef4c7c5d298abdefc06e838bce7f",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-bright-new-chapter",
+      "file": "pro/modules/display-types/playbooks/winter-bright-new-chapter.php",
+      "before": "2226c9ad96b25ca3b242f908a0d4407f074e6d66448a65271e539ba0faa12957",
+      "after": "77857cd9fb235564a1ad048e5facb0eb3197a5e7fa1f804885ff59eb2865b29a",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-first-page",
+      "file": "pro/modules/display-types/playbooks/winter-first-page.php",
+      "before": "b80d68db5bb7b77e28f756b4d65694f17be5c593d3f5550a164cde65be22f625",
+      "after": "6966df5108a46f2fa39a383ad473c1def10d9dcc05946a13f76d12f41798bcd0",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-shop-is-sleeping",
+      "file": "pro/modules/display-types/playbooks/winter-shop-is-sleeping.php",
+      "before": "33e4a10ebad9df459e2e09d16f1f8c764064812256f1c2eea313509cf79f081a",
+      "after": "483bcdeff232c3eb57617e3aac5a176b892e8c9c010d3b707732b2ccdef6199d",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-by-the-fire",
+      "file": "pro/modules/display-types/playbooks/winter-by-the-fire.php",
+      "before": "12684543a79212ccbc36639f46d86bd20990fa47e17092bae179ab7957039bce",
+      "after": "5df80eb8d27c82269dee6c0731b033d5e90abd0e0c9dfba9fb09e0a3b43d56c6",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-winter-hours",
+      "file": "pro/modules/display-types/playbooks/winter-winter-hours.php",
+      "before": "237e9df0fe960924e8e1ecd1045c366c23e56d7f7644a9719e22e1a9240e62e9",
+      "after": "e45549499d32585178a22be50e5f4755584f1591ba91de27b60c2920ad3af957",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-tied-with-joy",
+      "file": "pro/modules/display-types/playbooks/winter-tied-with-joy.php",
+      "before": "804df081b308e4f607f44d139bea7f799488df281dba1f0732fd815db5d85251",
+      "after": "092c84764e1f4641f18b38b304b3199d0457abd108a36d17987b13c31ac83c51",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-all-wrapped-up",
+      "file": "pro/modules/display-types/playbooks/winter-all-wrapped-up.php",
+      "before": "a873a4fcc15016ac39787c8588319376ac5d62903775ca94b8cc6643d68071a6",
+      "after": "5ad58a55ed5ad0e6d585a7c63b3608b6621b4d6163dcce73bba83205d603fb82",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-christmas-express",
+      "file": "pro/modules/display-types/playbooks/winter-christmas-express.php",
+      "before": "f98e7e3b5ba8fce17db961e4757bfffdeecc4caaa26695c40fbe455a35d6e54c",
+      "after": "ac3509af4a6a83f5cccea90f719c992acb1a3204d45b32033caee6b3260e343f",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-santa-letter",
+      "file": "pro/modules/display-types/playbooks/winter-santa-letter.php",
+      "before": "d1a6c3495759dbc2f69a5737c48049ce2b9077bb3d47e58017cf8c525cb921c1",
+      "after": "e64bb1cbf26bd1029c38daa51218c832e73d345d5dddd70910c6d3dc2cdb2129",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    },
+    {
+      "collection": "christmas-new-year-2026",
+      "setup": "winter-hello-2027",
+      "file": "pro/modules/display-types/playbooks/winter-hello-2027.php",
+      "before": "d4b0ce33280b3e6dd39118efa96a5b5d7aa9c338d87ab881a1d94673595236bc",
+      "after": "c7e59585baed6d8a1d8ddbe8818ad815fd13cc01a4bdf86d6b4a56c25e3e363b",
+      "design_unchanged": true,
+      "differs_only_in": [
+        "text domain wconvert → wconvert-pro",
+        "translators comments"
+      ]
+    }
+  ]
+}

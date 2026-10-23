@@ -36,7 +36,7 @@
     {
       "setup_id": "halloween-sale-countdown",
       "stage": "any",
-      "setup_hash": "df569ec8a5abeb3ffc2507ddc4be949892383f4a16ed502efc9432e6c351becb",
+      "setup_hash": "272a357b16bda6ad0965ce953f78bae80babef50bc34a99de69dfc1c3531d0a4",
       "design_hash": "f1def6a2fe51ff56bf6ebfd5f296db37d8a2e134dcaf366a4bbf78ab5d33b665"
     }
   ],
@@ -48,6 +48,6 @@
     "feature_end_exclusive": "2026-11-01"
   },
   "dependencies_current": true,
-  "revision": "d28bf4a1b68f12afca54ce6aee7513f2da60a18406a4a8d34b0b78723763e689",
+  "revision": "6d42bac68703a526b6be60549facc951432c48ce1c7b3e598ea91843ba1bf66b",
   "status": "published"
 }

@@ -18,7 +18,7 @@
     {
       "setup_id": "launch-index",
       "stage": "any",
-      "setup_hash": "3b5358d7540716a40dfe2510b9154bbe891ab32ead8c445a210711519db58a3c",
+      "setup_hash": "35f98d6f025b141294a7021cca211ff453e987c25900c9c0fa6b36df7289df7f",
       "design_hash": "db76e68675fa8699760cf2a336c8e1f73b0f5952b53423f23a2e567e24878a16"
     },
     {
@@ -41,6 +41,6 @@
     }
   ],
   "dependencies_current": true,
-  "revision": "62115fb1042215474ca175b9f1f00b6c5a04253ff96a468ebaa13e4ea453dbcb",
+  "revision": "c0dc13a0c7934119acedb357db8e01eacfd41704bb3c42cb4c42ede69c61ecae",
   "status": "published"
 }
