@@ -41,9 +41,9 @@ export function MeasurementValue({ id, label, value, fallback, standard, onChang
         <span className="wconvert-measure-input">
           <StyleValueInput id={index === 0 ? id : undefined} type="number" step="any"
             className="wconvert-token__exact min-w-0"
-            aria-label={sprintf(__('%s amount', 'wconvert'), axis)} value={String(part.amount)}
+            aria-label={sprintf(/* translators: %s: a style setting, e.g. “Padding” or “Padding, top and bottom”. */ __('%s amount', 'wconvert'), axis)} value={String(part.amount)}
             onCommit={(amount) => write(index, amount, unit)} />
-          {!advanced ? <span className="wconvert-measure-input__unit">{unit}</span> : <NativeSelect className="wconvert-measure-input__unit" aria-label={sprintf(__('%s unit', 'wconvert'), axis)} value={unit}
+          {!advanced ? <span className="wconvert-measure-input__unit">{unit}</span> : <NativeSelect className="wconvert-measure-input__unit" aria-label={sprintf(/* translators: %s: a style setting, e.g. “Padding” or “Padding, top and bottom”. */ __('%s unit', 'wconvert'), axis)} value={unit}
             onChange={(event) => write(index, String(part.amount), event.target.value)}>
             {unit !== '' && !UNITS.includes(unit) && <option value={unit}>{unit}</option>}
             {unit === '' && <option value="">{__('No unit', 'wconvert')}</option>}

@@ -18,8 +18,8 @@ export function JourneyArrivalSummary({ tree, step, onSelectPath }: {
   // An answer line's dot is its color on the Flow map (ADR 0142).
   const { colors } = answerColors(tree);
   return <Disclosure variant="inline" className="wconvert-journey-arrival" key={screen.id}
-    title={sources.size === 1 ? sprintf(__('Arrives from %s', 'wconvert'), tree.steps.find(item => item.id === incoming[0].from)?.name ?? __('Removed screen', 'wconvert'))
-      : sprintf(_n('Arrives from %d screen', 'Arrives from %d screens', sources.size, 'wconvert'), sources.size)}>
+    title={sources.size === 1 ? sprintf(/* translators: %s: the name of the one screen that leads here, e.g. “Skin type”. */ __('Arrives from %s', 'wconvert'), tree.steps.find(item => item.id === incoming[0].from)?.name ?? __('Removed screen', 'wconvert'))
+      : sprintf(/* translators: %d: how many different screens lead to this one. */ _n('Arrives from %d screen', 'Arrives from %d screens', sources.size, 'wconvert'), sources.size)}>
     <p>{__('First match wins on each line in; this screen’s “Only if…” is checked on arrival.', 'wconvert')}</p>
     <ul>{incoming.map(edge => {
       const from = tree.steps.findIndex(item => item.id === edge.from);

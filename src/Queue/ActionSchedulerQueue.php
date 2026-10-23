@@ -55,7 +55,8 @@ final class ActionSchedulerQueue implements Queue
             $store = \Action_Scheduler\Migration\Controller::instance()->get_migration_config_object()->get_destination_store();
         }
         if (!($store instanceof \ActionScheduler_DBStore)) {
-            throw new QueueFailure('Submission handoff requires the Action Scheduler database store.');
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- operator text: caught upstream and returned or stored as plain text, never printed as HTML.
+            throw new QueueFailure(__('Submission handoff requires the Action Scheduler database store.', 'wconvert'));
         }
         global $wpdb;
         // A one-off read of the schema itself, which no WordPress API exposes;
@@ -66,7 +67,8 @@ final class ActionSchedulerQueue implements Queue
             $wpdb->prefix . 'actionscheduler_actions', $wpdb->prefix . 'actionscheduler_groups'
         ));
         if (count($rows) !== 2 || array_filter($rows, static fn ($engine): bool => strtoupper((string) $engine) !== 'INNODB') !== []) {
-            throw new QueueFailure('Submission handoff requires transactional Action Scheduler storage.');
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- operator text: caught upstream and returned or stored as plain text, never printed as HTML.
+            throw new QueueFailure(__('Submission handoff requires transactional Action Scheduler storage.', 'wconvert'));
         }
         $this->storageChecked = true;
     }
@@ -77,7 +79,8 @@ final class ActionSchedulerQueue implements Queue
         // that as a failed operation rather than reporting a job that does not
         // exist; callers decide whether the surrounding operation can proceed.
         if ($actionId === 0) {
-            throw new QueueFailure('WConvert could not enqueue a scheduled action.');
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- operator text: caught upstream and returned or stored as plain text, never printed as HTML.
+            throw new QueueFailure(__('WConvert could not enqueue a scheduled action.', 'wconvert'));
         }
     }
 }

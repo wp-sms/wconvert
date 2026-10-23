@@ -24,4 +24,8 @@ it is what fails the check when a name leaves `mangle.reserved` or the comments
 filter stops keeping translator comments. The real bundles would fail too, but
 this says why.
 
+`plugin.php`'s `Fixture uncommented %s` has a placeholder and no translators
+comment, and make-pot's audit must flag exactly it — the audit is the only
+place a PHP call's missing comment is read.
+
 Everything else here must pass. Change a string and you change the self-check.

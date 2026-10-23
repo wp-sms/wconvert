@@ -295,7 +295,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const captureMode = captureModeOf(config);
   const destinationSummary = captureMode === 'local' ? __('Keep in WConvert only', 'wconvert')
     : destinationNames.length === bound.length && bound.length > 0 ? destinationNames.join(' + ')
-      : bound.length > 0 ? sprintf(_n('%d connected destination', '%d connected destinations', bound.length, 'wconvert'), bound.length)
+      : bound.length > 0 ? sprintf(/* translators: %d: how many destinations the campaign sends leads to. */ _n('%d connected destination', '%d connected destinations', bound.length, 'wconvert'), bound.length)
         : __('No connected destinations', 'wconvert');
 
   const template = config?.template as Template | undefined;
@@ -715,13 +715,10 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
     const newGoal = goalList?.find(entry => entry.id === result.goal);
     setCaptureSaid(current => ({ serial: (current?.serial ?? 0) + 1,
       said: result.goal !== goal && newGoal
-        /* translators: 1: what changed, e.g. “Email form added.” 2: the new goal's name. */
-        ? sprintf(__('%1$s The goal is now “%2$s”.', 'wconvert'), done, newGoal.label) : done }));
+        ? sprintf(/* translators: 1: what changed, e.g. “Email form added.” 2: the new goal's name. */ __('%1$s The goal is now “%2$s”.', 'wconvert'), done, newGoal.label) : done }));
   };
-  /* translators: %s: the campaign's name. A copy that asks for contact details. */
-  const signupCopy = () => sprintf(__('%s (signup)', 'wconvert'), name);
-  /* translators: %s: the campaign's name. A copy without a form. */
-  const offerCopy = () => sprintf(__('%s (offer)', 'wconvert'), name);
+  const signupCopy = () => sprintf(/* translators: %s: the campaign's name. A copy that asks for contact details. */ __('%s (signup)', 'wconvert'), name);
+  const offerCopy = () => sprintf(/* translators: %s: the campaign's name. A copy without a form. */ __('%s (offer)', 'wconvert'), name);
   const copyName = formState === 'none' ? signupCopy() : offerCopy();
   // The same create, confirmation and cleaning as Duplicate for another goal.
   const copyCapture = (result: Conversion) => {
@@ -733,7 +730,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         else window.location.hash = editorHref(created.id);
       })
       .catch((cause: unknown) => {
-        throw new Error(sprintf(__('The copy could not be confirmed. Check the campaigns list before trying again. %s', 'wconvert'), messageOf(cause)));
+        throw new Error(sprintf(/* translators: %s: the error the server gave, e.g. “Sorry, you are not allowed to do that.” */ __('The copy could not be confirmed. Check the campaigns list before trying again. %s', 'wconvert'), messageOf(cause)));
       })
       .finally(() => setBusy(false));
   };
@@ -804,7 +801,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         tools={<DeviceControls width={width} onChange={setWidth} />}
         view={<Fullscreen />}
         onStage={openLook}
-        hint={sprintf(__('Click anything on the %s to edit it', 'wconvert'), formatWordOf(displayTypeOf(config, templates)))}
+        hint={sprintf(/* translators: %s: the campaign's format in lower case, e.g. “popup” or “slide-in”. */ __('Click anything on the %s to edit it', 'wconvert'), formatWordOf(displayTypeOf(config, templates)))}
         screen={showingLock ? { inFlow: true, label: __('Content lock', 'wconvert'), controls: <ContentLockPreview controls template={entry} state={lockPreview} onStateChange={setLockPreview} />, content: <ContentLockPreview template={entry} state={lockPreview} onStateChange={setLockPreview} /> } : showingReopen ? { label: reopenLabel, content: <ReopenPreview value={config.teaser} template={entry} mobile={width === 'narrow'} onReopen={() => { setOpenRow(null); setStep(0); }} /> } : undefined}
       />
     );
@@ -1272,14 +1269,14 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           setBusy(true);
           setError(null);
           if (canChangeGoal) return persistDraft(config ?? {}, picked).finally(() => setBusy(false));
-          return createOptin(sprintf(__('%s — copy', 'wconvert'), name), picked, copiedConfig(config ?? {}))
+          return createOptin(sprintf(/* translators: %s: the campaign's name, e.g. “Spring sale”. */ __('%s — copy', 'wconvert'), name), picked, copiedConfig(config ?? {}))
             .then((created) => {
               onEditingStateChange?.({ dirty: false, busy: false });
               if (onCreated) onCreated(created.id);
               else window.location.hash = editorHref(created.id);
             })
             .catch((cause: unknown) => {
-              throw new Error(sprintf(__('The copy could not be confirmed. Check the campaigns list before trying again. %s', 'wconvert'), messageOf(cause)));
+              throw new Error(sprintf(/* translators: %s: the error the server gave, e.g. “Sorry, you are not allowed to do that.” */ __('The copy could not be confirmed. Check the campaigns list before trying again. %s', 'wconvert'), messageOf(cause)));
             })
             .finally(() => setBusy(false));
         }}

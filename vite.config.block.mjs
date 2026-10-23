@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
+import { GETTEXT_SAFE_TERSER } from './vite.admin-config.mjs';
 
 const root = import.meta.dirname;
 
@@ -97,6 +98,10 @@ export default defineConfig({
     emptyOutDir: true,
     target: 'es2020',
     minify: 'terser',
+    // The admin's settings: `translators:` comments survive, which terser's
+    // defaults strip, and make-pot reads them from this file (ADR 0165). The
+    // names are safe either way here — an IIFE reads `wp.i18n.__` as a member.
+    terserOptions: GETTEXT_SAFE_TERSER,
     lib: {
       entry: resolve(root, 'resources/blocks/inline-optin/src/index.tsx'),
       formats: ['iife'],

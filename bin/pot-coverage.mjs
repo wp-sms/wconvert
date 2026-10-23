@@ -62,8 +62,9 @@
 // another call does contribute (which only a `#:` comparison catches), and a
 // JS source whose string never reached the bundle — plus a JS file nothing
 // imports. The run refuses to judge the tree unless it finds exactly those
-// three, sets aside exactly that file, and finds the minified call with its
-// translators comment intact.
+// three, sets aside exactly that file, finds the minified call with its
+// translators comment intact, and hears make-pot's audit flag exactly the one
+// placeholder planted without a comment.
 
 import { execFileSync, spawnSync } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
@@ -502,10 +503,27 @@ function fail2(message) {
 
 function makePot(dir, out, domain) {
   const res = spawnSync('php', ['-d', 'error_reporting=E_ERROR', '-d', 'memory_limit=512M', wpBinary(),
-    'i18n', 'make-pot', dir, out, `--domain=${domain}`, '--slug=fixture', '--skip-audit',
+    'i18n', 'make-pot', dir, out, `--domain=${domain}`, '--slug=fixture',
     '--exclude=src', '--allow-root', '--debug'], { encoding: 'utf8' });
   if (res.status !== 0) fail2(`make-pot failed on the fixture:\n${res.stderr}`);
-  return unparsed(res.stderr);
+  return { skipped: unparsed(res.stderr), audit: audited(res.stderr) };
+}
+
+/**
+ * make-pot's own audit, the two warnings a translator pays for: a placeholder
+ * with no `translators:` comment to say what it holds, and a plural whose
+ * singular drops the number — which a language whose "one" form also covers
+ * 21 needs. ESLint catches the first in TypeScript; this is the only check
+ * that reads it in PHP, and the only one that reads the second anywhere.
+ *
+ * The others it prints are left alone. "Different translator comments" on
+ * `Actions for %s` is two honest descriptions of one pattern, and an
+ * ambiguous short word is what `_x()` is for, which is a review call rather
+ * than a rule.
+ */
+function audited(output) {
+  return [...output.matchAll(/Warning: (The string "(.+?)" contains placeholders but has no "translators:" comment|Missing singular placeholder)[^(]*\((.+?):(\d+)\)/g)]
+    .map(([, kind, msgid, file, line]) => ({ file, line: Number(line), msgid: msgid ?? null, why: kind.startsWith('Missing') ? 'its singular has no placeholder' : 'no translators: comment for its placeholder' }));
 }
 
 /**
@@ -559,7 +577,7 @@ async function selfCheck() {
     await minifyLikeTheAdmin(join(dir, 'src/minified.js'), join(dir, 'build/minified.js'));
 
     const pot = join(work, 'fixture.pot');
-    const skipped = makePot(dir, pot, FIXTURE_DOMAIN);
+    const { skipped, audit } = makePot(dir, pot, FIXTURE_DOMAIN);
     const catalog = parsePot(readFileSync(pot, 'utf8'));
 
     const { sites, findings, unshipped, unbundled } = judge(dir, {
@@ -581,7 +599,8 @@ async function selfCheck() {
 
     if (JSON.stringify(got) !== JSON.stringify(want) || planted.some((m) => !seen.has(m))
       || JSON.stringify(deadFiles) !== JSON.stringify(['src/dead.tsx']) || !commented
-      || JSON.stringify(skipped.map(({ file }) => file)) !== JSON.stringify(['build/broken.js']) || JSON.stringify(shaken) !== JSON.stringify(['Fixture shaken'])) {
+      || JSON.stringify(skipped.map(({ file }) => file)) !== JSON.stringify(['build/broken.js']) || JSON.stringify(shaken) !== JSON.stringify(['Fixture shaken'])
+      || JSON.stringify(audit.map(({ msgid }) => msgid)) !== JSON.stringify(['Fixture uncommented %s'])) {
       fail2(
         `SELF-CHECK FAILED on ${FIXTURE}.\n`
           + `  expected exactly ${JSON.stringify(want)} unextracted, got ${JSON.stringify(got)};\n`
@@ -589,7 +608,8 @@ async function selfCheck() {
           + `  expected every one of ${JSON.stringify(planted)} to be read as a call site;\n`
           + `  expected "Fixture minified %s" to keep its translators comment through the admin's minifier: ${commented ? 'kept' : 'LOST'};\n`
           + `  expected exactly ["Fixture shaken"] set aside as in no bundle, got ${JSON.stringify(shaken)};\n`
-          + `  expected make-pot to skip exactly ["build/broken.js"], and it skipped ${JSON.stringify(skipped.map(({ file }) => file))}.\n`
+          + `  expected make-pot to skip exactly ["build/broken.js"], and it skipped ${JSON.stringify(skipped.map(({ file }) => file))};\n`
+          + `  expected the audit to flag exactly ["Fixture uncommented %s"], and it flagged ${JSON.stringify(audit.map(({ msgid }) => msgid))}.\n`
           + '  If a "Fixture minified/on/off/listed" string is among the unextracted, or build/minified.js was\n'
           + '  skipped, GETTEXT_SAFE_TERSER no longer produces what make-pot can read — and neither does the\n'
           + '  admin build. Otherwise the comparator cannot see what it is looking for, so its verdict on the\n'
@@ -599,7 +619,7 @@ async function selfCheck() {
     console.log(
       `✓ self-check: the fixture's ${want.length} unextractable calls and its unparseable bundle were found, its unimported `
         + 'file and its tree-shaken string were set aside, its admin-minified calls kept their names and their translators '
-        + 'comment, and its good calls passed'
+        + 'comment, the audit flagged its uncommented placeholder, and its good calls passed'
     );
   } finally {
     rmSync(work, { recursive: true, force: true });
@@ -627,6 +647,7 @@ async function main() {
 
   const catalogs = new Map();
   const skipped = [];
+  const audit = [];
   for (const { name, source, pot, domain } of scripts) {
     if (!reuse) {
       const res = spawnSync('npm', ['run', name, '--silent', '--', '--debug'], {
@@ -634,6 +655,7 @@ async function main() {
       });
       if (res.status !== 0) fail2(`\`npm run ${name}\` failed:\n${res.stderr}`);
       skipped.push(...unparsed(res.stderr).map(({ file, why }) => ({ file: source === '.' ? file : `${source}/${file}`, why })));
+      audit.push(...audited(res.stderr).map((warning) => ({ ...warning, file: source === '.' ? warning.file : `${source}/${warning.file}` })));
     }
     if (!existsSync(resolve(ROOT, pot))) fail2(`${pot} does not exist (run without --reuse to generate it).`);
     catalogs.set(domain, parsePot(readFileSync(resolve(ROOT, pot), 'utf8'), source === '.' ? '' : `${source}/`));
@@ -677,7 +699,17 @@ async function main() {
     );
   }
 
-  if (findings.length > 0 || skipped.length > 0) {
+  if (audit.length > 0) {
+    console.error(
+      `\n✗ pot-coverage: make-pot's audit flagged ${audit.length} string(s) a translator would have to guess at:\n\n`
+        + audit.map(({ file, line, msgid, why }) => `  ${file}:${line}  ${msgid === null ? '' : `${JSON.stringify(msgid)} — `}${why}`).sort().join('\n')
+        + '\n\nA built .js line is the bundle\'s; find the string in the TypeScript. Put the comment\n'
+        + 'right before the gettext call — /* translators: %s: what it holds. */ __(…) — and give\n'
+        + 'a plural\'s singular its number: _n(\'%d item\', \'%d items\', n).'
+    );
+  }
+
+  if (findings.length > 0 || skipped.length > 0 || audit.length > 0) {
     process.exit(1);
   }
 

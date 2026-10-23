@@ -266,7 +266,7 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
       {erasureNotice !== null && <RegionBody><p role="status" className="m-0 rounded-md border border-border bg-surface p-3 text-note">{erasureNotice}</p></RegionBody>}
       {error !== null && data !== null && <RegionError message={error} onRetry={retryLog} />}
       {/* Only beside a loaded log: while the log is still loading, a names door would re-read only the names. */}
-      {namesError !== null && log.status === 'ready' && <RegionError message={sprintf(__('Campaign names couldn’t be loaded: %s', 'wconvert'), namesError)} onRetry={() => setNamesRetry((value) => value + 1)} />}
+      {namesError !== null && log.status === 'ready' && <RegionError message={sprintf(/* translators: %s: the error message. */ __('Campaign names couldn’t be loaded: %s', 'wconvert'), namesError)} onRetry={() => setNamesRetry((value) => value + 1)} />}
       <div aria-busy={updating || undefined} className={updating && !quiet && data !== null ? 'opacity-60' : undefined}>
       {log.status === 'failed' ? <RegionErrorState message={log.message} onRetry={retryLog} /> : data === null ? <DataTable><TableSkeleton columns={5} /></DataTable> : rows === 0 ? (
         hasAppliedFilters ? <EmptyState icon={Inbox} title={applied.query.leadId ? __('Submission not found', 'wconvert') : __('No matching submissions', 'wconvert')}
@@ -291,7 +291,7 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
           <DataTableCell label={__('Email or phone', 'wconvert')} heading><bdi dir="ltr" className="break-all">{group.identifier}</bdi></DataTableCell>
           <DataTableCell label={__('Submissions', 'wconvert')} numeric>{formatCount(group.submissions)}</DataTableCell>
           <DataTableCell label={__('Last submitted', 'wconvert')}>{group.latest_at === null ? '—' : <time className="text-note" dateTime={group.latest_at.replace(' ', 'T')} title={formatWhen(group.latest_at, 'detail')}>{formatWhen(group.latest_at, 'list')}</time>}</DataTableCell>
-          <DataTableActions><Button variant="ghost" aria-label={sprintf(__('Open submissions from %s', 'wconvert'), group.identifier)} onClick={(event) => open({ kind: 'history', group, query: applied.query }, event.currentTarget)}>
+          <DataTableActions><Button variant="ghost" aria-label={sprintf(/* translators: %s: an email address or phone number. */ __('Open submissions from %s', 'wconvert'), group.identifier)} onClick={(event) => open({ kind: 'history', group, query: applied.query }, event.currentTarget)}>
             {__('Open', 'wconvert')}<ChevronRight aria-hidden="true" className="size-4 rtl:-scale-x-100" />
           </Button></DataTableActions>
         </DataTableRow>)}</DataTableBody>
@@ -299,7 +299,7 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
       </div>
       {data !== null && rows > 0 && (applied.page > 1 || data.next_cursor !== null) && <RegionFooter>
         <div className="flex w-full flex-wrap items-center justify-between gap-3">
-          <span>{sprintf(__('Page %s', 'wconvert'), formatCount(applied.page))}</span>
+          <span>{sprintf(/* translators: %s: the page number. */ __('Page %s', 'wconvert'), formatCount(applied.page))}</span>
           <div className="flex gap-2"><Button variant="outline" disabled={updating || showingPrevious || applied.page <= 1} onClick={previous}>{oldestFirst ? __('Older', 'wconvert') : __('Newer', 'wconvert')}</Button>
             <Button variant="outline" disabled={updating || showingPrevious || !data.next_cursor} onClick={next}>{oldestFirst ? __('Newer', 'wconvert') : __('Older', 'wconvert')}</Button></div>
         </div>
@@ -332,9 +332,10 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
         else document.getElementById('wconvert-lead-search')?.focus();
       }}>
         <AlertDialogHeader>
-          <AlertDialogTitle>{framed(__('Delete every submission from %s?', 'wconvert'), erasureTarget ?? '')}</AlertDialogTitle>
+          <AlertDialogTitle>{framed(/* translators: %s: an email address or phone number. */ __('Delete every submission from %s?', 'wconvert'), erasureTarget ?? '')}</AlertDialogTitle>
           <AlertDialogDescription>
             {erasurePreview === null ? __('Counting their submissions…', 'wconvert') : sprintf(
+              /* translators: %s: how many submissions will be deleted. */
               _n(
                 'This permanently deletes %s submission, from every campaign.',
                 'This permanently deletes all %s submissions, from every campaign.',
@@ -364,7 +365,7 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
                 setErasureTarget(null);
                 setErasurePreview(null);
                 setErasureNotice(sprintf(
-                  _n('%s submission deleted. Copies in destinations, exports and backups aren’t affected.', '%s submissions deleted. Copies in destinations, exports and backups aren’t affected.', result.removed, 'wconvert'),
+                  /* translators: %s: how many submissions were deleted. */ _n('%s submission deleted. Copies in destinations, exports and backups aren’t affected.', '%s submissions deleted. Copies in destinations, exports and backups aren’t affected.', result.removed, 'wconvert'),
                   formatCount(result.removed),
                 ));
                 setPaging({ scope, previous: [] });
@@ -393,8 +394,8 @@ function exactIdentifierScope(query: LeadPage): string | null {
 /** A window's dates as one phrase, or null for any time. */
 function windowSummary({ from, to }: DayWindow): string | null {
   if (from && to) return from === to ? formatDay(from) : formatRange(from, to);
-  if (from) return sprintf(__('From %s', 'wconvert'), formatDay(from));
-  if (to) return sprintf(__('Until %s', 'wconvert'), formatDay(to));
+  if (from) return sprintf(/* translators: %s: a date, e.g. “Nov 27, 2026”. */ __('From %s', 'wconvert'), formatDay(from));
+  if (to) return sprintf(/* translators: %s: a date, e.g. “Nov 27, 2026”. */ __('Until %s', 'wconvert'), formatDay(to));
   return null;
 }
 
@@ -482,5 +483,5 @@ function scopeDescription(query: LeadQuery, nameOf: (id: string) => CampaignName
     query.purpose === 'subscribers' ? __('Subscribers', 'wconvert') : query.purpose === 'enquiries' ? __('Enquiries', 'wconvert') : undefined,
     query.leadId ? __('One submission', 'wconvert') : query.identifier || query.search,
     periodOf(query)];
-  return sprintf(__('Showing: %s', 'wconvert'), parts.filter(Boolean).join(' · '));
+  return sprintf(/* translators: %s: the filters in use, joined by “ · ”, e.g. “All campaigns · Subscribers · Last 30 days”. */ __('Showing: %s', 'wconvert'), parts.filter(Boolean).join(' · '));
 }

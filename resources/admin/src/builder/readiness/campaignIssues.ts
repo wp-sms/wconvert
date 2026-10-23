@@ -231,7 +231,7 @@ function signupRouteIssues({ template, captureMode, submissionSettings }: Campai
     if (at < 0 || (Array.isArray(routes) && routes.length > 0)) return [];
     return [{
       key: `signup-route:${signup.id}`,
-      said: sprintf(__('Choose a service for the form on “%s”, or keep all leads in WConvert only.', 'wconvert'), template.tree.steps[at].name),
+      said: sprintf(/* translators: %s: the name of the screen with the form, e.g. “Get your results”. */ __('Choose a service for the form on “%s”, or keep all leads in WConvert only.', 'wconvert'), template.tree.steps[at].name),
       blocks: true, tab: 'destinations', go: { to: 'destinations' }, screenId: template.tree.steps[at].id, offersKeepLocal: true,
     }];
   });

@@ -28,6 +28,8 @@ final class BundledTemplates implements TemplateSource
 {
     public const PATH = 'resources/templates/library';
     public const REVISIONS = 'resources/templates/revisions.json';
+    /** The designs' names as literal gettext calls (`bin/template-labels.mjs`). */
+    public const LABELS = 'resources/templates/labels.php';
 
     public function __construct(
         private readonly string $pluginDir = WCONVERT_DIR,
@@ -49,6 +51,8 @@ final class BundledTemplates implements TemplateSource
                 $entries[] = BundledArtwork::forSite($decoded, $this->pluginDir, defined('WCONVERT_URL') ? WCONVERT_URL : '');
             }
         }
+
+        $entries = TemplateNames::apply($entries, rtrim($this->pluginDir, '/') . '/' . self::LABELS);
 
         return BundledRevisions::stamp($entries, BundledRevisions::read(rtrim($this->pluginDir, '/') . '/' . self::REVISIONS));
     }

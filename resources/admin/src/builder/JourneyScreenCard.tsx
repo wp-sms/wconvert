@@ -49,7 +49,7 @@ export function JourneyScreenCard({ template, index, ordinal, selected, scope, l
   }, [scope, screen.id, terminal, movable]);
   return <li ref={card} className="wconvert-journey-card" data-selected={selected} data-dragging={dragging} data-drop-target={over}>
     <div className="wconvert-journey-card__head">
-      <span>{sprintf(__('Screen %d', 'wconvert'), ordinal ?? index + 1)}</span>
+      <span>{sprintf(/* translators: %d: the screen's position in the campaign, e.g. “2”. */ __('Screen %d', 'wconvert'), ordinal ?? index + 1)}</span>
       {onMove && <span ref={grip} className="wconvert-journey-card__grip" aria-hidden="true">{terminal ? __('Last', 'wconvert') : <GripVertical size={16} />}</span>}
     </div>
     <div ref={frame} className="wconvert-journey-card__preview" inert aria-hidden="true"><div ref={drawing} className="wconvert-journey-card__drawing" style={{ transform: `translateY(-50%) scale(${scale})` }}><Preview template={template} step={index} /></div></div>

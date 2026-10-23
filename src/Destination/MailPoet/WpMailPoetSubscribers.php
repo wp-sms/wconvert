@@ -261,7 +261,8 @@ final class WpMailPoetSubscribers implements MailPoetSubscribers
         $subscriber = $this->call($this->service(self::SUBSCRIBERS), 'findOneById', [$subscriberId]);
 
         if (!is_object($subscriber)) {
-            throw new \RuntimeException('MailPoet no longer holds that subscriber.');
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- operator text: caught upstream and returned or stored as plain text, never printed as HTML.
+            throw new \RuntimeException(__('MailPoet no longer holds that subscriber.', 'wconvert'));
         }
 
         $found = $this->call($this->service(self::SEGMENTS), 'findByIds', [$this->numeric($listIds)]);
@@ -310,7 +311,8 @@ final class WpMailPoetSubscribers implements MailPoetSubscribers
         $api = $accessor('v1');
 
         if (!is_object($api)) {
-            throw new \RuntimeException('MailPoet did not supply its plugin API.');
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- operator text: caught upstream and returned or stored as plain text, never printed as HTML.
+            throw new \RuntimeException(__('MailPoet did not supply its plugin API.', 'wconvert'));
         }
 
         return $api;
@@ -327,7 +329,8 @@ final class WpMailPoetSubscribers implements MailPoetSubscribers
         $container = $accessor();
 
         if (!is_object($container)) {
-            throw new \RuntimeException('MailPoet did not supply its container.');
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- operator text: caught upstream and returned or stored as plain text, never printed as HTML.
+            throw new \RuntimeException(__('MailPoet did not supply its container.', 'wconvert'));
         }
 
         $service = $this->call($container, 'get', [$id]);
@@ -338,7 +341,11 @@ final class WpMailPoetSubscribers implements MailPoetSubscribers
             // constants, and every path through `service()` is reached from
             // `push()`, which catches `\Throwable`.
             // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- caught by push() and stored as operator text; $id is a constant of this class.
-            throw new \RuntimeException('MailPoet did not supply ' . $id . '.');
+            throw new \RuntimeException(sprintf(
+                /* translators: %s: the name of a MailPoet service WConvert asked for. */
+                __('MailPoet did not supply %s.', 'wconvert'),
+                $id
+            ));
         }
 
         return $service;
@@ -363,7 +370,8 @@ final class WpMailPoetSubscribers implements MailPoetSubscribers
     private function requireMailPoet(): void
     {
         if (!self::isAvailable()) {
-            throw new \RuntimeException('MailPoet is not loaded on this site.');
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- operator text: caught upstream and returned or stored as plain text, never printed as HTML.
+            throw new \RuntimeException(__('MailPoet is not loaded on this site.', 'wconvert'));
         }
     }
 }

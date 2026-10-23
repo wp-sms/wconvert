@@ -436,10 +436,8 @@ export function customPacing(frequency: Frequency, capital: boolean): string {
   const parts: string[] = [];
   if (frequency.maxPerSession !== undefined) {
     parts.push(sprintf(capital
-      /* translators: %d: a number of times. */
-      ? _n('Up to %d time per visit', 'Up to %d times per visit', frequency.maxPerSession, 'wconvert')
-      /* translators: %d: a number of times. */
-      : _n('up to %d time per visit', 'up to %d times per visit', frequency.maxPerSession, 'wconvert'), frequency.maxPerSession));
+      ? /* translators: %d: the most times it shows in one visit. */ _n('Up to %d time per visit', 'Up to %d times per visit', frequency.maxPerSession, 'wconvert')
+      : /* translators: %d: the most times it shows in one visit. */ _n('up to %d time per visit', 'up to %d times per visit', frequency.maxPerSession, 'wconvert'), frequency.maxPerSession));
   }
   if (frequency.cooldownDays !== undefined) {
     parts.push(sprintf(
@@ -465,10 +463,8 @@ export function sentenceParts(
   const sections = summarise(value, vocabulary);
   const attention = (id: SectionId) => sections.find(section => section.id === id)?.attention ?? false;
   const all = everyType(vocabulary);
-  /* translators: %s: where it shows, e.g. “every page”. */
-  const on = __('on %s', 'wconvert');
-  /* translators: %s: who sees it, e.g. “everyone”. */
-  const to = __('to %s', 'wconvert');
+  const on = /* translators: %s: where it shows, e.g. “every page”. */ __('on %s', 'wconvert');
+  const to = /* translators: %s: who sees it, e.g. “everyone”. */ __('to %s', 'wconvert');
   const bare = '%s';
   const phrase = (id: SectionId, frame: string, custom: () => string): SentencePart => {
     const pick = derive(id, value, vocabulary);
@@ -487,8 +483,7 @@ export function sentenceParts(
     const groups = audience.groups.map(group => join(group.rules.map(rule => phraseOf(rule as Rule, all).text),
       group.match === 'all' ? _x('and', 'joins rules a visitor must all match', 'wconvert') : _x('or', 'joins rules any one of which a visitor may match', 'wconvert')));
     return groups.length === 0 || groups.some(group => group === '') ? unchosen
-      /* translators: %s: what the visitor must match, e.g. “they are on a phone and signed in to this site”. */
-      : sprintf(__('visitors if %s', 'wconvert'), groups.join(_x(', or if ', 'joins alternative groups of visitors', 'wconvert')));
+      : sprintf(/* translators: %s: what the visitor must match, e.g. “they are on a phone and signed in to this site”. */ __('visitors if %s', 'wconvert'), groups.join(_x(', or if ', 'joins alternative groups of visitors', 'wconvert')));
   });
 
   const when = phrase('when', bare, () => {
@@ -505,19 +500,15 @@ export function sentenceParts(
   const until = readable(value.schedule.ends_at);
   const dates: SentencePart | undefined = from === null && until === null ? undefined
     : hasFinished(value.schedule) && until !== null
-      /* translators: %s: the date and time it stopped running. */
-      ? { section: 'dates', text: until, attention: true, frame: __('It stopped running on %s.', 'wconvert') }
+      ? { section: 'dates', text: until, attention: true, frame: /* translators: %s: the date and time it stopped running. */ __('It stopped running on %s.', 'wconvert') }
       : { section: 'dates', attention: attention('dates'),
         /* translators: %s: when it runs, e.g. “from 27 Nov to 30 Nov”. */
         frame: __('It runs %s.', 'wconvert'),
         text: from !== null && until !== null
-          /* translators: 1: a date and time it starts. 2: a date and time it ends. */
-          ? sprintf(__('from %1$s to %2$s', 'wconvert'), from, until)
+          ? sprintf(/* translators: 1: a date and time it starts. 2: a date and time it ends. */ __('from %1$s to %2$s', 'wconvert'), from, until)
           : from !== null
-            /* translators: %s: a date and time it starts. */
-            ? sprintf(__('from %s', 'wconvert'), from)
-            /* translators: %s: a date and time it ends. */
-            : sprintf(__('until %s', 'wconvert'), until ?? '') };
+            ? sprintf(/* translators: %s: a date and time it starts. */ __('from %s', 'wconvert'), from)
+            : sprintf(/* translators: %s: a date and time it ends. */ __('until %s', 'wconvert'), until ?? '') };
 
   return { where, who, when, often, ...(dates ? { dates } : {}) };
 }
@@ -541,8 +532,8 @@ export function sentenceParts(
 export function phraseOf(rule: Rule, types: readonly RuleType[]): Summary {
   if (['cart_products', 'cart_categories'].includes(rule.type)) {
     const count = Array.isArray(rule.ids) ? rule.ids.length : 0;
-    const items = rule.type === 'cart_products' ? sprintf(_n('%d selected product', '%d selected products', count, 'wconvert'), count) : sprintf(_n('%d selected category', '%d selected categories', count, 'wconvert'), count);
-    const phrase = rule.operator === 'none' ? __('Cart contains none of %s', 'wconvert') : rule.operator === 'all' ? __('Cart contains all of %s', 'wconvert') : __('Cart contains any of %s', 'wconvert');
+    const items = rule.type === 'cart_products' ? sprintf(/* translators: %d: how many products the cart rule lists. */ _n('%d selected product', '%d selected products', count, 'wconvert'), count) : sprintf(/* translators: %d: how many product categories the cart rule lists. */ _n('%d selected category', '%d selected categories', count, 'wconvert'), count);
+    const phrase = rule.operator === 'none' ? /* translators: %s: the chosen products or categories, e.g. “3 selected products”. */ __('Cart contains none of %s', 'wconvert') : rule.operator === 'all' ? /* translators: %s: the chosen products or categories, e.g. “3 selected products”. */ __('Cart contains all of %s', 'wconvert') : /* translators: %s: the chosen products or categories, e.g. “3 selected products”. */ __('Cart contains any of %s', 'wconvert');
     return { text: sprintf(phrase, items) + (rule.type === 'cart_categories' && rule.descendants ? __(' (including subcategories)', 'wconvert') : ''), attention: count === 0 };
   }
   if (['cart_quantity', 'cart_amount'].includes(rule.type) && rule.range && typeof rule.range === 'object') {
@@ -589,7 +580,7 @@ export function phraseOf(rule: Rule, types: readonly RuleType[]): Summary {
   if (rule.type === 'query_param' && !supplied(rule.value)) {
     return { text: negate
       ? sprintf(/* translators: %s: a URL parameter's name, e.g. “utm_source”. */ __('URL does not contain the “%s” parameter', 'wconvert'), String(rule.key))
-      : sprintf(__('URL contains the “%s” parameter (any value)', 'wconvert'), String(rule.key)), attention: false };
+      : sprintf(/* translators: %s: a URL parameter's name, e.g. “utm_source”. */ __('URL contains the “%s” parameter (any value)', 'wconvert'), String(rule.key)), attention: false };
   }
   if (rule.type === 'logged_in') {
     return { text: rule.value === true ? __('signed in to this site', 'wconvert') : __('signed out of this site', 'wconvert'), attention: false };
@@ -667,20 +658,16 @@ export function valueText(param: RuleParam, value: unknown): string | null {
 
   switch (param.control) {
     case 'seconds':
-      // translators: %d: a number of seconds.
-      return sprintf(_n('%d second', '%d seconds', Number(value), 'wconvert'), Number(value));
+      return sprintf(/* translators: %d: a number of seconds. */ _n('%d second', '%d seconds', Number(value), 'wconvert'), Number(value));
     case 'percent':
-      // translators: %d: a percentage of the page.
-      return sprintf(__('%d%%', 'wconvert'), Number(value));
+      return sprintf(/* translators: %d: a percentage of the page. */ __('%d%%', 'wconvert'), Number(value));
     case 'quantity_range':
     case 'money_range':
       return typeof value === 'object' ? rangeText(value as Record<string, unknown>) : null;
     case 'product_set':
-      // translators: %d: how many products are chosen.
-      return sprintf(_n('%d product', '%d products', count, 'wconvert'), count);
+      return sprintf(/* translators: %d: how many products are chosen. */ _n('%d product', '%d products', count, 'wconvert'), count);
     case 'category_set':
-      // translators: %d: how many categories are chosen.
-      return sprintf(_n('%d category', '%d categories', count, 'wconvert'), count);
+      return sprintf(/* translators: %d: how many categories are chosen. */ _n('%d category', '%d categories', count, 'wconvert'), count);
     default:
       return format(param, value, 'label');
   }

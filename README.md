@@ -937,6 +937,19 @@ reached its POT. It runs in CI as its own job. Locally it needs wp-cli on the
 PATH and `npm run build` first. A free helper that only Pro's bundle ships fails
 the check: no catalogue can hold it, so it belongs under `pro/`.
 
+Three things do not come from a gettext call where they are drawn, and each
+has a route of its own (ADR 0166):
+
+- **The visitor's page carries no `wp.i18n`.** A word the renderer or a loader
+  writes itself is added to `PageLabels` (free) or `ProPageLabels` (Pro) and read
+  with `pageLabel(position, 'English')`. Append and never reorder: the
+  position is the contract, and `PageLabelsTest` holds the two sides together.
+- **Design and screen names live in JSON.** After adding or renaming a bundled
+  design, run `npm run templates:labels`. It rewrites the two `labels.php`
+  files, and `TemplateNamesTest` fails until you do.
+- **Pro's inspector explanations** read their words from
+  `ProInspectorLabels`, by group and key.
+
 To see a locale for real, turn both POTs into pseudo-translated `.po` files,
 compile them with `wp i18n make-json` and `make-php`, mount them as
 `wp-content/languages` (Pro's into `pro/resources/languages`), and force the

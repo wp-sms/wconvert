@@ -36,8 +36,7 @@ export function PhoneCountryPicker({ label, value, countries, onChange, disabled
   const chosen = countries.find(country => country.code === value);
   const site = countries.find(country => country.code === siteCountry);
   const siteChoice = site
-    /* translators: %s: the site's default country, e.g. “Armenia”. */
-    ? sprintf(__('Use site setting (%s)', 'wconvert'), site.name)
+    ? sprintf(/* translators: %s: the site's default country, e.g. “Armenia”. */ __('Use site setting (%s)', 'wconvert'), site.name)
     : __('Use site setting', 'wconvert');
   const shown = value === 'site' ? siteChoice : chosen?.name ?? __('Choose a country', 'wconvert');
   const term = query.trim().toLocaleLowerCase();

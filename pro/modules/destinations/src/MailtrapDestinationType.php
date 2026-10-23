@@ -34,9 +34,9 @@ final class MailtrapDestinationType implements DestinationType
     public function testConnection(array $credentials): void
     {
         [$status, $accounts] = $this->request($credentials, 'GET', '/accounts');
-        if ($status !== 200 || $accounts === []) throw new \RuntimeException('Mailtrap rejected the account check.');
+        if ($status !== 200 || $accounts === []) throw new \RuntimeException(__('Mailtrap rejected the account check.', 'wconvert-pro'));
         [$listsStatus] = $this->request($credentials, 'GET', '/contacts/lists');
-        if ($listsStatus !== 200) throw new \RuntimeException('Mailtrap lists could not be read.');
+        if ($listsStatus !== 200) throw new \RuntimeException(__('Mailtrap lists could not be read.', 'wconvert-pro'));
     }
 
     /** The token's one account; several are refused, since the account-free paths would not say which one a Contact landed in.
@@ -46,7 +46,7 @@ final class MailtrapDestinationType implements DestinationType
     {
         [$status, $accounts] = $this->request($credentials, 'GET', '/accounts');
         $identity = count($accounts) === 1 && is_array($accounts[0] ?? null) ? ($accounts[0]['id'] ?? null) : null;
-        if ($status !== 200 || !(is_int($identity) || (is_string($identity) && $identity !== ''))) throw new \RuntimeException('Mailtrap account identity unavailable.');
+        if ($status !== 200 || !(is_int($identity) || (is_string($identity) && $identity !== ''))) throw new \RuntimeException(__('Mailtrap account identity unavailable.', 'wconvert-pro'));
         return (string) $identity;
     }
 
@@ -55,7 +55,7 @@ final class MailtrapDestinationType implements DestinationType
     {
         if (empty($credentials['api_token'])) return ['lists' => ['type' => 'ids', 'label' => __('List', 'wconvert-pro'), 'max' => 1]];
         [$status, $lists] = $this->request($credentials, 'GET', '/contacts/lists');
-        if ($status !== 200) throw new \RuntimeException('Mailtrap lists could not be read.');
+        if ($status !== 200) throw new \RuntimeException(__('Mailtrap lists could not be read.', 'wconvert-pro'));
         $options = [];
         foreach ($lists as $list) {
             if (is_array($list) && isset($list['id'], $list['name'])) $options[] = ['value' => (string) $list['id'], 'label' => (string) $list['name']];
@@ -88,7 +88,7 @@ final class MailtrapDestinationType implements DestinationType
     private function fields(array $credentials, bool $includeInterests = false): array
     {
         [$status, $fields] = $this->request($credentials, 'GET', '/contacts/fields');
-        if ($status !== 200) throw new \RuntimeException('Mailtrap fields could not be read.');
+        if ($status !== 200) throw new \RuntimeException(__('Mailtrap fields could not be read.', 'wconvert-pro'));
         $options = [];
         foreach ($fields as $field) {
             if (!is_array($field) || !in_array($field['data_type'] ?? '', $includeInterests ? ['text', 'boolean'] : ['text'], true)) continue;
@@ -175,7 +175,7 @@ final class MailtrapDestinationType implements DestinationType
     private function request(array $credentials, string $method, string $path, ?array $body = null): array
     {
         $token = $credentials['api_token'] ?? '';
-        if (!is_string($token) || $token === '') throw new \RuntimeException('Missing Mailtrap token.');
+        if (!is_string($token) || $token === '') throw new \RuntimeException(__('Missing Mailtrap token.', 'wconvert-pro'));
         $args = ['method' => $method, 'timeout' => 12, 'redirection' => 0,
             'headers' => ['Api-Token' => $token, 'Accept' => 'application/json']];
         if ($body !== null) {
@@ -183,7 +183,7 @@ final class MailtrapDestinationType implements DestinationType
             $args['body'] = wp_json_encode($body);
         }
         $response = wp_remote_request('https://mailtrap.io/api' . $path, $args);
-        if (is_wp_error($response)) throw new \RuntimeException('Mailtrap transport failed.');
+        if (is_wp_error($response)) throw new \RuntimeException(__('Mailtrap transport failed.', 'wconvert-pro'));
         $decoded = json_decode((string) wp_remote_retrieve_body($response), true);
         return [(int) wp_remote_retrieve_response_code($response), is_array($decoded) ? $decoded : []];
     }

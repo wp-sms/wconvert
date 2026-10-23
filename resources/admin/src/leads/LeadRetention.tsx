@@ -131,6 +131,7 @@ export function LeadRetention({ onEditingStateChange }: { onEditingStateChange?:
     const days = Number(draft.days);
     if (draft.days.trim() === '' || !Number.isInteger(days) || days < 1 || days > period.max_days) {
       setValidation(sprintf(
+        /* translators: %d: the longest time submissions can be kept, in days. */
         __('Enter a whole number from 1 to %d days.', 'wconvert'),
         period.max_days,
       ));
@@ -163,6 +164,7 @@ export function LeadRetention({ onEditingStateChange }: { onEditingStateChange?:
           description={retention.data.days === null
             ? __('Kept until you delete them', 'wconvert')
             : sprintf(
+                /* translators: %s: how many days submissions are kept, e.g. “90”. */
                 _n('Deleted automatically after %s day', 'Deleted automatically after %s days', retention.data.days, 'wconvert'),
                 formatCount(retention.data.days),
               )}
@@ -208,7 +210,7 @@ export function LeadRetention({ onEditingStateChange }: { onEditingStateChange?:
                   options={[
                     ...presets.map((preset) => ({
                       value: String(preset),
-                      label: sprintf(_n('%s day', '%s days', preset, 'wconvert'), formatCount(preset)),
+                      label: sprintf(/* translators: %s: how many days submissions are kept, e.g. “90”. */ _n('%s day', '%s days', preset, 'wconvert'), formatCount(preset)),
                     })),
                     { value: 'custom', label: __('Custom', 'wconvert') },
                   ]}
@@ -274,6 +276,7 @@ export function LeadRetention({ onEditingStateChange }: { onEditingStateChange?:
           <AlertDialogHeader>
             <AlertDialogTitle>
               {sprintf(
+                /* translators: %s: the new number of days submissions are kept, e.g. “90”. */
                 _n('Delete submissions older than %s day?', 'Delete submissions older than %s days?', confirmDays ?? 0, 'wconvert'),
                 formatCount(confirmDays ?? 0),
               )}
@@ -297,6 +300,7 @@ export function LeadRetention({ onEditingStateChange }: { onEditingStateChange?:
               {saving
                 ? __('Saving…', 'wconvert')
                 : sprintf(
+                    /* translators: %s: the new number of days submissions are kept, e.g. “90”. */
                     _n('Delete after %s day', 'Delete after %s days', confirmDays ?? 0, 'wconvert'),
                     formatCount(confirmDays ?? 0),
                   )}

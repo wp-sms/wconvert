@@ -32,7 +32,7 @@ export function DeliveryAttention() {
   };
   const affected = data.destinations.filter(d => d.health.consecutive_failures > 0 || d.health.skipped_captures > 0 || d.availability !== 'ready' || data.failures.some(f => f.destination === d.id));
   return <Region className="wa-report"><RegionHeader title={__('Sending needs attention', 'wconvert')} icon={<Send />} />
-    <RegionBody className="wa-report-setting"><div><strong>{sprintf(_n('%d destination needs review', '%d destinations need review', issueCount(data), 'wconvert'), issueCount(data))}</strong><p className="wa-muted">{__('Current status, not limited to the report dates.', 'wconvert')}</p></div>
+    <RegionBody className="wa-report-setting"><div><strong>{sprintf(/* translators: %d: how many destinations need review. */ _n('%d destination needs review', '%d destinations need review', issueCount(data), 'wconvert'), issueCount(data))}</strong><p className="wa-muted">{__('Current status, not limited to the report dates.', 'wconvert')}</p></div>
       <div className="wconvert-toolbar"><Button variant="outline" asChild><a href={sendingIssuesHref()}>{__('Review sending issues', 'wconvert')}</a></Button></div>
     </RegionBody>
     <ReportDisclosure title={__('Affected destinations', 'wconvert')}>

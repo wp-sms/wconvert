@@ -12,13 +12,13 @@ export function contactWording(channel: ContactChannel) {
   return channel === 'email' ? {
     label: __('Email address', 'wconvert'),
     placeholder: __('you@example.com', 'wconvert'),
-    consent: __('Email me offers and news. Unsubscribe any time. %s', 'wconvert'),
-    optionalConsent: __('Send me email updates. %s', 'wconvert'),
+    consent: /* translators: %s: a link to the privacy policy, worded “Privacy Policy”. */ __('Email me offers and news. Unsubscribe any time. %s', 'wconvert'),
+    optionalConsent: /* translators: %s: a link to the privacy policy, worded “Privacy Policy”. */ __('Send me email updates. %s', 'wconvert'),
   } : {
     label: __('Phone number', 'wconvert'),
     placeholder: __('+44 7700 900000', 'wconvert'),
-    consent: __('Text me offers and news. Reply STOP to opt out. %s', 'wconvert'),
-    optionalConsent: __('Send me text updates. %s', 'wconvert'),
+    consent: /* translators: %s: a link to the privacy policy, worded “Privacy Policy”. */ __('Text me offers and news. Reply STOP to opt out. %s', 'wconvert'),
+    optionalConsent: /* translators: %s: a link to the privacy policy, worded “Privacy Policy”. */ __('Send me text updates. %s', 'wconvert'),
   };
 }
 

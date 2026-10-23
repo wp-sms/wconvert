@@ -112,10 +112,10 @@ function Coupon({ code, percent, until }: { code: string; percent: number | null
 
   return (
     <div className="wconvert-license-coupon">
-      <span>{percent !== null ? sprintf(__('%d%% off your renewal with', 'wconvert-pro'), percent) : __('Your renewal coupon', 'wconvert-pro')}</span>
+      <span>{percent !== null ? sprintf(/* translators: %d: a discount percentage, e.g. “20”. A coupon code follows the sentence. */ __('%d%% off your renewal with', 'wconvert-pro'), percent) : __('Your renewal coupon', 'wconvert-pro')}</span>
       <code>{code}</code>
       <Button variant="outline" size="sm" onClick={copy}>{copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}{copied ? __('Copied', 'wconvert-pro') : __('Copy', 'wconvert-pro')}</Button>
-      {until && <span className="wconvert-license-muted">{sprintf(__('until %s', 'wconvert-pro'), formatShortDay(until))}</span>}
+      {until && <span className="wconvert-license-muted">{sprintf(/* translators: %s: the day the coupon ends, e.g. “Oct 12”. */ __('until %s', 'wconvert-pro'), formatShortDay(until))}</span>}
     </div>
   );
 }
@@ -139,8 +139,8 @@ function UpdatesLine({ license, stopped, elsewhere }: { license: LicensePayload;
 
   if (stopped) {
     return <span className="wconvert-license-line wconvert-license-muted">{newer
-      ? sprintf(__('Version %1$s is out. This site stays on %2$s until updates are back.', 'wconvert-pro'), latest, installed)
-      : sprintf(__('Version %s', 'wconvert-pro'), installed)}</span>;
+      ? sprintf(/* translators: 1: the newest WConvert Pro version, e.g. “2.4.0”, 2: the version this site has. */ __('Version %1$s is out. This site stays on %2$s until updates are back.', 'wconvert-pro'), latest, installed)
+      : sprintf(/* translators: %s: the WConvert Pro version this site has, e.g. “2.3.1”. */ __('Version %s', 'wconvert-pro'), installed)}</span>;
   }
 
   if (elsewhere) {
@@ -151,14 +151,14 @@ function UpdatesLine({ license, stopped, elsewhere }: { license: LicensePayload;
     return (
       <div className="wconvert-license-stack">
         <span className="wconvert-license-line"><AlertTriangle className="wconvert-license-warn" aria-hidden="true" />{newer
-          ? sprintf(__('Version %s is out, and this host turned off updates from WordPress.', 'wconvert-pro'), latest)
+          ? sprintf(/* translators: %s: the newest WConvert Pro version, e.g. “2.4.0”. */ __('Version %s is out, and this host turned off updates from WordPress.', 'wconvert-pro'), latest)
           : __('This host turned off updates from WordPress.', 'wconvert-pro')}</span>
         {newer && (
           <Disclosure variant="inline" title={__('Update by hand', 'wconvert-pro')}>
             <ol className="wconvert-license-steps">
               {license.managed
-                ? <li>{sprintf(__('Ask %1$s for WConvert Pro %2$s.', 'wconvert-pro'), license.managed.by ?? __('your site developer', 'wconvert-pro'), latest)}</li>
-                : <li><Ext href={license.urls.downloads ?? '#'}>{sprintf(__('Download WConvert Pro %s from your account', 'wconvert-pro'), latest)}</Ext></li>}
+                ? <li>{sprintf(/* translators: 1: who manages the license, an agency's name or “your site developer”, 2: the newest WConvert Pro version, e.g. “2.4.0”. */ __('Ask %1$s for WConvert Pro %2$s.', 'wconvert-pro'), license.managed.by ?? __('your site developer', 'wconvert-pro'), latest)}</li>
+                : <li><Ext href={license.urls.downloads ?? '#'}>{sprintf(/* translators: %s: the newest WConvert Pro version, e.g. “2.4.0”. */ __('Download WConvert Pro %s from your account', 'wconvert-pro'), latest)}</Ext></li>}
               <li>{__('In Plugins → Add New Plugin → Upload Plugin, choose the ZIP.', 'wconvert-pro')}</li>
               <li>{__('Choose Replace current with uploaded.', 'wconvert-pro')}</li>
             </ol>
@@ -173,13 +173,13 @@ function UpdatesLine({ license, stopped, elsewhere }: { license: LicensePayload;
     return (
       <span className="wconvert-license-line">
         <Download className="wconvert-license-act" aria-hidden="true" />
-        <b>{sprintf(__('Version %s is available.', 'wconvert-pro'), latest)}</b>
+        <b>{sprintf(/* translators: %s: the newest WConvert Pro version, e.g. “2.4.0”. */ __('Version %s is available.', 'wconvert-pro'), latest)}</b>
         <Button asChild size="sm"><a href={updateUrl}>{__('Update now', 'wconvert-pro')}</a></Button>
       </span>
     );
   }
 
-  return <span className="wconvert-license-line"><CircleCheck className="wconvert-license-ok" aria-hidden="true" />{sprintf(__('Up to date · version %s', 'wconvert-pro'), installed)}</span>;
+  return <span className="wconvert-license-line"><CircleCheck className="wconvert-license-ok" aria-hidden="true" />{sprintf(/* translators: %s: the WConvert Pro version this site has, e.g. “2.4.0”. */ __('Up to date · version %s', 'wconvert-pro'), installed)}</span>;
 }
 
 function CheckLine({ license, checking, onCheck }: { license: LicensePayload; checking: boolean; onCheck: () => void }) {
@@ -192,14 +192,14 @@ function CheckLine({ license, checking, onCheck }: { license: LicensePayload; ch
   );
 
   if (license.reach === 'unreachable') {
-    return <span className="wconvert-license-line"><Info className="wconvert-license-act" aria-hidden="true" />{sprintf(__('Couldn’t reach the license server. Showing details from %s.', 'wconvert-pro'), when(license.last_success_at) ?? '—')}{button}</span>;
+    return <span className="wconvert-license-line"><Info className="wconvert-license-act" aria-hidden="true" />{sprintf(/* translators: %s: when the license was last checked successfully, e.g. “Oct 12, 2026, 9:14 AM”, or “—” if never. */ __('Couldn’t reach the license server. Showing details from %s.', 'wconvert-pro'), when(license.last_success_at) ?? '—')}{button}</span>;
   }
 
   const checked = when(license.last_checked_at);
 
   return (
     <span className="wconvert-license-line wconvert-license-muted">
-      {checked !== null && sprintf(__('Checked %s', 'wconvert-pro'), checked)}
+      {checked !== null && sprintf(/* translators: %s: when the license was last checked, e.g. “Oct 12, 2026, 9:14 AM”. */ __('Checked %s', 'wconvert-pro'), checked)}
       {button}
     </span>
   );

@@ -78,7 +78,7 @@ export function Change({
     <span className={`wa-change ${change.up ? 'wa-change-up' : ''}`}>
       {previous === 0
         ? change.text
-        : sprintf(__('%s vs previous period', 'wconvert'), change.text)}
+        : sprintf(/* translators: %s: a percentage change, e.g. “+12%”. */ __('%s vs previous period', 'wconvert'), change.text)}
     </span>
   );
 }
@@ -133,6 +133,7 @@ function VariantDifference({ arms }: { arms: OptinReport[] }) {
         enough
           ? __('enough traffic to compare; this is still not proof.', 'wconvert')
           : sprintf(
+              /* translators: %s: a number of times shown, e.g. “1,000”. */
               __('too early to call: fewer than %s shown per variant', 'wconvert'),
               formatCount(ENOUGH_SHOWN_PER_VARIANT),
             ),
@@ -392,6 +393,7 @@ export function CampaignTable({
         trailing={
           <ToolbarCount>
             {sprintf(
+              /* translators: %s: how many campaigns are listed. */
               _n('%s campaign', '%s campaigns', groups.length, 'wconvert'),
               formatCount(groups.length),
             )}
@@ -732,7 +734,7 @@ export function Experiment({
         onOpenChange={(open) => {
           if (!open) setChosen(null);
         }}
-        title={sprintf(__('Use %s?', 'wconvert'), chosen?.name ?? '')}
+        title={sprintf(/* translators: %s: an A/B test variant's name. */ __('Use %s?', 'wconvert'), chosen?.name ?? '')}
         description={__(
           'This design becomes the campaign and the other variants are retired. Their results stay in this report. This is your choice, not a statistically proven winner, and an unpublished design stays unpublished.',
           'wconvert',

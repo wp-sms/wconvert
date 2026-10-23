@@ -1,5 +1,6 @@
 import { decorate } from './decorations';
 import { controlIcon, strokeIcon } from './stroke-icon';
+import { pageLabel } from './page-labels';
 import type {
   BadgeNode,
   ButtonNode,
@@ -681,9 +682,8 @@ export const COUNTDOWN_SLOT = 'wc-count';
  * changed. Nothing here escalates to `assertive`: an offer expiring is not an
  * emergency, and there is no milestone in the vocabulary to escalate at.
  *
- * The label is English, exactly as the close button's is, and for the same
- * reason: the loader is a raw IIFE with no `wp.i18n` dependency, and adding one
- * would put a second script on the page for one string.
+ * Its label and the units' fallbacks are translated by PHP and read off the
+ * page, as the close button's name is ({@link pageLabel}).
  *
  * **It renders the shape and no time**, because `render()` asks nothing of the
  * world it will be attached to — including what time it is. `shell()` fills it
@@ -710,7 +710,7 @@ function countdown(node: CountdownNode): HTMLElement {
   if (node.layout === 'boxes') {
     element.classList.add('wc-boxes');
     if (node.density === 'compact') element.classList.add('wc-compact');
-    for (const [unit, label] of [['d', node.days_label || 'Days'], ['h', node.hours_label || 'Hours'], ['m', node.minutes_label || 'Mins'], ['s', node.seconds_label || 'Secs']]) {
+    for (const [unit, label] of [['d', node.days_label || pageLabel(3, 'Days')], ['h', node.hours_label || pageLabel(4, 'Hours')], ['m', node.minutes_label || pageLabel(5, 'Mins')], ['s', node.seconds_label || pageLabel(6, 'Secs')]]) {
       const word = document.createElement('small');
 
       word.textContent = label;
@@ -723,7 +723,7 @@ function countdown(node: CountdownNode): HTMLElement {
 
   element.setAttribute('role', 'timer');
   element.setAttribute('aria-atomic', 'true');
-  element.setAttribute('aria-label', 'Time remaining');
+  element.setAttribute('aria-label', pageLabel(2, 'Time remaining'));
 
   return element;
 }
@@ -939,11 +939,11 @@ function image(node: ImageNode): HTMLElement | null {
  * What each field kind captures: the input type that gets the right keyboard,
  * and the autofill token that lets a browser fill it.
  */
-const FIELD_KINDS: Readonly<Record<string, { type: string; autocomplete: AutoFill; label: string; maxLength?: number }>> = {
-  email: { type: 'email', autocomplete: 'email', label: 'Email address', maxLength: 254 },
-  phone: { type: 'tel', autocomplete: 'tel', label: 'Phone number', maxLength: 64 },
-  name: { type: 'text', autocomplete: 'name', label: 'Name', maxLength: 200 },
-  interest: { type: 'select', autocomplete: 'off', label: 'Interested in' },
+const FIELD_KINDS: Readonly<Record<string, { type: string; autocomplete: AutoFill; label: () => string; maxLength?: number }>> = {
+  email: { type: 'email', autocomplete: 'email', label: () => pageLabel(7, 'Email address'), maxLength: 254 },
+  phone: { type: 'tel', autocomplete: 'tel', label: () => pageLabel(8, 'Phone number'), maxLength: 64 },
+  name: { type: 'text', autocomplete: 'name', label: () => pageLabel(9, 'Name'), maxLength: 200 },
+  interest: { type: 'select', autocomplete: 'off', label: () => pageLabel(10, 'Interested in') },
 };
 
 /**
@@ -982,7 +982,7 @@ function field(node: FieldNode): HTMLElement | null {
   }
   input.autocomplete = kind.autocomplete;
   if (input instanceof HTMLSelectElement) {
-    input.add(new Option(node.placeholder || 'Choose an option', ''));
+    input.add(new Option(node.placeholder || pageLabel(11, 'Choose an option'), ''));
     for (const choice of Array.isArray(node.options) ? node.options : []) {
       if (choice && typeof choice.label === 'string' && typeof choice.value === 'string') input.add(new Option(choice.label, choice.value));
     }
@@ -999,7 +999,7 @@ function field(node: FieldNode): HTMLElement | null {
 
   label.className = 'wc-label';
   label.htmlFor = input.id;
-  label.textContent = node.label?.trim() ? node.label : kind.label;
+  label.textContent = node.label?.trim() ? node.label : kind.label();
 
   if (input.required) {
     const required = document.createElement('span');
@@ -1042,7 +1042,7 @@ function code(node: CodeNode, at: string | null): HTMLElement {
   if (!node.copy && href === null) return value;
   const wrapper = wrap('div', node.layout === 'inline' ? 'wc-code-inline' : 'wc-stack', value);
   if (node.copy) {
-    const copy = words('button', 'wc-button', node.copy_label || 'Copy code') as HTMLButtonElement;
+    const copy = words('button', 'wc-button', node.copy_label || pageLabel(12, 'Copy code')) as HTMLButtonElement;
     copy.type = 'button';
     const status = words('span', 'wc-text', '');
     status.setAttribute('role', 'status');
@@ -1052,9 +1052,9 @@ function code(node: CodeNode, at: string | null): HTMLElement {
       copy.disabled = true;
       try {
         await navigator.clipboard.writeText(node.text ?? '');
-        status.textContent = node.copied_label || 'Copied';
+        status.textContent = node.copied_label || pageLabel(13, 'Copied');
       } catch {
-        status.textContent = node.copy_failed_label || 'Copy failed. Select the code.';
+        status.textContent = node.copy_failed_label || pageLabel(14, 'Copy failed. Select the code.');
       } finally {
         copy.disabled = false;
       }
@@ -1062,7 +1062,7 @@ function code(node: CodeNode, at: string | null): HTMLElement {
   }
   if (href !== null) {
     // Same-tab, so no `rel`: it opens no window to protect.
-    const apply = words('a', 'wc-button', node.apply_label || 'Apply code') as HTMLAnchorElement;
+    const apply = words('a', 'wc-button', node.apply_label || pageLabel(15, 'Apply code')) as HTMLAnchorElement;
     apply.href = href;
     wrapper.append(apply);
   }

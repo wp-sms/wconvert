@@ -40,19 +40,19 @@ export function GradientField({ label, shown, reset, open, onOpenChange, onChang
           </select>
         </label>}
         {gradient.stops.map((stop, index) => <div key={index} className="wconvert-gradient-stop">
-          <ColorField label={sprintf(__('Color %d', 'wconvert'), index + 1)} fallback={stop.color} value={stop.color}
+          <ColorField label={sprintf(/* translators: %d: the color's position in a gradient, e.g. 1. */ __('Color %d', 'wconvert'), index + 1)} fallback={stop.color} value={stop.color}
             open={open && color === index} onOpenChange={value => setColor(value ? index : null)}
             onChange={value => write({ ...gradient, stops: gradient.stops.map((held, at) => at === index ? { ...held, color: value } : held) })} />
           <div className="wconvert-gradient-stop__row">
             {advanced ? <label className="wconvert-gradient-stop__at">{__('Position %', 'wconvert')}
-              <StyleValueInput aria-label={sprintf(__('Color %d position', 'wconvert'), index + 1)} type="number" min={index === 0 ? 0 : gradient.stops[index - 1].at} max={gradient.stops[index + 1]?.at ?? 100}
+              <StyleValueInput aria-label={sprintf(/* translators: %d: the color's position in a gradient, e.g. 1. */ __('Color %d position', 'wconvert'), index + 1)} type="number" min={index === 0 ? 0 : gradient.stops[index - 1].at} max={gradient.stops[index + 1]?.at ?? 100}
                 className="min-w-0 w-16" value={String(stop.at)} onCommit={value => {
                   const at = Number(value);
                   if (value.trim() === '' || !Number.isFinite(at) || at < (gradient.stops[index - 1]?.at ?? 0) || at > (gradient.stops[index + 1]?.at ?? 100)) return;
                   write({ ...gradient, stops: gradient.stops.map((held, i) => i === index ? { ...held, at } : held) });
                 }} />
             </label> : <span className="flex-1" />}
-            <Button type="button" variant="ghost" size="xs" disabled={gradient.stops.length <= 2} aria-label={sprintf(__('Remove color %d', 'wconvert'), index + 1)} onClick={() => {
+            <Button type="button" variant="ghost" size="xs" disabled={gradient.stops.length <= 2} aria-label={sprintf(/* translators: %d: the color's position in a gradient, e.g. 1. */ __('Remove color %d', 'wconvert'), index + 1)} onClick={() => {
               setColor(null); write({ ...gradient, stops: gradient.stops.filter((_, i) => i !== index) });
             }}>{__('Remove', 'wconvert')}</Button>
           </div>
@@ -64,7 +64,7 @@ export function GradientField({ label, shown, reset, open, onOpenChange, onChang
           stops.splice(gap + 1, 0, { color: stops[gap].color, at: (stops[gap].at + stops[gap + 1].at) / 2 });
           write({ ...gradient, stops });
         }}>{__('Add color', 'wconvert')}</button>
-      </> : advanced ? <StyleValueInput aria-label={sprintf(__('%s CSS', 'wconvert'), label)} value={shown} onCommit={onChange} />
+      </> : advanced ? <StyleValueInput aria-label={sprintf(/* translators: %s: a design setting's label, e.g. “Background”. */ __('%s CSS', 'wconvert'), label)} value={shown} onCommit={onChange} />
         : <PanelHint>{cssOnlyNote()}</PanelHint>}
       {advanced && <button type="button" className="wconvert-panel-link" disabled={gradient === null} onClick={() => { setColor(null); setCustom(!custom); }}>{custom ? __('Use visual controls', 'wconvert') : __('Custom CSS', 'wconvert')}</button>}
     </div>}

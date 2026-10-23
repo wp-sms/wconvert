@@ -32,9 +32,9 @@ final class BrevoDestinationType implements DestinationType
     public function testConnection(array $credentials): void
     {
         [$status] = $this->request($credentials, 'GET', '/account');
-        if ($status !== 200) throw new \RuntimeException('Brevo rejected the account check.');
+        if ($status !== 200) throw new \RuntimeException(__('Brevo rejected the account check.', 'wconvert-pro'));
         [$listsStatus] = $this->request($credentials, 'GET', '/contacts/lists?limit=1&offset=0');
-        if ($listsStatus !== 200) throw new \RuntimeException('Brevo lists could not be read.');
+        if ($listsStatus !== 200) throw new \RuntimeException(__('Brevo lists could not be read.', 'wconvert-pro'));
     }
 
     /** @param array<string, mixed> $credentials */
@@ -42,7 +42,7 @@ final class BrevoDestinationType implements DestinationType
     {
         [$status, $body] = $this->request($credentials, 'GET', '/account');
         $identity = $body['organization_id'] ?? null;
-        if ($status !== 200 || !is_string($identity) || $identity === '') throw new \RuntimeException('Brevo account identity unavailable.');
+        if ($status !== 200 || !is_string($identity) || $identity === '') throw new \RuntimeException(__('Brevo account identity unavailable.', 'wconvert-pro'));
         return $identity;
     }
 
@@ -52,13 +52,13 @@ final class BrevoDestinationType implements DestinationType
         $options = [];
         for ($offset = 0; $offset < 10000; $offset += 50) {
             [$status, $body] = $this->request($credentials, 'GET', '/contacts/lists?limit=50&offset=' . $offset);
-            if ($status !== 200) throw new \RuntimeException('Brevo lists could not be read.');
+            if ($status !== 200) throw new \RuntimeException(__('Brevo lists could not be read.', 'wconvert-pro'));
             $lists = $body['lists'] ?? [];
             foreach ($lists as $list) {
                 if (is_array($list) && isset($list['id'], $list['name'])) $options[] = ['value' => (string) $list['id'], 'label' => (string) $list['name']];
             }
             if (count($lists) < 50 || (isset($body['count']) && $offset + count($lists) >= (int) $body['count'])) break;
-            if ($offset + 50 >= 10000) throw new \RuntimeException('Brevo has too many lists to display.');
+            if ($offset + 50 >= 10000) throw new \RuntimeException(__('Brevo has too many lists to display.', 'wconvert-pro'));
         }
         return ['lists' => ['type' => 'ids', 'label' => __('List', 'wconvert-pro'), 'max' => 1, 'options' => $options],
             'existing_contact' => ['type' => 'select', 'label' => __('If the contact exists', 'wconvert-pro'), 'default' => 'keep', 'options' => [
@@ -75,7 +75,7 @@ final class BrevoDestinationType implements DestinationType
     {
         unset($settings);
         [$status, $body] = $this->request($credentials, 'GET', '/contacts/attributes');
-        if ($status !== 200) throw new \RuntimeException('Brevo attributes could not be read.');
+        if ($status !== 200) throw new \RuntimeException(__('Brevo attributes could not be read.', 'wconvert-pro'));
         $options = [];
         foreach ($body['attributes'] ?? [] as $attribute) {
             if (!is_array($attribute) || ($attribute['category'] ?? '') !== 'normal' || ($attribute['type'] ?? '') !== 'text') continue;
@@ -138,7 +138,7 @@ final class BrevoDestinationType implements DestinationType
     private function request(array $credentials, string $method, string $path, ?array $body = null): array
     {
         $key = $credentials['api_key'] ?? '';
-        if (!is_string($key) || $key === '') throw new \RuntimeException('Missing Brevo key.');
+        if (!is_string($key) || $key === '') throw new \RuntimeException(__('Missing Brevo key.', 'wconvert-pro'));
         $args = ['method' => $method, 'timeout' => 12, 'redirection' => 0,
             'headers' => ['api-key' => $key, 'Accept' => 'application/json']];
         if ($body !== null) {
@@ -146,7 +146,7 @@ final class BrevoDestinationType implements DestinationType
             $args['body'] = wp_json_encode($body);
         }
         $response = wp_remote_request('https://api.brevo.com/v3' . $path, $args);
-        if (is_wp_error($response)) throw new \RuntimeException('Brevo transport failed.');
+        if (is_wp_error($response)) throw new \RuntimeException(__('Brevo transport failed.', 'wconvert-pro'));
         $decoded = json_decode((string) wp_remote_retrieve_body($response), true);
         return [(int) wp_remote_retrieve_response_code($response), is_array($decoded) ? $decoded : []];
     }

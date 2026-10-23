@@ -98,8 +98,7 @@ export function skipLabel(reason: SkipReason): string {
 export function skippedList(skipped: readonly Skipped[]): string {
   const byReason = new Map<SkipReason, string[]>();
   for (const { row, reason } of skipped) byReason.set(reason, [...(byReason.get(reason) ?? []), campaignName(row)]);
-  /* translators: 1: why campaigns were skipped, such as "A/B test", 2: their names, comma separated. */
-  return [...byReason].map(([reason, names]) => sprintf(__('%1$s: %2$s', 'wconvert'), skipLabel(reason), names.join(', '))).join('; ');
+  return [...byReason].map(([reason, names]) => sprintf(/* translators: 1: why campaigns were skipped, such as "A/B test", 2: their names, comma separated. */ __('%1$s: %2$s', 'wconvert'), skipLabel(reason), names.join(', '))).join('; ');
 }
 
 /** "Published 3. Skipped 1 (A/B test: Spring sale). 1 failed." */
@@ -115,12 +114,10 @@ export function resultSentence(result: GroupResult): string {
           : sprintf(/* translators: %d: how many campaigns were copied. */ _n('Copied %d as a draft.', 'Copied %d as drafts.', count, 'wconvert'), count),
   ];
   if (result.skipped.length) {
-    /* translators: 1: how many campaigns were skipped, 2: why and which, e.g. "A/B test: Spring sale". */
-    parts.push(sprintf(__('Skipped %1$d (%2$s).', 'wconvert'), result.skipped.length, skippedList(result.skipped)));
+    parts.push(sprintf(/* translators: 1: how many campaigns were skipped, 2: why and which, e.g. "A/B test: Spring sale". */ __('Skipped %1$d (%2$s).', 'wconvert'), result.skipped.length, skippedList(result.skipped)));
   }
   if (result.failed.length) {
-    /* translators: %d: how many campaigns could not be changed. */
-    parts.push(sprintf(__('%d failed.', 'wconvert'), result.failed.length));
+    parts.push(sprintf(/* translators: %d: how many campaigns could not be changed. */ __('%d failed.', 'wconvert'), result.failed.length));
   }
   return parts.join(' ');
 }
@@ -129,8 +126,7 @@ export function resultSentence(result: GroupResult): string {
 export function groupConfirmCopy(action: ConfirmedAction, group: GroupPlan): { title: string; description: string; confirmLabel: string } {
   const n = group.run.length;
   const skipped = group.skipped.length
-    /* translators: 1: how many campaigns are left alone, 2: why and which, e.g. "A/B test: Spring sale". */
-    ? ' ' + sprintf(__('%1$d will be skipped (%2$s).', 'wconvert'), group.skipped.length, skippedList(group.skipped))
+    ? ' ' + sprintf(/* translators: 1: how many campaigns are left alone, 2: why and which, e.g. "A/B test: Spring sale". */ __('%1$d will be skipped (%2$s).', 'wconvert'), group.skipped.length, skippedList(group.skipped))
     : '';
   if (action === 'delete') {
     return {

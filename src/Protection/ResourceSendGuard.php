@@ -27,7 +27,7 @@ final class ResourceSendGuard
             $value = json_decode((string) ($row['option_value'] ?? ''), true);
             if (($value['expires'] ?? 0) > time()) {
                 $this->diagnostics->record('send_limited');
-                return PushResult::skipped('A resource email was already accepted for this recipient and resource within ten minutes.');
+                return PushResult::skipped(__('A resource email was already accepted for this recipient and resource within ten minutes.', 'wconvert'));
             }
             $result = $send();
             if ($result->outcome === PushOutcome::Success) {

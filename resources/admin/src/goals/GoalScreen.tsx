@@ -339,7 +339,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
   const inspectedEntry = inspected && (inspectedPreview?.revision === inspected.revision ? inspectedPreview ?? inspected : inspected);
   const inspectedChoices = inspected ? (comparing ? allEntries : entries).filter(entry => designKey(entry) === designKey(inspected) && startingPointDisplayType(entry) === startingPointDisplayType(inspected)) : [];
   const inspectedRefusal = inspected?.availability && inspected.availability !== 'ready'
-    ? inspected.availability === 'locked' ? sprintf(__('Available with %s.', 'wconvert'), tierProductName(undefined)) : __('This setup needs a design that is not installed.', 'wconvert')
+    ? inspected.availability === 'locked' ? sprintf(/* translators: %s: the product a setup needs, e.g. “WConvert Pro”. */ __('Available with %s.', 'wconvert'), tierProductName(undefined)) : __('This setup needs a design that is not installed.', 'wconvert')
     : null;
   const comparisonEntries = compareIds.flatMap(id => {
     const entry = allEntries.find(value => value.id === id); const prepared = previews.previews.get(id);
@@ -381,13 +381,13 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
           key={designId} id={playbook.id} name={playbook.name} template={playbook.template}
           displayType={startingPointDisplayType(playbook)}
           onNear={previews.onNear} loadError={previews.failed.has(playbook.id)} onRetry={() => previews.retry(playbook.id)}
-          reason={playbook.availability === 'locked' ? sprintf(__('Available with %s.', 'wconvert'), tierProductName(undefined)) : playbook.availability === 'unavailable' ? __('This setup needs a design that is not installed.', 'wconvert') : undefined}
+          reason={playbook.availability === 'locked' ? sprintf(/* translators: %s: the product a setup needs, e.g. “WConvert Pro”. */ __('Available with %s.', 'wconvert'), tierProductName(undefined)) : playbook.availability === 'unavailable' ? __('This setup needs a design that is not installed.', 'wconvert') : undefined}
           absent={playbook.template === undefined && (!playbook.revision || (playbook.availability !== undefined && playbook.availability !== 'ready')) ? <p>{__('This design is not available on this site.', 'wconvert')}</p> : undefined}
           selected={compareIds.some(id => variants.some(entry => entry.id === id))}
-          saveAction={<Button variant="ghost" size="icon" className="wconvert-picker__save" disabled={picker.saving || !picker.data} aria-pressed={picker.data?.preferences.saved.includes(designKey(playbook)) ?? false} aria-label={sprintf(__('Save design: %s', 'wconvert'), playbook.name)} onClick={() => picker.toggleSaved(designKey(playbook))}><Star size={17} aria-hidden="true" fill={picker.data?.preferences.saved.includes(designKey(playbook)) ? 'currentColor' : 'none'} /></Button>}
+          saveAction={<Button variant="ghost" size="icon" className="wconvert-picker__save" disabled={picker.saving || !picker.data} aria-pressed={picker.data?.preferences.saved.includes(designKey(playbook)) ?? false} aria-label={sprintf(/* translators: %s: a campaign setup's name, e.g. “Spring sale popup”. */ __('Save design: %s', 'wconvert'), playbook.name)} onClick={() => picker.toggleSaved(designKey(playbook))}><Star size={17} aria-hidden="true" fill={picker.data?.preferences.saved.includes(designKey(playbook)) ? 'currentColor' : 'none'} /></Button>}
           marks={<><Badge variant="outline">{displayTypeLabel(startingPointDisplayType(playbook))}</Badge>
-            {variants.length > 1 && <span>{sprintf(_n('%s use case', '%s use cases', variants.length, 'wconvert'), formatCount(variants.length))}</span>}
-            {playbook.template && playbook.template.tree.steps.length > 1 && <span>{sprintf(_n('%s screen', '%s screens', playbook.template.tree.steps.length, 'wconvert'), formatCount(playbook.template.tree.steps.length))}</span>}
+            {variants.length > 1 && <span>{sprintf(/* translators: %s: how many use cases a campaign setup offers, e.g. “3”. */ _n('%s use case', '%s use cases', variants.length, 'wconvert'), formatCount(variants.length))}</span>}
+            {playbook.template && playbook.template.tree.steps.length > 1 && <span>{sprintf(/* translators: %s: how many screens a campaign setup's design has, e.g. “3”. */ _n('%s screen', '%s screens', playbook.template.tree.steps.length, 'wconvert'), formatCount(playbook.template.tree.steps.length))}</span>}
           </>}
           notes={playbook.recommendation || playbook.business_types?.map(item => item.label).join(' · ') || undefined}
           selection={featured ? undefined : <CompareSelection name={playbook.name} checked={compareIds.some(id => variants.some(entry => entry.id === id))}
@@ -399,11 +399,11 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
                 {starting === playbook.id ? __('Creating draft…', 'wconvert') : __('Use this setup', 'wconvert')}
               </Button>
               <Button ref={node => { if (detailGroup.current === designId) detailTrigger.current = node; }} variant="outline" aria-describedby={describedBy} disabled={starting !== null}
-                aria-label={sprintf(__('Preview %s first', 'wconvert'), playbook.name)} onClick={openDetails}>
+                aria-label={sprintf(/* translators: %s: a campaign setup's name, e.g. “Spring sale popup”. */ __('Preview %s first', 'wconvert'), playbook.name)} onClick={openDetails}>
                 {__('Preview first', 'wconvert')}
               </Button>
             </> : <Button ref={node => { if (detailGroup.current === designId) detailTrigger.current = node; }} variant="outline" aria-describedby={describedBy} disabled={starting !== null}
-                aria-label={sprintf(__('Setup details for %s', 'wconvert'), playbook.name)} onClick={openDetails}>
+                aria-label={sprintf(/* translators: %s: a campaign setup's name, e.g. “Spring sale popup”. */ __('Setup details for %s', 'wconvert'), playbook.name)} onClick={openDetails}>
                 {__('Preview & details', 'wconvert')}
               </Button>} />;
   }
@@ -477,9 +477,8 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
           onChange={value => { setFormatId(value); setPage(0); }} />
         <span role="status" className="wconvert-picker__count">{playbooks.status === 'ready'
           ? entries.length === allEntries.length
-            ? sprintf(_n('%s setup', '%s setups', allEntries.length, 'wconvert'), formatCount(allEntries.length))
-            /* translators: 1: matching setups, 2: setups for the selected goal. */
-            : sprintf(__('%1$s of %2$s setups', 'wconvert'), formatCount(entries.length), formatCount(allEntries.length))
+            ? sprintf(/* translators: %s: how many campaign setups there are for the chosen goal, e.g. “12”. */ _n('%s setup', '%s setups', allEntries.length, 'wconvert'), formatCount(allEntries.length))
+            : sprintf(/* translators: 1: how many setups match the filters, 2: how many setups there are for the chosen goal. */ __('%1$s of %2$s setups', 'wconvert'), formatCount(entries.length), formatCount(allEntries.length))
           : playbooks.status === 'loading' ? __('Loading campaign setups…', 'wconvert') : __('Campaign setups could not be loaded.', 'wconvert')}</span>
         <MoreFilters active={hiddenFilters} open={filtersOpen} onToggle={setFiltersOpen}>
           {/* Labels above their controls in one aligned grid, the way a form reads (GUIDELINES §7, Field). */}
@@ -512,7 +511,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
       </div>
       {activeFilters.length > 0 && <div className="wconvert-picker__active">
         {activeFilters.map(({ id, label, remove }) => <button key={id} type="button" className="wconvert-picker__active-filter"
-          disabled={starting !== null} aria-label={sprintf(__('Remove filter: %s', 'wconvert'), label)} onClick={remove}>
+          disabled={starting !== null} aria-label={sprintf(/* translators: %s: an active filter's label, e.g. “Popup”, “Saved designs” or a search phrase. */ __('Remove filter: %s', 'wconvert'), label)} onClick={remove}>
           <bdi>{label}</bdi><X size={12} aria-hidden="true" />
         </button>)}
         <Button variant="link" disabled={starting !== null} onClick={clearFilters}>{__('Clear filters', 'wconvert')}</Button>
@@ -597,7 +596,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
                 options={[{value:'all',label:__('All formats','wconvert')}, ...formatOptions].filter(({value}) => value === 'all' || value === formatId || matchingCollection.some(entry => editorialCollection.items.some(item => item.setup_id === entry.id) && startingPointDisplayType(entry) === value))}
                 onChange={value => { setFormatId(value); setPage(0); }} />}
             </div></div>
-            <p role="status" className="text-note">{sprintf(_n('%s matching setup', '%s matching setups', entries.length, 'wconvert'), formatCount(entries.length))}</p>
+            <p role="status" className="text-note">{sprintf(/* translators: %s: how many campaign setups match the search and filters, e.g. “4”. */ _n('%s matching setup', '%s matching setups', entries.length, 'wconvert'), formatCount(entries.length))}</p>
             {setupGallery}
           </>}
           {!inspected && comparing && <SetupComparison entries={comparisonEntries} busy={starting !== null} vocabulary={vocabulary.status === 'ready' ? vocabulary.data : null}
@@ -645,8 +644,8 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
 }
 
 function Step({ at }: { at: 1 | 2 }) {
-  return <nav className="wconvert-creation__steps" aria-label={sprintf(__('Choice %1$s of %2$s', 'wconvert'), String(at), '2')}>
-    <span className="sr-only">{sprintf(__('Choice %1$s of %2$s', 'wconvert'), String(at), '2')}</span>
+  return <nav className="wconvert-creation__steps" aria-label={sprintf(/* translators: 1: the current step's number, e.g. “1”, 2: how many steps there are, e.g. “2”. */ __('Choice %1$s of %2$s', 'wconvert'), String(at), '2')}>
+    <span className="sr-only">{sprintf(/* translators: 1: the current step's number, e.g. “1”, 2: how many steps there are, e.g. “2”. */ __('Choice %1$s of %2$s', 'wconvert'), String(at), '2')}</span>
     <ol>
       {[__('Choose a goal', 'wconvert'), __('Choose a campaign setup', 'wconvert')].map((label, index) => <li key={label} aria-current={at === index + 1 ? 'step' : undefined}>
         <span className="wconvert-creation__step-number" aria-hidden="true">{index + 1 < at ? <Check size={14} /> : index + 1}</span>{label}

@@ -36,11 +36,11 @@ export function graphChangeImpact(before: TemplateTree, after: TemplateTree): st
   const alreadyDisconnected = new Set(unreachableScreenIds(before));
   const disconnected = unreachableScreenIds(after).filter(id => !alreadyDisconnected.has(id));
   const messages: string[] = [];
-  if (disconnected.length) messages.push(sprintf(__('These screens would become unreachable: %s. They stay in the draft, but visitors cannot reach them.', 'wconvert'), disconnected.map(name).join(', ')));
+  if (disconnected.length) messages.push(sprintf(/* translators: %s: a comma-separated list of screen names, e.g. “Intro, Skin type”. */ __('These screens would become unreachable: %s. They stay in the draft, but visitors cannot reach them.', 'wconvert'), disconnected.map(name).join(', ')));
   // A change that newly lets some visitors skip the required form, to an early ending or a shared one, is reviewed once, though it may publish (ADR 0142).
   const previousBypasses = new Set(requiredSaveBypasses(before, { endings: true }).map(item => item.key));
   for (const bypass of requiredSaveBypasses(after, { endings: true }).filter(item => !previousBypasses.has(item.key))) {
-    messages.push(sprintf(__('A line could reach %1$s without saving at %2$s. Visitors on that line would not submit those details. Check the rules and try the form before publishing.', 'wconvert'),
+    messages.push(sprintf(/* translators: 1: the name of a result or ending screen, already in quotes, 2: the name of the screen whose form saves the visitor's details, already in quotes. */ __('A line could reach %1$s without saving at %2$s. Visitors on that line would not submit those details. Check the rules and try the form before publishing.', 'wconvert'),
       `“${name(bypass.endingId)}”`, bypass.saving.map(screen => `“${screen.name}”`).join(', ')));
   }
   return messages.length ? [...messages, __('Undo restores the previous lines.', 'wconvert')].join(' ') : null;

@@ -24,7 +24,7 @@ import type { NotSent } from './notSent';
 const summaryOf = (lead: Lead): string | null => {
   const answered = lead.question_answers?.length ?? 0;
   return lead.fields.message || lead.fields.interest_label
-    || (answered > 0 ? sprintf(_n('%s answer', '%s answers', answered, 'wconvert'), formatCount(answered)) : null);
+    || (answered > 0 ? sprintf(/* translators: %s: how many questions the visitor answered. */ _n('%s answer', '%s answers', answered, 'wconvert'), formatCount(answered)) : null);
 };
 
 /**
@@ -105,7 +105,7 @@ export function EventTable({
                 <Button
                   variant="ghost"
                   data-lead={lead.id}
-                  aria-label={sprintf(__('Open submission from %s', 'wconvert'), lead.fields.name?.trim() || titleOf(lead))}
+                  aria-label={sprintf(/* translators: %s: the visitor's name, else their email address or phone number. */ __('Open submission from %s', 'wconvert'), lead.fields.name?.trim() || titleOf(lead))}
                   onClick={(event) => onOpen(lead, event.currentTarget)}
                 >
                   {__('Open', 'wconvert')}<ChevronRight aria-hidden="true" className="size-4 rtl:-scale-x-100" />

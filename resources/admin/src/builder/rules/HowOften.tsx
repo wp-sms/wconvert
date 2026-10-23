@@ -79,8 +79,7 @@ export function HowOften({ frequency, priority, overlay, custom, reopenEnabled, 
     {reopenEnabled && <p className="wconvert-display-hint">{__('Your reopen button skips automatic view limits, waiting periods and closing restrictions. Completion stops it; closing the reminder stops this campaign for the visit.', 'wconvert')}</p>}
 
     {overlay && <DisclosureCard title={__('If several popups are ready at once', 'wconvert')}
-      /* translators: %d: a priority number. */
-      current={priority === 0 ? __('Opens in the usual order', 'wconvert') : sprintf(__('Shows before others (%d)', 'wconvert'), priority)}>
+      current={priority === 0 ? __('Opens in the usual order', 'wconvert') : sprintf(/* translators: %d: a priority number. */ __('Shows before others (%d)', 'wconvert'), priority)}>
       <label className="wconvert-display-inline-field" htmlFor="wconvert-priority">{__('Show this one first', 'wconvert')}
         <Input id="wconvert-priority" className="w-24" type="number" value={priority === 0 ? '' : priority} aria-describedby="wconvert-priority-help"
           onChange={event => { const next = Number(event.target.value); onPriority(event.target.value === '' || !Number.isFinite(next) ? 0 : Math.trunc(next)); }} />

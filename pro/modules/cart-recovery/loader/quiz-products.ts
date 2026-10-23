@@ -1,3 +1,4 @@
+import { pageLabel } from '@renderer/page-labels';
 import type { ResultVariant, ProductsNode } from '@renderer/types';
 import { readPayload } from '@loader/payload';
 import { additionSession } from './addition';
@@ -18,7 +19,7 @@ export function showQuizProducts(host: HTMLElement, result: ResultVariant, click
     loading = true; controller = new AbortController();
     const timer = setTimeout(() => controller?.abort(), 8000);
     const focused = host.contains((host.getRootNode() as Document | ShadowRoot).activeElement);
-    status.textContent = 'Loading current products…'; host.replaceChildren(status);
+    status.textContent = pageLabel(101, 'Loading current products…'); host.replaceChildren(status);
     if (focused) status.focus();
     try {
       const endpoint = document.getElementById('wconvert-payload')?.getAttribute('data-commerce-quiz');
@@ -31,7 +32,7 @@ export function showQuizProducts(host: HTMLElement, result: ResultVariant, click
       const cards: unknown = await response.json();
       if (!Array.isArray(cards)) throw Error('cards');
       if (closed) return;
-      if (!cards.length) { status.textContent = 'These products are unavailable right now. Please use the link below.'; return; }
+      if (!cards.length) { status.textContent = pageLabel(102, 'These products are unavailable right now. Please use the link below.'); return; }
       const options = { cards: cards as ProductCard[], state, session, click, stop: undefined as (() => void) | undefined };
       const node = renderProductNode({ type: 'products', context_key: id, action: result.product_action ?? 'link' } as ProductsNode, options);
       stop = options.stop;
@@ -39,8 +40,8 @@ export function showQuizProducts(host: HTMLElement, result: ResultVariant, click
       if (focused) { host.tabIndex = -1; host.focus(); }
     } catch {
       if (closed) return;
-      status.textContent = 'Products could not load. You can still use the link below.';
-      const retry = document.createElement('button'); retry.type = 'button'; retry.className = 'wc-button'; retry.textContent = 'Retry products';
+      status.textContent = pageLabel(103, 'Products could not load. You can still use the link below.');
+      const retry = document.createElement('button'); retry.type = 'button'; retry.className = 'wc-button'; retry.textContent = pageLabel(104, 'Retry products');
       retry.onclick = () => { void load(); }; host.append(retry);
     } finally { clearTimeout(timer); loading = false; }
   };

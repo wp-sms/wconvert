@@ -17,6 +17,8 @@
  * refusals appear beside the field while its entered value stays in place.
  */
 
+import { pageLabel } from '@renderer/page-labels';
+
 /** The one element a refusal draws, and the hook the stylesheet styles it by. */
 export const CAPTURE_ERROR_CLASS = 'wc-error';
 
@@ -25,17 +27,13 @@ type CaptureInput = HTMLInputElement | HTMLSelectElement;
 const isControl = (value: EventTarget | null): value is CaptureInput => value instanceof HTMLInputElement || value instanceof HTMLSelectElement;
 
 /**
- * The one sentence the loader carries itself.
- *
- * Every other refusal is worded by the server, which is what makes it
- * translatable — the loader is a raw IIFE with no `wp.i18n` runtime, and
- * adding one would put a second script on the page for a handful of strings
- * (ADR 0004). This case is the exception because there was no response to
- * carry a usable sentence: the response was missing or malformed. It says
- * nothing about whether the server saved the Lead. Same reasoning as the
- * close button's label, and the same English.
+ * The one sentence the loader words itself, because there was no response to
+ * carry a usable one: the response was missing or malformed. It says nothing
+ * about whether the server saved the Lead. Every other refusal is worded by
+ * the server. Translated by PHP and read off the page, as the close button's
+ * name is.
  */
-const NO_RESPONSE = 'Submission not confirmed. Please try again.';
+const noResponse = () => pageLabel(16, 'Submission not confirmed. Please try again.');
 
 export interface CaptureOptions {
   readonly optinId: string;
@@ -102,7 +100,7 @@ export function bindCapture(root: HTMLElement, options: CaptureOptions): void {
     }
 
     if (options.endpoint === null) {
-      refuse(root, NO_RESPONSE, null);
+      refuse(root, noResponse(), null);
       options.onRefused?.('unconfirmed');
 
       return;
@@ -128,7 +126,7 @@ export function bindCapture(root: HTMLElement, options: CaptureOptions): void {
           return;
         }
 
-        refuse(root, text(refusal.message) ?? NO_RESPONSE, text(refusal.data?.field));
+        refuse(root, text(refusal.message) ?? noResponse(), text(refusal.data?.field));
         options.onRefused?.(typeof refusal.code === 'string' && [
           'wconvert_consent_required', 'wconvert_field_required', 'wconvert_field_too_long',
           'wconvert_choice_invalid', 'wconvert_uncanonicalisable_identifier', 'wconvert_no_identifier',

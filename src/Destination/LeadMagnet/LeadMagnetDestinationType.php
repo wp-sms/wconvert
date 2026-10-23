@@ -237,17 +237,17 @@ final class LeadMagnetDestinationType implements DestinationType
         $email = $subject->values[CanonicalFields::EMAIL] ?? '';
 
         if (!$this->requirements()->acceptsCapture($subject->values)) {
-            return PushResult::skipped('The Lead carries no email address, and the lead magnet goes out by email.');
+            return PushResult::skipped(__('The Lead carries no email address, and the lead magnet goes out by email.', 'wconvert'));
         }
 
         $link = $this->setting($context, self::FILE_URL);
 
         if ($this->requirements()->missingSettings($context->settings) !== []) {
-            return PushResult::retryable('No lead magnet file is configured on this Destination.');
+            return PushResult::retryable(__('No lead magnet file is configured on this Destination.', 'wconvert'));
         }
 
         if (!$this->mailer->accepts($email)) {
-            return PushResult::terminal('WordPress will not send to this Lead’s email address.');
+            return PushResult::terminal(__('WordPress will not send to this Lead’s email address.', 'wconvert'));
         }
 
         try {
@@ -261,7 +261,7 @@ final class LeadMagnetDestinationType implements DestinationType
         // be a value nothing can look up (ADR 0008).
         return $sent
             ? PushResult::success()
-            : PushResult::retryable('The site’s mail transport refused the message.');
+            : PushResult::retryable(__('The site’s mail transport refused the message.', 'wconvert'));
     }
 
     public function requirements(): DestinationRequirements

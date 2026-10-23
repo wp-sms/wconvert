@@ -36,7 +36,7 @@ export function journeyBoundaryIssues(tree: TemplateTree, action?: string): Jour
     if (screen.id === primary.id || !graphReaches(tree.graph, primary.id, screen.id)) continue;
     if (!walkNodes(screen.content).some(node => node.type === 'question')) continue;
     issues.push({ key: `question-after-save:${screen.id}`,
-      said: sprintf(__('The questions on “%1$s” come after “%2$s” saves the answers. Move this screen before that save, or remove its questions.', 'wconvert'), screen.name, primary.name),
+      said: sprintf(/* translators: 1: a screen with questions, 2: the screen whose form saves the answers. Both are screen names, e.g. “Your result”. */ __('The questions on “%1$s” come after “%2$s” saves the answers. Move this screen before that save, or remove its questions.', 'wconvert'), screen.name, primary.name),
       repair: { screenId: screen.id, section: 'content', focus: 'questions' },
     });
   }
@@ -45,7 +45,7 @@ export function journeyBoundaryIssues(tree: TemplateTree, action?: string): Jour
     if (at < 0 || at === primaryAt) continue;
     for (const { edge } of bypasses(tree, primary.id, new Set([tree.steps[at].id]))) issues.push({
       key: `secondary-before-primary:${save.id}`,
-      said: sprintf(__('A line reaches “%1$s” before the main form at “%2$s”. Send the line from “%3$s” through the main form.', 'wconvert'), tree.steps[at].name, primary.name, name(edge.from)),
+      said: sprintf(/* translators: 1: a screen with an extra form, 2: the screen with the main form, 3: the screen the line leaves. All are screen names, e.g. “Your result”. */ __('A line reaches “%1$s” before the main form at “%2$s”. Send the line from “%3$s” through the main form.', 'wconvert'), tree.steps[at].name, primary.name, name(edge.from)),
       repair: { screenId: edge.from, section: 'paths', edgeId: edge.id, focus: edge.kind === 'hidden' ? 'hidden-route' : 'route-target' },
     });
   }

@@ -19,6 +19,7 @@ define('ABSPATH', '/');
 define('WCONVERT_URL', '');
 require dirname(__DIR__, 3) . '/src/constants.php';
 function __(string $text, string $domain = ''): string { return $text; }
+function _x(string $text, string $context, string $domain = ''): string { return $text; }
 // A portable catalog has no installed modules or site-owned checkout page to resolve.
 function apply_filters(string $hook, mixed $value, mixed ...$args): mixed { return $value; }
 // A portable catalog has no site of its own; offer links point at the site root.

@@ -139,7 +139,7 @@ export function ScopeStyle({
                       open={openToken === token.name}
                       onOpenChange={(open) => onOpenToken(open ? token.name : null)}
                       onChange={write(token.name, styleCoalesce(here.path, width, token.name))}
-                      resetSaid={sprintf(__('Let %s be inherited again', 'wconvert'), label)}
+                      resetSaid={sprintf(/* translators: %s: a style setting's name, e.g. “Background”. */ __('Let %s be inherited again', 'wconvert'), label)}
                     />
                     {width === 'tokens' && Object.hasOwn(here.narrow, token.name) && sourceOfToken(chain, template.tokens, token.name, 'narrow').value !== from.value && <PanelHint className="text-action">{__('Different on mobile', 'wconvert')}</PanelHint>}
                     <SourceNote
@@ -234,7 +234,7 @@ function SourceNote({
     <p className="wconvert-scope__from">
       {from.from === 'scope' && scope !== undefined ? (
         <button type="button" className="wconvert-linkish" onClick={() => onSelect(scope.path)}>
-          {sprintf(__('From %s', 'wconvert'), nameOf(labels.layouts, scope.type))}
+          {sprintf(/* translators: %s: the kind of layout the style comes from, e.g. “Row”. */ __('From %s', 'wconvert'), nameOf(labels.layouts, scope.type))}
         </button>
       ) : from.from === 'narrow' ? (
         <span data-set={from.from}>{__('Mobile override', 'wconvert')}</span>
@@ -250,7 +250,7 @@ function SourceNote({
             'wconvert',
           )}
         >
-          {sprintf(__('→ %s', 'wconvert'), nameOf(labels.tokens, follows(token) ?? ''))}
+          {sprintf(/* translators: %s: the palette color it would follow, e.g. “Button color”. */ __('→ %s', 'wconvert'), nameOf(labels.tokens, follows(token) ?? ''))}
         </button>
       )}
     </p>
@@ -279,6 +279,7 @@ function NoScope({
       {design
         ? __('This block takes its look from the design.', 'wconvert')
         : sprintf(
+            /* translators: %s: the kind of layout it sits in, e.g. “Row”. */
             __('This block takes its look from %s.', 'wconvert'),
             nameOf(labels.layouts, box.type),
           )}{' '}
@@ -331,15 +332,14 @@ function ScopeContrast({
   return (
     <ul className="wconvert-scope__contrast" aria-label={__('Readability in this box', 'wconvert')}>
       {wrong.map(({ fg, bg, verdict }) => {
-        /* translators: 1: the text color's name, e.g. “Lighter text”. 2: the surface's, e.g. “Background”. */
-        const named = sprintf(__('%1$s on %2$s', 'wconvert'), nameOf(labels.tokens, fg), nameOf(labels.tokens, bg));
+        const named = sprintf(/* translators: 1: the text color's name, e.g. “Lighter text”. 2: the surface's, e.g. “Background”. */ __('%1$s on %2$s', 'wconvert'), nameOf(labels.tokens, fg), nameOf(labels.tokens, bg));
 
         // Verdict and Fix on one line (ADR 0136); the ratio is Advanced's.
         return (
           <li key={`${fg}/${bg}`} className="wconvert-panel-warn">
             <TriangleAlert aria-hidden="true" />
             <span title={verdict.said}>{sprintf(/* translators: %s: a pair, e.g. “Text on Background”. */ __('%s is hard to read', 'wconvert'), named)}{advanced && verdict.ratio !== null ? ` (${sprintf(/* translators: %s: a contrast ratio, e.g. “4.5”. */ __('%s:1', 'wconvert'), verdict.ratio)})` : ''}</span>
-            <Button type="button" variant="outline" size="xs" aria-label={sprintf(__('Fix %s', 'wconvert'), named)}
+            <Button type="button" variant="outline" size="xs" aria-label={sprintf(/* translators: %s: a color pair, e.g. “Text on Background”. */ __('Fix %s', 'wconvert'), named)}
               onClick={() => onFix(fg, readableFix(value, bg))}>
               {__('Fix', 'wconvert')}
             </Button>

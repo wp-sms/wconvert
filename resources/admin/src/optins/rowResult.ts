@@ -23,7 +23,6 @@ export function rowResultOf(goal: GoalReport, row: OptinReport): RowResult {
 /** The line under a row's number: its rate of shown, or that a message has none. */
 export function shownLine(result: RowResult): string {
   return result.counted
-    /* translators: 1: a conversion rate such as "2.5%", 2: how many times the campaign was shown. */
-    ? sprintf(__('%1$s of %2$s shown', 'wconvert'), formatRate(result.rate), formatCount(result.shown))
+    ? sprintf(/* translators: 1: a conversion rate such as "2.5%", 2: how many times the campaign was shown. */ __('%1$s of %2$s shown', 'wconvert'), formatRate(result.rate), formatCount(result.shown))
     : __('Rate not counted', 'wconvert');
 }

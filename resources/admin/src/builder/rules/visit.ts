@@ -273,8 +273,7 @@ export function checkVisit(value: DisplayRulesValue, vocabulary: RuleVocabulary,
   const page = pages.find(choice => choice.value === visitor.page) ?? pages[pages.length - 1];
   const excluded = /^out:(\d+)$/.exec(page.value);
   const where = page.admitted ? 'pass' : fail(excluded
-    /* translators: %s: the page it is kept off, e.g. “/checkout/*”. */
-    ? sprintf(__('%s is excluded.', 'wconvert'), pageLabel(value.targeting.exclude![Number(excluded[1])], vocabulary))
+    ? sprintf(/* translators: %s: the page it is kept off, e.g. “/checkout/*”. */ __('%s is excluded.', 'wconvert'), pageLabel(value.targeting.exclude![Number(excluded[1])], vocabulary))
     : (value.targeting.include ?? []).length ? __('It only shows on the pages you chose.', 'wconvert') : __('Choose at least one page for it to show on.', 'wconvert'));
 
   const { logged_in: signedIn, roles } = value.targeting;

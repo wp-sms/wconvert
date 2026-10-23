@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { formatDay, formatRange } from '../lib/format';
 import type { GoalReport, Numbers, OptinReport, DashboardPayload } from './api';
 
@@ -81,28 +81,31 @@ export function reportCSV(
   cards: GoalReport[],
   optinId?: string,
 ): string {
+  // The header row is in the merchant's language, like the screen it was
+  // exported from. A spreadsheet reads columns by position, so a translated
+  // header changes nothing a formula depends on.
   const rows: (string | number)[][] = [
     [
-      'Campaign',
-      'ID',
-      'Parent ID',
-      'Goal',
-      'Status',
-      'Metric',
-      'Results',
-      'Shown',
-      'Rate',
-      'Emails accepted for sending',
-      'From',
-      'To',
-      'Previous results',
-      'Previous shown',
-      'Previous rate',
-      'Previous emails accepted for sending',
-      'Previous from',
-      'Previous to',
-      'Items added to basket',
-      'Previous items added to basket',
+      __('Campaign', 'wconvert'),
+      _x('ID', 'CSV column: a campaign\'s identifier', 'wconvert'),
+      _x('Parent ID', 'CSV column: the A/B test a variant belongs to', 'wconvert'),
+      __('Goal', 'wconvert'),
+      _x('Status', 'CSV column: published, draft or suspended', 'wconvert'),
+      __('Metric', 'wconvert'),
+      __('Results', 'wconvert'),
+      _x('Shown', 'CSV column: how many times a campaign was shown', 'wconvert'),
+      _x('Rate', 'CSV column: results divided by times shown', 'wconvert'),
+      __('Emails accepted for sending', 'wconvert'),
+      _x('From', 'CSV column: first day of the period', 'wconvert'),
+      _x('To', 'CSV column: last day of the period', 'wconvert'),
+      __('Previous results', 'wconvert'),
+      __('Previous shown', 'wconvert'),
+      __('Previous rate', 'wconvert'),
+      __('Previous emails accepted for sending', 'wconvert'),
+      _x('Previous from', 'CSV column: first day of the earlier period', 'wconvert'),
+      _x('Previous to', 'CSV column: last day of the earlier period', 'wconvert'),
+      __('Items added to basket', 'wconvert'),
+      __('Previous items added to basket', 'wconvert'),
     ],
   ];
   for (const card of cards)

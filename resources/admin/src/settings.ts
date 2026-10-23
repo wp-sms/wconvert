@@ -39,6 +39,8 @@ export interface AdminSettings {
   readonly timezone?: string;
   /** The nonced `admin-post.php` URL for the CSV export. */
   readonly exportUrl: string;
+  /** `PageLabels::differing()`: the renderer's own words, by position, for previews. */
+  readonly pageLabels?: Readonly<Record<number, string>>;
   /**
    * `WP_DEBUG`. The builder's library-entry export is the only thing that
    * reads it — authoring is the settings panel plus a **dev-only** export

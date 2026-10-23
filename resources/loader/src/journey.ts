@@ -1,6 +1,6 @@
 import { requestCapture, type Reply } from './capture-request';
 import { protectionField } from './protection';
-import { journeyLabel } from './journey-labels';
+import { pageLabel } from '@renderer/page-labels';
 import { journeyNotice } from '@renderer/journey-notice';
 import type { Mounted } from '@renderer/mount';
 import type { TemplateNode } from '@renderer/types';
@@ -89,10 +89,10 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
         else input.readOnly = true;
       }
     }
-    if (reviewing) journeyNotice(root, journeyLabel(3));
+    if (reviewing) journeyNotice(root, pageLabel(19, 'Already saved. You can review these details, but cannot change them.'));
     for (const button of root.querySelectorAll<HTMLButtonElement>('button[data-action]')) {
       if (button.dataset.action === 'submit' && accepted.has(button.dataset.submission!)) {
-        button.dataset.action = 'next'; button.textContent = journeyLabel(0);
+        button.dataset.action = 'next'; button.textContent = pageLabel(17, 'Continue');
       }
     }
     root.addEventListener('click', event => {
@@ -160,7 +160,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
               : [...nodes.values()].find(({ node }) => 'name' in node && node.name === field);
             if (target && target.screen !== step) show(target.screen);
           }
-          if (mounted.root) refuse(mounted.root, reply?.message || journeyLabel(1), field ?? null);
+          if (mounted.root) refuse(mounted.root, reply?.message || pageLabel(16, 'Submission not confirmed. Please try again.'), field ?? null);
           options.onRefused?.(field || reply?.code?.startsWith('wconvert_verification_') ? 'correctable' : 'unconfirmed');
         }
       })();

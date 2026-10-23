@@ -136,6 +136,7 @@ export function useBlockEdits({ template, labels, act, step, selected, onSelect,
       [...spot.parent, spot.key, spot.index + by],
       control,
       sprintf(
+        /* translators: 1: the block that moved, e.g. “Heading”, with its words when it has any, 2: “up” or “down”, 3: its new position, 4: how many blocks sit beside it, itself included. */
         __('%1$s, moved %2$s, %3$d of %4$d', 'wconvert'),
         sentenceFor(block, labels),
         by < 0 ? __('up', 'wconvert') : __('down', 'wconvert'),
@@ -166,7 +167,7 @@ export function useBlockEdits({ template, labels, act, step, selected, onSelect,
       // is none, the block that was holding it — never `<body>`.
       nodeAt(removed, sibling) === null ? spot.parent : sibling,
       0,
-      sprintf(__('%s removed. Undo brings it back.', 'wconvert'), sentenceFor(block, labels)),
+      sprintf(/* translators: %s: the removed block, e.g. “Heading”, with its words when it has any. */ __('%s removed. Undo brings it back.', 'wconvert'), sentenceFor(block, labels)),
     );
     // Read at render rather than now: the screen offers Undo only once there
     // is a step to go back to, which a first edit is what creates.
@@ -199,7 +200,7 @@ export function useBlockEdits({ template, labels, act, step, selected, onSelect,
       withDuplicated(template.tree, block.path),
       [...spot.parent, spot.key, spot.index + 1],
       0,
-      sprintf(__('%s copied.', 'wconvert'), sentenceFor(block, labels)),
+      sprintf(/* translators: %s: the copied block, e.g. “Heading”, with its words when it has any. */ __('%s copied.', 'wconvert'), sentenceFor(block, labels)),
     );
   };
 
@@ -228,7 +229,7 @@ export function useBlockEdits({ template, labels, act, step, selected, onSelect,
       withInserted(template.tree, at, node),
       [...at.parent, at.key, at.index],
       0,
-      sprintf(__('%s added.', 'wconvert'), kind),
+      sprintf(/* translators: %s: the kind of block added, e.g. “Heading” or “Email address”. */ __('%s added.', 'wconvert'), kind),
     );
   };
 
@@ -245,7 +246,7 @@ export function useBlockEdits({ template, labels, act, step, selected, onSelect,
   const notice = (
     <div className={undoable ? 'wconvert-layer-notice' : 'sr-only'}>
       <p role="status" aria-label={__('Layer changes', 'wconvert')}>
-        {undoable ? sprintf(__('%s removed.', 'wconvert'), removal.name) : said}
+        {undoable ? sprintf(/* translators: %s: the removed block, e.g. “Heading”, with its words when it has any. */ __('%s removed.', 'wconvert'), removal.name) : said}
       </p>
       {undoable && <Button type="button" variant="ghost" size="xs" onClick={undoRemoval}>{__('Undo delete', 'wconvert')}</Button>}
     </div>
@@ -324,7 +325,7 @@ export function RowAction({
         {up ? <ArrowUp aria-hidden="true" /> : <ArrowDown aria-hidden="true" />}
 
         <span className="sr-only">
-          {up ? sprintf(__('Move %s up', 'wconvert'), name) : sprintf(__('Move %s down', 'wconvert'), name)}
+          {up ? sprintf(/* translators: %s: a block's name, e.g. “Headline”. */ __('Move %s up', 'wconvert'), name) : sprintf(/* translators: %s: a block's name, e.g. “Headline”. */ __('Move %s down', 'wconvert'), name)}
         </span>
       </Button>
     );
@@ -341,7 +342,7 @@ export function RowAction({
         <Button type="button" variant="ghost" size="icon-xs" tabIndex={tabIndex}>
           <MoreHorizontal aria-hidden="true" />
 
-          <span className="sr-only">{sprintf(__('Add, copy or delete %s', 'wconvert'), name)}</span>
+          <span className="sr-only">{sprintf(/* translators: %s: a block's name, e.g. “Headline”. */ __('Add, copy or delete %s', 'wconvert'), name)}</span>
         </Button>
       </DropdownMenuTrigger>
       <OptionMenuContent align="end" aria-label={sprintf(/* translators: %s: a block's name, e.g. “Headline”. */ __('Actions for %s', 'wconvert'), name)}>
@@ -366,8 +367,7 @@ export function RowAction({
             <OptionItem icon={Trash2} destructive refused={removal} onSelect={() => onRemove(block)}
               name={block.holds === 0
                 ? __('Delete', 'wconvert')
-                // translators: %d: how many blocks the deleted one holds.
-                : sprintf(__('Delete, with %d inside', 'wconvert'), block.holds)} />
+                : sprintf(/* translators: %d: how many blocks the deleted one holds. */ __('Delete, with %d inside', 'wconvert'), block.holds)} />
           </>
         )}
       </OptionMenuContent>
@@ -427,15 +427,15 @@ export function AddElementPicker({ block, tree, act, labels, onAdd }: {
   const places: { label: string; at: Spot }[] = [];
   const spot = spotOf(block.path);
   if (spot) places.push(
-    { label: sprintf(__('After %s', 'wconvert'), nameOfBlock(block, labels)), at: { ...spot, index: spot.index + 1 } },
-    { label: sprintf(__('Before %s', 'wconvert'), nameOfBlock(block, labels)), at: spot },
+    { label: sprintf(/* translators: %s: a block's name, e.g. “Headline”. */ __('After %s', 'wconvert'), nameOfBlock(block, labels)), at: { ...spot, index: spot.index + 1 } },
+    { label: sprintf(/* translators: %s: a block's name, e.g. “Headline”. */ __('Before %s', 'wconvert'), nameOfBlock(block, labels)), at: spot },
   );
   const keys = childKeysOf(block.type);
   keys.forEach(key => {
     const name = keys.length > 1 ? key === 'start' ? __('first pane', 'wconvert') : __('second pane', 'wconvert') : nameOfBlock(block, labels);
     places.push(
-      { label: sprintf(__('At the beginning of %s', 'wconvert'), name), at: { parent: block.path, key, index: 0 } },
-      { label: sprintf(__('At the end of %s', 'wconvert'), name), at: { parent: block.path, key, index: countAt(tree, block.path, key) } },
+      { label: sprintf(/* translators: %s: a block's name, e.g. “Headline”, or “first pane” or “second pane”. */ __('At the beginning of %s', 'wconvert'), name), at: { parent: block.path, key, index: 0 } },
+      { label: sprintf(/* translators: %s: a block's name, e.g. “Headline”, or “first pane” or “second pane”. */ __('At the end of %s', 'wconvert'), name), at: { parent: block.path, key, index: countAt(tree, block.path, key) } },
     );
   });
   const at = (places[Number(position)] ?? places[0])?.at;

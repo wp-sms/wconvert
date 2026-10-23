@@ -69,12 +69,14 @@ constant-folded branch, or a helper only a test calls.
   passing without them.
 - `i18n-translator-comments` is off until the 451 placeholders without a
   `translators:` comment have one. `--max-warnings=0` leaves no warning tier to
-  start it at.
+  start it at. *It is on now, as an error ([ADR 0166](0166-the-pages-own-words-are-translated-in-php.md)).*
 - Pro's playbooks changed bytes. Collections pin setups by file hash, so the
   collections that hold Pro setups were re-hashed and need a fresh review.
 - A comparison against generated copy (`label === __('Back', …)`) now matches
   across two catalogues wherever free code wrote the text and Pro code compares
   it. When the translations differ, the comparison fails, and the generated copy
   is left as it is.
-- Visitor-facing English in the renderer and loaders, and template and screen
-  names, are untouched here.
+- ~~Visitor-facing English in the renderer and loaders, and template and screen
+  names, are untouched here.~~ *Completed by
+  [ADR 0166](0166-the-pages-own-words-are-translated-in-php.md), which also
+  turned `i18n-translator-comments` on.*

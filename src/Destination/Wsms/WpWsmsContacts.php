@@ -141,7 +141,8 @@ final class WpWsmsContacts implements WsmsContacts
     private function repository(): object
     {
         if (!self::isAvailable()) {
-            throw new \RuntimeException('WP SMS is not loaded on this site.');
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- operator text: caught upstream and returned or stored as plain text, never printed as HTML.
+            throw new \RuntimeException(__('WP SMS is not loaded on this site.', 'wconvert'));
         }
 
         // By name, not by import. The guard above is what makes this safe to
@@ -152,7 +153,8 @@ final class WpWsmsContacts implements WsmsContacts
         $repository = $accessor(self::REPOSITORY);
 
         if (!is_object($repository)) {
-            throw new \RuntimeException('WP SMS did not supply a contact repository.');
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- operator text: caught upstream and returned or stored as plain text, never printed as HTML.
+            throw new \RuntimeException(__('WP SMS did not supply a contact repository.', 'wconvert'));
         }
 
         return $repository;

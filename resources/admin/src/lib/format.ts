@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { adminSettings } from '../settings';
 import { documentLocale, wallKey, wallNow } from './wallTime';
 
@@ -17,6 +17,20 @@ import { documentLocale, wallKey, wallNow } from './wallTime';
 
 /** The site's locale as WordPress wrote it on `<html lang>`, on the Gregorian calendar. */
 export const siteLocale = documentLocale;
+
+/**
+ * A list read as one alternative — "A, B or C" — in the site's language.
+ *
+ * `Intl.ListFormat` rather than `join(' or ')`: where the conjunction goes, and
+ * whether a comma comes before it, is the language's grammar, and a translated
+ * "or" glued between every pair gets both wrong.
+ */
+export const anyOf = (items: readonly string[]): string =>
+  new Intl.ListFormat(siteLocale(), { type: 'disjunction' }).format(items);
+
+/** A list read as all of its items — "A, B and C" — in the site's language. */
+export const allOf = (items: readonly string[]): string =>
+  new Intl.ListFormat(siteLocale(), { type: 'conjunction' }).format(items);
 
 type Wall = { day: string; time: string | null };
 
@@ -73,12 +87,13 @@ export function formatWhen(
   const time = wall.time === null ? null : new Intl.DateTimeFormat(locale, { timeStyle: 'short', timeZone: 'UTC' }).format(at);
 
   if (style === 'detail') {
-    const date = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeZone: 'UTC' }).format(at);
-    return time === null ? date : `${date}, ${time}`;
+    // One formatter for both, so the language decides how a date and a time
+    // sit together rather than a comma this code chose.
+    return new Intl.DateTimeFormat(locale, { dateStyle: 'medium', ...(time === null ? {} : { timeStyle: 'short' }), timeZone: 'UTC' }).format(at);
   }
 
   const today = siteDay(now, timezone);
-  if (wall.day === today) return time === null ? __('Today', 'wconvert') : `${__('Today', 'wconvert')}, ${time}`;
+  if (wall.day === today) return time === null ? __('Today', 'wconvert') : sprintf(/* translators: %s: a time of day, e.g. “4:05 PM”. */ __('Today, %s', 'wconvert'), time);
   if (wall.day === shiftDay(today, -1)) return __('Yesterday', 'wconvert');
 
   const sameYear = wall.day.slice(0, 4) === today.slice(0, 4);

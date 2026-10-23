@@ -186,11 +186,11 @@ export function ObjectPicker({ id, kind, value, onChange }: ObjectPickerProps) {
   const resolutionNote = resolving
     ? __('Loading the saved selection’s name…', 'wconvert')
     : resolutionFailed
-      ? sprintf(__('Couldn’t load the saved selection’s name. This rule still uses #%s.', 'wconvert'), value)
+      ? sprintf(/* translators: %s: the saved page, post, category or tag's ID number. */ __('Couldn’t load the saved selection’s name. This rule still uses #%s.', 'wconvert'), value)
       : missing
         ? kind === 'post'
-          ? sprintf(__('Page or post #%s is not available by name. It may be unpublished, deleted or unavailable in WordPress search. This rule still uses it.', 'wconvert'), value)
-          : sprintf(__('Category or tag #%s is not available by name. It may have been deleted or be unavailable in WordPress search. This rule still uses it.', 'wconvert'), value)
+          ? sprintf(/* translators: %s: the page or post's ID number. */ __('Page or post #%s is not available by name. It may be unpublished, deleted or unavailable in WordPress search. This rule still uses it.', 'wconvert'), value)
+          : sprintf(/* translators: %s: the category or tag's ID number. */ __('Category or tag #%s is not available by name. It may have been deleted or be unavailable in WordPress search. This rule still uses it.', 'wconvert'), value)
         : '';
   const searchNote = searching ? __('Searching…', 'wconvert')
     : searchFailed ? __('Search couldn’t be completed. Retry, or press Enter in the search field.', 'wconvert')

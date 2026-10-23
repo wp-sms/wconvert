@@ -1230,6 +1230,13 @@ if (!function_exists('_n')) {
     }
 }
 
+if (!function_exists('_x')) {
+    function _x(string $text, string $context, string $domain = 'default'): string
+    {
+        return wconvert_test_translate($text);
+    }
+}
+
 if (!function_exists('number_format_i18n')) {
     function number_format_i18n(float $number, int $decimals = 0): string
     {

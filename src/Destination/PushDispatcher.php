@@ -158,7 +158,7 @@ final class PushDispatcher
         $destination = $this->destinations->find($destinationId);
 
         if ($destination === null) {
-            return PushResult::terminal('There is no Destination with that id.');
+            return PushResult::terminal(__('There is no Destination with that id.', 'wconvert'));
         }
 
         $type = $this->registry->find($destination->type);

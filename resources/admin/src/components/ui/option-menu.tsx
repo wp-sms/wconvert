@@ -492,10 +492,8 @@ function OptionItem({
       {head}
       {more ? (
         <InfoTip label={sprintf(refused
-          /* translators: %s: a menu item that cannot be chosen here, e.g. "Product recommendations". */
-          ? __("Why: %s", "wconvert")
-          /* translators: %s: what the help is about, e.g. a menu item or section. */
-          : __("About %s", "wconvert"), name)}>
+          ? /* translators: %s: a menu item that cannot be chosen here, e.g. "Product recommendations". */ __("Why: %s", "wconvert")
+          : /* translators: %s: what the help is about, e.g. a menu item or section. */ __("About %s", "wconvert"), name)}>
           {more}
         </InfoTip>
       ) : null}

@@ -114,7 +114,7 @@ final class WebhookDestinationType implements DestinationType, DeclaresRetrySche
     public function accountIdentity(array $credentials): string
     {
         $host = wp_parse_url((string) ($credentials['url'] ?? ''), PHP_URL_HOST);
-        if (!is_string($host) || $host === '') throw new \RuntimeException('Webhook URL has no host.');
+        if (!is_string($host) || $host === '') throw new \RuntimeException(__('Webhook URL has no host.', 'wconvert-pro'));
         return strtolower($host);
     }
 

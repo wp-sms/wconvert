@@ -117,10 +117,8 @@ function Inline({ template, param, value, onChange, onError, errorId }: {
     ? (draft.trim() !== '' && !portableSelector(draft) ? __('Use an ID, class, tag or attribute selector, such as #signup or .offer-button.', 'wconvert') : null)
     : draft === '' || !inRange(param, number)
       ? sprintf(param.whole
-        /* translators: 1: the lowest number allowed. 2: the highest. */
-        ? __('Enter a whole number from %1$d to %2$d.', 'wconvert')
-        /* translators: 1: the lowest number allowed. 2: the highest. */
-        : __('Enter a number from %1$d to %2$d.', 'wconvert'), param.min ?? 0, param.max ?? 0) : null;
+        ? /* translators: 1: the lowest number allowed. 2: the highest. */ __('Enter a whole number from %1$d to %2$d.', 'wconvert')
+        : /* translators: 1: the lowest number allowed. 2: the highest. */ __('Enter a number from %1$d to %2$d.', 'wconvert'), param.min ?? 0, param.max ?? 0) : null;
   useEffect(() => { onError(error); }, [error, onError]);
   useEffect(() => () => onError(null), [onError]);
 

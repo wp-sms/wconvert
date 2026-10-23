@@ -17,6 +17,7 @@ use WConvert\Template\TemplateVocabulary;
 define('ABSPATH', '/');
 function apply_filters(string $hook, mixed $value, mixed ...$args): mixed { return $value; }
 function __(string $text, string $domain = ''): string { return $text; }
+function _x(string $text, string $context, string $domain = ''): string { return $text; }
 function _doing_it_wrong(string $function, string $message, string $version): void
 {
     throw new RuntimeException($function . ': ' . $message);

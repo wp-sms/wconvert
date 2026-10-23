@@ -2,7 +2,7 @@ import { usePreviewDeadline } from './PreviewDeadline';
 import { getThemeTokens } from './api';
 import { firstFamily, loadFontFaces, usedGoogleFonts } from '@renderer/fonts';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { __, _n, sprintf } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { mount } from '@renderer/mount';
 import { enhancePhones } from '../../../phone/src/enhance';
 import { phoneSiteCountry } from '../phoneSiteCountry';
@@ -270,11 +270,8 @@ export function Preview({ template, displayType = 'inline', step = 0, selected =
       search: __('Search…', 'wconvert'),
       searchCountries: __('Search countries', 'wconvert'),
       countries: __('Countries', 'wconvert'),
-      // The same two forms LoaderEnqueue hands the phone bundle on the site.
-      /* translators: %s: the number of countries matching the search. */
-      oneResult: _n('%s result', '%s results', 1, 'wconvert'),
-      /* translators: %s: the number of countries matching the search. */
-      manyResults: _n('%s result', '%s results', 2, 'wconvert'),
+      // The same string LoaderEnqueue hands the phone bundle on the site.
+      results: /* translators: %s: how many countries match the search. */ __('Results: %s', 'wconvert'),
       too_short: __('Enter a longer phone number.', 'wconvert'),
       too_long: __('This phone number is too long.', 'wconvert'),
       invalid_length: __('Check the phone number length.', 'wconvert'),

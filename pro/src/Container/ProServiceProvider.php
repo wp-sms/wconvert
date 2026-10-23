@@ -175,6 +175,10 @@ final class ProServiceProvider implements ServiceProvider
         // Existing claims must expire even after WooCommerce or the module that took them is disabled.
         \WConvert\Pro\Claims::hooks();
 
+        // The words Pro's loader writes itself, printed beside free's.
+        \WConvert\Pro\Frontend\ProPageLabels::hooks();
+        \WConvert\Pro\Frontend\ProInspectorLabels::hooks();
+
         // Question journeys exist on this install because the module that runs
         // them shipped in this ZIP, and that registration is the whole of the
         // entitlement (ADR 0116). Its manifest on disk is the possession test —

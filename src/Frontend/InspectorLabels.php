@@ -42,7 +42,7 @@ final class InspectorLabels
             'unavailable' => __('The basket could not be checked. Neither positive nor negative cart rules can match.', 'wconvert'),
             'consent-blocked' => __('Waiting for functional consent.', 'wconvert'),
         ];
-        return [
+        $labels = [
             'title' => __('Why each popup did or did not show', 'wconvert'),
             'intro' => __(
                 'Published rules on this page, with browser allowances as the page began. Unsaved draft changes are not included. Only you can see this report.',
@@ -239,7 +239,7 @@ final class InspectorLabels
                 'isLoggedIn' => __('You are signed in', 'wconvert'),
                 'yes' => __('Yes', 'wconvert'),
                 'no' => __('No', 'wconvert'),
-                'none' => __('None', 'wconvert'),
+                'none' => _x('None', 'no value to report', 'wconvert'),
             ],
 
             /**
@@ -303,5 +303,17 @@ final class InspectorLabels
             // same table for every Optin on the page.
             'rules' => RuleLabels::types(),
         ];
+
+        /**
+         * Filters the inspector panel's words.
+         *
+         * Pro adds the groups its own explanations read
+         * (`resources/loader/src/inspect/labels.ts`).
+         *
+         * @param array<string, mixed> $labels
+         */
+        $filtered = apply_filters('wconvert_inspector_labels', $labels);
+
+        return is_array($filtered) ? $filtered : $labels;
     }
 }

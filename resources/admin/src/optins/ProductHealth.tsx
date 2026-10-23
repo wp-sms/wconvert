@@ -45,7 +45,7 @@ export function useProductHealth(ids: string, refresh: number) {
 export function productHealthLabel(health?: ProductHealth): string | null {
   if (!health) return null;
   const warnings = health.checks.filter(check => check.state === 'warning').length;
-  if (warnings) return sprintf(_n('%d product warning', '%d product warnings', warnings, 'wconvert'), warnings);
+  if (warnings) return sprintf(/* translators: %d: how many product checks gave a warning. */ _n('%d product warning', '%d product warnings', warnings, 'wconvert'), warnings);
   if (health.checks.some(check => check.state === 'unknown')) return __('Products not checked', 'wconvert');
   if (health.checks.some(check => check.state === 'context')) return __('Check a sample basket', 'wconvert');
   return null;

@@ -172,7 +172,7 @@ export function BlockInspector({
       {look !== undefined && slot !== null && (
         <TabsList
           className="wconvert-inspector__halves"
-          aria-label={sprintf(__('%s settings', 'wconvert'), name)}
+          aria-label={sprintf(/* translators: %s: an element's name, e.g. “Headline”. */ __('%s settings', 'wconvert'), name)}
         >
           <TabsTrigger value="content">{__('Content', 'wconvert')}</TabsTrigger>
           <TabsTrigger value="style">{__('Style', 'wconvert')}</TabsTrigger>
@@ -307,7 +307,7 @@ function contentBody({
         <select id={`form-${path.join('-')}`} value={node?.submission ?? ''} onChange={e => onChange({ ...template, tree: withValue(template.tree, path, 'submission', e.target.value) })}>
           <option value="">{__('Choose a form', 'wconvert')}</option>
           {template.tree.submissions.filter(s => node?.action !== 'skip' || !s.required).map((s, index) => <option key={s.id} value={s.id}>
-            {template.tree.steps[submissionScreen(template.tree, s.id)]?.name ?? sprintf(__('Form %d', 'wconvert'), index + 1)}
+            {template.tree.steps[submissionScreen(template.tree, s.id)]?.name ?? sprintf(/* translators: %d: the form's position in the design, starting at 1. */ __('Form %d', 'wconvert'), index + 1)}
           </option>)}
         </select>
       </PanelField>}

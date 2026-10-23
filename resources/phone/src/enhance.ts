@@ -83,7 +83,10 @@ export function enhancePhones(root: HTMLElement, shadow: ShadowRoot, defaultCoun
           const translate = () => {
             const count = live.textContent?.match(/^\d+/)?.[0];
             if (!count) return;
-            const phrase = word(Number(count) === 1 ? 'oneResult' : 'manyResults', Number(count) === 1 ? '%s result' : '%s results').replace('%s', count);
+            // One string for every count: the bundle has no wp.i18n to choose
+            // a plural form with, and "1 or more" is two forms only in some
+            // languages — Russian, Polish and Arabic need more.
+            const phrase = word('results', 'Results: %s').replace('%s', count);
             if (live.textContent !== phrase) live.textContent = phrase;
           };
           liveObserver?.disconnect();

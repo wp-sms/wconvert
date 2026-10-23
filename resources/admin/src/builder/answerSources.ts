@@ -57,7 +57,7 @@ export function answerSources(template: Template, submissionId: string): AnswerS
       const questionId = item.id;
       if (item.answer_type === 'multi') item.options?.forEach((option) => found.push({
         id: `choice:${item.id}:${option.value}`,
-        label: sprintf(__('%1$s — %2$s', 'wconvert'), questionLabel, option.label),
+        label: sprintf(/* translators: 1: a quiz question's text, e.g. “Which topics interest you?”, 2: one of its answer choices, e.g. “Recipes”. */ __('%1$s — %2$s', 'wconvert'), questionLabel, option.label),
         type: 'boolean',
         choice: { questionId, questionLabel, label: option.label },
       }));

@@ -52,7 +52,7 @@ export function RegionSkeleton({
 
       <RegionBody className="flex flex-col gap-4">
         <span role="status" className="text-note text-muted-foreground">
-          {sprintf(__('Loading %s…', 'wconvert'), sentenceCase(label))}
+          {sprintf(/* translators: %s: the name of the section loading, lower-cased when it starts a sentence, e.g. “answers”. */ __('Loading %s…', 'wconvert'), sentenceCase(label))}
         </span>
 
         {children ??

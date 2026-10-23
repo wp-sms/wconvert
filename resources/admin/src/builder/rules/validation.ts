@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import type { RuleGroup } from '@loader/display-rules';
 import type { Rule, RuleType } from '../api';
 
@@ -35,7 +35,7 @@ export function groupProblems(group: RuleGroup, types: readonly RuleType[]): str
       }
       if (valid && ['product_set', 'category_set'].includes(param.control)) valid = Array.isArray(value) && value.length <= 20 && value.every(id => Number.isInteger(id) && Number(id) > 0) && new Set(value).size === value.length;
       if (valid && ['quantity_range', 'money_range'].includes(param.control)) valid = validRange(value, param.control === 'money_range');
-      if (!valid) problems.push(`${type.label}: ${param.label} — ${__('enter a valid value', 'wconvert')}`);
+      if (!valid) problems.push(sprintf(/* translators: 1: a rule, e.g. “Time on page”, 2: one of its settings, e.g. “Seconds”. */ __('%1$s: %2$s — enter a valid value', 'wconvert'), type.label, param.label));
     }
   }
   if (group.match === 'all') {

@@ -89,10 +89,10 @@ export function PickerSettings({ picker, onBack, onPlan, context = 'creation', n
             </fieldset>
             {/* Countries only steer collections that declare markets; with none, the question changes nothing. */}
             {regional && suggestedCountry && suggestion && <div className="wconvert-picker-settings__suggestion">
-              <p className="m-0">{sprintf(__('Suggested country: %s', 'wconvert'), suggestedCountry.name)}</p>
+              <p className="m-0">{sprintf(/* translators: %s: a country's name, e.g. “Germany”. */ __('Suggested country: %s', 'wconvert'), suggestedCountry.name)}</p>
               <Description>{__('Based on this site’s time zone. Choose the countries your business serves.', 'wconvert')}</Description>
               <div className="flex flex-wrap gap-2">
-                <Button variant="outline" disabled={picker.saving} onClick={() => { void picker.preferences({ ...data.preferences, markets: [suggestion.code] }); }}>{sprintf(__('Add %s', 'wconvert'), suggestedCountry.name)}</Button>
+                <Button variant="outline" disabled={picker.saving} onClick={() => { void picker.preferences({ ...data.preferences, markets: [suggestion.code] }); }}>{sprintf(/* translators: %s: a country's name, e.g. “Germany”. */ __('Add %s', 'wconvert'), suggestedCountry.name)}</Button>
                 <Button variant="ghost" disabled={picker.saving} onClick={() => { void picker.preferences({ ...data.preferences, country_suggestion_dismissed: suggestion.timezone }); }}>{__('Dismiss country suggestion', 'wconvert')}</Button>
               </div>
             </div>}
@@ -102,7 +102,7 @@ export function PickerSettings({ picker, onBack, onPlan, context = 'creation', n
               {!countryError && countries.length === 0 && <p role="status" className="m-0 text-note text-muted-foreground">{__('Loading countries…', 'wconvert')}</p>}
               <div className="wconvert-picker-settings__countries">{data.preferences.markets.map(code => {
                 const name = countryName(code);
-                return <Button key={code} variant="outline" disabled={picker.saving} aria-label={sprintf(__('Remove %s', 'wconvert'), name)} onClick={() => { void picker.preferences({ ...data.preferences, markets: data.preferences.markets.filter(value => value !== code) }); }}><bdi>{name}</bdi><X aria-hidden="true" /></Button>;
+                return <Button key={code} variant="outline" disabled={picker.saving} aria-label={sprintf(/* translators: %s: a country's name, e.g. “Germany”. */ __('Remove %s', 'wconvert'), name)} onClick={() => { void picker.preferences({ ...data.preferences, markets: data.preferences.markets.filter(value => value !== code) }); }}><bdi>{name}</bdi><X aria-hidden="true" /></Button>;
               })}</div>
               <Description>{__('Regional collections use these countries.', 'wconvert')}</Description>
             </div>}
@@ -118,7 +118,7 @@ export function PickerSettings({ picker, onBack, onPlan, context = 'creation', n
               const entry = data.saved_designs?.find(value => value.key === key);
               const name = entry?.name || __('Unnamed design', 'wconvert');
               return <li key={key}><div><strong><bdi>{name}</bdi></strong>{entry?.retired && <span>{__('No longer in the library', 'wconvert')}</span>}</div>
-                <Button variant="ghost" disabled={picker.saving} aria-label={sprintf(__('Remove %s from saved designs', 'wconvert'), name)} onClick={() => picker.toggleSaved(key)}>{__('Remove', 'wconvert')}</Button></li>;
+                <Button variant="ghost" disabled={picker.saving} aria-label={sprintf(/* translators: %s: a saved design's name, e.g. “Spring sale popup”. */ __('Remove %s from saved designs', 'wconvert'), name)} onClick={() => picker.toggleSaved(key)}>{__('Remove', 'wconvert')}</Button></li>;
             })}</ul>
           </section>}
           {context === 'creation' && <Occasions picker={picker} items={data.occasions.items} timezone={data.timezone} onPlan={onPlan} />}
@@ -201,7 +201,7 @@ function Occasions({ picker, items, timezone, onPlan }: {
           {picker.saving ? __('Saving…', 'wconvert') : editing ? __('Save occasion', 'wconvert') : __('Add occasion', 'wconvert')}
         </Button>
         <SaveStatus saved={status.saved} />
-        {full && <span id={`${id}-full`} className="text-note text-muted-foreground">{sprintf(__('You can keep up to %s occasions. Delete one to add another.', 'wconvert'), String(MAX_OCCASIONS))}</span>}
+        {full && <span id={`${id}-full`} className="text-note text-muted-foreground">{sprintf(/* translators: %s: the most occasions you can keep, e.g. “50”. */ __('You can keep up to %s occasions. Delete one to add another.', 'wconvert'), String(MAX_OCCASIONS))}</span>}
       </div>
     </form>
     <ConfirmDialog open={deleting !== null} onOpenChange={open => { if (!open) setDeleting(null); }} variant="destructive" returnFocusTo={menu}

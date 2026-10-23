@@ -103,12 +103,12 @@ export function describeLicense(license: LicensePayload, now = Date.now()): Lice
         __('WordPress can’t read the saved key. This usually happens after the site’s security keys change. Updates stopped until you do; Pro features keep working.', 'wconvert-pro'), 'rekey');
       break;
     case 'copy':
-      card = hero('info', 'globe', sprintf(__('This is a copy of %s', 'wconvert-pro'), license.domain_change?.was ?? ''),
+      card = hero('info', 'globe', sprintf(/* translators: %s: the live site's domain this site was copied from, e.g. “shop.example.com”. */ __('This is a copy of %s', 'wconvert-pro'), license.domain_change?.was ?? ''),
         __('Updates are off on this copy. Staging and local copies don’t use a site, and the live site isn’t touched.', 'wconvert-pro'), 'activate_copy');
       break;
     case 'moved':
-      card = hero('warning', 'globe', sprintf(__('This site moved from %s', 'wconvert-pro'), license.domain_change?.was ?? ''),
-        sprintf(__('The license is still on %s, so updates are off here.', 'wconvert-pro'), license.domain_change?.was ?? ''), 'move');
+      card = hero('warning', 'globe', sprintf(/* translators: %s: the domain this site was on before, e.g. “shop.example.com”. */ __('This site moved from %s', 'wconvert-pro'), license.domain_change?.was ?? ''),
+        sprintf(/* translators: %s: the domain the license is still activated on, e.g. “shop.example.com”. */ __('The license is still on %s, so updates are off here.', 'wconvert-pro'), license.domain_change?.was ?? ''), 'move');
       break;
     case 'not_activated_here':
       card = hero('warning', 'globe', __('This site isn’t on your license', 'wconvert-pro'),
@@ -122,33 +122,33 @@ export function describeLicense(license: LicensePayload, now = Date.now()): Lice
       break;
     case 'expired':
       card = hero('danger', 'alert', __('Your license expired', 'wconvert-pro'),
-        `${sprintf(__('Updates and support stopped on %s.', 'wconvert-pro'), long(ends))} ${keepWorking}`, 'renew');
+        `${sprintf(/* translators: %s: the date the license expired, e.g. “Mar 3, 2027”. */ __('Updates and support stopped on %s.', 'wconvert-pro'), long(ends))} ${keepWorking}`, 'renew');
       break;
     case 'payment_failed':
       card = hero('warning', 'warn', __('Your payment didn’t go through', 'wconvert-pro'),
-        `${sprintf(__('Update it by %s to keep updates and support.', 'wconvert-pro'), long(license.renewal?.grace_ends_at ?? null))} ${keepWorking}`, 'payment');
+        `${sprintf(/* translators: %s: the last day to fix the payment, e.g. “Mar 3, 2027”. */ __('Update it by %s to keep updates and support.', 'wconvert-pro'), long(license.renewal?.grace_ends_at ?? null))} ${keepWorking}`, 'payment');
       break;
     case 'over_limit': {
       const used = license.plan?.used ?? license.sites.filter((site) => !site.dev).length;
-      card = hero('warning', 'warn', sprintf(_n('%1$d site uses a %2$d-site license', '%1$d sites use a %2$d-site license', used, 'wconvert-pro'), used, license.plan?.max ?? 0),
+      card = hero('warning', 'warn', sprintf(/* translators: 1: how many sites use the license, 2: how many sites the plan allows. */ _n('%1$d site uses a %2$d-site license', '%1$d sites use a %2$d-site license', used, 'wconvert-pro'), used, license.plan?.max ?? 0),
         __('Remove the sites you no longer use, or upgrade for more.', 'wconvert-pro'), 'sites');
       break;
     }
     case 'trial':
       card = hero(days <= 7 ? 'warning' : 'info', 'clock',
-        days <= 7 ? sprintf(_n('Your trial ends in %d day', 'Your trial ends in %d days', days, 'wconvert-pro'), days) : __('You’re on a trial', 'wconvert-pro'),
-        sprintf(__('It ends on %s. Buy to keep updates and support after that.', 'wconvert-pro'), long(license.renewal?.trial_ends_at ?? ends)), 'buy');
+        days <= 7 ? sprintf(/* translators: %d: how many days are left in the trial. */ _n('Your trial ends in %d day', 'Your trial ends in %d days', days, 'wconvert-pro'), days) : __('You’re on a trial', 'wconvert-pro'),
+        sprintf(/* translators: %s: the date the trial ends, e.g. “Mar 3, 2027”. */ __('It ends on %s. Buy to keep updates and support after that.', 'wconvert-pro'), long(license.renewal?.trial_ends_at ?? ends)), 'buy');
       break;
     case 'expiring':
       card = hero('warning', 'calendar',
-        days <= 0 ? __('Your license ends today', 'wconvert-pro') : sprintf(_n('Your license ends in %d day', 'Your license ends in %d days', days, 'wconvert-pro'), days),
-        sprintf(__('It ends on %s. Renew to keep getting updates and support.', 'wconvert-pro'), long(ends)), 'renew');
+        days <= 0 ? __('Your license ends today', 'wconvert-pro') : sprintf(/* translators: %d: how many days are left before the license ends. */ _n('Your license ends in %d day', 'Your license ends in %d days', days, 'wconvert-pro'), days),
+        sprintf(/* translators: %s: the date the license ends, e.g. “Mar 3, 2027”. */ __('It ends on %s. Renew to keep getting updates and support.', 'wconvert-pro'), long(ends)), 'renew');
       break;
     default: {
-      const body = mode === 'auto' ? sprintf(__('Renews automatically on %s.', 'wconvert-pro'), long(ends))
-        : mode === 'cancelled' ? sprintf(__('Ends on %s and won’t renew.', 'wconvert-pro'), long(ends))
+      const body = mode === 'auto' ? sprintf(/* translators: %s: the date the license renews, e.g. “Mar 3, 2027”. */ __('Renews automatically on %s.', 'wconvert-pro'), long(ends))
+        : mode === 'cancelled' ? sprintf(/* translators: %s: the date the license ends, e.g. “Mar 3, 2027”. */ __('Ends on %s and won’t renew.', 'wconvert-pro'), long(ends))
           : mode === 'lifetime' ? __('Lifetime license. There’s nothing to renew.', 'wconvert-pro')
-            : sprintf(__('Ends on %s. It doesn’t renew automatically.', 'wconvert-pro'), long(ends));
+            : sprintf(/* translators: %s: the date the license ends, e.g. “Mar 3, 2027”. */ __('Ends on %s. It doesn’t renew automatically.', 'wconvert-pro'), long(ends));
       const door: Door = mode === 'cancelled' ? 'renewal_on' : mode === 'manual' && days <= 30 ? 'renew_soon' : 'account';
       card = hero('success', 'checkCircle', __('Updates and support are on', 'wconvert-pro'), body, door);
     }
@@ -175,8 +175,8 @@ function managed(license: LicensePayload, stopped: boolean): LicenseDescription 
     icon: stopped ? 'alert' : 'checkCircle',
     headline: stopped ? __('Updates stopped', 'wconvert-pro') : __('Updates are on', 'wconvert-pro'),
     body: stopped
-      ? `${__('Pro features keep working.', 'wconvert-pro')} ${sprintf(__('Contact %s to turn updates back on.', 'wconvert-pro'), who)}`
-      : sprintf(__('%s manages this license.', 'wconvert-pro'), Who),
+      ? `${__('Pro features keep working.', 'wconvert-pro')} ${sprintf(/* translators: %s: who manages the license, an agency's name or “your site developer”. */ __('Contact %s to turn updates back on.', 'wconvert-pro'), who)}`
+      : sprintf(/* translators: %s: who manages the license, an agency's name or “Your site developer”. */ __('%s manages this license.', 'wconvert-pro'), Who),
     door: stopped ? 'contact' : null,
     chip: __('Pro', 'wconvert-pro'),
     facts: [
@@ -193,7 +193,7 @@ function managed(license: LicensePayload, stopped: boolean): LicenseDescription 
 function chip(license: LicensePayload): string {
   const pro = __('Pro', 'wconvert-pro');
   const plan = license.plan === null ? null : license.plan.max === null ? __('Unlimited', 'wconvert-pro')
-    : sprintf(_n('%d site', '%d sites', license.plan.max, 'wconvert-pro'), license.plan.max);
+    : sprintf(/* translators: %d: how many sites the plan allows. */ _n('%d site', '%d sites', license.plan.max, 'wconvert-pro'), license.plan.max);
   const lifetime = license.renewal?.mode === 'lifetime' ? __('Lifetime', 'wconvert-pro') : null;
 
   const parts: Array<string | null> = [pro, plan, lifetime];
@@ -222,17 +222,17 @@ function facts(license: LicensePayload, stopped: boolean, elsewhere: boolean, no
   } else if (mode === 'lifetime') {
     list.push({ label: __('Support', 'wconvert-pro'), value: __('Included', 'wconvert-pro'), sub: __('For life', 'wconvert-pro') });
   } else {
-    list.push({ label: __('Support', 'wconvert-pro'), value: sprintf(__('Until %s', 'wconvert-pro'), short(ends, now)), sub: relative(days) });
+    list.push({ label: __('Support', 'wconvert-pro'), value: sprintf(/* translators: %s: the date support ends, e.g. “Mar 3” or “Mar 3, 2027”. */ __('Until %s', 'wconvert-pro'), short(ends, now)), sub: relative(days) });
   }
 
   if (mode !== 'lifetime' && license.state !== 'disabled' && !ended) {
     if (license.state === 'trial') {
-      list.push({ label: __('Renewal', 'wconvert-pro'), value: __('Trial', 'wconvert-pro'), sub: sprintf(__('Ends %s', 'wconvert-pro'), short(license.renewal?.trial_ends_at ?? ends, now)), tone: (days ?? 0) <= 7 ? 'warning' : undefined });
+      list.push({ label: __('Renewal', 'wconvert-pro'), value: __('Trial', 'wconvert-pro'), sub: sprintf(/* translators: %s: the date the trial ends, e.g. “Mar 3” or “Mar 3, 2027”. */ __('Ends %s', 'wconvert-pro'), short(license.renewal?.trial_ends_at ?? ends, now)), tone: (days ?? 0) <= 7 ? 'warning' : undefined });
     } else if (license.state === 'payment_failed') {
-      list.push({ label: __('Renewal', 'wconvert-pro'), value: __('Payment failed', 'wconvert-pro'), sub: sprintf(__('Update by %s', 'wconvert-pro'), short(license.renewal?.grace_ends_at ?? null, now)), tone: 'warning' });
+      list.push({ label: __('Renewal', 'wconvert-pro'), value: __('Payment failed', 'wconvert-pro'), sub: sprintf(/* translators: %s: the last day to fix the failed payment, e.g. “Mar 3” or “Mar 3, 2027”. */ __('Update by %s', 'wconvert-pro'), short(license.renewal?.grace_ends_at ?? null, now)), tone: 'warning' });
     } else {
       const value = mode === 'auto' ? __('Automatic', 'wconvert-pro') : mode === 'cancelled' ? __('Off', 'wconvert-pro') : __('Manual', 'wconvert-pro');
-      const sub = sprintf(mode === 'auto' ? __('Renews %s', 'wconvert-pro') : __('Ends %s', 'wconvert-pro'), short(ends, now));
+      const sub = sprintf(mode === 'auto' ? /* translators: %s: the date the license renews, e.g. “Mar 3” or “Mar 3, 2027”. */ __('Renews %s', 'wconvert-pro') : /* translators: %s: the date the license ends, e.g. “Mar 3” or “Mar 3, 2027”. */ __('Ends %s', 'wconvert-pro'), short(ends, now));
       list.push({ label: __('Renewal', 'wconvert-pro'), value, sub, tone: license.state === 'expiring' ? 'warning' : undefined });
     }
   }
@@ -254,8 +254,8 @@ function short(iso: string | null, now = Date.now()): string {
 function relative(days: number | null): string | null {
   if (days === null) return null;
   if (days === 0) return __('today', 'wconvert-pro');
-  if (days < 0) return sprintf(_n('%d day ago', '%d days ago', -days, 'wconvert-pro'), -days);
-  if (days < 45) return sprintf(_n('in %d day', 'in %d days', days, 'wconvert-pro'), days);
+  if (days < 0) return sprintf(/* translators: %d: how many days ago the license ended. */ _n('%d day ago', '%d days ago', -days, 'wconvert-pro'), -days);
+  if (days < 45) return sprintf(/* translators: %d: how many days until the date. */ _n('in %d day', 'in %d days', days, 'wconvert-pro'), days);
   const months = Math.round(days / 30.4);
-  return sprintf(_n('in %d month', 'in %d months', months, 'wconvert-pro'), months);
+  return sprintf(/* translators: %d: how many months until the date. */ _n('in %d month', 'in %d months', months, 'wconvert-pro'), months);
 }

@@ -31,7 +31,7 @@ function CatalogChoice({ label, taxonomy, value, onChange }: { label: string; ta
       {value && !state.items.some(item => item.id === value) && <option value={value}>{state.busy ? __('Loading selection…', 'wconvert-pro') : __('Unavailable — choose again', 'wconvert-pro')}</option>}
       {state.items.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
     </select></label>
-    {(state.more || state.items.length > 8 || !!search) && <Input type="search" aria-label={sprintf(__('Search %s', 'wconvert-pro'), label.toLowerCase())} placeholder={__('Search…', 'wconvert-pro')} value={search} maxLength={100} onChange={event => setSearch(event.target.value)} />}
+    {(state.more || state.items.length > 8 || !!search) && <Input type="search" aria-label={sprintf(/* translators: %s: what is being searched, in lowercase: “category”, “attribute” or “value”. */ __('Search %s', 'wconvert-pro'), label.toLowerCase())} placeholder={__('Search…', 'wconvert-pro')} value={search} maxLength={100} onChange={event => setSearch(event.target.value)} />}
     {state.more && <small>{__('Search to narrow the list.', 'wconvert-pro')}</small>}
     {!state.busy && !state.error && !state.items.length && <small>{__('No choices found. Try another search or add them in WooCommerce.', 'wconvert-pro')}</small>}
     {state.error && <p role="alert">{__('Choices could not load.', 'wconvert-pro')} <TryAgain onClick={() => setRetry(retry + 1)} /></p>}
@@ -53,16 +53,16 @@ export function ResultProductFilter({ value, onChange }: { value: Filter; onChan
     </select></label>
     {!!value.attributes.length && <p>{__('Products must match every filter.', 'wconvert-pro')}</p>}
     {value.attributes.map((filter, index) => <fieldset key={index}>
-      <legend>{sprintf(__('Filter %d', 'wconvert-pro'), index + 1)}</legend>
+      <legend>{sprintf(/* translators: %d: the product filter's position in the list, e.g. 1. */ __('Filter %d', 'wconvert-pro'), index + 1)}</legend>
       <CatalogChoice label={__('Attribute', 'wconvert-pro')} taxonomy="attributes" value={filter.taxonomy} onChange={taxonomy => edit(index, { taxonomy, term_id: 0 })} />
       {!!filter.taxonomy && <CatalogChoice key={filter.taxonomy} label={__('Value', 'wconvert-pro')} taxonomy={filter.taxonomy} value={filter.term_id ? String(filter.term_id) : ''} onChange={id => edit(index, { ...filter, term_id: Number(id) })} />}
-      <Button variant="ghost" aria-label={sprintf(__('Remove filter %d', 'wconvert-pro'), index + 1)} onClick={() => onChange({ ...value, attributes: value.attributes.filter((_, at) => at !== index) })}>{__('Remove filter', 'wconvert-pro')}</Button>
+      <Button variant="ghost" aria-label={sprintf(/* translators: %d: the product filter's position in the list, e.g. 1. */ __('Remove filter %d', 'wconvert-pro'), index + 1)} onClick={() => onChange({ ...value, attributes: value.attributes.filter((_, at) => at !== index) })}>{__('Remove filter', 'wconvert-pro')}</Button>
     </fieldset>)}
     {value.attributes.length < 3 && <Button variant="outline" disabled={!value.category_id || value.attributes.some(item => !item.taxonomy || !item.term_id)} onClick={() => onChange({ ...value, attributes: [...value.attributes, { taxonomy: '', term_id: 0 }] })}>{__('Add attribute filter', 'wconvert-pro')}</Button>}
     <small>{__('Uses global WooCommerce attributes. Shoppers choose size or other options on the product page.', 'wconvert-pro')}</small>
     {new Set(value.attributes.map(item => item.taxonomy)).size < value.attributes.length && <p role="alert">{__('Use each attribute only once.', 'wconvert-pro')}</p>}
     <Disclosure variant="inline" onToggle={setCuration} title={__('Pin or exclude products', 'wconvert-pro')}
-      summary={sprintf(__('%1$d pinned, %2$d excluded', 'wconvert-pro'), value.pinned_ids?.length ?? 0, value.excluded_ids?.length ?? 0)}>
+      summary={sprintf(/* translators: 1: how many products are pinned to show first for this quiz result, 2: how many products are left out of it. */ __('%1$d pinned, %2$d excluded', 'wconvert-pro'), value.pinned_ids?.length ?? 0, value.excluded_ids?.length ?? 0)}>
       {curation && <div className="wconvert-result-filter__body"><fieldset><legend>{__('Pinned products', 'wconvert-pro')}</legend>
         <ProductPicker ids={value.pinned_ids ?? []} max={3} label={__('Find products to pin', 'wconvert-pro')} actionLabel={__('Pin', 'wconvert-pro')} help={__('Choose up to three. Shown first when available and matching all filters.', 'wconvert-pro')} onChange={pinned_ids => onChange({ ...value, pinned_ids })} />
       </fieldset>

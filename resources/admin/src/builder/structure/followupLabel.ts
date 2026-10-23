@@ -2,6 +2,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import type { QuestionCondition, TemplateTree } from '@renderer/types';
 import { conditionText } from './conditionText';
 import { walkNodes } from './journey';
+import { anyOf } from '../../lib/format';
 
 /** Short answer labels only when they express the entire visibility rule. */
 export function followupLabel(tree: TemplateTree, condition: QuestionCondition) {
@@ -11,7 +12,7 @@ export function followupLabel(tree: TemplateTree, condition: QuestionCondition) 
       const question = tree.steps.flatMap(screen => walkNodes(screen.content)).find(node => node.type === 'question' && 'id' in node && node.id === clause.question);
       const labels = clause.values.map(value => question && 'options' in question ? question.options?.find(item => item.value === value)?.label : undefined);
       // "is any of" reads "My home or My flat" (ADR 0142).
-      if (labels.every(Boolean)) return sprintf(/* translators: %s: one or more answers. */ __('If %s is selected', 'wconvert'), labels.map(label => `“${label}”`).join(` ${__('or', 'wconvert')} `));
+      if (labels.every(Boolean)) return sprintf(/* translators: %s: one or more answers. */ __('If %s is selected', 'wconvert'), anyOf(labels.map(label => `“${label}”`)));
     }
   }
   return conditionText(tree, condition);

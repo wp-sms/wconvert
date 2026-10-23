@@ -38,7 +38,7 @@ registerBlockType(DIVIDER_BLOCK, {
           : pagination
             ? __('Remove Page Break and More blocks to use this divider. Content stays public.', 'wconvert-pro')
             : unsupported
-              ? sprintf(__('The %s block below is not supported here. Move it above the divider. Content stays public.', 'wconvert-pro'), getBlockType(unsupported.name)?.title ?? unsupported.name)
+              ? sprintf(/* translators: %s: a block's name in the editor, e.g. “Embed”. */ __('The %s block below is not supported here. Move it above the divider. Content stays public.', 'wconvert-pro'), getBlockType(unsupported.name)?.title ?? unsupported.name)
               : /<(?:form|iframe|script|video|audio|object|embed)\b|\[\/?[a-zA-Z]/i.test(html)
                 ? __('Content below includes an embed or shortcode. Move it above the divider. The remainder stays public.', 'wconvert-pro')
               : null;
@@ -53,7 +53,7 @@ registerBlockType(DIVIDER_BLOCK, {
       <p className="wconvert-lock-divider__scope">{__('Everything below, to the end of this article.', 'wconvert-pro')}</p>
       {!value ? <Button variant="secondary" onClick={openSettings}>{__('Choose campaign', 'wconvert-pro')}</Button> : <CampaignStatus value={value} state={state} />}
       {problem ? <Notice status={hasContent ? 'warning' : 'info'} isDismissible={false}>{problem}{unsupported && <Button variant="secondary" onClick={() => selectBlock(unsupported.clientId)}>{__('Find unsupported block', 'wconvert-pro')}</Button>}</Notice>
-        : <span className="wconvert-lock-divider__count">{!hasContent ? __('Add content below to lock it.', 'wconvert-pro') : sprintf(_n('%d block below', '%d blocks below', remaining.length, 'wconvert-pro'), remaining.length)}</span>}
+        : <span className="wconvert-lock-divider__count">{!hasContent ? __('Add content below to lock it.', 'wconvert-pro') : sprintf(/* translators: %d: how many blocks below the divider will be locked. */ _n('%d block below', '%d blocks below', remaining.length, 'wconvert-pro'), remaining.length)}</span>}
     </div>;
   },
   save: () => null,

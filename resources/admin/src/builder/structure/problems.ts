@@ -178,7 +178,7 @@ function whatHasUnfinishedLinks(template: Template): Problem[] {
     const text = (node as { text?: unknown } | null)?.text;
     if (!node || !link || asksForPolicy(node) || typeof link.label !== 'string' || !link.label.trim()
       || (typeof link.href === 'string' && link.href.trim() !== '') || typeof text !== 'string' || !text.includes('%s')) return [];
-    return [{ said: sprintf(__('Add a web address for “%s”.', 'wconvert'), link.label.trim()), path: block.path, check: 'words', blocksPublish: true }];
+    return [{ said: sprintf(/* translators: %s: a link's words, e.g. “Privacy Policy”. */ __('Add a web address for “%s”.', 'wconvert'), link.label.trim()), path: block.path, check: 'words', blocksPublish: true }];
   });
 }
 
@@ -194,7 +194,7 @@ function whatHasIncompleteFields(template: Template): Problem[] {
     if (identifiers.length === 0) {
       issues.push({ said: __('Add an email or phone field so this form can capture a lead.', 'wconvert'), path: null, check: 'captures', blocksPublish: true });
     } else if (!identifiers.some(field => (nodeAt(template.tree, field.path) as FieldNode).required)) {
-      issues.push({ said: sprintf(__('Require an email or phone field for “%s” so every saved lead has contact details.', 'wconvert'),
+      issues.push({ said: sprintf(/* translators: %s: the name of the screen the form is saved on. */ __('Require an email or phone field for “%s” so every saved lead has contact details.', 'wconvert'),
         template.tree.steps[submissionScreen(template.tree, submission.id)].name),
         path: identifiers[0].path, check: 'captures', blocksPublish: true });
     }

@@ -123,7 +123,7 @@ final class WsmsDestinationType implements DestinationType
         // (ADR 0008). The capture path refuses such a Lead while the visitor
         // is still on the page, so nothing a form can do reaches this.
         if (!$this->requirements()->acceptsCapture($values)) {
-            return PushResult::skipped('The Lead carries neither an email nor a phone.');
+            return PushResult::skipped(__('The Lead carries neither an email nor a phone.', 'wconvert'));
         }
 
         try {

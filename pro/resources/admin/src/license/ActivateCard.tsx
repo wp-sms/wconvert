@@ -100,7 +100,7 @@ export function ActivateCard({ license, onActivateKey, onKeyEdit, onChanged, bus
             {error && copy && (
               <Notice tone="danger" title={__('It didn’t activate', 'wconvert-pro')}>
                 <p>{copy.text} <span className="wconvert-license-muted">({error.code})</span></p>
-                {license.retry_at && <p>{sprintf(__('WordPress tries again %s.', 'wconvert-pro'), formatWhen(new Date(license.retry_at * 1000).toISOString()))}</p>}
+                {license.retry_at && <p>{sprintf(/* translators: %s: when it tries next, e.g. “Today, 4:05 PM” or “Oct 3”. */ __('WordPress tries again %s.', 'wconvert-pro'), formatWhen(new Date(license.retry_at * 1000).toISOString()))}</p>}
               </Notice>
             )}
           </div>
@@ -116,7 +116,7 @@ export function ActivateCard({ license, onActivateKey, onKeyEdit, onChanged, bus
       <section className="wconvert-license-card" aria-labelledby="wconvert-license-activate">
         <div className="wconvert-license-card__head"><h2 id="wconvert-license-activate">{__('Activate WConvert Pro', 'wconvert-pro')}</h2></div>
         <div className="wconvert-license-card__body">
-          <Notice tone="warning" title={sprintf(__('This account (%s) has no WConvert Pro license', 'wconvert-pro'), account.email_masked ?? '')}
+          <Notice tone="warning" title={sprintf(/* translators: %s: the account's email address, partly hidden, e.g. “n***@example.com”. */ __('This account (%s) has no WConvert Pro license', 'wconvert-pro'), account.email_masked ?? '')}
             actions={<>
               <Button variant="outline" size="sm" onClick={leave}>{__('Sign out and use another account', 'wconvert-pro')}</Button>
               <Ext href={license.urls.checkout ?? '#'}>{__('See plans', 'wconvert-pro')}</Ext>
@@ -145,11 +145,11 @@ export function ActivateCard({ license, onActivateKey, onKeyEdit, onChanged, bus
                   aria-disabled={choice.full || undefined} aria-describedby={choice.full ? `wconvert-license-full-${choice.id}` : undefined}
                   onChange={() => !choice.full && setChosen(choice.id)} />
                 <span>
-                  <b>{sprintf(__('Pro · %s', 'wconvert-pro'), planName(choice.max))}</b>
+                  <b>{sprintf(/* translators: %s: the license's plan size, e.g. “5 sites” or “Unlimited”. */ __('Pro · %s', 'wconvert-pro'), planName(choice.max))}</b>
                   <span>{[
                     choice.key_masked,
-                    choice.ends_at ? sprintf(__('Ends %s', 'wconvert-pro'), formatShortDay(choice.ends_at)) : null,
-                    choice.max === null ? sprintf(_n('%d site', '%d sites', choice.used, 'wconvert-pro'), choice.used) : sprintf(__('%1$d of %2$d used', 'wconvert-pro'), choice.used, choice.max),
+                    choice.ends_at ? sprintf(/* translators: %s: the day the license ends, e.g. “Mar 3, 2027”. */ __('Ends %s', 'wconvert-pro'), formatShortDay(choice.ends_at)) : null,
+                    choice.max === null ? sprintf(/* translators: %d: how many sites use this unlimited license. */ _n('%d site', '%d sites', choice.used, 'wconvert-pro'), choice.used) : sprintf(/* translators: 1: how many sites use this license, 2: how many sites the plan allows. */ __('%1$d of %2$d used', 'wconvert-pro'), choice.used, choice.max),
                   ].filter(Boolean).join(' · ')}</span>
                   {choice.full && <span className="wconvert-license-why" id={`wconvert-license-full-${choice.id}`}>{__('No free site', 'wconvert-pro')}</span>}
                 </span>
@@ -166,7 +166,7 @@ export function ActivateCard({ license, onActivateKey, onKeyEdit, onChanged, bus
           </div>
         </div>
         <div className="wconvert-license-card__foot">
-          {sprintf(__('Signed in as %s', 'wconvert-pro'), account.email_masked ?? '')} · <Button variant="link" size="sm" onClick={leave}>{__('Sign out', 'wconvert-pro')}</Button>
+          {sprintf(/* translators: %s: the account's email address, partly hidden, e.g. “n***@example.com”. */ __('Signed in as %s', 'wconvert-pro'), account.email_masked ?? '')} · <Button variant="link" size="sm" onClick={leave}>{__('Sign out', 'wconvert-pro')}</Button>
         </div>
       </section>
     );
@@ -204,7 +204,7 @@ export function ActivateCard({ license, onActivateKey, onKeyEdit, onChanged, bus
 
 function planName(max: number | null): string {
   if (max === null) return __('Unlimited', 'wconvert-pro');
-  return sprintf(_n('%d site', '%d sites', max, 'wconvert-pro'), max);
+  return sprintf(/* translators: %d: how many sites the plan allows. */ _n('%d site', '%d sites', max, 'wconvert-pro'), max);
 }
 
 /** The ways forward from a refusal: links to the store, Try again, Sign in. */
