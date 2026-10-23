@@ -26,7 +26,7 @@ return [
                 'email_label' => __('Email address', 'wconvert-pro'),
                 'email_placeholder' => __('you@example.com', 'wconvert-pro'),
                 'consent_text' => [
-                    'text' => __('Send me email guides and updates. %s', 'wconvert-pro'),
+                    'text' => /* translators: %s: a link to the site's privacy policy. */ __('Send me email guides and updates. %s', 'wconvert-pro'),
                     'link' => [
                         'label' => __('Privacy Policy', 'wconvert-pro'),
                     ],

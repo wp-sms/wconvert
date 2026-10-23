@@ -16,7 +16,7 @@ return [
         'email_placeholder' => __('you@example.com', 'wconvert-pro'),
         'cta_label' => __('Request the guide', 'wconvert-pro'),
         'consent_text' => __('Use my email to send the requested guide.', 'wconvert-pro'),
-        'fine_print' => ['text' => __('One requested guide. No newsletter signup. %s', 'wconvert-pro'), 'link' => ['label' => __('Privacy Policy', 'wconvert-pro')]],
+        'fine_print' => ['text' => /* translators: %s: a link to the site's privacy policy. */ __('One requested guide. No newsletter signup. %s', 'wconvert-pro'), 'link' => ['label' => __('Privacy Policy', 'wconvert-pro')]],
         'success_headline' => __('Request received', 'wconvert-pro'),
         'success_body' => __('Your guide request has been received.', 'wconvert-pro'),
     ],

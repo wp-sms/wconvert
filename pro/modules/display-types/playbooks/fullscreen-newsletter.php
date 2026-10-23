@@ -16,7 +16,7 @@ return [
         'email_placeholder' => __('you@example.com', 'wconvert-pro'),
         'cta_label' => __('Request the weekly notes', 'wconvert-pro'),
         'consent_text' => __('Email me the weekly field notes. I can unsubscribe anytime.', 'wconvert-pro'),
-        'fine_print' => ['text' => __('A short note every Friday. Unsubscribe anytime. %s', 'wconvert-pro'), 'link' => ['label' => __('Privacy Policy', 'wconvert-pro')]],
+        'fine_print' => ['text' => /* translators: %s: a link to the site's privacy policy. */ __('A short note every Friday. Unsubscribe anytime. %s', 'wconvert-pro'), 'link' => ['label' => __('Privacy Policy', 'wconvert-pro')]],
         'success_headline' => __('Request received', 'wconvert-pro'),
         'success_body' => __('Your request for the weekly field notes has been received.', 'wconvert-pro'),
     ],
