@@ -1,4 +1,18 @@
 {
+  "reviewedAt": "2026-10-23",
+  "viewports": [
+    320,
+    390,
+    649,
+    651,
+    768,
+    1000
+  ],
+  "acknowledgementViewports": [
+    320,
+    390,
+    1000
+  ],
   "designs": 35,
   "pro": 25,
   "free": 10,

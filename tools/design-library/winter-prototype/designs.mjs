@@ -1,4 +1,4 @@
-import { art } from './art.mjs';
+import { artwork } from './art-assets.mjs';
 const rows = [
 ['The ribbon room','Gifting','Popup','ribbon','A little ceremony.\nA lovely gift.','Thoughtful things, beautifully wrapped. Explore our Christmas edit.','Explore the gift edit'],
 ['A little gift','Gifting','Popup','gift','Small gift.\nBig feeling.','Take 15% off selected gifts for your favourite people.','Find a little something'],
@@ -44,36 +44,36 @@ export const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>'
 const eyebrow=t=>`<p class="eyebrow">${t}</p>`;
 const headline=d=>`<h1>${esc(d.headline).replace(/\n/g,'<br>')}</h1>`;
 const body=d=>`<p class="body-copy">${esc(d.body)}</p>`;
-const image=(key,extra='')=>`<div class="artwork ${extra}" role="img" aria-label="Original winter ${key} illustration">${art[key]}</div>`;
+const image=(key,extra='',fit='contain')=>{const a=artwork[key];return `<div class="artwork ${extra}" data-art="${key}" style="--art-bg:${a.bg}"><img src="${a.src}" alt="${a.alt}" data-fit="${fit}" style="object-fit:${fit}" width="${a.width}" height="${a.height}"></div>`;};
 const code=d=>`<div class="coupon"><span>${d.code}</span><button data-copy="${d.code}" type="button" aria-label="Copy ${d.code}">Copy code</button></div>`;
 const countdown=d=>d.timer?`<div class="timer-wrap"><p class="timer-label">${d.category==='Last-minute'?'ORDERING WINDOW CLOSES IN':'THIS SEASONAL OFFER ENDS IN'}</p><div class="countdown" role="timer" aria-label="Time remaining"><span><b data-unit="days">08</b><small>days</small></span><i>:</i><span><b data-unit="hours">14</b><small>hours</small></span><i>:</i><span><b data-unit="minutes">32</b><small>mins</small></span><i>:</i><span><b data-unit="seconds">09</b><small>secs</small></span></div></div>`:'';
-const action=d=>d.signup?`<form class="signup-form"><label>Email address<input type="email" required autocomplete="email" placeholder="you@example.com"></label><button class="cta" type="submit">${esc(d.cta)} <span aria-hidden="true">↗</span></button><label class="consent"><input type="checkbox" required><span>I agree to receive marketing emails. Unsubscribe anytime.</span></label></form>`:`<button type="button" class="cta" data-offer>${esc(d.cta)} <span aria-hidden="true">↗</span></button>`;
+const action=d=>d.signup?`<form class="signup-form"><label>Email address<input type="email" required autocomplete="email" placeholder="you@example.com"></label><button class="cta" type="submit">${esc(d.cta)}</button><label class="consent"><input type="checkbox" required><span>I agree to receive marketing emails. Unsubscribe anytime.</span></label></form>`:`<button type="button" class="cta" data-offer>${esc(d.cta)}</button>`;
 const note=d=>`<p class="fine-print">${d.signup?'Your code appears here after signup.':d.category==='Holiday info'?'Check the full timetable before you visit or order.':'Selected items. Offer terms apply.'}</p>`;
 const copy=(d,eyebrowText,extra='')=>`<div class="copy ${extra}">${eyebrow(eyebrowText)}${headline(d)}${body(d)}${countdown(d)}${action(d)}${note(d)}</div>`;
 const sparkles=d=>d.motion?`<div class="sparkles" aria-hidden="true"><i>✦</i><i>✦</i><i>✦</i><i>✦</i></div>`:'';
 export function composition(d,ack=false){
- if(ack)return `<div class="ack-art">${art[({'06':'candles','12':'village','13':'globe','16':'dawn','17':'presents','18':'book','29':'stars'})[d.id]||(d.category==='New Year'?'dawn':'envelope')]}</div><div class="ack-copy">${eyebrow('A LITTLE THANK YOU')}<h1>Thank you.<br>Your request is received.</h1><p class="body-copy">Here’s your example welcome code. Enjoy finding something lovely.</p>${code(d)}<button class="cta" data-offer>Explore the collection <span>↗</span></button><p class="fine-print">Prototype only. No email address was saved or sent.</p><button class="text-button" data-back>← Back to signup</button></div>`;
+ if(ack)return `${image(({'06':'candles','12':'village','13':'globe','16':'dawn','17':'presents','18':'book','29':'stars'})[d.id]||(d.category==='New Year'?'dawn':'envelope'),'ack-art')}<div class="ack-copy">${eyebrow('A LITTLE THANK YOU')}<h1>Thank you.<br>Your request is received.</h1><p class="body-copy">Here’s your example welcome code. Enjoy finding something lovely.</p>${code(d)}<button class="cta" data-offer>Explore the collection</button><p class="fine-print">Prototype only. No email address was saved or sent.</p><button class="text-button" data-back>← Back to signup</button></div>`;
  let html='';
  switch(d.id){
  case '01':html=`${image('ribbon')}${copy(d,'THE CHRISTMAS GIFT ATELIER')}`;break;
  case '02':html=`<div class="gift-icon">${image('presents')}</div>${eyebrow('A LITTLE SOMETHING, FROM US')}${headline(d)}<div class="discount">15<span>% off</span></div>${body(d)}${code(d)}${action(d)}${note(d)}`;break;
- case '03':html=`<div class="village-sky">${eyebrow('THE WINTER VILLAGE')}${headline(d)}${body(d)}${action(d)}</div>${image('villageWide','panorama')}`;break;
+ case '03':html=`<div class="village-sky">${eyebrow('THE WINTER VILLAGE')}${headline(d)}${body(d)}${action(d)}</div>${image('villageWide','panorama','cover')}`;break;
  case '04':html=`${image('baubles')}${copy(d,'THE ORNAMENT EDIT · 20% OFF')}`;break;
  case '05':html=`${image('pine')}${copy(d,'THE GIFT GUIDE / WINTER 2026')}`;break;
  case '06':html=`${image('candles','art-banner')}${copy(d,'THE CANDLE CLUB')}`;break;
  case '07':html=`<div class="colour-title">${eyebrow('FOR THE COLOURFULLY CURIOUS')}${headline(d)}</div>${image('presents')}<div class="colour-action">${body(d)}${action(d)}${note(d)}</div>`;break;
  case '08':html=`<div class="list-intro">${eyebrow('THE THOUGHTFUL LIST')}${headline(d)}<p class="list-line">01 &nbsp; A little inspiration.</p><p class="list-line">02 &nbsp; A considered gift.</p><p class="list-line">03 &nbsp; A happier December.</p></div><div class="list-form">${body(d)}${action(d)}${note(d)}</div>`;break;
- case '09':html=`<div class="ribbon-mark" aria-hidden="true">✦</div><div class="bar-copy">${eyebrow('WRAPPED WITH A LITTLE LOVE')}${headline(d)}${body(d)}</div>${countdown(d)}${action(d)}`;break;
+ case '09':html=`<div class="bar-copy">${eyebrow('WRAPPED WITH A LITTLE LOVE')}${headline(d)}${body(d)}</div>${countdown(d)}${action(d)}`;break;
  case '10':html=`${image('botanical')}<div class="atelier-center">${eyebrow('THE GIFT ATELIER')}${headline(d)}${body(d)}${countdown(d)}${action(d)}${note(d)}</div><div class="atelier-side">${image('candles')}<p>Beautifully considered.<br>Thoughtfully given.</p></div>`;break;
- case '11':html=`<div class="letter-top">${eyebrow('A LETTER, JUST FOR YOU')}<span class="postage" aria-hidden="true">✦</span></div>${headline(d)}${body(d)}${action(d)}<div class="letter-signature">With a little love,<br><em>The December edit</em></div>`;break;
- case '12':html=`${image('village')}<div class="postcard-copy"><div class="postcard-header">${eyebrow('POSTCARDS FROM WINTER')}<span class="postage" aria-hidden="true">✦</span></div>${headline(d)}${body(d)}${action(d)}</div>`;break;
+ case '11':html=`<div class="letter-top">${eyebrow('A LETTER, JUST FOR YOU')}</div>${headline(d)}${body(d)}${action(d)}<div class="letter-signature">With a little love,<br><em>The December edit</em></div>`;break;
+ case '12':html=`${image('village')}<div class="postcard-copy"><div class="postcard-header">${eyebrow('POSTCARDS FROM WINTER')}</div>${headline(d)}${body(d)}${action(d)}</div>`;break;
  case '13':html=`${image('globe','globe-art')}${copy(d,'THE SNOWGLOBE SOCIETY')}`;break;
- case '14':html=`<div class="kindness-mark" aria-hidden="true">✳</div>${copy(d,'A SMALL KINDNESS')}`;break;
- case '15':html=`<div class="afterhours-top">${eyebrow('AFTER HOURS AT THE ATELIER')}<span aria-hidden="true">☾</span></div>${headline(d)}${body(d)}<div class="slim-rule"></div>${action(d)}${note(d)}`;break;
+ case '14':html=`${image('flower','kindness-mark')}${copy(d,'A SMALL KINDNESS')}`;break;
+ case '15':html=`<div class="afterhours-top">${eyebrow('AFTER HOURS AT THE ATELIER')}${image('moon','small-moon')}</div>${headline(d)}${body(d)}<div class="slim-rule"></div>${action(d)}${note(d)}`;break;
  case '16':html=`${image('dawn','art-banner')}${copy(d,'THE WINTER PREVIEW')}`;break;
- case '17':html=`<div class="advent-art"><div class="advent-tile">01</div><div class="advent-tile">✶</div><div class="advent-tile">03</div><div class="advent-tile">04</div><div class="advent-tile">05</div><div class="advent-tile">✦</div></div>${copy(d,'THE ADVENT LETTER')}`;break;
+ case '17':html=`${image('advent','advent-art')}${copy(d,'THE ADVENT LETTER')}`;break;
  case '18':html=`${image('book')}${copy(d,'THE WINTER READING ROOM')}`;break;
- case '19':html=`<div class="bar-art">${art.parcel}</div><div class="bar-copy">${eyebrow('THE CHRISTMAS DISPATCH')}${headline(d)}${body(d)}</div>${countdown(d)}${action(d)}`;break;
+ case '19':html=`${image('parcel','bar-art')}<div class="bar-copy">${eyebrow('THE CHRISTMAS DISPATCH')}${headline(d)}${body(d)}</div>${countdown(d)}${action(d)}`;break;
  case '20':html=`<div class="bow-border">${image('ribbon','art-banner')}${copy(d,'A NOTE FROM THE GIFT DESK')}</div>`;break;
  case '21':html=`<div class="dispatch-date"><span>DECEMBER</span><strong>18</strong><span>THE CHRISTMAS ORDER DEADLINE</span></div><div class="dispatch-copy">${eyebrow('FROM THE DISPATCH DESK')}${headline(d)}${body(d)}${countdown(d)}${action(d)}</div>`;break;
  case '22':html=`<div class="eleven-number" aria-hidden="true">11<span>th hour</span></div>${copy(d,'A LAST-MINUTE LITTLE MIRACLE')}`;break;
@@ -81,12 +81,12 @@ export function composition(d,ack=false){
  case '24':html=`<div class="pickup-label">CLICK.<br>COLLECT.<br>CELEBRATE.</div><div class="bar-copy">${headline(d)}${body(d)}</div>${countdown(d)}${action(d)}`;break;
  case '25':html=`${image('baubles')}<div class="final-copy">${eyebrow('THE CHRISTMAS FINALE')}${headline(d)}${body(d)}${countdown(d)}${action(d)}${note(d)}</div>`;break;
  case '26':html=`${image('dawn')}${copy(d,'A SOFTER JANUARY')}`;break;
- case '27':html=`<div class="tomorrow-title">${eyebrow('A NEW YEAR. A LITTLE POSSIBILITY.')}${headline(d)}<span aria-hidden="true">↗</span></div><div class="tomorrow-form">${body(d)}${action(d)}</div>`;break;
+ case '27':html=`<div class="tomorrow-title">${eyebrow('A NEW YEAR. A LITTLE POSSIBILITY.')}${headline(d)}</div><div class="tomorrow-form">${body(d)}${action(d)}</div>`;break;
  case '28':html=`<div class="midnight-illustration">${image('botanical')}<span class="year">2027</span></div><div class="midnight-copy">${eyebrow('THE MIDNIGHT GARDEN')}${headline(d)}${body(d)}${countdown(d)}${action(d)}${note(d)}</div>`;break;
  case '29':html=`${image('stars','art-banner')}${copy(d,'HERE’S TO WHAT COMES NEXT')}`;break;
  case '30':html=`<span class="firstpage-year">2027</span><div class="bar-copy">${eyebrow('THE FIRST PAGE')}${headline(d)}${body(d)}</div>${countdown(d)}${action(d)}`;break;
- case '31':html=`<div class="club-heading">${eyebrow('THE FRESH START CLUB')}<span aria-hidden="true">✳</span></div>${headline(d)}${body(d)}${action(d)}<p class="club-foot">A little inspiration. A little momentum.</p>`;break;
- case '32':html=`<span class="sleeping-moon" aria-hidden="true">☾</span><div class="bar-copy">${eyebrow('A NOTE FROM OUR LITTLE SHOP')}${headline(d)}${body(d)}</div>${action(d)}`;break;
+ case '31':html=`<div class="club-heading">${eyebrow('THE FRESH START CLUB')}${image('flowerGreen','club-flower')}</div>${headline(d)}${body(d)}${action(d)}<p class="club-foot">A little inspiration. A little momentum.</p>`;break;
+ case '32':html=`${image('moon','sleeping-moon')}<div class="bar-copy">${eyebrow('A NOTE FROM OUR LITTLE SHOP')}${headline(d)}${body(d)}</div>${action(d)}`;break;
  case '33':html=`${image('mug','art-banner')}${copy(d,'COME IN FROM THE COLD')}`;break;
  case '34':html=`<div class="post-art">${image('parcel')}</div><div class="post-copy">${eyebrow('HOLIDAY POST')}${headline(d)}${body(d)}<div class="post-rule"></div>${action(d)}</div>`;break;
  case '35':html=`${eyebrow('OUR WINTER HOURS')}${headline(d)}<div class="hours-table"><p><span>24 December</span><b>10 am – 2 pm</b></p><p><span>25–26 December</span><b>Closed</b></p><p><span>27 December</span><b>10 am – 6 pm</b></p></div>${body(d)}${action(d)}`;break;

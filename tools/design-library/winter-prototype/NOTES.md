@@ -1,6 +1,6 @@
 # Small wonders — Christmas & New Year prototype
 
-**Throwaway visual exploration, 22 October 2026.** Review 35 concepts before authoring native Templates. This is a Vite/HTML/CSS prototype, excluded from plugin distributions by the existing /tools rule. No native Templates, Playbooks, collections or server catalogue entries are registered or published here.
+**Throwaway visual exploration, updated 23 October 2026.** Review 35 concepts before authoring native Templates. This is a Vite/HTML/CSS prototype, excluded from plugin distributions by the existing /tools rule. No native Templates, Playbooks, collections or server catalogue entries are registered or published here.
 
 ## Run and review
 
@@ -19,7 +19,7 @@ The viewer includes a motion pause control, signup/acknowledgement selection, an
 
 Warm paper, illustrated gifts, botanicals, winter villages, letters and optimistic New Year typography. This batch moves away from the shopping weekend's black, chrome and neon. Compositions include two-panel invitations, personal letters, a wide village, an immersive atelier, an advent-inspired tile pattern, calendar dates, compact deadline bars, and practical opening-hours notices.
 
-All copy remains live text. Original illustrations contain no headlines, offers or button labels. Email fields use transparent backgrounds. The ten Free concepts are spread across themes and use only Popup or Inline formats; paid display formats remain Pro.
+All copy remains live text. Original illustrations contain no headlines, offers or button labels. Static artwork is rendered as ordinary PNG image blocks, with a matching panel background and contain fit for complete objects. Only the wide village landscape deliberately uses cover fit. Email fields use transparent backgrounds. The ten Free concepts are spread across themes and use only Popup or Inline formats; paid display formats remain Pro.
 
 ## Proposed collection
 
@@ -45,15 +45,27 @@ The sample deadlines are 1/18/20/23/24 December 2026 and 5 January 2027 at 20:00
 
 8 designs add four subtle sparkles. They are intended to map to the existing native sparkle decoration with float/blink motions. Artwork itself stays static. The prototype's CSS motion is illustrative; it is not a new animation runtime. Pause motion and reduced-motion preferences stop all decorative animation. Snowglobe glass, candles, ribbons and scenery do not animate.
 
+## Editor-friendly revision — 23 October 2026
+
+The review identified decoration that looked like a custom editor feature and object illustrations clipped by enlarged, upward-offset SVGs. The prototype now uses 20 exported PNG assets via ordinary image blocks. The source vectors remain authoring inputs only; no campaign renders inline SVG artwork.
+
+- Complete object illustrations use contain fit with no negative margins or enlargement. Candles, snowglobes, trees, books, gifts and mugs stay intact at desktop and phone widths. Surrounding image panes match the asset background, including the entire reading-room left column.
+- Removed the postage stamps in 11 and 12, the oversized arrow in 27, the extra mark in 09 and the arrows inside primary buttons. Buttons now use simple centred text, matching the native button vocabulary.
+- Moon marks in 15/32 and flowers in 14/31 are regular replaceable images. The native icon chooser supports check, star, bolt, gift, clock and truck; these custom symbols are not part of that list. An image can be replaced/removed as a whole; its internal drawing is not separately editable.
+- The decorative tile pattern in 17 is one image without pretend calendar numbers. Removed CSS-only blend treatment, vertically written year text and the letter's repeating-border effect. The year, calendar deadline and all meaningful copy remain live text.
+- The eight motion treatments continue to represent the existing native sparkle decoration, independent of ordinary image replacement. The 25 Pro / 10 Free split and 13 countdowns are unchanged.
+
+Regenerate the original raster assets with `node tools/design-library/winter-prototype/rasterize-art.mjs`. No new editor controls or native runtime behaviour are introduced in this prototype revision.
+
 ## Native promotion boundaries
 
-Re-author approved concepts using the manifest's closed node vocabulary and stable IDs, palette tokens, supported breakpoints, native fields, countdown leaves and decoration items. Prototype CSS and SVG must not be imported as arbitrary editor features. Rasterise original static illustrations into supported image assets with rights records and previews. Preserve editable headlines, calendar labels, offer copy, fields and codes outside those assets.
+Re-author approved concepts using the manifest's closed node vocabulary and stable IDs, palette tokens, supported breakpoints, native fields, countdown leaves and decoration items. Prototype CSS and SVG must not be imported as arbitrary editor features. Reuse the exported PNG illustrations as supported image assets, adding production rights records and previews. Preserve editable headlines, calendar labels, offer copy, fields and codes outside those assets.
 
 Re-check every design through the native renderer on desktop and mobile, with long copy, real editor controls, real signup and acknowledgement contracts, held-reward states where applicable, Pro/Free installation and discovery, and WordPress boot/runtime validation. This prototype does not prove those production behaviours. Existing form conversion and reward flows remain authoritative; the visual prototype does not introduce a new signup or reward mechanism.
 
 ## Review evidence
 
-- Chromium layout audit: all 35 at 320, 390, 768 and 1000px; no horizontal page/card overflow, clipped checked text, offscreen close controls or browser errors.
+- Chromium layout audit: all 35 at 320, 390, 649, 651, 768 and 1000px; no horizontal page/card overflow, clipped checked text, offscreen close controls or browser errors.
 - All 14 acknowledgement views at 320, 390 and 1000px; no horizontal overflow.
 - Visual review: desktop and 320px contact sheets for all 35, plus all 14 acknowledgement views. Narrow atelier/tomorrow layouts and the village panorama were corrected during review.
 - Gallery and viewer inspected at 320, 390 and 1440px; no horizontal page overflow.
@@ -104,4 +116,4 @@ Re-check every design through the native renderer on desktop and mobile, with lo
 
 ## Assets and rights
 
-Artwork in art.mjs is original vector illustration authored for this prototype; no external photos, logos or generated stock images are included. DM Sans (regular/bold) and Instrument Serif (regular) are local copies of the existing commerce prototype fonts. Their SIL Open Font License notices are included in assets/. No Google Fonts request or external media request occurs at runtime. Production font delivery continues to follow WConvert's font permission rules.
+Artwork in art.mjs is original vector source authored for this prototype and exported to assets/art/*.png by rasterize-art.mjs; no external photos, logos or generated stock images are included. DM Sans (regular/bold) and Instrument Serif (regular) are local copies of the existing commerce prototype fonts. Their SIL Open Font License notices are included in assets/. No Google Fonts request or external media request occurs at runtime. Production font delivery continues to follow WConvert's font permission rules.
