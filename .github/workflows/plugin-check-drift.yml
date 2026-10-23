@@ -66,6 +66,11 @@ jobs:
 
       - run: npm run build
 
+      # Not for the ZIP — the stage runs its own install and never copies this
+      # vendor/. bin/build.sh checks the design library before it stages, and
+      # that check loads the plugin's classes through the root autoloader.
+      - run: composer install --no-interaction --no-progress
+
       - name: Stage the free tree
         run: bash bin/build.sh free
 
@@ -82,13 +87,13 @@ jobs:
         env:
           PLUGIN_CHECK_RESULTS: ${{ runner.temp }}/pinned.json
           PIN_VERSION: ${{ steps.pin.outputs.version }}
-        run: bash bin/plugin-check.sh dist/stage/wconvert "$PIN_VERSION"
+        run: bash bin/plugin-check.sh dist/stage/plain/wconvert "$PIN_VERSION"
 
       - name: Plugin Check, latest
         continue-on-error: true
         env:
           PLUGIN_CHECK_RESULTS: ${{ runner.temp }}/latest.json
-        run: bash bin/plugin-check.sh dist/stage/wconvert latest
+        run: bash bin/plugin-check.sh dist/stage/plain/wconvert latest
 
       # The diff is by CODE, not by file and line. A checker upgrade that
       # re-anchors an existing finding two lines down is not news; a check the
