@@ -61,7 +61,8 @@
     "templates:review:scope": "npm run templates:pilot && node tools/design-library/build/plan-review.mjs",
     "templates:controls:proof": "npm run templates:pilot && node tools/design-library/build/control-proof.mjs",
     "prototype:commerce": "vite --config tools/design-library/commerce-prototype/vite.config.mjs",
-    "prototype:winter": "vite --config tools/design-library/winter-prototype/vite.config.mjs"
+    "prototype:winter": "vite --config tools/design-library/winter-prototype/vite.config.mjs",
+    "preflight": "node bin/preflight.mjs"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^3.0.0",
@@ -98,6 +99,7 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "globals": "^15.15.0",
     "jsdom": "^26.0.0",
+    "picomatch": "^4.0.7",
     "terser": "^5.50.0",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.24.0",

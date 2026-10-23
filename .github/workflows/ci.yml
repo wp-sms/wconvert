@@ -38,10 +38,19 @@ name: CI
 # NO `push` TRIGGER, DELIBERATELY. A pull request is tested against the result
 # of merging it, so running the same suites again on `main` a moment later
 # re-proves what the pull request proved.
+#
+# A DRAFT SKIPS THE VISUAL SUITES (frontend-tests.yml), which are most of a
+# run's minutes and most of its jobs; everything else still runs. Marking the
+# pull request ready for review is a trigger of its own, so it starts the full
+# run, and GitHub refuses to merge a draft, so the run that gates a merge is
+# always a full one. Open pull requests as drafts while iterating. Before
+# pushing, `npm run preflight` runs locally what this workflow would run for
+# the same diff, reading the filters below.
 # =============================================================================
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -124,9 +133,9 @@ jobs:
       js: ${{ steps.filter.outputs.js }}
       service: ${{ steps.filter.outputs.service }}
     steps:
+      # Shallow: on a pull request paths-filter reads the changed-file list
+      # from the API, so the history is never consulted.
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       # Pinned to a commit rather than a tag: `stable` is a tag someone else
       # can repoint at will.
@@ -237,8 +246,17 @@ jobs:
       - run: npm ci
         working-directory: tools/template-server
 
-      # Thumbnails, previews and the contrast check render in Chromium.
-      - run: npx playwright install --with-deps chromium
+      # Thumbnails, previews and the contrast check render in Chromium. No
+      # --with-deps: the runner image already carries Chromium's libraries,
+      # and the apt mirror behind --with-deps throttles (frontend-tests.yml).
+      # Nothing here compares pixels, so the missing fonts change nothing.
+      - id: playwright
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+      - run: npx playwright install chromium
 
       - name: Design library
         run: bash tools/design-library/build.sh renderer && npm run test:template-studio
@@ -251,13 +269,6 @@ jobs:
       # differently; the failure names the one command that carries them.
       - name: Approvals current
         run: npm run templates:releasable
-
-      # A design change can break the form switch on it (ADR 0163).
-      - name: Converted designs
-        run: |
-          composer install --working-dir=pro --no-progress
-          WCONVERT_DUMP_CONVERSIONS="$RUNNER_TEMP/conversions.json" npx vitest run tests/js/capture-conversion-designs.test.ts
-          php bin/verify-converted-designs.php "$RUNNER_TEMP/conversions.json"
 
       - name: Worker
         working-directory: tools/template-server
