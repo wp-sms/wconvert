@@ -1,0 +1,27 @@
+[
+  {
+    "key": "mitten",
+    "method": "OpenAI ImageGen; original generated artwork",
+    "prompt": "Create ONE original clean playful object photograph for a sophisticated holiday ecommerce design. Square composition. Exactly one oversized cherry-red chunky knitted mitten gently curled around one tiny cobalt-blue gift box with a thin ivory ribbon. No person or arm, mitten freestanding like a soft sculpture. The unexpected size relationship is the joke. Rich wool fibres, tactile knit, crisp folded paper, studio editorial photography with a subtle soft grounding shadow. Warm pale blush seamless backdrop, nearly uniform #f2dedb. Entire mitten and gift fully visible, centred, filling only 65% of image, generous breathing room on all sides. Calm high-end graphic simplicity. No scenery, snow, stars, confetti, extra gifts, faces, animals, pattern border, text, letters, numbers, UI, watermark. Do not add any other objects."
+  },
+  {
+    "key": "cocoa",
+    "method": "OpenAI ImageGen; original generated artwork",
+    "prompt": "Create ONE original clean playful holiday still-life for a sophisticated ecommerce image. Square composition. Exactly one smiling gingerbread biscuit lounging in a small glossy deep-red cocoa cup as if it is a hot tub, two biscuit arms resting lazily over rim, one cookie knee protruding. The cookie has simple two icing-dot eyes and one small icing smile, no sunglasses or clothes. One cup, one cookie, nothing else. The visual joke is the relaxed pose. Studio clay-animation quality but realistic biscuit texture and glossy ceramics. Seamless pale butter-yellow #f3e4ac background, subtle soft shadow. Whole object visible, centred and occupying 65% of image with generous margins. No saucer, spoon, extra cookie, diving board, clouds, crumbs on the floor, scenery, stars, confetti, lettering, numbers, logos, watermark or UI."
+  },
+  {
+    "key": "snail",
+    "method": "OpenAI ImageGen; original generated artwork",
+    "prompt": "Create ONE original clean whimsical object photograph for an ecommerce Christmas ordering reminder. Square composition. A small sculptural snail made from matte cobalt-blue ceramic carries one cube-shaped warm coral gift box on its back instead of a shell. The gift box has a simple cream ribbon. Snail has two tiny rounded antennae and understated black-dot eyes, a slightly determined posture, no clothing. Minimal sophisticated design-toy still-life, tactile porcelain and folded paper, graphic strong silhouette, soft studio lighting. Entire single hybrid object visible, centred, only 65% of frame, generous empty margin on every side. Solid pale ice-blue seamless backdrop #dbe8f0 with faint grounding shadow. No racing track, goggles, wheels, scenery, Christmas tree, snow, stars, confetti, other gifts or decorative clutter. No text, numbers, logos, UI or watermark."
+  },
+  {
+    "key": "fold",
+    "method": "OpenAI ImageGen; original generated artwork",
+    "prompt": "Create ONE original clean graphic editorial photograph of a folded-paper fortune teller (classic origami cootie-catcher) as a playful holiday surprise. Square composition. One paper object only, half-open, resting on one point with four crisp triangular folds visible. Heavy uncoated ivory paper outside, bold tomato-red and cobalt-blue solid panels inside, one tiny green panel. No writing or numbers on any face. Interesting angular silhouette and clean folds, tactile paper edge, photographic hard-but-softened shadow. Pale warm ivory #f5eee2 seamless background. Object fully visible centred, occupying 60% of frame, enormous calm margins. Art directed graphic simplicity for an adult design store, not a children's craft scene. No hands, ribbon, extra objects, stars, confetti, scenery, texture overlay, text, logo, watermark or UI."
+  },
+  {
+    "key": "pear",
+    "method": "OpenAI ImageGen; original generated artwork",
+    "prompt": "Create ONE original playful surreal editorial product photograph for a New Year design campaign. Square composition. A single pear-shaped disco ball: recognisable elegant pear silhouette entirely tiled in tiny silver mirror squares, a short curved metallic stem and one polished leaf. No face, no limbs, no hat, no ribbon. The unexpected transformation of an everyday pear into a disco ball is the entire concept. Beautiful tactile reflective tiles, crisp form, sophisticated fashion-advertising studio light; restrained iridescent reflections only on the object. Entire pear visible, slightly tilted, centred, filling 63% of frame, broad empty margins. Flat soft lilac #d7cdea seamless background with simple gentle shadow. NO orbit rings, planets, stars, confetti, glitter clouds, extra fruit, scenery, text, numbers, logo, watermark or UI."
+  }
+]

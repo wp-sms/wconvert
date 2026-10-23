@@ -30,10 +30,4 @@ export const artwork = {
   villageBanner: { src: new URL('./assets/art/villageBanner.png', import.meta.url).href, bg: '#9fc0c3', alt: "Winter cottage and pine trees", width: 2100, height: 1050 },
   bookBanner: { src: new URL('./assets/art/bookBanner.png', import.meta.url).href, bg: '#d5ddce', alt: "Winter book with a tree on its cover", width: 2100, height: 1050 },
   envelopeBanner: { src: new URL('./assets/art/envelopeBanner.png', import.meta.url).href, bg: '#e6c3b7', alt: "Sealed winter letter", width: 2100, height: 1050 },
-  yeti: { src: new URL('./assets/art/yeti.png', import.meta.url).href, bg: '#a9d4d6', alt: "Friendly snowy yeti carrying a wrapped present", width: 1500, height: 1250 },
-  ginger: { src: new URL('./assets/art/ginger.png', import.meta.url).href, bg: '#f7cabc', alt: "Gingerbread house with icing and a smiling cookie", width: 1500, height: 1250 },
-  penguin: { src: new URL('./assets/art/penguin.png', import.meta.url).href, bg: '#b8c5ed', alt: "Penguin gift courier on a wooden sled", width: 1500, height: 1250 },
-  giftcat: { src: new URL('./assets/art/giftcat.png', import.meta.url).href, bg: '#33304f', alt: "Ginger cat peeking from a ribboned present", width: 1500, height: 1250 },
-  party: { src: new URL('./assets/art/party.png', import.meta.url).href, bg: '#edb7c7', alt: "Rabbit and cat celebrating in striped party hats", width: 1500, height: 1250 },
-  giftcatBanner: { src: new URL('./assets/art/giftcatBanner.png', import.meta.url).href, bg: '#33304f', alt: "Ginger cat peeking from a ribboned present", width: 2500, height: 1250 },
 };

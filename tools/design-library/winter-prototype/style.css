@@ -94,31 +94,30 @@
 .t-hours .close{top:28px;inset-inline-end:26px}
 @media(max-width:650px){.t-sleigh .bar-copy,.t-pickup .bar-copy{flex:1 1 100%}.t-chapter h1{font-size:44px!important}}
 
-/* Playful five: ordinary artwork panes and the shipping decoration renderer. */
+
+/* Five clear ideas: editable type, one replaceable object, quiet motion. */
 .playful-link{display:inline-block;color:#98443e;font-weight:700;margin:5px 0 4px;text-underline-offset:5px}
-.play-art{position:relative;isolation:isolate;min-width:0;display:flex;align-items:center}
-.play-art .artwork{width:100%;background:transparent;position:relative}
-.play-art .artwork img{width:100%;height:auto;display:block}
 .campaign{--wc-fg:var(--fg);--wc-accent:var(--accent);--wc-accent-fg:var(--on);--wc-muted:var(--fg)}
-.campaign .wc-decorations{pointer-events:none}
-.t-yeti{display:grid;grid-template-columns:46% 54%;--bg:#eef3df;--fg:#244d59;--accent:#a53648;--on:#fff5dc}
-.t-yeti .polar-art{background:#a9d4d6;--wc-fg:#fff9e7}
-.t-yeti h1{font:700 56px/.98 DM;letter-spacing:-.055em}
-.t-yeti .copy{padding:46px 30px 32px}
-.t-yeti .countdown b{font-size:30px}.t-yeti .countdown>span{min-width:36px}.t-yeti .countdown i{font-size:18px}
-.t-ginger{--bg:#fff1d7;--fg:#803d37;--accent:#a63742;--on:#fff4da;padding:42px;display:grid;grid-template-columns:1fr 1fr;gap:0 28px;border:6px solid #a63742}
-.bakery-heading{grid-column:1/-1;text-align:center}.t-ginger h1{font:50px/.98 Instrument;letter-spacing:-.02em;margin:18px 0 24px}.bakery-art{background:#f7cabc;border-radius:90px 90px 4px 4px;overflow:hidden;--wc-fg:#a63742}
-.bakery-action{display:flex;flex-direction:column;justify-content:center;min-width:0}.t-ginger .cta{width:100%}
-.t-penguin{--bg:#e9edf8;--fg:#293b63;--accent:#35466f;--on:#fff4dc}.courier-art{background:#b8c5ed;--wc-fg:#fff4dc}.t-penguin h1{font:700 38px/1.04 DM!important;letter-spacing:-.045em}.t-penguin .copy{padding:28px}.t-penguin .countdown b{font-size:31px}.t-penguin .countdown>span{min-width:39px}
-.t-giftcat{display:grid;grid-template-columns:42% 58%;--bg:#f6dfcd;--fg:#4a3553;--accent:#83415c;--on:#fff1d6}.cat-panel{background:#33304f;display:flex;flex-direction:column;justify-content:center;min-width:0}.cat-art{--wc-fg:#f2c463}.peeking-panel{position:relative;background:#33304f;color:#f2c463;padding:24px;min-height:70px;--wc-accent-fg:#f2c463}.peeking-panel .eyebrow{margin:0;padding:0;max-width:65%;font-size:10px}.t-giftcat h1{font:48px/1.02 Instrument;letter-spacing:-.025em}.t-giftcat .copy{padding:46px 30px 32px}
-.t-party{display:grid;grid-template-columns:51% 49%;--bg:#45395e;--fg:#fff0d6;--accent:#f0be65;--on:#45395e}.party-intro{padding:70px 45px;display:flex;flex-direction:column;justify-content:center;min-width:0}.campaign.t-party h1{font:700 clamp(48px,6.5vw,90px)/.98 DM;letter-spacing:-.06em}.party-intro .cta{max-width:420px}.party-scene{display:flex;flex-direction:column;justify-content:center;background:#edb7c7;min-width:0}.party-art{--wc-fg:#fff2d6}.party-deadline{background:#f4ca6d;color:#45395e;padding:30px 36px}.party-deadline .timer-wrap{margin:0}.party-deadline .countdown{justify-content:space-between}.party-deadline .countdown b{font-size:45px}
+.object-stage{position:relative;isolation:isolate;min-width:0;display:flex;align-items:center;justify-content:center}
+.object-art{position:relative;min-width:0;width:100%}.object-art img{display:block;width:100%;height:auto;object-fit:contain}
+.object-stage{padding:12px}.object-stage .wc-decorations{opacity:.65}
 .motion-off .wc-decoration-motion,.is-thumbnail .wc-decoration-motion{animation:none!important}
+/* 36: a compact editorial poster with the offer as live type. */
+.t-mitten{width:490px;--bg:#f2dedb;--fg:#632735;--accent:#8f2940;--on:#fff5e8;border-radius:12px}
+.warmth-heading{padding:35px 30px 0}.warmth-title{display:flex;gap:20px;align-items:center;justify-content:space-between}.t-mitten h1{font:700 49px/.95 DM;letter-spacing:-.055em;margin:18px 0}.offer-badge{font:46px/.9 Instrument;border:1px solid var(--fg);border-radius:50%;width:94px;height:94px;flex:0 0 94px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0}.offer-badge span{font:11px DM;letter-spacing:.14em;margin-top:6px}
+.warmth-art .object-art{max-width:310px}.warmth-footer{padding:0 30px 30px}.warmth-footer .body-copy{font-size:15px}.warmth-footer .timer-wrap{border-top:1px solid #63273544;padding-top:18px}.t-mitten .countdown b{font-size:29px}.t-mitten .countdown{justify-content:space-between}.t-mitten .countdown>span{min-width:30px}
+/* 37: quiet humour, a two-pane editorial feature. */
+.t-cocoa{display:grid;grid-template-columns:52% 48%;--bg:#f3e4ac;--fg:#532738;--accent:#642742;--on:#fff6da;border-radius:4px}.cocoa-copy{padding:50px 36px;min-width:0;display:flex;flex-direction:column;justify-content:center}.t-cocoa h1{font:60px/.95 Instrument;letter-spacing:-.035em}.cocoa-art{background:#f3e4ac}.t-cocoa .cta{max-width:340px}.t-cocoa .fine-print{margin-top:20px}
+/* 38: an image/date row above a real ordering reminder. */
+.t-snail{--bg:#dbe8f0;--fg:#234454;--accent:#254f64;--on:#fff5e3;border-radius:14px}.snail-top{display:grid;grid-template-columns:40% 60%;align-items:center;padding:33px 24px 0}.dispatch-stamp{border:1px solid #23445466;padding:16px 8px;text-align:center;display:flex;flex-direction:column;align-items:center}.dispatch-stamp .eyebrow{padding:0;margin:0 0 7px;font-size:9px}.dispatch-stamp strong{font:68px/.9 Instrument}.dispatch-stamp>span{font-size:10px;letter-spacing:.1em;margin-top:8px}.snail-copy{padding:28px}.t-snail h1{font:44px/.97 Instrument!important}.t-snail .countdown b{font-size:30px}.t-snail .countdown>span{min-width:36px}.t-snail .timer-wrap{padding-top:20px;border-top:1px dashed #23445466}
+/* 39: folded-paper invitation; the actual signup is ordinary editor content. */
+.t-fold{--bg:#f5eee2;--fg:#263f72;--accent:#25498e;--on:#fff7e9;width:720px;border:1px solid #263f7244}.fold-heading{padding:38px 36px 0}.t-fold h1{font:62px/.95 Instrument;letter-spacing:-.04em;margin:20px 0}.fold-content{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);padding:0 36px 36px;gap:20px}.fold-form{min-width:0;padding-top:15px}.t-fold .body-copy{font-size:15px}.fold-art{align-self:start;margin-top:10px}.unfold-ack-art{display:flex;align-items:center;background:#f5eee2}.t-fold.ack{grid-template-columns:32% 68%}
+/* 40: a full-page typographic composition with one surreal object. */
+.t-pear{display:flex;flex-direction:column;--bg:#d7cdea;--fg:#352b50;--accent:#352b50;--on:#fff1d8;padding:45px 5vw}.pear-top{display:flex;justify-content:space-between;align-items:center;gap:25px;padding-inline-end:35px}.pear-top .eyebrow{padding:0;margin:0}.pear-offer{font-size:11px;letter-spacing:.1em;margin:0}.pear-main{display:grid;grid-template-columns:53% 47%;align-items:center;flex:1;gap:0;min-height:0}.pear-copy{min-width:0}.campaign.t-pear h1{font:clamp(70px,8.5vw,130px)/.88 Instrument;letter-spacing:-.045em;margin:30px 0}.pear-copy .body-copy{max-width:400px}.pear-footer{display:grid;grid-template-columns:1fr 1fr;gap:20px 50px;border-top:1px solid #352b5055;padding-top:25px;align-items:center}.pear-footer .timer-wrap{margin:0}.pear-footer .fine-print{grid-column:1/-1;margin:0}.pear-footer .countdown b{font-size:34px}.pear-footer .cta{width:100%}
 @media(max-width:650px){
- .t-yeti,.t-giftcat,.t-party{grid-template-columns:minmax(0,1fr)}
- .t-yeti .polar-art .artwork,.cat-art .artwork{max-width:330px;margin:auto}
- .t-yeti h1{font-size:43px}.t-yeti .copy,.t-giftcat .copy{padding:30px 25px}
- .t-ginger{display:flex;flex-direction:column;padding:30px 23px;border-width:5px;gap:20px}.t-ginger h1{font-size:42px;margin-bottom:0}.bakery-heading{text-align:start}.bakery-action .body-copy{margin-top:0}
- .t-penguin h1{font-size:36px!important}.t-penguin .copy{padding:28px 24px}
- .t-giftcat h1{font-size:44px}.peeking-panel{padding:17px 25px;min-height:52px}
- .party-intro{padding:65px 27px 30px}.t-party h1{font-size:53px!important}.party-deadline{padding:25px}.party-deadline .countdown b{font-size:36px}
+ .warmth-heading{padding:33px 24px 0}.t-mitten h1{font-size:39px}.offer-badge{font-size:37px;width:75px;height:75px;flex-basis:75px}.warmth-title{gap:10px}.warmth-art .object-art{max-width:220px}.warmth-footer{padding:0 24px 26px}.t-mitten .countdown b{font-size:25px}
+ .t-cocoa{grid-template-columns:minmax(0,1fr)}.cocoa-copy{padding:38px 27px 10px}.t-cocoa h1{font-size:50px}.cocoa-art .object-art{max-width:330px}.cocoa-art{padding:0 20px 15px}
+ .snail-top{padding:42px 22px 0}.dispatch-stamp strong{font-size:62px}.snail-copy{padding:27px 24px}.t-snail h1{font-size:42px!important}
+ .fold-heading{padding:38px 25px 0}.t-fold h1{font-size:51px}.fold-content{grid-template-columns:1fr;padding:0 25px 28px;gap:0}.fold-art{margin:0}.fold-art .object-art{max-width:170px}.fold-form{padding:0}.t-fold.ack{grid-template-columns:1fr}.unfold-ack-art .object-art{width:180px;margin:auto}
+ .t-pear{padding:55px 27px 30px}.pear-top{align-items:start;flex-direction:column;gap:12px}.pear-main{grid-template-columns:1fr}.campaign.t-pear h1{font-size:70px!important}.pear-art .object-art{max-width:310px}.pear-footer{grid-template-columns:1fr;gap:23px}.pear-footer .countdown{justify-content:space-between}.pear-footer .countdown b{font-size:30px}
 }

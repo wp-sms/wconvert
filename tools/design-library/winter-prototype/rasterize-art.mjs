@@ -9,7 +9,6 @@ const browser = await chromium.launch();
 const page = await browser.newPage();
 const records = [];
 const labels = {
-  yeti: 'Friendly snowy yeti carrying a wrapped present', ginger: 'Gingerbread house with icing and a smiling cookie', penguin: 'Penguin gift courier on a wooden sled', giftcat: 'Ginger cat peeking from a ribboned present', party: 'Rabbit and cat celebrating in striped party hats',
   moon: 'Cream crescent moon', flower: 'Terracotta eight-petal flower',
   flowerGreen: 'Green eight-petal flower', advent: 'Four illustrated festive tiles',
   villageWide: 'Snow-covered village panorama', ribbon: 'Wrapped Christmas gift',
@@ -26,10 +25,6 @@ try {
     const [, w, h] = source.match(/viewBox="0 0 (\d+) (\d+)"/);
     const scale = Number(w) <= 100 ? 3 : 2.5;
     const width = Math.round(w * scale), height = Math.round(h * scale);
-    // Transparent character assets let the native decoration layer sit behind
-    // the illustration, exactly as it does in a normal editor image panel.
-    const renderSource = ['yeti','ginger','penguin','giftcat','party','giftcatBanner'].includes(key)
-      ? source.replace(/<rect width="\d+" height="\d+" fill="[^"]+"\/>/, '') : source;
     const png = await page.evaluate(async ({ source, width, height }) => {
       const image = new Image();
       image.src = URL.createObjectURL(new Blob([source], { type: 'image/svg+xml' }));
@@ -39,7 +34,7 @@ try {
       canvas.getContext('2d').drawImage(image, 0, 0, width, height);
       URL.revokeObjectURL(image.src);
       return canvas.toDataURL('image/png').split(',')[1];
-    }, { source: renderSource, width, height });
+    }, { source, width, height });
     await writeFile(new URL(`${key}.png`, target), Buffer.from(png, 'base64'));
     const bg = source.match(/<rect width="\d+" height="\d+" fill="([^"]+)"/)?.[1] || 'transparent';
     records.push(`  ${key}: { src: new URL('./assets/art/${key}.png', import.meta.url).href, bg: '${bg}', alt: ${JSON.stringify(labels[key]||labels[key.replace('Banner','')])}, width: ${width}, height: ${height} },`);

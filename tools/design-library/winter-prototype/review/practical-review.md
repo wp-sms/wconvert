@@ -71,20 +71,14 @@ All entries below were reviewed as prototype candidates. “Setup” names what 
 
 ## Playful extension assessment
 
-The five additional Pro designs use the same layout and image vocabulary. Their personality comes from original character images and native decoration groups. 36, 38 and 40 use real example deadlines; 37 is a simple bakery link; 39 is a one-field signup with an acknowledgement and code. No imaginary games, character-animation controls or new capture mechanisms are proposed. The native decoration renderer runs directly in these five prototypes, but the complete designs still need native authoring.
+The five additional Pro designs use ordinary replaceable images, live text and native sparkle groups. 36, 38 and 40 use fixed example deadlines; 37 is a simple shop link; 39 is a one-field signup with an acknowledgement and code. The artwork uses a single unexpected object per image, with no dense scenery or text. No games, animated character controls or new capture mechanisms are proposed. These remain visual prototypes pending native authoring.
 
-| # | Practical job and placement | Editor composition / reuse | Setup or constraint |
+| # | Visitor purpose | Composition | Merchant setup |
 | --- | --- | --- | --- |
-| 36 | Playful Christmas sale popup | Yeti image/text split with countdown | Genuine 20% gift offer ending 20 December |
-| 37 | Bakery gift feature within a page | Heading, image/action split, framed panel | Link to actual bakery gifts; no pretend ordering form |
-| 38 | Christmas delivery reminder | Penguin image above text and timer | 18 December cutoff and real dispatch policy; no arrival guarantee |
-| 39 | Gift newsletter with welcome code | Cat image panel, optional eye-decoration strip, form panel | Valid 15% code; remove the eye group independently when repurposing |
-| 40 | Prominent New Year sale invitation | Bold copy beside party image and timer panel | Genuine 20% offer ending 5 January; use a deliberate fullscreen trigger |
+| 36 | Christmas gift offer | Mitten-and-gift poster, live offer badge, countdown footer | Real 20% offer ending 20 December |
+| 37 | Treats and small gifts | Short editorial invitation beside cocoa-cookie photograph | Relevant gift edit/shop link |
+| 38 | Ordering reminder | Parcel snail beside editable date stamp, details below | Actual order cutoff and delivery-area link |
+| 39 | Gift newsletter with welcome code | Folded-paper image, email form, separate acknowledgement | Valid 15% welcome code and signup destination |
+| 40 | New Year sale | Pear mirrorball beside live typography, countdown footer | Real 20% offer ending 5 January; deliberate fullscreen trigger |
 
-Final visual review covers all five at 320 and 1000px and the new acknowledgement, plus 649/651px transition views with longer CTAs. The art stays intact, image panels precede copy on stacked character layouts, and text/buttons remain still. The party layout intentionally places copy before its illustrated scene on phones. Checkbox first-line alignment, whole-label clicking and enabled/paused/reduced native motion were checked separately in `playful-audit.json`.
-
-## Evidence and limits
-
-The JSON reports beside this file record normal layout, interaction, contrast and stress checks. Contact sheets show all 40 at desktop and 320px. Stress cases cover 40 designs × three widths × normal/long-copy/fallback-font/RTL variants (480 cases). Additional short-phone checks submit all 15 forms at 320×568 and verify that all 40 still expose their headline/action with artwork hidden. Hiding artwork checks semantic independence; it does not prove automatic deletion or collapse of native image panes.
-
-The native implementation must additionally validate all screens against the shipping vocabulary, review actual Keep/Sample content transfer and form conversion, test themes and real reward states, publish image rights metadata, verify installation and collection discovery, and boot and submit in real WordPress. These remain explicit future gates, not passed checks.
+Review covers desktop, 320px phones, 649/651px layout transitions with longer CTAs and design 39's acknowledgement. All imagery uses contain fit. Copy remains meaningful if artwork is hidden. Two optional sparkle decorations occupy the artwork panel edges, away from fields and actions. Checkbox first-line alignment, whole-label clicking and enabled/paused/reduced native motion are checked in `playful-audit.json`.

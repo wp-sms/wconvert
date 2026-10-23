@@ -43,17 +43,17 @@ Display every eligible catalogue member before installation with clear Pro badge
 
 The sample deadlines are 1/18/20/23/24 December 2026 and 5 January 2027 at 20:00 UTC, matching the advertised calendar dates. These are review fixtures, not ready-to-publish merchant deadlines. Native promotion must connect countdowns to the Optin's end date, explicitly configure merchant dates/timezone and verify the real expiry contract. No evergreen countdown or promised delivery guarantee is implied.
 
-13 designs include optional decorative motion. Concepts 36–40 reuse the shipping decoration renderer directly, with floating/blinking sparkles and a blinking-eyes group in 39. The earlier eight represent the same native sparkle vocabulary. Artwork itself stays static. The earlier prototype CSS motion is illustrative; the five additions use the existing renderer. No new animation runtime is introduced. Pause motion and reduced-motion preferences stop all decorative animation. Snowglobe glass, candles, ribbons and scenery do not animate.
+13 designs include optional decorative motion. Concepts 36–40 reuse the shipping decoration renderer directly, with two restrained floating/blinking sparkles per artwork panel. The earlier eight represent the same native sparkle vocabulary. Artwork itself stays static. The earlier prototype CSS motion is illustrative; the five additions use the existing renderer. No new animation runtime is introduced. Pause motion and reduced-motion preferences stop all decorative animation. Snowglobe glass, candles, ribbons and scenery do not animate.
 
 ## Editor-friendly revision — 23 October 2026
 
-The review identified decoration that looked like a custom editor feature and object illustrations clipped by enlarged, upward-offset SVGs. The prototype now uses 36 exported PNG assets, including wide banner variants via ordinary image blocks. The source vectors remain authoring inputs only; no campaign renders custom inline SVG artwork. The shipping decoration renderer supplies its own small built-in shapes.
+The review identified decoration that looked like a custom editor feature and object illustrations clipped by enlarged, upward-offset SVGs. The prototype now uses 30 exported illustration PNG assets and five original AI-generated object photographs, including wide banner variants via ordinary image blocks. The source vectors remain authoring inputs only; no campaign renders custom inline SVG artwork. The shipping decoration renderer supplies its own small built-in shapes.
 
 - Complete object illustrations use contain fit with no negative margins or enlargement. Candles, snowglobes, trees, books, gifts and mugs stay intact at desktop and phone widths. Surrounding image panes match the asset background, including the entire reading-room left column.
 - Removed the postage stamps in 11 and 12, the oversized arrow in 27, the extra mark in 09 and the arrows inside primary buttons. Buttons now use simple centred text, matching the native button vocabulary.
 - The moon mark in 32 and flowers in 14/31 are regular replaceable images. The native icon chooser supports check, star, bolt, gift, clock and truck; these custom symbols are not part of that list. An image can be replaced/removed as a whole; its internal drawing is not separately editable.
 - The decorative tile pattern in 17 is one image without pretend calendar numbers. Removed CSS-only blend treatment, vertically written year text and the letter's repeating-border effect. The year, calendar deadline and all meaningful copy remain live text.
-- Decorative motion remains independent of ordinary image replacement. The playful extension below adds native blinking eyes as well as sparkles.
+- Decorative motion remains independent of ordinary image replacement. The five new object compositions use only sparse native sparkles.
 
 Regenerate the original raster assets with `node tools/design-library/winter-prototype/rasterize-art.mjs`. No new editor controls or native runtime behaviour are introduced in this prototype revision.
 
@@ -65,13 +65,13 @@ Regenerate the original raster assets with `node tools/design-library/winter-pro
 
 Five more Pro concepts bring the batch to **40: 30 Pro / 10 Free**, with 16 countdowns and 13 motion treatments. They stay in the same proposed collection and existing theme filters. The gallery links directly to the additions.
 
-- **36 / Yeti, set, gift:** a big gift-carrying yeti, bold offer text and a real 20 December countdown. Popup.
-- **37 / The gingerbread bakery:** a cookie storefront, rounded image pane and a clear bakery shop action. Inline.
-- **38 / Special snow delivery:** a penguin courier on a sled, with an 18 December order cutoff. Slide-in.
-- **39 / No peeking club:** a cat inside a gift, a 15% signup and an independent blinking-eyes strip, using the Halloween decoration vocabulary. Popup.
-- **40 / The tiny party:** rabbit-and-cat party artwork, oversized sale typography and a quiet countdown panel ending 5 January. Fullscreen.
+- **36 / Gift a little warmth:** an oversized knitted mitten hugging a tiny gift, with editable offer text and a 20 December countdown. Popup.
+- **37 / The cocoa break:** one gingerbread cookie relaxing in a cocoa cup, beside a clear shop invitation. Inline.
+- **38 / No last-minute snail mail:** a ceramic snail carrying a parcel, beside a live 18 December date stamp and ordering countdown. Slide-in.
+- **39 / Good things unfold:** a single folded-paper surprise beside a normal email form and 15% welcome code acknowledgement. Popup.
+- **40 / A fresh kind of party:** one pear-shaped mirrorball, large live typography and a quiet countdown footer ending 5 January. Fullscreen.
 
-Every illustration is a replaceable PNG; the new character images have transparent backgrounds so native decorations can sit behind them. Each has a matching panel colour, with a matching wide cat image on the acknowledgement. Characters stay static: floating or blinking decorations sit in the artwork panels, not over forms or buttons. The blinking-eyes strip is an independently removable decoration group; it does not animate or track the cat's face. No shake-the-globe, spin-to-win or pretend gift-unwrapping interaction is implied. Pause and reduced motion leave the complete design readable.
+[Creative research and rationale](review/creative-direction.md) records the references behind this revision. Each image has one focal idea, a quiet background and no baked-in copy. It is replaceable as a whole. Two small native sparkles sit at the panel edges; images, text, forms and buttons stay still. No interactive origami game or new editor animation control is implied. Pause and reduced motion leave the complete design readable.
 
 Wrapped consent labels now align the checkbox with the first text line, with a 3px optical offset. The entire label remains clickable and at least 44px tall. It should not be centred against the combined height of multiple lines.
 
@@ -131,12 +131,12 @@ Re-check every design through the native renderer on desktop and mobile, with lo
 | 33 | See you by the fire | Holiday info | Slide-in | Pro | — | — |
 | 34 | Holiday post | Holiday info | Inline | Free | — | — |
 | 35 | Winter hours | Holiday info | Slide-in | Pro | — | — |
-| 36 | Yeti, set, gift | Gifting | Popup | Pro | Yes | Sparkles |
-| 37 | The gingerbread bakery | Gifting | Inline | Pro | — | Sparkles |
-| 38 | Special snow delivery | Last-minute | Slide-in | Pro | Yes | Sparkles |
-| 39 | No peeking club | Signup | Popup | Pro | — | Eyes + sparkles |
-| 40 | The tiny party | New Year | Fullscreen | Pro | Yes | Sparkles |
+| 36 | Gift a little warmth | Gifting | Popup | Pro | Yes | Sparkles |
+| 37 | The cocoa break | Gifting | Inline | Pro | — | Sparkles |
+| 38 | No last-minute snail mail | Last-minute | Slide-in | Pro | Yes | Sparkles |
+| 39 | Good things unfold | Signup | Popup | Pro | — | Sparkles |
+| 40 | A fresh kind of party | New Year | Fullscreen | Pro | Yes | Sparkles |
 
 ## Assets and rights
 
-Artwork in art.mjs and playful-art.mjs is original vector source authored for this prototype and exported to assets/art/*.png by rasterize-art.mjs; no external photos, logos or generated stock images are included. DM Sans (regular/bold) and Instrument Serif (regular) are local copies of the existing commerce prototype fonts. Their SIL Open Font License notices are included in assets/. No Google Fonts request or external media request occurs at runtime. Production font delivery continues to follow WConvert's font permission rules.
+The first 30 illustration assets come from original vector source in art.mjs, exported to assets/art/*.png by rasterize-art.mjs. Five original object photographs in assets/creative/ were generated with OpenAI ImageGen; exact prompts are recorded in assets/creative/provenance.json. External reference campaign artwork was not copied or included. Generated originals remain unmodified. These five photographs are not regenerated by rasterize-art.mjs. DM Sans (regular/bold) and Instrument Serif (regular) are local copies of the existing commerce prototype fonts. Their SIL Open Font License notices are included in assets/. No Google Fonts request or external media request occurs at runtime. Production font delivery continues to follow WConvert's font permission rules.

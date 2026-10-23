@@ -1,6 +1,4 @@
 {
   "designs": 35,
-  "findings": [],
-  "reviewedAt": "2026-10-23",
-  "scope": "Prototype Chromium review; not native editor or WordPress verification"
+  "findings": []
 }

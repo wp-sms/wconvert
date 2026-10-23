@@ -11,7 +11,5 @@
     "boxTop": 501.328125,
     "labelTop": 498.328125,
     "clickHeight": 44
-  },
-  "reviewedAt": "2026-10-23",
-  "scope": "Prototype Chromium review; not native editor or WordPress verification"
+  }
 }
