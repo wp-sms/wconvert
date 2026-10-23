@@ -1,0 +1,47 @@
+{
+  "id": "winter-softer-beginning",
+  "revision": "dd5f1b977c0af435c5b15177512ce7931204b18dfe06656eeac65964a556c956",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "Sunrise imagery balances a calm January signup. The label and outline remain clear under dark and minimal theme changes.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-softer-beginning-320.png",
+          "sha256": "547086c548e346fcef6caa89f1b886ef6d41a1f0dfba398b0a8b9b03d1d514eb"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-softer-beginning-1440.png",
+          "sha256": "0fe35cf7725bd186bec9e636c69d4607acd0c3ee37d09f375625fe3479895a5e"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "dfac752a28e7c9e8217640b3cbda325310ee0fa974fdfc03e9ae9133a7517eb6"
+}

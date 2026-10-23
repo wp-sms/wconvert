@@ -1,0 +1,47 @@
+{
+  "id": "winter-fresh-start-club",
+  "revision": "55c85b1c678b0c2b743fc99c73e9d2dc1c9dbcfccf025691c008fa1845bf5ec3",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "A small replaceable flower and weekly-email promise distinguish this gentle signup; there is no decorative icon control users must reconstruct.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-fresh-start-club-320.png",
+          "sha256": "fe6bce595bcfbe1eda99e258022747f9eb139a9201f4d401e0f3b51369b69bde"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-fresh-start-club-1440.png",
+          "sha256": "ea9de84a5aeca55f04cbd60ee648722f34841593cb284ecba16bf33f2969d707"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "9bf61e15c3076c939151722fe8bf8176fb64b783eeef21c0dbb8df520057f518"
+}

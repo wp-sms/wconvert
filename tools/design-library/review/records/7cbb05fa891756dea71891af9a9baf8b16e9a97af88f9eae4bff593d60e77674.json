@@ -1,0 +1,47 @@
+{
+  "id": "winter-gift-atelier",
+  "revision": "efc7cadd56c5da335d88654512d85a17d72e004424d3d2f387f69ecbd7e1aed8",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "Botanical art and centred editorial copy retain a spacious fullscreen treatment; the real clock is subordinate to the shopping action.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-gift-atelier-320.png",
+          "sha256": "0605fae9e96ee1da86552190c0d9976d94a87f1dc296d9c8335d99f9cd50aefa"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-gift-atelier-1440.png",
+          "sha256": "ea4bca61672fc49b8cb3dfc8a6b059a03a6c03b7bd609929ed1e452e7a8871db"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "7cbb05fa891756dea71891af9a9baf8b16e9a97af88f9eae4bff593d60e77674"
+}

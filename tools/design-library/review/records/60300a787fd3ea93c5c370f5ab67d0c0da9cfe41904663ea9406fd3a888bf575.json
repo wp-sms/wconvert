@@ -1,0 +1,47 @@
+{
+  "id": "winter-ribbon-room",
+  "revision": "50c54f553715c8b5ff479ca53e4db836722bc52e25dc9f205e4247cb2154cee1",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "Ribbon artwork stays whole above the live offer on phones; the desktop split keeps the shopping action beside the image.",
+  "at": "2026-10-23T09:01:15.958Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-ribbon-room-320.png",
+          "sha256": "8394c1b8f9e091bec452aed5a5fd99979c62c93ac4db4bef523ba9c6c608f1ac"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-ribbon-room-1440.png",
+          "sha256": "972b27405084554bf138fc752ba18f722a3f7301e1f480ebd7f5194b918b822c"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "60300a787fd3ea93c5c370f5ab67d0c0da9cfe41904663ea9406fd3a888bf575"
+}

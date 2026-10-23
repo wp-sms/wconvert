@@ -1,0 +1,47 @@
+{
+  "id": "winter-first-page",
+  "revision": "f3f24e159c1afedd08c40351c7aba9586cea21a23193f8ef158d9b70dde5bca5",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "A large editable year anchors the compact New Year bar; the date label, offer, clock and action reflow into an ordered phone stack.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-first-page-320.png",
+          "sha256": "8a8ab524f0a703e09ca87f2b982d70481d611183893bf06d33f390cd6c6a5e84"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-first-page-1440.png",
+          "sha256": "e1e8250dfefe23b0a3fbf14e5b4c980c310898196fcfa945861f45058927c25b"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "1d157963b932a8d3800b569098ee4ab4f7d4704678056b0f4dd15731ff6e325e"
+}

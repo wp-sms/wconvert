@@ -1,0 +1,47 @@
+{
+  "id": "winter-dear-december",
+  "revision": "261700d62c81f4e122f7ef0e746494f48f24c7a0df64c13f29ad29ac5abcf815",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "The letter uses a top rule, live greeting and signature; the field sits on the paper without an extra filled wrapper.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-dear-december-320.png",
+          "sha256": "4f08d10c4588659b88dec31c68dea8b9d312eb06036e11ac82e007bd3396bd8b"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-dear-december-1440.png",
+          "sha256": "1f069e17a4f3d969b5775e55e698f4cfcba229119816f114f42478966df5cb6c"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "411991694985812e392baf4b4798b859054163bb59da1af7f162389f21f7e5dc"
+}

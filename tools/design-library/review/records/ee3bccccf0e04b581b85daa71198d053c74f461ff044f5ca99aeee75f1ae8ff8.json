@@ -1,0 +1,47 @@
+{
+  "id": "winter-candle-club",
+  "revision": "ad18260348af9406ad62b0a20fa5d56bef70e02c6f0eb5c0c6df04313665b527",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "Complete candle flames fit inside the banner. The email field is transparent against the plum card; acknowledgement repeats the candle image and reveals a copyable code.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-candle-club-320.png",
+          "sha256": "054a1aac546393e29e981f6534c726136506277e598df3a9420e1967d4714c67"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-candle-club-1440.png",
+          "sha256": "b1199a2ac9665e7124bb60817bc8d5a3566a328a0f3257edf0569446a0d42104"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "ee3bccccf0e04b581b85daa71198d053c74f461ff044f5ca99aeee75f1ae8ff8"
+}

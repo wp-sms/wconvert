@@ -1,0 +1,29 @@
+{
+    "tier": "pro",
+    "woocommerce": false,
+    "release": "918812d3cd550d8a23e61d578bcab01bfb4728ddbd446e1d090e8773dd51d02c",
+    "designs": 125,
+    "setups": 148,
+    "images": 43,
+    "skipped": {
+        "unavailable": [
+            "accessory-workbench",
+            "basket-companion",
+            "cart-accessories",
+            "cart-additions",
+            "coffee-finder-board",
+            "product-trio"
+        ],
+        "setup:unavailable": [
+            "add-useful-extras",
+            "basket-cross-sells",
+            "coffee-taste-finder",
+            "explore-compatible-extras",
+            "recommend-accessory",
+            "finish-the-set"
+        ]
+    },
+    "offline_designs": 125,
+    "keyed_names": true,
+    "result": "pass"
+}

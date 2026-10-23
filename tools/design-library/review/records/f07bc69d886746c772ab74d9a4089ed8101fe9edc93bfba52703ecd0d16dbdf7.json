@@ -1,0 +1,47 @@
+{
+  "id": "winter-tied-with-joy",
+  "revision": "7d6617f241ccb5f91183e1af8c9daa0fb4eb7117326d66801c7009af4e231f0a",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "The bow is a replaceable decorative image header, with live greeting below it. The phone view preserves the bow loops and separates them from the words, clock and offer button.",
+  "at": "2026-10-23T09:01:15.960Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-tied-with-joy-320.png",
+          "sha256": "48ec1ac195202f6c17d02280f045b06ce351b241e3492c0ee425cd39adcb4d36"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-tied-with-joy-1440.png",
+          "sha256": "4a648f1ba5ac99b7c81226b123a2c6ab6f37b0b2a1a95afba3eead3e1c698b69"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "f07bc69d886746c772ab74d9a4089ed8101fe9edc93bfba52703ecd0d16dbdf7"
+}

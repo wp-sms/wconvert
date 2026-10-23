@@ -1,0 +1,47 @@
+{
+  "id": "winter-santa-letter",
+  "revision": "dd63f4d689c67810584b585d7d63a8955ea0db44b66447da24d7be37968399ca",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "Santa is a replaceable illustration over a live letter. Email, consent, submit and coupon acknowledgement work through the normal capture path.",
+  "at": "2026-10-23T09:01:15.960Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-santa-letter-320.png",
+          "sha256": "df3d24f144eb4eead532f19afd4cd2c78f32fa934fffb57008d4f87b9c280822"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-santa-letter-1440.png",
+          "sha256": "4fc2b8ae5ba390d28d3d60bea0baeb313bc9891a3abf6e7111e0278bc9171231"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "e629947b1d4572346f294cf0fdd7cff6b47788139cdbec00c834fe327703d027"
+}

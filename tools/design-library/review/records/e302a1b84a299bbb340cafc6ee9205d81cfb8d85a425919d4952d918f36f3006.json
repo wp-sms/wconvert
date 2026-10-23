@@ -1,0 +1,47 @@
+{
+  "id": "winter-advent-letter",
+  "revision": "0142aaaa4231ab0a21edf3ae1d5406f5f4f694bde7852cd7088cf599c0a761a8",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "Advent art is one replaceable picture beside the seasonal signup; the phone reading order is picture, offer, field, consent, then acknowledgement.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-advent-letter-320.png",
+          "sha256": "e26894b241e7074ada2c764e12f5cd492e1f3c9d874189ad4b5050d02be040ad"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-advent-letter-1440.png",
+          "sha256": "7654c6c8738f1d3f0f1d5afe5eeae5dbde4c371e9e01d0273725bee48b3c2b60"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "e302a1b84a299bbb340cafc6ee9205d81cfb8d85a425919d4952d918f36f3006"
+}

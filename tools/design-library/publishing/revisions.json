@@ -640,6 +640,206 @@
       "revision": 1,
       "content": "cbab6de6b4052ccdbcb38664eccf6cee924e23a142a29b2b84d4e8f22a1627a7",
       "added": 281
+    },
+    "winter-advent-letter": {
+      "revision": 1,
+      "content": "82546c4668b333691092cbdc844fcecf780f6c534fba29f46748f574252a086e",
+      "added": 292
+    },
+    "winter-after-hours-atelier": {
+      "revision": 1,
+      "content": "ae5d7ddc482b67064bf374018668bb9426d7453fb1330bd51adab6c43022d7a6",
+      "added": 293
+    },
+    "winter-all-wrapped-up": {
+      "revision": 1,
+      "content": "f0d976aa0599e90255cf8caee2e85801e2939a5fea104af84970911ed01d3337",
+      "added": 294
+    },
+    "winter-before-the-bow": {
+      "revision": 1,
+      "content": "e61ad51e61906aba6bb1cd4416a76a85a050f807d7fd4adeffeaa0d46ec36379",
+      "added": 295
+    },
+    "winter-bright-new-chapter": {
+      "revision": 1,
+      "content": "b8640b6a250f416d39cc1b77f531fb5273979ea9d1e75c30c0e940df904c84d9",
+      "added": 296
+    },
+    "winter-by-the-fire": {
+      "revision": 1,
+      "content": "008be94724b2b8df56070787aff4d260c42f517702582bb1199495a4f29a8402",
+      "added": 297
+    },
+    "winter-candle-club": {
+      "revision": 1,
+      "content": "fa15dfb3e3aca693494baf5db7cbc2d58bfa5a5c517b788badd0de755f3bf554",
+      "added": 298
+    },
+    "winter-christmas-express": {
+      "revision": 1,
+      "content": "5f60391ea35b26af2db87aaa3e41ceb2719b248115757689838711c90b82fcf4",
+      "added": 299
+    },
+    "winter-dear-december": {
+      "revision": 1,
+      "content": "f9c6a217113959968c95c53ba6e0578ab8ec07e49ecbf9842f5f03044c8d5105",
+      "added": 300
+    },
+    "winter-digital-gift": {
+      "revision": 1,
+      "content": "6bc0032b9fb2ae6d71b977d8b00af7a4fed9ba119fb088acb2ca2e9724c1c658",
+      "added": 301
+    },
+    "winter-dispatch-desk": {
+      "revision": 1,
+      "content": "95f7f6d5cf3074bc522e860f8b0c437a5e207addfe3713cb11c5efe0dcf62a39",
+      "added": 302
+    },
+    "winter-final-sparkle": {
+      "revision": 1,
+      "content": "0a355fb9eb1d951b4fa58f214c643af946563bcab0db8ac1d420e9f105e6cc4f",
+      "added": 303
+    },
+    "winter-first-light-access": {
+      "revision": 1,
+      "content": "942642c67a2172f342b6909559afc1886db1a6da27de58ff3438aaf00ff31134",
+      "added": 304
+    },
+    "winter-first-page": {
+      "revision": 1,
+      "content": "3c88dd92a047f6306fc8996d095cf23529631082e6f1bd6748d12f94c792038a",
+      "added": 305
+    },
+    "winter-fresh-start-club": {
+      "revision": 1,
+      "content": "94b4b5332c6e83b24f8331d64285050f1af01b8dde60167aae26e7650b3bbede",
+      "added": 306
+    },
+    "winter-gift-atelier": {
+      "revision": 2,
+      "content": "ef04d9579d5946e3926ce8f340a978cece9329dcf2f8d287e6fef525d3a38ef4",
+      "added": 307
+    },
+    "winter-hello-2027": {
+      "revision": 1,
+      "content": "64a5f8da91648a5b629f928dc5631e1fe1e7eec90ee3d6e32b68fb04440df982",
+      "added": 308
+    },
+    "winter-hello-tomorrow": {
+      "revision": 1,
+      "content": "15d108cb2ce72876da5d2362864602c9bbec75332a4e12e6ee1772dc8386f96d",
+      "added": 309
+    },
+    "winter-holiday-post": {
+      "revision": 1,
+      "content": "547a812ee2bf247ee0233f2e40ffeb88a3f40f043965b8a5dbe4aefc93157f78",
+      "added": 310
+    },
+    "winter-last-sleigh": {
+      "revision": 1,
+      "content": "cb42b10e3b962e03c49fcd070a470a116e54fca165e5a95acc76bdd303c24cb1",
+      "added": 311
+    },
+    "winter-little-gift": {
+      "revision": 1,
+      "content": "54b4d894b98823742fe93ad13e808c4c145e0a7bc8398ebc895579b934e86d50",
+      "added": 312
+    },
+    "winter-midnight-garden": {
+      "revision": 1,
+      "content": "db70070af03debc47974909cb4baddfaefe3b23a8a5273e68cf6e0771d79d31d",
+      "added": 313
+    },
+    "winter-ornament-edit": {
+      "revision": 1,
+      "content": "7d8f470fb6c9a4e86acdaf52d2a86b6cfae2f623bad4f313bb891cee1068f95a",
+      "added": 314
+    },
+    "winter-paper-pine": {
+      "revision": 1,
+      "content": "78c3c29d8399b3b6c80e14a259a753b3500da957dd571acfd7f868eadd20c422",
+      "added": 315
+    },
+    "winter-pickup-window": {
+      "revision": 1,
+      "content": "53b5598a6a82d107a49a54ab888274a7eb17d38929aa42013410bd502ca166fb",
+      "added": 316
+    },
+    "winter-ribbon-reminder": {
+      "revision": 1,
+      "content": "e3bfb472de6fe9846d4008707fc8983b12866819309438d45babed54df54f772",
+      "added": 317
+    },
+    "winter-ribbon-room": {
+      "revision": 1,
+      "content": "c8ac73cc67442f584061c9b36dcdaa3fd958b071daffec0f70306c5d9afe5836",
+      "added": 318
+    },
+    "winter-santa-letter": {
+      "revision": 1,
+      "content": "1ae9daf3884cf63762ec1c3cd71340d7a5b807a99f1b395e24e028d6e51a8621",
+      "added": 319
+    },
+    "winter-shop-is-sleeping": {
+      "revision": 1,
+      "content": "bd05c3db14ac9c488ca1d2b01ff40a0723651e5c67d219e371fa6f96232b04a2",
+      "added": 320
+    },
+    "winter-small-kindness": {
+      "revision": 1,
+      "content": "e6144eddfa7b7b90e6e19e8febc4a31e2ac938b60dc4cb8b2681368a16b122c2",
+      "added": 321
+    },
+    "winter-snowglobe-society": {
+      "revision": 1,
+      "content": "4bb4cd024f6fca95f4a28d59af7e8a41042ebd0ee68508a94fec13fa0fc81c24",
+      "added": 322
+    },
+    "winter-softer-beginning": {
+      "revision": 1,
+      "content": "5a0b412bacb000e9693d3258a0e39853849d7dc0444c1d8ae88b2594ade8d421",
+      "added": 323
+    },
+    "winter-still-time": {
+      "revision": 1,
+      "content": "3181e3bbaa599d037f27d3e01e4e0ac0db94d75b044ac8dd2e5ade1d95aba984",
+      "added": 324
+    },
+    "winter-thoughtful-list": {
+      "revision": 2,
+      "content": "29a01781e3a6c6ce501eab946d8005451d4539b01f0f01b6296d93d832812db4",
+      "added": 325
+    },
+    "winter-tied-with-joy": {
+      "revision": 1,
+      "content": "87dead46d2de2ec389eaf8452c00253d99855e5c8be33abcfbceed4d4115dfa6",
+      "added": 326
+    },
+    "winter-winter-hours": {
+      "revision": 2,
+      "content": "2ca4515bbea28173eb2eb6f87bbb0c207283fc834910961bf508a72744507c90",
+      "added": 327
+    },
+    "winter-winter-postcards": {
+      "revision": 1,
+      "content": "b0d6016c7178af07890f5a5efbd005c82e90c114c1bce954d03b4527a7eac191",
+      "added": 328
+    },
+    "winter-winter-reading-room": {
+      "revision": 1,
+      "content": "836fa880601d3cfb2bf7224f651a44361e4bb44634fea8f2a9bc92a57db3ec6d",
+      "added": 329
+    },
+    "winter-winter-windows": {
+      "revision": 1,
+      "content": "0f4d3f8ea2d8ec37a6dd411fdbbdac200d88332cd9c481bb3bd58952f5032f24",
+      "added": 330
+    },
+    "winter-wrapped-in-colour": {
+      "revision": 1,
+      "content": "b8f532e61097acea8683ad9947af8475760be38d21ecbb01cbd6c582246c7967",
+      "added": 331
     }
   },
   "setups": {
@@ -1457,6 +1657,206 @@
       "revision": 1,
       "content": "76036ac001128a230081865f2c72959cfb3b093610f085fc88af571dddb1c304",
       "added": 291
+    },
+    "winter-advent-letter": {
+      "revision": 1,
+      "content": "d28fb89371e31671c5dbbf93b2b28419f037a76ab15828fd28ec505e7b8b7939",
+      "added": 332
+    },
+    "winter-after-hours-atelier": {
+      "revision": 1,
+      "content": "b4e2709061fd6234c38cfcb16b9d3c3a1974ae4ec5e12b722fa13d1af04368a4",
+      "added": 333
+    },
+    "winter-all-wrapped-up": {
+      "revision": 1,
+      "content": "3b7295cfe8a03cf72b6c2086e60bdfa2a8be253a988d496857ab570a0717a519",
+      "added": 334
+    },
+    "winter-before-the-bow": {
+      "revision": 1,
+      "content": "6b16db654f7f9324fe2e4ed52a92e5d14727fd3ef30acac427788610c4e2f7db",
+      "added": 335
+    },
+    "winter-bright-new-chapter": {
+      "revision": 1,
+      "content": "aa0021261a3e81d8f6b6c94c76a70a8a998f1480f02b0764b7a992ee665bf231",
+      "added": 336
+    },
+    "winter-by-the-fire": {
+      "revision": 1,
+      "content": "a42bd5af6a27cba4deb13f588adf0573c03203b4c019f29702a032dd9e951a06",
+      "added": 337
+    },
+    "winter-candle-club": {
+      "revision": 1,
+      "content": "41066ff374a7f749cceb191510096f6e2d71264a35ea5ad629cef88fb1860d8f",
+      "added": 338
+    },
+    "winter-christmas-express": {
+      "revision": 1,
+      "content": "af1df4d01d4b2a7cb7e9517db76d6544e1a282668e7cc22f291c8741f2a3c219",
+      "added": 339
+    },
+    "winter-dear-december": {
+      "revision": 1,
+      "content": "c55804efda8f1854ab021f6281dd1111e46cbf164d8d0e802ce94b8003e06ff8",
+      "added": 340
+    },
+    "winter-digital-gift": {
+      "revision": 1,
+      "content": "56046fa9081e9bc7e9ac2443361ab30c171d211ae58bccdffa0bb679faff927d",
+      "added": 341
+    },
+    "winter-dispatch-desk": {
+      "revision": 1,
+      "content": "6809ade8d017024d6e0c86f76f2ea99768386ce19b85ac0c523f7865e0de16bf",
+      "added": 342
+    },
+    "winter-final-sparkle": {
+      "revision": 1,
+      "content": "65c6ac380b2a1ddbcddbaa9d7edef05319bf0ceb0fa827518a6f860251e407c3",
+      "added": 343
+    },
+    "winter-first-light-access": {
+      "revision": 1,
+      "content": "dc5f702e59b48e53791ffda7ed10fb9bc6f1fff49648331b14e3ab2480242a95",
+      "added": 344
+    },
+    "winter-first-page": {
+      "revision": 1,
+      "content": "b46d97882a13c71986d07abb0777b0c9b7e21fcf885dc9102403e86fe6a189e8",
+      "added": 345
+    },
+    "winter-fresh-start-club": {
+      "revision": 1,
+      "content": "820bb753519404f57a7154fafea90a8138934757b0f4f75c988e4298eb0703b4",
+      "added": 346
+    },
+    "winter-gift-atelier": {
+      "revision": 2,
+      "content": "d1b4806aab0ca29ebd9c12185e67da0226ccbe3d14a16db5031a5f5dd88e49f7",
+      "added": 347
+    },
+    "winter-hello-2027": {
+      "revision": 1,
+      "content": "8f46a882ab5f8a78d8c889780c6f3aebcb6d7b8b435e333fa64947a082384ede",
+      "added": 348
+    },
+    "winter-hello-tomorrow": {
+      "revision": 1,
+      "content": "700caf50c52290ea949a739b60d14f7a5241d208e2009f95ed3055478e9b4f2b",
+      "added": 349
+    },
+    "winter-holiday-post": {
+      "revision": 1,
+      "content": "9898df48a8cba68066bee42e41eefff358c336a5a03e40dfef0d1b94de3db15e",
+      "added": 350
+    },
+    "winter-last-sleigh": {
+      "revision": 1,
+      "content": "84c419adedef8d005ac0227488c07ecda0b31d4869e0ae852b3c3f858e6ba52a",
+      "added": 351
+    },
+    "winter-little-gift": {
+      "revision": 1,
+      "content": "6ede98e4a276079c87211614bf253c03156a85ae6aa90dc5cbd1cdc24531dd46",
+      "added": 352
+    },
+    "winter-midnight-garden": {
+      "revision": 1,
+      "content": "e92699cf105815dcd7fe5995b98b70567848f2123b2d4fa949e9944cca3f54d3",
+      "added": 353
+    },
+    "winter-ornament-edit": {
+      "revision": 1,
+      "content": "7f1cc192194941acce47955018b8fe59b5f320eb8a4fb8eb37f1649864013663",
+      "added": 354
+    },
+    "winter-paper-pine": {
+      "revision": 1,
+      "content": "30a9f98ba65d41dae02b1ede1b8a122c41b2088e806e1dbb4703ba84f207fa26",
+      "added": 355
+    },
+    "winter-pickup-window": {
+      "revision": 1,
+      "content": "bd8329de1e12a44cc418b52b5075a5ff61f9917c620fc393207b8b704137b9f1",
+      "added": 356
+    },
+    "winter-ribbon-reminder": {
+      "revision": 1,
+      "content": "6916bbc3c016fdcec15026c93d3f1deb1d8130a3e1adfca3e24b6c0a5ca90604",
+      "added": 357
+    },
+    "winter-ribbon-room": {
+      "revision": 1,
+      "content": "3e050a7739b09458e11ab0c1055e4e00192eb8b0519c18e5ee5f04999fc1fce4",
+      "added": 358
+    },
+    "winter-santa-letter": {
+      "revision": 1,
+      "content": "33d40a93fd4d19d8f754e6dc7eb4a27ca16e65f6daa4ea3bd55dc79e89d4f1fd",
+      "added": 359
+    },
+    "winter-shop-is-sleeping": {
+      "revision": 1,
+      "content": "9552d1c11214683396d73a9d351057b4e551b871fb346797a0da03313e2c7165",
+      "added": 360
+    },
+    "winter-small-kindness": {
+      "revision": 1,
+      "content": "342a65afde546d73e61ea440d46b74a6c7ceff62b9a52e0b14f1852912bfce84",
+      "added": 361
+    },
+    "winter-snowglobe-society": {
+      "revision": 1,
+      "content": "462daccf7bdd1255cf67665258525efd51838ea0c99e06951a8ed8e61d708b68",
+      "added": 362
+    },
+    "winter-softer-beginning": {
+      "revision": 1,
+      "content": "c5295e3b44a660bb54070792fe38bcccbbac8a1b06b731921072e2c09a1c7d3c",
+      "added": 363
+    },
+    "winter-still-time": {
+      "revision": 1,
+      "content": "241966f1cd8b6225388a332cf0955fecb6bba96d22ed9435d2a9bbed104fef46",
+      "added": 364
+    },
+    "winter-thoughtful-list": {
+      "revision": 2,
+      "content": "a4933caa653a3282af18e88d02c537fda206aa15ff046736256d480886d1b0c2",
+      "added": 365
+    },
+    "winter-tied-with-joy": {
+      "revision": 1,
+      "content": "bc70d860375b82dda988bac319d995f5bf27d3c7a194cbc749c87a13dd9eab2f",
+      "added": 366
+    },
+    "winter-winter-hours": {
+      "revision": 2,
+      "content": "3db76fdaf4de67acfe72c69f36bfd2e993d7dc3b04a73cf5e5c51587b4cd00cc",
+      "added": 367
+    },
+    "winter-winter-postcards": {
+      "revision": 1,
+      "content": "95039cf9294987dbca5f967582810d0cd42a99960dd36d6b1b81eccc5b61f32f",
+      "added": 368
+    },
+    "winter-winter-reading-room": {
+      "revision": 1,
+      "content": "fa1aa31ded1ee4adee352745e490723cc9be7caaba2e6814d9fb727729e58289",
+      "added": 369
+    },
+    "winter-winter-windows": {
+      "revision": 1,
+      "content": "0ca4851e30284090efc100ed3c41ebfb6d74f4517fce2ce2646365c00fd9a533",
+      "added": 370
+    },
+    "winter-wrapped-in-colour": {
+      "revision": 1,
+      "content": "76e64393526c833445fa079894621df4594fa755a3ea15d1dd228d6a11b3a476",
+      "added": 371
     }
   },
   "retired": []

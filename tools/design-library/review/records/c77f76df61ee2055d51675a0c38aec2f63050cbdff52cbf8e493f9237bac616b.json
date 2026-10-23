@@ -1,0 +1,47 @@
+{
+  "id": "winter-midnight-garden",
+  "revision": "1ec69758112dab93ac1541e21c5f6c0c1578631cc2cdf5afec8e715c2cd1967e",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "Botanical art, editable year and midnight palette create a distinct New Year offer. Native sparkles sit in panel margins; the clock is tied to the real end date.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-midnight-garden-320.png",
+          "sha256": "e54144bcacf44560b5e423682ad0be744f2eb39b0a41d56b63410870f828414a"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-midnight-garden-1440.png",
+          "sha256": "859d29c075184d7b20191df39ace456e4dc02423f211d08149464e4cea0abc90"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "c77f76df61ee2055d51675a0c38aec2f63050cbdff52cbf8e493f9237bac616b"
+}

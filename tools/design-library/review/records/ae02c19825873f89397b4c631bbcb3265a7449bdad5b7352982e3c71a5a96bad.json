@@ -1,0 +1,47 @@
+{
+  "id": "winter-small-kindness",
+  "revision": "57e14a88abb22e74ccfd04d0279cfe33024d6ccd790a2b3bd143cc3c7dd1d4fc",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "A replaceable geometric flower accompanies a monthly-email invitation; the acknowledgement thanks the request without inventing a coupon.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-small-kindness-320.png",
+          "sha256": "56a192c6d141dc10ebc50e8419e1c1dc4626888780b13a96cf639600a3bb1e2a"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-small-kindness-1440.png",
+          "sha256": "07a564f80624e50da81f12a9853271fe4dae1d6409739c2d32826f22e0e58b1c"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "ae02c19825873f89397b4c631bbcb3265a7449bdad5b7352982e3c71a5a96bad"
+}

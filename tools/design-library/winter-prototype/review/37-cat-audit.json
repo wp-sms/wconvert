@@ -1,0 +1,49 @@
+{
+  "checks": [
+    {
+      "width": 320,
+      "imageLoaded": true,
+      "aspectIntact": true,
+      "closeClear": true,
+      "overflow": false,
+      "longCopy": true,
+      "cta": true
+    },
+    {
+      "width": 390,
+      "imageLoaded": true,
+      "aspectIntact": true,
+      "closeClear": true,
+      "overflow": false,
+      "longCopy": true,
+      "cta": true
+    },
+    {
+      "width": 649,
+      "imageLoaded": true,
+      "aspectIntact": true,
+      "closeClear": true,
+      "overflow": false,
+      "longCopy": true,
+      "cta": true
+    },
+    {
+      "width": 651,
+      "imageLoaded": true,
+      "aspectIntact": true,
+      "closeClear": true,
+      "overflow": false,
+      "longCopy": true,
+      "cta": true
+    },
+    {
+      "width": 1000,
+      "imageLoaded": true,
+      "aspectIntact": true,
+      "closeClear": true,
+      "overflow": false,
+      "longCopy": true,
+      "cta": true
+    }
+  ]
+}

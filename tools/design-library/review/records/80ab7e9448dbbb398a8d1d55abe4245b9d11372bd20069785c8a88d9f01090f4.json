@@ -1,0 +1,39 @@
+{
+  "id": "collection-christmas-new-year-2026",
+  "revision": "8500c79640562628536e08d3f0b05de09416030508730e0aa33def0267bb560a",
+  "base_id": "e095d4c16c46321cd365700f0365c3967f9f5e27fb55b9f1a646bc27dfcb99f9",
+  "decision": "approved",
+  "reviewer": "Codex final copy review",
+  "note": "Replaced spacing used as punctuation with explicit separators; rechecked final native composition and WordPress flows. No changed action, tier, asset or timing.",
+  "at": "2026-10-23T09:07:15.854Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "fa3f984264aecd8f98dfd3fec90cfba040d3159e8624c8d701d90734caa705fa"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "fa3f984264aecd8f98dfd3fec90cfba040d3159e8624c8d701d90734caa705fa"
+        }
+      ]
+    }
+  },
+  "record_id": "80ab7e9448dbbb398a8d1d55abe4245b9d11372bd20069785c8a88d9f01090f4"
+}

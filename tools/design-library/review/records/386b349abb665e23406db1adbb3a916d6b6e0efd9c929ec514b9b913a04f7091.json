@@ -1,0 +1,51 @@
+{
+  "id": "collection-christmas-new-year-2026",
+  "revision": "7dd1a6a43c0aa0ea506d0da4e5f7de9baa5a0a69c0d27c0f78578cb54f08a038",
+  "base_id": "80ab7e9448dbbb398a8d1d55abe4245b9d11372bd20069785c8a88d9f01090f4",
+  "decision": "approved",
+  "reviewer": "Codex final tablet review",
+  "note": "Reviewed final Gift atelier spacing at phone, desktop and adjacent tablet transition widths, and verified both WordPress journeys. Collection retains all forty reviewed setups and the approved tier split.",
+  "at": "2026-10-23T09:28:52.408Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-gift-atelier-320.png",
+          "sha256": "0605fae9e96ee1da86552190c0d9976d94a87f1dc296d9c8335d99f9cd50aefa"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-gift-atelier-1440.png",
+          "sha256": "88467659532935d2d7e43b60ca0419922755b52da83fbeb652bc46f7aa2760f3"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/transitions-2.jpg",
+          "sha256": "506d9dbf81b7dd57967a2743770647da9758fdde6a6d4f69f2031833b8f05487"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "5babce30b4a6605b2e47179996c6a9173cffc0236b2a9c81a12fbb4a6d328aa1"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "836bb27a508acce231df17cfdeb88af9e53ee5dbf167548d071f58a6d3383838"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "836bb27a508acce231df17cfdeb88af9e53ee5dbf167548d071f58a6d3383838"
+        }
+      ]
+    }
+  },
+  "record_id": "386b349abb665e23406db1adbb3a916d6b6e0efd9c929ec514b9b913a04f7091"
+}

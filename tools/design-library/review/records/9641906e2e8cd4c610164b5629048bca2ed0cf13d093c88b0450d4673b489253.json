@@ -1,0 +1,47 @@
+{
+  "id": "winter-wrapped-in-colour",
+  "revision": "de015064d4ba48c55ab2a05fa66b0834716eca1365c263d44ad1096057843fca",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "Mustard illustration and pale-pink action panel retain the colour-block concept; on phones each block has its own row, avoiding a cramped action column.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-wrapped-in-colour-320.png",
+          "sha256": "d0083186cab65eb71639c920eba6f3d8bf92c6d6a21808236cb9eff15b2f36c1"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-wrapped-in-colour-1440.png",
+          "sha256": "f81e0d982854fc60bcf19562f05d1fd455c88d8aa907d3fec7b6373536bc1efd"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "9641906e2e8cd4c610164b5629048bca2ed0cf13d093c88b0450d4673b489253"
+}

@@ -4,7 +4,7 @@ import fs from 'node:fs';
 const base=process.env.WCONVERT_TEMPLATE_REVIEW_URL||'http://127.0.0.1:9453';
 if(!['localhost','127.0.0.1'].includes(new URL(base).hostname))throw Error('Disposable local WordPress required');
 const output=process.env.WCONVERT_REVIEW_EVIDENCE||'docs/reviews/shopping-weekend-2026-10-22';
-const entries=JSON.parse(fs.readFileSync('tools/design-library/out/pilot.json')).filter(e=>e.batch==='shopping-weekend-2026'&&JSON.stringify(e.tree).includes('"countdown"')&&(!process.env.WCONVERT_REVIEW_IDS||process.env.WCONVERT_REVIEW_IDS.split(',').includes(e.id)));
+const entries=JSON.parse(fs.readFileSync('tools/design-library/out/pilot.json')).filter(e=>e.batch===(process.env.WCONVERT_REVIEW_BATCH||'shopping-weekend-2026')&&JSON.stringify(e.tree).includes('"countdown"')&&(!process.env.WCONVERT_REVIEW_IDS||process.env.WCONVERT_REVIEW_IDS.split(',').includes(e.id)));
 const browser=await chromium.launch(),results=[];
 try{
  for(const entry of entries)for(const width of [320,1280]){
@@ -41,9 +41,17 @@ try{
    if(hasCopy){await page.evaluate(()=>window.reviewRoots.find(r=>r.host.isConnected&&r.querySelector('.wc-code + button')).querySelector('.wc-code + button').click());await page.waitForFunction(()=>window.reviewRoots.some(r=>r.host.isConnected&&r.textContent.includes('Copied')));if(await page.evaluate(()=>navigator.clipboard.readText())!=='REVIEW10')throw Error('Wrong copied code');}
    await page.clock.fastForward(live.ends_at-1500-await page.evaluate(() => Date.now()));await page.clock.runFor(3000);
    const visible=await page.evaluate(()=>window.reviewRoots.some(r=>r.host.isConnected&&r.querySelector('.wc-root')?.getBoundingClientRect().height>0));
-   if(visible)throw Error('Expired campaign remains visible on the open page');
+   const capture=live.template.tree.steps.some(step=>step.kind==='input');
+   if(capture){
+    if(!visible)throw Error('Expiry discarded an in-progress signup');
+    await page.evaluate(()=>{const r=window.reviewRoots.find(r=>r.host.isConnected&&r.querySelector('.wc-root'));r.querySelector('input[type="email"]').value='deadline-review@example.test';for(const c of r.querySelectorAll('.wc-consent input'))c.checked=true;r.querySelector('[data-action="submit"]').click();});
+    await page.waitForFunction(()=>window.reviewRoots.some(r=>r.host.isConnected&&r.querySelector('[data-action="close"]')&&!r.querySelector('[data-action="submit"]')));
+   }else if(visible)throw Error('Expired campaign remains visible on the open page');
+   await page.goto(url);
+   await page.clock.runFor(2000);
+   if(await page.evaluate(()=>window.reviewRoots.some(r=>r.host.isConnected&&r.querySelector('.wc-root')?.getBoundingClientRect().height>0)))throw Error('Expired campaign reopened');
    if(errors.length)throw Error(errors.join('; '));
-   results.push({id:entry.id,width,passed:true,realDeadline:true,ticks:true,refreshPreservesDeadline:!inline,daysHide:true,copiedCode:hasCopy,expiresWhileOpen:true});
+   results.push({id:entry.id,width,passed:true,realDeadline:true,ticks:true,refreshPreservesDeadline:!inline,daysHide:true,copiedCode:hasCopy,expiresWhileOpen:!capture,openSignupCompletedAfterExpiry:capture,doesNotReopenAfterExpiry:true});
   }catch(e){console.error(entry.id,width,e.stack);results.push({id:entry.id,width,passed:false,error:e.message.split('\n')[0]});}
   finally{await context.close();fs.writeFileSync(`${output}/countdowns.json`,JSON.stringify({results},null,2)+'\n');}
  }

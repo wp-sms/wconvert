@@ -41,7 +41,7 @@ try{
   const email=`review-${run}-${id}-${width}@example.test`;
   const context=await browser.newContext({viewport:{width,height:800},hasTouch:width===320});let page;
   try{
-  if(id==='first-order-receipt')await context.grantPermissions(['clipboard-read','clipboard-write']);
+  await context.grantPermissions(['clipboard-read','clipboard-write']);
   await context.addCookies([{name:'wcv_test_consent',value:'allow',url:base}]);
   page=await context.newPage();const errors=[],captures=[];let endpoint,failedOnce=false,attempts=0;
   page.on('pageerror',e=>errors.push(e.message));
@@ -116,7 +116,7 @@ try{
   if(!complete||errors.length)throw Error(id+': incomplete '+errors.join(';'));
   const resource=await page.locator('#configured-resource').getAttribute('href');const response=await context.request.get(resource);if(!response.ok()||!(await response.text()).includes('<h1'))throw Error(id+': resource unavailable');
   let copiedCode=false;
-  if(id==='first-order-receipt'){await click('.wc-code + button');await page.waitForFunction(()=>window.reviewRoots.some(r=>r.host.isConnected&&r.textContent.includes('Copied')));if(await page.evaluate(()=>navigator.clipboard.readText())!=='REVIEW10')throw Error('Wrong copied code');copiedCode=true;await page.screenshot({path:`${evidence}/${id}-${width}-copied.png`,fullPage:true});}
+  if(await page.evaluate(()=>window.reviewRoots.some(r=>r.host.isConnected&&r.querySelector('.wc-code + button')))){await click('.wc-code + button');await page.waitForFunction(()=>window.reviewRoots.some(r=>r.host.isConnected&&r.textContent.includes('Copied')));if(await page.evaluate(()=>navigator.clipboard.readText())!=='REVIEW10')throw Error('Wrong copied code');copiedCode=true;await page.screenshot({path:`${evidence}/${id}-${width}-copied.png`,fullPage:true});}
   const link=await page.evaluate(()=>window.reviewRoots.find(r=>r.host.isConnected&&r.querySelector('.wc-root')).querySelector('a.wc-button')?.href);
   if(link){await click('a.wc-button');await page.waitForURL(link);}
   const form=states.some(s=>s.action==='submit');if(form&&!captures.some(c=>c.status===201&&c.body.id))throw Error(id+': no local Lead saved');

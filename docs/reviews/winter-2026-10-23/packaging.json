@@ -1,0 +1,17 @@
+{
+  "free": {
+    "archive": "wconvert-v1.0.0.zip",
+    "newDesigns": 0,
+    "newPlaybooks": 0,
+    "hostedSources": 0,
+    "passed": true
+  },
+  "pro": {
+    "archive": "wconvert-pro-v0.1.0.zip",
+    "newDesigns": 30,
+    "newPlaybooks": 30,
+    "hostedSources": 0,
+    "passed": true,
+    "giftAtelierRevision2Verified": true
+  }
+}

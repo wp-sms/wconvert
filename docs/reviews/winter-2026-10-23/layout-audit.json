@@ -1,0 +1,28 @@
+{
+  "reports": [
+    {
+      "mode": "standard",
+      "kind": "designs",
+      "total": 880,
+      "failures": []
+    },
+    {
+      "mode": "standard",
+      "kind": "campaigns",
+      "total": 880,
+      "failures": []
+    },
+    {
+      "mode": "long-copy",
+      "kind": "designs",
+      "total": 880,
+      "failures": []
+    },
+    {
+      "mode": "long-copy",
+      "kind": "campaigns",
+      "total": 880,
+      "failures": []
+    }
+  ]
+}

@@ -1,0 +1,203 @@
+{
+  "id": "winter-dispatch-desk",
+  "name": "The dispatch desk",
+  "display_type": "inline",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#efe8d5",
+    "fg": "#394f4c",
+    "muted": "#394f4c",
+    "accent": "#8d4535",
+    "accent-fg": "#fbecd1",
+    "border": "#394f4c",
+    "input-bg": "transparent",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Instrument Serif\", Georgia, serif",
+    "heading-size": "3rem",
+    "heading-weight": "400",
+    "text-size": "1rem",
+    "leading": "1.55",
+    "tracking": "-.02em",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "46rem",
+    "align": "start",
+    "close-fg": "fg",
+    "close-bg": "bg",
+    "close-border": "border",
+    "close-radius": "50%",
+    "error-fg": "#991b1b",
+    "error-bg": "#fff1f2"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "split",
+          "start": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "text",
+                  "narrow": {
+                    "text-size": "2rem"
+                  },
+                  "text": "18",
+                  "role": "fine_print",
+                  "tokens": {
+                    "text-size": "2.5rem",
+                    "leading": "1",
+                    "align": "center",
+                    "muted": "fg"
+                  },
+                  "size": "2xl",
+                  "id": "n1"
+                },
+                {
+                  "type": "text",
+                  "text": "December\nChristmas order cutoff",
+                  "role": "body",
+                  "id": "n2"
+                }
+              ],
+              "tokens": {
+                "pad": "2.25rem",
+                "gap": "1rem",
+                "radius": "0",
+                "bg": "accent",
+                "fg": "accent-fg",
+                "align": "center"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": ".85rem"
+              }
+            }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "text": "FROM THE DISPATCH DESK",
+                  "role": "eyebrow",
+                  "tokens": {
+                    "text-size": ".75rem",
+                    "tracking": ".12em"
+                  },
+                  "id": "n3"
+                },
+                {
+                  "type": "heading",
+                  "narrow": {
+                    "heading-size": "2.35rem"
+                  },
+                  "text": "Plan your\nChristmas delivery.",
+                  "role": "headline",
+                  "tokens": {
+                    "heading-size": "3rem",
+                    "heading-font": "\"Instrument Serif\", Georgia, serif",
+                    "heading-weight": "400"
+                  },
+                  "id": "n4"
+                },
+                {
+                  "type": "text",
+                  "text": "Place your Christmas order before 18 December. Delivery areas and terms apply.",
+                  "role": "body",
+                  "id": "n5"
+                },
+                {
+                  "type": "countdown",
+                  "layout": "boxes",
+                  "density": "compact",
+                  "days_label": "Days",
+                  "hours_label": "Hrs",
+                  "minutes_label": "Mins",
+                  "seconds_label": "Secs",
+                  "role": "countdown_units",
+                  "tokens": {
+                    "text-size": "1.15rem",
+                    "tracking": "normal",
+                    "radius": ".1rem",
+                    "input-bg": "transparent"
+                  },
+                  "id": "n6"
+                },
+                {
+                  "type": "button",
+                  "label": "Check delivery options",
+                  "action": "link",
+                  "role": "cta_label",
+                  "tokens": {
+                    "text-size": "1rem",
+                    "radius": ".15rem",
+                    "border": "fg",
+                    "tracking": "normal"
+                  },
+                  "id": "n7"
+                },
+                {
+                  "type": "text",
+                  "text": "Selected items. Offer terms apply.",
+                  "role": "fine_print",
+                  "tokens": {
+                    "text-size": ".875rem",
+                    "tracking": "normal"
+                  },
+                  "id": "n8"
+                }
+              ],
+              "tokens": {
+                "pad": "2.25rem",
+                "gap": "1rem",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": ".85rem"
+              }
+            }
+          ],
+          "ratio": "0.35",
+          "basis": "20rem",
+          "tokens": {
+            "gap": "0"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -41,6 +41,8 @@ try {
     '--mount', `${resolve(root, 'pro')}:/wordpress/wp-content/plugins/wconvert-pro`,
     '--mount', `${join(temp, 'mu')}:/wordpress/wp-content/mu-plugins`,
     '--mount', `${temp}:/scratch`, ...(releaseDirectory ? ['--mount', `${releaseDirectory}:/release`] : []), '--', '/scratch/runner.php'], { cwd: root, encoding: 'utf8', maxBuffer: 16777216, timeout: 180000 });
-  if (!output.includes(remote ? 'PASS live HTTPS catalogue' : 'no site settings or campaigns changed.') || /Fatal error|Uncaught/.test(output)) throw Error(`Native verification failed:\n${output}`);
+  // The v3 local verifier emits a JSON report, not the old v2 prose sentinel.
+  const passed = remote ? output.includes('PASS live HTTPS catalogue') : JSON.parse(output.trim()).result === 'pass';
+  if (!passed || /Fatal error|Uncaught/.test(output)) throw Error(`Native verification failed:\n${output}`);
   console.log(output.trim());
 } finally { rmSync(temp, { recursive: true, force: true }); }

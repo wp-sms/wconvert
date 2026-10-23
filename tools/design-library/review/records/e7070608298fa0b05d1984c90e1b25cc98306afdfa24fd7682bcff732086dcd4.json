@@ -1,0 +1,47 @@
+{
+  "id": "winter-snowglobe-society",
+  "revision": "3f790e2cac789643463dcfda607ab9f300ce6e1130fbe60d9a2aa3a61265fedc",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "The complete snowglobe sits above the navy signup card. Motion is native decoration; the form and coupon remain editable and keyboard-operable.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-snowglobe-society-320.png",
+          "sha256": "07f5beb9850250cfa497abc4f0c73b3ac21ea4524c40011510a0213642639b79"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-snowglobe-society-1440.png",
+          "sha256": "d18cf44a9f5a855d1a485abd7f61cf0eb41035be5118b482923f3b15947d96e1"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "e7070608298fa0b05d1984c90e1b25cc98306afdfa24fd7682bcff732086dcd4"
+}

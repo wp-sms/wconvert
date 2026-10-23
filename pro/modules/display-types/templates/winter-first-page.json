@@ -1,0 +1,175 @@
+{
+  "id": "winter-first-page",
+  "name": "The first page",
+  "display_type": "floating_bar",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#e7dcb8",
+    "fg": "#4e5338",
+    "muted": "#4e5338",
+    "accent": "#4e5338",
+    "accent-fg": "#fff8e7",
+    "border": "#4e5338",
+    "input-bg": "transparent",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Instrument Serif\", Georgia, serif",
+    "heading-size": "3rem",
+    "heading-weight": "400",
+    "text-size": "1rem",
+    "leading": "1.55",
+    "tracking": "-.02em",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "100%",
+    "align": "start",
+    "close-fg": "fg",
+    "close-bg": "bg",
+    "close-border": "border",
+    "close-radius": "50%",
+    "error-fg": "#991b1b",
+    "error-bg": "#fff1f2"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "text",
+                  "narrow": {
+                    "text-size": "2rem"
+                  },
+                  "text": "2027",
+                  "role": "fine_print",
+                  "tokens": {
+                    "text-size": "2.5rem",
+                    "leading": "1",
+                    "align": "center",
+                    "muted": "fg"
+                  },
+                  "size": "2xl",
+                  "id": "n1"
+                },
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "text": "THE FIRST PAGE",
+                      "role": "eyebrow",
+                      "tokens": {
+                        "text-size": ".75rem",
+                        "tracking": ".12em"
+                      },
+                      "id": "n2"
+                    },
+                    {
+                      "type": "heading",
+                      "narrow": {
+                        "heading-size": "1.3rem"
+                      },
+                      "text": "Start the year with 20% off.",
+                      "role": "headline",
+                      "tokens": {
+                        "heading-size": "1.4rem",
+                        "heading-font": "\"DM Sans\", Arial, sans-serif",
+                        "heading-weight": "400"
+                      },
+                      "id": "n3"
+                    },
+                    {
+                      "type": "text",
+                      "text": "Our 20% New Year edit ends on 5 January.",
+                      "role": "body",
+                      "id": "n4"
+                    }
+                  ],
+                  "tokens": {
+                    "gap": ".35rem"
+                  }
+                },
+                {
+                  "type": "countdown",
+                  "layout": "boxes",
+                  "density": "compact",
+                  "days_label": "Days",
+                  "hours_label": "Hrs",
+                  "minutes_label": "Mins",
+                  "seconds_label": "Secs",
+                  "role": "countdown_units",
+                  "tokens": {
+                    "text-size": "1.15rem",
+                    "tracking": "normal",
+                    "radius": ".1rem",
+                    "input-bg": "transparent"
+                  },
+                  "id": "n5"
+                },
+                {
+                  "type": "button",
+                  "label": "Shop the New Year edit",
+                  "action": "link",
+                  "role": "cta_label",
+                  "tokens": {
+                    "text-size": "1rem",
+                    "radius": ".15rem",
+                    "border": "fg",
+                    "tracking": "normal"
+                  },
+                  "id": "n6"
+                }
+              ],
+              "tokens": {
+                "gap": "1rem",
+                "align": "center"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "1.25rem 3.5rem",
+            "gap": "1rem",
+            "radius": "0"
+          },
+          "narrow": {
+            "pad": "3rem 1.25rem 1.25rem",
+            "gap": ".85rem"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

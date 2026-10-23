@@ -1,0 +1,47 @@
+{
+  "id": "winter-paper-pine",
+  "revision": "22cf3b15bc8ddfa4a9dd245d2e68468db060c64bb0a3c12ab6c600510683d02a",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "The pine illustration and gift-guide link form a quiet split; image ground continues across the picture pane and stacks cleanly.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-paper-pine-320.png",
+          "sha256": "3dcc615c1c8834eb8aebfa85af89c7ac1d75a8f9fa94cee6cbab54def297d7ed"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-paper-pine-1440.png",
+          "sha256": "f60acbe8ace76b92c08ae6b61b79d3824681ab3a2198783004181d7330610fb0"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "3010d8bed14ce9f8b821b8776eda83c9173d185e4417a2fc67503d16590c0d7e"
+}

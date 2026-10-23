@@ -72,6 +72,10 @@
       {
         "id": "cyber-monday",
         "label": "Cyber Monday"
+      },
+      {
+        "id": "new-year",
+        "label": "New Year"
       }
     ],
     "style": [
@@ -2717,6 +2721,606 @@
       "occasions": [
         "black-friday",
         "sale"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-ribbon-room": {
+      "description": "The ribbon room: a seasonal gift or information invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-little-gift": {
+      "description": "A little gift: a seasonal gift or information invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-winter-windows": {
+      "description": "Winter windows: a seasonal gift or information invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-ornament-edit": {
+      "description": "The ornament edit: a seasonal deadline invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-paper-pine": {
+      "description": "Paper & pine: a seasonal gift or information invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-candle-club": {
+      "description": "The candle club: seasonal email signup with a welcome-code acknowledgement.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "winter-wrapped-in-colour": {
+      "description": "Wrapped in colour: a seasonal gift or information invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-thoughtful-list": {
+      "description": "The thoughtful list: seasonal email signup with a welcome-code acknowledgement.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-ribbon-reminder": {
+      "description": "A ribbon reminder: a seasonal deadline invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "winter-gift-atelier": {
+      "description": "The gift atelier: a seasonal deadline invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-dear-december": {
+      "description": "Dear December: seasonal email signup with a welcome-code acknowledgement.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-winter-postcards": {
+      "description": "Postcards from winter: seasonal email signup with a welcome-code acknowledgement.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-snowglobe-society": {
+      "description": "The snowglobe society: seasonal email signup with a welcome-code acknowledgement.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "winter-small-kindness": {
+      "description": "A small kindness: seasonal email signup for monthly gift ideas.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-after-hours-atelier": {
+      "description": "After-hours at the atelier: seasonal email signup with a welcome-code acknowledgement.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "winter-first-light-access": {
+      "description": "First light access: seasonal email signup with a welcome-code acknowledgement.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-advent-letter": {
+      "description": "The advent letter: seasonal email signup with a welcome-code acknowledgement.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-winter-reading-room": {
+      "description": "The winter reading room: seasonal email signup with a welcome-code acknowledgement.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-last-sleigh": {
+      "description": "The last sleigh: a seasonal deadline invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-before-the-bow": {
+      "description": "Before the bow: a seasonal deadline invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-dispatch-desk": {
+      "description": "The dispatch desk: a seasonal deadline invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-digital-gift": {
+      "description": "The digital gift: a seasonal deadline invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-still-time": {
+      "description": "Still time for something: a seasonal deadline invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-pickup-window": {
+      "description": "The pickup window: a seasonal deadline invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-final-sparkle": {
+      "description": "A final little sparkle: a seasonal deadline invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-softer-beginning": {
+      "description": "A softer beginning: seasonal email signup with a welcome-code acknowledgement.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "new-year"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-hello-tomorrow": {
+      "description": "Hello, tomorrow: seasonal email signup with a welcome-code acknowledgement.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "new-year"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-midnight-garden": {
+      "description": "The midnight garden: a seasonal deadline invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "new-year"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "winter-bright-new-chapter": {
+      "description": "A bright new chapter: seasonal email signup with a welcome-code acknowledgement.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "new-year"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-first-page": {
+      "description": "The first page: a seasonal deadline invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "new-year"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-fresh-start-club": {
+      "description": "Fresh start club: seasonal email signup with a welcome-code acknowledgement.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "new-year"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-shop-is-sleeping": {
+      "description": "The shop is sleeping: a seasonal gift or information invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "winter-by-the-fire": {
+      "description": "See you by the fire: a seasonal gift or information invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-holiday-post": {
+      "description": "Holiday post: a seasonal gift or information invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-winter-hours": {
+      "description": "Winter hours: a seasonal gift or information invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-tied-with-joy": {
+      "description": "Tied with a little joy: a seasonal deadline invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-all-wrapped-up": {
+      "description": "All wrapped up: a seasonal gift or information invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-christmas-express": {
+      "description": "The Christmas express: a seasonal deadline invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "winter-santa-letter": {
+      "description": "A letter from Santa: seasonal email signup with a welcome-code acknowledgement.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "winter-hello-2027": {
+      "description": "Hello, twenty twenty-seven: a seasonal deadline invitation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "new-year"
       ],
       "style": [
         "editorial"

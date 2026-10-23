@@ -1,0 +1,47 @@
+{
+  "id": "winter-pickup-window",
+  "revision": "94131b0ae62e484bd9dab261dc51abd9a133d177c500b879c6374267fb35e19a",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "The pickup strip combines order deadline, compact countdown and one details link. All three groups stay together as the row wraps.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-pickup-window-320.png",
+          "sha256": "89a457b7da67fd03f5e3a50422628110fb3f07eeefb998986a91cb761809c28d"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-pickup-window-1440.png",
+          "sha256": "510d7e01f53dac2203d720e8f7a7278f19bb1571fe8f9bd20de1853a181d3ba0"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "5e3a001d31ed12d7a78bf4b76a7dd9583bc202866eaa60926777a0c1b8ed6d4c"
+}

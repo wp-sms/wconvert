@@ -1,0 +1,15 @@
+{
+  "design": "winter-gift-atelier",
+  "version": 2,
+  "standard": 32,
+  "longCopy": 32,
+  "failures": 0,
+  "wordpressCases": 2,
+  "visualWidths": [
+    320,
+    679,
+    680,
+    1440
+  ],
+  "passed": true
+}

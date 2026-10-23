@@ -1,0 +1,47 @@
+{
+  "id": "winter-christmas-express",
+  "revision": "ecb23f7e9d6fcb593092f9498b956ae9183dac5bbba99f0a1b719d4364cb96ba",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "The ticket uses native panels, borders and a notched stub. The order date is editable display text; caption, clock and delivery link remain legible in the narrow format.",
+  "at": "2026-10-23T09:01:15.960Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-christmas-express-320.png",
+          "sha256": "c0eb449d50235bce975cd7acf5b324edadc401e58806b6a1c760e7045c2dffa8"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-christmas-express-1440.png",
+          "sha256": "2cb69d95e61fe644de937cd7ee1458d5cbc05dc9ab310fecf3ecd592fb16195f"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "3d59985ae98ed79fd6c0e26a59cdfc62b23b7ec2ea4040f02df681bc8719b198"
+}

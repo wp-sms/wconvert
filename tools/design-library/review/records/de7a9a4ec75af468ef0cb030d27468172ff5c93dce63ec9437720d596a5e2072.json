@@ -1,0 +1,47 @@
+{
+  "id": "winter-little-gift",
+  "revision": "23259b6762b02795da6935b8c1275bc21d23b355a4a402ad562d464e948dcc93",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "A compact gift illustration and large editable saving establish the offer; coupon copy and shopping link remain real controls.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-little-gift-320.png",
+          "sha256": "e4d102c9e188fb41df5babf8bb70edebcf27e684d6762c7aa76ce1be063cc7d8"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-little-gift-1440.png",
+          "sha256": "82fa1e5c59d5e3ad172656e645a7dff0d6deeae0bc86d4cef73b43f46ab765bd"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "de7a9a4ec75af468ef0cb030d27468172ff5c93dce63ec9437720d596a5e2072"
+}

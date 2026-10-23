@@ -1,0 +1,47 @@
+{
+  "id": "winter-hello-2027",
+  "revision": "d9c182a0e8f1b60415d53abbfcde847534ab59a82f840e2b5c1e401309e187a4",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "Large red editable New Year typography leads a yellow poster; the green offer panel holds the real action and countdown, stacked on phones. Colours use supported palette aliases.",
+  "at": "2026-10-23T09:01:15.960Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-hello-2027-320.png",
+          "sha256": "0fb5f5076ab2bbec4f3af972a38a010900bba53f6a0a519ac12671566b317caf"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-hello-2027-1440.png",
+          "sha256": "183bde0724665d54df257b6e4e73f30f711c65c5c594444b41dc689f340eb538"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "9505a60140bf810f5e6d1507569f4eaf533a741be7adfe2d3f13357db90365e0"
+}
