@@ -71,14 +71,14 @@ All entries below were reviewed as prototype candidates. “Setup” names what 
 
 ## Playful extension assessment
 
-The five additional Pro designs use ordinary replaceable images, live text and native sparkle groups. 36, 38 and 40 use fixed example deadlines; 37 is a simple shop link; 39 is a one-field signup with an acknowledgement and code. The artwork uses a single unexpected object per image, with no dense scenery or text. No games, animated character controls or new capture mechanisms are proposed. These remain visual prototypes pending native authoring.
+The five additional Pro designs were rebuilt as greeting-card compositions after the object-photography direction was rejected. Copy, ordering dates, discounts, fields and countdowns remain live. The cards are fully readable without the decorative images; no pulling, unwrapping or opening interaction is promised. Two optional native sparkles per card use the shipping decoration renderer. The complete designs still require native authoring.
 
 | # | Visitor purpose | Composition | Merchant setup |
 | --- | --- | --- | --- |
-| 36 | Christmas gift offer | Mitten-and-gift poster, live offer badge, countdown footer | Real 20% offer ending 20 December |
-| 37 | Treats and small gifts | Short editorial invitation beside cocoa-cookie photograph | Relevant gift edit/shop link |
-| 38 | Ordering reminder | Parcel snail beside editable date stamp, details below | Actual order cutoff and delivery-area link |
-| 39 | Gift newsletter with welcome code | Folded-paper image, email form, separate acknowledgement | Valid 15% welcome code and signup destination |
-| 40 | New Year sale | Pear mirrorball beside live typography, countdown footer | Real 20% offer ending 5 January; deliberate fullscreen trigger |
+| 36 | Christmas gift offer | Ribbon framing a typographic greeting, offer inside the card | Real 20% offer ending 20 December |
+| 37 | Christmas gift edit | Horizontal cracker on desktop, upright cracker on phones | Relevant gift edit link; replace both decorative background orientations together |
+| 38 | Ordering reminder | Dispatch ticket, large editable date, dashed countdown stub | Actual order cutoff and delivery-area link |
+| 39 | Gift newsletter with welcome code | Santa illustration merges into letter paper and form | Valid 15% welcome code and signup destination |
+| 40 | New Year offer | Large live typography, printed trim, contrasting offer strip | Real 20% offer ending 5 January; deliberate fullscreen trigger |
 
-Review covers desktop, 320px phones, 649/651px layout transitions with longer CTAs and design 39's acknowledgement. All imagery uses contain fit. Copy remains meaningful if artwork is hidden. Two optional sparkle decorations occupy the artwork panel edges, away from fields and actions. Checkbox first-line alignment, whole-label clicking and enabled/paused/reduced native motion are checked in `playful-audit.json`.
+Inspect all five at desktop, 320px and the 649/651px transitions, including the Santa acknowledgement. Printed backgrounds must stay behind text and may be removed as a whole. Long copy can increase card height; artwork does not contain meaningful text. No new arbitrary positioning, card-fold control, image motion or games are assumed in the editor.

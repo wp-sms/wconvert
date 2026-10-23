@@ -36,11 +36,11 @@ const rows = [
 ["See you by the fire","Holiday info","Slide-in","fire","Visit us this\nholiday season.","Planning a visit? Check our opening hours before you make the trip.","See opening hours"],
 ["Holiday post","Holiday info","Inline","post","Check your\nChristmas delivery.","Christmas delivery has its own timetable. Check dates and delivery areas before ordering.","Read delivery information"],
 ["Winter hours","Holiday info","Slide-in","hours","Your holiday\nopening hours.","A little change to our opening hours. Find your best time to visit.","See full opening hours"],
-["Gift a little warmth", "Gifting", "Popup", "mitten", "Big love.\nLittle gift.", "Take 20% off selected Christmas gifts until 20 December. A little something goes a long way.", "Find their little something"],
-["The cocoa break", "Gifting", "Inline", "cocoa", "Out of office.\nInto cocoa.", "Cookies, cocoa and thoughtful little gifts. Give someone a very good reason to take a break.", "Shop festive treats"],
-["No last-minute snail mail", "Last-minute", "Slide-in", "snail", "Good gifts.\nWorth planning.", "Place Christmas orders by 18 December. Check dispatch dates and delivery areas before ordering.", "Check delivery dates"],
-["Good things unfold", "Signup", "Popup", "fold", "Good things\nunfold.", "Join our emails for thoughtful gift ideas. Your first little surprise: a 15% welcome code.", "Reveal my 15% code", "email"],
-["A fresh kind of party", "New Year", "Fullscreen", "pear", "Fresh year.\nGood taste.", "A fresh take on your favourites. Take 20% off selected pieces until 5 January.", "Explore the New Year edit"]
+["Tied with a little joy", "Gifting", "Popup", "ribboncard", "Merry\n& bright.", "A little Christmas treat: 20% off our gift edit until 20 December.", "Find a little joy"],
+["A cracker of a Christmas", "Gifting", "Inline", "cracker", "Oh,\nwhat fun!", "Little gifts. Big grins. A Christmas edit worth making a fuss about.", "Explore the gift edit"],
+["The Christmas express", "Last-minute", "Slide-in", "expressticket", "All aboard\nfor Christmas.", "Order by 18 December. Check delivery areas and dispatch dates before you buy.", "Check delivery dates"],
+["A letter from Santa", "Signup", "Popup", "santaletter", "Dear gift lover,", "A little surprise from our workshop: join our emails for gift ideas and a 15% welcome code.", "Send my request", "email"],
+["Hello, twenty twenty-seven", "New Year", "Fullscreen", "newyearprint", "HELLO,\n2027.", "Good things ahead. Start with 20% off our New Year edit, until 5 January.", "Meet your new favourites"]
 ];
 const free = new Set([2,5,8,11,14,18,23,27,31,34]);
 const clocks = new Set([4,9,10,16,19,20,21,22,23,24,25,28,30,36,38,40]);
@@ -50,7 +50,9 @@ export const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>'
 const eyebrow=t=>`<p class="eyebrow">${t}</p>`;
 const headline=d=>`<h1>${esc(d.headline).replace(/\n/g,'<br>')}</h1>`;
 const body=d=>`<p class="body-copy">${esc(d.body)}</p>`;
-const art=(key,extra='')=>{const a=creativeArtwork[key];return `<div class="object-art ${extra}" data-art="${key}"><img src="${a.src}" alt="${a.alt}" width="1024" height="1024"></div>`;};
+const cardBackground=key=>`style="--card-art:url('${creativeArtwork[key].src}');${key==='cracker'?`--card-narrow:url('${creativeArtwork.crackerMobile.src}');`:''}"`;
+const cardImage=key=>`<img class="card-illustration" src="${creativeArtwork[key].src}" alt="${creativeArtwork[key].alt}">`;
+
 const image=(key,extra='',fit='contain')=>{if(['art-banner','globe-art','ack-art'].includes(extra))key+='Banner';const a=artwork[key];return `<div class="artwork ${extra}" data-art="${key}" style="--art-bg:${a.bg}"><img src="${a.src}" alt="${a.alt}" data-fit="${fit}" style="object-fit:${fit}" width="${a.width}" height="${a.height}"></div>`;};
 const code=d=>`<div class="coupon"><span>${d.code}</span><button data-copy="${d.code}" type="button" aria-label="Copy ${d.code}">Copy code</button></div>`;
 const timerLabels={'04':'ORNAMENT OFFER ENDS IN','09':'GIFT WRAPPING ENDS IN','10':'CHRISTMAS EDIT CLOSES IN','16':'PREVIEW SIGNUP CLOSES IN','19':'CHRISTMAS ORDERS CLOSE IN','20':'CHRISTMAS ORDERS CLOSE IN','21':'CHRISTMAS ORDERS CLOSE IN','22':'DIGITAL GIFT OFFER ENDS IN','23':'DIGITAL GIFT OFFER ENDS IN','24':'PICKUP ORDERS CLOSE IN','25':'CHRISTMAS EDIT CLOSES IN','28':'NEW YEAR OFFER ENDS IN','30':'NEW YEAR OFFER ENDS IN','36':'GIFT OFFER ENDS IN','38':'CHRISTMAS ORDERS CLOSE IN','40':'NEW YEAR OFFER ENDS IN'};
@@ -60,7 +62,7 @@ const note=d=>`<p class="fine-print">${d.signup?(d.reward?'Your code appears her
 const copy=(d,eyebrowText,extra='')=>`<div class="copy ${extra}">${eyebrow(eyebrowText)}${headline(d)}${body(d)}${countdown(d)}${action(d)}${note(d)}</div>`;
 const sparkles=d=>d.motion&&Number(d.id)<36?`<div class="sparkles" aria-hidden="true"><i>✦</i><i>✦</i><i>✦</i><i>✦</i></div>`:'';
 export function composition(d,ack=false){
- if(ack&&d.id==='39')return `<div class="unfold-ack-art">${art('fold')}</div><div class="ack-copy">${eyebrow('YOUR LITTLE SURPRISE')}<h1>Thank you.<br>Request received.</h1><p class="body-copy">Here’s your example welcome code.</p>${code(d)}<button class="cta" data-offer>Explore the gift edit</button><p class="fine-print">Prototype only. No email address was saved or sent.</p><button class="text-button" data-back>← Back to signup</button></div>`;
+ if(ack&&d.id==='39')return `<div class="santa-top">${cardImage('santaletter')}</div><div class="santa-paper ack-copy">${eyebrow('A LITTLE NOTE FROM THE WORKSHOP')}<h1>Thank you,<br>gift lover.</h1><p class="body-copy">Your request was received. Here’s your example welcome code.</p>${code(d)}<button class="cta" data-offer>Explore the Christmas edit</button><p class="fine-print">Prototype only. No email address was saved or sent.</p><button class="text-button" data-back>← Back to signup</button></div>`;
  if(ack)return `${image(({'06':'candles','12':'village','13':'globe','16':'dawn','17':'presents','18':'book','29':'stars'})[d.id]||(d.category==='New Year'?'dawn':'envelope'),'ack-art')}<div class="ack-copy">${eyebrow('A LITTLE THANK YOU')}<h1>Thank you.<br>Request received.</h1><p class="body-copy">${d.reward?'Here’s your example welcome code. Enjoy finding something lovely.':'Thank you for requesting our monthly gift ideas.'}</p>${d.reward?code(d):''}<button class="cta" data-offer>Explore the collection</button><p class="fine-print">Prototype only. No email address was saved or sent.</p><button class="text-button" data-back>← Back to signup</button></div>`;
  let html='';
  switch(d.id){
@@ -100,11 +102,12 @@ export function composition(d,ack=false){
  case '34':html=`<div class="post-art">${image('parcel')}</div><div class="post-copy">${eyebrow('HOLIDAY POST')}${headline(d)}${body(d)}<div class="post-rule"></div>${action(d)}</div>`;break;
  case '35':html=`${eyebrow('OUR WINTER HOURS')}${headline(d)}<div class="hours-table"><p><span>24 December</span><b>10 am – 2 pm</b></p><p><span>25–26 December</span><b>Closed</b></p><p><span>27 December</span><b>10 am – 6 pm</b></p></div>${body(d)}${action(d)}`;break;
 
- case '36':html=`<div class="warmth-heading">${eyebrow('SOMETHING SMALL. A WHOLE LOT OF LOVE.')}<div class="warmth-title">${headline(d)}<p class="offer-badge">20%<span>OFF</span></p></div></div><div class="object-stage warmth-art" data-play-decor="warmth">${art('mitten')}</div><div class="warmth-footer">${body(d)}${countdown(d)}${action(d)}${note(d)}</div>`;break;
- case '37':html=`<div class="cocoa-copy">${eyebrow('THE VERY GOOD BREAK CLUB')}${headline(d)}${body(d)}${action(d)}<p class="fine-print">A little treat. A proper pause.</p></div><div class="object-stage cocoa-art" data-play-decor="cocoa">${art('cocoa')}</div>`;break;
- case '38':html=`<div class="dispatch-ticket"><div class="snail-top"><div class="dispatch-stamp">${eyebrow('ORDER BY')}<strong>18</strong><span>DECEMBER</span></div><div class="object-stage snail-art" data-play-decor="snail">${art('snail')}</div></div><div class="snail-copy">${eyebrow('SKIP THE LAST-MINUTE SCRAMBLE')}${headline(d)}${body(d)}${countdown(d)}${action(d)}</div></div>`;break;
- case '39':html=`<div class="fold-heading">${eyebrow('THE GIFT OF A GOOD IDEA')}${headline(d)}</div><div class="fold-content"><div class="object-stage fold-art" data-play-decor="fold">${art('fold')}</div><div class="fold-form">${body(d)}${action(d)}${note(d)}</div></div>`;break;
- case '40':html=`<div class="pear-top">${eyebrow('THE NEW YEAR EDIT / 2027')}<p class="pear-offer">20% OFF SELECTED PIECES</p></div><div class="pear-main"><div class="pear-copy">${headline(d)}${body(d)}</div><div class="object-stage pear-art" data-play-decor="pear">${art('pear')}</div></div><div class="pear-footer">${countdown(d)}${action(d)}<p class="fine-print">Until 5 January. Selected items. Offer terms apply.</p></div>`;break;
+
+ case '36':html=`<div class="ribbon-greeting" ${cardBackground('ribboncard')} data-play-decor="ribboncard">${eyebrow('A LITTLE CHRISTMAS WISH')}${headline(d)}<p class="greeting-signoff">from our little shop to you</p><div class="greeting-offer">${body(d)}${countdown(d)}${action(d)}${note(d)}</div></div>`;break;
+ case '37':html=`<div class="cracker-paper" ${cardBackground('cracker')} data-play-decor="cracker"><div class="cracker-copy">${eyebrow('A CRACKER OF A CHRISTMAS')}${headline(d)}${body(d)}${action(d)}<p class="fine-print">Picked with love. Given with a grin.</p></div></div>`;break;
+ case '38':html=`<div class="ticket-top">${eyebrow('THE CHRISTMAS EXPRESS')}<p class="ticket-route">FROM OUR WORKSHOP &nbsp; / &nbsp; TO YOUR DOOR</p></div><div class="ticket-main" data-play-decor="ticket">${headline(d)}<div class="ticket-date"><span>ORDER<br>BY</span><strong>18</strong><span>DEC<br>2026</span></div>${body(d)}</div><div class="ticket-stub">${countdown(d)}${action(d)}<p class="fine-print">Thoughtful gifts. Thoughtfully timed.</p></div>`;break;
+ case '39':html=`<div class="santa-top" data-play-decor="santa">${cardImage('santaletter')}</div><div class="santa-paper">${eyebrow('POST FROM THE CHRISTMAS WORKSHOP')}${headline(d)}${body(d)}${action(d)}${note(d)}<p class="santa-signature">With a little Christmas magic,<br><em>The gift workshop</em></p></div>`;break;
+ case '40':html=`<div class="print-border"></div><div class="newyear-poster" data-play-decor="print">${eyebrow('SOMETHING GOOD IS JUST BEGINNING')}${headline(d)}<p class="print-wish">a fresh start looks good on you.</p></div><div class="newyear-offer"><div>${body(d)}${action(d)}</div>${countdown(d)}</div><p class="print-terms">Selected items. Until 5 January. Offer terms apply.</p><div class="print-border"></div>`;break;
  }
  return html+sparkles(d);
 }

@@ -1,22 +1,31 @@
-# Five clear ideas, not five busy scenes
+# Greeting cards define the composition
 
-The revised 36–40 respond to the request for more creative, practical imagery with less clutter. Each concept uses one unexpected object, a quiet backdrop and separate editable copy. All five images are original ImageGen outputs; external campaign assets were not copied.
+The user rejected the previous five object-photography layouts: changing the illustration did not change the structure enough. This revision uses the two supplied Dribbble collections as the primary research direction:
 
-## Research
+- [Christmas animation and graphics](https://dribbble.com/search/shots/popular/animation?q=christmas)
+- [Christmas cards](https://dribbble.com/search/christmas-card)
 
-- [Brown Thomas, Christmas Crush — Together We Create](https://www.togetherwecreate.com/brown-thomas-christmas/): inspected the oversized-bauble campaign. Our takeaway is that an unexpected scale relationship can carry the whole joke without supporting scenery.
-- [Snap Holidays — BUCK](https://buck.co/work/snap-holidays): reviewed its simple forms and tactile materials. Our takeaway is to find personality in wool, biscuit, ceramic, paper and mirrors rather than adding more decorations.
-- [Ungifted Secret Santa — Pentagram](https://www.pentagram.com/work/ungifted-secret-santa): reviewed the concept and copy. Our takeaway is that a memorable idea can lead the design before ornament does.
-- [MoMA Design Store Holiday 25 — Juri Okita](https://www.juriokita.com/project/moma-design-store-holiday-25): inspected its colourful wrapping-paper direction. Our takeaway is to pair a strong colour choice with clear composition.
+Both pages were opened and visually inspected in the browser. The observations below are design interpretations, not evidence of conversion performance.
 
-These are design interpretations, not claims about the references' conversion performance.
+## Specific references
 
-The local Halloween monster, forest, engraved and bats designs were also inspected. Their useful lesson is the relationship between artwork and live content, plus use of supported decoration groups. Their monsters and elaborate environments are not the new creative direction.
+- [Michael Driver — Christmas Cracker Christmas Card](https://dribbble.com/shots/26966003-Christmas-Cracker-Christmas-Card): inspected the pink/red printed cracker card and read its description. Its physical silhouette makes the card memorable. Design 37 uses the cracker as the whole invitation, with original new artwork and live text in the central paper.
+- [Nick Budrewicz — Christmas Card](https://dribbble.com/shots/17132735-Christmas-Card): inspected the green/red geometric print in the card results and read its project page. Limited ink colours, graphic framing and a deliberate print composition informed 38 and 40.
+- [Katie Connolly — 2020 Christmas Card](https://dribbble.com/shots/14903302-2020-Christmas-Card): reviewed the colour-blocked, geometric card direction and its project palette. The useful idea is to compose the whole print, rather than add an illustration to a generic offer panel.
+- The same card search showed large lettering, festive borders, illustrated letters and printed paper silhouettes. The animation search showed geometric Christmas forms and limited-palette graphic work. We inspected still compositions; no claim is made to have reviewed every animation timeline.
 
-## Application
+## Five different structures
 
-36 uses a giant knitted mitten holding a tiny present. 37 gives one gingerbread cookie a cocoa bath. 38 replaces a snail shell with a gift, making an ordering reminder memorable. 39 uses folded paper to support the welcome-code reveal. 40 transforms one pear into a mirrorball for New Year.
+36: a ribbon surrounds the greeting itself; the offer is a note within that frame.
 
-Keep the imagery replaceable as one image. Headlines, discounts, date stamps, countdowns, forms and buttons remain live content. The image's internal objects are not separate editor controls. No special games or character animation are promised. Two small native sparkle decorations per panel provide optional restrained motion; pause and reduced motion stop them.
+37: a cracker silhouette is the whole card, with horizontal and upright artwork for desktop and phone layouts.
 
-The source prompts are in [provenance.json](../assets/creative/provenance.json). Production asset optimisation, rights records, native authoring and WordPress verification remain part of promotion after design approval.
+38: the ordering date becomes the hero graphic on a dispatch ticket; the countdown occupies its detachable-looking stub. This is a visual cue, not an interactive tear-off control.
+
+39: Santa’s beard becomes the letter paper that holds the signup. The thank-you screen retains the same paper and illustrated header.
+
+40: giant New Year lettering fills a graphic print; the offer lives in a contrasting green strip below it. No photograph is needed.
+
+## Practical boundaries
+
+All meaningful copy is live HTML in this prototype and must become native text, fields, buttons, countdowns and panels during authoring. Card illustrations are original built-in ImageGen outputs, not copied reference artwork. Exact prompts are in [provenance.json](../assets/cards/provenance.json). Decorative backgrounds are replaceable as a whole; the cracker has a separate narrow background. Native sparkles provide optional motion without animating text or controls. Full native editor compatibility and WordPress behaviour remain unverified at this prototype stage.

@@ -1,7 +1,6 @@
 export const creativeArtwork = {
-  mitten: {src: new URL('./assets/creative/mitten.png', import.meta.url).href, alt: "An oversized red knitted mitten hugging a tiny blue gift"},
-  cocoa: {src: new URL('./assets/creative/cocoa.png', import.meta.url).href, alt: "A gingerbread cookie relaxing in a red cup of cocoa"},
-  snail: {src: new URL('./assets/creative/snail.png', import.meta.url).href, alt: "A blue ceramic snail carrying a coral gift box"},
-  fold: {src: new URL('./assets/creative/fold.png', import.meta.url).href, alt: "A folded paper surprise with red and blue inner panels"},
-  pear: {src: new URL('./assets/creative/pear.png', import.meta.url).href, alt: "A silver pear-shaped disco ball"},
+ crackerMobile: {src:new URL('./assets/cards/cracker-mobile.png',import.meta.url).href,alt:'An upright pink Christmas cracker with red paper ends'},
+ ribboncard: {src:new URL('./assets/cards/ribboncard.png',import.meta.url).href,alt:"Printed red ribbon framing an ivory Christmas card"},
+ cracker: {src:new URL('./assets/cards/cracker.png',import.meta.url).href,alt:"A pink Christmas cracker with red folded-paper ends"},
+ santaletter: {src:new URL('./assets/cards/santaletter.png',import.meta.url).href,alt:"A smiling illustrated Santa above warm-white letter paper"},
 };

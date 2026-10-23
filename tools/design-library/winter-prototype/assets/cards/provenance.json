@@ -1,0 +1,22 @@
+[
+  {
+    "key": "ribboncard",
+    "transparent": false,
+    "prompt": "Create a flat finished illustration BACKGROUND for an original portrait Christmas greeting card, NOT a photograph of a card, NOT a mockup. 3:4 portrait canvas. Sophisticated joyful screen-print graphic design, subtle paper ink grain, only warm ivory #fff2d8 and vivid vermilion #c9362f plus a very small forest green accent. ONE enormous loose hand-drawn red ribbon bow stretches across the TOP 22% of the canvas. Its two ribbon tails flow down the outermost left and right edges only, no further than 7% inward, gently forming a loose open frame. A pair of tiny forest-green holly leaves at the bottom corners. The central region from x12% to88%, y27% to97% must be entirely plain warm ivory so real editable greeting typography, offer and button can be overlaid later. No text, no letters, no numbers, no typography, no UI, no other objects, no scenery. Use bold imperfect cut-paper silhouettes and graceful sweeping ribbon loops. The ribbon is integrated into the full card composition, not an isolated object image. Restrained, celebratory, art-school print-shop character. Full bleed background to edges."
+  },
+  {
+    "key": "cracker",
+    "transparent": true,
+    "prompt": "Original flat screenprinted Christmas cracker silhouette with a TRANSPARENT background outside the silhouette. Landscape 3:2 canvas. The cracker is seen straight on, no perspective or photography. Large plain solid salmon pink central RECTANGLE occupies x20% to80%, y6% to94%, absolutely no marks or text within it; this space will hold real website text. At each side, an exaggerated bright vermilion red pleated paper fan / cracker end extends from x0% to20% and x80% to100%, vertically centred, ends broad and zigzag cut. Small dark burgundy tie at each narrow join. Two colours plus dark burgundy only, subtle screenprint grain on the RED ends only. Pink central rectangle MUST be perfectly untextured #f7b7c8. Silhouette feels like a playful handcrafted holiday cracker greeting card opened flat. Whole silhouette visible, almost fills canvas, no drop shadow. NO words, no letters, no numbers, no stars in central area, no mockup, no fingers, no scenery. Bold expressive paper geometry."
+  },
+  {
+    "key": "santaletter",
+    "transparent": false,
+    "prompt": "Create an original wide horizontal 3:1 illustration banner for the TOP of a Santa-shaped Christmas greeting card. Flat playful 1960s paper-cut / screenprint graphic language, not 3D, not photorealistic. White #fff8e7 background. At centre one stylised friendly Santa face, oversized sideways floppy vermilion red hat with white pompom, peach oval face, simple two black dot eyes, round bright red nose, magnificent sweeping ivory moustache and white beard. The beard extends all the way to the bottom border and merges seamlessly into flat warm white #fff8e7 there. Santa face and hat fill most of the banner height but fit fully within it. Left and right corners contain ONLY a few thick red diagonal candy stripes. Broad simple shapes, confident quirky print illustration, limited red/peach/ink/ivory palette, slight print texture only inside red shapes. No words or letters anywhere. No ornaments, extra characters, scenery, holly or tiny detail. This is a designed greeting-card header: the face merges into a blank paper letter that will continue below the image."
+  },
+  {
+    "key": "crackerMobile",
+    "prompt": "Original FLAT screenprint silhouette of a Christmas cracker standing vertically, a tall PORTRAIT 2:3 composition for a mobile greeting card. Transparent background outside the silhouette. Main body is a huge perfectly flat opaque salmon-pink #f7b7c8 RECTANGLE occupying x5% to95%, y14% to86% of the image. No text or marks on this large central rectangle. At TOP and BOTTOM only, vivid vermilion red fan-folded paper cracker ends with zigzag cut edges, small burgundy ties at the joins. Each fan end takes up only 14% of total image height. The rectangle is much larger than the fan ends. Keep the whole silhouette fully visible. Confident 2D cut-paper graphic with small screenprint ink texture on red fans only. No shadows, no glow, no gradients, no transparent haze, no studio lighting, no 3D render, no words, no letters, no numbers, no ornaments, no other objects. This is original printable graphic artwork, not a product photograph.",
+    "transparent": true
+  }
+]
