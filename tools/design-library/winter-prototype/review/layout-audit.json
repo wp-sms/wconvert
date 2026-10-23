@@ -1,23 +1,25 @@
 {
-  "reviewedAt": "2026-10-23",
-  "viewports": [
-    320,
-    390,
-    649,
-    651,
-    768,
-    1000
-  ],
-  "acknowledgementViewports": [
-    320,
-    390,
-    1000
-  ],
   "designs": 35,
   "pro": 25,
   "free": 10,
   "countdowns": 13,
   "motion": 8,
   "findings": [],
-  "errors": []
+  "errors": [],
+  "reviewedAt": "2026-10-23",
+  "scope": "Prototype Chromium review; not native editor or WordPress verification",
+  "viewports": [
+    320,
+    390,
+    649,
+    651,
+    768,
+    1000,
+    1440
+  ],
+  "acknowledgementViewports": [
+    320,
+    390,
+    1000
+  ]
 }

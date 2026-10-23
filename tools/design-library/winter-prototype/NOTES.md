@@ -13,7 +13,7 @@ Run `npm run prototype:winter` from the repository root. Open http://127.0.0.1:5
 - `/?render=27&motion=off`: standalone visitor view at the actual browser width.
 - Use the bottom switcher or arrow keys to move between concepts. Phone choices are 390px and 320px. Each preview scrolls if its content exceeds the frame height.
 
-The viewer includes a motion pause control, signup/acknowledgement selection, and countdown expiry preview. Example email forms use native email and consent validation, then show the matching example coupon. Copy code writes that code to the clipboard. No address is sent, saved, subscribed or added to a Destination. Shop and information buttons show a local demonstration notice.
+The viewer includes a motion pause control, signup/acknowledgement selection, and countdown expiry preview. Example email forms use native email and consent validation, then show a request acknowledgement. Thirteen signup designs reveal an example coupon; design 14 is a monthly newsletter without a coupon. Copy code writes that code to the clipboard. No address is sent, saved, subscribed or added to a Destination. Shop and information buttons show a local demonstration notice.
 
 ## Creative direction
 
@@ -47,15 +47,19 @@ The sample deadlines are 1/18/20/23/24 December 2026 and 5 January 2027 at 20:00
 
 ## Editor-friendly revision — 23 October 2026
 
-The review identified decoration that looked like a custom editor feature and object illustrations clipped by enlarged, upward-offset SVGs. The prototype now uses 20 exported PNG assets via ordinary image blocks. The source vectors remain authoring inputs only; no campaign renders inline SVG artwork.
+The review identified decoration that looked like a custom editor feature and object illustrations clipped by enlarged, upward-offset SVGs. The prototype now uses 30 exported PNG assets, including wide banner variants via ordinary image blocks. The source vectors remain authoring inputs only; no campaign renders inline SVG artwork.
 
 - Complete object illustrations use contain fit with no negative margins or enlargement. Candles, snowglobes, trees, books, gifts and mugs stay intact at desktop and phone widths. Surrounding image panes match the asset background, including the entire reading-room left column.
 - Removed the postage stamps in 11 and 12, the oversized arrow in 27, the extra mark in 09 and the arrows inside primary buttons. Buttons now use simple centred text, matching the native button vocabulary.
-- Moon marks in 15/32 and flowers in 14/31 are regular replaceable images. The native icon chooser supports check, star, bolt, gift, clock and truck; these custom symbols are not part of that list. An image can be replaced/removed as a whole; its internal drawing is not separately editable.
+- The moon mark in 32 and flowers in 14/31 are regular replaceable images. The native icon chooser supports check, star, bolt, gift, clock and truck; these custom symbols are not part of that list. An image can be replaced/removed as a whole; its internal drawing is not separately editable.
 - The decorative tile pattern in 17 is one image without pretend calendar numbers. Removed CSS-only blend treatment, vertically written year text and the letter's repeating-border effect. The year, calendar deadline and all meaningful copy remain live text.
 - The eight motion treatments continue to represent the existing native sparkle decoration, independent of ordinary image replacement. The 25 Pro / 10 Free split and 13 countdowns are unchanged.
 
 Regenerate the original raster assets with `node tools/design-library/winter-prototype/rasterize-art.mjs`. No new editor controls or native runtime behaviour are introduced in this prototype revision.
+
+## Practical review — 23 October 2026
+
+[The full review](review/practical-review.md) assesses every design for visitor value, placement, editor composition, content resilience and merchant setup. It records the changes to copy, touch controls, field contrast, image sizing, plain-newsletter signup and misleading urgency. The 420-case stress report covers longer copy, fallback fonts and RTL at three widths; additional checks cover short-phone submission and meaning without artwork. The batch remains a prototype pending native authoring and WordPress verification.
 
 ## Native promotion boundaries
 
@@ -65,14 +69,14 @@ Re-check every design through the native renderer on desktop and mobile, with lo
 
 ## Review evidence
 
-- Chromium layout audit: all 35 at 320, 390, 649, 651, 768 and 1000px; no horizontal page/card overflow, clipped checked text, offscreen close controls or browser errors.
+- Chromium layout audit: all 35 at 320, 390, 649, 651, 768, 1000 and 1440px; no horizontal page/card overflow, clipped checked text, offscreen close controls or browser errors.
 - All 14 acknowledgement views at 320, 390 and 1000px; no horizontal overflow.
 - Visual review: desktop and 320px contact sheets for all 35, plus all 14 acknowledgement views. Narrow atelier/tomorrow layouts and the village panorama were corrected during review.
 - Gallery and viewer inspected at 320, 390 and 1440px; no horizontal page overflow.
-- Interaction review: filters and counts, keyboard/selector navigation, phone width, pause, acknowledgement switching, all 14 forms and coupon copies, all 13 deadline calculations and simulated expiries, natural countdown expiry, expired initial loads, reduced motion, close/reopen.
+- Interaction review: filters and counts, keyboard/selector navigation, phone width, pause, acknowledgement switching, all 14 forms and the 13 signup coupon copies, all 13 deadline calculations and simulated expiries, natural countdown expiry, expired initial loads, reduced motion, close/reopen.
 - Production-build check: `npx vite build --config tools/design-library/winter-prototype/vite.config.mjs`.
 
-`review/layout-audit.json` and `review/functional-audit.json` record the prototype checks. Contact sheets are visual review references; live clocks may differ when reopened. These are prototype-browser checks, not WordPress verification or native-template approval.
+`review/layout-audit.json`, `review/functional-audit.json`, `review/stress-audit.json`, `review/contrast-audit.json` and `review/practical-audit.json` record the prototype checks. Contact sheets are visual review references; live clocks may differ when reopened. These are prototype-browser checks, not WordPress verification or native-template approval.
 
 ## Inventory
 
@@ -99,7 +103,7 @@ Re-check every design through the native renderer on desktop and mobile, with lo
 | 19 | The last sleigh | Last-minute | Floating bar | Pro | Yes | — |
 | 20 | Before the bow | Last-minute | Popup | Pro | Yes | — |
 | 21 | The dispatch desk | Last-minute | Inline | Pro | Yes | — |
-| 22 | The eleventh-hour gift | Last-minute | Slide-in | Pro | Yes | — |
+| 22 | The digital gift | Last-minute | Slide-in | Pro | Yes | — |
 | 23 | Still time for something | Last-minute | Popup | Free | Yes | — |
 | 24 | The pickup window | Last-minute | Floating bar | Pro | Yes | — |
 | 25 | A final little sparkle | Last-minute | Fullscreen | Pro | Yes | Sparkles |

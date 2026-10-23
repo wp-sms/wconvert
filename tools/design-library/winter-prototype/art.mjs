@@ -27,3 +27,11 @@ export const art={
  book:svg(`<rect width="420" height="420" fill="#d5ddce"/><g transform="rotate(-9 210 210)"><rect x="91" y="58" width="238" height="312" rx="6" fill="#b04e43"/><path d="M112 58V370" stroke="#853c37" stroke-width="5"/><rect x="133" y="110" width="153" height="199" rx="75" fill="#ebcba2"/>${tree(210,143,.7,'#3e6956')}<path d="M311 370V85" stroke="#f3e4ca" stroke-width="15"/></g>`),
  mug:svg(`<rect width="420" height="420" fill="#ecd0aa"/><ellipse cx="210" cy="343" rx="140" ry="22" fill="#d4b080"/><path d="M287 179H321Q373 182 357 240Q343 273 292 265" stroke="#a34939" stroke-width="25" fill="none"/><path d="M102 159H299V267Q299 337 201 337Q102 337 102 267Z" fill="#bd5944"/><ellipse cx="200" cy="159" rx="99" ry="24" fill="#d57e59"/><ellipse cx="200" cy="160" rx="81" ry="15" fill="#623e30"/>${star(201,246,39,'#f4d8a7')}<path d="M157 115Q134 82 166 47M227 114Q205 72 239 40" stroke="#f7ead1" stroke-width="8" stroke-linecap="round" fill="none"/>`),
 };
+// Image leaves use their source aspect ratio in the editor. These wide exports
+// preserve complete objects without requiring a custom cropped-height control.
+for (const key of ['candles','dawn','stars','mug','ribbon','globe','presents','village','book','envelope']) {
+ const source=art[key],width=key==='ribbon'?1260:840;
+ const bg=source.match(/<rect width="420" height="420" fill="([^"]+)"/)?.[1]||'#f5eada';
+ const drawing=source.replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'');
+ art[`${key}Banner`]=`<svg viewBox="0 0 ${width} 420" xmlns="http://www.w3.org/2000/svg"><rect width="${width}" height="420" fill="${bg}"/><g transform="translate(${(width-420)/2} 0)">${drawing}</g></svg>`;
+}

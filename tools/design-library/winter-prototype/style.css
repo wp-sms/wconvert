@@ -42,3 +42,53 @@
  .t-final .countdown b{font-size:38px}
  .t-final .countdown i{font-size:15px;line-height:38px}
 }
+/* Practical review: readable secondary copy, touch controls and resilient type. */
+.campaign h1{max-width:100%;overflow-wrap:anywhere}
+.tomorrow-title,.tomorrow-form{min-width:0}
+.campaign .fine-print,.campaign .consent,.campaign .signup-form>label:not(.consent){font-size:14px;opacity:1}
+.campaign .consent{min-height:44px;align-items:center}
+.campaign .close{width:44px;height:44px;inset-inline-end:8px;inset-inline-start:auto;top:8px}
+.campaign .eyebrow{padding-inline-end:30px}
+.campaign .coupon button{min-width:64px;min-height:44px;font-size:13px}
+.campaign .text-button{min-height:44px;font-size:14px}
+.campaign .timer-label,.campaign .countdown small{font-size:11px;opacity:1;letter-spacing:.04em}
+.campaign .countdown{flex-wrap:wrap}
+.campaign .signup-form input::placeholder{opacity:1}
+.format-floating-bar .campaign{padding-inline-end:64px}
+.format-floating-bar .campaign .body-copy{font-size:14px}
+.format-floating-bar .campaign .cta{font-size:14px;min-height:44px}
+.format-inline:after,.format-slide-in:after,.format-floating-bar:after{display:none}
+.t-atelier{grid-template-columns:35% 65%}
+.t-atelier h1{font-size:72px}
+.digital-label{background:#754b3a;color:#efc68e;padding:34px 30px;font:46px/.95 Instrument;letter-spacing:-.025em}
+.t-tomorrow h1{font-size:58px}
+.hours-table p,.hours-table b{font-size:14px;white-space:normal}
+@media(max-width:650px){
+ .t-atelier{grid-template-columns:minmax(0,1fr)}
+ .t-atelier>.artwork{display:flex;height:160px}
+ .t-atelier .atelier-center{padding:38px 28px}
+ .t-atelier h1{font-size:54px!important}
+ .t-tomorrow h1{font-size:51px}
+ .format-floating-bar .campaign{padding-top:28px;padding-inline-end:60px}
+ .campaign .countdown{gap:5px}
+ .campaign .countdown>span{min-width:38px}
+ .campaign .countdown i{font-size:15px}
+ .t-final h1,.t-midnight h1{font-size:56px!important}
+ .t-afterhours h1{font-size:49px!important}
+}
+.campaign .signup-form input[type=email]{border-color:currentColor}
+.campaign .coupon{border-color:currentColor;flex-wrap:wrap}
+.campaign .sleeping-moon,.campaign .club-flower,.campaign .bar-art,.campaign .gift-icon{width:72px;height:72px;padding:0;border-radius:50%;flex:0 0 72px}
+.t-sleeping .bar-copy{flex:1 1 130px}
+/* Source aspect ratios reproduce these image bands with native image leaves. */
+.campaign .art-banner,.campaign .globe-art{height:auto;aspect-ratio:2}
+.t-bow .art-banner{aspect-ratio:3}
+.campaign .globe-art img{max-width:none}
+.format-slide-in .ack-art{height:auto;aspect-ratio:2}
+@media(max-width:650px){.campaign .ack-art{height:auto;aspect-ratio:2}}
+.dispatch-date,.dispatch-copy{min-width:0}
+.date-context{display:flex;flex-direction:column;gap:8px;font-size:14px;line-height:1.4;letter-spacing:0}
+@media(max-width:650px){.dispatch-date{gap:20px;text-align:start}.dispatch-date strong{flex-shrink:0;font-size:80px}.date-context{flex:1;min-width:0}}
+/* Keep the touch dismiss control inside the arched hours panel. */
+.t-hours .close{top:28px;inset-inline-end:26px}
+@media(max-width:650px){.t-sleigh .bar-copy,.t-pickup .bar-copy{flex:1 1 100%}.t-chapter h1{font-size:44px!important}}

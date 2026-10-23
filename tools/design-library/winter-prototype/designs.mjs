@@ -1,58 +1,59 @@
 import { artwork } from './art-assets.mjs';
 const rows = [
-['The ribbon room','Gifting','Popup','ribbon','A little ceremony.\nA lovely gift.','Thoughtful things, beautifully wrapped. Explore our Christmas edit.','Explore the gift edit'],
-['A little gift','Gifting','Popup','gift','Small gift.\nBig feeling.','Take 15% off selected gifts for your favourite people.','Find a little something'],
-['Winter windows','Gifting','Fullscreen','village','A whole village\nof good gifts.','Discover thoughtful gifts for the people who make your world.','Step into Christmas'],
-['The ornament edit','Gifting','Popup','ornament','Make their\nseason sparkle.','The Christmas ornament edit: 20% off until 20 December.','Explore the ornaments'],
-['Paper & pine','Gifting','Inline','pine','Less scrolling.\nMore thoughtful giving.','Our considered Christmas gift guide, all in one place.','Find their gift'],
-['The candle club','Gifting','Slide-in','candle','A warmer kind\nof December.','Join our emails for 15% off your first candle order.','Reveal my welcome code','email'],
-['Wrapped in colour','Gifting','Inline','colour','Not another\nbeige Christmas.','Bright little things for the wonderfully colourful people in your life.','Shop the colourful edit'],
-['The thoughtful list','Gifting','Inline','list','Good gifts start\nwith a good list.','Get seasonal gift ideas and a 10% welcome code when you join our emails.','Join the thoughtful list','email'],
-['A ribbon reminder','Gifting','Floating bar','ribbonbar','A little extra, beautifully wrapped.','Complimentary gift wrapping on eligible orders until 20 December.','Explore gifts'],
-['The gift atelier','Gifting','Fullscreen','atelier','For someone\nquite extraordinary.','Considered objects. Beautiful details. Gifts worth keeping.','Visit the gift atelier'],
-['Dear December','Signup','Popup','letter','A little joy\nin your inbox.','Join our December letters for gift ideas and a 15% welcome code.','Send me the little joys','email'],
-['Postcards from winter','Signup','Inline','postcard','Wish you\nwere here.','Join our winter newsletter for small discoveries, seasonal stories and 10% off.','Count me in','email'],
-['The snowglobe society','Signup','Popup','globe','Your own little\nwinter world.','Join our email list for winter launches and a 15% welcome code.','Let me into winter','email'],
-['A small kindness','Signup','Inline','kindness','Something thoughtful,\nonce a month.','Seasonal inspiration and a 10% thank-you code for joining our emails.','A little kindness, please','email'],
-['After-hours at the atelier','Signup','Slide-in','afterhours','First pick.\nQuietly yours.','Join our emails to hear about new winter pieces and reveal 15% off.','Join the private list','email'],
-['First light access','Signup','Slide-in','firstlight','Be there for\nthe first light.','Request winter-preview emails before 1 December and reveal a 15% code.','Request early access','email'],
-['The advent letter','Signup','Inline','advent','Make room for\nlittle discoveries.','Join our seasonal letters: gift inspiration and a 10% welcome code.','Open a new chapter','email'],
-['The winter reading room','Signup','Popup','reading','A good book.\nA slow afternoon.','Join our bookshop emails for winter reading picks and 10% off.','Find my next chapter','email'],
-['The last sleigh','Last-minute','Floating bar','sleigh','One last ride before Christmas.','Order by 18 December for our Christmas dispatch window.','See delivery details'],
-['Before the bow','Last-minute','Popup','bow','There is still\ntime for thoughtful.','Our Christmas ordering window closes on 18 December.','Find the finishing touch'],
-['The dispatch desk','Last-minute','Inline','dispatch','A date for\nyour diary.','Place your Christmas order before 18 December. Delivery areas and terms apply.','Check delivery options'],
-['The eleventh-hour gift','Last-minute','Slide-in','eleven','Late?\nLovely, actually.','Our digital gift-card offer ends on 24 December. A thoughtful choice, without the wrapping.','Explore gift cards'],
-['Still time for something','Last-minute','Popup','stilltime','A little time.\nA lovely find.','Take 15% off selected digital gifts until 24 December.','Find a digital gift'],
-['The pickup window','Last-minute','Floating bar','pickup','Your gifts. Our doorstep.','Order by 23 December for our Christmas collection window.','See pickup details'],
-['A final little sparkle','Last-minute','Fullscreen','final','One last\nlittle sparkle.','Our Christmas edit closes on 24 December. Find something worth giving.','Make it a lovely one'],
-['A softer beginning','New Year','Popup','soft','A fresh start.\nAt your own pace.','Join our emails for fresh ideas and 15% off your first order of the new year.','Start softly','email'],
-['Hello, tomorrow','New Year','Inline','tomorrow','Hello,\ntomorrow.','New ideas for a new year. Join our emails and reveal a 10% welcome code.','Meet what’s next','email'],
-['The midnight garden','New Year','Fullscreen','midnight','Let good\nthings grow.','Welcome the new year with 20% off selected pieces until 5 January.','Explore a fresh beginning'],
-['A bright new chapter','New Year','Slide-in','chapter','A bright\nnew chapter.','Join our January emails for new arrivals and a 15% welcome code.','Turn the page','email'],
-['The first page','New Year','Floating bar','firstpage','Start the year with something good.','Our 20% New Year edit ends on 5 January.','Explore the new edit'],
-['Fresh start club','New Year','Popup','club','Small steps.\nGood things.','Join our weekly inspiration emails and reveal 10% off your first order.','Make a fresh start','email'],
-['The shop is sleeping','Holiday info','Floating bar','sleeping','A little pause for the holidays.','Our shop is closed 25–26 December. Online orders reopen on 27 December.','See holiday hours'],
-['See you by the fire','Holiday info','Slide-in','fire','A warm welcome.\nA winter timetable.','Planning a visit? Check our opening hours before you make the trip.','Plan a winter visit'],
-['Holiday post','Holiday info','Inline','post','A small note\nabout your parcel.','Christmas delivery has its own timetable. Check dates and delivery areas before ordering.','Read delivery information'],
-['Winter hours','Holiday info','Slide-in','hours','A slower season.\nStill here for you.','A little change to our opening hours. Find your best time to visit.','Plan your visit'],
+["The ribbon room","Gifting","Popup","ribbon","A little ceremony.\nA lovely gift.","Thoughtful things, beautifully wrapped. Explore our Christmas edit.","Shop Christmas gifts"],
+["A little gift","Gifting","Popup","gift","Small gift.\nBig feeling.","Take 15% off selected gifts for your favourite people.","Shop gifts with 15% off"],
+["Winter windows","Gifting","Fullscreen","village","A whole village\nof good gifts.","Discover thoughtful gifts for the people who make your world.","Explore Christmas gifts"],
+["The ornament edit","Gifting","Popup","ornament","Make their season sparkle.\nSave 20%.","The Christmas ornament edit: 20% off until 20 December.","Shop ornaments with 20% off"],
+["Paper & pine","Gifting","Inline","pine","Less scrolling.\nMore thoughtful giving.","Our considered Christmas gift guide, all in one place.","Explore the gift guide"],
+["The candle club","Gifting","Slide-in","candle","A warmer December.\n15% off candles.","Join our emails for 15% off your first candle order.","Get my 15% code","email"],
+["Wrapped in colour","Gifting","Inline","colour","Not another\nbeige Christmas.","Bright little things for the wonderfully colourful people in your life.","Shop colourful gifts"],
+["The thoughtful list","Gifting","Inline","list","Good gift ideas.\nA 10% welcome.","Get seasonal gift ideas and a 10% welcome code when you join our emails.","Get gift ideas + 10% off","email"],
+["A ribbon reminder","Gifting","Floating bar","ribbonbar","Complimentary Christmas gift wrapping.","Complimentary gift wrapping on eligible orders until 20 December.","Shop eligible gifts"],
+["The gift atelier","Gifting","Fullscreen","atelier","Thoughtful\nChristmas gifts.","Considered objects. Beautiful details. Explore our Christmas gift edit before it closes on 20 December.","Explore the Christmas edit"],
+["Dear December","Signup","Popup","letter","Winter letters.\n15% off to begin.","Join our December letters for gift ideas and a 15% welcome code.","Get winter letters + 15% off","email"],
+["Postcards from winter","Signup","Inline","postcard","Winter postcards.\n10% off your first order.","Join our winter newsletter for small discoveries, seasonal stories and 10% off.","Get winter stories + 10% off","email"],
+["The snowglobe society","Signup","Popup","globe","A little winter magic.\nA 15% welcome.","Join our email list for winter launches and a 15% welcome code.","Get my 15% welcome code","email"],
+["A small kindness","Signup","Inline","kindness","Thoughtful gift ideas,\nonce a month.","A monthly email with seasonal gift ideas and stories from our makers. A little inspiration, without the daily noise.","Send me monthly gift ideas","email"],
+["After-hours at the atelier","Signup","Slide-in","afterhours","First pick.\n15% off your first order.","Join our emails to hear about new winter pieces and reveal 15% off.","Join the list + get 15% off","email"],
+["First light access","Signup","Slide-in","firstlight","Winter previews.\nA 15% welcome.","Request winter-preview emails before 1 December and reveal a 15% code.","Get early access + 15% off","email"],
+["The advent letter","Signup","Inline","advent","Little discoveries.\nA 10% welcome.","Join our seasonal letters: gift inspiration and a 10% welcome code.","Get gift ideas + 10% off","email"],
+["The winter reading room","Signup","Popup","reading","Your next good book.\n10% off to begin.","Join our bookshop emails for winter reading picks and 10% off.","Get reading picks + 10% off","email"],
+["The last sleigh","Last-minute","Floating bar","sleigh","Christmas orders close 18 December.","Order by 18 December for our Christmas dispatch window.","See delivery details"],
+["Before the bow","Last-minute","Popup","bow","Christmas orders\nclose 18 December.","Our Christmas ordering window closes on 18 December.","Shop before the order cutoff"],
+["The dispatch desk","Last-minute","Inline","dispatch","Plan your\nChristmas delivery.","Place your Christmas order before 18 December. Delivery areas and terms apply.","Check delivery options"],
+["The digital gift","Last-minute","Slide-in","eleven","Good gifts.\nNo wrapping.","Our digital gift-card offer ends on 24 December. A thoughtful choice, without the wrapping.","Explore digital gift cards"],
+["Still time for something","Last-minute","Popup","stilltime","A little more time.\n15% off digital gifts.","Take 15% off selected digital gifts until 24 December.","Shop digital gifts"],
+["The pickup window","Last-minute","Floating bar","pickup","Christmas click & collect.","Order by 23 December for our Christmas collection window.","See pickup details"],
+["A final little sparkle","Last-minute","Fullscreen","final","One last sparkle.\nUntil 24 December.","Our Christmas edit closes on 24 December. Find something worth giving.","Explore Christmas gifts"],
+["A softer beginning","New Year","Popup","soft","A fresh start.\nA 15% welcome.","Join our emails for fresh ideas and 15% off your first order of the new year.","Get January ideas + 15% off","email"],
+["Hello, tomorrow","New Year","Inline","tomorrow","Hello, tomorrow.\nHello, 10% off.","New ideas for a new year. Join our emails and reveal a 10% welcome code.","Get new-year ideas + 10% off","email"],
+["The midnight garden","New Year","Fullscreen","midnight","Let good things grow.\nStart with 20% off.","Welcome the new year with 20% off selected pieces until 5 January.","Shop the New Year offer"],
+["A bright new chapter","New Year","Slide-in","chapter","A new chapter.\nA 15% welcome.","Join our January emails for new arrivals and a 15% welcome code.","Get January arrivals + 15% off","email"],
+["The first page","New Year","Floating bar","firstpage","Start the year with 20% off.","Our 20% New Year edit ends on 5 January.","Shop the New Year edit"],
+["Fresh start club","New Year","Popup","club","Small steps.\nA 10% welcome.","Join our weekly inspiration emails and reveal 10% off your first order.","Get weekly ideas + 10% off","email"],
+["The shop is sleeping","Holiday info","Floating bar","sleeping","Closed 25–26 December.","Dispatch resumes on 27 December.","See holiday hours"],
+["See you by the fire","Holiday info","Slide-in","fire","Visit us this\nholiday season.","Planning a visit? Check our opening hours before you make the trip.","See opening hours"],
+["Holiday post","Holiday info","Inline","post","Check your\nChristmas delivery.","Christmas delivery has its own timetable. Check dates and delivery areas before ordering.","Read delivery information"],
+["Winter hours","Holiday info","Slide-in","hours","Your holiday\nopening hours.","A little change to our opening hours. Find your best time to visit.","See full opening hours"]
 ];
 const free = new Set([2,5,8,11,14,18,23,27,31,34]);
 const clocks = new Set([4,9,10,16,19,20,21,22,23,24,25,28,30]);
 const moving = new Set([3,4,10,13,16,25,28,29]);
-export const designs=rows.map((r,i)=>({id:String(i+1).padStart(2,'0'),name:r[0],category:r[1],format:r[2],theme:r[3],headline:r[4],body:r[5],cta:r[6],signup:r[7]==='email',tier:free.has(i+1)?'Free':'Pro',timer:clocks.has(i+1),endsAt:(i>=25?'2027-01-05':i===15?'2026-12-01':[18,19,20].includes(i)?'2026-12-18':i===23?'2026-12-23':i>=21?'2026-12-24':'2026-12-20')+'T20:00:00Z',motion:moving.has(i+1),code:(i>=25?'FRESH':'MERRY')+(r[5].match(/(\d+)%/)?.[1]||'15')}));
+export const designs=rows.map((r,i)=>({id:String(i+1).padStart(2,'0'),name:r[0],category:r[1],format:r[2],theme:r[3],headline:r[4],body:r[5],cta:r[6],signup:r[7]==='email',reward:i!==13,tier:free.has(i+1)?'Free':'Pro',timer:clocks.has(i+1),endsAt:(i>=25?'2027-01-05':i===15?'2026-12-01':[18,19,20].includes(i)?'2026-12-18':i===23?'2026-12-23':i>=21?'2026-12-24':'2026-12-20')+'T20:00:00Z',motion:moving.has(i+1),code:(i>=25?'FRESH':'MERRY')+(r[5].match(/(\d+)%/)?.[1]||'15')}));
 export const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const eyebrow=t=>`<p class="eyebrow">${t}</p>`;
 const headline=d=>`<h1>${esc(d.headline).replace(/\n/g,'<br>')}</h1>`;
 const body=d=>`<p class="body-copy">${esc(d.body)}</p>`;
-const image=(key,extra='',fit='contain')=>{const a=artwork[key];return `<div class="artwork ${extra}" data-art="${key}" style="--art-bg:${a.bg}"><img src="${a.src}" alt="${a.alt}" data-fit="${fit}" style="object-fit:${fit}" width="${a.width}" height="${a.height}"></div>`;};
+const image=(key,extra='',fit='contain')=>{if(['art-banner','globe-art','ack-art'].includes(extra))key+='Banner';const a=artwork[key];return `<div class="artwork ${extra}" data-art="${key}" style="--art-bg:${a.bg}"><img src="${a.src}" alt="${a.alt}" data-fit="${fit}" style="object-fit:${fit}" width="${a.width}" height="${a.height}"></div>`;};
 const code=d=>`<div class="coupon"><span>${d.code}</span><button data-copy="${d.code}" type="button" aria-label="Copy ${d.code}">Copy code</button></div>`;
-const countdown=d=>d.timer?`<div class="timer-wrap"><p class="timer-label">${d.category==='Last-minute'?'ORDERING WINDOW CLOSES IN':'THIS SEASONAL OFFER ENDS IN'}</p><div class="countdown" role="timer" aria-label="Time remaining"><span><b data-unit="days">08</b><small>days</small></span><i>:</i><span><b data-unit="hours">14</b><small>hours</small></span><i>:</i><span><b data-unit="minutes">32</b><small>mins</small></span><i>:</i><span><b data-unit="seconds">09</b><small>secs</small></span></div></div>`:'';
+const timerLabels={'04':'ORNAMENT OFFER ENDS IN','09':'GIFT WRAPPING ENDS IN','10':'CHRISTMAS EDIT CLOSES IN','16':'PREVIEW SIGNUP CLOSES IN','19':'CHRISTMAS ORDERS CLOSE IN','20':'CHRISTMAS ORDERS CLOSE IN','21':'CHRISTMAS ORDERS CLOSE IN','22':'DIGITAL GIFT OFFER ENDS IN','23':'DIGITAL GIFT OFFER ENDS IN','24':'PICKUP ORDERS CLOSE IN','25':'CHRISTMAS EDIT CLOSES IN','28':'NEW YEAR OFFER ENDS IN','30':'NEW YEAR OFFER ENDS IN'};
+const countdown=d=>d.timer?`<div class="timer-wrap"><p class="timer-label">${timerLabels[d.id]}</p><div class="countdown" role="timer" aria-label="Time remaining"><span><b data-unit="days">08</b><small>days</small></span><i>:</i><span><b data-unit="hours">14</b><small>hours</small></span><i>:</i><span><b data-unit="minutes">32</b><small>mins</small></span><i>:</i><span><b data-unit="seconds">09</b><small>secs</small></span></div></div>`:'';
 const action=d=>d.signup?`<form class="signup-form"><label>Email address<input type="email" required autocomplete="email" placeholder="you@example.com"></label><button class="cta" type="submit">${esc(d.cta)}</button><label class="consent"><input type="checkbox" required><span>I agree to receive marketing emails. Unsubscribe anytime.</span></label></form>`:`<button type="button" class="cta" data-offer>${esc(d.cta)}</button>`;
-const note=d=>`<p class="fine-print">${d.signup?'Your code appears here after signup.':d.category==='Holiday info'?'Check the full timetable before you visit or order.':'Selected items. Offer terms apply.'}</p>`;
+const note=d=>`<p class="fine-print">${d.signup?(d.reward?'Your code appears here after signup.':'One email a month. Unsubscribe anytime.'):d.category==='Holiday info'?'Check the full timetable before you visit or order.':'Selected items. Offer terms apply.'}</p>`;
 const copy=(d,eyebrowText,extra='')=>`<div class="copy ${extra}">${eyebrow(eyebrowText)}${headline(d)}${body(d)}${countdown(d)}${action(d)}${note(d)}</div>`;
 const sparkles=d=>d.motion?`<div class="sparkles" aria-hidden="true"><i>✦</i><i>✦</i><i>✦</i><i>✦</i></div>`:'';
 export function composition(d,ack=false){
- if(ack)return `${image(({'06':'candles','12':'village','13':'globe','16':'dawn','17':'presents','18':'book','29':'stars'})[d.id]||(d.category==='New Year'?'dawn':'envelope'),'ack-art')}<div class="ack-copy">${eyebrow('A LITTLE THANK YOU')}<h1>Thank you.<br>Your request is received.</h1><p class="body-copy">Here’s your example welcome code. Enjoy finding something lovely.</p>${code(d)}<button class="cta" data-offer>Explore the collection</button><p class="fine-print">Prototype only. No email address was saved or sent.</p><button class="text-button" data-back>← Back to signup</button></div>`;
+ if(ack)return `${image(({'06':'candles','12':'village','13':'globe','16':'dawn','17':'presents','18':'book','29':'stars'})[d.id]||(d.category==='New Year'?'dawn':'envelope'),'ack-art')}<div class="ack-copy">${eyebrow('A LITTLE THANK YOU')}<h1>Thank you.<br>Request received.</h1><p class="body-copy">${d.reward?'Here’s your example welcome code. Enjoy finding something lovely.':'Thank you for requesting our monthly gift ideas.'}</p>${d.reward?code(d):''}<button class="cta" data-offer>Explore the collection</button><p class="fine-print">Prototype only. No email address was saved or sent.</p><button class="text-button" data-back>← Back to signup</button></div>`;
  let html='';
  switch(d.id){
  case '01':html=`${image('ribbon')}${copy(d,'THE CHRISTMAS GIFT ATELIER')}`;break;
@@ -64,21 +65,21 @@ export function composition(d,ack=false){
  case '07':html=`<div class="colour-title">${eyebrow('FOR THE COLOURFULLY CURIOUS')}${headline(d)}</div>${image('presents')}<div class="colour-action">${body(d)}${action(d)}${note(d)}</div>`;break;
  case '08':html=`<div class="list-intro">${eyebrow('THE THOUGHTFUL LIST')}${headline(d)}<p class="list-line">01 &nbsp; A little inspiration.</p><p class="list-line">02 &nbsp; A considered gift.</p><p class="list-line">03 &nbsp; A happier December.</p></div><div class="list-form">${body(d)}${action(d)}${note(d)}</div>`;break;
  case '09':html=`<div class="bar-copy">${eyebrow('WRAPPED WITH A LITTLE LOVE')}${headline(d)}${body(d)}</div>${countdown(d)}${action(d)}`;break;
- case '10':html=`${image('botanical')}<div class="atelier-center">${eyebrow('THE GIFT ATELIER')}${headline(d)}${body(d)}${countdown(d)}${action(d)}${note(d)}</div><div class="atelier-side">${image('candles')}<p>Beautifully considered.<br>Thoughtfully given.</p></div>`;break;
+ case '10':html=`${image('botanical')}<div class="atelier-center">${eyebrow('THE GIFT ATELIER')}${headline(d)}${body(d)}${countdown(d)}${action(d)}${note(d)}</div>`;break;
  case '11':html=`<div class="letter-top">${eyebrow('A LETTER, JUST FOR YOU')}</div>${headline(d)}${body(d)}${action(d)}<div class="letter-signature">With a little love,<br><em>The December edit</em></div>`;break;
  case '12':html=`${image('village')}<div class="postcard-copy"><div class="postcard-header">${eyebrow('POSTCARDS FROM WINTER')}</div>${headline(d)}${body(d)}${action(d)}</div>`;break;
  case '13':html=`${image('globe','globe-art')}${copy(d,'THE SNOWGLOBE SOCIETY')}`;break;
  case '14':html=`${image('flower','kindness-mark')}${copy(d,'A SMALL KINDNESS')}`;break;
- case '15':html=`<div class="afterhours-top">${eyebrow('AFTER HOURS AT THE ATELIER')}${image('moon','small-moon')}</div>${headline(d)}${body(d)}<div class="slim-rule"></div>${action(d)}${note(d)}`;break;
+ case '15':html=`<div class="afterhours-top">${eyebrow('AFTER HOURS AT THE ATELIER')}</div>${headline(d)}${body(d)}<div class="slim-rule"></div>${action(d)}${note(d)}`;break;
  case '16':html=`${image('dawn','art-banner')}${copy(d,'THE WINTER PREVIEW')}`;break;
  case '17':html=`${image('advent','advent-art')}${copy(d,'THE ADVENT LETTER')}`;break;
  case '18':html=`${image('book')}${copy(d,'THE WINTER READING ROOM')}`;break;
- case '19':html=`${image('parcel','bar-art')}<div class="bar-copy">${eyebrow('THE CHRISTMAS DISPATCH')}${headline(d)}${body(d)}</div>${countdown(d)}${action(d)}`;break;
+ case '19':html=`<div class="bar-copy">${eyebrow('THE CHRISTMAS DISPATCH')}${headline(d)}${body(d)}</div>${countdown(d)}${action(d)}`;break;
  case '20':html=`<div class="bow-border">${image('ribbon','art-banner')}${copy(d,'A NOTE FROM THE GIFT DESK')}</div>`;break;
- case '21':html=`<div class="dispatch-date"><span>DECEMBER</span><strong>18</strong><span>THE CHRISTMAS ORDER DEADLINE</span></div><div class="dispatch-copy">${eyebrow('FROM THE DISPATCH DESK')}${headline(d)}${body(d)}${countdown(d)}${action(d)}</div>`;break;
- case '22':html=`<div class="eleven-number" aria-hidden="true">11<span>th hour</span></div>${copy(d,'A LAST-MINUTE LITTLE MIRACLE')}`;break;
+ case '21':html=`<div class="dispatch-date"><strong>18</strong><div class="date-context"><span>December</span><span>Christmas order cutoff</span></div></div><div class="dispatch-copy">${eyebrow('FROM THE DISPATCH DESK')}${headline(d)}${body(d)}${countdown(d)}${action(d)}</div>`;break;
+ case '22':html=`<div class="digital-label">Digital<br>gift cards</div>${copy(d,'A THOUGHTFUL DIGITAL GIFT')}`;break;
  case '23':html=`${eyebrow('THOUGHTFUL DOESN’T HAVE TO TAKE LONG')}${headline(d)}${body(d)}${countdown(d)}${code(d)}${action(d)}${note(d)}`;break;
- case '24':html=`<div class="pickup-label">CLICK.<br>COLLECT.<br>CELEBRATE.</div><div class="bar-copy">${headline(d)}${body(d)}</div>${countdown(d)}${action(d)}`;break;
+ case '24':html=`<div class="bar-copy">${headline(d)}${body(d)}</div>${countdown(d)}${action(d)}`;break;
  case '25':html=`${image('baubles')}<div class="final-copy">${eyebrow('THE CHRISTMAS FINALE')}${headline(d)}${body(d)}${countdown(d)}${action(d)}${note(d)}</div>`;break;
  case '26':html=`${image('dawn')}${copy(d,'A SOFTER JANUARY')}`;break;
  case '27':html=`<div class="tomorrow-title">${eyebrow('A NEW YEAR. A LITTLE POSSIBILITY.')}${headline(d)}</div><div class="tomorrow-form">${body(d)}${action(d)}</div>`;break;
