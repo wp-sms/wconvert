@@ -771,7 +771,7 @@ final class OptinRepositoryTest extends TestCase
      * the only way a merchant has to stop it. Deleting the parent alone left
      * the variants serving and gone from the list — live, and unreachable.
      */
-    public function testDeletingATestDeletesItsLiveVariantsToo(): void
+    public function testDeletingATestDeletesItsVariantsToo(): void
     {
         $parent = $this->anOptin();
         $variant = $this->repository->createVariant($parent->id);

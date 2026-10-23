@@ -1,4 +1,5 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
+import { formatCount } from '../lib/format';
 
 export type DecisionKind = 'delete' | 'pause' | 'publish' | 'winner';
 
@@ -6,7 +7,7 @@ export type DecisionKind = 'delete' | 'pause' | 'publish' | 'winner';
  * The words for one decision on a campaign — the list's confirm and Details'
  * in-place strip read the same ones (ADR 0137), so the two never ask the
  * question differently. `arm` is whether the row is an A/B variant;
- * `variants` is how many live variants a test's parent row has, which a delete
+ * `variants` is how many variants a test's parent row has, which a delete
  * takes with it (#292).
  */
 export function decisionCopy(kind: DecisionKind, arm: boolean, name: string, variants: number): { title: string; description: string; confirmLabel: string } {
@@ -16,9 +17,9 @@ export function decisionCopy(kind: DecisionKind, arm: boolean, name: string, var
         title: __('Delete this A/B test?', 'wconvert'),
         description: sprintf(
           /* translators: 1: a campaign's name, 2: how many variants it has. */
-          _n('“%1$s” and its %2$d variant stop showing and leave this list. Their leads and results are kept.', '“%1$s” and its %2$d variants stop showing and leave this list. Their leads and results are kept.', variants, 'wconvert'),
+          _n('“%1$s” and its %2$s variant stop showing and leave this list. Their leads and results are kept.', '“%1$s” and its %2$s variants stop showing and leave this list. Their leads and results are kept.', variants, 'wconvert'),
           name,
-          variants,
+          formatCount(variants),
         ),
         confirmLabel: __('Delete test', 'wconvert'),
       };

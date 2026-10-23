@@ -298,3 +298,8 @@ reports the numbers, once per screen and only where a test is running.
   test and started another never gets two rows called *"Welcome (B)"* — which
   would be two different designs under one label in the [[Lead]] log, where the
   name is the only provenance a Lead has.
+- **Deleting the test deletes its arms.** *Added by #292.* Deleting a parent
+  soft-deletes every arm not already retired, since the list nests arms under
+  the parent and an orphan would serve with no row to stop it. The rebuild also
+  leaves out any arm whose parent is deleted. A paused parent is not deleted,
+  and its live arms keep serving.

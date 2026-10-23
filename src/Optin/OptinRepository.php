@@ -964,9 +964,9 @@ final class OptinRepository
      * by joining this table at report time, so removing the row makes every
      * count that references it uninterpretable (ADR 0002, ADR 0020).
      *
-     * **Deleting a test's parent deletes its live arms with it** (#292). The
-     * list shows a test as its parent row alone, so an arm left behind would
-     * keep serving with nothing left on screen to stop it. Arms an earlier
+     * **Deleting a test's parent deletes its arms with it** (#292). The list
+     * shows a test as its parent row alone, so an arm left behind would keep
+     * serving with nothing left on screen to stop it. Arms an earlier
      * winner already retired are skipped by {@see self::armsByParent()} and
      * keep the moment they were retired. Deleting one arm deletes that arm.
      */
@@ -1082,8 +1082,8 @@ final class OptinRepository
         // An arm of a deleted test never goes live, however its parent got
         // deleted (#292). Not "parent missing from $rows": a paused or
         // never-published parent is missing too, and its arms still run. The
-        // second read only happens while a test is running, and the deleted
-        // check is in PHP for {@see self::armsByParent()}'s reason.
+        // second read only happens while a test is running, and it re-checks
+        // `deleted_at` in PHP as {@see self::designs()} does.
         if (array_filter(array_column($rows, 'parent_id')) !== []) {
             $deleted = [];
             foreach ($this->db->results(Connection::TABLE_OPTINS, 'SELECT id, deleted_at FROM %i WHERE parent_id IS NULL AND deleted_at IS NOT NULL') as $row) {
