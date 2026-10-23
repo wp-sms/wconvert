@@ -903,7 +903,15 @@ composer verify:source # the source contract
 npm test               # Vitest — free's tree and Pro's
 npm run typecheck      # tsc --noEmit
 npm run lint           # ESLint, --max-warnings=0
+npm run preflight      # what CI would run for this diff, before pushing
 ```
+
+`npm run preflight` reads the path filters out of `.github/workflows/ci.yml`
+and runs the checks the branch's diff would trigger there, fastest first,
+stopping at the first failure and printing a timing summary. `--all` ignores
+the diff, `--visual` adds the Playwright suites (popup and fullscreen fail
+locally from a path with a space in it), and `--dry-run` lists the steps
+without running them. The MySQL database job stays CI-only.
 
 ## Releasing
 

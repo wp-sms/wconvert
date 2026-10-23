@@ -100,6 +100,9 @@ change. There is no branch protection enforcing this; the discipline is the
 enforcement. Merge once `CI / Required checks` is green, and require only that
 check — never an individual row, which may legitimately be skipped.
 
+Run `npm run preflight` before pushing; open PRs as drafts while iterating. A
+draft skips the visual suites, and marking it ready starts the full run.
+
 **Releases are two tags, not one.** `free-vX.Y.Z` and `pro-vX.Y.Z` carry
 independent version numbers and drive `release-free.yml` and `release-pro.yml`
 out of the one monorepo (ADR 0030). Publishing a GitHub Release is the only

@@ -8,21 +8,38 @@ name: Frontend tests
 #                module never lands in resources/, which IS a scan root for the
 #                source contract. (tests/ is not a scan root in either language,
 #                which is why the PHP tests for Pro's boot guard can sit in
-#                tests/unit/Pro/ without contradicting this.)
+#                tests/unit/Pro/ without contradicting this.) The same run
+#                dumps every converted design for the PHP verifier (ADR 0163),
+#                so the form-switch test runs once rather than in a job of its
+#                own.
 #
-#   [typecheck]  tsc --noEmit.
-#
-#   [lint]       ESLint at --max-warnings=0, from the first commit. There is no
-#                backlog to grandfather, and holding it at zero is the whole
-#                point: a lint backlog is what makes the signal worthless.
+#   [static]     tsc --noEmit, then ESLint at --max-warnings=0, from the first
+#                commit. There is no backlog to grandfather, and holding it at
+#                zero is the whole point: a lint backlog is what makes the
+#                signal worthless. One job, because each is seconds of work
+#                behind a minute of setup.
 #
 # Visual contracts run on disposable WordPress. [visual-build] runs `npm run
 # build` once — every bundle, free and Pro — and hands public/, pro/public/ and
-# vendor/ to [visual], a matrix with one leg per suite (admin, the largest, is
-# split into two Playwright shards). Each leg boots its own Playground, so the
-# legs share nothing but the build and none waits on another. Screenshots and
-# traces are retained per leg; geometry/style assertions gate the regressions
-# that jsdom cannot see. No release ZIP is staged here.
+# vendor/ to [visual], a matrix of five legs: admin, the largest, split into two
+# Playwright shards, and the storefront suites packed three ways by measured
+# duration. Every config has its own port and its own outputDir, so a leg runs
+# its suites back to back; it keeps going after a failure, so every suite still
+# reports. Each leg boots its own Playground, so the legs share nothing but the
+# build and none waits on another. Screenshots and traces are retained per leg;
+# geometry/style assertions gate the regressions that jsdom cannot see. No
+# release ZIP is staged here.
+#
+# WHY THE LEGS RUN IN THE PLAYWRIGHT CONTAINER. `playwright install
+# --with-deps` apt-installs ~26 MB of fonts, and the runners' Ubuntu mirror
+# throttles: in most runs one or more legs fetched at ~40 kB/s and spent 6–11
+# minutes on a suite that takes 20 seconds. The image already carries the
+# browsers and the same fonts. Its tag is read from the lockfile in
+# [visual-build], so it cannot drift from @playwright/test.
+#
+# A DRAFT PULL REQUEST SKIPS THE VISUAL SUITES. Marking it ready for review
+# starts the full run, and GitHub refuses to merge a draft, so the run that
+# gates a merge is always a full one. A manual dispatch always runs them.
 #
 # NO TRIGGERS OF ITS OWN beyond a manual dispatch. See ci.yml.
 # =============================================================================
@@ -45,25 +62,13 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
-      - run: npm ci
-      - run: npm test
-
-  # The form switch's output against the PHP rules a publish applies (ADR 0163).
-  converted-designs:
-    name: 'Converted designs'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
+      # The form switch's output against the PHP rules a publish applies (ADR
+      # 0163). The verifier boots the unit suite's bootstrap, which loads Pro's
+      # autoloader.
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.1'
           coverage: none
-      # The verifier boots the unit suite's bootstrap, which loads Pro's autoloader.
       - run: |
           composer install --no-progress
           composer install --working-dir=pro --no-progress
@@ -72,11 +77,12 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
-      - run: WCONVERT_DUMP_CONVERSIONS="$RUNNER_TEMP/conversions.json" npx vitest run tests/js/capture-conversion-designs.test.ts
-      - run: php bin/verify-converted-designs.php "$RUNNER_TEMP/conversions.json"
+      - run: WCONVERT_DUMP_CONVERSIONS="$RUNNER_TEMP/conversions.json" npm test
+      - name: Converted designs
+        run: php bin/verify-converted-designs.php "$RUNNER_TEMP/conversions.json"
 
-  typecheck:
-    name: 'TypeScript'
+  static:
+    name: 'TypeScript and ESLint'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -87,24 +93,15 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run typecheck
-
-  lint:
-    name: 'ESLint'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
-      - run: npm ci
       - run: npm run lint
 
   visual-build:
     name: 'Visual contracts: build'
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    outputs:
+      playwright: ${{ steps.playwright.outputs.version }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -121,6 +118,9 @@ jobs:
       # wp-scoper is a dev dependency and is what writes pro/packages/.
       - run: composer install --working-dir=pro --no-progress
       - run: npm ci
+      # The container tag for [visual], from the lockfile's @playwright/test.
+      - id: playwright
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
       # The one script that builds everything, so no leg's build list can drift
       # from the suites that need it.
       - run: npm run build
@@ -135,25 +135,26 @@ jobs:
           retention-days: 1
 
   visual:
-    name: 'Visual contracts: ${{ matrix.suite }}'
+    name: 'Visual contracts: ${{ matrix.leg }}'
     needs: visual-build
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
+    container:
+      image: mcr.microsoft.com/playwright:v${{ needs.visual-build.outputs.playwright }}-noble
+      # The runner's own uid, so the workspace checkout stays writable.
+      options: --user 1001
     strategy:
       # Report every suite even if one fails. Any failed leg still fails the
       # frontend-tests call, and with it the Required checks gate.
       fail-fast: false
       matrix:
+        # Balanced against admin's ~3.5 minutes a shard, from measured runs.
         include:
-          - { suite: admin-1, script: 'test:visual', args: '--shard=1/2' }
-          - { suite: admin-2, script: 'test:visual', args: '--shard=2/2' }
-          - { suite: popup, script: 'test:visual:popup' }
-          - { suite: fullscreen, script: 'test:visual:fullscreen' }
-          - { suite: reopen, script: 'test:visual:reopen' }
-          - { suite: events, script: 'test:visual:events' }
-          - { suite: inline, script: 'test:visual:inline' }
-          - { suite: content-lock, script: 'test:visual:content-lock' }
-          - { suite: analytics, script: 'test:visual:analytics' }
+          - { leg: admin-1, scripts: 'test:visual', args: '--shard=1/2' }
+          - { leg: admin-2, scripts: 'test:visual', args: '--shard=2/2' }
+          - { leg: storefront-a, scripts: 'test:visual:inline test:visual:reopen' }
+          - { leg: storefront-b, scripts: 'test:visual:content-lock test:visual:popup' }
+          - { leg: storefront-c, scripts: 'test:visual:analytics test:visual:fullscreen test:visual:events' }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -166,19 +167,25 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: visual-build
-      - id: playwright
-        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
-      # Still runs on a cache hit: --with-deps installs the system libraries,
-      # which live outside the cached directory.
-      - run: npx playwright install --with-deps chromium
-      - run: npm run ${{ matrix.script }} -- ${{ matrix.args }}
+      - name: Run the suites
+        shell: bash
+        env:
+          SCRIPTS: ${{ matrix.scripts }}
+          ARGS: ${{ matrix.args }}
+        run: |
+          failed=()
+          for script in $SCRIPTS; do
+            echo "── npm run $script $ARGS"
+            # ARGS is a flag list, unquoted so it splits.
+            npm run "$script" -- $ARGS || failed+=("$script")
+          done
+          if [ ${#failed[@]} -gt 0 ]; then
+            echo "::error::Failed: ${failed[*]}"
+            exit 1
+          fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: admin-visual-checks-${{ matrix.suite }}
+          name: admin-visual-checks-${{ matrix.leg }}
           path: tools/visual-tests/out/
           retention-days: 14

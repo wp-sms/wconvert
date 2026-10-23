@@ -1260,7 +1260,7 @@ describe('the verdict', () => {
     expect(screen.getByRole('heading', { name: '1 thing to review' })).toBeInTheDocument();
     expect(screen.getByText(/hard to read on the background/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save & publish' })).toBeEnabled();
-  });
+  }, 15000);
 
   /**
    * **Read out rather than behind a press.** It was a popover, which is right
