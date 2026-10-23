@@ -115,7 +115,7 @@ export function CampaignDetailsDialog({
         : __('The previous version is still published. Open the editor to publish your changes.', 'wconvert')
       : null,
   ].filter((note): note is string => note !== null) : [];
-  const words = asking ? decisionCopy(asking, arm, name) : null;
+  const words = asking ? decisionCopy(asking, arm, name, row?.arms.length ?? 0) : null;
   const cancel = () => {
     backingOut.current = true;
     setAsking(null);

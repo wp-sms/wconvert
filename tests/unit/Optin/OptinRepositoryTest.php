@@ -766,4 +766,85 @@ final class OptinRepositoryTest extends TestCase
         $this->assertFalse($this->repository->declareWinner($parent->id, $parent->id));
     }
 
+    /**
+     * #292: the list shows a test as its parent row, so deleting that row is
+     * the only way a merchant has to stop it. Deleting the parent alone left
+     * the variants serving and gone from the list — live, and unreachable.
+     */
+    public function testDeletingATestDeletesItsLiveVariantsToo(): void
+    {
+        $parent = $this->anOptin();
+        $variant = $this->repository->createVariant($parent->id);
+        $this->repository->publish($parent->id);
+        $this->repository->publish((string) $variant?->id);
+
+        $this->assertTrue($this->repository->delete($parent->id));
+
+        $this->assertNotNull($this->repository->find((string) $variant?->id)?->deletedAt);
+        $this->assertSame([], $this->repository->armsByParent()[$parent->id] ?? []);
+        $this->assertSame([], $this->publishedSet->all());
+        $this->assertSame([], $this->db->deletes, 'a stamp, never a removal');
+    }
+
+    /** An arm a finished test already retired keeps the moment it was retired. */
+    public function testDeletingACampaignLeavesItsRetiredArmsTimestampAlone(): void
+    {
+        $parent = $this->anOptin();
+        $loser = $this->repository->createVariant($parent->id);
+        $this->repository->publish($parent->id);
+        $this->repository->publish((string) $loser?->id);
+        $this->repository->declareWinner($parent->id, $parent->id);
+        $this->db->rows[(string) $loser?->id]['deleted_at'] = '2026-01-01 00:00:00';
+
+        $this->repository->delete($parent->id);
+
+        $this->assertSame('2026-01-01 00:00:00', $this->repository->find((string) $loser?->id)?->deletedAt);
+    }
+
+    public function testDeletingOneVariantLeavesTheRestOfTheTestRunning(): void
+    {
+        $parent = $this->anOptin();
+        $b = $this->repository->createVariant($parent->id);
+        $c = $this->repository->createVariant($parent->id);
+        foreach ([$parent->id, (string) $b?->id, (string) $c?->id] as $id) {
+            $this->repository->publish($id);
+        }
+
+        $this->repository->delete((string) $b?->id);
+
+        $this->assertNull($this->repository->find($parent->id)?->deletedAt);
+        $this->assertNull($this->repository->find((string) $c?->id)?->deletedAt);
+        $this->assertEqualsCanonicalizing([$parent->id, $c?->id], array_column($this->publishedSet->all(), 'id'));
+    }
+
+    /**
+     * The safety net under the cascade: a variant whose parent is deleted by
+     * any other route — a row deleted before #292 was fixed, say — still never
+     * reaches a visitor.
+     */
+    public function testAVariantOfADeletedCampaignNeverGoesLive(): void
+    {
+        $parent = $this->anOptin();
+        $variant = $this->repository->createVariant($parent->id);
+        $this->repository->publish($parent->id);
+        $this->repository->publish((string) $variant?->id);
+        $this->db->rows[$parent->id]['deleted_at'] = '2026-01-01 00:00:00';
+
+        $this->repository->rebuildForInstall();
+
+        $this->assertSame([], $this->publishedSet->all());
+    }
+
+    /** Paused is not deleted: a paused campaign's live variant keeps serving. */
+    public function testAVariantOfAPausedCampaignStaysLive(): void
+    {
+        $parent = $this->anOptin();
+        $variant = $this->repository->createVariant($parent->id);
+        $this->repository->publish($parent->id);
+        $this->repository->publish((string) $variant?->id);
+
+        $this->repository->unpublish($parent->id);
+
+        $this->assertSame([$variant?->id], array_column($this->publishedSet->all(), 'id'));
+    }
 }
