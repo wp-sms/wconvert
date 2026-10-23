@@ -922,6 +922,7 @@ which of the two workflows runs, and the other reports as skipped. A tag push
 on its own does nothing.
 
 ```bash
+composer install       # the root vendor/: the collection checks below load the plugin's classes
 npm run build          # public/ and pro/public/ are gitignored — nothing is stale
 bin/build.sh free      # → dist/wconvert-v1.0.0.zip
 bin/build.sh pro       # → dist/wconvert-pro-v1.0.0.zip (below)

@@ -21,25 +21,25 @@ final class WorkflowStagePathsTest extends TestCase
 
     public function testEveryWorkflowStagePathIsUnderTheDirectoryBuildShStagesTo(): void
     {
-        $root = self::stagedTreeRoot();
-        $paths = [];
+        $prefix = self::stagePrefix();
+        $checked = 0;
 
-        foreach (glob(self::REPO . '/.github/workflows/*.yml') ?: [] as $workflow) {
+        foreach (glob(self::REPO . '/.github/workflows/*.{yml,yaml}', GLOB_BRACE) ?: [] as $workflow) {
             $yaml = file_get_contents($workflow);
             self::assertIsString($yaml);
             preg_match_all('#dist/stage/[\w./*-]*#', $yaml, $found);
             foreach ($found[0] as $path) {
-                $paths[] = basename($workflow) . ': ' . $path;
+                $checked++;
                 self::assertStringStartsWith(
-                    $root,
+                    $prefix,
                     $path,
-                    basename($workflow) . " names $path, but bin/build.sh stages to $root<slug>",
+                    basename($workflow) . " names $path, but bin/build.sh stages to $prefix<slug>",
                 );
             }
         }
 
         // A rename that drops every path would otherwise pass with nothing checked.
-        self::assertNotEmpty($paths, 'No workflow names a dist/stage/ path any more');
+        self::assertGreaterThan(0, $checked, 'No workflow names a dist/stage/ path any more');
     }
 
     /**
@@ -47,7 +47,7 @@ final class WorkflowStagePathsTest extends TestCase
      *
      * @return non-empty-string
      */
-    private static function stagedTreeRoot(): string
+    private static function stagePrefix(): string
     {
         $script = file_get_contents(self::REPO . '/bin/build.sh');
         self::assertIsString($script);

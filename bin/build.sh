@@ -44,7 +44,9 @@
 # exists is a ZIP somebody can upload; the check has to be what decides
 # whether one is written.
 #
-# Requirements: php, zip and composer — free and Pro both install in the stage.
+# Requirements: php, zip and composer — free and Pro both install in the stage —
+# and the repo root's own `composer install`, which the collection checks below
+# load the plugin's classes through. The stage never copies that vendor/.
 
 set -euo pipefail
 
