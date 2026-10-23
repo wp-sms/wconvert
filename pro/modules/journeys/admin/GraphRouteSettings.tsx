@@ -153,7 +153,7 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
       <FieldHeading label={__('If skipped', 'wconvert-pro')} htmlFor={`${skipId}-skip`} tip={__('Skipped screens don’t collect answers or save details.', 'wconvert-pro')} />
       <select id={`${skipId}-skip`} ref={hiddenSelect} value={hidden && hidden.to !== fallback?.to ? hidden.to : ''} onChange={event => write(answers, fallback,
         event.target.value === '' ? null : { id: hidden?.id ?? graphEdgeId(graph), from: screen.id, kind: 'hidden', to: event.target.value })}>
-        <option value="">{fallback ? sprintf(__('Where it would have gone (%s)', 'wconvert-pro'), tree.steps.find(item => item.id === fallback.to)?.name ?? '') : __('Where it would have gone', 'wconvert-pro')}</option>
+        <option value="">{fallback ? sprintf(/* translators: %s: the name of the screen visitors reach when this screen is skipped, e.g. “Thank you”. */ __('Where it would have gone (%s)', 'wconvert-pro'), tree.steps.find(item => item.id === fallback.to)?.name ?? '') : __('Where it would have gone', 'wconvert-pro')}</option>
         {targets.filter(target => target.id !== fallback?.to).map(target => <option key={target.id} value={target.id}>{target.name}</option>)}
       </select></div>}
     </div>

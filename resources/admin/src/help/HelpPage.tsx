@@ -167,8 +167,7 @@ export function HelpPage() {
         </div>
         <Button asChild size="lg">
           <a href={HELP_URLS.support} target="_blank" rel="noreferrer">
-            {/* translators: %s: the installed plan's name, e.g. Pro. */}
-            {paid ? sprintf(__('Contact %s support', 'wconvert'), tierName(tier)) : __('Contact support', 'wconvert')}
+            {paid ? sprintf(/* translators: %s: the installed plan's name, e.g. “Pro”. */ __('Contact %s support', 'wconvert'), tierName(tier)) : __('Contact support', 'wconvert')}
             <ExternalLink aria-hidden="true" /><NewTab />
           </a>
         </Button>
@@ -176,8 +175,7 @@ export function HelpPage() {
 
       {settings?.version && (
         <p className="wconvert-help-version">
-          {/* translators: %s: the plugin's version, e.g. 1.0.0. */}
-          {sprintf(__('WConvert %s', 'wconvert'), settings.version)}
+          {sprintf(/* translators: %s: the plugin's version, e.g. “1.0.0”. */ __('WConvert %s', 'wconvert'), settings.version)}
           {' · '}
           <a href={HELP_URLS.changes} target="_blank" rel="noreferrer">{__('What’s new', 'wconvert')}<NewTab /></a>
         </p>

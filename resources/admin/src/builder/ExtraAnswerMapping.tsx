@@ -62,7 +62,7 @@ export function ExtraAnswerMapping({ destination, providerLabel, submissionId, t
   }, [open, destination.id, context, sources.length, refresh]);
   if (eligible.length === 0 && orphaned.length === 0) return null;
   return <Disclosure className="mt-3" onToggle={setOpen} bodyClassName="p-0" title={__('Field mapping', 'wconvert')}
-    summary={<Badge variant={hasIssues ? 'warning' : 'outline'} className="mt-1 font-normal">{hasIssues ? __('Needs review', 'wconvert') : sprintf(_n('%d field mapped', '%d fields mapped', selected.length, 'wconvert'), selected.length)}</Badge>}>
+    summary={<Badge variant={hasIssues ? 'warning' : 'outline'} className="mt-1 font-normal">{hasIssues ? __('Needs review', 'wconvert') : sprintf(/* translators: %d: how many answers are mapped to a field in the destination. */ _n('%d field mapped', '%d fields mapped', selected.length, 'wconvert'), selected.length)}</Badge>}>
     {open && <div className="flex min-w-0 flex-col gap-4 p-3">
       <div className="wconvert-toolbar flex flex-wrap items-start justify-between gap-3">
         <Description className="min-w-0 flex-1 basis-56">{__('Choose which answers to send. Changes take effect when you publish.', 'wconvert')}</Description>
@@ -74,14 +74,14 @@ export function ExtraAnswerMapping({ destination, providerLabel, submissionId, t
       {!fields && !error && busy && <RegionSkeleton label={__('fields', 'wconvert')} lines={Math.min(eligible.length, 3)} />}
       {fields && <fieldset disabled={busy || !!error} className="@container m-0 min-w-0 border-0 p-0" aria-label={__('Answer mappings', 'wconvert')} aria-busy={busy}>
         <div className="hidden grid-cols-[minmax(0,1fr)_1rem_minmax(0,1fr)] gap-3 border-b border-border pb-2 text-note text-muted-foreground @min-[400px]:grid" aria-hidden="true">
-          <span>{__('Campaign answer', 'wconvert')}</span><span /><span>{providerLabel ? sprintf(__('%s field', 'wconvert'), providerLabel) : __('Destination field', 'wconvert')}</span>
+          <span>{__('Campaign answer', 'wconvert')}</span><span /><span>{providerLabel ? sprintf(/* translators: %s: the service answers are sent to, e.g. “Mailchimp”. */ __('%s field', 'wconvert'), providerLabel) : __('Destination field', 'wconvert')}</span>
         </div>
         <div className="divide-y divide-border">
           {answerGroups(eligible).map((group) => group.choices.length > 0 ? <fieldset key={group.id} className="m-0 min-w-0 border-0 px-0 pb-3 pt-4">
             <legend className="float-start mb-1 w-full text-body font-medium [overflow-wrap:anywhere]">{group.label}</legend>
             <div className="clear-both">
               <Description>{__('Each selected choice sends Yes. Earlier interests stay saved.', 'wconvert')}</Description>
-              {!fields.some((field) => field.type === 'boolean') && <Description className="mt-2">{sprintf(__('Add a yes/no field for each choice in %s, then refresh fields.', 'wconvert'), providerLabel ?? destination.label)}</Description>}
+              {!fields.some((field) => field.type === 'boolean') && <Description className="mt-2">{sprintf(/* translators: %s: the service answers are sent to, e.g. “Mailchimp”. */ __('Add a yes/no field for each choice in %s, then refresh fields.', 'wconvert'), providerLabel ?? destination.label)}</Description>}
               {group.choices.map((source) => <MappingRow key={source.id} id={`${id}-${source.id}`} source={source} label={source.choice?.label ?? source.label} fields={fields} value={value} issue={issueFor(source)} onChange={onChange} />)}
               {group.answer && <Disclosure variant="inline" className="border-t border-border" open={value[group.answer.id] ? true : undefined} title={__('Send all choices as text (optional)', 'wconvert')}>
                 <MappingRow id={`${id}-${group.answer.id}`} source={group.answer} label={__('All selected choices', 'wconvert')} fields={fields} value={value} issue={issueFor(group.answer)} onChange={onChange} />
@@ -134,10 +134,10 @@ function MappingRow({ id, source, label = source.label, fields, value, issue, on
           onChange(next);
         }}>
         <option value="">{__('Keep in WConvert only', 'wconvert')}</option>
-        {target && !options.some((field) => field.value === target) && <option value={target}>{sprintf(__('Unavailable field (%s)', 'wconvert'), target)}</option>}
+        {target && !options.some((field) => field.value === target) && <option value={target}>{sprintf(/* translators: %s: the saved field's ID in the service, e.g. “MMERGE5”. */ __('Unavailable field (%s)', 'wconvert'), target)}</option>}
         {options.map((field) => {
           const used = Object.entries(value).some(([other, selected]) => other !== source.id && selected === field.value);
-          return <option key={field.value} value={field.value} disabled={used}>{used ? sprintf(__('%s — already used', 'wconvert'), field.label) : field.label}</option>;
+          return <option key={field.value} value={field.value} disabled={used}>{used ? sprintf(/* translators: %s: a field in the service, e.g. “Company”. */ __('%s — already used', 'wconvert'), field.label) : field.label}</option>;
         })}
       </NativeSelect>
       {issue ? <p id={`${id}-help`} role="alert" className="m-0 text-note text-warning">{issue}</p>

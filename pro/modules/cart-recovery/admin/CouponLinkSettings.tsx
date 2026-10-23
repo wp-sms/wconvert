@@ -40,12 +40,10 @@ export interface CouponExpiry {
 export function expiryWarning(code: string, expiry: CouponExpiry | null): string | null {
   if (!expiry || !expiry.ends) return null;
   if (expiry.verdict === 'outlives' && expiry.expires) {
-    /* translators: 1: a coupon code, 2: the date it expires, 3: the date and time the campaign ends. */
-    return sprintf(__('%1$s stays valid until %2$s, after this campaign ends on %3$s.', 'wconvert-pro'), code, expiry.expires, expiry.ends);
+    return sprintf(/* translators: 1: a coupon code, 2: the date it expires, 3: the date and time the campaign ends. */ __('%1$s stays valid until %2$s, after this campaign ends on %3$s.', 'wconvert-pro'), code, expiry.expires, expiry.ends);
   }
   if (expiry.verdict === 'no_expiry') {
-    /* translators: 1: a coupon code, 2: the date and time the campaign ends. */
-    return sprintf(__('%1$s never expires, so it keeps working after this campaign ends on %2$s.', 'wconvert-pro'), code, expiry.ends);
+    return sprintf(/* translators: 1: a coupon code, 2: the date and time the campaign ends. */ __('%1$s never expires, so it keeps working after this campaign ends on %2$s.', 'wconvert-pro'), code, expiry.ends);
   }
   return null;
 }

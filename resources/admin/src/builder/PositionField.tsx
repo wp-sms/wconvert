@@ -38,7 +38,7 @@ export function PositionField({ label, shown, offered, nameOfValue, reset, onCha
   });
   const expanded = advanced && (adjusting || selected === undefined);
   const summary = selected !== undefined ? nameOfValue(selected) : point && advanced
-    ? sprintf(__('%1$s%% across, %2$s%% down', 'wconvert'), String(point[0]), String(point[1]))
+    ? sprintf(/* translators: 1: how far across, as a percentage, 2: how far down, as a percentage. */ __('%1$s%% across, %2$s%% down', 'wconvert'), String(point[0]), String(point[1]))
     : __('Custom position', 'wconvert');
 
   return <div className="wconvert-token wconvert-position">
@@ -79,7 +79,7 @@ export function PositionField({ label, shown, offered, nameOfValue, reset, onCha
           </label>)}
       </div>}
       <Disclosure variant="inline" className="wconvert-position__css" open={point === null ? true : undefined} title={__('Custom CSS', 'wconvert')}>
-        <StyleValueInput aria-label={sprintf(__('%s value', 'wconvert'), label)} value={shown} onCommit={onChange} />
+        <StyleValueInput aria-label={sprintf(/* translators: %s: a setting's name, e.g. “Picture focus”. */ __('%s value', 'wconvert'), label)} value={shown} onCommit={onChange} />
       </Disclosure>
     </div>}
   </div>;

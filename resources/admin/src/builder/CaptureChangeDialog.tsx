@@ -63,12 +63,10 @@ function counts(change: Extract<Change, { kind: 'goal' }>): string {
   const outcome = change.outcome;
   if (outcome.action === 'none') return __('Only appearances are counted.', 'wconvert');
   if (outcome.action === 'click') return change.link
-    /* translators: %s: a button's label. */
-    ? sprintf(__('Clicks on “%s” count.', 'wconvert'), change.link) : __('Clicks count.', 'wconvert');
+    ? sprintf(/* translators: %s: a button's label. */ __('Clicks on “%s” count.', 'wconvert'), change.link) : __('Clicks count.', 'wconvert');
   const signups = outcome.audience_channel === 'phone' ? __('Phone signups count.', 'wconvert')
     : outcome.audience_channel === 'email' ? __('Signups count.', 'wconvert') : __('Enquiries count.', 'wconvert');
-  /* translators: %s: a button's label. */
-  return change.link ? `${signups} ${sprintf(__('Clicks on “%s” no longer count.', 'wconvert'), change.link)}` : signups;
+  return change.link ? `${signups} ${sprintf(/* translators: %s: a button's label. */ __('Clicks on “%s” no longer count.', 'wconvert'), change.link)}` : signups;
 }
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
@@ -86,8 +84,7 @@ function changeRows(changes: readonly Change[], copy: boolean, swapNote: SwapNot
   const leads = changes.some(change => change.kind === 'leads-stay');
   const stops = changes.some(change => change.kind === 'stops-sending');
   return changes.flatMap((change, at): ReactNode[] => {
-    /* translators: %s: a screen's name, e.g. “Offer”. */
-    const screenLabel = (name: string) => sprintf(__('%s screen', 'wconvert'), name);
+    const screenLabel = (name: string) => sprintf(/* translators: %s: a screen's name, e.g. “Offer”. */ __('%s screen', 'wconvert'), name);
     switch (change.kind) {
       case 'screen-changes': {
         const gets = change.gets.length ? sprintf(/* translators: %s: a list of things, e.g. “the code FRIDAY25 and “Shop now””. */ __('Gets %s.', 'wconvert'), listWithAnd(change.gets.map(itemWords))) : '';
@@ -100,8 +97,7 @@ function changeRows(changes: readonly Change[], copy: boolean, swapNote: SwapNot
         {change.shows.length > 0 && ` ${sprintf(/* translators: %s: a list of things. */ __('It shows %s.', 'wconvert'), listWithAnd(change.shows.map(itemWords)))}`}</Row>];
       case 'removed-screens': return [<Row key={at} label={_n('Removed screen', 'Removed screens', change.screens.length, 'wconvert')}>
         <ul>{change.screens.map(screen => <li key={screen.name}>{screen.words.length
-          /* translators: 1: a screen's name. 2: its words, quoted. */
-          ? sprintf(__('%1$s, with its words %2$s', 'wconvert'), quoted(screen.name), listWithAnd(screen.words.map(quoted)))
+          ? sprintf(/* translators: 1: a screen's name. 2: its words, quoted. */ __('%1$s, with its words %2$s', 'wconvert'), quoted(screen.name), listWithAnd(screen.words.map(quoted)))
           : quoted(screen.name)}</li>)}</ul></Row>];
       case 'field-swap': return [<Row key={at} label={screenLabel(change.screen)}>
         {/* translators: 1: the old field's label. 2: the new one. */ sprintf(__('“%1$s” becomes “%2$s”.', 'wconvert'), change.from, change.to)}
@@ -171,8 +167,7 @@ export function CaptureChangeDialog({ open, onOpenChange, before, target, conver
   const meta = copy ? __('The original keeps its published version and all its results.', 'wconvert')
     : adding ? (code ? __('Visitors sign up first, then see the code.', 'wconvert') : __('Visitors sign up first, then see the thank-you screen.', 'wconvert'))
       : removing ? (before.tree.steps.length > 2
-        /* translators: %d: how many screens go. */
-        ? sprintf(_n('A campaign without a form is one screen, so %d screen goes.', 'A campaign without a form is one screen, so %d screens go.', before.tree.steps.length - 1, 'wconvert'), before.tree.steps.length - 1)
+        ? sprintf(/* translators: %d: how many screens go. */ _n('A campaign without a form is one screen, so %d screen goes.', 'A campaign without a form is one screen, so %d screens go.', before.tree.steps.length - 1, 'wconvert'), before.tree.steps.length - 1)
         : code ? __('Visitors see the offer and the code straight away.', 'wconvert') : __('Visitors see the offer straight away.', 'wconvert'))
         : __('The screens stay the same. Only the field and its consent change.', 'wconvert');
   const confirmLabel = copy ? (adding ? __('Create signup copy', 'wconvert') : __('Create offer copy', 'wconvert'))

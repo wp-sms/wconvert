@@ -34,8 +34,7 @@ export function formatWordOf(displayType: string): string {
 
 /** "Fieldwork · Popup": the design and the format, beside "Look" on one line (ADR 0136). */
 export function lookSummary(displayType: string, design: string): string {
-  /* translators: 1: a design's name, e.g. “Fieldwork”. 2: the campaign's format, e.g. “Popup”. */
-  return sprintf(__('%1$s · %2$s', 'wconvert'), design, displayTypeLabel(displayType));
+  return sprintf(/* translators: 1: a design's name, e.g. “Fieldwork”. 2: the campaign's format, e.g. “Popup”. */ __('%1$s · %2$s', 'wconvert'), design, displayTypeLabel(displayType));
 }
 
 /** The pinned Look row: the design's colors and what the Look holds. */
@@ -102,7 +101,7 @@ export function EditTree({ tree, step, editingScreen = true, issues = [], onIssu
     const here = issuesHere.get(screen.id) ?? [];
     const current = step === index && editingScreen;
     const warning = here.length > 0 && <button type="button" className="wconvert-campaign-screens__issues" data-soft={here.every(issue => !issue.blocks) || undefined} onClick={() => onIssue?.(here[0])}
-      aria-label={sprintf(_n('%1$d issue on “%2$s”: %3$s', '%1$d issues on “%2$s”: %3$s', here.length, 'wconvert'), here.length, screen.name, here[0].said)}>
+      aria-label={sprintf(/* translators: 1: how many issues the screen has, 2: a screen's name, 3: the first issue, a sentence. */ _n('%1$d issue on “%2$s”: %3$s', '%1$d issues on “%2$s”: %3$s', here.length, 'wconvert'), here.length, screen.name, here[0].said)}>
       <TriangleAlert aria-hidden="true" size={12} />{here.length}</button>;
     return <div key={screen.id} className="wconvert-campaign-screens__row">
       <button type="button" aria-current={current ? 'true' : undefined} onClick={() => onSelect(index)}>
@@ -110,16 +109,16 @@ export function EditTree({ tree, step, editingScreen = true, issues = [], onIssu
           {path && <small className="wconvert-campaign-screens__path">{path.kind === 'answer' && path.when ? followupLabel(tree, path.when) : __('All other answers', 'wconvert')}</small>}
           {nested && screen.when && <small className="wconvert-campaign-screens__answer">{followupLabel(tree, screen.when)}</small>}
           <strong>{screen.name}</strong>
-          {unreachable.has(screen.id) ? <small>{__('Not connected', 'wconvert')}</small> : screen.when && !nested ? <small>{sprintf(__('Only if %s', 'wconvert'), conditionText(tree, screen.when))}</small>
+          {unreachable.has(screen.id) ? <small>{__('Not connected', 'wconvert')}</small> : screen.when && !nested ? <small>{sprintf(/* translators: %s: the rule that shows this screen, a question and its answers, e.g. “Skin type is Dry”. */ __('Only if %s', 'wconvert'), conditionText(tree, screen.when))}</small>
             : screen.id === (tree.graph?.entry ?? tree.steps[0].id) ? <small>{__('First screen', 'wconvert')}</small> : null}
           {branches > 0 && <small><GitBranch aria-hidden="true" size={12} />{__('First match wins', 'wconvert')}</small>}
         </span>
       </button>{warning}
-      {step === index && elements !== undefined && <div className="wconvert-edit-tree__elements" role="group" aria-label={sprintf(__('Elements on %s', 'wconvert'), screen.name)}>{elements}</div>}
+      {step === index && elements !== undefined && <div className="wconvert-edit-tree__elements" role="group" aria-label={sprintf(/* translators: %s: a screen's name. */ __('Elements on %s', 'wconvert'), screen.name)}>{elements}</div>}
     </div>;
   };
-  const renderGroup = (group: typeof groups[number]) => <section key={group.id} aria-label={sprintf(__('Follow-ups: %s', 'wconvert'), owners.has(group.id) ? tree.steps[owners.get(group.id)!].name : tree.steps[group.screens[0]].name)}>
-    <Disclosure variant="inline" open={group.screens.includes(step) || owners.get(group.id) === step} title={sprintf(_n('%d follow-up question', '%d follow-up questions', group.screens.length, 'wconvert'), group.screens.length)} summary={__('Asked one at a time, to each matching answer.', 'wconvert')}>
+  const renderGroup = (group: typeof groups[number]) => <section key={group.id} aria-label={sprintf(/* translators: %s: the name of the screen whose answers they follow up. */ __('Follow-ups: %s', 'wconvert'), owners.has(group.id) ? tree.steps[owners.get(group.id)!].name : tree.steps[group.screens[0]].name)}>
+    <Disclosure variant="inline" open={group.screens.includes(step) || owners.get(group.id) === step} title={sprintf(/* translators: %d: how many follow-up questions. */ _n('%d follow-up question', '%d follow-up questions', group.screens.length, 'wconvert'), group.screens.length)} summary={__('Asked one at a time, to each matching answer.', 'wconvert')}>
     {group.screens.map(index => item(index, true))}
     <p>{sprintf(/* translators: %s: a screen's name. */ __('Then → %s', 'wconvert'), tree.steps.find(screen => screen.id === group.next)?.name ?? '')}</p></Disclosure>
   </section>;

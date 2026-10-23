@@ -17,7 +17,7 @@ import type { NotSent } from './notSent';
 export type CampaignName = string | null | undefined;
 
 export const submissionCount = (count: number) =>
-  sprintf(_n('%s submission', '%s submissions', count, 'wconvert'), formatCount(count));
+  sprintf(/* translators: %s: how many form submissions, e.g. “3”. */ _n('%s submission', '%s submissions', count, 'wconvert'), formatCount(count));
 
 /** The email or phone a lead is found by: the email where there is one, as the log groups. */
 export const contactOf = (lead: Lead): string | null => lead.email || lead.phone || null;
@@ -97,7 +97,7 @@ function Sending({ notSent }: { notSent: readonly NotSent[] }) {
     <ul className="m-0 flex list-none flex-col gap-2 p-0">
       {notSent.map((entry, index) => (
         <li key={index} className="m-0 [overflow-wrap:anywhere]">
-          {sentence(__('Not sent to %1$s: %2$s', 'wconvert'), [
+          {sentence(/* translators: 1: a destination's name, e.g. “Mailchimp”, 2: why it was not sent, the error from that service. */ __('Not sent to %1$s: %2$s', 'wconvert'), [
             entry.destination === null ? __('Removed destination', 'wconvert') : entry.destination || __('Unnamed destination', 'wconvert'),
             entry.error,
           ])}
@@ -215,7 +215,7 @@ export function LeadDetail({
       value: <>
         {fields[`${channel}_consent_text`] || __('No wording was recorded.', 'wconvert')}
         {fields[`${channel}_accepted_at`] && <span className="mt-1 block text-note text-muted-foreground">
-          {sprintf(__('Agreed %s', 'wconvert'), formatWhen(fields[`${channel}_accepted_at`], 'detail'))}
+          {sprintf(/* translators: %s: the date and time they agreed, e.g. “Oct 9, 2026, 2:22 PM”. */ __('Agreed %s', 'wconvert'), formatWhen(fields[`${channel}_accepted_at`], 'detail'))}
         </span>}
       </>,
     }))

@@ -273,7 +273,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
     const next = movedScreen(tree, from, to);
     if (next === tree) { setSaid(__('Keep the main signup before the optional signup, and the thank-you screen last.', 'wconvert')); return; }
     write(next, to);
-    setSaid(sprintf(__('%1$s moved to screen %2$d.', 'wconvert'), tree.steps[from].name, to + 1));
+    setSaid(sprintf(/* translators: 1: a screen's name, e.g. “Skin type”, 2: its new position in the journey, e.g. 3. */ __('%1$s moved to screen %2$d.', 'wconvert'), tree.steps[from].name, to + 1));
   };
   const saving = (index: number) => tree.submissions.find(sub => submissionScreen(tree, sub.id) === index);
   const saveLabel = (id: string) => {
@@ -418,8 +418,8 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   const boundary = tree.steps.findIndex(s => s.kind === 'result' || walkNodes(s.content).some(n => 'action' in n && n.action === 'submit'));
   const insertionAt = Math.min(step + 1, boundary < 0 ? tree.steps.length - 1 : boundary);
   const insertionLabel = tree.graph ? __('Choose where it goes', 'wconvert') : insertionAt <= step
-    ? sprintf(__('Before %s', 'wconvert'), tree.steps[insertionAt].name)
-    : sprintf(__('After %s', 'wconvert'), current.name);
+    ? sprintf(/* translators: %s: a screen's name, e.g. “Thank you”. */ __('Before %s', 'wconvert'), tree.steps[insertionAt].name)
+    : sprintf(/* translators: %s: a screen's name, e.g. “Skin type”. */ __('After %s', 'wconvert'), current.name);
   const panelOpen = inspecting;
   // Display rules and Destinations are tabs of their own, one click away (ADR 0134).
   const openContext = (kind: 'rules' | 'destinations') => { setOpen(false); (kind === 'rules' ? onGoToRules : onGoToDestinations)?.(); };
@@ -549,11 +549,11 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
           </Suspense></FlowMapBoundary>}
           {view === 'screens' && <aside className="wconvert-journey-rail" aria-label={__('Screens', 'wconvert')}>
             {formSwitch}
-            <div className="wconvert-journey-rail__heading"><strong>{__('Screens', 'wconvert')}</strong><span>{tree.graph ? tree.steps.length : sprintf(__('%d of 7', 'wconvert'), tree.steps.length)}</span><small>{tree.graph ? __('Lines may skip screens', 'wconvert') : __('Up to 7 screens without answer lines', 'wconvert')}</small></div>
+            <div className="wconvert-journey-rail__heading"><strong>{__('Screens', 'wconvert')}</strong><span>{tree.graph ? tree.steps.length : sprintf(/* translators: %d: how many screens the journey has; 7 is the most allowed. */ __('%d of 7', 'wconvert'), tree.steps.length)}</span><small>{tree.graph ? __('Lines may skip screens', 'wconvert') : __('Up to 7 screens without answer lines', 'wconvert')}</small></div>
             <ol ref={screenList} className="wconvert-journey-dialog__screens" aria-label={__('All screens', 'wconvert')}>
               {displayOrder.map((index, position) => <JourneyScreenCard key={tree.steps[index].id} template={{ tree, tokens }} index={index} ordinal={position + 1} selected={index === step}
-                scope={id} label={disconnected.has(tree.steps[index].id) ? __('Unreachable', 'wconvert') : screenLabel(index)} condition={tree.steps[index].when ? sprintf(__('Only if %s', 'wconvert'), conditionText(tree, tree.steps[index].when!))
-                  : tree.steps[index].kind === 'result' && (tree.steps[index].results?.length ?? 0) > 1 ? sprintf(__('%d possible results', 'wconvert'), tree.steps[index].results?.length ?? 0) : undefined}
+                scope={id} label={disconnected.has(tree.steps[index].id) ? __('Unreachable', 'wconvert') : screenLabel(index)} condition={tree.steps[index].when ? sprintf(/* translators: %s: the rule that shows the screen, e.g. “Skin type is Oily”. */ __('Only if %s', 'wconvert'), conditionText(tree, tree.steps[index].when!))
+                  : tree.steps[index].kind === 'result' && (tree.steps[index].results?.length ?? 0) > 1 ? sprintf(/* translators: %d: how many results the result screen can show. */ __('%d possible results', 'wconvert'), tree.steps[index].results?.length ?? 0) : undefined}
                 onSelect={() => select(index)}
                 onMove={tree.graph ? undefined : (from, to) => move(tree.steps.findIndex(s => s.id === from), Math.min(tree.steps.findIndex(s => s.id === to), tree.steps.length - 2))} />)}
             </ol>
@@ -586,7 +586,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
                     onChange={e => onChange({ ...tree, steps: tree.steps.map((s, i) => i === step ? { ...s, name: e.target.value } : s) }, `journey:${current.id}:name`)} /></>}
                 caption={kindWord}
                 actions={<>
-                  <DropdownMenu><DropdownMenuTrigger asChild><button ref={deleteTrigger} type="button" className="wconvert-journey-pane__menu" aria-label={sprintf(__('Actions for %s', 'wconvert'), current.name)} title={sprintf(__('Actions for %s', 'wconvert'), current.name)}><MoreHorizontal aria-hidden="true" /></button></DropdownMenuTrigger>
+                  <DropdownMenu><DropdownMenuTrigger asChild><button ref={deleteTrigger} type="button" className="wconvert-journey-pane__menu" aria-label={sprintf(/* translators: %s: a screen's name, e.g. “Skin type”. */ __('Actions for %s', 'wconvert'), current.name)} title={sprintf(/* translators: %s: a screen's name, e.g. “Skin type”. */ __('Actions for %s', 'wconvert'), current.name)}><MoreHorizontal aria-hidden="true" /></button></DropdownMenuTrigger>
                     <OptionMenuContent align="end" aria-label={sprintf(/* translators: %s: a screen's name. */ __('Actions for %s', 'wconvert'), current.name)}>
                       {!tree.graph && <OptionItem icon={Copy} name={__('Duplicate', 'wconvert')} onSelect={duplicate}
                         refused={current.kind === 'acknowledgement' || current.kind === 'result'
@@ -678,11 +678,11 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
         </div>
         </QuestionPanelContext.Provider>
         <div className={embedded && !said ? 'sr-only' : 'wconvert-journey-dialog__footer wconvert-toolbar'}><p role="status">{said}</p>{said && onUndo && <Button type="button" variant="ghost" onClick={onUndo}>{__('Undo change', 'wconvert')}</Button>}{said && <Button type="button" variant="outline" onClick={() => { setTestChange(notice); setTestMode('journey'); setTestOpen(true); }}>{__('Test this change', 'wconvert')}</Button>}{!embedded && <DialogClose asChild><Button variant="outline">{__('Done', 'wconvert')}</Button></DialogClose>}</div>
-        <ConfirmDialog variant="destructive" open={deleting} onOpenChange={setDeleting} title={sprintf(__('Delete “%s”?', 'wconvert'), current.name)} returnFocusTo={deleteTrigger}
+        <ConfirmDialog variant="destructive" open={deleting} onOpenChange={setDeleting} title={sprintf(/* translators: %s: a screen's name, e.g. “Skin type”. */ __('Delete “%s”?', 'wconvert'), current.name)} returnFocusTo={deleteTrigger}
           description={__('Other screens, their lines and saved leads stay. Undo brings this screen back.', 'wconvert')}
           confirmLabel={__('Delete screen', 'wconvert')} onConfirm={() => { setDeleting(false); remove(); }} />
         <ConfirmDialog variant="destructive" open={confirmRemoval} onOpenChange={setConfirmRemoval} title={__('Remove this optional signup?', 'wconvert')}
-          description={sprintf(__('Removes %s, with its contact fields, consent and signup settings. Other screens and saved leads stay. Undo restores this draft edit.', 'wconvert'), tree.steps.filter(s => removal.screens.includes(s.id)).map(s => s.name).join(', '))}
+          description={sprintf(/* translators: %s: a comma-separated list of the optional signup's screen names, e.g. “Get updates, Thanks”. */ __('Removes %s, with its contact fields, consent and signup settings. Other screens and saved leads stay. Undo restores this draft edit.', 'wconvert'), tree.steps.filter(s => removal.screens.includes(s.id)).map(s => s.name).join(', '))}
           confirmLabel={__('Remove signup', 'wconvert')} onConfirm={remove} />
         <ConfirmDialog open={straightening} onOpenChange={setStraightening} title={__('Make it a straight campaign?', 'wconvert')}
           description={__('Removes the questions, results, answer lines and “Only if…” this site can’t display, and the screens that only asked questions. The rest stay in the order the Flow map shows. Undo brings it all back.', 'wconvert')}

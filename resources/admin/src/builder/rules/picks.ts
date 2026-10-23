@@ -225,11 +225,9 @@ function whenPicks(): readonly Pick[] {
       /* translators: %s: a CSS selector, shown as a field. */
       template: () => __('When they click %s', 'wconvert'),
       label: value => clickRule(value)?.selector
-        /* translators: %s: a CSS selector, e.g. “.offer-button”. */
-        ? fill(__('When they click %s', 'wconvert'), click.read(value)) : __('On a button click', 'wconvert'),
+        ? fill(/* translators: %s: a CSS selector, e.g. “.offer-button”. */ __('When they click %s', 'wconvert'), click.read(value)) : __('On a button click', 'wconvert'),
       fragment: value => clickRule(value)?.selector
-        /* translators: %s: a CSS selector, e.g. “.offer-button”. */
-        ? fill(__('when they click %s', 'wconvert'), click.read(value)) : __('when they click a button', 'wconvert'),
+        ? fill(/* translators: %s: a CSS selector, e.g. “.offer-button”. */ __('when they click %s', 'wconvert'), click.read(value)) : __('when they click a button', 'wconvert'),
       matches: value => clickRule(value) !== undefined,
       apply: (value, n) => {
         const held = clickRule(value);

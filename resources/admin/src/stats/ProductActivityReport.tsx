@@ -53,9 +53,9 @@ export function ProductActivityReport({ id, period }: { id: string; period?: Rep
     {failure === key ? <RegionErrorState message={__('Could not load product activity.', 'wconvert')} onRetry={() => setRetry(n => n + 1)} /> : report && <>
       <RegionBody>
         <div className="wa-report-meta"><span>{formatRange(report.from, report.to)}</span>{!period && <span>{__('Includes today', 'wconvert')}</span>}</div>
-        {report.since && <p className="wa-muted">{sprintf(__('Tracking started %s. Earlier product activity is unavailable.', 'wconvert'), formatDay(report.since))}</p>}
+        {report.since && <p className="wa-muted">{sprintf(/* translators: %s: a date, e.g. “Nov 27, 2026”. */ __('Tracking started %s. Earlier product activity is unavailable.', 'wconvert'), formatDay(report.since))}</p>}
         {!report.collecting && <p className="wa-report-notice">{__('Tracking is unavailable. Saved activity is still shown.', 'wconvert')}</p>}
-        {report.recorded_from && report.recorded_from !== report.from && report.recorded_from !== report.since && <p className="wa-report-notice">{sprintf(__('Available activity: %s. The rest of this period is not recorded or has expired.', 'wconvert'), formatRange(report.recorded_from, report.to))}</p>}
+        {report.recorded_from && report.recorded_from !== report.from && report.recorded_from !== report.since && <p className="wa-report-notice">{sprintf(/* translators: %s: a date range, e.g. “Sep 9 – Oct 8, 2026”. */ __('Available activity: %s. The rest of this period is not recorded or has expired.', 'wconvert'), formatRange(report.recorded_from, report.to))}</p>}
         {report.truncated ? <EmptyState icon={Package} title={__('Choose a shorter period', 'wconvert')}>{__('More than 100 products have activity. Narrow the dates to see a complete table.', 'wconvert')}</EmptyState>
           : report.days === 0 ? <EmptyState icon={Package} title={__('No complete days yet', 'wconvert')}>{todayAppearsTomorrow()} {chooseToday()}</EmptyState>
           : !report.recorded_from ? <EmptyState icon={Package} title={__('No product data for these dates', 'wconvert')}>{__('Choose dates after tracking started and within the last 90 days.', 'wconvert')}</EmptyState>
@@ -73,7 +73,7 @@ export function ProductActivityReport({ id, period }: { id: string; period?: Rep
       <ReportDisclosure title={__('What these numbers mean', 'wconvert')}>
         <p>{__('Shown counts a visible product card. Clicked counts a product-page link. Each counts once per product each time the campaign is shown. Added counts WooCommerce-confirmed additions, not button presses or purchases.', 'wconvert')}</p>
         <p>{__('These are recorded actions, not unique shoppers. Totals can differ from campaign results. Product names are current; sales remain at campaign level.', 'wconvert')}</p>
-        <p>{sprintf(__('Product activity is kept for %d days. Tracking can miss activity when blocked or inactive; the first day may be partial. Older campaign totals stay unchanged.', 'wconvert'), report.retention_days)}</p>
+        <p>{sprintf(/* translators: %d: how many days product activity is kept. */ __('Product activity is kept for %d days. Tracking can miss activity when blocked or inactive; the first day may be partial. Older campaign totals stay unchanged.', 'wconvert'), report.retention_days)}</p>
       </ReportDisclosure>
     </>}
   </Region></ReportTarget>;

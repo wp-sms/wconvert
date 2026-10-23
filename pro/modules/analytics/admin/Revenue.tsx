@@ -75,7 +75,7 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
     }).catch((cause: unknown) => {
       if (controller.signal.aborted) return;
       const reason = cause instanceof Error && cause.message === MISMATCH ? '' : messageOf(cause);
-      setError(sprintf(__('Could not load campaign sales for these dates. %s', 'wconvert-pro'), reason).trim());
+      setError(sprintf(/* translators: %s: the reason loading failed, as the server gave it; may be empty. */ __('Could not load campaign sales for these dates. %s', 'wconvert-pro'), reason).trim());
     }).finally(() => { if (!controller.signal.aborted) setUpdating(false); });
     return () => controller.abort();
   }, [period.from, period.to, windowQuery, optinId, retry]); // eslint-disable-line react-hooks/exhaustive-deps -- keyed on the dates, not the period object, so a new object for the same window does not refetch
@@ -93,7 +93,7 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
   async function change(enabled: boolean) {
     setBusy(true); setError('');
     try { const saved = await apiFetch<{ settings: Report['settings'] }>({ path: '/wconvert/v1/revenue', method: 'POST', data: { enabled } }); setReport(previous => previous ? { ...previous, settings: saved.settings, site_matches: true } : previous); setRetry(n => n + 1); }
-    catch (cause) { setError(sprintf(__('Could not save the tracking setting. %s', 'wconvert-pro'), messageOf(cause))); }
+    catch (cause) { setError(sprintf(/* translators: %s: the reason the request failed, as the server gave it. */ __('Could not save the tracking setting. %s', 'wconvert-pro'), messageOf(cause))); }
     finally { setBusy(false); }
   }
   if (!report && !error) return <RegionSkeleton label={__('Campaign sales', 'wconvert-pro')} lines={3} />;
@@ -127,10 +127,10 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
             : (report.linked_orders ?? 0) === 0 ? <EmptyState icon={ShoppingBag} title={__('No linked orders in this period', 'wconvert-pro')}>{__('With tracking on and statistics consent granted, a signup or click can link a checkout within 30 minutes.', 'wconvert-pro')}{!live && <> {todayAppearsTomorrow()}</>}</EmptyState>
             : <SalesTotals report={report} />}
           {report.complete && period.days > 0 && <p className="wa-muted wa-report-context">{__('Linked after a signup or eligible click within 30 minutes. A link does not prove the campaign caused the sale.', 'wconvert-pro')}</p>}
-          {report.complete && period.days > 0 && <p className="wa-muted wa-report-store-total">{sprintf(__('%s eligible paid orders across your store in this period.', 'wconvert-pro'), formatCount(report.eligible_orders ?? 0))} <InfoTip label={__('About linked orders', 'wconvert-pro')}>{__('Orders may be unlinked because consent was not granted, the interaction expired or tracking failed.', 'wconvert-pro')}</InfoTip></p>}
+          {report.complete && period.days > 0 && <p className="wa-muted wa-report-store-total">{sprintf(/* translators: %s: how many eligible paid orders the store had, e.g. “1,204”. */ __('%s eligible paid orders across your store in this period.', 'wconvert-pro'), formatCount(report.eligible_orders ?? 0))} <InfoTip label={__('About linked orders', 'wconvert-pro')}>{__('Orders may be unlinked because consent was not granted, the interaction expired or tracking failed.', 'wconvert-pro')}</InfoTip></p>}
         </RegionBody>
         {report.complete && period.days > 0 && !!report.orders?.length && <ReportDisclosure title={__('View linked orders', 'wconvert-pro')}>
-          <p className="wa-muted">{sprintf(__('Up to %s recent linked orders. Open an order to review it in WooCommerce.', 'wconvert-pro'), formatCount(50))}</p>
+          <p className="wa-muted">{sprintf(/* translators: %s: the most linked orders listed, e.g. “50”. */ __('Up to %s recent linked orders. Open an order to review it in WooCommerce.', 'wconvert-pro'), formatCount(50))}</p>
           <DataTable label={__('Linked orders', 'wconvert-pro')}>
             <DataTableHead><DataTableColumn>{__('Order', 'wconvert-pro')}</DataTableColumn><DataTableColumn>{__('Campaign', 'wconvert-pro')}</DataTableColumn><DataTableColumn>{__('Paid on', 'wconvert-pro')}</DataTableColumn><DataTableColumn>{__('Status', 'wconvert-pro')}</DataTableColumn><DataTableColumn numeric>{__('Net product revenue', 'wconvert-pro')}</DataTableColumn></DataTableHead>
             <DataTableBody>{report.orders.map(order => <DataTableRow key={order.id}>
@@ -144,7 +144,7 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
         </ReportDisclosure>}
         <ReportDisclosure title={__('Tracking & setup', 'wconvert-pro')}>
           <div className="wa-report-setting"><SlidersHorizontal aria-hidden="true" className="size-5" /><div><strong>{status}</strong><p className="wa-muted">{__('Turning tracking off keeps existing order links.', 'wconvert-pro')}</p></div><div className="wconvert-toolbar">{trackingControl}{optinId && <a href={reportHref()}>{__('Manage tracking', 'wconvert-pro')}</a>}</div></div>
-          <p className="wa-muted">{sprintf(__('First turned on %s', 'wconvert-pro'), formatWhen(report.settings.since, 'detail'))}</p>
+          <p className="wa-muted">{sprintf(/* translators: %s: the date and time tracking was first turned on, e.g. “Oct 9, 2026, 2:22 PM”. */ __('First turned on %s', 'wconvert-pro'), formatWhen(report.settings.since, 'detail'))}</p>
           <a href={docsUrl(GUIDES.campaignSales)} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert-pro')}</a>
         </ReportDisclosure>
       </>}

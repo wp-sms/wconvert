@@ -63,17 +63,19 @@ final class MonthlyTargets
     public function save(string $month, array $targets, string $today): void
     {
         if ($month !== substr($today, 0, 7)) {
-            throw new \DomainException('The month changed. Refresh and review the new month before saving.');
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- operator text: caught upstream and returned or stored as plain text, never printed as HTML.
+            throw new \DomainException(__('The month changed. Refresh and review the new month before saving.', 'wconvert'));
         }
         foreach ($targets as $id => $value) {
             if (!in_array($id, self::METRICS, true) || !is_int($value) || $value < 1 || $value > self::MAX_TARGET) {
-                throw new \InvalidArgumentException('Targets must be whole positive counts for a supported metric.');
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- operator text: caught upstream and returned or stored as plain text, never printed as HTML.
+                throw new \InvalidArgumentException(__('Targets must be whole positive counts for a supported metric.', 'wconvert'));
             }
         }
         $all = $this->all();
         $all[$month] = $targets;
         $this->options->set(self::OPTION, $all);
-        if ($this->all() !== $all) throw new \RuntimeException('The targets could not be saved. Try again.');
+        if ($this->all() !== $all) throw new \RuntimeException(__('The targets could not be saved. Try again.', 'wconvert')); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- operator text: caught upstream and returned or stored as plain text, never printed as HTML.
     }
 
     /** Tolerant reads never repair or rewrite a hand-edited setting.

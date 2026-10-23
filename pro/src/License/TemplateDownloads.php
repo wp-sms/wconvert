@@ -107,7 +107,7 @@ final class TemplateDownloads implements CatalogTransport, CatalogImageTransport
         $scope = str_ends_with($url, '/grants') ? 'grants' : 'files';
         $retryKey = 'wconvert_template_retry_' . hash('sha256', $this->origin . '/' . $scope);
         $retryAt = (int) get_transient($retryKey);
-        if ($retryAt > time()) throw new \RuntimeException(sprintf(__('Template downloads are temporarily unavailable. Try again in %d seconds. Installed designs are still available.', 'wconvert-pro'), $retryAt - time()));
+        if ($retryAt > time()) throw new \RuntimeException(sprintf(/* translators: %d: seconds until downloads can be tried again. */ __('Template downloads are temporarily unavailable. Try again in %d seconds. Installed designs are still available.', 'wconvert-pro'), $retryAt - time()));
         $response = wp_safe_remote_request($url, $args + ['timeout' => 15, 'redirection' => 0, 'limit_response_size' => $limit + 1, 'user-agent' => 'WConvert template downloads']);
         if ($response instanceof \WP_Error) throw new \RuntimeException(__('The template server could not be reached. Try again later. Installed designs are still available.', 'wconvert-pro'));
         $status = (int) wp_remote_retrieve_response_code($response);
@@ -119,7 +119,7 @@ final class TemplateDownloads implements CatalogTransport, CatalogImageTransport
         if (in_array($status, [429, 503], true)) {
             $seconds = min(3600, max(1, (int) wp_remote_retrieve_header($response, 'retry-after') ?: 30));
             set_transient($retryKey, time() + $seconds, $seconds);
-            throw new \RuntimeException(sprintf(__('Template downloads are temporarily unavailable. Try again in %d seconds. Installed designs are still available.', 'wconvert-pro'), $seconds));
+            throw new \RuntimeException(sprintf(/* translators: %d: seconds until downloads can be tried again. */ __('Template downloads are temporarily unavailable. Try again in %d seconds. Installed designs are still available.', 'wconvert-pro'), $seconds));
         }
         if ($this->sdk->keySource()->constantKey() !== null
             && in_array($code, ['invalid_key', 'license_expired', 'key_disabled', 'license_suspended', 'license_revoked', 'domain_not_allowed'], true)) {

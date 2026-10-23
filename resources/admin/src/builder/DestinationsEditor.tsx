@@ -120,8 +120,7 @@ export function DestinationsEditor({
   const handoffIssue = primary && outcome && available.status === 'ready' ? outcomeHandoffIssue(outcome, bound, site, local ? 'local' : 'connected') : null;
   const names = contactFieldNames();
   const saved = capturedFields(template, submission).filter((field) => field.name in names).map((field) => names[field.name]);
-  /* translators: %s: the contact fields a signup collects, e.g. “email and name”. */
-  const subtitle = description ?? (saved.length > 0 ? sprintf(__('Receives %s from this signup.', 'wconvert'), listWithAnd(saved)) : undefined);
+  const subtitle = description ?? (saved.length > 0 ? sprintf(/* translators: %s: the contact fields a signup collects, e.g. “email and name”. */ __('Receives %s from this signup.', 'wconvert'), listWithAnd(saved)) : undefined);
   const typeOf = (destination: Destination) => types.find((type) => type.id === destination.type);
 
   const openPicker = (trigger: HTMLElement) => {
@@ -198,7 +197,7 @@ export function DestinationsEditor({
           {missing.length > 0 && !local &&
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-warning/30 bg-warning-surface p-3">
               <div>
-                <p className="m-0 font-medium">{sprintf(_n('%d selected destination has been deleted.', '%d selected destinations have been deleted.', missing.length, 'wconvert'), missing.length)}</p>
+                <p className="m-0 font-medium">{sprintf(/* translators: %d: how many of the campaign's chosen destinations have been deleted. */ _n('%d selected destination has been deleted.', '%d selected destinations have been deleted.', missing.length, 'wconvert'), missing.length)}</p>
                 <Description>{__('Remove deleted destinations, then choose replacements if needed.', 'wconvert')}</Description>
               </div>
               <Button variant="outline" onClick={() => onChange(bound.filter((id) => !missing.includes(id)))}>
@@ -211,8 +210,7 @@ export function DestinationsEditor({
       {picking && <AddDestinationPicker destinations={site} types={types} connections={connections} bound={bound} rule={channel}
         suggested={suggested} returnFocusTo={returnFocus}
         description={title === undefined ? __('Choose one you already use, or set up a new one.', 'wconvert')
-          /* translators: %s: the signup this route is for, e.g. “Optional SMS signup”. */
-          : sprintf(__('For %s. Choose one you already use, or set up a new one.', 'wconvert'), title)}
+          : sprintf(/* translators: %s: the signup this route is for, e.g. “Optional SMS signup”. */ __('For %s. Choose one you already use, or set up a new one.', 'wconvert'), title)}
         onClose={() => setPicking(false)}
         onPick={(id) => { returnFocus.current = null; setFocusId(id); setPicking(false); onChange([...bound, id]); }}
         onCreate={(type) => { setPicking(false); setSetup({ type: type.id }); }} />}

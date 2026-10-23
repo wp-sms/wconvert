@@ -271,8 +271,7 @@ export function Preview({ template, displayType = 'inline', step = 0, selected =
       searchCountries: __('Search countries', 'wconvert'),
       countries: __('Countries', 'wconvert'),
       // The same string LoaderEnqueue hands the phone bundle on the site.
-      /* translators: %s: how many countries match the search. */
-      results: __('Results: %s', 'wconvert'),
+      results: /* translators: %s: how many countries match the search. */ __('Results: %s', 'wconvert'),
       too_short: __('Enter a longer phone number.', 'wconvert'),
       too_long: __('This phone number is too long.', 'wconvert'),
       invalid_length: __('Check the phone number length.', 'wconvert'),

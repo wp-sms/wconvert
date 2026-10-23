@@ -1,6 +1,7 @@
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 import type { QuestionCondition, ResultVariant, TemplateTree } from '@renderer/types';
 import { walkNodes } from './journey';
+import { allOf, anyOf } from '../../lib/format';
 
 /** Explain a saved rule with the question and choice labels the merchant knows. */
 export function conditionText(tree: TemplateTree, condition: QuestionCondition): string {
@@ -11,13 +12,15 @@ export function conditionText(tree: TemplateTree, condition: QuestionCondition):
     const label = question && 'label' in question ? String(question.label) : clause.question;
     const options = question && 'options' in question ? question.options : [];
     const labels = clause.values.map(value => value === '' ? __('choose an answer', 'wconvert') : options?.find(option => option.value === value)?.label ?? value);
-    const answer = labels.length ? labels.join(` ${__('or', 'wconvert')} `) : __('choose an answer', 'wconvert');
+    const answer = labels.length ? anyOf(labels) : __('choose an answer', 'wconvert');
     const operator = clause.operator === 'is' ? __('is', 'wconvert')
       : clause.operator === 'is_not' ? __('is not', 'wconvert')
         : clause.operator === 'includes_any' ? __('includes', 'wconvert') : __('without', 'wconvert');
-    return sprintf(__('%1$s %2$s %3$s', 'wconvert'), label, operator, answer);
+    return sprintf(
+      /* translators: 1: a question, 2: “is”, “is not”, “includes” or “without”, 3: one or more answers. */
+      _x('%1$s %2$s %3$s', 'a question, how it is compared, and its answers', 'wconvert'), label, operator, answer);
   });
-  return parts.join(` ${condition.match === 'any' ? __('or', 'wconvert') : __('and', 'wconvert')} `);
+  return condition.match === 'any' ? anyOf(parts) : allOf(parts);
 }
 
 /** Warn only when two ordered results are not clearly exclusive. */

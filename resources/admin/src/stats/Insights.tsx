@@ -3,7 +3,8 @@ import { ListChecks, Eye, TrendingDown } from 'lucide-react';
 import { ReportTarget } from './ReportNavigation';
 import { ReportDisclosure } from './ReportDisclosure';
 import { rangeLabel } from './reporting';
-import { __, _n, sprintf } from '@wordpress/i18n';
+import { __, _n, _x, sprintf } from '@wordpress/i18n';
+import type { ReactNode } from 'react';
 import { Button } from '../components/ui/button';
 import { Region, RegionHeader } from '../shell/Region';
 import { editorHref, reportHref, type ReportQuery } from '../nav';
@@ -15,6 +16,15 @@ export interface Insight {
   result_label: string; rate_label: string; title: string; note: string; limitation: string; action: 'edit' | 'display';
   facts: { current: Facts; previous: Facts | null };
   periods: { from: string; to: string; previous_from: string | null; previous_to: string | null };
+}
+
+/**
+ * A translated sentence with a figure in it, the figure kept as markup: the
+ * `%s` decides where it goes, so a language can put it first.
+ */
+function withValue(template: string, figure: ReactNode): ReactNode {
+  const [before, after = ''] = template.split('%s');
+  return <>{before}{figure}{after}</>;
 }
 
 export function Insights({ items, query }: { items: Insight[]; query: ReportQuery }) {
@@ -34,8 +44,12 @@ export function Insights({ items, query }: { items: Insight[]; query: ReportQuer
           <div className="wa-insight-head">
             <h4>{item.title}</h4>
             <span className="wa-insight-fact">
-              {metric === 'rate' ? __('This period', 'wconvert') : __('Shown', 'wconvert')} <strong>{value(item.facts.current)}</strong>
-              {item.facts.previous && <> · {__('previously', 'wconvert')} {value(item.facts.previous)}</>}
+              {withValue(metric === 'rate'
+                ? /* translators: %s: a rate for the chosen period, e.g. “4.2%”. */ __('This period %s', 'wconvert')
+                : /* translators: %s: how many times a campaign was shown, e.g. “1,204”. */ _x('Shown %s', 'times a campaign was shown', 'wconvert'), <strong>{value(item.facts.current)}</strong>)}
+              {item.facts.previous && <> · {withValue(
+                /* translators: %s: the same figure for the period before, e.g. “3.1%”. */
+                __('previously %s', 'wconvert'), value(item.facts.previous))}</>}
             </span>
           </div>
           <p className="wa-muted">
@@ -56,6 +70,6 @@ export function Insights({ items, query }: { items: Insight[]; query: ReportQuer
         </div>
       </article>;
     })}</div>
-    {more > 0 && <p className="wa-insights-more">{sprintf(_n('%s more campaign needs attention. Open a goal to see it.', '%s more campaigns need attention. Open a goal to see them.', more, 'wconvert'), formatCount(more))}</p>}
+    {more > 0 && <p className="wa-insights-more">{sprintf(/* translators: %s: how many more campaigns need attention beyond the three shown, e.g. “2”. */ _n('%s more campaign needs attention. Open a goal to see it.', '%s more campaigns need attention. Open a goal to see them.', more, 'wconvert'), formatCount(more))}</p>}
   </Region></ReportTarget>;
 }

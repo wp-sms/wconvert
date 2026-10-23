@@ -23,8 +23,7 @@ export function Dates({ schedule, onSchedule }: { readonly schedule: Schedule; r
 
   return <div className="wconvert-display-dates">
     <Description>{timezone
-      /* translators: %s: a timezone name, e.g. “Europe/London”. */
-      ? sprintf(__('Dates use your site’s timezone: %s.', 'wconvert'), timezone)
+      ? sprintf(/* translators: %s: a timezone name, e.g. “Europe/London”. */ __('Dates use your site’s timezone: %s.', 'wconvert'), timezone)
       : __('Dates use your WordPress site’s timezone.', 'wconvert')}</Description>
     <div className="wconvert-display-fields">
       <div><Label htmlFor="wconvert-starts-at">{__('Start showing it on', 'wconvert')}</Label>

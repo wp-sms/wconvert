@@ -41,9 +41,9 @@ final class MailchimpDestinationType implements DestinationType
     public function testConnection(array $credentials): void
     {
         [$status] = $this->request($credentials, 'GET', '/ping');
-        if ($status !== 200) throw new \RuntimeException('Mailchimp rejected the account check.');
+        if ($status !== 200) throw new \RuntimeException(__('Mailchimp rejected the account check.', 'wconvert-pro'));
         [$listsStatus] = $this->request($credentials, 'GET', '/lists?count=1&offset=0&fields=lists.id,total_items');
-        if ($listsStatus !== 200) throw new \RuntimeException('Mailchimp audiences could not be read.');
+        if ($listsStatus !== 200) throw new \RuntimeException(__('Mailchimp audiences could not be read.', 'wconvert-pro'));
     }
 
     /** @param array<string, mixed> $credentials */
@@ -51,7 +51,7 @@ final class MailchimpDestinationType implements DestinationType
     {
         [$status, $body] = $this->request($credentials, 'GET', '/');
         $identity = $body['account_id'] ?? null;
-        if ($status !== 200 || !is_string($identity) || $identity === '') throw new \RuntimeException('Mailchimp account identity unavailable.');
+        if ($status !== 200 || !is_string($identity) || $identity === '') throw new \RuntimeException(__('Mailchimp account identity unavailable.', 'wconvert-pro'));
         return $identity;
     }
 
@@ -61,13 +61,13 @@ final class MailchimpDestinationType implements DestinationType
         $options = [];
         for ($offset = 0; $offset < 10000; $offset += 100) {
             [$status, $body] = $this->request($credentials, 'GET', '/lists?count=100&offset=' . $offset . '&fields=lists.id,lists.name,total_items');
-            if ($status !== 200) throw new \RuntimeException('Mailchimp audiences could not be read.');
+            if ($status !== 200) throw new \RuntimeException(__('Mailchimp audiences could not be read.', 'wconvert-pro'));
             $lists = $body['lists'] ?? [];
             foreach ($lists as $list) {
                 if (is_array($list) && isset($list['id'], $list['name'])) $options[] = ['value' => (string) $list['id'], 'label' => (string) $list['name']];
             }
             if (count($lists) < 100 || (isset($body['total_items']) && $offset + count($lists) >= (int) $body['total_items'])) break;
-            if ($offset + 100 >= 10000) throw new \RuntimeException('Mailchimp has too many audiences to display.');
+            if ($offset + 100 >= 10000) throw new \RuntimeException(__('Mailchimp has too many audiences to display.', 'wconvert-pro'));
         }
         return ['audiences' => ['type' => 'ids', 'label' => __('Audience', 'wconvert-pro'), 'max' => 1, 'options' => $options],
             'existing_contact' => ['type' => 'select', 'label' => __('If the contact exists', 'wconvert-pro'), 'default' => 'keep', 'options' => [
@@ -87,7 +87,7 @@ final class MailchimpDestinationType implements DestinationType
         $options = [];
         for ($offset = 0; $offset < 10000; $offset += 100) {
             [$status, $body] = $this->request($credentials, 'GET', '/lists/' . rawurlencode($audiences[0]) . '/merge-fields?count=100&offset=' . $offset);
-            if ($status !== 200) throw new \RuntimeException('Mailchimp fields could not be read.');
+            if ($status !== 200) throw new \RuntimeException(__('Mailchimp fields could not be read.', 'wconvert-pro'));
             $fields = $body['merge_fields'] ?? [];
             foreach ($fields as $field) {
                 if (!is_array($field) || ($field['type'] ?? '') !== 'text' || !is_string($field['tag'] ?? null)) continue;
@@ -95,7 +95,7 @@ final class MailchimpDestinationType implements DestinationType
                 $options[] = ['value' => $field['tag'], 'label' => (string) ($field['name'] ?? $field['tag'])];
             }
             if (count($fields) < 100 || (isset($body['total_items']) && $offset + count($fields) >= (int) $body['total_items'])) break;
-            if ($offset + 100 >= 10000) throw new \RuntimeException('Mailchimp has too many fields to display.');
+            if ($offset + 100 >= 10000) throw new \RuntimeException(__('Mailchimp has too many fields to display.', 'wconvert-pro'));
         }
         return $options;
     }
@@ -145,7 +145,7 @@ final class MailchimpDestinationType implements DestinationType
     private function request(array $credentials, string $method, string $path, ?array $body = null): array
     {
         $key = $credentials['api_key'] ?? '';
-        if (!is_string($key) || !preg_match('/-([a-z]{2}[0-9]+)$/i', $key, $match)) throw new \RuntimeException('Invalid Mailchimp key.');
+        if (!is_string($key) || !preg_match('/-([a-z]{2}[0-9]+)$/i', $key, $match)) throw new \RuntimeException(__('Invalid Mailchimp key.', 'wconvert-pro'));
         $host = strtolower($match[1]) . '.api.mailchimp.com';
         $args = [
             'method' => $method,
@@ -158,7 +158,7 @@ final class MailchimpDestinationType implements DestinationType
             $args['body'] = wp_json_encode($body);
         }
         $response = wp_remote_request('https://' . $host . '/3.0' . $path, $args);
-        if (is_wp_error($response)) throw new \RuntimeException('Mailchimp transport failed.');
+        if (is_wp_error($response)) throw new \RuntimeException(__('Mailchimp transport failed.', 'wconvert-pro'));
         $decoded = json_decode((string) wp_remote_retrieve_body($response), true);
         return [(int) wp_remote_retrieve_response_code($response), is_array($decoded) ? $decoded : []];
     }

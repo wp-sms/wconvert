@@ -82,10 +82,8 @@ export function SitePhoneCountry({ onEditingStateChange }: { onEditingStateChang
       {suggested && <p className="m-0 flex flex-wrap items-center gap-x-3 gap-y-1 text-note">
         <span>{sprintf(
           state.data.suggested_from === 'store'
-            /* translators: %s: a country name, e.g. “Germany”. */
-            ? __('Suggested: %s, from your store address', 'wconvert')
-            /* translators: %s: a country name, e.g. “Germany”. */
-            : __('Suggested: %s, from your site language', 'wconvert'),
+            ? /* translators: %s: a country name, e.g. “Germany”. */ __('Suggested: %s, from your store address', 'wconvert')
+            : /* translators: %s: a country name, e.g. “Germany”. */ __('Suggested: %s, from your site language', 'wconvert'),
           suggested.name,
         )}</span>
         <Button type="button" variant="outline" disabled={saving} onClick={() => choose(suggested.code)}>

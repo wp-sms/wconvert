@@ -178,7 +178,7 @@ export function LicensePage() {
   const was = data.domain_change?.was ?? '';
   const used = data.plan?.used ?? data.sites.filter((site) => !site.dev).length;
   const max = data.plan?.max ?? null;
-  const ofPlan = max === null ? sprintf(__('%d in use', 'wconvert-pro'), used + 1) : sprintf(__('%1$d of %2$d in use', 'wconvert-pro'), used + 1, max);
+  const ofPlan = max === null ? sprintf(/* translators: %d: how many sites would use the license, counting this one. */ __('%d in use', 'wconvert-pro'), used + 1) : sprintf(/* translators: 1: how many sites would use the license, counting this one, 2: how many sites the plan allows. */ __('%1$d of %2$d in use', 'wconvert-pro'), used + 1, max);
 
   const move = (keepOld?: boolean) => {
     // A staging copy (no "keep" either way): the SDK decides, and a copy uses no site.
@@ -188,27 +188,27 @@ export function LicensePage() {
     }
 
     setConfirm(keepOld
-      ? { title: __('Keep the license on both sites?', 'wconvert-pro'), description: sprintf(__('%1$s uses one more site: %2$s.', 'wconvert-pro'), here, ofPlan), confirm: __('Keep it on both', 'wconvert-pro'),
-        run: () => void run('move', () => moveLicense(true), () => say('success', sprintf(__('The license is on %s too', 'wconvert-pro'), here))) }
-      : { title: sprintf(__('Move the license to %s?', 'wconvert-pro'), here),
+      ? { title: __('Keep the license on both sites?', 'wconvert-pro'), description: sprintf(/* translators: 1: this site's new domain, e.g. “example.com”, 2: sites in use, e.g. “3 of 5 in use”. */ __('%1$s uses one more site: %2$s.', 'wconvert-pro'), here, ofPlan), confirm: __('Keep it on both', 'wconvert-pro'),
+        run: () => void run('move', () => moveLicense(true), () => say('success', sprintf(/* translators: %s: this site's new domain, e.g. “example.com”. */ __('The license is on %s too', 'wconvert-pro'), here))) }
+      : { title: sprintf(/* translators: %s: this site's new domain, e.g. “example.com”. */ __('Move the license to %s?', 'wconvert-pro'), here),
         description: data.domain_change?.was_dev
-          ? <>{sprintf(__('%1$s will use one site on your license: %2$s.', 'wconvert-pro'), here, ofPlan)} {sprintf(__('%s stays as a dev site, which is free.', 'wconvert-pro'), was)}</>
-          : sprintf(__('Frees %s. It stops getting updates; its Pro features keep working.', 'wconvert-pro'), was),
+          ? <>{sprintf(/* translators: 1: this site's new domain, e.g. “example.com”, 2: sites in use, e.g. “3 of 5 in use”. */ __('%1$s will use one site on your license: %2$s.', 'wconvert-pro'), here, ofPlan)} {sprintf(/* translators: %s: the site's previous domain, e.g. “staging.example.com”. */ __('%s stays as a dev site, which is free.', 'wconvert-pro'), was)}</>
+          : sprintf(/* translators: %s: the site's previous domain, e.g. “old-example.com”. */ __('Frees %s. It stops getting updates; its Pro features keep working.', 'wconvert-pro'), was),
         confirm: __('Move license here', 'wconvert-pro'),
         run: () => void run('move', () => moveLicense(false), (answer) => say(answer.released?.removed_remotely === false ? 'warning' : 'success',
-          sprintf(__('The license is on %s now', 'wconvert-pro'), here),
-          answer.released?.removed_remotely === false ? sprintf(__('%s couldn’t be freed right now. Free it from your account.', 'wconvert-pro'), was) : undefined)) });
+          sprintf(/* translators: %s: this site's new domain, e.g. “example.com”. */ __('The license is on %s now', 'wconvert-pro'), here),
+          answer.released?.removed_remotely === false ? sprintf(/* translators: %s: the site's previous domain, e.g. “old-example.com”. */ __('%s couldn’t be freed right now. Free it from your account.', 'wconvert-pro'), was) : undefined)) });
   };
 
   const removeOne = (site: LicenseSite) => setConfirm({
-    title: sprintf(__('Remove %s?', 'wconvert-pro'), site.domain),
-    description: sprintf(__('Frees one site on your license. %s stops getting updates; its Pro features keep working.', 'wconvert-pro'), site.domain),
+    title: sprintf(/* translators: %s: a site's domain on the license, e.g. “example.com”. */ __('Remove %s?', 'wconvert-pro'), site.domain),
+    description: sprintf(/* translators: %s: a site's domain on the license, e.g. “example.com”. */ __('Frees one site on your license. %s stops getting updates; its Pro features keep working.', 'wconvert-pro'), site.domain),
     confirm: __('Remove', 'wconvert-pro'),
     destructive: true,
     run: () => {
       setSitesResult(null);
       void run(`site:${site.domain}`, () => removeSite(site.domain), () => setSitesResult(
-        <Notice key={site.domain} tone="success" focus>{sprintf(__('%s was removed. One more site is free.', 'wconvert-pro'), site.domain)}</Notice>,
+        <Notice key={site.domain} tone="success" focus>{sprintf(/* translators: %s: a site's domain on the license, e.g. “example.com”. */ __('%s was removed. One more site is free.', 'wconvert-pro'), site.domain)}</Notice>,
       ));
     },
   });

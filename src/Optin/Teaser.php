@@ -20,7 +20,8 @@ final class Teaser
         $label = is_string($value['label'] ?? null) ? (preg_replace('/^\s+|\s+$/u', '', wp_strip_all_tags($value['label'])) ?? '') : '';
         $length = preg_match_all('/./us', $label);
         if ($label === '' || $length === false || $length > 80) {
-            throw new \InvalidArgumentException('Reopen button text must contain 1–80 characters.');
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- operator text: caught upstream and returned or stored as plain text, never printed as HTML.
+            throw new \InvalidArgumentException(__('Reopen button text must contain 1–80 characters.', 'wconvert'));
         }
         $result = ['label' => $label] + self::position($value);
         // Same string-valued colour tokens as the Template vocabulary. The

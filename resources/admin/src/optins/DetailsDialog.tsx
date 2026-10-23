@@ -184,7 +184,7 @@ export function CampaignDetailsDialog({
             back={row && (
               <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
-                  <Button ref={more} variant="outline" size="icon" disabled={editBusy} aria-label={sprintf(__('More actions for %s', 'wconvert'), name)}>
+                  <Button ref={more} variant="outline" size="icon" disabled={editBusy} aria-label={sprintf(/* translators: %s: a campaign's name, e.g. “Spring sale”. */ __('More actions for %s', 'wconvert'), name)}>
                     <MoreHorizontal aria-hidden="true" />
                   </Button>
                 </DropdownMenuTrigger>

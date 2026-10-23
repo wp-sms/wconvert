@@ -451,7 +451,7 @@ function Control({
  */
 export function nameOfBlock(block: Block, labels: TemplateLabels): string {
   if (block.level === 1) {
-    return block.screenName || sprintf(__('Screen %d', 'wconvert'), block.position);
+    return block.screenName || sprintf(/* translators: %d: the screen's position in the campaign, e.g. “2”. */ __('Screen %d', 'wconvert'), block.position);
   }
 
   if (block.role !== null) {

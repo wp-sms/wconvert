@@ -249,7 +249,7 @@ export function PrivacyDataMap() {
         /* translators: 1: kinds of data kept, 2: services that receive data. */
         _n('%1$s kind of data kept · %2$s', '%1$s kinds of data kept · %2$s', stored.length, 'wconvert'),
         formatCount(stored.length),
-        sprintf(_n('%s service receives data', '%s services receive data', recipients.length, 'wconvert'), formatCount(recipients.length)),
+        sprintf(/* translators: %s: how many services receive visitor data, e.g. “2”. */ _n('%s service receives data', '%s services receive data', recipients.length, 'wconvert'), formatCount(recipients.length)),
       )}>
       <RegionBody className="flex flex-wrap items-center justify-between gap-2">
         <Description>

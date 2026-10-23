@@ -34,7 +34,7 @@ export function ProductPicker({ ids, onChange, max = 6, ordered = true, allowUna
       .catch(() => { if (!controller.signal.aborted) setNamesFailed(true); });
     return () => controller.abort();
   }, [selectedKey, max, namesRetry]);
-  const productName = (id: number) => [...found, ...selected].find(product => product.id === id)?.name ?? sprintf(__('Product #%d', 'wconvert-pro'), id);
+  const productName = (id: number) => [...found, ...selected].find(product => product.id === id)?.name ?? sprintf(/* translators: %d: a product's ID number, shown when its name could not load. */ __('Product #%d', 'wconvert-pro'), id);
   const move = (index: number, direction: -1 | 1) => { const next = [...ids]; [next[index], next[index + direction]] = [next[index + direction], next[index]]; onChange(next); };
   const search = async () => {
     if (!query.trim()) return;
@@ -62,7 +62,7 @@ export function ProductPicker({ ids, onChange, max = 6, ordered = true, allowUna
     {!!found.length && <ul aria-label={__('Search results', 'wconvert-pro')}>{found.map(product => <li key={product.id}>
       {product.images?.[0]?.thumbnail && <img alt="" src={product.images[0].thumbnail} width="36" height="36" />}
       <span>{product.name} {product.is_in_stock === false ? __('Out of stock', 'wconvert-pro') : ''} {productPrice(product)}</span>
-      <Button variant="outline" type="button" aria-label={sprintf(__('%1$s: %2$s', 'wconvert-pro'), actionLabel, product.name)} disabled={ids.includes(product.id) || ids.length >= max || (!allowUnavailable && product.is_in_stock === false)} onClick={() => onChange([...ids, product.id])}>{ids.includes(product.id) ? __('Selected', 'wconvert-pro') : actionLabel}</Button>
+      <Button variant="outline" type="button" aria-label={sprintf(/* translators: 1: the button's action, e.g. “Add”, “Pin” or “Exclude”. 2: a product's name. */ __('%1$s: %2$s', 'wconvert-pro'), actionLabel, product.name)} disabled={ids.includes(product.id) || ids.length >= max || (!allowUnavailable && product.is_in_stock === false)} onClick={() => onChange([...ids, product.id])}>{ids.includes(product.id) ? __('Selected', 'wconvert-pro') : actionLabel}</Button>
     </li>)}</ul>}
   </div>;
 }

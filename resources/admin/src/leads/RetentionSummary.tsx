@@ -30,7 +30,7 @@ export function RetentionSummary({ refreshKey = 0 }: { refreshKey?: number }) {
     return (
       <div className="flex flex-wrap items-center gap-3 text-note">
         <p role="alert" className="m-0 text-destructive">
-          {sprintf(__('How long submissions are kept couldn’t be loaded: %s', 'wconvert'), error)}
+          {sprintf(/* translators: %s: the error message explaining why it failed to load. */ __('How long submissions are kept couldn’t be loaded: %s', 'wconvert'), error)}
         </p>
         <TryAgain onClick={() => setRetry((value) => value + 1)} />
       </div>
@@ -49,7 +49,7 @@ export function RetentionSummary({ refreshKey = 0 }: { refreshKey?: number }) {
       {period.days === null
         ? __('Submissions are kept until you delete them.', 'wconvert')
         : sprintf(
-            _n(
+            /* translators: %s: how many days submissions are kept, e.g. “90”. */ _n(
               'Submissions are deleted automatically after %s day.',
               'Submissions are deleted automatically after %s days.',
               period.days,

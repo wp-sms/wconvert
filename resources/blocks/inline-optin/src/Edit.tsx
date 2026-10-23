@@ -186,8 +186,7 @@ function rules(): PickerRules<InlineCampaign> {
     // Listed, refused, and saying why — GUIDELINES §8. A draft's anchor
     // renders nothing, so placing one would look done and show nothing.
     refused: (campaign) => campaign.status === 'draft'
-      /* translators: %s: a campaign's name. */
-      ? sprintf(__('%s — draft, publish to place it', 'wconvert'), campaignName(campaign))
+      ? sprintf(/* translators: %s: a campaign's name. */ __('%s — draft, publish to place it', 'wconvert'), campaignName(campaign))
       : null,
     createLabel: __('Create an inline campaign', 'wconvert'),
     askAdministrator: __('Ask your administrator to publish an inline campaign.', 'wconvert'),

@@ -119,7 +119,7 @@ export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
           target="_blank"
           rel="noreferrer"
         >
-          {sprintf(__('Explore %s', 'wconvert'), tierName('pro'))}
+          {sprintf(/* translators: %s: the paid tier's name, e.g. “Pro”. */ __('Explore %s', 'wconvert'), tierName('pro'))}
         </a>
       )}
       {tier === 'free' && !proInactive && (
@@ -156,7 +156,7 @@ export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
             className="wconvert-notifications-trigger"
             aria-label={
               count > 0
-                ? sprintf(_n('Notifications, %d issue', 'Notifications, %d issues', count, 'wconvert'), count)
+                ? sprintf(/* translators: %d: how many issues the notifications list holds. */ _n('Notifications, %d issue', 'Notifications, %d issues', count, 'wconvert'), count)
                 : __('Notifications', 'wconvert')
             }
           >
@@ -169,7 +169,7 @@ export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
           <h2>{__('Notifications', 'wconvert')}</h2>
           {error && (
             <div role="alert" className="wconvert-notification">
-              <p>{sprintf(__('Notifications couldn’t load: %s', 'wconvert'), error)}</p>
+              <p>{sprintf(/* translators: %s: the reason loading failed, as the server gave it. */ __('Notifications couldn’t load: %s', 'wconvert'), error)}</p>
               <TryAgain onClick={() => void load()} busy={loading} />
             </div>
           )}
@@ -205,6 +205,7 @@ export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
                     <strong>{__('Sending needs attention', 'wconvert')}</strong>
                     <p>
                       {sprintf(
+                        /* translators: %d: how many destinations have a known sending issue. */
                         _n(
                           '%d destination has a known issue.',
                           '%d destinations have known issues.',

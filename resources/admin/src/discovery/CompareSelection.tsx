@@ -14,7 +14,7 @@ export function CompareSelection({ name, checked, disabled = false, full = false
   return <label className="wconvert-compare-choice" data-refused={full || undefined}>
     <input type="checkbox" checked={checked} disabled={disabled}
       aria-disabled={full || undefined} aria-describedby={full ? COMPARE_FULL : undefined}
-      aria-label={sprintf(__('Compare design: %s', 'wconvert'), name)}
+      aria-label={sprintf(/* translators: %s: a design's name. */ __('Compare design: %s', 'wconvert'), name)}
       onClick={full ? (event) => event.preventDefault() : undefined} onChange={full ? () => undefined : onChange} />
     <Icon size={16} aria-hidden="true" /><span>{__('Compare', 'wconvert')}</span>
   </label>;

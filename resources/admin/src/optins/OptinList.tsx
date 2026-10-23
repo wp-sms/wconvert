@@ -302,8 +302,7 @@ export function OptinList({
     } catch (cause) {
       const row = all.find((candidate) => candidate.id === id);
       const name = row ? nameOf(row) : __('Deleted campaign', 'wconvert');
-      /* translators: 1: a campaign's name, 2: why an action on it failed. */
-      mutationErrorsRef.current.set(id, { message: sprintf(__('%1$s: %2$s', 'wconvert'), name, messageOf(cause)), action, openCreated });
+      mutationErrorsRef.current.set(id, { message: sprintf(/* translators: 1: a campaign's name, 2: why an action on it failed. */ __('%1$s: %2$s', 'wconvert'), name, messageOf(cause)), action, openCreated });
       setMutationErrors(new Map(mutationErrorsRef.current));
     } finally {
       if (createdId) createdToOpen.current = createdId;
@@ -324,7 +323,7 @@ export function OptinList({
             ? declareWinner(d.parent!.id, d.row.id)
             : publishOptin(d.row.id),
     );
-  const copyOf = (row: OptinSummary) => duplicateCampaign(row.id, sprintf(__('%s — copy', 'wconvert'), nameOf(row)));
+  const copyOf = (row: OptinSummary) => duplicateCampaign(row.id, sprintf(/* translators: %s: a campaign's name, e.g. “Spring sale”. */ __('%s — copy', 'wconvert'), nameOf(row)));
   const duplicate = (row: OptinSummary, parent: OptinSummary) => void run(parent.id, () => copyOf(row), true);
   const groupPlan = (action: GroupAction) => plan(action, tickedRows, (row) => previews[row.id]?.template === null);
   /**
@@ -363,8 +362,7 @@ export function OptinList({
         result = reduceResult(result, { type: 'done', row });
       } catch (cause) {
         result = reduceResult(result, { type: 'failed', row, message: messageOf(cause) });
-        /* translators: 1: a campaign's name, 2: why an action on it failed. */
-        mutationErrorsRef.current.set(row.id, { message: sprintf(__('%1$s: %2$s', 'wconvert'), nameOf(row), messageOf(cause)), action: call, openCreated: false });
+        mutationErrorsRef.current.set(row.id, { message: sprintf(/* translators: 1: a campaign's name, 2: why an action on it failed. */ __('%1$s: %2$s', 'wconvert'), nameOf(row), messageOf(cause)), action: call, openCreated: false });
       }
     }
     setMutationErrors(new Map(mutationErrorsRef.current));
@@ -504,7 +502,7 @@ export function OptinList({
                   })
                 }
               >
-                {sprintf(_n('A/B test · %d variant', 'A/B test · %d variants', variants, 'wconvert'), variants)}
+                {sprintf(/* translators: %d: how many variants the A/B test has. */ _n('A/B test · %d variant', 'A/B test · %d variants', variants, 'wconvert'), variants)}
                 <ChevronDown aria-hidden="true" className="wconvert-family-toggle__chevron" />
               </button>
             )}
@@ -528,7 +526,7 @@ export function OptinList({
           {reportReady && result ? (
             <a
               href={reportHref({ optinId: row.id, ...period })}
-              aria-label={sprintf(__('View %s report', 'wconvert'), name)}
+              aria-label={sprintf(/* translators: %s: a campaign's name. */ __('View %s report', 'wconvert'), name)}
             >
               <strong>{formatCount(result.count)}</strong>
               <span>{result.label}</span>
@@ -807,7 +805,7 @@ export function OptinList({
             {/* One line: how many and over which dates, then the pages. */}
             {list.status === 'ready' && !empty && <div className="wconvert-footer wconvert-campaign-footer">
               <span>
-                {sprintf(_n('%d campaign', '%d campaigns', visible.length, 'wconvert'), visible.length)}
+                {sprintf(/* translators: %d: how many campaigns are listed. */ _n('%d campaign', '%d campaigns', visible.length, 'wconvert'), visible.length)}
                 {report && <> · {formatRange(report.from, report.to)}</>}
               </span>
               {lastPage > 0 && (
@@ -817,7 +815,7 @@ export function OptinList({
                     {__('Previous', 'wconvert')}
                   </Button>
                   <span aria-live="polite" aria-atomic="true">
-                    {sprintf(__('Page %1$d of %2$d', 'wconvert'), currentPage + 1, lastPage + 1)}
+                    {sprintf(/* translators: 1: this page's number, 2: how many pages. */ __('Page %1$d of %2$d', 'wconvert'), currentPage + 1, lastPage + 1)}
                   </span>
                   <Button variant="outline" disabled={currentPage === lastPage} onClick={() => setPage(currentPage + 1)}>
                     {__('Next', 'wconvert')}

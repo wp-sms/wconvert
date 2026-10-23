@@ -248,7 +248,7 @@ export function ReadinessDialog({
         <Button type="button" variant="outline" className="wconvert-readiness__resume" disabled={busy} onClick={reopen}>
           <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
           {sprintf(
-            /* translators: %d: how many items still block publishing. */
+            /* translators: %s: how many items still block publishing. */
             _n('Back to review · %s left', 'Back to review · %s left', blocking.length, 'wconvert'),
             formatCount(blocking.length),
           )}
@@ -264,13 +264,13 @@ export function ReadinessDialog({
         {reviewCount > 0 && <TriangleAlert aria-hidden="true" />}
         {__('Review & publish', 'wconvert')}
         {blocking.length > 0 && <span id={`${reasonId}-count`} hidden>{sprintf(
-          /* translators: %d: how many items block publishing. */
+          /* translators: %s: how many items block publishing. */
           _n('%s item blocks publishing', '%s items block publishing', blocking.length, 'wconvert'),
           formatCount(blocking.length),
         )}</span>}
         {blocking.length > 0 && (
           <span className="wconvert-readiness__count" aria-hidden="true">
-            {sprintf(/* translators: %d: how many items block publishing. */ _n('%s to fix', '%s to fix', blocking.length, 'wconvert'), formatCount(blocking.length))}
+            {sprintf(/* translators: %s: how many items block publishing. */ _n('%s to fix', '%s to fix', blocking.length, 'wconvert'), formatCount(blocking.length))}
           </span>
         )}
       </Button>
@@ -398,6 +398,7 @@ export function ReadinessDialog({
                 {warnings.length > 0 && (
                   <ReviewSection
                     title={sprintf(
+                      /* translators: %d: how many warnings to look at before publishing; none of them block it. */
                       _n('%d thing to review', '%d things to review', warnings.length, 'wconvert'),
                       warnings.length,
                     )}

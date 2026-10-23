@@ -371,7 +371,7 @@ function ValueList({ id, label, value, onChange }: Omit<ParamControlProps, 'para
             type="text"
             className="regular-text"
             id={`${id}-value-${index}`}
-            aria-label={row === '' ? sprintf(__('Add a value for %s', 'wconvert'), label) : sprintf(__('%1$s, value %2$d', 'wconvert'), label, index + 1)}
+            aria-label={row === '' ? sprintf(/* translators: %s: a targeting rule setting's label, e.g. “Referring site”. */ __('Add a value for %s', 'wconvert'), label) : sprintf(/* translators: 1: a targeting rule setting's label, e.g. “Referring site”, 2: the value's position in its list, e.g. 2. */ __('%1$s, value %2$d', 'wconvert'), label, index + 1)}
             placeholder={__('Type a value…', 'wconvert')}
             value={row}
             onChange={(event) => write(index, event.target.value)}

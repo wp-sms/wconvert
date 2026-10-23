@@ -94,6 +94,9 @@ final class ProTemplates implements TemplateSource
             }
         }
 
+        // Pro's designs' names, in Pro's domain (`bin/template-labels.mjs`).
+        $entries = \WConvert\Template\TemplateNames::apply($entries, rtrim($this->pluginDir, '/') . '/resources/templates/labels.php');
+
         return \WConvert\Template\BundledRevisions::stamp($entries, \WConvert\Template\BundledRevisions::read(rtrim($this->pluginDir, '/') . '/' . self::REVISIONS));
     }
 }

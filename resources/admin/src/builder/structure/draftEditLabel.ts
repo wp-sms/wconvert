@@ -54,20 +54,20 @@ function journeyEditLabel(before: TemplateTree, after: TemplateTree): string {
   }
   const added = after.steps.filter(screen => !before.steps.some(item => item.id === screen.id));
   const removed = before.steps.filter(screen => !after.steps.some(item => item.id === screen.id));
-  if (added.length === 1 && !removed.length) return sprintf(__('Add screen “%s”', 'wconvert'), added[0].name);
-  if (removed.length === 1 && !added.length) return sprintf(__('Remove screen “%s”', 'wconvert'), removed[0].name);
+  if (added.length === 1 && !removed.length) return sprintf(/* translators: %s: the added screen's name, e.g. “Thank you”. */ __('Add screen “%s”', 'wconvert'), added[0].name);
+  if (removed.length === 1 && !added.length) return sprintf(/* translators: %s: the removed screen's name, e.g. “Thank you”. */ __('Remove screen “%s”', 'wconvert'), removed[0].name);
   if (added.length || removed.length) return __('Change screens', 'wconvert');
   const changed = after.steps.filter(screen => !same(screen, before.steps.find(item => item.id === screen.id)));
   if (changed.length === 1) {
     const screen = changed[0];
     const previous = before.steps.find(item => item.id === screen.id)!;
-    if (previous.name !== screen.name) return sprintf(__('Rename screen “%s”', 'wconvert'), previous.name);
-    if (!same(previous.when, screen.when)) return sprintf(__('Change when “%s” appears', 'wconvert'), screen.name);
-    if (!same(previous.results, screen.results)) return sprintf(__('Change results on “%s”', 'wconvert'), screen.name);
-    if (!same(previous.paths, screen.paths)) return sprintf(__('Change lines from “%s”', 'wconvert'), screen.name);
+    if (previous.name !== screen.name) return sprintf(/* translators: %s: the screen's old name, e.g. “Skin type”. */ __('Rename screen “%s”', 'wconvert'), previous.name);
+    if (!same(previous.when, screen.when)) return sprintf(/* translators: %s: a screen's name, e.g. “Skin type”. */ __('Change when “%s” appears', 'wconvert'), screen.name);
+    if (!same(previous.results, screen.results)) return sprintf(/* translators: %s: a screen's name, e.g. “Skin type”. */ __('Change results on “%s”', 'wconvert'), screen.name);
+    if (!same(previous.paths, screen.paths)) return sprintf(/* translators: %s: a screen's name, e.g. “Skin type”. */ __('Change lines from “%s”', 'wconvert'), screen.name);
     if (!same(previous.content, screen.content)) {
       const questions = (tree: typeof screen) => walkNodes(tree.content).filter(node => node.type === 'question');
-      return sprintf(!same(questions(previous), questions(screen)) ? __('Edit questions on “%s”', 'wconvert') : __('Edit content on “%s”', 'wconvert'), screen.name);
+      return sprintf(!same(questions(previous), questions(screen)) ? /* translators: %s: a screen's name, e.g. “Skin type”. */ __('Edit questions on “%s”', 'wconvert') : /* translators: %s: a screen's name, e.g. “Skin type”. */ __('Edit content on “%s”', 'wconvert'), screen.name);
     }
   }
   if (!same(before.submissions, after.submissions)) return __('Change forms', 'wconvert');
@@ -81,7 +81,7 @@ function journeyEditLabel(before: TemplateTree, after: TemplateTree): string {
       const oldEdges = before.graph.edges.filter(edge => edge.from === id);
       const newEdges = after.graph.edges.filter(edge => edge.from === id);
       const orderingOnly = oldEdges.length === newEdges.length && oldEdges.every(edge => same(edge, newEdges.find(item => item.id === edge.id)));
-      return sprintf(orderingOnly ? __('Reorder lines from “%s”', 'wconvert') : __('Change lines from “%s”', 'wconvert'), sources[0].name);
+      return sprintf(orderingOnly ? /* translators: %s: a screen's name, e.g. “Skin type”. */ __('Reorder lines from “%s”', 'wconvert') : /* translators: %s: a screen's name, e.g. “Skin type”. */ __('Change lines from “%s”', 'wconvert'), sources[0].name);
     }
   }
   if (!same(before.steps.map(screen => screen.id), after.steps.map(screen => screen.id))) return __('Reorder screens', 'wconvert');
@@ -92,7 +92,7 @@ export function draftHistoryLabels(history: History<DraftSnapshot> | null): { un
   const previous = history?.past.at(-1);
   const next = history?.future[0];
   return {
-    undo: previous && history ? sprintf(__('Undo: %s', 'wconvert'), draftEditLabel(previous, history.present)) : __('Undo draft edit', 'wconvert'),
-    redo: next && history ? sprintf(__('Redo: %s', 'wconvert'), draftEditLabel(history.present, next)) : __('Redo draft edit', 'wconvert'),
+    undo: previous && history ? sprintf(/* translators: %s: the edit Undo reverses, e.g. “Change design”. */ __('Undo: %s', 'wconvert'), draftEditLabel(previous, history.present)) : __('Undo draft edit', 'wconvert'),
+    redo: next && history ? sprintf(/* translators: %s: the edit Redo repeats, e.g. “Change display rules”. */ __('Redo: %s', 'wconvert'), draftEditLabel(history.present, next)) : __('Redo draft edit', 'wconvert'),
   };
 }

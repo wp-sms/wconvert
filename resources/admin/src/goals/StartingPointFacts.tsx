@@ -67,9 +67,12 @@ export function StartingPointFacts({ playbook, goal, vocabulary }: {
   const todo: string[] = [...(playbook.requirements ?? [])];
   if (types.has('code')) todo.push(__('A real discount code from your store', 'wconvert'));
   if (goal.outcome.link_required) todo.push(__('The real link to your offer or page', 'wconvert'));
-  if (resultLinks > 0) todo.push(sprintf(
+  // One result reads as its own sentence; a count gets a real plural, because
+  // a language whose "one" form also covers 21 needs the number in it.
+  if (resultLinks === 1) todo.push(__('A link for its result', 'wconvert'));
+  else if (resultLinks > 1) todo.push(sprintf(
     /* translators: %d: how many quiz results need a link chosen before publishing. */
-    _n('A link for its result', 'A link for each of its %d results', resultLinks, 'wconvert'), resultLinks));
+    _n('A link for each of its %d result', 'A link for each of its %d results', resultLinks, 'wconvert'), resultLinks));
   const optional = !goal.outcome.audience_channel ? null : goal.outcome.audience_channel === 'phone'
     ? __('Connect an SMS service. Leads are kept in WConvert either way.', 'wconvert')
     : __('Connect an email service. Leads are kept in WConvert either way.', 'wconvert');

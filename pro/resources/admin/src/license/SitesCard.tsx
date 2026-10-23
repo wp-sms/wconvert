@@ -48,8 +48,8 @@ export function SitesCard({ license, onRemove, busy, result, headingRef, now = D
         <RegionHeader title={__('Sites', 'wconvert-pro')} trailing={
           <span className="wconvert-license-muted" data-over={over ? '' : undefined}>
             {max === null
-              ? sprintf(_n('%d site · Unlimited', '%d sites · Unlimited', used, 'wconvert-pro'), used)
-              : sprintf(__('%1$d of %2$d used', 'wconvert-pro'), used, max)}
+              ? sprintf(/* translators: %d: how many sites this license is active on. */ _n('%d site · Unlimited', '%d sites · Unlimited', used, 'wconvert-pro'), used)
+              : sprintf(/* translators: 1: how many sites this license is active on, 2: how many sites the license allows. */ __('%1$d of %2$d used', 'wconvert-pro'), used, max)}
           </span>
         } />
       </div>
@@ -84,14 +84,14 @@ export function SitesCard({ license, onRemove, busy, result, headingRef, now = D
                     <span className="wconvert-license-domain">{site.domain}</span>
                     {site.here && <Badge variant="secondary">{__('This site', 'wconvert-pro')}</Badge>}
                     {site.dev && <Badge variant="outline">{__('Dev', 'wconvert-pro')}</Badge>}
-                    {stale && site.last_seen && <small className="wconvert-license-warn-text">{sprintf(__('Not seen since %s', 'wconvert-pro'), formatShortDay(site.last_seen))}</small>}
+                    {stale && site.last_seen && <small className="wconvert-license-warn-text">{sprintf(/* translators: %s: the date a site last checked in, e.g. “Nov 27, 2026”. */ __('Not seen since %s', 'wconvert-pro'), formatShortDay(site.last_seen))}</small>}
                   </span>
                 </DataTableCell>
                 <DataTableCell label={__('Added', 'wconvert-pro')} className="wconvert-license-num">{site.added ? formatShortDay(site.added) : '—'}</DataTableCell>
                 <DataTableCell label={__('Actions', 'wconvert-pro')} className="wconvert-license-act-cell">
                   {!site.here && (
                     <Button variant="ghost" size="sm" aria-disabled={busy !== null || undefined}
-                      aria-label={sprintf(__('Remove %s', 'wconvert-pro'), site.domain)}
+                      aria-label={sprintf(/* translators: %s: a site's domain, e.g. “example.com”. */ __('Remove %s', 'wconvert-pro'), site.domain)}
                       onClick={() => busy === null && onRemove(site)}>
                       {busy === `site:${site.domain}` ? __('Removing…', 'wconvert-pro') : __('Remove', 'wconvert-pro')}
                     </Button>
@@ -101,7 +101,7 @@ export function SitesCard({ license, onRemove, busy, result, headingRef, now = D
             );
           })}
           {shown.length === 0 && (
-            <DataTableRow><DataTableCell label={__('Site', 'wconvert-pro')} className="wconvert-license-muted">{sprintf(__('No site matches “%s”.', 'wconvert-pro'), query)}</DataTableCell></DataTableRow>
+            <DataTableRow><DataTableCell label={__('Site', 'wconvert-pro')} className="wconvert-license-muted">{sprintf(/* translators: %s: the text typed into the site search. */ __('No site matches “%s”.', 'wconvert-pro'), query)}</DataTableCell></DataTableRow>
           )}
         </DataTableBody>
       </DataTable>
@@ -138,7 +138,7 @@ export function KeyCard({ license, busy, onReplace, replaceError, onRemove }: {
           <KeyField id="wconvert-license-swap" label={__('New license key', 'wconvert-pro')} value={key} onChange={setKey}
             onSubmit={() => onReplace(key)} busy={busy === 'replace'} error={replaceError}
             hint={masked
-              ? sprintf(__('Activates the new key first, then releases %s. Updates don’t pause.', 'wconvert-pro'), masked)
+              ? sprintf(/* translators: %s: the current license key with all but its last four characters hidden, e.g. “••••7F3A”. */ __('Activates the new key first, then releases %s. Updates don’t pause.', 'wconvert-pro'), masked)
               : __('Activates the new key on this site.', 'wconvert-pro')} />
         </Disclosure>
         <div className="wconvert-license-danger">

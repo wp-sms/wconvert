@@ -16,7 +16,7 @@ export function graphInsertionLocations(tree: TemplateTree) {
   if (!graph) return [];
   const entry = tree.steps.find(screen => screen.id === graph.entry);
   const locations: InsertionLocation[] = entry ? [{ id: 'entry', source: '', target: entry.id,
-    label: sprintf(__('Before first screen: %s', 'wconvert-pro'), entry.name), detail: __('This becomes the first screen visitors see.', 'wconvert-pro'), choices: [] as ReturnType<typeof graphChoiceSources>, canAsk: true }] : [];
+    label: sprintf(/* translators: %s: the first screen's name, e.g. “Welcome”. */ __('Before first screen: %s', 'wconvert-pro'), entry.name), detail: __('This becomes the first screen visitors see.', 'wconvert-pro'), choices: [] as ReturnType<typeof graphChoiceSources>, canAsk: true }] : [];
   const captures = tree.steps.filter(screen => walkNodes(screen.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit'));
   for (const index of graphDisplayOrder(tree)) {
     const source = tree.steps[index];
@@ -28,11 +28,11 @@ export function graphInsertionLocations(tree: TemplateTree) {
       const target = tree.steps.find(screen => screen.id === edge.to);
       if (!target) continue;
       const path = edge.kind === 'hidden' ? __('If skipped', 'wconvert-pro') : edge.kind === 'answer'
-        ? sprintf(__('Answer line %d', 'wconvert-pro'), answers.indexOf(edge) + 1)
+        ? sprintf(/* translators: %d: the line's position among this screen's answer lines, starting at 1. */ __('Answer line %d', 'wconvert-pro'), answers.indexOf(edge) + 1)
         : answers.length ? __('All other answers', 'wconvert-pro') : __('Continue', 'wconvert-pro');
       locations.push({ id: `edge:${edge.id}`, source: source.id, target: target.id,
         sharedHidden: edge.kind === 'default' && outgoing.some(item => item.kind === 'hidden' && item.to === edge.to),
-        label: sprintf(__('%1$s — %2$s — to %3$s', 'wconvert-pro'), source.name, path, target.name),
+        label: sprintf(/* translators: 1: the screen the line starts from, 2: which line, e.g. “Answer line 2” or “All other answers”, 3: the screen it leads to. */ __('%1$s — %2$s — to %3$s', 'wconvert-pro'), source.name, path, target.name),
         detail: edge.kind === 'answer' && edge.when ? conditionText(tree, edge.when)
           : edge.kind === 'hidden' ? __('Used when the source screen is skipped.', 'wconvert-pro')
           : answers.length ? __('Used when none of the answer lines match.', 'wconvert-pro') : __('Everyone on this line.', 'wconvert-pro'),

@@ -3,7 +3,12 @@ import tseslint from 'typescript-eslint';
 import reactHooks from 'eslint-plugin-react-hooks';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import globals from 'globals';
-import wordpress from '@wordpress/eslint-plugin';
+import { fixupPluginRules } from '@eslint/compat';
+import wordpressPlugin from '@wordpress/eslint-plugin';
+
+// 23 is the last line without a Vite 7 peer; its translator-comments rule
+// still calls `context.getCommentsBefore()`, which ESLint 9 removed.
+const wordpress = fixupPluginRules(wordpressPlugin);
 
 /*
  * WordPress's own i18n rules, with the text domain decided by DIRECTORY.
@@ -15,13 +20,14 @@ import wordpress from '@wordpress/eslint-plugin';
  * `npm run check:pot` proves the same thing against the POTs themselves; this
  * says it on the line, in the editor.
  *
- * `i18n-translator-comments` is off until the 451 placeholders that lack a
- * `translators:` comment have one: `--max-warnings=0` makes a warning block
- * too, so there is no half-way severity to start it at.
+ * `i18n-translator-comments` is an error: a placeholder with no
+ * `translators:` comment is a string a translator has to guess at, and
+ * make-pot reads the comment from the same place this rule looks for it —
+ * the last comment before the gettext call itself, not before `sprintf`.
  */
 const i18nRules = (domain) => ({
   '@wordpress/i18n-text-domain': ['error', { allowedTextDomain: domain }],
-  '@wordpress/i18n-translator-comments': 'off',
+  '@wordpress/i18n-translator-comments': 'error',
   '@wordpress/i18n-no-variables': 'error',
   '@wordpress/i18n-ellipsis': 'error',
   '@wordpress/i18n-no-collapsible-whitespace': 'error',

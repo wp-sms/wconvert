@@ -17,13 +17,13 @@ export function AnalyticsIntegrationSettings(props: { onEditingStateChange?: Set
   // A free install is shown no locked feature (ADR 0116).
   if (!Component && isFreeInstall()) return null;
   return Component ? <Suspense fallback={<RegionSkeleton label={__('Analytics integrations', 'wconvert')} lines={4} />}><Component {...props} /></Suspense>
-    : <Region><RegionHeader title={__('Analytics integrations', 'wconvert')} trailing={<Badge variant="secondary"><Lock aria-hidden="true" />{tierName('pro')}</Badge>} /><RegionBody><p className="m-0 text-note">{sprintf(__('Send campaign events through your existing Google tag, GTM or Plausible script with %s.', 'wconvert'), tierProductName('pro'))}</p></RegionBody></Region>;
+    : <Region><RegionHeader title={__('Analytics integrations', 'wconvert')} trailing={<Badge variant="secondary"><Lock aria-hidden="true" />{tierName('pro')}</Badge>} /><RegionBody><p className="m-0 text-note">{sprintf(/* translators: %s: the product that includes it, e.g. “WConvert Pro”. */ __('Send campaign events through your existing Google tag, GTM or Plausible script with %s.', 'wconvert'), tierProductName('pro'))}</p></RegionBody></Region>;
 }
 export function CampaignAnalytics(props: CampaignAnalyticsProps) {
   const Component = analyticsIntegration.campaign;
   if (!Component && isFreeInstall()) return null;
   return <div className="wconvert-details-section"><h3>{__('Optional analytics', 'wconvert')}</h3>{Component
     ? <Suspense fallback={<RegionSkeleton label={__('External analytics', 'wconvert')} lines={2} />}><Component {...props} /></Suspense>
-    : <><Badge variant="secondary"><Lock aria-hidden="true" />{tierName('pro')}</Badge><p>{sprintf(__('Managed analytics integrations require %s. Saved preferences remain inactive.', 'wconvert'), tierProductName('pro'))}</p></>}
+    : <><Badge variant="secondary"><Lock aria-hidden="true" />{tierName('pro')}</Badge><p>{sprintf(/* translators: %s: the product that includes it, e.g. “WConvert Pro”. */ __('Managed analytics integrations require %s. Saved preferences remain inactive.', 'wconvert'), tierProductName('pro'))}</p></>}
     <a href={settingsHref('integrations')}>{__('Analytics integration settings', 'wconvert')}</a></div>;
 }

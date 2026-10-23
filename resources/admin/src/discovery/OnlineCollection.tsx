@@ -49,7 +49,7 @@ export function OnlineCollection({ collection, goals, busy, onInstalled, onUse }
       <OptionStrip label={__('Collection format', 'wconvert')} value={format} onChange={setFormat}
         options={[{ value: 'all', label: __('All formats', 'wconvert') }, ...Array.from(new Set(members.map(member => member.design.format))).map(value => ({ value, label: displayTypeLabel(value) }))]} />
     </div>
-    <p role="status" className="text-note">{sprintf(_n('%s setup', '%s setups', shown.length, 'wconvert'), formatCount(shown.length))} · {__('Install a setup to add it to your library. Use it to create an unpublished draft.', 'wconvert')}</p>
+    <p role="status" className="text-note">{sprintf(/* translators: %s: how many campaign setups in this online collection match the search and chosen format, e.g. “6”. */ _n('%s setup', '%s setups', shown.length, 'wconvert'), formatCount(shown.length))} · {__('Install a setup to add it to your library. Use it to create an unpublished draft.', 'wconvert')}</p>
     <ul className="wconvert-gallery">{shown.map(member => {
       const { setup, design } = member;
       const goal = goals.find(value => value.id === setup.goal);

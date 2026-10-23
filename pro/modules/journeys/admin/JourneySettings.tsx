@@ -182,7 +182,7 @@ export function RouteSettings({ tree, step, focusPath = null, onChange, onInsert
     {!sources.length && targets.length > 1 && <PanelHint>{__('Add a choice question before this screen to send answers to different screens.', 'wconvert-pro')}</PanelHint>}
     {unreachable.length > 0 && <p className="wconvert-panel-warn" role="status">{sprintf(/* translators: %s: screen names. */ __('No line reaches %s.', 'wconvert-pro'), unreachable.join(', '))}</p>}
     <ConfirmDialog open={pending !== null} onOpenChange={open => { if (!open) setPending(null); }} title={__('Check this change', 'wconvert-pro')}
-      description={pending ? sprintf(__('These screens would become unreachable: %s. They stay in the draft, but visitors cannot reach or submit from them. You can Undo after applying.', 'wconvert-pro'), pending.disconnected.join(', ')) : ''}
+      description={pending ? sprintf(/* translators: %s: a comma-separated list of screen names, e.g. “Welcome, Results”. */ __('These screens would become unreachable: %s. They stay in the draft, but visitors cannot reach or submit from them. You can Undo after applying.', 'wconvert-pro'), pending.disconnected.join(', ')) : ''}
       confirmLabel={__('Change anyway', 'wconvert-pro')} onConfirm={() => { if (pending) onChange(pending.tree); setPending(null); }} />
   </div>;
 }
@@ -293,7 +293,7 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
               onChange={event => change(question.id, node => ({ ...node, options: node.options?.map((old, i) => i === at ? { ...old, label: event.target.value } : old) }), `choice:${option.value}`)} />
               <DropdownMenu><DropdownMenuTrigger asChild><button type="button" className="wconvert-choice-menu" aria-label={sprintf(/* translators: %s: a choice's words. */ __('More for “%s”', 'wconvert-pro'), option.label)} title={sprintf(/* translators: %s: a choice's words. */ __('More for “%s”', 'wconvert-pro'), option.label)}><MoreHorizontal aria-hidden="true" /></button></DropdownMenuTrigger>
                 <OptionMenuContent align="end" aria-label={sprintf(/* translators: %s: a choice's words. */ __('More for “%s”', 'wconvert-pro'), option.label)}>
-                  {onFollowup && <OptionItem icon={Plus} name={__('Add follow-up', 'wconvert-pro')} label={sprintf(__('Add follow-up for %s', 'wconvert-pro'), option.label)} onSelect={() => onFollowup(question.id, option.value)} />}
+                  {onFollowup && <OptionItem icon={Plus} name={__('Add follow-up', 'wconvert-pro')} label={sprintf(/* translators: %s: a choice's words, e.g. “Under $50”. */ __('Add follow-up for %s', 'wconvert-pro'), option.label)} onSelect={() => onFollowup(question.id, option.value)} />}
                   {used && <OptionItem icon={GitBranch} name={__('Review uses', 'wconvert-pro')} trail={uses > 0 ? uses : undefined}
                     onSelect={() => { setRepair({ question: question.id, value: option.value }); setReplacement(''); setRetiring(false); }} />}
                   {!used && <OptionItem icon={Trash2} destructive name={__('Remove', 'wconvert-pro')}
@@ -305,7 +305,7 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
             </div>;
           })}
           {repair?.question === question.id && <div tabIndex={-1} className="wconvert-journey-answer-repair" role="region" aria-label={__('Review answer uses', 'wconvert-pro')}>
-            <strong>{sprintf(reviewRefs.length ? __('“%s” is used in rules', 'wconvert-pro') : __('No rules use “%s” now', 'wconvert-pro'), question.options?.find(option => option.value === repair.value)?.label ?? __('This answer', 'wconvert-pro'))}</strong>
+            <strong>{sprintf(reviewRefs.length ? /* translators: %s: an answer choice's words, e.g. “Under $50”. */ __('“%s” is used in rules', 'wconvert-pro') : /* translators: %s: an answer choice's words, e.g. “Under $50”. */ __('No rules use “%s” now', 'wconvert-pro'), question.options?.find(option => option.value === repair.value)?.label ?? __('This answer', 'wconvert-pro'))}</strong>
             <p>{reviewRefs.length ? __('Review the rules below. Replace this answer with another choice, or stop offering it and review what will be removed.', 'wconvert-pro') : __('Your rule changes are kept. You can now remove this choice without changing other behavior.', 'wconvert-pro')}</p>
             <div>{reviewRefs.map(reference => <button type="button" key={reference.key} onClick={() => openReference(reference)}><strong>{reference.label}</strong>{' '}<small>{reference.detail} <ArrowRight aria-hidden="true" className="inline size-3 rtl:-scale-x-100" /></small></button>)}</div>
             {retirement && (question.options?.length ?? 0) > 2 && <Disclosure variant="inline" className="wconvert-answer-retirement" open={retiring} onToggle={setRetiring} title={__('Stop offering this answer…', 'wconvert-pro')}>
@@ -413,13 +413,13 @@ export function ResultSettings({ tree, step, onChange: change, onAction, repairR
   return <PanelSection ref={settingsRoot} className="wconvert-journey-settings" title={__('Results', 'wconvert-pro')}
     tipLabel={__('How results are chosen', 'wconvert-pro')} tip={__('First match wins, top to bottom. All other answers see the last one. Move results to change the order.', 'wconvert-pro')}
     action={variants.length < 6 && sources.length > 0 ? <button type="button" onClick={() => setDraftResult({ heading: '', when: { match: 'all', clauses: [{ question: '', operator: 'is', values: [] }] } })}>{__('Add result', 'wconvert-pro')}</button> : undefined}>
-    {overlap && <p className="wconvert-panel-warn" role="status">{sprintf(__('“%1$s” and “%2$s” may match the same answers. The one listed first wins.', 'wconvert-pro'), overlap[0].heading, overlap[1].heading)}</p>}
+    {overlap && <p className="wconvert-panel-warn" role="status">{sprintf(/* translators: 1: a result's heading, 2: another result's heading. */ __('“%1$s” and “%2$s” may match the same answers. The one listed first wins.', 'wconvert-pro'), overlap[0].heading, overlap[1].heading)}</p>}
     <div className="wconvert-journey-results" role="group" aria-label={__('Possible results', 'wconvert-pro')}>
       {variants.map((variant, at) => <div className="wconvert-journey-result-card" key={variant.id}><button className="wconvert-journey-result-summary" type="button" id={`${tabsId}-result-${at}`} aria-controls={`${tabsId}-panel-${at}`}
         aria-expanded={selected?.id === variant.id} onClick={() => setSelectedId(selected?.id === variant.id ? null : variant.id)}>
-        <strong><span className="wconvert-flow-dot" data-color={answerColorOf(resultColors, variant.when)} aria-hidden="true" />{at === variants.length - 1 ? __('All other answers', 'wconvert-pro') : variant.heading || sprintf(__('Result %d', 'wconvert-pro'), at + 1)}</strong>
+        <strong><span className="wconvert-flow-dot" data-color={answerColorOf(resultColors, variant.when)} aria-hidden="true" />{at === variants.length - 1 ? __('All other answers', 'wconvert-pro') : variant.heading || sprintf(/* translators: %d: the result's position in the list, starting at 1. */ __('Result %d', 'wconvert-pro'), at + 1)}</strong>
         <span>{at === variants.length - 1 ? __('When no other result matches', 'wconvert-pro')
-          : variant.when ? sprintf(__('If %s', 'wconvert-pro'), conditionText(tree, variant.when)) : __('Set a condition', 'wconvert-pro')}</span><ChevronDown aria-hidden="true" className="wconvert-journey-result-chevron" />
+          : variant.when ? sprintf(/* translators: %s: the answers that pick this result, e.g. “Budget is Under $50”. */ __('If %s', 'wconvert-pro'), conditionText(tree, variant.when)) : __('Set a condition', 'wconvert-pro')}</span><ChevronDown aria-hidden="true" className="wconvert-journey-result-chevron" />
       </button>
     {selected?.id === variant.id && <div className="wconvert-journey-settings__result" role="region" id={`${tabsId}-panel-${at}`} aria-labelledby={`${tabsId}-result-${at}`}>
 
@@ -447,8 +447,8 @@ export function ResultSettings({ tree, step, onChange: change, onAction, repairR
       </Disclosure>
       {selectedAt < variants.length - 1 && <ConditionSettings required value={selected.when} sources={sources} onChange={when => { if (when) edit(selectedAt, { when }); }} />}
       {selectedAt < variants.length - 1 && <div className="wconvert-journey-result-actions">
-        <DropdownMenu><DropdownMenuTrigger asChild><button type="button" className="wconvert-choice-menu" aria-label={sprintf(/* translators: %s: a result's heading. */ __('More for “%s”', 'wconvert-pro'), selected.heading || sprintf(__('Result %d', 'wconvert-pro'), selectedAt + 1))}><MoreHorizontal aria-hidden="true" /></button></DropdownMenuTrigger>
-          <OptionMenuContent align="end" aria-label={sprintf(/* translators: %s: a result's heading. */ __('More for “%s”', 'wconvert-pro'), selected.heading || sprintf(__('Result %d', 'wconvert-pro'), selectedAt + 1))}>
+        <DropdownMenu><DropdownMenuTrigger asChild><button type="button" className="wconvert-choice-menu" aria-label={sprintf(/* translators: %s: a result's heading. */ __('More for “%s”', 'wconvert-pro'), selected.heading || sprintf(/* translators: %d: the result's position in the list, starting at 1. */ __('Result %d', 'wconvert-pro'), selectedAt + 1))}><MoreHorizontal aria-hidden="true" /></button></DropdownMenuTrigger>
+          <OptionMenuContent align="end" aria-label={sprintf(/* translators: %s: a result's heading. */ __('More for “%s”', 'wconvert-pro'), selected.heading || sprintf(/* translators: %d: the result's position in the list, starting at 1. */ __('Result %d', 'wconvert-pro'), selectedAt + 1))}>
             {variants.length > 2 && <OptionItem icon={ArrowUp} name={__('Move earlier', 'wconvert-pro')} onSelect={() => move(selectedAt, selectedAt - 1)}
               refused={selectedAt === 0 ? refusal(__('Already first', 'wconvert-pro')) : null} />}
             {variants.length > 2 && <OptionItem icon={ArrowDown} name={__('Move later', 'wconvert-pro')} onSelect={() => move(selectedAt, selectedAt + 1)}
@@ -468,7 +468,7 @@ export function ResultSettings({ tree, step, onChange: change, onAction, repairR
       {draftResult && <><AdminDialogBody className="wconvert-graph-insert__body"><label>{__('Result heading', 'wconvert-pro')}<Input value={draftResult.heading} maxLength={200} onChange={event => setDraftResult({ ...draftResult, heading: event.target.value })} /></label>
         <ConditionSettings deliberate required purpose="result" value={draftResult.when} sources={sources} onChange={when => setDraftResult({ ...draftResult, when: when ?? { match: 'all', clauses: [] } })} />
         <p>{__('Checked after your existing results, before all other answers. You can move it afterward.', 'wconvert-pro')}</p>
-        {variants.slice(0, -1).filter(result => resultReady && resultsMayOverlap(tree, result, { ...draftResult, id: 'new-result' })).map(result => <p key={result.id} role="status">{sprintf(__('“%s” may match the same answers and is checked first.', 'wconvert-pro'), result.heading)}</p>)}
+        {variants.slice(0, -1).filter(result => resultReady && resultsMayOverlap(tree, result, { ...draftResult, id: 'new-result' })).map(result => <p key={result.id} role="status">{sprintf(/* translators: %s: an existing result's heading. */ __('“%s” may match the same answers and is checked first.', 'wconvert-pro'), result.heading)}</p>)}
       </AdminDialogBody><AdminDialogFooter back={<Button type="button" variant="outline" onClick={() => setDraftResult(null)}>{__('Cancel', 'wconvert-pro')}</Button>}
         note={!resultReady && <span id={`${tabsId}-add-reason`}>{__('Choose the answers that show this result.', 'wconvert-pro')}</span>}>
         <Button type="button" aria-disabled={!resultReady || undefined} aria-describedby={!resultReady ? `${tabsId}-add-reason` : undefined} onClick={() => { if (resultReady) addResult(); }}>{__('Add result', 'wconvert-pro')}</Button>

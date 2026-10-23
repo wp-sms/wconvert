@@ -41,7 +41,7 @@ final class WebhookSignature
     public static function sign(string $secret, string $id, int $timestamp, string $body): string
     {
         $key = base64_decode(substr($secret, strlen(self::PREFIX)), true);
-        if (!str_starts_with($secret, self::PREFIX) || !is_string($key) || $key === '') throw new \InvalidArgumentException('Not a signing secret.');
+        if (!str_starts_with($secret, self::PREFIX) || !is_string($key) || $key === '') throw new \InvalidArgumentException(__('Not a signing secret.', 'wconvert-pro'));
         return 'v1,' . base64_encode(hash_hmac('sha256', $id . '.' . $timestamp . '.' . $body, $key, true));
     }
 }

@@ -47,7 +47,7 @@ export function inlinePlacementLabel(value: unknown): string | null {
   if (value.position === 'after_content') return __('Automatically after content', 'wconvert');
   if (value.position === 'after_paragraph' && 'paragraph' in value && typeof value.paragraph === 'number'
     && Number.isInteger(value.paragraph) && value.paragraph >= 1 && value.paragraph <= 100) {
-    return sprintf(__('Automatically after paragraph %d', 'wconvert'), Number(value.paragraph));
+    return sprintf(/* translators: %d: which paragraph of the post the form follows, from 1 to 100. */ __('Automatically after paragraph %d', 'wconvert'), Number(value.paragraph));
   }
   return null;
 }

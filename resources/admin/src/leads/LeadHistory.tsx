@@ -120,7 +120,7 @@ export function LeadHistory({
       <AdminDialogHeader
         title={<bdi dir="ltr" title={group.identifier}>{group.identifier}</bdi>}
         meta={filtered
-          ? sprintf(_n('%s submission matches the current filters', '%s submissions match the current filters', total, 'wconvert'), formatCount(total))
+          ? sprintf(/* translators: %s: how many of this person's submissions match the filters, e.g. “3”. */ _n('%s submission matches the current filters', '%s submissions match the current filters', total, 'wconvert'), formatCount(total))
           : submissionCount(total)}
       />
       <AdminDialogBody ref={rows} className="flex flex-col gap-4">
@@ -138,7 +138,7 @@ export function LeadHistory({
         back={<Button variant="outline" onClick={onClose}>{__('Close', 'wconvert')}</Button>}
         note={(csv || paged) && <span className="flex flex-wrap items-center gap-3">
           {csv && <ExportMenu filter={filter} answers={answersCsv} />}
-          {paged && <span>{sprintf(__('Page %s', 'wconvert'), formatCount(shownPage))}</span>}
+          {paged && <span>{sprintf(/* translators: %s: the page number. */ __('Page %s', 'wconvert'), formatCount(shownPage))}</span>}
         </span>}
       >
         {paged && <>{goBack}{goOn}</>}

@@ -5,6 +5,7 @@ import { followupGroups, followupGroupSource } from './followupGroups';
 import { earlyEnding, type SkippedGate } from './gateEndings';
 import { graphDisplayOrder } from './graph';
 import { questionsIn, unreachableScreenIds, walkNodes } from './journey';
+import { anyOf } from '../../lib/format';
 
 /**
  * What the Flow map draws (ADR 0142), worked out once from the tree and never
@@ -223,8 +224,7 @@ export function flowModel(tree: TemplateTree, { selectedQuestion }: { selectedQu
   const own = (id: string) => { const screen = byId.get(id)?.screen; return new Set(screen ? questionsIn(screen.content).map(node => node.id) : []); };
   const { colors, focusQuestion } = answerColors(tree, selectedQuestion);
   const colorOf = (when?: QuestionCondition) => answerColorOf(colors, when);
-  const answerWords = (question: string, values: readonly string[]) => values.map(value => questions.get(question)?.options?.find(option => option.value === value)?.label ?? value)
-    .join(` ${__('or', 'wconvert')} `);
+  const answerWords = (question: string, values: readonly string[]) => anyOf(values.map(value => questions.get(question)?.options?.find(option => option.value === value)?.label ?? value));
   /** "Growing", "Includes Growing", "Without Growing" on the question's own lines; the whole rule elsewhere. */
   const ruleWords = (when: QuestionCondition, from: string): { text: string; problem: boolean } => {
     const clause = when.clauses.length === 1 ? when.clauses[0] : undefined;

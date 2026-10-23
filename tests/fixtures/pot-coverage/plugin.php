@@ -15,3 +15,7 @@ $ctx    = _x('Fixture ctx', 'fixture context', 'wconvert-fixture');
 // msgid IS in the POT, so only a check on `#:` references sees the second one.
 $shared = _n('Fixture shared', 'Fixture shareds', $n, 'wconvert-fixture');
 $hidden = _n('Fixture shared', 'Fixture shareds', (int) ($p['items'] ?? 0), 'wconvert-fixture');
+
+// A placeholder with no translators comment: make-pot's audit flags it, and
+// the check must report exactly this one.
+$uncommented = __('Fixture uncommented %s', 'wconvert-fixture');

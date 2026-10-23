@@ -96,8 +96,7 @@ function Results({ results, status, rateLabel }: { results: CampaignResults; sta
             sprintf(_n('Last %d day', 'Last %d days', results.days, 'wconvert'), results.days),
             formatRange(results.from, results.to),
           )
-        /* translators: %d: how many days the period covers. */
-        : sprintf(_n('Last %d day', 'Last %d days', results.days, 'wconvert'), results.days)
+        : sprintf(/* translators: %d: how many days the period covers. */ _n('Last %d day', 'Last %d days', results.days, 'wconvert'), results.days)
       : __('Results', 'wconvert');
   const result = results.status === 'ready' ? results.result : undefined;
   return (

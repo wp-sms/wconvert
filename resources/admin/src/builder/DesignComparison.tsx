@@ -37,6 +37,6 @@ function DesignColumn({entry,template,onInspect,failed,onRetry}:{entry:TemplateI
     <PreviewFrame fitHeight template={template} displayType={entry.display_type} mobile={mobile} step={step} result={result}>
       {failed ? <div className="wconvert-design-detail__error"><p role="alert">{__('This design preview could not be loaded.','wconvert')}</p>{onRetry && <TryAgain onClick={()=>onRetry(entry.id)} />}</div> : <p role="status">{__('Loading design preview…','wconvert')}</p>}
     </PreviewFrame>
-    <Button variant="outline" aria-label={sprintf(__('Review design: %s','wconvert'),entry.name)} onClick={()=>onInspect(entry.id)}>{__('Review this design','wconvert')}</Button>
+    <Button variant="outline" aria-label={sprintf(/* translators: %s: a design's name, e.g. “Spring sale popup”. */ __('Review design: %s','wconvert'),entry.name)} onClick={()=>onInspect(entry.id)}>{__('Review this design','wconvert')}</Button>
   </section>;
 }

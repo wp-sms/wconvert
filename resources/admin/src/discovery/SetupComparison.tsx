@@ -21,8 +21,8 @@ export function SetupComparison({ entries, onInspect, onUse, busy = false, vocab
     <SetupPreview entry={entry} comparison failed={failed.has(entry.id)} onRetry={() => onRetry(entry.id)} />
     <StartingPointSummary playbook={entry} vocabulary={vocabulary} />
     <div className="wconvert-toolbar flex flex-wrap gap-2">
-      {onUse && <Button aria-label={sprintf(__('Use setup: %s', 'wconvert'), entry.name)} disabled={busy} onClick={() => onUse(entry)}>{__('Use this setup', 'wconvert')}</Button>}
-      <Button variant="outline" aria-label={sprintf(__('Review setup: %s', 'wconvert'), entry.name)} onClick={() => onInspect(entry)}>{__('Review this setup', 'wconvert')}</Button>
+      {onUse && <Button aria-label={sprintf(/* translators: %s: a campaign setup's name, e.g. “Spring sale popup”. */ __('Use setup: %s', 'wconvert'), entry.name)} disabled={busy} onClick={() => onUse(entry)}>{__('Use this setup', 'wconvert')}</Button>}
+      <Button variant="outline" aria-label={sprintf(/* translators: %s: a campaign setup's name, e.g. “Spring sale popup”. */ __('Review setup: %s', 'wconvert'), entry.name)} onClick={() => onInspect(entry)}>{__('Review this setup', 'wconvert')}</Button>
     </div>
   </section>)}</ComparisonGrid>;
 }

@@ -48,10 +48,10 @@ export function CollectionShelf({ matches, all = false, disabled, onOpen, onAll,
           <span className="wconvert-collection__art" aria-hidden="true"><span /><span /><span /></span>
           <span className="wconvert-collection__copy"><strong>{collection.name}</strong><span>{collection.description}</span>
             {collection.event && <span>{formatRange(collection.event.start, lastDay(collection.event.end_exclusive))}</span>}
-            <span className="wconvert-collection__count">{sprintf(collection.online ? _n('%s setup', '%s setups', setups.length, 'wconvert') : _n('%s matching setup', '%s matching setups', setups.length, 'wconvert'), formatCount(setups.length))} · {sprintf(_n('%s design', '%s designs', designs, 'wconvert'), formatCount(designs))}</span>
+            <span className="wconvert-collection__count">{sprintf(collection.online ? /* translators: %s: how many campaign setups are in the collection, e.g. “6”. */ _n('%s setup', '%s setups', setups.length, 'wconvert') : /* translators: %s: how many campaign setups in the collection match the chosen goal, search and filters, e.g. “4”. */ _n('%s matching setup', '%s matching setups', setups.length, 'wconvert'), formatCount(setups.length))} · {sprintf(/* translators: %s: how many designs the collection's setups use, e.g. “3”. */ _n('%s design', '%s designs', designs, 'wconvert'), formatCount(designs))}</span>
           </span>
         </button>
-        {!all && <button type="button" className="wconvert-collection__hide" disabled={disabled} aria-label={sprintf(__('Hide collection: %s', 'wconvert'), collection.name)} onClick={() => onHide(collection.id)}><X size={15} aria-hidden="true" /></button>}
+        {!all && <button type="button" className="wconvert-collection__hide" disabled={disabled} aria-label={sprintf(/* translators: %s: a collection's name, e.g. “Black Friday”. */ __('Hide collection: %s', 'wconvert'), collection.name)} onClick={() => onHide(collection.id)}><X size={15} aria-hidden="true" /></button>}
       </article>)}
     </div>
   </section>;

@@ -68,7 +68,7 @@ final class PickerController implements RestController
         $revision = $request->get_param('revision');
         if ($document === 'occasions') {
             $saved = $this->occasions->write(static function () use ($input): mixed {
-                if (!is_array($input)) throw new \InvalidArgumentException('Invalid document.');
+                if (!is_array($input)) throw new \InvalidArgumentException(__('Invalid document.', 'wconvert')); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- operator text: caught upstream and returned or stored as plain text, never printed as HTML.
                 return $input['items'] ?? null;
             }, is_int($revision) ? $revision : -1);
             return $saved instanceof WP_Error ? $saved : new WP_REST_Response($saved);
@@ -77,7 +77,7 @@ final class PickerController implements RestController
         $saved = OccasionStore::leased('wconvert_picker_lock_user_' . $user, function () use ($input, $revision, $user) {
             $current = $this->readPreferences();
             if ($revision !== $current['revision']) return OccasionStore::conflict();
-            if (!is_array($input)) throw new \InvalidArgumentException('Invalid document.');
+            if (!is_array($input)) throw new \InvalidArgumentException(__('Invalid document.', 'wconvert')); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- operator text: caught upstream and returned or stored as plain text, never printed as HTML.
             $next = ['schema' => 1, 'revision' => $current['revision'] + 1] + PickerDocuments::validatePreferences($input);
             return update_user_meta($user, PickerDocuments::USER_KEY . get_current_blog_id(), $next) === false ? OccasionStore::saveFailed() : $next;
         });

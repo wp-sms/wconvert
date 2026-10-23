@@ -200,7 +200,7 @@ export function duplicateScreen(tree: TemplateTree, index: number): TemplateScre
     for (const key of ['children', 'start', 'end']) if (Array.isArray(n[key])) n[key] = (n[key] as TemplateNode[]).map(clone);
     return n as unknown as TemplateNode;
   };
-  return { ...base, paths: undefined, id: freshScreen(tree, 'input').id, name: sprintf(__('%s (copy)', 'wconvert'), base.name), content: clone(base.content) };
+  return { ...base, paths: undefined, id: freshScreen(tree, 'input').id, name: sprintf(/* translators: %s: the name of the screen being duplicated, e.g. “Your result”. */ __('%s (copy)', 'wconvert'), base.name), content: clone(base.content) };
 }
 
 /** Keep the acknowledgement last and accepted signups in their declared order. */

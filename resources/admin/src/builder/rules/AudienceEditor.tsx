@@ -26,8 +26,7 @@ export function AudienceEditor({ value, types, onChange }: { value: Audience; ty
 
   return <div className="wconvert-display-groups">
     {groups.map((group, index) => {
-      // translators: %d: a group's number, from 1.
-      const title = sprintf(__('Group %d', 'wconvert'), index + 1);
+      const title = sprintf(/* translators: %d: a group's number, from 1. */ __('Group %d', 'wconvert'), index + 1);
 
       return <div key={group.id ?? index}>
         {index > 0 && <div className="wconvert-display-or" role="separator" aria-label={__('or', 'wconvert')}><b aria-hidden="true">{__('OR', 'wconvert')}</b></div>}

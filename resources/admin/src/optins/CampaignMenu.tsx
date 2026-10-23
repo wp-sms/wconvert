@@ -72,7 +72,7 @@ export function CampaignMenu({
           variant="ghost"
           size="icon-sm"
           disabled={busy}
-          aria-label={sprintf(__('More actions for %s', 'wconvert'), name)}
+          aria-label={sprintf(/* translators: %s: a campaign's name. */ __('More actions for %s', 'wconvert'), name)}
         >
           <MoreHorizontal aria-hidden="true" />
         </Button>

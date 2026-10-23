@@ -118,7 +118,7 @@ export function MonthlyTargets({
     return error ? (
       <Region label={__('Monthly targets', 'wconvert')} className="wa-targets-failed">
         <RegionErrorState
-          message={sprintf(__('Could not load monthly targets. %s', 'wconvert'), error)}
+          message={sprintf(/* translators: %s: the error message from the server. */ __('Could not load monthly targets. %s', 'wconvert'), error)}
           onRetry={refresh}
         />
       </Region>
@@ -139,6 +139,7 @@ export function MonthlyTargets({
         // A refresh failed: the last accepted month stays on screen under it.
         <PageError
           message={sprintf(
+            /* translators: %s: the error message from the server. */
             __('Could not refresh targets. Showing the last loaded values. %s', 'wconvert'),
             error,
           )}
@@ -150,7 +151,7 @@ export function MonthlyTargets({
           <header className="wa-targets-heading">
             <div>
               <h2 id="wa-targets-heading">
-                {sprintf(__('%s targets', 'wconvert'), monthLabel(data.month))}
+                {sprintf(/* translators: %s: a month and year, e.g. “October 2026”. */ __('%s targets', 'wconvert'), monthLabel(data.month))}
               </h2>
               <p className="wa-muted">
                 {formatRange(data.from, data.end)} ·{' '}
@@ -158,6 +159,7 @@ export function MonthlyTargets({
                 <br />
                 {data.through
                   ? sprintf(
+                      /* translators: %s: the last day counted, e.g. “Oct 22, 2026”. */
                       __('Counted through %s', 'wconvert'),
                       formatDay(data.through),
                     )
@@ -176,14 +178,14 @@ export function MonthlyTargets({
                 <article className="wa-target-card" key={metric.id}>
                   <div className="wa-target-card-heading">
                     <h3>{metric.label}</h3>
-                    <InfoTip label={sprintf(__('What counts toward %s?', 'wconvert'), metric.label)}>
+                    <InfoTip label={sprintf(/* translators: %s: a measure, e.g. “Submissions” or “Offer link clicks”. */ __('What counts toward %s?', 'wconvert'), metric.label)}>
                       <p>{metric.note}</p>
                     </InfoTip>
                   </div>
                   <div className="wa-target-number">
                     <strong>{formatCount(metric.actual)}</strong>
                     <span>
-                      {sprintf(__('of %s', 'wconvert'), formatCount(target))}
+                      {sprintf(/* translators: %s: this month's target, a number, e.g. “500”. */ __('of %s', 'wconvert'), formatCount(target))}
                     </span>
                   </div>
                   <div
@@ -194,6 +196,7 @@ export function MonthlyTargets({
                     aria-valuemax={target}
                     aria-valuenow={Math.min(metric.actual, target)}
                     aria-valuetext={sprintf(
+                      /* translators: 1: the count so far, 2: the target, 3: what is counted, “submissions” or “clicks”, 4: the percentage of the target reached, a number. %% is a literal percent sign. */
                       __('%1$s of %2$s %3$s; %4$s%% of target', 'wconvert'),
                       formatCount(metric.actual),
                       formatCount(target),
@@ -206,6 +209,7 @@ export function MonthlyTargets({
                   <div className="wa-target-percent">
                     <span>
                       {sprintf(
+                        /* translators: %s: the percentage of the target reached, a number, e.g. “42”. %% is a literal percent sign. */
                         __('%s%% of target', 'wconvert'),
                         formatCount(percent),
                       )}
@@ -225,6 +229,7 @@ export function MonthlyTargets({
                       ) : (
                         <span className="wa-target-pace">
                           {sprintf(
+                            /* translators: %s: how many more are needed to be on pace today, a number. */
                             __('Behind pace: about %s short', 'wconvert'),
                             formatCount(pace.short),
                           )}
@@ -235,10 +240,12 @@ export function MonthlyTargets({
                     <span>
                       {reached
                         ? sprintf(
+                            /* translators: %s: how many the count is over the target, a number. */
                             __('%s above target', 'wconvert'),
                             formatCount(metric.actual - target),
                           )
                         : sprintf(
+                            /* translators: %s: how many are still needed to reach the target, a number. */
                             __('%s to go', 'wconvert'),
                             formatCount(target - metric.actual),
                           )}
@@ -249,6 +256,7 @@ export function MonthlyTargets({
                         impact: metric.id,
                       })}
                       aria-label={sprintf(
+                        /* translators: %s: a measure, e.g. “Submissions” or “Offer link clicks”. */
                         __('View monthly results for %s', 'wconvert'),
                         metric.label,
                       )}
@@ -330,6 +338,7 @@ function TargetEditor({
   const id = useId();
   const dirty = metrics.some((m) => draft[m.id] !== start[m.id]);
   const limit = sprintf(
+    /* translators: %s: the largest target allowed, e.g. “100,000,000”. */
     __('Use a whole number from 1 to %s.', 'wconvert'),
     formatCount(context.max_target),
   );
@@ -379,7 +388,7 @@ function TargetEditor({
         }}
       >
         <AdminDialogHeader
-          title={sprintf(__('%s targets', 'wconvert'), monthLabel(context.month))}
+          title={sprintf(/* translators: %s: a month and year, e.g. “October 2026”. */ __('%s targets', 'wconvert'), monthLabel(context.month))}
           meta={`${formatRange(context.from, context.end)} · ${__('all campaigns', 'wconvert')}`}
         />
         <form className="flex min-h-0 flex-1 flex-col" onSubmit={submit} noValidate>
@@ -470,6 +479,7 @@ function TargetEditor({
             error={
               error &&
               sprintf(
+                /* translators: %s: the error message from the server. */
                 __('Could not save. Your draft is kept. %s', 'wconvert'),
                 error,
               )

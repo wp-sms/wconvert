@@ -42,12 +42,12 @@ export function errorCopy(error: LicenseError, { host = 'my.wconvert.io', fromCo
       return { text: __('This license was turned off.', 'wconvert-pro'), ways: ['support'] };
     case 'rate_limited': {
       const minutes = Math.max(1, Math.ceil((error.data?.retry_after ?? 60) / 60));
-      return { text: sprintf(_n('Too many tries. Try again in %d minute.', 'Too many tries. Try again in %d minutes.', minutes, 'wconvert-pro'), minutes), ways: [] };
+      return { text: sprintf(/* translators: %d: how many minutes to wait before trying again. */ _n('Too many tries. Try again in %d minute.', 'Too many tries. Try again in %d minutes.', minutes, 'wconvert-pro'), minutes), ways: [] };
     }
     case 'network_error':
     case 'server_error':
     case 'invalid_response':
-      return { text: sprintf(__('Couldn’t reach the license server. Some hosts block outgoing connections. Ask yours to allow %s.', 'wconvert-pro'), host), ways: ['retry', 'guide'] };
+      return { text: sprintf(/* translators: %s: the license server's address, e.g. “my.wconvert.io”. */ __('Couldn’t reach the license server. Some hosts block outgoing connections. Ask yours to allow %s.', 'wconvert-pro'), host), ways: ['retry', 'guide'] };
     case 'account_expired':
     case 'token_expired':
       return { text: __('Your sign-in timed out. Sign in again.', 'wconvert-pro'), ways: [] };
@@ -58,7 +58,6 @@ export function errorCopy(error: LicenseError, { host = 'my.wconvert.io', fromCo
     case 'license_not_on_account':
       return { text: __('That license isn’t on this account any more.', 'wconvert-pro'), ways: ['retry'] };
     default:
-      /* translators: %s: the error code, for support */
-      return { text: sprintf(__('Something went wrong (%s).', 'wconvert-pro'), error.code), ways: ['retry', 'support', 'guide'] };
+      return { text: sprintf(/* translators: %s: the error code, for support */ __('Something went wrong (%s).', 'wconvert-pro'), error.code), ways: ['retry', 'support', 'guide'] };
   }
 }

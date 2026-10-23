@@ -27,8 +27,8 @@ export function decisionCopy(kind: DecisionKind, arm: boolean, name: string, var
         title: arm ? __('Delete this variant?', 'wconvert') : __('Delete this campaign?', 'wconvert'),
         description: sprintf(
           arm
-            ? __('“%s” stops showing and leaves this A/B test. Its leads and results are kept.', 'wconvert')
-            : __('“%s” stops showing and leaves this list. Its leads and results are kept.', 'wconvert'),
+            ? /* translators: %s: an A/B test variant's name, e.g. “Spring sale B”. */ __('“%s” stops showing and leaves this A/B test. Its leads and results are kept.', 'wconvert')
+            : /* translators: %s: a campaign's name, e.g. “Spring sale”. */ __('“%s” stops showing and leaves this list. Its leads and results are kept.', 'wconvert'),
           name,
         ),
         confirmLabel: arm ? __('Delete variant', 'wconvert') : __('Delete campaign', 'wconvert'),
@@ -38,8 +38,8 @@ export function decisionCopy(kind: DecisionKind, arm: boolean, name: string, var
         title: arm ? __('Unpublish this variant?', 'wconvert') : __('Unpublish this campaign?', 'wconvert'),
         description: sprintf(
           arm
-            ? __('“%s” stops showing. Its saved draft, leads and results are kept, and the other variants keep running.', 'wconvert')
-            : __('“%s” stops showing and returns to Draft. Its saved draft, leads and results are kept.', 'wconvert'),
+            ? /* translators: %s: an A/B test variant's name, e.g. “Spring sale B”. */ __('“%s” stops showing. Its saved draft, leads and results are kept, and the other variants keep running.', 'wconvert')
+            : /* translators: %s: a campaign's name, e.g. “Spring sale”. */ __('“%s” stops showing and returns to Draft. Its saved draft, leads and results are kept.', 'wconvert'),
           name,
         ),
         confirmLabel: arm ? __('Unpublish variant', 'wconvert') : __('Unpublish campaign', 'wconvert'),

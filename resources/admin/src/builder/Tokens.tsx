@@ -883,7 +883,7 @@ function MeasureField({
     {axes !== null && (axes.length === 1 ? slider(axes[0], 0) : <span className="wconvert-token__axes">
       {axes.map((axis, index) => <label key={index} className="wconvert-token__axis">
         <span className="wconvert-token__axis-name">{axisName(index)}</span>
-        {slider(axis, index, sprintf(__('%1$s, %2$s', 'wconvert'), label, axisName(index).toLocaleLowerCase()))}
+        {slider(axis, index, sprintf(/* translators: 1: a spacing setting, e.g. “Inner spacing”, 2: which edges this slider sets, “top and bottom” or “sides”. */ __('%1$s, %2$s', 'wconvert'), label, axisName(index).toLocaleLowerCase()))}
       </label>)}
     </span>)}
     <MeasurementValue id={axes === null ? id : undefined} label={label}
@@ -945,7 +945,7 @@ function ChoiceField({
     </select>}
     {custom && !advanced && <PanelHint>{cssOnlyNote()}</PanelHint>}
     {custom && advanced && <StyleValueInput type="text" className="wconvert-token__typed"
-      aria-label={sprintf(__('%s value', 'wconvert'), label)} placeholder={fallback} value={value}
+      aria-label={sprintf(/* translators: %s: a design setting, e.g. “Heading size”. */ __('%s value', 'wconvert'), label)} placeholder={fallback} value={value}
       onFocus={() => setAsked(true)} onCommit={onChange} />}
   </div>;
 }

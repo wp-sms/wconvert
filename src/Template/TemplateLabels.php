@@ -54,7 +54,7 @@ final class TemplateLabels
             /* translators: the four words under a boxed countdown — days, hours, minutes and seconds. */
             'countdown_units' => __('Countdown unit words', 'wconvert'),
             /* translators: the discount code shown after a visitor submits, e.g. “WELCOME10”. */
-            'code_value' => __('Discount code', 'wconvert'),
+            'code_value' => _x('Discount code', 'the code a visitor is given', 'wconvert'),
             /*
              * ================================================================
              * THE SECOND ROLE A PLAYBOOK MAY NEVER FILL, AND FOR THE SAME
@@ -110,7 +110,7 @@ final class TemplateLabels
             /* translators: a block — the time left, ticking down to the date the Optin stops running. */
             'countdown' => __('Countdown', 'wconvert'),
             /* translators: a block — one discount code, boxed, the same for every visitor. */
-            'code' => __('Discount code', 'wconvert'),
+            'code' => _x('Discount code', 'a block that shows a code', 'wconvert'),
             'field' => __('Field', 'wconvert'),
             'question' => __('Question', 'wconvert'),
             'products' => __('Product recommendations', 'wconvert'),
@@ -326,14 +326,14 @@ final class TemplateLabels
             'panel.tokens' => __('Style for this box', 'wconvert'),
             /* translators: whether the coloured box has a rule above it, a border all round, or neither. */
             'panel.edges' => __('Border', 'wconvert'),
-            /* translators: the least tall the coloured box may be, so a box holding only a picture does not collapse. */
+            /* translators: the optional ornaments a design draws on a coloured box, which a merchant can switch off. */
             'panel.decorations' => __('Decorations', 'wconvert'),
             'panel.min' => __('Minimum height', 'wconvert'),
             /* translators: whether two circles are punched out of the box's top corners, like a torn ticket, so the page shows through. */
             'panel.notch' => __('Punched corners', 'wconvert'),
             /* translators: the colours, spacing and type this box sets for itself and everything inside it. */
             'media.tokens' => __('Style for this box', 'wconvert'),
-            /* translators: the least tall the picture may be, so it does not collapse to the two lines written on it. */
+            /* translators: the optional ornaments a design draws on a coloured box, which a merchant can switch off. */
             'media.decorations' => __('Decorations', 'wconvert'),
             'media.min' => __('Minimum height', 'wconvert'),
 
@@ -416,7 +416,7 @@ final class TemplateLabels
              * `block-start` and not `top`.
              */
             /* translators: a coloured box with no border at all. */
-            'panel.edges.none' => __('None', 'wconvert'),
+            'panel.edges.none' => _x('None', 'border of a box', 'wconvert'),
             /* translators: a border treatment — a thick coloured rule along the block-start edge. In a vertical writing mode this is not the top of the screen. */
             'panel.edges.block-start' => __('A rule above', 'wconvert'),
             /* translators: a border treatment — a thin line all the way round the box. */
@@ -433,11 +433,11 @@ final class TemplateLabels
             /* translators: a minimum height — none, so the box is as tall as what is in it. */
             'panel.min.0' => __('As tall as its contents', 'wconvert'),
             /* translators: a minimum height for a box holding a picture. */
-            'panel.min.10rem' => __('Short', 'wconvert'),
+            'panel.min.10rem' => _x('Short', 'minimum height', 'wconvert'),
             /* translators: a minimum height for a box holding a picture. */
-            'panel.min.16rem' => __('Medium', 'wconvert'),
+            'panel.min.16rem' => _x('Medium', 'minimum height', 'wconvert'),
             /* translators: a minimum height for a box holding a picture. */
-            'panel.min.24rem' => __('Tall', 'wconvert'),
+            'panel.min.24rem' => _x('Tall', 'minimum height', 'wconvert'),
 
             /*
              * **Two words rather than a tick box**, because the param is on
@@ -448,18 +448,18 @@ final class TemplateLabels
              * can see in the preview.
              */
             /* translators: the coloured box has ordinary square corners. */
-            'panel.notch.false' => __('Square', 'wconvert'),
+            'panel.notch.false' => _x('Square', 'corners of a box', 'wconvert'),
             /* translators: two circles are punched out of the box's top corners, like a torn ticket, so the page shows through. */
             'panel.notch.true' => __('Punched, like a ticket', 'wconvert'),
 
-            /* translators: a minimum height — none, so the picture is as tall as what is written on it. */
+            /* translators: a minimum height — none, so the box is as tall as what is in it. */
             'media.min.0' => __('As tall as its contents', 'wconvert'),
             /* translators: a minimum height for a picture. */
-            'media.min.10rem' => __('Short', 'wconvert'),
+            'media.min.10rem' => _x('Short', 'minimum height', 'wconvert'),
             /* translators: a minimum height for a picture. */
-            'media.min.16rem' => __('Medium', 'wconvert'),
+            'media.min.16rem' => _x('Medium', 'minimum height', 'wconvert'),
             /* translators: a minimum height for a picture. */
-            'media.min.24rem' => __('Tall', 'wconvert'),
+            'media.min.24rem' => _x('Tall', 'minimum height', 'wconvert'),
         ];
     }
 
@@ -506,9 +506,9 @@ final class TemplateLabels
             'button.action' => __('Button action', 'wconvert'),
             'heading.level' => __('Heading level', 'wconvert'),
             /* translators: how big this heading is drawn, as a step up or down from the design's own heading size. */
-            'heading.size' => __('Size', 'wconvert'),
+            'heading.size' => _x('Size', 'setting: how big text is drawn', 'wconvert'),
             /* translators: how big this paragraph is drawn, as a step up or down from the design's own text size. */
-            'text.size' => __('Size', 'wconvert'),
+            'text.size' => _x('Size', 'setting: how big text is drawn', 'wconvert'),
             /* translators: how a picture fills the space it is given. */
             'image.fit' => __('Picture fit', 'wconvert'),
             'code.layout' => __('Code layout', 'wconvert'),
@@ -516,7 +516,7 @@ final class TemplateLabels
             /* translators: how a countdown is drawn — as one line of digits, or as a box per unit. */
             'countdown.layout' => __('Countdown style', 'wconvert'),
             /* translators: whether a visitor must fill a form field in before they can submit. */
-            'field.required' => __('Required', 'wconvert'),
+            'field.required' => _x('Required', 'a visitor must answer it', 'wconvert'),
             'field.phone_country' => __('Starting country', 'wconvert'),
             'field.phone_dropdown' => __('Show a country list', 'wconvert'),
             'products.action' => __('Product action', 'wconvert'),
@@ -567,7 +567,7 @@ final class TemplateLabels
             'question.answer_type.multi' => __('Choose several', 'wconvert'),
             'question.answer_type.text' => __('Short answer', 'wconvert'),
             'question.required.false' => __('Optional', 'wconvert'),
-            'question.required.true' => __('Required', 'wconvert'),
+            'question.required.true' => _x('Required', 'a visitor must answer it', 'wconvert'),
             'code.layout.stack' => __('Stacked', 'wconvert'),
             'code.layout.inline' => __('Code and button together', 'wconvert'),
             'code.copy.false' => __('Code only', 'wconvert'),
@@ -604,7 +604,7 @@ final class TemplateLabels
             /* translators: a type size step — one step up from the design’s own size. */
             'heading.size.xl' => __('Large', 'wconvert'),
             /* translators: a type size step — the design’s own size, which is what a block gets when nothing is chosen. */
-            'heading.size.m' => __('Medium', 'wconvert'),
+            'heading.size.m' => _x('Medium', 'text size step', 'wconvert'),
             /* translators: a type size step — one step down from the design’s own size. */
             'heading.size.s' => __('Small', 'wconvert'),
             /* translators: a type size step — the smallest step — fine print. */
@@ -617,7 +617,7 @@ final class TemplateLabels
             /* translators: a type size step — one step up from the design’s own size. */
             'text.size.xl' => __('Large', 'wconvert'),
             /* translators: a type size step — the design’s own size, which is what a block gets when nothing is chosen. */
-            'text.size.m' => __('Medium', 'wconvert'),
+            'text.size.m' => _x('Medium', 'text size step', 'wconvert'),
             /* translators: a type size step — one step down from the design’s own size. */
             'text.size.s' => __('Small', 'wconvert'),
             /* translators: a type size step — the smallest step — fine print. */
@@ -639,7 +639,7 @@ final class TemplateLabels
             'badge.place.corner' => __('Pinned to the corner', 'wconvert'),
 
             /* translators: a form field a visitor cannot leave empty. */
-            'field.required.true' => __('Required', 'wconvert'),
+            'field.required.true' => _x('Required', 'a visitor must answer it', 'wconvert'),
             'field.phone_country.site' => __('Use site setting', 'wconvert'),
             'field.phone_dropdown.true' => __('Show country list', 'wconvert'),
             'field.phone_dropdown.false' => __('Hide country list', 'wconvert'),
@@ -989,18 +989,18 @@ final class TemplateLabels
             'heading-weight.800' => __('Extra bold', 'wconvert'),
 
             /* translators: heading letters set closer together than normal. */
-            'tracking.-0.02em' => __('Tight', 'wconvert'),
+            'tracking.-0.02em' => _x('Tight', 'letter spacing', 'wconvert'),
             /* translators: heading letters at the typeface's own spacing. */
-            'tracking.normal' => __('Normal', 'wconvert'),
+            'tracking.normal' => _x('Normal', 'letter spacing', 'wconvert'),
             /* translators: heading letters set further apart than normal. */
             'tracking.0.04em' => __('Loose', 'wconvert'),
             /* translators: heading letters set much further apart — the spaced-out look of a label or an eyebrow. */
             'tracking.0.1em' => __('Wide', 'wconvert'),
 
             /* translators: lines of text set close together. */
-            'leading.1.3' => __('Tight', 'wconvert'),
+            'leading.1.3' => _x('Tight', 'line spacing', 'wconvert'),
             /* translators: the usual space between lines of text. */
-            'leading.1.5' => __('Normal', 'wconvert'),
+            'leading.1.5' => _x('Normal', 'line spacing', 'wconvert'),
             /* translators: lines of text set further apart, which reads as airier. */
             'leading.1.7' => __('Airy', 'wconvert'),
 
@@ -1012,11 +1012,11 @@ final class TemplateLabels
              * type a unit into a box to get one.
              */
             /* translators: an animation speed — the design appears with no animation at all. */
-            'motion.0ms' => __('None', 'wconvert'),
+            'motion.0ms' => _x('None', 'animation speed', 'wconvert'),
             /* translators: an animation speed. */
             'motion.120ms' => __('Fast', 'wconvert'),
             /* translators: an animation speed — the default. */
-            'motion.200ms' => __('Normal', 'wconvert'),
+            'motion.200ms' => _x('Normal', 'animation speed', 'wconvert'),
             /* translators: an animation speed. */
             'motion.400ms' => __('Slow', 'wconvert'),
 
@@ -1057,7 +1057,7 @@ final class TemplateLabels
              * reads as dirt.
              */
             /* translators: a shadow depth — the design casts no shadow at all. */
-            'shadow.none' => __('None', 'wconvert'),
+            'shadow.none' => _x('None', 'shadow depth', 'wconvert'),
             /* translators: a shadow depth — barely there, the design sits almost flat on the page. */
             'shadow.0 1px 2px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.1)' => __('Flat', 'wconvert'),
             /* translators: a shadow depth — the design sits just above the page. */
@@ -1072,7 +1072,7 @@ final class TemplateLabels
             /* translators: the shape of the button that closes a popup — a square with softened corners. */
             'close-radius.0.375rem' => __('Rounded square', 'wconvert'),
             /* translators: the shape of the button that closes a popup — a square with sharp corners. */
-            'close-radius.0' => __('Square', 'wconvert'),
+            'close-radius.0' => _x('Square', 'shape of a close button', 'wconvert'),
         ];
     }
 

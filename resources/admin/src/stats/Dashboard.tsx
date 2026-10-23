@@ -120,7 +120,7 @@ const periodLabel = (days: number) =>
   days === 1
     ? __('Yesterday', 'wconvert')
     : sprintf(
-        _n('Last %s complete day', 'Last %s complete days', days, 'wconvert'),
+        /* translators: %s: how many complete days the report covers, e.g. “30”. */ _n('Last %s complete day', 'Last %s complete days', days, 'wconvert'),
         formatCount(days),
       );
 
@@ -220,7 +220,7 @@ function DashboardContent({
       : payload.days === 0
         ? __('No complete days yet this month', 'wconvert')
         : live
-          ? sprintf(__('%s so far', 'wconvert'), rangeLabel(payload.from, payload.to))
+          ? sprintf(/* translators: %s: the report's date range, e.g. “Oct 1 – 23, 2026”. */ __('%s so far', 'wconvert'), rangeLabel(payload.from, payload.to))
           : rangeLabel(payload.from, payload.to);
   const exportReport = () => {
     if (!payload) return;
@@ -311,7 +311,7 @@ function DashboardContent({
       {refreshError && payload && (
         <PageError
           message={sprintf(
-            __(
+            /* translators: %s: the error message explaining why the report failed to load. */ __(
               'Could not load that period. Showing the last report and its dates. %s',
               'wconvert',
             ),
@@ -336,7 +336,7 @@ function DashboardContent({
       {payload && compare && payload.previous && !comparable && payload.goals.length > 0 && (
         <p className="wa-muted wa-compare-note">
           {sprintf(
-            __('Nothing to compare in %s.', 'wconvert'),
+            /* translators: %s: the earlier date range being compared against, e.g. “Sep 1 – 30, 2026”. */ __('Nothing to compare in %s.', 'wconvert'),
             rangeLabel(payload.previous.from, payload.previous.to),
           )}
         </p>
@@ -472,7 +472,7 @@ function DashboardContent({
                       )}
                       {' · '}
                       {sprintf(
-                        _n(
+                        /* translators: %s: how many campaigns serve this goal, e.g. “3”. */ _n(
                           '%s campaign',
                           '%s campaigns',
                           families(g).length,
@@ -578,7 +578,7 @@ function SalesCard({ summary }: { summary: CommerceSummary }) {
       <strong>{amount ?? formatCount(summary.orders)}</strong>
       <span className="wa-change">
         {amount
-          ? sprintf(_n('%s order', '%s orders', summary.orders, 'wconvert'), formatCount(summary.orders))
+          ? sprintf(/* translators: %s: how many paid orders were linked to a signup or click, e.g. “12”. */ _n('%s order', '%s orders', summary.orders, 'wconvert'), formatCount(summary.orders))
           : _n('Linked order; the amount is in Campaign sales', 'Linked orders; amounts are in Campaign sales', summary.orders, 'wconvert')}
       </span>
       <small>{__('Paid orders after a signup or click. Linked, not caused.', 'wconvert')}</small>

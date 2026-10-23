@@ -14,7 +14,7 @@ export function JourneyIssueMarker({ issues, onIssue, tabIndex }: {
   tabIndex?: number;
 }) {
   if (!issues?.length || !onIssue) return null;
-  const count = sprintf(_n('%d issue', '%d issues', issues.length, 'wconvert'), issues.length);
+  const count = sprintf(/* translators: %d: how many issues the screen has. */ _n('%d issue', '%d issues', issues.length, 'wconvert'), issues.length);
   return <Popover>
     <PopoverTrigger asChild>
       <button type="button" className="wconvert-flow-issue" tabIndex={tabIndex} aria-label={sprintf(/* translators: %s: “1 issue”, “3 issues”. */ __('%s on this screen. Show them', 'wconvert'), count)}>

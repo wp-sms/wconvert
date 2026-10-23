@@ -11,7 +11,7 @@ export function PickerPagination({ page, pages, disabled = false, onChange, labe
 }) {
   return <nav className="wconvert-picker__pagination wconvert-toolbar" aria-label={label ?? __('Pages', 'wconvert')}>
     {pages > 1 && <Button variant="outline" disabled={disabled || page === 0} onClick={() => onChange(page - 1)}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Previous', 'wconvert')}</Button>}
-    <span aria-live="polite" aria-atomic="true">{sprintf(__('Page %1$s of %2$s', 'wconvert'), formatCount(page + 1), formatCount(pages))}</span>
+    <span aria-live="polite" aria-atomic="true">{sprintf(/* translators: 1: the current page number, 2: how many pages there are. */ __('Page %1$s of %2$s', 'wconvert'), formatCount(page + 1), formatCount(pages))}</span>
     {pages > 1 && <Button variant="outline" disabled={disabled || page === pages - 1} onClick={() => onChange(page + 1)}>{__('Next', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button>}
   </nav>;
 }

@@ -54,7 +54,7 @@ export function SpacingField({ label, shown, fallback, standard, reset, onChange
         {reset}
     </FieldHeading>
     {!advanced && sides === null ? <PanelHint>{cssOnlyNote()}</PanelHint>
-      : (advanced && custom) || sides === null ? <StyleValueInput type="text" className="regular-text" aria-label={sprintf(__('%s custom value', 'wconvert'), label)} value={shown} placeholder={fallback} onCommit={onChange} />
+      : (advanced && custom) || sides === null ? <StyleValueInput type="text" className="regular-text" aria-label={sprintf(/* translators: %s: a setting's name, e.g. “Inner spacing”. */ __('%s custom value', 'wconvert'), label)} value={shown} placeholder={fallback} onCommit={onChange} />
       : <div className={linked ? "grid gap-2" : "wconvert-fields"}>
         {(linked ? sides.slice(0, 1) : sides).map((side, index) => <div key={index} className="wconvert-fields__item grid min-w-0 gap-1" data-compact={!linked || undefined}>
           {!linked && <span className="wconvert-panel-hint">{names[index]}</span>}

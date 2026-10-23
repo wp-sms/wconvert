@@ -133,7 +133,7 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
             {value.route === 'gtm' && <Field label={__('Data-layer name', 'wconvert-pro')} htmlFor={`${ids}-layer`}>
               <Input id={`${ids}-layer`} className="max-w-sm" value={value.data_layer} maxLength={40} dir="ltr" onChange={e => change({ data_layer: e.target.value })} />
             </Field>}
-            <p className="m-0 text-note text-muted-foreground">{__('Includes existing and future campaigns unless excluded in campaign details.', 'wconvert-pro')}{response.excluded > 0 && <> {sprintf(_n('%s published campaign is excluded.', '%s published campaigns are excluded.', response.excluded, 'wconvert-pro'), String(response.excluded))}</>}</p>
+            <p className="m-0 text-note text-muted-foreground">{__('Includes existing and future campaigns unless excluded in campaign details.', 'wconvert-pro')}{response.excluded > 0 && <> {sprintf(/* translators: %s: how many published campaigns are excluded from analytics. */ _n('%s published campaign is excluded.', '%s published campaigns are excluded.', response.excluded, 'wconvert-pro'), String(response.excluded))}</>}</p>
           </Disclosure>
         </div>
         </>}
@@ -182,14 +182,12 @@ function sendingLine(settings: SettingsValue): string {
   const to = settings.route === 'plausible' ? __('Plausible', 'wconvert-pro')
     : settings.route === 'gtm' ? __('Google Tag Manager', 'wconvert-pro')
       : settings.measurement_id
-        /* translators: %s: a Google Analytics measurement ID, e.g. “G-ABC123”. */
-        ? sprintf(__('Google tag %s', 'wconvert-pro'), settings.measurement_id)
+        ? sprintf(/* translators: %s: a Google Analytics measurement ID, e.g. “G-ABC123”. */ __('Google tag %s', 'wconvert-pro'), settings.measurement_id)
         : __('Google tag', 'wconvert-pro');
   const consent = settings.consent === 'wp' ? __('with WP Consent API', 'wconvert-pro')
     : settings.route === 'plausible' ? __('without a WConvert consent check', 'wconvert-pro')
       : __('with consent handled by your tag', 'wconvert-pro');
-  /* translators: 1: where events go, e.g. “Google tag G-ABC123”; 2: the consent handling, e.g. “with WP Consent API”. */
-  return sprintf(__('Sending campaign events to %1$s, %2$s.', 'wconvert-pro'), to, consent);
+  return sprintf(/* translators: 1: where events go, e.g. “Google tag G-ABC123”; 2: the consent handling, e.g. “with WP Consent API”. */ __('Sending campaign events to %1$s, %2$s.', 'wconvert-pro'), to, consent);
 }
 
 /** Small exclusive choices: the shared OptionStrip, under a visible label that names the group. */

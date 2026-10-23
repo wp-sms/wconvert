@@ -96,6 +96,13 @@ if (!function_exists('__')) {
     }
 }
 
+if (!function_exists('_x')) {
+    function _x(string $text, string $context, string $domain = 'default'): string
+    {
+        return $text;
+    }
+}
+
 /**
  * Every problem one file has, and the file it has them in.
  *

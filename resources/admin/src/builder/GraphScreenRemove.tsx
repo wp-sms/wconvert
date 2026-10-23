@@ -37,22 +37,22 @@ export function GraphScreenRemove({ tree, screenId, journeys = true, onRemove, o
   return <>
     <AlertDialogHeader>
       <AlertDialogTitle>{__('Delete this screen?', 'wconvert')}</AlertDialogTitle>
-      <AlertDialogDescription>{sprintf(__('“%s” and its answers are removed from the draft. Other screens and saved leads stay. Undo restores the screen and all its lines.', 'wconvert'), name(screenId))}</AlertDialogDescription>
+      <AlertDialogDescription>{sprintf(/* translators: %s: the name of the screen being deleted, e.g. “Your result”. */ __('“%s” and its answers are removed from the draft. Other screens and saved leads stay. Undo restores the screen and all its lines.', 'wconvert'), name(screenId))}</AlertDialogDescription>
     </AlertDialogHeader>
     <div className="wconvert-graph-insert__body wconvert-graph-remove__body">
       {plan.reason ? <p role="status">{plan.reason}</p> : <>
         {plan.needsDestination ? <>
-          {destination && <div className="wconvert-graph-insert__outcome" aria-label={__('After removing', 'wconvert')}><strong>{__('After removing', 'wconvert')}</strong><p>{group && destination === plan.preferred ? sprintf(__('Check the remaining matching follow-ups, then continue to %s.', 'wconvert'), name(group.next)) : sprintf(__('Then → %s.', 'wconvert'), name(destination))}</p></div>}
+          {destination && <div className="wconvert-graph-insert__outcome" aria-label={__('After removing', 'wconvert')}><strong>{__('After removing', 'wconvert')}</strong><p>{group && destination === plan.preferred ? sprintf(/* translators: %s: the name of the screen after the follow-ups, e.g. “Your result”. */ __('Check the remaining matching follow-ups, then continue to %s.', 'wconvert'), name(group.next)) : sprintf(/* translators: %s: the name of the screen visitors go to instead, e.g. “Your result”. */ __('Then → %s.', 'wconvert'), name(destination))}</p></div>}
           {plan.preferred ? <Disclosure variant="inline" title={__('Change where they go', 'wconvert')} open={custom} onToggle={setCustom}>{custom && choice}</Disclosure> : choice}
           {(!group || custom) && <><p>{plan.isEntry ? __('Visitors will start at the chosen screen. Its Back button will be removed.', 'wconvert')
             : __('Those lines keep their answers and order, and go to the chosen screen:', 'wconvert')}</p>
           {!!plan.incoming.length && <ul>{plan.incoming.map(edge => <li key={edge.id}>
             <strong>{name(edge.from)}</strong>{' — '}{edge.kind === 'hidden' ? __('If skipped', 'wconvert')
-              : edge.kind === 'answer' && edge.when ? sprintf(__('%1$d. %2$s', 'wconvert'), answersFrom(edge.from).findIndex(item => item.id === edge.id) + 1, conditionText(tree, edge.when))
+              : edge.kind === 'answer' && edge.when ? sprintf(/* translators: 1: the answer line's position on its screen, starting at 1, 2: its condition, e.g. “Budget is Under $50”. */ __('%1$d. %2$s', 'wconvert'), answersFrom(edge.from).findIndex(item => item.id === edge.id) + 1, conditionText(tree, edge.when))
                 : answersFrom(edge.from).length ? __('All other answers', 'wconvert') : __('Then', 'wconvert')}
           </li>)}</ul>}</>}
         </> : <p>{__('No line reaches it, so nothing else changes.', 'wconvert')}</p>}
-        {!!plan.outgoing.length && (!plan.preferred || custom) && <p>{sprintf(__('Lines leaving “%s”, with their answers, are removed. Other screens stay in the draft.', 'wconvert'), name(screenId))}</p>}
+        {!!plan.outgoing.length && (!plan.preferred || custom) && <p>{sprintf(/* translators: %s: the name of the screen being deleted, e.g. “Your result”. */ __('Lines leaving “%s”, with their answers, are removed. Other screens stay in the draft.', 'wconvert'), name(screenId))}</p>}
         <div aria-live="polite">{impact && <p className="wconvert-graph-insert__summary">{impact}</p>}</div>
       </>}
     </div>

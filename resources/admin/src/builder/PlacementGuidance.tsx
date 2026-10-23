@@ -65,7 +65,7 @@ export function PlacementGuidance({ optinId, optinName, displayType, placement, 
       ) : (
         <>
           {/* Where, who and when are said once, by the review above. */}
-          {position !== null && <p>{sprintf(__('Position: %s.', 'wconvert'), position)}</p>}
+          {position !== null && <p>{sprintf(/* translators: %s: where on the page the campaign appears, e.g. “Bottom left”. */ __('Position: %s.', 'wconvert'), position)}</p>}
         </>
       )}
       {siteCheck !== null && (

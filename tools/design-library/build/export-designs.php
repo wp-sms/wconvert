@@ -19,6 +19,7 @@ if (!$root || !is_file($root . '/src/constants.php')) throw new RuntimeException
 define('WCONVERT_URL', '');
 require $root . '/src/constants.php';
 function __(string $text, string $domain = ''): string { return $text; }
+function _x(string $text, string $context, string $domain = ''): string { return $text; }
 // Trusted authoring simulates the capabilities whose source modules are loaded.
 // The shipping reader still checks the receiving site's actual registrations.
 function apply_filters(string $hook, mixed $value, mixed ...$args): mixed { return in_array($hook, ['wconvert_journeys', 'wconvert_commerce'], true) ? true : $value; }

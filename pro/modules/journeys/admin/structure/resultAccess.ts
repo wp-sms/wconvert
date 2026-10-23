@@ -129,9 +129,9 @@ export function graphResultAccessIssue(tree: TemplateTree, required: boolean): {
   const first = required ? result : signup, second = required ? signup : result;
   const outgoing = graph.edges.filter(edge => edge.from === first.id);
   if (outgoing.length !== 1 || outgoing[0].kind !== 'default' || outgoing[0].to !== second.id)
-    return issue(sprintf(__('Connect “%1$s” directly to “%2$s” with one line for all answers. Move any answer lines after both screens first.', 'wconvert-pro'), first.name, second.name), first.id);
+    return issue(sprintf(/* translators: 1: the screen that comes first, 2: the screen that should follow it; both are screen names. */ __('Connect “%1$s” directly to “%2$s” with one line for all answers. Move any answer lines after both screens first.', 'wconvert-pro'), first.name, second.name), first.id);
   const otherIncoming = graph.edges.find(edge => edge.to === second.id && edge.id !== outgoing[0].id);
-  if (otherIncoming) return issue(sprintf(__('The line from “%1$s” enters “%2$s” separately. Connect it to “%3$s” first so both screens move together.', 'wconvert-pro'),
+  if (otherIncoming) return issue(sprintf(/* translators: 1: the screen a line starts from, 2: the screen that line enters, 3: the screen it should connect to instead; all are screen names. */ __('The line from “%1$s” enters “%2$s” separately. Connect it to “%3$s” first so both screens move together.', 'wconvert-pro'),
     tree.steps.find(screen => screen.id === otherIncoming.from)?.name ?? otherIncoming.from, second.name, first.name), otherIncoming.from);
   if (!required) {
     const questions = new Set(walkNodes(signup.content).filter(node => node.type === 'question' && 'id' in node).map(node => 'id' in node ? node.id : ''));
@@ -152,7 +152,7 @@ function graphResultAccess(tree: TemplateTree, required: boolean): TemplateTree 
   const signup = tree.steps[submissionScreen(tree, submission.id)];
   if (!result || !signup) return tree;
   const generatedConsent = (node: Record<string, unknown>) => node.type === 'consent'
-    && [__('Send me email updates. %s', 'wconvert-pro'), __('Send me email guides and updates. %s', 'wconvert-pro')].some(text => text === node.text);
+    && [/* translators: %s: a link to the site's privacy policy. */ __('Send me email updates. %s', 'wconvert-pro'), /* translators: %s: a link to the site's privacy policy. */ __('Send me email guides and updates. %s', 'wconvert-pro')].some(text => text === node.text);
   const generatedConsentIds = walkNodes(signup.content).filter(node => generatedConsent(node as unknown as Record<string, unknown>) && 'id' in node)
     .map(node => (node as { id: string }).id);
   const consents = required ? submission.consents.filter(id => !generatedConsentIds.includes(id))

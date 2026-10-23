@@ -106,8 +106,7 @@ export function whereIn(document: unknown, path: string): string {
     const campaigns = typeof document === 'object' && document !== null && Array.isArray((document as { campaigns?: unknown }).campaigns)
       ? (document as { campaigns: unknown[] }).campaigns : [];
     const name = (campaigns[Number(index)] as { name?: unknown } | undefined)?.name;
-    /* translators: %d: a campaign's position in the imported file, from 1. */
-    return typeof name === 'string' && name.trim() !== '' ? name : sprintf(__('Campaign %d', 'wconvert'), Number(index) + 1);
+    return typeof name === 'string' && name.trim() !== '' ? name : sprintf(/* translators: %d: a campaign's position in the imported file, from 1. */ __('Campaign %d', 'wconvert'), Number(index) + 1);
   }
   return head === 'occasion' ? __('Occasion', 'wconvert') : head === 'campaigns' ? __('Campaigns', 'wconvert') : __('File', 'wconvert');
 }

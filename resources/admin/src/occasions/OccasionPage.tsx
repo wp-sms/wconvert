@@ -203,7 +203,7 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
               <MoreHorizontal aria-hidden="true" />
             </Button>
           </DropdownMenuTrigger>
-          <OptionMenuContent align="end" sideOffset={5} aria-label={sprintf(__('Actions for %s', 'wconvert'), occasion.name)}>
+          <OptionMenuContent align="end" sideOffset={5} aria-label={sprintf(/* translators: %s: an occasion's name, e.g. “Black Friday”. */ __('Actions for %s', 'wconvert'), occasion.name)}>
             <OptionGroup>
               <OptionItem icon={Copy} name={__('Copy to next year', 'wconvert')} onSelect={() => setAsking('copy')} />
               <OptionItem icon={Download} name={__('Export', 'wconvert')} onSelect={() => void exportFile()} />
@@ -309,7 +309,7 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
                 })}
               </DataTableBody>
             </DataTable>
-            <RegionFooter>{sprintf(_n('%d campaign', '%d campaigns', campaigns.length, 'wconvert'), campaigns.length)}</RegionFooter>
+            <RegionFooter>{sprintf(/* translators: %d: how many campaigns are listed for this occasion. */ _n('%d campaign', '%d campaigns', campaigns.length, 'wconvert'), campaigns.length)}</RegionFooter>
           </Region>
         </>}
       </div>
@@ -358,7 +358,8 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
 }
 
 function phaseLine(phase: Phase): string {
-  if (phase.kind === 'before') return sprintf(/* translators: %d: days until the occasion starts. */ _n('Starts tomorrow', 'Starts in %d days', phase.days, 'wconvert'), phase.days);
+  if (phase.kind === 'before') return phase.days === 1 ? __('Starts tomorrow', 'wconvert')
+    : sprintf(/* translators: %d: days until the occasion starts. */ _n('Starts in %d day', 'Starts in %d days', phase.days, 'wconvert'), phase.days);
   if (phase.kind === 'after') return __('Ended', 'wconvert');
   return sprintf(/* translators: 1: today's day number in the occasion, 2: how many days it has. */ __('Day %1$d of %2$d', 'wconvert'), phase.day, phase.of);
 }

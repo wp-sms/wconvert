@@ -52,15 +52,17 @@ export function missingSettings(requirements: DestinationRequirements | null | u
 export function settingsProblems(requirements: DestinationRequirements | null | undefined, settings: Readonly<Record<string, unknown>>, schema?: Readonly<Record<string, SettingsField>>): string[] {
   const problems: string[] = Object.entries(requirements?.settings ?? {}).filter(([key, field]) => !ready(settings[key], field))
     .map(([key, field]) => field.type !== 'ids'
-      ? sprintf(__('Complete “%s” before this destination can send.', 'wconvert'), field.label)
+      ? sprintf(/* translators: %s: a destination setting, e.g. “File URL”. */ __('Complete “%s” before this destination can send.', 'wconvert'), field.label)
       : tooMany(settings[key], field)
-        ? sprintf(/* translators: 1: how many it takes, 2: the field, e.g. “List”. */ _n('Choose only one “%2$s” before this destination can send.', 'Choose no more than %1$d “%2$s” before this destination can send.', field.max ?? 1, 'wconvert'), field.max, field.label)
-        : sprintf(__('Choose “%s” before this destination can send.', 'wconvert'), field.label));
+        ? (field.max ?? 1) === 1
+          ? sprintf(/* translators: %s: the field, e.g. “List”. */ __('Choose only one “%s” before this destination can send.', 'wconvert'), field.label)
+          : sprintf(/* translators: 1: the most it may hold, 2: the field, e.g. “List”. */ _n('Choose no more than %1$d “%2$s” before this destination can send.', 'Choose no more than %1$d “%2$s” before this destination can send.', field.max ?? 1, 'wconvert'), field.max, field.label)
+        : sprintf(/* translators: %s: a destination setting, e.g. “List” or “Audience”. */ __('Choose “%s” before this destination can send.', 'wconvert'), field.label));
   for (const field of Object.values(requirements?.mapped_fields ?? {})) {
     const value = settings[field.setting];
     const options = schema?.[field.setting]?.options;
     if (present(value, 'text') && options !== undefined && !options.some((option) => option.value === value)) {
-      problems.push(sprintf(__('The selected field for %s is unavailable. Choose another field or keep the answer only in WConvert.', 'wconvert'), field.label));
+      problems.push(sprintf(/* translators: %s: an answer the form collects, e.g. “Interest”. */ __('The selected field for %s is unavailable. Choose another field or keep the answer only in WConvert.', 'wconvert'), field.label));
     }
   }
   return problems;
@@ -70,7 +72,7 @@ export function settingsProblems(requirements: DestinationRequirements | null | 
 export function compatibilityProblems(destination: Destination, captures: readonly CapturedField[]): string[] {
   if (!destination.requirements) return [];
   return [...settingsProblems(destination.requirements, destination.settings), ...captureProblems(destination, captures)]
-    .map((problem) => sprintf(__('%1$s: %2$s', 'wconvert'), destination.label, problem));
+    .map((problem) => sprintf(/* translators: 1: a destination's name, e.g. “Mailchimp”, 2: a problem with it, a full sentence. */ __('%1$s: %2$s', 'wconvert'), destination.label, problem));
 }
 
 /** Where this form and this route disagree: missing or optional identifiers, unsent fields, broken mappings. */
@@ -94,9 +96,9 @@ export function captureProblems(destination: Destination, captures: readonly Cap
     if (requirements.fields.includes(field.name)) continue;
     const mapping = requirements.mapped_fields[field.name];
     if (mapping && present(destination.settings[mapping.setting], 'text')) {
-      problems.push(sprintf(__('%1$s: %2$s', 'wconvert'), mapping.label, mapping.scope));
+      problems.push(sprintf(/* translators: 1: an answer the form collects, e.g. “Interest”, 2: which contacts receive it, e.g. “New subscribers only; existing subscriber fields stay unchanged.”. */ __('%1$s: %2$s', 'wconvert'), mapping.label, mapping.scope));
     } else {
-      problems.push(sprintf(__('The %s is saved in WConvert but is not sent by this destination.', 'wconvert'), named(field.name)));
+      problems.push(sprintf(/* translators: %s: a form field, e.g. “phone number”. */ __('The %s is saved in WConvert but is not sent by this destination.', 'wconvert'), named(field.name)));
     }
   }
   return problems;

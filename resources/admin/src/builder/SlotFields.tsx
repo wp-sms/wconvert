@@ -188,7 +188,7 @@ export function SlotFields({
               which is a control that silently does nothing, and the one thing
               ADR 0054 rule 3 says a control may not be.
             */
-            hint={key === 'emphasis' ? __('Put %b in the text above where the bold words should sit.', 'wconvert')
+            hint={key === 'emphasis' ? /* translators: %b is typed by the merchant as written, to mark where the bold words go; keep it unchanged. */ __('Put %b in the text above where the bold words should sit.', 'wconvert')
               : signupOnly && slot.type === 'code' && key === 'text' ? __('Only visitors who sign up see this code.', 'wconvert')
               : signupOnly && slot.type === 'followup' && key === 'href' ? __('Only visitors who sign up see this link.', 'wconvert') : undefined}>
             <KeyControl
@@ -392,7 +392,7 @@ export function LinkControl({
           onChange={(event) => write({ ...link, href: event.target.value === '' ? undefined : event.target.value })}
         />
       </PanelField>
-      <PanelHint>{__('Put %s in the sentence above where the link should sit.', 'wconvert')}</PanelHint>
+      <PanelHint>{/* translators: %s: not replaced. The merchant types these two characters into their sentence to mark where the link goes, so keep “%s” exactly as is. */ __('Put %s in the sentence above where the link should sit.', 'wconvert')}</PanelHint>
     </fieldset>
   );
 }

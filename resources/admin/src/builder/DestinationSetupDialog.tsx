@@ -58,7 +58,7 @@ export function DestinationSetupDialog({
             <DialogTitle className="wconvert-dialog__title leading-snug" ref={title} tabIndex={-1}>
               {destination !== undefined ? <bdi>{destination.label}</bdi>
                 : type === undefined ? __('Add a destination', 'wconvert')
-                : sprintf(__('New %s destination', 'wconvert'), type.label)}
+                : sprintf(/* translators: %s: a kind of destination, e.g. “Mailchimp”. */ __('New %s destination', 'wconvert'), type.label)}
             </DialogTitle>
           </div>
           <DialogDescription className="wconvert-dialog__meta" id={description}>
@@ -67,7 +67,7 @@ export function DestinationSetupDialog({
               the description names the provider rather than saying it twice.
             */}
             {type?.needs_connection && !connections.some((account) => account.type === type.id)
-              ? sprintf(__('Connect %s, then choose where submissions should go.', 'wconvert'), type.label)
+              ? sprintf(/* translators: %s: a service to connect, e.g. “Mailchimp”. */ __('Connect %s, then choose where submissions should go.', 'wconvert'), type.label)
               : destination !== undefined
               ? type?.label ?? __('Destination', 'wconvert')
               : __('It is selected for this campaign when you save.', 'wconvert')}

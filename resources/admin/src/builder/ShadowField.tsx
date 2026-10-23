@@ -72,7 +72,7 @@ export function ShadowField({ label, shown, value, fallback, offered, labels, to
       <CheckRow className="wconvert-check" label={__('Inner shadow', 'wconvert')} checked={shadow.inset} onChange={e => edit({ inset: e.target.checked })} />
     </Disclosure>}
     {advanced && ((!shadow && shown !== 'none' && !offered.includes(shown)) || custom) && <div className="wconvert-shadow-css">
-      <StyleValueInput aria-label={sprintf(__('%s value', 'wconvert'), label)} className="wconvert-token__typed" value={value} placeholder={fallback} onFocus={() => setCustom(true)} onCommit={onChange} />
+      <StyleValueInput aria-label={sprintf(/* translators: %s: a design setting's label, e.g. “Shadow”. */ __('%s value', 'wconvert'), label)} className="wconvert-token__typed" value={value} placeholder={fallback} onFocus={() => setCustom(true)} onCommit={onChange} />
     </div>}
   </div>;
 }

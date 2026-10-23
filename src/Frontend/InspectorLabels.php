@@ -239,7 +239,7 @@ final class InspectorLabels
                 'isLoggedIn' => __('You are signed in', 'wconvert'),
                 'yes' => __('Yes', 'wconvert'),
                 'no' => __('No', 'wconvert'),
-                'none' => __('None', 'wconvert'),
+                'none' => _x('None', 'no value to report', 'wconvert'),
             ],
 
             /**

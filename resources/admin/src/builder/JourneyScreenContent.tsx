@@ -27,7 +27,7 @@ export function JourneyScreenContent({ tree, step, onChange }: {
       const count = (counts.get(label) ?? 0) + 1; counts.set(label, count);
       const key = button ? 'label' : 'text';
       const value = key in node ? String((node as unknown as Record<string, unknown>)[key] ?? '') : '';
-      return <label key={block.path.join('.')}>{count > 1 ? sprintf(__('%1$s %2$d', 'wconvert'), label, count) : label}
+      return <label key={block.path.join('.')}>{count > 1 ? sprintf(/* translators: 1: a text field's label, e.g. “Heading” or “Button text”, 2: which one of that kind it is on the screen, e.g. 2. */ __('%1$s %2$d', 'wconvert'), label, count) : label}
         <textarea rows={button ? 1 : node.type === 'heading' ? 2 : 3} value={value}
           onChange={event => onChange(withValue(tree, block.path, key, event.target.value), `journey:${tree.steps[step].id}:copy:${block.path.join('.')}`)} />
       </label>;
