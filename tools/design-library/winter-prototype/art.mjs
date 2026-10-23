@@ -1,3 +1,4 @@
+import { playfulArt } from './playful-art.mjs';
 // Original source illustrations. rasterize-art.mjs exports ordinary PNG assets;
 // every headline, label, offer and date stays live text outside these drawings.
 const svg = body => `<svg viewBox="0 0 420 420" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${body}</svg>`;
@@ -35,3 +36,5 @@ for (const key of ['candles','dawn','stars','mug','ribbon','globe','presents','v
  const drawing=source.replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'');
  art[`${key}Banner`]=`<svg viewBox="0 0 ${width} 420" xmlns="http://www.w3.org/2000/svg"><rect width="${width}" height="420" fill="${bg}"/><g transform="translate(${(width-420)/2} 0)">${drawing}</g></svg>`;
 }
+
+Object.assign(art, playfulArt);

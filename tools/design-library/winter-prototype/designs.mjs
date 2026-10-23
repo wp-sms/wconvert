@@ -34,26 +34,31 @@ const rows = [
 ["The shop is sleeping","Holiday info","Floating bar","sleeping","Closed 25–26 December.","Dispatch resumes on 27 December.","See holiday hours"],
 ["See you by the fire","Holiday info","Slide-in","fire","Visit us this\nholiday season.","Planning a visit? Check our opening hours before you make the trip.","See opening hours"],
 ["Holiday post","Holiday info","Inline","post","Check your\nChristmas delivery.","Christmas delivery has its own timetable. Check dates and delivery areas before ordering.","Read delivery information"],
-["Winter hours","Holiday info","Slide-in","hours","Your holiday\nopening hours.","A little change to our opening hours. Find your best time to visit.","See full opening hours"]
+["Winter hours","Holiday info","Slide-in","hours","Your holiday\nopening hours.","A little change to our opening hours. Find your best time to visit.","See full opening hours"],
+["Yeti, set, gift","Gifting","Popup","yeti","Big hugs.\nLittle prices.","A very big-hearted 20% off selected Christmas gifts until 20 December.","Shop gifts with 20% off"],
+["The gingerbread bakery","Gifting","Inline","ginger","A little sugar.\nA lot of Christmas.","Cookies, gingerbread and little boxes of joy. Explore our festive bakery gifts.","Explore the Christmas bakery"],
+["Special snow delivery","Last-minute","Slide-in","penguin","All aboard.\nUntil 18 Dec.","Our Christmas order window closes on 18 December. Check dispatch dates and delivery areas before you order.","Check Christmas delivery"],
+["No peeking club","Signup","Popup","giftcat","A purr-fect gift.\n15% off to start.","Join our emails for playful gift ideas and a 15% welcome code. Curiosity rewarded.","Get gift ideas + 15% off","email"],
+["The tiny party","New Year","Fullscreen","party","Big joy.\n20% off.","Celebrate the little things with 20% off selected New Year favourites until 5 January.","Shop the New Year party edit"]
 ];
 const free = new Set([2,5,8,11,14,18,23,27,31,34]);
-const clocks = new Set([4,9,10,16,19,20,21,22,23,24,25,28,30]);
-const moving = new Set([3,4,10,13,16,25,28,29]);
-export const designs=rows.map((r,i)=>({id:String(i+1).padStart(2,'0'),name:r[0],category:r[1],format:r[2],theme:r[3],headline:r[4],body:r[5],cta:r[6],signup:r[7]==='email',reward:i!==13,tier:free.has(i+1)?'Free':'Pro',timer:clocks.has(i+1),endsAt:(i>=25?'2027-01-05':i===15?'2026-12-01':[18,19,20].includes(i)?'2026-12-18':i===23?'2026-12-23':i>=21?'2026-12-24':'2026-12-20')+'T20:00:00Z',motion:moving.has(i+1),code:(i>=25?'FRESH':'MERRY')+(r[5].match(/(\d+)%/)?.[1]||'15')}));
+const clocks = new Set([4,9,10,16,19,20,21,22,23,24,25,28,30,36,38,40]);
+const moving = new Set([3,4,10,13,16,25,28,29,36,37,38,39,40]);
+export const designs=rows.map((r,i)=>({id:String(i+1).padStart(2,'0'),name:r[0],category:r[1],format:r[2],theme:r[3],headline:r[4],body:r[5],cta:r[6],signup:r[7]==='email',reward:i!==13,tier:free.has(i+1)?'Free':'Pro',timer:clocks.has(i+1),endsAt:(i===35?'2026-12-20':i===37?'2026-12-18':i>=25?'2027-01-05':i===15?'2026-12-01':[18,19,20].includes(i)?'2026-12-18':i===23?'2026-12-23':i>=21?'2026-12-24':'2026-12-20')+'T20:00:00Z',motion:moving.has(i+1),code:(r[1]==='New Year'?'FRESH':'MERRY')+(r[5].match(/(\d+)%/)?.[1]||'15')}));
 export const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const eyebrow=t=>`<p class="eyebrow">${t}</p>`;
 const headline=d=>`<h1>${esc(d.headline).replace(/\n/g,'<br>')}</h1>`;
 const body=d=>`<p class="body-copy">${esc(d.body)}</p>`;
 const image=(key,extra='',fit='contain')=>{if(['art-banner','globe-art','ack-art'].includes(extra))key+='Banner';const a=artwork[key];return `<div class="artwork ${extra}" data-art="${key}" style="--art-bg:${a.bg}"><img src="${a.src}" alt="${a.alt}" data-fit="${fit}" style="object-fit:${fit}" width="${a.width}" height="${a.height}"></div>`;};
 const code=d=>`<div class="coupon"><span>${d.code}</span><button data-copy="${d.code}" type="button" aria-label="Copy ${d.code}">Copy code</button></div>`;
-const timerLabels={'04':'ORNAMENT OFFER ENDS IN','09':'GIFT WRAPPING ENDS IN','10':'CHRISTMAS EDIT CLOSES IN','16':'PREVIEW SIGNUP CLOSES IN','19':'CHRISTMAS ORDERS CLOSE IN','20':'CHRISTMAS ORDERS CLOSE IN','21':'CHRISTMAS ORDERS CLOSE IN','22':'DIGITAL GIFT OFFER ENDS IN','23':'DIGITAL GIFT OFFER ENDS IN','24':'PICKUP ORDERS CLOSE IN','25':'CHRISTMAS EDIT CLOSES IN','28':'NEW YEAR OFFER ENDS IN','30':'NEW YEAR OFFER ENDS IN'};
+const timerLabels={'04':'ORNAMENT OFFER ENDS IN','09':'GIFT WRAPPING ENDS IN','10':'CHRISTMAS EDIT CLOSES IN','16':'PREVIEW SIGNUP CLOSES IN','19':'CHRISTMAS ORDERS CLOSE IN','20':'CHRISTMAS ORDERS CLOSE IN','21':'CHRISTMAS ORDERS CLOSE IN','22':'DIGITAL GIFT OFFER ENDS IN','23':'DIGITAL GIFT OFFER ENDS IN','24':'PICKUP ORDERS CLOSE IN','25':'CHRISTMAS EDIT CLOSES IN','28':'NEW YEAR OFFER ENDS IN','30':'NEW YEAR OFFER ENDS IN','36':'GIFT OFFER ENDS IN','38':'CHRISTMAS ORDERS CLOSE IN','40':'NEW YEAR OFFER ENDS IN'};
 const countdown=d=>d.timer?`<div class="timer-wrap"><p class="timer-label">${timerLabels[d.id]}</p><div class="countdown" role="timer" aria-label="Time remaining"><span><b data-unit="days">08</b><small>days</small></span><i>:</i><span><b data-unit="hours">14</b><small>hours</small></span><i>:</i><span><b data-unit="minutes">32</b><small>mins</small></span><i>:</i><span><b data-unit="seconds">09</b><small>secs</small></span></div></div>`:'';
 const action=d=>d.signup?`<form class="signup-form"><label>Email address<input type="email" required autocomplete="email" placeholder="you@example.com"></label><button class="cta" type="submit">${esc(d.cta)}</button><label class="consent"><input type="checkbox" required><span>I agree to receive marketing emails. Unsubscribe anytime.</span></label></form>`:`<button type="button" class="cta" data-offer>${esc(d.cta)}</button>`;
 const note=d=>`<p class="fine-print">${d.signup?(d.reward?'Your code appears here after signup.':'One email a month. Unsubscribe anytime.'):d.category==='Holiday info'?'Check the full timetable before you visit or order.':'Selected items. Offer terms apply.'}</p>`;
 const copy=(d,eyebrowText,extra='')=>`<div class="copy ${extra}">${eyebrow(eyebrowText)}${headline(d)}${body(d)}${countdown(d)}${action(d)}${note(d)}</div>`;
-const sparkles=d=>d.motion?`<div class="sparkles" aria-hidden="true"><i>✦</i><i>✦</i><i>✦</i><i>✦</i></div>`:'';
+const sparkles=d=>d.motion&&Number(d.id)<36?`<div class="sparkles" aria-hidden="true"><i>✦</i><i>✦</i><i>✦</i><i>✦</i></div>`:'';
 export function composition(d,ack=false){
- if(ack)return `${image(({'06':'candles','12':'village','13':'globe','16':'dawn','17':'presents','18':'book','29':'stars'})[d.id]||(d.category==='New Year'?'dawn':'envelope'),'ack-art')}<div class="ack-copy">${eyebrow('A LITTLE THANK YOU')}<h1>Thank you.<br>Request received.</h1><p class="body-copy">${d.reward?'Here’s your example welcome code. Enjoy finding something lovely.':'Thank you for requesting our monthly gift ideas.'}</p>${d.reward?code(d):''}<button class="cta" data-offer>Explore the collection</button><p class="fine-print">Prototype only. No email address was saved or sent.</p><button class="text-button" data-back>← Back to signup</button></div>`;
+ if(ack)return `${image(({'06':'candles','12':'village','13':'globe','16':'dawn','17':'presents','18':'book','29':'stars','39':'giftcat'})[d.id]||(d.category==='New Year'?'dawn':'envelope'),'ack-art')}<div class="ack-copy">${eyebrow('A LITTLE THANK YOU')}<h1>Thank you.<br>Request received.</h1><p class="body-copy">${d.reward?'Here’s your example welcome code. Enjoy finding something lovely.':'Thank you for requesting our monthly gift ideas.'}</p>${d.reward?code(d):''}<button class="cta" data-offer>Explore the collection</button><p class="fine-print">Prototype only. No email address was saved or sent.</p><button class="text-button" data-back>← Back to signup</button></div>`;
  let html='';
  switch(d.id){
  case '01':html=`${image('ribbon')}${copy(d,'THE CHRISTMAS GIFT ATELIER')}`;break;
@@ -91,6 +96,11 @@ export function composition(d,ack=false){
  case '33':html=`${image('mug','art-banner')}${copy(d,'COME IN FROM THE COLD')}`;break;
  case '34':html=`<div class="post-art">${image('parcel')}</div><div class="post-copy">${eyebrow('HOLIDAY POST')}${headline(d)}${body(d)}<div class="post-rule"></div>${action(d)}</div>`;break;
  case '35':html=`${eyebrow('OUR WINTER HOURS')}${headline(d)}<div class="hours-table"><p><span>24 December</span><b>10 am – 2 pm</b></p><p><span>25–26 December</span><b>Closed</b></p><p><span>27 December</span><b>10 am – 6 pm</b></p></div>${body(d)}${action(d)}`;break;
+ case '36':html=`<div class="play-art polar-art" data-play-decor="snow">${image('yeti')}</div><div class="copy">${eyebrow('YETI, SET, GIFT')}${headline(d)}${body(d)}${countdown(d)}${action(d)}${note(d)}</div>`;break;
+ case '37':html=`<div class="bakery-heading">${eyebrow('THE CHRISTMAS BAKERY')}${headline(d)}</div><div class="play-art bakery-art" data-play-decor="sugar">${image('ginger')}</div><div class="bakery-action">${body(d)}${action(d)}${note(d)}</div>`;break;
+ case '38':html=`<div class="play-art courier-art" data-play-decor="snow">${image('penguin')}</div>${copy(d,'SPECIAL SNOW DELIVERY')}`;break;
+ case '39':html=`<div class="cat-panel"><div class="play-art cat-art" data-play-decor="stars">${image('giftcat')}</div><div class="peeking-panel" data-play-decor="eyes">${eyebrow('NO PEEKING')}</div></div>${copy(d,'THE CURIOUS GIFT CLUB')}`;break;
+ case '40':html=`<div class="party-intro">${eyebrow('GOOD COMPANY. GOOD THINGS. HELLO, 2027.')}${headline(d)}${body(d)}${action(d)}${note(d)}</div><div class="party-scene"><div class="play-art party-art" data-play-decor="party">${image('party')}</div><div class="party-deadline">${countdown(d)}</div></div>`;break;
  }
  return html+sparkles(d);
 }

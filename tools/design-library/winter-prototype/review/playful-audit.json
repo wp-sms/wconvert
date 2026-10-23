@@ -1,0 +1,17 @@
+{
+  "checks": [
+    "36: native decorative motion runs, pauses and respects reduced motion",
+    "37: native decorative motion runs, pauses and respects reduced motion",
+    "38: native decorative motion runs, pauses and respects reduced motion",
+    "39: native decorative motion runs, pauses and respects reduced motion",
+    "40: native decorative motion runs, pauses and respects reduced motion",
+    "Wrapped consent checkbox aligns to first line, full label is clickable, target remains at least 44px"
+  ],
+  "consent": {
+    "boxTop": 501.328125,
+    "labelTop": 498.328125,
+    "clickHeight": 44
+  },
+  "reviewedAt": "2026-10-23",
+  "scope": "Prototype Chromium review; not native editor or WordPress verification"
+}

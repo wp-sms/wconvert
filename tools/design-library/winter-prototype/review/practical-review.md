@@ -1,19 +1,19 @@
 # Practical design review — 23 October 2026
 
-Scope: all 35 Christmas & New Year concepts, including every signup acknowledgement. This is a second review of the prototype, against the current template manifest, image renderer, native layout vocabulary and design guidelines. It is **not native-template approval**: no JSON registration, WordPress runtime, real capture/reward delivery, server catalogue or installed editor was exercised.
+Scope: all 40 Christmas & New Year concepts, including every signup acknowledgement. This is a second review of the prototype, against the current template manifest, image renderer, native layout vocabulary and design guidelines. It is **not native-template approval**: no JSON registration, WordPress runtime, real capture/reward delivery, server catalogue or installed editor was exercised.
 
 ## Verdict
 
-Keep the 35-concept batch, with 25 Pro and 10 individually downloadable Free designs. They cover useful seasonal jobs and several reusable layout families. They are not 35 unrelated layout inventions: letters, image splits and compact signup cards have intentional siblings. Preserve those family relationships in catalogue metadata rather than presenting palette variations as new capabilities.
+Keep the 40-concept batch, with 30 Pro and 10 individually downloadable Free designs. They cover useful seasonal jobs and several reusable layout families. They are not 40 unrelated layout inventions: letters, image splits and compact signup cards have intentional siblings. Preserve those family relationships in catalogue metadata rather than presenting palette variations as new capabilities.
 
 The prototype is a stronger starting point after the changes below. Native authoring must still prove content transfer, form conversion, real expiry, held rewards, theme application and image replacement in WordPress. No new editor capability is required by the proposed composition vocabulary; exact proportions must follow the native renderer, not be copied from arbitrary prototype CSS.
 
 ## Findings and changes
 
 1. **Visitor value was too indirect.** Several headings were attractive but hid the actual incentive in body copy; CTA labels such as “Let me into winter” were vague. Signup headings now identify the reward or requested content, and buttons state the action. Decorative voice remains in imagery, palettes and secondary wording.
-2. **Every signup depended on a discount.** Design 14 now offers monthly gift ideas without a coupon. Its acknowledgement confirms the request and makes no provider-subscription or delivery claim. The other 13 signup examples retain their visible reward. Code copy is a utility, not a second conversion action.
-3. **Some urgency lacked context.** Design 10 now names its real example closing date. All 13 countdown labels identify the relevant offer, signup or ordering window. Design 22 replaces the oversized “11th hour” with editable digital-gift-card wording; it does not suggest only one hour remains. Merchants must configure true dates and valid offers before publishing.
-4. **Fine print and controls were too small.** Consent, secondary copy and field labels are 14px; inputs remain 16px. Close, copy, back and primary actions have a 44px target floor. Field boundaries now meet 3:1 contrast; checked solid-background text meets the relevant 4.5:1/3:1 thresholds. Text no longer relies on faded placeholder opacity.
+2. **Every signup depended on a discount.** Design 14 now offers monthly gift ideas without a coupon. Its acknowledgement confirms the request and makes no provider-subscription or delivery claim. The other 14 signup examples retain their visible reward. Code copy is a utility, not a second conversion action.
+3. **Some urgency lacked context.** Design 10 now names its real example closing date. All 16 countdown labels identify the relevant offer, signup or ordering window. Design 22 replaces the oversized “11th hour” with editable digital-gift-card wording; it does not suggest only one hour remains. Merchants must configure true dates and valid offers before publishing.
+4. **Fine print and controls were too small.** Consent, secondary copy and field labels are 14px; inputs remain 16px. Wrapped consent checkboxes align with the first line while retaining a 44px clickable label. Close, copy, back and primary actions have a 44px target floor. Field boundaries now meet 3:1 contrast; checked solid-background text meets the relevant 4.5:1/3:1 thresholds. Text no longer relies on faded placeholder opacity.
 5. **Normal previews hid content resilience defects.** Longer copy, fallback fonts and RTL revealed heading overflow and close-control collisions. Headings and layout children now wrap without widening the campaign, and the close control uses the logical end edge with reserved text space. The dispatch date is a number beside a wrapping label group on phones, not three cramped columns.
 6. **Some arrangements implied unsupported editor controls.** Design 10 now uses a two-pane split and keeps the artwork in mobile reading order. Small image marks use the native 72px circular image footprint. Wide banner exports have useful source aspect ratios, so an ordinary image leaf can reproduce them without a custom image-height or crop-offset control. These are ordinary PNG assets; internal illustration parts are not editable shapes.
 7. **Non-modal formats looked modal in the review scene.** Slide-ins and bars now leave the demo page undimmed. Their actual triggering, placement and frequency still belong to campaign configuration.
@@ -69,8 +69,22 @@ All entries below were reviewed as prototype candidates. “Setup” names what 
 | 34 | Delivery-policy notice, Free | Parcel image and concise information panel | Link to a real delivery page; no unsupported arrival guarantee |
 | 35 | At-a-glance holiday timetable | Three editable date/time rows and supporting action | Update every date and time; rows are text, not a live calendar integration |
 
+## Playful extension assessment
+
+The five additional Pro designs use the same layout and image vocabulary. Their personality comes from original character images and native decoration groups. 36, 38 and 40 use real example deadlines; 37 is a simple bakery link; 39 is a one-field signup with an acknowledgement and code. No imaginary games, character-animation controls or new capture mechanisms are proposed. The native decoration renderer runs directly in these five prototypes, but the complete designs still need native authoring.
+
+| # | Practical job and placement | Editor composition / reuse | Setup or constraint |
+| --- | --- | --- | --- |
+| 36 | Playful Christmas sale popup | Yeti image/text split with countdown | Genuine 20% gift offer ending 20 December |
+| 37 | Bakery gift feature within a page | Heading, image/action split, framed panel | Link to actual bakery gifts; no pretend ordering form |
+| 38 | Christmas delivery reminder | Penguin image above text and timer | 18 December cutoff and real dispatch policy; no arrival guarantee |
+| 39 | Gift newsletter with welcome code | Cat image panel, optional eye-decoration strip, form panel | Valid 15% code; remove the eye group independently when repurposing |
+| 40 | Prominent New Year sale invitation | Bold copy beside party image and timer panel | Genuine 20% offer ending 5 January; use a deliberate fullscreen trigger |
+
+Final visual review covers all five at 320 and 1000px and the new acknowledgement, plus 649/651px transition views with longer CTAs. The art stays intact, image panels precede copy on stacked character layouts, and text/buttons remain still. The party layout intentionally places copy before its illustrated scene on phones. Checkbox first-line alignment, whole-label clicking and enabled/paused/reduced native motion were checked separately in `playful-audit.json`.
+
 ## Evidence and limits
 
-The JSON reports beside this file record normal layout, interaction, contrast and stress checks. Contact sheets show all 35 at desktop and 320px. Stress cases cover 35 designs × three widths × normal/long-copy/fallback-font/RTL variants (420 cases). Additional short-phone checks submit all 14 forms at 320×568 and verify that all 35 still expose their headline/action with artwork hidden. Hiding artwork checks semantic independence; it does not prove automatic deletion or collapse of native image panes.
+The JSON reports beside this file record normal layout, interaction, contrast and stress checks. Contact sheets show all 40 at desktop and 320px. Stress cases cover 40 designs × three widths × normal/long-copy/fallback-font/RTL variants (480 cases). Additional short-phone checks submit all 15 forms at 320×568 and verify that all 40 still expose their headline/action with artwork hidden. Hiding artwork checks semantic independence; it does not prove automatic deletion or collapse of native image panes.
 
 The native implementation must additionally validate all screens against the shipping vocabulary, review actual Keep/Sample content transfer and form conversion, test themes and real reward states, publish image rights metadata, verify installation and collection discovery, and boot and submit in real WordPress. These remain explicit future gates, not passed checks.

@@ -46,7 +46,8 @@
 .campaign h1{max-width:100%;overflow-wrap:anywhere}
 .tomorrow-title,.tomorrow-form{min-width:0}
 .campaign .fine-print,.campaign .consent,.campaign .signup-form>label:not(.consent){font-size:14px;opacity:1}
-.campaign .consent{min-height:44px;align-items:center}
+.campaign .consent{min-height:44px;align-items:flex-start}
+.campaign .consent input{margin-block-start:3px}
 .campaign .close{width:44px;height:44px;inset-inline-end:8px;inset-inline-start:auto;top:8px}
 .campaign .eyebrow{padding-inline-end:30px}
 .campaign .coupon button{min-width:64px;min-height:44px;font-size:13px}
@@ -92,3 +93,32 @@
 /* Keep the touch dismiss control inside the arched hours panel. */
 .t-hours .close{top:28px;inset-inline-end:26px}
 @media(max-width:650px){.t-sleigh .bar-copy,.t-pickup .bar-copy{flex:1 1 100%}.t-chapter h1{font-size:44px!important}}
+
+/* Playful five: ordinary artwork panes and the shipping decoration renderer. */
+.playful-link{display:inline-block;color:#98443e;font-weight:700;margin:5px 0 4px;text-underline-offset:5px}
+.play-art{position:relative;isolation:isolate;min-width:0;display:flex;align-items:center}
+.play-art .artwork{width:100%;background:transparent;position:relative}
+.play-art .artwork img{width:100%;height:auto;display:block}
+.campaign{--wc-fg:var(--fg);--wc-accent:var(--accent);--wc-accent-fg:var(--on);--wc-muted:var(--fg)}
+.campaign .wc-decorations{pointer-events:none}
+.t-yeti{display:grid;grid-template-columns:46% 54%;--bg:#eef3df;--fg:#244d59;--accent:#a53648;--on:#fff5dc}
+.t-yeti .polar-art{background:#a9d4d6;--wc-fg:#fff9e7}
+.t-yeti h1{font:700 56px/.98 DM;letter-spacing:-.055em}
+.t-yeti .copy{padding:46px 30px 32px}
+.t-yeti .countdown b{font-size:30px}.t-yeti .countdown>span{min-width:36px}.t-yeti .countdown i{font-size:18px}
+.t-ginger{--bg:#fff1d7;--fg:#803d37;--accent:#a63742;--on:#fff4da;padding:42px;display:grid;grid-template-columns:1fr 1fr;gap:0 28px;border:6px solid #a63742}
+.bakery-heading{grid-column:1/-1;text-align:center}.t-ginger h1{font:50px/.98 Instrument;letter-spacing:-.02em;margin:18px 0 24px}.bakery-art{background:#f7cabc;border-radius:90px 90px 4px 4px;overflow:hidden;--wc-fg:#a63742}
+.bakery-action{display:flex;flex-direction:column;justify-content:center;min-width:0}.t-ginger .cta{width:100%}
+.t-penguin{--bg:#e9edf8;--fg:#293b63;--accent:#35466f;--on:#fff4dc}.courier-art{background:#b8c5ed;--wc-fg:#fff4dc}.t-penguin h1{font:700 38px/1.04 DM!important;letter-spacing:-.045em}.t-penguin .copy{padding:28px}.t-penguin .countdown b{font-size:31px}.t-penguin .countdown>span{min-width:39px}
+.t-giftcat{display:grid;grid-template-columns:42% 58%;--bg:#f6dfcd;--fg:#4a3553;--accent:#83415c;--on:#fff1d6}.cat-panel{background:#33304f;display:flex;flex-direction:column;justify-content:center;min-width:0}.cat-art{--wc-fg:#f2c463}.peeking-panel{position:relative;background:#33304f;color:#f2c463;padding:24px;min-height:70px;--wc-accent-fg:#f2c463}.peeking-panel .eyebrow{margin:0;padding:0;max-width:65%;font-size:10px}.t-giftcat h1{font:48px/1.02 Instrument;letter-spacing:-.025em}.t-giftcat .copy{padding:46px 30px 32px}
+.t-party{display:grid;grid-template-columns:51% 49%;--bg:#45395e;--fg:#fff0d6;--accent:#f0be65;--on:#45395e}.party-intro{padding:70px 45px;display:flex;flex-direction:column;justify-content:center;min-width:0}.campaign.t-party h1{font:700 clamp(48px,6.5vw,90px)/.98 DM;letter-spacing:-.06em}.party-intro .cta{max-width:420px}.party-scene{display:flex;flex-direction:column;justify-content:center;background:#edb7c7;min-width:0}.party-art{--wc-fg:#fff2d6}.party-deadline{background:#f4ca6d;color:#45395e;padding:30px 36px}.party-deadline .timer-wrap{margin:0}.party-deadline .countdown{justify-content:space-between}.party-deadline .countdown b{font-size:45px}
+.motion-off .wc-decoration-motion,.is-thumbnail .wc-decoration-motion{animation:none!important}
+@media(max-width:650px){
+ .t-yeti,.t-giftcat,.t-party{grid-template-columns:minmax(0,1fr)}
+ .t-yeti .polar-art .artwork,.cat-art .artwork{max-width:330px;margin:auto}
+ .t-yeti h1{font-size:43px}.t-yeti .copy,.t-giftcat .copy{padding:30px 25px}
+ .t-ginger{display:flex;flex-direction:column;padding:30px 23px;border-width:5px;gap:20px}.t-ginger h1{font-size:42px;margin-bottom:0}.bakery-heading{text-align:start}.bakery-action .body-copy{margin-top:0}
+ .t-penguin h1{font-size:36px!important}.t-penguin .copy{padding:28px 24px}
+ .t-giftcat h1{font-size:44px}.peeking-panel{padding:17px 25px;min-height:52px}
+ .party-intro{padding:65px 27px 30px}.t-party h1{font-size:53px!important}.party-deadline{padding:25px}.party-deadline .countdown b{font-size:36px}
+}
