@@ -213,7 +213,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: free-stage
-          path: dist/stage/wconvert
+          path: dist/stage/plain/wconvert
           retention-days: 14
           if-no-files-found: error
           include-hidden-files: true
