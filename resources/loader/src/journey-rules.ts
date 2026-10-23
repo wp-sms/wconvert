@@ -1,6 +1,10 @@
 import type { TemplateScreen } from '@renderer/types';
 import { journeyNodes } from './journey-nodes';
 
+// Only editor traces consume branch explanations; visitor routing uses indices and answers.
+declare const __WCONVERT_VISITOR__: boolean;
+const TRACE = typeof __WCONVERT_VISITOR__ === 'undefined' || !__WCONVERT_VISITOR__;
+
 export type Answers = Record<string, string | string[]>;
 export interface Clause { readonly question: string; readonly operator: 'is' | 'is_not' | 'includes_any' | 'includes_none'; readonly values: readonly string[]; }
 export interface Condition { readonly match: 'all' | 'any'; readonly clauses: readonly Clause[]; }
@@ -43,7 +47,7 @@ export function journeyTrace(steps: readonly TemplateScreen[], answers: Answers)
     if (shown) {
       indices.push(at);
       for (const id of screenQuestionIds(step)) if (answers[id] !== undefined) active[id] = answers[id];
-    } else {
+    } else if (TRACE) {
       const missingQuestions = step.when?.clauses.filter(clause => {
         const value = active[clause.question];
         return value === undefined || value === '' || Array.isArray(value) && !value.length;
@@ -56,8 +60,8 @@ export function journeyTrace(steps: readonly TemplateScreen[], answers: Answers)
     // Publication rejects missing and backward routes. The guard also keeps
     // a malformed cached payload from trapping a visitor in a loop.
     const next = target > at ? target : at + 1;
-    if (next < steps.length) decisions.push({ from: at, to: next, kind: shown ? route ? 'route' : 'continue' : 'hidden', ...(route ? { priority } : {}) });
-    if (shown && route) for (let bypassed = at + 1; bypassed < next; bypassed++) skips.push({ index: bypassed, reason: 'route', from: at, to: next });
+    if (TRACE && next < steps.length) decisions.push({ from: at, to: next, kind: shown ? route ? 'route' : 'continue' : 'hidden', ...(route ? { priority } : {}) });
+    if (TRACE && shown && route) for (let bypassed = at + 1; bypassed < next; bypassed++) skips.push({ index: bypassed, reason: 'route', from: at, to: next });
     at = next;
   }
   return { indices, answers: active, decisions, skips };
