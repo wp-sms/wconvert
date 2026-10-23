@@ -3,6 +3,7 @@ import { controlIcon } from './stroke-icon';
 import type { Template } from './types';
 import { A_DESIGNS_OWN_WIDTH, DOCUMENT_CSS, SHADOW_CSS, mountedStyles } from './css';
 import { COUNTDOWN_SLOT, render } from './render';
+import { pageLabel } from './page-labels';
 
 export { render, SHADOW_CSS };
 
@@ -477,7 +478,7 @@ export function mountModal(options: MountOptions, surface: ModalSurface = {}): M
 
   let dismissible = true;
   let opened = false;
-  const label = () => dialog.setAttribute('aria-label', parts.root.querySelector('h1,h2')?.textContent || 'Campaign');
+  const label = () => dialog.setAttribute('aria-label', parts.root.querySelector('h1,h2')?.textContent || pageLabel(1, 'Campaign'));
 
   const closed = () => {
     // Native close events are queued. A stale event must not hide a reopened dialog.
@@ -581,10 +582,9 @@ function inline(options: MountOptions, anchor: Element): Mounted {
  * The way out, supplied by the container rather than by the vocabulary — a
  * template must not be able to omit it.
  *
- * The label is English here because the loader carries no i18n runtime: it is
- * a raw IIFE with no `wp.i18n` dependency, and adding one would put a second
- * script on the page for one string. Esc and the backdrop are unlabelled
- * routes to the same act, so a visitor is never trapped by it.
+ * Its name is translated by PHP and read off the page ({@link pageLabel}): the
+ * loader carries no i18n runtime. Esc and the backdrop are unlabelled routes
+ * to the same act, so a visitor is never trapped by it.
  */
 export function closeButton(onClick: () => void): HTMLElement {
   const button = document.createElement('button');
@@ -592,7 +592,7 @@ export function closeButton(onClick: () => void): HTMLElement {
   button.type = 'button';
   button.className = 'wc-close';
   button.append(controlIcon('close'));
-  button.setAttribute('aria-label', 'Close');
+  button.setAttribute('aria-label', pageLabel(0, 'Close'));
   button.addEventListener('click', onClick);
 
   return button;

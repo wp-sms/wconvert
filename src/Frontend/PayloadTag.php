@@ -173,6 +173,11 @@ final class PayloadTag
             $attributes[self::SITE_ALLOWANCE_ATTRIBUTE] = $allowance;
         }
 
+        $pageLabels = PageLabels::attribute();
+        if ($pageLabels !== null) {
+            $attributes['data-labels'] = $pageLabels;
+        }
+
         $reopenLabels = [__('Dismiss reminder', 'wconvert'), __('Submission received — View details', 'wconvert')];
         if ($hasReopen && $reopenLabels !== ['Dismiss reminder', 'Submission received — View details']) {
             $attributes['data-reopen'] = (string) wp_json_encode($reopenLabels, JSON_UNESCAPED_UNICODE);

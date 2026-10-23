@@ -1,3 +1,4 @@
+import { pageLabel } from '@renderer/page-labels';
 import { requestCapture, type Reply } from '@loader/capture-request';
 import { protectionField } from '@loader/protection';
 import { journeyLabel } from '@loader/journey-labels';
@@ -69,7 +70,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
       if (!inputs.length) continue;
       const answered = inputs[0] instanceof HTMLTextAreaElement ? inputs[0].value.trim() !== '' : inputs.some(input => input instanceof HTMLInputElement && input.checked);
       if ('required' in node.node && node.node.required === true && !answered) {
-        inputs[0].setCustomValidity('Please answer this question.'); inputs[0].reportValidity(); inputs[0].focus(); return false;
+        inputs[0].setCustomValidity(pageLabel(100, 'Please answer this question.')); inputs[0].reportValidity(); inputs[0].focus(); return false;
       }
       inputs[0].setCustomValidity('');
     }

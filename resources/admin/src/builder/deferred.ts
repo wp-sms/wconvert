@@ -28,5 +28,14 @@
  * whose next click loads the builder anyway.
  */
 
+import { providePageLabels } from '@renderer/page-labels';
+import { adminSettings } from '../settings';
+
+// Every preview draws through the visitor renderer, which reads its own words
+// off the payload tag a visitor's page carries. The admin has none, so it is
+// handed the same words (`PageLabels::differing()`) — here, on the renderer's
+// side of the boundary, where the renderer itself arrives.
+providePageLabels(adminSettings()?.pageLabels);
+
 export { OptinBuilder } from './OptinBuilder';
 export { GoalScreen } from '../goals/GoalScreen';

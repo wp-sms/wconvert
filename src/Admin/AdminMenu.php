@@ -251,6 +251,9 @@ final class AdminMenu
             // `apiFetch` would read the file into memory and then have to turn
             // it back into a download.
             'exportUrl' => LeadExport::url(),
+            // The renderer's own words, so a preview speaks the merchant's
+            // language as the published page does (`page-labels.ts`).
+            'pageLabels' => (object) \WConvert\Frontend\PageLabels::differing(),
             'installedTier' => $pro->installedTier()->value,
             // The contextual Pro hints, and whether they say "Activate it" (ADR 0147).
             'proHints' => ProHints::shown($pro),

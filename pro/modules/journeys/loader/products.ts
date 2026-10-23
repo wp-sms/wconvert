@@ -1,3 +1,4 @@
+import { pageLabel } from '@renderer/page-labels';
 import type { ResultVariant } from '@renderer/types';
 import { productsEndpoint } from '@loader/payload';
 
@@ -27,7 +28,7 @@ export function showProducts(container: HTMLElement, variant: ResultVariant | un
   const retryFocused = () => !!retry && retry === (container.getRootNode() as Document | ShadowRoot).activeElement;
   const unavailable = () => {
     const focused = retryFocused();
-    status.textContent = 'These products are unavailable right now. Please use the link below.';
+    status.textContent = pageLabel(102, 'These products are unavailable right now. Please use the link below.');
     retry?.remove();
     if (focused) { status.tabIndex = -1; status.focus(); }
   };
@@ -35,7 +36,7 @@ export function showProducts(container: HTMLElement, variant: ResultVariant | un
     if (loading || controller.signal.aborted) return;
     loading = true;
     retry?.setAttribute('aria-disabled', 'true');
-    status.textContent = 'Loading current products…';
+    status.textContent = pageLabel(101, 'Loading current products…');
     try {
       if (!endpoint) { unavailable(); return; }
       const url = new URL(endpoint, document.baseURI);
@@ -71,7 +72,7 @@ export function showProducts(container: HTMLElement, variant: ResultVariant | un
         const item = document.createElement('li');
         const link = document.createElement('a');
         link.href = product.permalink;
-        link.textContent = `View ${product.name}`;
+        link.textContent = pageLabel(105, 'View %s').replace('%s', product.name);
         if (onProductClick) link.addEventListener('click', onProductClick);
         const image = product.images?.[0];
         if (image?.thumbnail || image?.src) {
@@ -99,10 +100,10 @@ export function showProducts(container: HTMLElement, variant: ResultVariant | un
       if (focused) list.querySelector('a')?.focus();
     } catch {
       if (controller.signal.aborted) return;
-      status.textContent = 'Products could not load. You can still use the link below.';
+      status.textContent = pageLabel(103, 'Products could not load. You can still use the link below.');
       if (!retry) {
         retry = document.createElement('button');
-        retry.type = 'button'; retry.className = 'wc-button'; retry.textContent = 'Retry products';
+        retry.type = 'button'; retry.className = 'wc-button'; retry.textContent = pageLabel(104, 'Retry products');
         retry.addEventListener('click', load);
         container.append(retry);
       }

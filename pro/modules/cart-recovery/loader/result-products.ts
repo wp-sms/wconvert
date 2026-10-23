@@ -1,3 +1,4 @@
+import { pageLabel } from '@renderer/page-labels';
 import { resultProducts } from '../../journeys/loader/result-products';
 import { showProducts } from '../../journeys/loader/products';
 import type { ResultVariant } from '@renderer/types';
@@ -11,7 +12,7 @@ export function showResultProducts(host: HTMLElement, result: ResultVariant | un
   if (!result || (!result.product_filter && !result.product_ids?.length)) return () => {};
   let closed = false; let stop: (() => void) | undefined;
   const load = async () => {
-    host.textContent = 'Loading current products…';
+    host.textContent = pageLabel(101, 'Loading current products…');
     try {
       const url = new URL(runtime, location.href);
       if (url.origin !== location.origin) throw Error('origin');
@@ -19,8 +20,8 @@ export function showResultProducts(host: HTMLElement, result: ResultVariant | un
       if (!closed) stop = module.showQuizProducts(host, result, click, id, screen, scope);
     } catch {
       if (closed) return;
-      host.textContent = 'Products could not load. You can still use the link below.';
-      const retry = document.createElement('button'); retry.type = 'button'; retry.className = 'wc-button'; retry.textContent = 'Retry products';
+      host.textContent = pageLabel(103, 'Products could not load. You can still use the link below.');
+      const retry = document.createElement('button'); retry.type = 'button'; retry.className = 'wc-button'; retry.textContent = pageLabel(104, 'Retry products');
       retry.onclick = () => { void load(); }; host.append(retry);
     }
   };

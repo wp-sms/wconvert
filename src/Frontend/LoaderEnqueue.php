@@ -176,13 +176,11 @@ final class LoaderEnqueue
                 'search' => __('Search…', 'wconvert'),
                 'searchCountries' => __('Search countries', 'wconvert'),
                 'countries' => __('Countries', 'wconvert'),
-                // The phone bundle has no wp.i18n to evaluate a plural rule
-                // with, so it is handed the forms for one and for several, and
-                // picks between those two by count.
-                /* translators: %s: the number of countries matching the search. */
-                'oneResult' => _n('%s result', '%s results', 1, 'wconvert'),
-                /* translators: %s: the number of countries matching the search. */
-                'manyResults' => _n('%s result', '%s results', 2, 'wconvert'),
+                // One string for every count: the phone bundle has no wp.i18n
+                // to evaluate a plural rule with, and a language with more
+                // than two forms cannot be served by a "one" and a "many".
+                /* translators: %s: how many countries match the search. */
+                'results' => __('Results: %s', 'wconvert'),
                 'too_short' => __('Enter a longer phone number.', 'wconvert'),
                 'too_long' => __('This phone number is too long.', 'wconvert'),
                 'invalid_length' => __('Check the phone number length.', 'wconvert'),
