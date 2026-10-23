@@ -1,6 +1,7 @@
+import { pageLabel } from '@renderer/page-labels';
 import { scheduledMount } from '@loader/scheduled-mount';
 import { campaignLifecycle } from '@loader/events';
-import { googleFontsAllowed, PAYLOAD_ELEMENT_ID } from '@loader/payload';
+import { googleFontsAllowed } from '@loader/payload';
 import type { OptinControls, PayloadEntry } from '@loader/types';
 import { mount } from '@renderer/mount';
 import { premiumCaptureInto } from '../../journeys/loader';
@@ -8,12 +9,9 @@ import { mountPopover } from './popover';
 
 import { reminder, type Teaser } from './reminder';
 
+/** Translated by `PageLabels` and read off the page, as the close button's name is. */
 export function reminderLabels(): [string, string] {
-  const fallback: [string, string] = ['Dismiss reminder', 'Submission received — View details'];
-  try {
-    const value: unknown = JSON.parse(document.getElementById(PAYLOAD_ELEMENT_ID)?.getAttribute('data-reopen') ?? 'null');
-    return Array.isArray(value) && value.length === 2 && value.every(item => typeof item === 'string') ? value as [string, string] : fallback;
-  } catch { return fallback; }
+  return [pageLabel(21, 'Dismiss reminder'), pageLabel(22, 'Submission received — View details')];
 }
 
 export type Recoverable = PayloadEntry & { teaser?: Teaser };

@@ -42,6 +42,15 @@ final class PageLabels
         'Copy failed. Select the code.',
         'Apply code',
         'Submission not confirmed. Please try again.',
+        'Continue',
+        'Contact details are required before you see your result.',
+        'Already saved. You can review these details, but cannot change them.',
+        'Review your answers',
+        'Dismiss reminder',
+        'Submission received — View details',
+        'Content unlocked.',
+        'Continue to content',
+        'Your submission could not be confirmed. The content is available below.',
     ];
 
     /**
@@ -74,6 +83,17 @@ final class PageLabels
             __('Copy failed. Select the code.', 'wconvert'),
             __('Apply code', 'wconvert'),
             __('Submission not confirmed. Please try again.', 'wconvert'),
+            /* translators: The button that moves a visitor on to the next screen of a quiz or form. */
+            _x('Continue', 'go to the next screen', 'wconvert'),
+            __('Contact details are required before you see your result.', 'wconvert'),
+            __('Already saved. You can review these details, but cannot change them.', 'wconvert'),
+            __('Review your answers', 'wconvert'),
+            /* translators: The accessible name of the button that hides a reopen reminder. */
+            __('Dismiss reminder', 'wconvert'),
+            __('Submission received — View details', 'wconvert'),
+            __('Content unlocked.', 'wconvert'),
+            __('Continue to content', 'wconvert'),
+            __('Your submission could not be confirmed. The content is available below.', 'wconvert'),
         ];
     }
 

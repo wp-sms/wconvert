@@ -15,18 +15,21 @@ and in Pro's inspector explanations.
 **1. The visitor's page still has no `wp.i18n` (ADR 0004).** PHP translates the
 renderer's and loaders' words instead: `PageLabels` for free, and
 `ProPageLabels` at positions from 100 through `wconvert_page_labels`. The
-payload tag prints them as `data-labels`, the route `data-journey` and
-`data-reopen` already took. Only the words that differ from English are
-printed, as an object keyed by position, so an untranslated page's markup does
-not change.
+payload tag prints them as `data-labels`. Only the words that differ from
+English are printed, as an object keyed by position, so an untranslated page's
+markup does not change. The three per-feature attributes that came before it,
+`data-journey`, `data-reopen` and `data-content-lock`, are folded into it,
+because each carried its own parser in the loader.
 
 **2. Read by position, with the English inline.** `pageLabel(0, 'Close')`. The
 English renders wherever nothing is printed: untranslated sites, older cached
 pages, and the design studio, whose rendered identities therefore did not move.
 The loader's byte budget has no room for a second copy of the English.
 `PageLabelsTest` holds every TypeScript call to the PHP lists, so moving a
-position fails a test instead of relabelling a field. The cost was 108 B
-gzipped in free's loader and 141 B in Pro's.
+position fails a test instead of relabelling a field. Folding the three
+older parsers in paid for most of it: the net cost is 28 B gzipped in free's
+loader and 29 B in Pro's. CI's Node 22 zlib measures about 65 B more than a
+local build, so the headroom has to be read off CI, not off a laptop.
 
 **3. Admin previews get the same words** through `wconvertAdmin.pageLabels`,
 handed to the renderer on the deferred side of the admin's lazy boundary, which

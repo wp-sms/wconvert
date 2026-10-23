@@ -1,7 +1,6 @@
 import { pageLabel } from '@renderer/page-labels';
 import { requestCapture, type Reply } from '@loader/capture-request';
 import { protectionField } from '@loader/protection';
-import { journeyLabel } from '@loader/journey-labels';
 import { answerReview } from '@renderer/answer-review';
 import { journeyNotice } from '@renderer/journey-notice';
 import type { Mounted } from '@renderer/mount';
@@ -137,9 +136,9 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
     if (!root) return;
     const website = protectionField(root);
     root.setAttribute('aria-label', tree!.steps[step].name);
-    if (tree!.steps[step].review_answers) answerReview(root, visited.filter(index => index !== step).flatMap(index => journeyNodes(tree!.steps[index].content)), activeFor(questionAnswers), journeyLabel(4));
+    if (tree!.steps[step].review_answers) answerReview(root, visited.filter(index => index !== step).flatMap(index => journeyNodes(tree!.steps[index].content)), activeFor(questionAnswers), pageLabel(20, 'Review your answers'));
     if (step === entryIndex && resultAt >= 0 && !resultFirst) {
-      journeyNotice(root, journeyLabel(2));
+      journeyNotice(root, pageLabel(18, 'Contact details are required before you see your result.'));
     }
     const index = step;
     let observer: IntersectionObserver | undefined;
@@ -181,10 +180,10 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
       if (lockedQuestions.has(input.dataset.questionId ?? '')) { input.disabled = true; reviewing = true; }
       input.addEventListener('input', () => { for (const peer of root.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('[data-question-id]')) if (peer.dataset.questionId === input.dataset.questionId) peer.setCustomValidity(''); });
     }
-    if (reviewing) journeyNotice(root, journeyLabel(3));
+    if (reviewing) journeyNotice(root, pageLabel(19, 'Already saved. You can review these details, but cannot change them.'));
     for (const button of root.querySelectorAll<HTMLButtonElement>('button[data-action]')) {
       if (button.dataset.action === 'submit' && accepted.has(button.dataset.submission!)) {
-        button.dataset.action = 'next'; button.textContent = journeyLabel(0);
+        button.dataset.action = 'next'; button.textContent = pageLabel(17, 'Continue');
       }
     }
     if (tree!.steps[step].kind === 'result') {
@@ -225,7 +224,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
       const submission = tree!.submissions.find(s => s.id === button.dataset.submission);
       if (!submission || accepted.has(submission.id)) return;
       const snapshot = journeyCapturePrefix(tree!.steps, tree!.graph, step, questionAnswers);
-      if (!snapshot) { refuse(root, journeyLabel(1), null); options.onRefused?.('correctable'); return; }
+      if (!snapshot) { refuse(root, pageLabel(16, 'Submission not confirmed. Please try again.'), null); options.onRefused?.('correctable'); return; }
       const fields: Record<string, string> = {};
       for (const id of submission.fields) {
         const node = nodes.get(id)?.node;
@@ -260,7 +259,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
               : nodes.get(field) ?? [...nodes.values()].find(({ node }) => 'name' in node && node.name === field);
             if (target && target.screen !== step) show(target.screen);
           }
-          if (mounted.root) refuse(mounted.root, reply?.message || journeyLabel(1), field ?? null);
+          if (mounted.root) refuse(mounted.root, reply?.message || pageLabel(16, 'Submission not confirmed. Please try again.'), field ?? null);
           if (field && nodes.get(field)?.node.type === 'question') mounted.root?.querySelector<HTMLElement>(`[data-question-id="${field}"]`)?.focus();
           options.onRefused?.(field || reply?.code?.startsWith('wconvert_verification_') ? 'correctable' : 'unconfirmed');
         }

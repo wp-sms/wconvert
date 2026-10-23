@@ -1,8 +1,9 @@
+import { pageLabel } from '@renderer/page-labels';
 import { notifyCampaign } from '@loader/events';
 import type { LoaderModule, PayloadEntry, PresentationSession } from '@loader/types';
 import { decide, audienceAnswer, rulesOf, type Decision } from '@loader/decide';
 import { isWithinWindow } from '@loader/schedule';
-import { captureEndpoint, googleFontsAllowed, PAYLOAD_ELEMENT_ID } from '@loader/payload';
+import { captureEndpoint, googleFontsAllowed } from '@loader/payload';
 import { bindJourney } from '@loader/journey';
 import { whenInViewport } from '@loader/present';
 import { mount, type Mounted } from '@renderer/mount';
@@ -23,12 +24,9 @@ export function lockAvailable(entry: Entry, input: Decision): boolean {
     && entry.display_rules?.opening.mode === 'immediate'
     && isWithinWindow(entry, input.now) && audienceAnswer(entry, input) === true;
 }
+/** Translated by `PageLabels` and read off the page, as the close button's name is. */
 function labels(): string[] {
-  try {
-    const value: unknown = JSON.parse(document.getElementById(PAYLOAD_ELEMENT_ID)?.getAttribute('data-content-lock') ?? 'null');
-    if (Array.isArray(value) && value.length === 3 && value.every(item => typeof item === 'string')) return value;
-  } catch { /* Missing labels do not block the content. */ }
-  return ['Content unlocked.', 'Continue to content', 'Your submission could not be confirmed. The content is available below.'];
+  return [pageLabel(23, 'Content unlocked.'), pageLabel(24, 'Continue to content'), pageLabel(25, 'Your submission could not be confirmed. The content is available below.')];
 }
 
 /** A single explicit region, composed around the existing presentation session. */

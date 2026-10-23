@@ -314,7 +314,8 @@ it('closing successful content ends presentation even across responsive changes'
 
 it('uses server-translated reminder names and confirmation text as plain text', async () => {
   const { reminder } = await import('../../modules/display-types/loader/reminder');
-  const tag = document.createElement('script'); tag.id = 'wconvert-payload'; tag.setAttribute('data-reopen', JSON.stringify(['یادآوری را ببندید', 'ارسال شد — مشاهده جزئیات'])); document.body.append(tag);
+  const tag = document.createElement('script'); tag.id = 'wconvert-payload'; tag.setAttribute('data-labels', JSON.stringify({ 21: 'یادآوری را ببندید', 22: 'ارسال شد — مشاهده جزئیات' })); document.body.append(tag);
+  (await import('@renderer/page-labels')).providePageLabels(undefined);
   const { reminderLabels } = await import('../../modules/display-types/loader/reopen');
   const view = reminder({ label: 'Offer <b>text</b>' }, {}, reminderLabels());
   expect(view.close.getAttribute('aria-label')).toBe('یادآوری را ببندید');

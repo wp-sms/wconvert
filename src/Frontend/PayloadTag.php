@@ -116,7 +116,6 @@ final class PayloadTag
             return '';
         }
 
-        $hasReopen = false;
         foreach ($entries as &$entry) {
             // Codes and resource links arrive with the signup, not the page
             // (ADR 0164). A preview has no capture to return them, so it
@@ -126,7 +125,6 @@ final class PayloadTag
             }
             if (isset($entry['teaser']) && is_array($entry['teaser'])) {
                 $entry['teaser'] = \WConvert\Optin\Teaser::forPayload($entry['teaser']);
-                $hasReopen = true;
             }
         }
         unset($entry);
@@ -178,21 +176,6 @@ final class PayloadTag
             $attributes['data-labels'] = $pageLabels;
         }
 
-        $reopenLabels = [__('Dismiss reminder', 'wconvert'), __('Submission received — View details', 'wconvert')];
-        if ($hasReopen && $reopenLabels !== ['Dismiss reminder', 'Submission received — View details']) {
-            $attributes['data-reopen'] = (string) wp_json_encode($reopenLabels, JSON_UNESCAPED_UNICODE);
-        }
-
-        $lockLabels = [__('Content unlocked.', 'wconvert'), __('Continue to content', 'wconvert'), __('Your submission could not be confirmed. The content is available below.', 'wconvert')];
-        if (array_filter($entries, static fn (array $entry): bool => isset($entry['content_lock'])) !== []
-            && $lockLabels !== ['Content unlocked.', 'Continue to content', 'Your submission could not be confirmed. The content is available below.']) {
-            $attributes['data-content-lock'] = (string) wp_json_encode($lockLabels, JSON_UNESCAPED_UNICODE);
-        }
-        $journeyLabels = [__('Continue', 'wconvert'), __('Submission not confirmed. Please try again.', 'wconvert'), __('Contact details are required before you see your result.', 'wconvert'), __('Already saved. You can review these details, but cannot change them.', 'wconvert'), __('Review your answers', 'wconvert')];
-        if (array_filter($entries, static fn (array $entry): bool => isset($entry['capture_contract'])) !== []
-            && $journeyLabels !== ['Continue', 'Submission not confirmed. Please try again.', 'Contact details are required before you see your result.', 'Already saved. You can review these details, but cannot change them.', 'Review your answers']) {
-            $attributes['data-journey'] = (string) wp_json_encode($journeyLabels, JSON_UNESCAPED_UNICODE);
-        }
         foreach ($entries as $entry) {
             $steps = $entry['template']['tree']['steps'] ?? [];
             if (!is_array($steps)) { continue; }
