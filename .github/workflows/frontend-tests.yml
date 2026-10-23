@@ -153,8 +153,8 @@ jobs:
           - { leg: admin-1, scripts: 'test:visual', args: '--shard=1/2' }
           - { leg: admin-2, scripts: 'test:visual', args: '--shard=2/2' }
           - { leg: storefront-a, scripts: 'test:visual:inline test:visual:reopen' }
-          - { leg: storefront-b, scripts: 'test:visual:content-lock test:visual:popup test:visual:events' }
-          - { leg: storefront-c, scripts: 'test:visual:analytics test:visual:fullscreen' }
+          - { leg: storefront-b, scripts: 'test:visual:content-lock test:visual:popup' }
+          - { leg: storefront-c, scripts: 'test:visual:analytics test:visual:fullscreen test:visual:events' }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
