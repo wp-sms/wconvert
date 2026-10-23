@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, expect, it } from 'vitest';
 import type { TemplateTree } from '@renderer/types';
 import { graphTrace } from '@loader/journey-graph';
-import { addGraphResultSignup, freshScreen, referencedJourney, replaceAnswer, resultAccess, graphResultAccessIssue, unreachableScreens, usedBy, walkNodes } from '../../resources/admin/src/builder/structure/journey';
+import { freshScreen, referencedJourney, replaceAnswer, unreachableScreens, usedBy, walkNodes } from '../../resources/admin/src/builder/structure/journey';
+import { addGraphResultSignup, graphResultAccessIssue, resultAccess } from '../../pro/modules/journeys/admin/structure/resultAccess';
 import { graphDisplayOrder, graphTargets, insertOnGraphEdge, upgradeToGraph } from '../../resources/admin/src/builder/structure/graph';
 import { graphRemoval } from '../../resources/admin/src/builder/structure/graphRemoval';
 import fixture from '../fixtures/journey-graph-enquiry.json';

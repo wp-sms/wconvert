@@ -15,7 +15,7 @@ export default function ReopenPreview({ value, template, mobile, onReopen }: Reo
   useEffect(() => {
     const parent = container.current;
     if (!parent || dismissed) return;
-    const view = reminder(config, template.tokens, [__('Dismiss reminder', 'wconvert'), __('Submission received — View details', 'wconvert')]);
+    const view = reminder(config, template.tokens, [__('Dismiss reminder', 'wconvert-pro'), __('Submission received — View details', 'wconvert-pro')]);
     view.host.removeAttribute('popover');
     const visible = view.layout(mobile);
     view.host.style.setProperty('position', 'absolute', 'important');
@@ -25,9 +25,9 @@ export default function ReopenPreview({ value, template, mobile, onReopen }: Reo
     return () => view.host.remove();
   }, [config, template, mobile, direction, dismissed, onReopen]);
   return <div ref={container} className="absolute inset-0 grid place-items-center">
-    {hidden ? <p className="rounded bg-card p-4">{__('Hidden on mobile', 'wconvert')}</p> : dismissed ? <div className="rounded bg-card p-4 text-center">
-      <p>{__('Reminder dismissed for this preview.', 'wconvert')}</p>
-      <Button variant="outline" onClick={() => setDismissed(false)}>{__('Show again', 'wconvert')}</Button>
+    {hidden ? <p className="rounded bg-card p-4">{__('Hidden on mobile', 'wconvert-pro')}</p> : dismissed ? <div className="rounded bg-card p-4 text-center">
+      <p>{__('Reminder dismissed for this preview.', 'wconvert-pro')}</p>
+      <Button variant="outline" onClick={() => setDismissed(false)}>{__('Show again', 'wconvert-pro')}</Button>
     </div> : null}
   </div>;
 }

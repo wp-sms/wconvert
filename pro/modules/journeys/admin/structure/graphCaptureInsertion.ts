@@ -1,9 +1,9 @@
 import { __ } from '@wordpress/i18n';
 import type { TemplateNode, TemplateTree } from '@renderer/types';
-import { graphEdgeId } from './graph';
+import { graphEdgeId } from '@/builder/structure/graph';
 import { graphInsertionLocations } from './graphInsertion';
-import { contactWording, privacyLink, type ContactChannel } from './captureWording';
-import { freshScreen, referencedJourney, walkNodes } from './journey';
+import { contactWording, privacyLink, type ContactChannel } from '@/builder/structure/captureWording';
+import { freshScreen, referencedJourney, walkNodes } from '@/builder/structure/journey';
 
 /** Check acceptance, including hidden exits, rather than just passing a card. */
 function acceptedBeforeEdge(tree: TemplateTree, submission: string, target: string): boolean {
@@ -30,15 +30,15 @@ function acceptedBeforeEdge(tree: TemplateTree, submission: string, target: stri
 export function graphCaptureInsertion(tree: TemplateTree, primaryChannel: string | null | undefined) {
   const channel: ContactChannel = (primaryChannel === 'sms' || primaryChannel === 'phone') ? 'email' : 'phone';
   const reason = !tree.graph || !['email', 'phone', 'sms'].includes(primaryChannel ?? '')
-    ? __('Optional second signups are available for email or SMS list campaigns.', 'wconvert')
+    ? __('Optional second signups are available for email or SMS list campaigns.', 'wconvert-pro')
     : tree.submissions.length !== 1 || !tree.submissions[0].required
-      ? __('Keep one required primary signup before adding an optional second signup.', 'wconvert')
+      ? __('Keep one required primary signup before adding an optional second signup.', 'wconvert-pro')
       : tree.steps.flatMap(screen => walkNodes(screen.content)).some(node => node.type === 'field' && 'name' in node && node.name === channel)
-        ? __('This campaign already collects that contact channel. Review its existing fields before adding another signup.', 'wconvert') : null;
+        ? __('This campaign already collects that contact channel. Review its existing fields before adding another signup.', 'wconvert-pro') : null;
   const locations = reason ? [] : graphInsertionLocations(tree).filter(location => location.id.startsWith('edge:')
     && acceptedBeforeEdge(tree, tree.submissions[0].id, location.id.slice(5)));
   return { channel, locations, reason: reason ?? (!locations.length
-    ? __('Connect a line after the main form first. Visitors must complete that signup before reaching the optional one.', 'wconvert') : null) };
+    ? __('Connect a line after the main form first. Visitors must complete that signup before reaching the optional one.', 'wconvert-pro') : null) };
 }
 
 export function addGraphCapture(tree: TemplateTree, primaryChannel: string | null | undefined, locationId: string): TemplateTree {
@@ -55,15 +55,15 @@ export function addGraphCapture(tree: TemplateTree, primaryChannel: string | nul
   const end = tree.steps.find(screen => screen.id === edge.to);
   const rewards = end?.kind === 'acknowledgement' ? walkNodes(end.content, false).filter(node => ['code', 'followup'].includes(node.type))
     .map(node => { const copy = { ...node } as Record<string, unknown>; delete copy.id; return copy as unknown as TemplateNode; }) : [];
-  const screen = { ...freshScreen(tree, 'input'), name: channel === 'email' ? __('Optional email signup', 'wconvert') : __('Optional SMS signup', 'wconvert'),
+  const screen = { ...freshScreen(tree, 'input'), name: channel === 'email' ? __('Optional email signup', 'wconvert-pro') : __('Optional SMS signup', 'wconvert-pro'),
     content: { type: 'stack' as const, children: [
-      { type: 'heading', text: __('Your signup was received', 'wconvert'), role: 'headline' }, ...rewards,
-      { type: 'text', text: channel === 'email' ? __('Would you also like email updates?', 'wconvert') : __('Would you also like text updates?', 'wconvert'), role: 'body' },
+      { type: 'heading', text: __('Your signup was received', 'wconvert-pro'), role: 'headline' }, ...rewards,
+      { type: 'text', text: channel === 'email' ? __('Would you also like email updates?', 'wconvert-pro') : __('Would you also like text updates?', 'wconvert-pro'), role: 'body' },
       { type: 'field', name: channel, required: true, label: contactWording(channel).label },
       { type: 'consent', text: contactWording(channel).optionalConsent, link: privacyLink(), hidden: false, role: 'consent_text' },
-      { type: 'button', label: channel === 'email' ? __('Sign up for email', 'wconvert') : __('Sign up for SMS', 'wconvert'), action: 'submit', submission: submissionId },
-      { type: 'button', label: __('No thanks', 'wconvert'), action: 'skip', submission: submissionId, tokens: { accent: 'transparent', 'accent-fg': 'fg' } },
-      { type: 'button', label: __('Back', 'wconvert'), action: 'back', tokens: { accent: 'transparent', 'accent-fg': 'fg' } },
+      { type: 'button', label: channel === 'email' ? __('Sign up for email', 'wconvert-pro') : __('Sign up for SMS', 'wconvert-pro'), action: 'submit', submission: submissionId },
+      { type: 'button', label: __('No thanks', 'wconvert-pro'), action: 'skip', submission: submissionId, tokens: { accent: 'transparent', 'accent-fg': 'fg' } },
+      { type: 'button', label: __('Back', 'wconvert-pro'), action: 'back', tokens: { accent: 'transparent', 'accent-fg': 'fg' } },
     ] as TemplateNode[] } };
   const next = referencedJourney({ ...tree, steps: [...tree.steps, screen], graph: { ...tree.graph,
     // Insert only on the chosen connection. A hidden exit is a separate choice.

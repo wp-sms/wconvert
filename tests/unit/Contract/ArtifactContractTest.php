@@ -196,6 +196,9 @@ final class ArtifactContractTest extends TestCase
             // silently, which is why the ZIP is where it has to be caught.
             'public/admin/main-abc12345.js' => "console.log('pro admin');\n",
             'public/admin/builder-def67890.js' => "console.log('pro builder');\n",
+            // Pro's catalogue template, made from THESE bundles: it names the
+            // two files above and nothing else.
+            'resources/languages/wconvert-pro.pot' => "#: public/admin/main-abc12345.js:1\nmsgid \"Exit intent\"\nmsgstr \"\"\n\n#: public/admin/builder-def67890.js:3\n#: src/Bootstrap.php:4\nmsgid \"Licence\"\nmsgstr \"\"\n",
             'resources/loader/src/main.ts' => "export const boot = () => {};\n",
             // Every module `tiers.json` names, which check (f) asserts.
             'modules/display-types/module.json' => "{\"slug\":\"display-types\"}\n",
@@ -246,6 +249,31 @@ final class ArtifactContractTest extends TestCase
     // The happy paths, which are here to make the failures below mean something
     // — not because either is interesting on its own.
     // =========================================================================
+
+    /**
+     * Pro is not on wp.org, so its catalogue template ships in the ZIP or
+     * nowhere — and a template from an EARLIER build names hashed bundle files
+     * this ZIP does not carry, so every `.json` made from it is one WordPress
+     * never asks for.
+     */
+    public function testProRequiresACatalogueTemplateMadeFromItsOwnBundles(): void
+    {
+        $missing = $this->verify($this->stagedPro(['resources/languages/wconvert-pro.pot' => null]));
+        $this->assertNotSame(0, $missing['status']);
+        $this->assertStringContainsString('wconvert-pro.pot', $missing['output']);
+
+        $stale = $this->verify($this->stagedPro([
+            'resources/languages/wconvert-pro.pot' => "#: public/admin/main-0ld0ld00.js:1\nmsgid \"Exit intent\"\nmsgstr \"\"\n",
+        ]));
+        $this->assertNotSame(0, $stale['status']);
+        $this->assertStringContainsString('public/admin/main-0ld0ld00.js', $stale['output']);
+
+        $noJs = $this->verify($this->stagedPro([
+            'resources/languages/wconvert-pro.pot' => "#: src/Bootstrap.php:4\nmsgid \"Licence\"\nmsgstr \"\"\n",
+        ]));
+        $this->assertNotSame(0, $noJs['status']);
+        $this->assertStringContainsString('references no built .js file', $noJs['output']);
+    }
 
     public function testProRequiresTheDividerStylesAndRuntimeSchema(): void
     {

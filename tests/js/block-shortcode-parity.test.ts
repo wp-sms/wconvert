@@ -155,7 +155,7 @@ describe('the block editor and PHP agree about what things are called', () => {
     expect(metadata.title).toBe('WConvert campaign');
     expect(metadata.keywords).toEqual(expect.arrayContaining(['wconvert', 'form', 'inline', 'popup-free']));
     expect(read('src/Frontend/ContentRegion.php')).toContain(`'title' => __('WConvert content lock', 'wconvert')`);
-    expect(read('pro/modules/content-lock/src/ContentDivider.php')).toContain(`'title' => __('WConvert lock from here', 'wconvert')`);
+    expect(read('pro/modules/content-lock/src/ContentDivider.php')).toContain(`'title' => __('WConvert lock from here', 'wconvert-pro')`);
   });
 
   /** The builder tells the merchant which block to add, by the name the inserter shows. */

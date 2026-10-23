@@ -2,7 +2,7 @@ import { render, screen, within, fireEvent, cleanup } from '@testing-library/rea
 import { afterEach, expect, it, vi } from 'vitest';
 import { GraphScreenInsert } from '../../pro/modules/journeys/admin/GraphScreenInsert';
 import { Dialog, DialogContent } from '../../resources/admin/src/components/ui/dialog';
-import { addGraphScreen } from '../../resources/admin/src/builder/structure/graphInsertion';
+import { addGraphScreen } from '../../pro/modules/journeys/admin/structure/graphInsertion';
 import type { TemplateTree } from '../../resources/renderer/src/types';
 import fixture from '../fixtures/journey-graph-branch-groups.json';
 const tree = fixture as unknown as TemplateTree;

@@ -16,7 +16,7 @@ defined('ABSPATH') || exit;
 final class MailchimpDestinationType implements DestinationType
 {
     public function id(): string { return 'mailchimp'; }
-    public function label(): string { return __('Mailchimp', 'wconvert'); }
+    public function label(): string { return __('Mailchimp', 'wconvert-pro'); }
     public function icon(): string { return 'mail'; }
     public function tier(): Tier { return Tier::Pro; }
     public function requires(): ?\WConvert\Support\SiteDependency { return null; }
@@ -24,14 +24,14 @@ final class MailchimpDestinationType implements DestinationType
 
     public function connectionSchema(): array
     {
-        return ['api_key' => ['type' => 'password', 'label' => __('Mailchimp API key', 'wconvert')]];
+        return ['api_key' => ['type' => 'password', 'label' => __('Mailchimp API key', 'wconvert-pro')]];
     }
 
     public function requirements(): DestinationRequirements
     {
         return new DestinationRequirements(
             [CanonicalFields::EMAIL],
-            ['audiences' => ['label' => __('Audience', 'wconvert'), 'type' => 'ids', 'max' => 1]],
+            ['audiences' => ['label' => __('Audience', 'wconvert-pro'), 'type' => 'ids', 'max' => 1]],
             [CanonicalFields::EMAIL, CanonicalFields::NAME],
             [],
             ['email']
@@ -57,7 +57,7 @@ final class MailchimpDestinationType implements DestinationType
 
     public function settingsSchema(array $credentials): array
     {
-        if (empty($credentials['api_key'])) return ['audiences' => ['type' => 'ids', 'label' => __('Audience', 'wconvert'), 'max' => 1]];
+        if (empty($credentials['api_key'])) return ['audiences' => ['type' => 'ids', 'label' => __('Audience', 'wconvert-pro'), 'max' => 1]];
         $options = [];
         for ($offset = 0; $offset < 10000; $offset += 100) {
             [$status, $body] = $this->request($credentials, 'GET', '/lists?count=100&offset=' . $offset . '&fields=lists.id,lists.name,total_items');
@@ -69,10 +69,10 @@ final class MailchimpDestinationType implements DestinationType
             if (count($lists) < 100 || (isset($body['total_items']) && $offset + count($lists) >= (int) $body['total_items'])) break;
             if ($offset + 100 >= 10000) throw new \RuntimeException('Mailchimp has too many audiences to display.');
         }
-        return ['audiences' => ['type' => 'ids', 'label' => __('Audience', 'wconvert'), 'max' => 1, 'options' => $options],
-            'existing_contact' => ['type' => 'select', 'label' => __('If the contact exists', 'wconvert'), 'default' => 'keep', 'options' => [
-                ['value' => 'keep', 'label' => __('Keep existing details', 'wconvert')],
-                ['value' => 'update', 'label' => __('Update mapped fields', 'wconvert')],
+        return ['audiences' => ['type' => 'ids', 'label' => __('Audience', 'wconvert-pro'), 'max' => 1, 'options' => $options],
+            'existing_contact' => ['type' => 'select', 'label' => __('If the contact exists', 'wconvert-pro'), 'default' => 'keep', 'options' => [
+                ['value' => 'keep', 'label' => __('Keep existing details', 'wconvert-pro')],
+                ['value' => 'update', 'label' => __('Update mapped fields', 'wconvert-pro')],
             ]]];
     }
 
@@ -103,9 +103,9 @@ final class MailchimpDestinationType implements DestinationType
     public function push(PushSubject $subject, PushContext $context): PushResult
     {
         $email = $subject->values[CanonicalFields::EMAIL] ?? '';
-        if (!is_email($email)) return PushResult::terminal(__('This submission has no valid email address.', 'wconvert'));
+        if (!is_email($email)) return PushResult::terminal(__('This submission has no valid email address.', 'wconvert-pro'));
         $audiences = DestinationRequirements::ids($context->settings['audiences'] ?? null);
-        if (count($audiences) !== 1) return PushResult::attention(__('Choose one Mailchimp audience.', 'wconvert'));
+        if (count($audiences) !== 1) return PushResult::attention(__('Choose one Mailchimp audience.', 'wconvert-pro'));
         $audience = rawurlencode($audiences[0]);
         $merge = [];
         if (isset($subject->values[CanonicalFields::NAME])) $merge['FNAME'] = $subject->values[CanonicalFields::NAME];
@@ -127,15 +127,15 @@ final class MailchimpDestinationType implements DestinationType
             }
             return $this->failure($status);
         } catch (\Throwable $failure) {
-            return PushResult::retryable(__('Mailchimp could not be reached. The result may be uncertain.', 'wconvert'));
+            return PushResult::retryable(__('Mailchimp could not be reached. The result may be uncertain.', 'wconvert-pro'));
         }
     }
 
     private function failure(int $status): PushResult
     {
-        if ($status === 401 || $status === 403) return PushResult::attention(__('Mailchimp access was refused. Check this account.', 'wconvert'));
-        if ($status === 429 || $status >= 500) return PushResult::retryable(__('Mailchimp is temporarily unavailable.', 'wconvert'));
-        return PushResult::terminal(__('Mailchimp rejected this contact or audience.', 'wconvert'));
+        if ($status === 401 || $status === 403) return PushResult::attention(__('Mailchimp access was refused. Check this account.', 'wconvert-pro'));
+        if ($status === 429 || $status >= 500) return PushResult::retryable(__('Mailchimp is temporarily unavailable.', 'wconvert-pro'));
+        return PushResult::terminal(__('Mailchimp rejected this contact or audience.', 'wconvert-pro'));
     }
 
     /** @param array<string, mixed> $credentials

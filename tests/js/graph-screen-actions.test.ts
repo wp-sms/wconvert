@@ -1,8 +1,8 @@
 import { expect, it } from 'vitest';
 import type { TemplateTree } from '@renderer/types';
 import { graphTrace } from '@loader/journey-graph';
-import { addGraphScreen, addGraphBranchScreen } from '../../resources/admin/src/builder/structure/graphInsertion';
-import { duplicateGraphScreen, moveGraphScreen } from '../../resources/admin/src/builder/structure/graphScreenActions';
+import { addGraphScreen, addGraphBranchScreen } from '../../pro/modules/journeys/admin/structure/graphInsertion';
+import { duplicateGraphScreen, moveGraphScreen } from '../../pro/modules/journeys/admin/structure/graphScreenActions';
 import { referencedJourney, walkNodes } from '../../resources/admin/src/builder/structure/journey';
 import { graphChangeImpact } from '../../resources/admin/src/builder/structure/graphChangeImpact';
 import { graphRemovalPlan, graphRemoval } from '../../resources/admin/src/builder/structure/graphRemoval';

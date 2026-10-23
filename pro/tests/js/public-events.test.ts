@@ -4,7 +4,7 @@ import { premiumCaptureInto } from '../../modules/journeys/loader';
 import { mount } from '@renderer/mount';
 import type { Template } from '@renderer/types';
 import guide from '../../modules/journeys/templates/journey-content-guide.json';
-import { resultAccess } from '../../../resources/admin/src/builder/structure/journey';
+import { resultAccess } from '../../modules/journeys/admin/structure/resultAccess';
 import { mountPopover } from '../../modules/display-types/loader/popover';
 import { campaignLifecycle } from '@loader/events';
 import { showReopen } from '../../modules/display-types/loader/reopen';

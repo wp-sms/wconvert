@@ -46,7 +46,8 @@
 #
 # Requirements: php, zip and composer — free and Pro both install in the stage —
 # and the repo root's own `composer install`, which the collection checks below
-# load the plugin's classes through. The stage never copies that vendor/.
+# load the plugin's classes through. The stage never copies that vendor/. Pro
+# also needs wp-cli, which makes its catalogue template.
 
 set -euo pipefail
 
@@ -138,6 +139,47 @@ apply_distignore() {
 }
 
 # ---------------------------------------------------------------------------
+# Pro's translations, compiled in the stage from whatever `.po` files ship.
+#
+# Each `.po` is first brought up to the `.pot` this build just made: a
+# translation made against an earlier build references that build's hashed
+# bundle names, and `make-json` names each JSON catalogue after the md5 of the
+# file a string came from — so without the update every JS catalogue would be
+# named for a file this ZIP does not carry, and WordPress would never ask for
+# it. Then the three forms WordPress reads: `.mo`, `.l10n.php` (preferred since
+# 6.5) and one `.json` per script.
+#
+# No `.po` is the normal case today and is not an error. A `.po` with no
+# wp-cli to compile it is, because shipping it uncompiled is shipping nothing.
+# ---------------------------------------------------------------------------
+compile_translations() {
+    local dir="$1"
+    local -a pos=()
+    local po
+
+    for po in "$dir"/*.po; do
+        [ -f "$po" ] && pos+=("$po")
+    done
+
+    [ "${#pos[@]}" -gt 0 ] || return 0
+
+    local wp
+    wp="$(command -v wp)" || {
+        echo "  ✗ wp-cli not found, and $dir has ${#pos[@]} translation(s) to compile" >&2
+        return 1
+    }
+
+    echo "  · compiling ${#pos[@]} translation(s)"
+    local pot="$dir/wconvert-pro.pot"
+    for po in "${pos[@]}"; do
+        php -d error_reporting=E_ERROR "$wp" i18n update-po "$pot" "$po" --quiet
+    done
+    php -d error_reporting=E_ERROR "$wp" i18n make-mo "$dir" --quiet
+    php -d error_reporting=E_ERROR "$wp" i18n make-php "$dir" --quiet
+    php -d error_reporting=E_ERROR "$wp" i18n make-json "$dir" --no-purge --quiet
+}
+
+# ---------------------------------------------------------------------------
 # One artifact.
 #
 # $1 = the source tree to stage from, relative to the repo root ('.' or 'pro')
@@ -184,6 +226,21 @@ build_one() {
 
     rm -rf "$stage"
     mkdir -p "$stage"
+
+    # PRO'S CATALOGUE TEMPLATE, from the bundles about to be staged. Free's
+    # comes from wp.org, which builds a language pack from free's ZIP; Pro is
+    # not on wp.org, so its `.pot` ships inside the ZIP or nowhere. It is made
+    # here rather than committed because its `#:` references name the admin
+    # bundle's content-hashed files, which change on every build — and a JS
+    # catalogue is looked up by the md5 of exactly that name. The artifact
+    # contract refuses a `.pot` that names a file the stage does not carry.
+    #
+    # Like the bundles it reads, it is not rebuilt "just in case" from an
+    # unbuilt tree: the contract fails closed on a `.pot` with no JS in it.
+    if [ "$source_rel" = "pro" ]; then
+        echo "  · npm run build:pot:pro"
+        (cd "$REPO_ROOT" && npm run --silent build:pot:pro)
+    fi
 
     # The four exclusions here are about COPY TIME, not about the contract:
     # each is either enormous or regenerated below, and each is named in the
@@ -232,6 +289,12 @@ build_one() {
     fi
 
     apply_distignore "$stage" "$source/.distignore"
+
+    # An `if`, not `&&`: errexit is ignored inside a function called from
+    # the left of a list, and this one has to stop the build when it fails.
+    if [ "$source_rel" = "pro" ]; then
+        compile_translations "$stage/resources/languages"
+    fi
 
     # THE GATE. Before the ZIP exists, so that a failure leaves nothing behind
     # that anybody could upload.

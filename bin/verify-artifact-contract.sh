@@ -237,6 +237,32 @@ else
     require_file public/blocks/content-lock.js "the content-region editor is built for Pro" || true
     require_file public/blocks/content-lock.css "content-lock editor styles must load in the WordPress iframe" || true
     require_file modules/content-lock/static-blocks.json "the divider renderer reads the supported static block schema" || true
+
+    # PRO'S CATALOGUE TEMPLATE. Pro is not on wp.org, so no language pack will
+    # ever be built for it: the `.pot` a translator starts from ships in the
+    # ZIP or nowhere. bin/build.sh generates it from the built bundles before
+    # staging (`npm run build:pot:pro`).
+    #
+    # AND IT MUST DESCRIBE THESE BUNDLES. A JS string's catalogue is named
+    # after the md5 of the file it was extracted from, and the admin bundle's
+    # file names carry a content hash — so a `.pot` left over from an earlier
+    # build names files this ZIP does not have, and every `.json` made from it
+    # is one WordPress never asks for. Every `#:` reference into public/ has to
+    # be a file that is here.
+    if require_file resources/languages/wconvert-pro.pot "Pro ships its own catalogue template — run npm run build:pot:pro" ; then
+        pot_js_refs="$(grep -oE '^#: .*' "$TREE/resources/languages/wconvert-pro.pot" | tr ' ' '\n' | grep -E '^public/.+\.js' | sed 's/:[0-9]*$//' | sort -u)" || true
+
+        if [ -z "$pot_js_refs" ]; then
+            fail "resources/languages/wconvert-pro.pot references no built .js file — it was made before the bundles were, or from an unbuilt tree"
+        fi
+
+        while IFS= read -r pot_ref; do
+            [ -n "$pot_ref" ] || continue
+            if [ ! -f "$TREE/$pot_ref" ]; then
+                fail "resources/languages/wconvert-pro.pot references $pot_ref, which this artifact does not carry — the .pot is stale, run npm run build:pot:pro"
+            fi
+        done <<< "$pot_js_refs"
+    fi
 fi
 
 verdict

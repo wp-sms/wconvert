@@ -1,4 +1,4 @@
-import { productPreview } from '../../../resources/admin/src/productPreview';
+import { productPreview } from '../../../pro/resources/admin/src/productPreview';
 import type { ResultVariant } from '../../../resources/renderer/src/types';
 
 /** Inert product placeholders, not catalogue availability or invented prices. */

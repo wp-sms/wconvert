@@ -15,3 +15,7 @@
 /pro/packages/
 
 /tools/nexus-test-keys/keys.local.json
+
+# Built by `npm run build:pot:pro` from the built bundles, never committed:
+# its references name content-hashed files that change on every build.
+/pro/resources/languages/*.pot

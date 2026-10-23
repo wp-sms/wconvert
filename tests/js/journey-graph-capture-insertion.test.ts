@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import type { TemplateTree } from '@renderer/types';
 import { graphTrace } from '@loader/journey-graph';
-import { addGraphCapture, graphCaptureInsertion } from '../../resources/admin/src/builder/structure/graphCaptureInsertion';
+import { addGraphCapture, graphCaptureInsertion } from '../../pro/modules/journeys/admin/structure/graphCaptureInsertion';
 import { upgradeToGraph } from '../../resources/admin/src/builder/structure/graph';
 import { walkNodes } from '../../resources/admin/src/builder/structure/journey';
 import { removeGraphCapture } from '../../resources/admin/src/builder/structure/graphCaptureRemoval';

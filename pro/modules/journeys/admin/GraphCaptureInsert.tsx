@@ -3,7 +3,7 @@ import { __ } from '@wordpress/i18n';
 import type { TemplateTree } from '@renderer/types';
 import { Button } from '@/components/ui/button';
 import { AdminDialogBody, AdminDialogFooter, AdminDialogHeader } from '@/components/ui/admin-dialog';
-import { graphCaptureInsertion } from '@/builder/structure/graphCaptureInsertion';
+import { graphCaptureInsertion } from './structure/graphCaptureInsertion';
 
 /** The body of a Small `AdminDialog`; the host owns the dialog and its focus. */
 export function GraphCaptureInsert({ tree, primaryChannel, source, onInsert, onCancel }: {
@@ -14,26 +14,26 @@ export function GraphCaptureInsert({ tree, primaryChannel, source, onInsert, onC
   const preferred = plan.locations.find(location => location.id === `edge:${tree.graph?.edges.find(edge => edge.from === source && edge.kind === 'default')?.id}`) ?? (plan.locations.length === 1 ? plan.locations[0] : undefined);
   const [locationId, setLocationId] = useState(preferred?.id ?? '');
   const selected = plan.locations.find(location => location.id === locationId);
-  const refusal = plan.reason ?? (selected ? null : __('Choose where the signup goes.', 'wconvert'));
+  const refusal = plan.reason ?? (selected ? null : __('Choose where the signup goes.', 'wconvert-pro'));
   return <>
-    <AdminDialogHeader title={plan.channel === 'email' ? __('Add optional email signup', 'wconvert') : __('Add optional SMS signup', 'wconvert')}
-      meta={__('The main signup is saved first. This optional one adds contact details and consent to the same lead only when the visitor submits it.', 'wconvert')} />
+    <AdminDialogHeader title={plan.channel === 'email' ? __('Add optional email signup', 'wconvert-pro') : __('Add optional SMS signup', 'wconvert-pro')}
+      meta={__('The main signup is saved first. This optional one adds contact details and consent to the same lead only when the visitor submits it.', 'wconvert-pro')} />
     <AdminDialogBody className="wconvert-graph-insert__body">
       {plan.reason ? <p role="status">{plan.reason}</p> : <>
         {/* The visitor's outcome first, then the control that changes it (§22). */}
         {selected && <div className="wconvert-graph-insert__summary"><strong>{selected.label}</strong><p>{selected.detail}</p></div>}
-        <label htmlFor={`${id}-location`}>{__('Insert after the main signup', 'wconvert')}</label>
+        <label htmlFor={`${id}-location`}>{__('Insert after the main signup', 'wconvert-pro')}</label>
         <select id={`${id}-location`} value={locationId} onChange={event => setLocationId(event.target.value)}>
-          <option value="" disabled>{__('Choose a line…', 'wconvert')}</option>
+          <option value="" disabled>{__('Choose a line…', 'wconvert-pro')}</option>
           {plan.locations.map(location => <option key={location.id} value={location.id}>{location.label}</option>)}
         </select>
-        <p>{__('Only visitors on this line see it. Signing up and “No thanks” both continue to the same screen, and the main signup is not sent again. Check its consent text and Destinations afterwards.', 'wconvert')}</p>
+        <p>{__('Only visitors on this line see it. Signing up and “No thanks” both continue to the same screen, and the main signup is not sent again. Check its consent text and Destinations afterwards.', 'wconvert-pro')}</p>
       </>}
     </AdminDialogBody>
-    <AdminDialogFooter back={<Button type="button" variant="outline" onClick={onCancel}>{__('Cancel', 'wconvert')}</Button>}
+    <AdminDialogFooter back={<Button type="button" variant="outline" onClick={onCancel}>{__('Cancel', 'wconvert-pro')}</Button>}
       note={refusal && !plan.reason && <span id={`${id}-refusal`}>{refusal}</span>}>
       <Button type="button" aria-disabled={refusal !== null || undefined} aria-describedby={refusal && !plan.reason ? `${id}-refusal` : undefined}
-        onClick={() => { if (refusal === null) onInsert(locationId); }}>{__('Add signup', 'wconvert')}</Button>
+        onClick={() => { if (refusal === null) onInsert(locationId); }}>{__('Add signup', 'wconvert-pro')}</Button>
     </AdminDialogFooter>
   </>;
 }

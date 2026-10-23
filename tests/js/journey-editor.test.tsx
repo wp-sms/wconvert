@@ -21,7 +21,8 @@ const questionPanel = (step: number) => ({ elementSelection: { path: [step, 'chi
 import { Fullscreen } from '../../resources/admin/src/builder/Fullscreen';
 import type { QuestionCondition, QuestionNode, TemplateTree } from '@renderer/types';
 import { ConditionSettings } from '../../pro/modules/journeys/admin/JourneySettings';
-import { addGraphResultSignup, movedScreen, removedScreen, referencedJourney, replaceAnswer, walkNodes } from '../../resources/admin/src/builder/structure/journey';
+import { movedScreen, removedScreen, referencedJourney, replaceAnswer, walkNodes } from '../../resources/admin/src/builder/structure/journey';
+import { addGraphResultSignup } from '../../pro/modules/journeys/admin/structure/resultAccess';
 import { upgradeToGraph } from '../../resources/admin/src/builder/structure/graph';
 import progressive from '../../resources/templates/library/journey-email-then-sms.json';
 import source from '../../resources/templates/library/journey-email-only.json';

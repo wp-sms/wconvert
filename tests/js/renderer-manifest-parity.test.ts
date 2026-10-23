@@ -1,4 +1,4 @@
-import { registerProductPreview } from '../../resources/admin/src/productPreview';
+import { registerProductPreview } from '../../pro/resources/admin/src/productPreview';
 import { treeFixture } from './support/journey';
 import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';

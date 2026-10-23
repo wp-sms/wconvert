@@ -3,6 +3,30 @@ import tseslint from 'typescript-eslint';
 import reactHooks from 'eslint-plugin-react-hooks';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import globals from 'globals';
+import wordpress from '@wordpress/eslint-plugin';
+
+/*
+ * WordPress's own i18n rules, with the text domain decided by DIRECTORY.
+ *
+ * Free and Pro are two plugins with two catalogues: free's comes from wp.org's
+ * language packs, built from free's ZIP, and Pro's ships in Pro's ZIP. So a
+ * string's domain is not a style choice — it is which catalogue it can ever be
+ * found in, and code under `pro/` that says `'wconvert'` is in neither.
+ * `npm run check:pot` proves the same thing against the POTs themselves; this
+ * says it on the line, in the editor.
+ *
+ * `i18n-translator-comments` is off until the 451 placeholders that lack a
+ * `translators:` comment have one: `--max-warnings=0` makes a warning block
+ * too, so there is no half-way severity to start it at.
+ */
+const i18nRules = (domain) => ({
+  '@wordpress/i18n-text-domain': ['error', { allowedTextDomain: domain }],
+  '@wordpress/i18n-translator-comments': 'off',
+  '@wordpress/i18n-no-variables': 'error',
+  '@wordpress/i18n-ellipsis': 'error',
+  '@wordpress/i18n-no-collapsible-whitespace': 'error',
+  '@wordpress/i18n-no-placeholders-only': 'error',
+});
 
 export default [
   {
@@ -30,6 +54,9 @@ export default [
       'tools/template-server/.wrangler/',
       'tools/template-server/worker-configuration.d.ts',
       '.superdesign/tmp/',
+      // pot-coverage's self-check fixture: deliberately broken gettext, read
+      // as data by bin/pot-coverage.mjs and never bundled.
+      'tests/fixtures/pot-coverage/',
     ],
   },
   js.configs.recommended,
@@ -111,5 +138,21 @@ export default [
       'jsx-a11y/no-redundant-roles': ['error', { thead: ['rowgroup'], tbody: ['rowgroup'] }],
       'jsx-a11y/no-interactive-element-to-noninteractive-role': ['error', { td: ['cell'] }],
     },
+  },
+  {
+    files: ['resources/**/*.{ts,tsx}'],
+    plugins: { '@wordpress': wordpress },
+    rules: i18nRules('wconvert'),
+  },
+  {
+    files: ['pro/**/*.{ts,tsx}'],
+    plugins: { '@wordpress': wordpress },
+    rules: i18nRules('wconvert-pro'),
+  },
+  {
+    // A test asserts on the English a component renders, through a mocked
+    // `@wordpress/i18n`; its strings reach no catalogue and need none.
+    files: ['**/*.test.{ts,tsx}', '**/__tests__/**'],
+    rules: Object.fromEntries(Object.keys(i18nRules('')).map((rule) => [rule, 'off'])),
   },
 ];

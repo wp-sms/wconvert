@@ -30,30 +30,30 @@ registerBlockType(DIVIDER_BLOCK, {
     const hasSection = (items: typeof blocks): boolean => items.some(block => block.name === LOCK_BLOCK || hasSection(block.innerBlocks));
     const unsupported = remaining.find(block => !supportedContent([block], ALLOWED_BLOCKS, true));
     const problem = index < 0
-      ? __('Move this divider into the main article. Content stays public inside Groups, Columns or patterns.', 'wconvert')
+      ? __('Move this divider into the main article. Content stays public inside Groups, Columns or patterns.', 'wconvert-pro')
       : hasSection(blocks) || article.includes('[wconvert_content_lock')
-        ? __('This article already has a content lock section. Remove one lock. The divider is inactive.', 'wconvert')
+        ? __('This article already has a content lock section. Remove one lock. The divider is inactive.', 'wconvert-pro')
         : lockCount(blocks) > 1
-          ? __('Keep one divider per article. Until extras are removed, content stays public.', 'wconvert')
+          ? __('Keep one divider per article. Until extras are removed, content stays public.', 'wconvert-pro')
           : pagination
-            ? __('Remove Page Break and More blocks to use this divider. Content stays public.', 'wconvert')
+            ? __('Remove Page Break and More blocks to use this divider. Content stays public.', 'wconvert-pro')
             : unsupported
-              ? sprintf(__('The %s block below is not supported here. Move it above the divider. Content stays public.', 'wconvert'), getBlockType(unsupported.name)?.title ?? unsupported.name)
+              ? sprintf(__('The %s block below is not supported here. Move it above the divider. Content stays public.', 'wconvert-pro'), getBlockType(unsupported.name)?.title ?? unsupported.name)
               : /<(?:form|iframe|script|video|audio|object|embed)\b|\[\/?[a-zA-Z]/i.test(html)
-                ? __('Content below includes an embed or shortcode. Move it above the divider. The remainder stays public.', 'wconvert')
+                ? __('Content below includes an embed or shortcode. Move it above the divider. The remainder stays public.', 'wconvert-pro')
               : null;
     const picker = <CampaignPickerFields value={value} onChange={optinId => setAttributes({ optinId })} state={state} focusRequested={focusRequested} onFocusHandled={() => setFocusRequested(false)} />;
     return <div {...useBlockProps({ className: 'wconvert-lock-divider' })}>
-      <InspectorControls><PanelBody title={__('Lock from here', 'wconvert')} opened={settingsOpen} onToggle={setSettingsOpen}>
+      <InspectorControls><PanelBody title={__('Lock from here', 'wconvert-pro')} opened={settingsOpen} onToggle={setSettingsOpen}>
         {picker}
-        <p className="wconvert-lock-settings__hint">{__('Locks to the end of this article, including new content. For a section with public content after it, use the WConvert content lock block.', 'wconvert')}</p>
+        <p className="wconvert-lock-settings__hint">{__('Locks to the end of this article, including new content. For a section with public content after it, use the WConvert content lock block.', 'wconvert-pro')}</p>
       </PanelBody></InspectorControls>
-      <BlockControls group="other"><ToolbarButton disabled={!canRemove} onClick={() => removeBlocks([clientId])}>{__('Remove divider, keep content', 'wconvert')}</ToolbarButton></BlockControls>
-      <div className="wconvert-lock-editor__boundary"><strong>{__('Content lock starts here', 'wconvert')}</strong><span>{boundaryLabel(value, state, __('Not set up', 'wconvert'))}</span></div>
-      <p className="wconvert-lock-divider__scope">{__('Everything below, to the end of this article.', 'wconvert')}</p>
-      {!value ? <Button variant="secondary" onClick={openSettings}>{__('Choose campaign', 'wconvert')}</Button> : <CampaignStatus value={value} state={state} />}
-      {problem ? <Notice status={hasContent ? 'warning' : 'info'} isDismissible={false}>{problem}{unsupported && <Button variant="secondary" onClick={() => selectBlock(unsupported.clientId)}>{__('Find unsupported block', 'wconvert')}</Button>}</Notice>
-        : <span className="wconvert-lock-divider__count">{!hasContent ? __('Add content below to lock it.', 'wconvert') : sprintf(_n('%d block below', '%d blocks below', remaining.length, 'wconvert'), remaining.length)}</span>}
+      <BlockControls group="other"><ToolbarButton disabled={!canRemove} onClick={() => removeBlocks([clientId])}>{__('Remove divider, keep content', 'wconvert-pro')}</ToolbarButton></BlockControls>
+      <div className="wconvert-lock-editor__boundary"><strong>{__('Content lock starts here', 'wconvert-pro')}</strong><span>{boundaryLabel(value, state, __('Not set up', 'wconvert-pro'))}</span></div>
+      <p className="wconvert-lock-divider__scope">{__('Everything below, to the end of this article.', 'wconvert-pro')}</p>
+      {!value ? <Button variant="secondary" onClick={openSettings}>{__('Choose campaign', 'wconvert-pro')}</Button> : <CampaignStatus value={value} state={state} />}
+      {problem ? <Notice status={hasContent ? 'warning' : 'info'} isDismissible={false}>{problem}{unsupported && <Button variant="secondary" onClick={() => selectBlock(unsupported.clientId)}>{__('Find unsupported block', 'wconvert-pro')}</Button>}</Notice>
+        : <span className="wconvert-lock-divider__count">{!hasContent ? __('Add content below to lock it.', 'wconvert-pro') : sprintf(_n('%d block below', '%d blocks below', remaining.length, 'wconvert-pro'), remaining.length)}</span>}
     </div>;
   },
   save: () => null,

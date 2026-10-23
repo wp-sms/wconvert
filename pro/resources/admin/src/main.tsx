@@ -1,5 +1,5 @@
 import { reportExtensions } from '@/stats/extensions';
-import { registerProductPreview } from '@/productPreview';
+import { registerProductPreview } from './productPreview';
 import { analyticsIntegration } from '@/analyticsIntegration';
 import { lazy, StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';

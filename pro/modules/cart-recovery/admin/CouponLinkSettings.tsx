@@ -41,11 +41,11 @@ export function expiryWarning(code: string, expiry: CouponExpiry | null): string
   if (!expiry || !expiry.ends) return null;
   if (expiry.verdict === 'outlives' && expiry.expires) {
     /* translators: 1: a coupon code, 2: the date it expires, 3: the date and time the campaign ends. */
-    return sprintf(__('%1$s stays valid until %2$s, after this campaign ends on %3$s.', 'wconvert'), code, expiry.expires, expiry.ends);
+    return sprintf(__('%1$s stays valid until %2$s, after this campaign ends on %3$s.', 'wconvert-pro'), code, expiry.expires, expiry.ends);
   }
   if (expiry.verdict === 'no_expiry') {
     /* translators: 1: a coupon code, 2: the date and time the campaign ends. */
-    return sprintf(__('%1$s never expires, so it keeps working after this campaign ends on %2$s.', 'wconvert'), code, expiry.ends);
+    return sprintf(__('%1$s never expires, so it keeps working after this campaign ends on %2$s.', 'wconvert-pro'), code, expiry.ends);
   }
   return null;
 }
@@ -83,9 +83,9 @@ function CouponLinkControls({ code, href, endsAt, onChange }: CodeLinkProps) {
   const stale = applies !== null && applies.toLowerCase() !== code.trim().toLowerCase();
   return <>
     <Button type="button" variant="outline" className="justify-self-start" disabled={code.trim() === '' || href === couponHref(code)} onClick={() => onChange(couponHref(code))}>
-      {__('Apply in WooCommerce', 'wconvert')}
+      {__('Apply in WooCommerce', 'wconvert-pro')}
     </Button>
     {warning && <PanelHint>{warning}</PanelHint>}
-    {stale && <PanelHint>{sprintf(/* translators: 1: the coupon code the link applies, 2: the code the block shows. */ __('This link applies %1$s, but the block shows %2$s. Press Apply in WooCommerce to match them.', 'wconvert'), applies, code.trim())}</PanelHint>}
+    {stale && <PanelHint>{sprintf(/* translators: 1: the coupon code the link applies, 2: the code the block shows. */ __('This link applies %1$s, but the block shows %2$s. Press Apply in WooCommerce to match them.', 'wconvert-pro'), applies, code.trim())}</PanelHint>}
   </>;
 }

@@ -62,7 +62,7 @@ final class WebhookDestinationType implements DestinationType, DeclaresRetrySche
     }
 
     public function id(): string { return 'webhook'; }
-    public function label(): string { return __('Webhook', 'wconvert'); }
+    public function label(): string { return __('Webhook', 'wconvert-pro'); }
     public function icon(): string { return 'webhook'; }
     public function tier(): Tier { return Tier::Pro; }
     public function requires(): ?\WConvert\Support\SiteDependency { return null; }
@@ -76,11 +76,11 @@ final class WebhookDestinationType implements DestinationType, DeclaresRetrySche
     public function connectionSchema(): array
     {
         return [
-            'url' => ['type' => 'url', 'label' => __('Webhook URL', 'wconvert')],
+            'url' => ['type' => 'url', 'label' => __('Webhook URL', 'wconvert-pro')],
             // Shown once, with this line and the guide, by free's generic secret panel.
-            'signing_secret' => ['type' => 'secret', 'label' => __('Signing secret', 'wconvert'), 'prefix' => 'whsec_',
-                'description' => __('Zapier, Make and n8n don’t check it.', 'wconvert'), 'guide' => Docs::url(Docs::WEBHOOKS, 'verify-the-signature')],
-            'headers' => ['type' => 'headers', 'label' => __('Custom headers', 'wconvert'), 'optional' => true, 'max' => 5,
+            'signing_secret' => ['type' => 'secret', 'label' => __('Signing secret', 'wconvert-pro'), 'prefix' => 'whsec_',
+                'description' => __('Zapier, Make and n8n don’t check it.', 'wconvert-pro'), 'guide' => Docs::url(Docs::WEBHOOKS, 'verify-the-signature')],
+            'headers' => ['type' => 'headers', 'label' => __('Custom headers', 'wconvert-pro'), 'optional' => true, 'max' => 5,
                 'reserved' => self::RESERVED_HEADERS],
             // The site this Connection was made on, so a staging copy of it can say so.
             'setup_site_url' => ['type' => 'site_url'],
@@ -105,7 +105,7 @@ final class WebhookDestinationType implements DestinationType, DeclaresRetrySche
     {
         $refusal = self::refusalMessage($this->guard->refusal((string) ($credentials['url'] ?? ''), self::allowsPrivate()));
         if ($refusal !== null) throw new ConnectionRefused($refusal); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- rendered through React, which escapes.
-        if (!WebhookSignature::isSecret((string) ($credentials['signing_secret'] ?? ''))) throw new ConnectionRefused(__('This webhook has no valid signing secret. Generate a new one.', 'wconvert'));
+        if (!WebhookSignature::isSecret((string) ($credentials['signing_secret'] ?? ''))) throw new ConnectionRefused(__('This webhook has no valid signing secret. Generate a new one.', 'wconvert-pro'));
     }
 
     /** The host, which is what a merchant recognises: `hooks.zapier.com`.
@@ -123,10 +123,10 @@ final class WebhookDestinationType implements DestinationType, DeclaresRetrySche
         $url = (string) ($context->credentials['url'] ?? '');
         $secret = (string) ($context->credentials['signing_secret'] ?? '');
         $refusal = $this->guard->refusal($url, self::allowsPrivate());
-        if ($refusal === WebhookUrlGuard::UNRESOLVED) return PushResult::retryable(__('The webhook’s host could not be found. Sending will retry.', 'wconvert'));
+        if ($refusal === WebhookUrlGuard::UNRESOLVED) return PushResult::retryable(__('The webhook’s host could not be found. Sending will retry.', 'wconvert-pro'));
         if ($refusal !== null) return PushResult::attention((string) self::refusalMessage($refusal));
-        if (!WebhookSignature::isSecret($secret)) return PushResult::attention(__('This webhook has no valid signing secret. Generate a new one.', 'wconvert'));
-        if ($subject->deliveryId === '') return PushResult::terminal(__('This submission has no delivery id.', 'wconvert'));
+        if (!WebhookSignature::isSecret($secret)) return PushResult::attention(__('This webhook has no valid signing secret. Generate a new one.', 'wconvert-pro'));
+        if ($subject->deliveryId === '') return PushResult::terminal(__('This submission has no delivery id.', 'wconvert-pro'));
 
         // Encoded once: the signature covers these exact bytes.
         $body = (string) wp_json_encode(WebhookPayload::of($subject, $context, home_url(), wp_get_environment_type()), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
@@ -158,30 +158,30 @@ final class WebhookDestinationType implements DestinationType, DeclaresRetrySche
     public static function outcome(int $status): PushResult
     {
         if ($status >= 200 && $status < 300) return PushResult::success();
-        if ($status >= 300 && $status < 400) return PushResult::attention(__('The webhook URL redirects. Paste the address it redirects to.', 'wconvert'));
-        if ($status === 401) return PushResult::attention(__('The receiver refused the request. Check the webhook’s key or headers.', 'wconvert'));
-        if ($status === 403) return PushResult::attention(__('The receiver or its firewall blocked the request. Check its key, headers or bot protection.', 'wconvert'));
-        if ($status === 404 || $status === 410) return PushResult::attention(__('The receiver no longer accepts this URL. The Zap or scenario may be off or deleted.', 'wconvert'));
-        if ($status === 408 || $status === 429 || $status >= 500) return PushResult::retryable(__('The receiver is temporarily unavailable. Sending will retry.', 'wconvert'));
-        return PushResult::terminal(__('The receiver rejected this submission.', 'wconvert'));
+        if ($status >= 300 && $status < 400) return PushResult::attention(__('The webhook URL redirects. Paste the address it redirects to.', 'wconvert-pro'));
+        if ($status === 401) return PushResult::attention(__('The receiver refused the request. Check the webhook’s key or headers.', 'wconvert-pro'));
+        if ($status === 403) return PushResult::attention(__('The receiver or its firewall blocked the request. Check its key, headers or bot protection.', 'wconvert-pro'));
+        if ($status === 404 || $status === 410) return PushResult::attention(__('The receiver no longer accepts this URL. The Zap or scenario may be off or deleted.', 'wconvert-pro'));
+        if ($status === 408 || $status === 429 || $status >= 500) return PushResult::retryable(__('The receiver is temporarily unavailable. Sending will retry.', 'wconvert-pro'));
+        return PushResult::terminal(__('The receiver rejected this submission.', 'wconvert-pro'));
     }
 
     /** A transport error: a bad certificate needs the merchant; anything else is an outage. */
     private static function transportFailure(string $error): PushResult
     {
         if (preg_match('/certificate|cURL error (51|58|60|77)\b/i', $error) === 1) {
-            return PushResult::attention(__('The receiver’s security certificate is invalid. Fix it on the receiver; WConvert only sends over a valid one.', 'wconvert'));
+            return PushResult::attention(__('The receiver’s security certificate is invalid. Fix it on the receiver; WConvert only sends over a valid one.', 'wconvert-pro'));
         }
-        return PushResult::retryable(__('The receiver could not be reached. The result may be uncertain.', 'wconvert'));
+        return PushResult::retryable(__('The receiver could not be reached. The result may be uncertain.', 'wconvert-pro'));
     }
 
     /** A guard refusal in the merchant's words, or null where there is none. */
     private static function refusalMessage(?string $refusal): ?string
     {
         return match ($refusal) {
-            WebhookUrlGuard::INVALID => __('Enter a full webhook URL starting with https:// or http://.', 'wconvert'),
-            WebhookUrlGuard::PRIVATE => __('This URL points at a private or local network address, which WConvert does not send to.', 'wconvert'),
-            WebhookUrlGuard::UNRESOLVED => __('This URL’s host could not be found. Check the address.', 'wconvert'),
+            WebhookUrlGuard::INVALID => __('Enter a full webhook URL starting with https:// or http://.', 'wconvert-pro'),
+            WebhookUrlGuard::PRIVATE => __('This URL points at a private or local network address, which WConvert does not send to.', 'wconvert-pro'),
+            WebhookUrlGuard::UNRESOLVED => __('This URL’s host could not be found. Check the address.', 'wconvert-pro'),
             default => null,
         };
     }

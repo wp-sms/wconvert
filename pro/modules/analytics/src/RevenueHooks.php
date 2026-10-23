@@ -57,7 +57,7 @@ final class RevenueHooks
         add_action('woocommerce_store_api_checkout_order_processed', [$this, 'bindOrder']);
         add_filter('wconvert_privacy_browser_storage', function (array $rows): array {
             if ($this->settings()['since'] === null) return $rows;
-            $rows['additional'][] = __('When enabled and statistics consent is granted, campaign sales tracking stores a campaign reference and interaction time in the WooCommerce session. An interaction can link one checkout created within 30 minutes. A short-lived anonymous receipt prevents duplicate credit. Order attribution stays with the order under WooCommerce retention and erasure policies; no contact details or money are copied into WConvert.', 'wconvert');
+            $rows['additional'][] = __('When enabled and statistics consent is granted, campaign sales tracking stores a campaign reference and interaction time in the WooCommerce session. An interaction can link one checkout created within 30 minutes. A short-lived anonymous receipt prevents duplicate credit. Order attribution stays with the order under WooCommerce retention and erasure policies; no contact details or money are copied into WConvert.', 'wconvert-pro');
             return $rows;
         });
     }
@@ -88,7 +88,7 @@ final class RevenueHooks
     public function save(WP_REST_Request $request): WP_REST_Response|WP_Error
     {
         $body = $request->get_json_params();
-        if (!function_exists('WC') || !is_array($body) || !is_bool($body['enabled'] ?? null) || count($body) !== 1) return new WP_Error('wconvert_revenue_settings', __('Choose whether to track campaign sales on this WooCommerce site.', 'wconvert'), ['status' => 422]);
+        if (!function_exists('WC') || !is_array($body) || !is_bool($body['enabled'] ?? null) || count($body) !== 1) return new WP_Error('wconvert_revenue_settings', __('Choose whether to track campaign sales on this WooCommerce site.', 'wconvert-pro'), ['status' => 422]);
         $prior = $this->settings();
         $this->options->set(self::OPTION, ['enabled' => $body['enabled'], 'since' => $prior['home'] === home_url('/') ? ($prior['since'] ?? ($body['enabled'] ? gmdate('c') : null)) : ($body['enabled'] ? gmdate('c') : null), 'home' => home_url('/')]);
         PageCache::purge();

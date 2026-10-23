@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { afterEach, expect, it } from 'vitest';
 import type { TemplateTree } from '@renderer/types';
 import { JourneyScreenContent } from '../../resources/admin/src/builder/JourneyScreenContent';
-import { addGraphScreen } from '../../resources/admin/src/builder/structure/graphInsertion';
+import { addGraphScreen } from '../../pro/modules/journeys/admin/structure/graphInsertion';
 import { graphTrace } from '../../resources/loader/src/journey-graph';
 import fixture from '../fixtures/journey-graph-enquiry.json';
 const tree = fixture as unknown as TemplateTree;

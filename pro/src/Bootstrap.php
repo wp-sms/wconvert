@@ -107,6 +107,14 @@ final class Bootstrap
 
     public static function setup(): void
     {
+        /*
+         * Before the guard, not past it: the refusal notice is in Pro's own
+         * domain, and Pro's catalogue lives in Pro's directory, where
+         * WordPress's just-in-time loader never looks. A Pro that refused to
+         * boot and loaded no catalogue would explain itself in English only.
+         */
+        add_action('init', [self::class, 'loadTextdomain']);
+
         $verdict = BootGuard::verdict();
 
         if (!$verdict->mayBoot()) {
@@ -121,8 +129,6 @@ final class Bootstrap
          * installed — which is what the merchant is in fact getting.
          */
         define('WCONVERT_PRO_LOADED', true);
-
-        add_action('init', [self::class, 'loadTextdomain']);
 
         /*
          * Pro's services bind into the container FREE created rather than
@@ -160,7 +166,14 @@ final class Bootstrap
     }
 
     /**
-     * Pro carries its own text domain, kept out of free's .pot.
+     * Pro carries its own text domain, `wconvert-pro`, kept out of free's .pot.
+     *
+     * Every gettext call under `pro/` names it — PHP, playbooks and the
+     * TypeScript Pro bundles — and `npm run build:pot:pro` extracts it into
+     * `resources/languages/wconvert-pro.pot`, which the release ZIP carries.
+     * Pro is not on wp.org, so no language pack will ever arrive for it: the
+     * catalogues are Pro's to ship, and this is where WordPress is told about
+     * them. `.l10n.php` files there are preferred over `.mo` since 6.5.
      */
     public static function loadTextdomain(): void
     {

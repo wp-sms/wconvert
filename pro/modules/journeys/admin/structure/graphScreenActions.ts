@@ -1,18 +1,18 @@
 import { __ } from '@wordpress/i18n';
 import type { TemplateTree } from '@renderer/types';
-import { duplicateScreen, referencedJourney, walkNodes, withBackButton } from './journey';
-import { insertOnGraphEdge } from './graph';
+import { duplicateScreen, referencedJourney, walkNodes, withBackButton } from '@/builder/structure/journey';
+import { insertOnGraphEdge } from '@/builder/structure/graph';
 import { graphInsertionLocations, insertionUnavailable } from './graphInsertion';
-import { journeyReadinessIssues } from './journeyReadiness';
-import { journeyBoundaryIssues } from './journeyBoundaryReadiness';
+import { journeyReadinessIssues } from '@/builder/structure/journeyReadiness';
+import { journeyBoundaryIssues } from '@/builder/structure/journeyBoundaryReadiness';
 
 export function duplicateGraphScreenReason(tree: TemplateTree, id: string): string | null {
   const screen = tree.steps.find(item => item.id === id);
-  if (!tree.graph || !screen) return __('Choose a screen.', 'wconvert');
+  if (!tree.graph || !screen) return __('Choose a screen.', 'wconvert-pro');
   if (['result', 'acknowledgement'].includes(screen.kind) || walkNodes(screen.content).some(node => ['field', 'consent'].includes(node.type) || node.type === 'button' && 'action' in node && node.action === 'submit'))
-    return __('For results, endings or forms, add a screen with its own lines and form settings.', 'wconvert');
+    return __('For results, endings or forms, add a screen with its own lines and form settings.', 'wconvert-pro');
   if (tree.graph.edges.some(edge => edge.from === id && edge.kind === 'answer') || !tree.graph.edges.some(edge => edge.from === id && edge.kind === 'default'))
-    return __('For screens with several lines, add a new screen and choose its lines.', 'wconvert');
+    return __('For screens with several lines, add a new screen and choose its lines.', 'wconvert-pro');
   return null;
 }
 export function duplicateGraphScreen(tree: TemplateTree, id: string): TemplateTree {

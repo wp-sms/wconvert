@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import type { ResultProductFilter as Filter } from '../../resources/renderer/src/types';
-import { ProductPicker } from '../../resources/admin/src/builder/ResultProductPicker';
+import { ProductPicker } from '../../pro/modules/journeys/admin/ResultProductPicker';
 import { afterEach, expect, it, vi } from 'vitest';
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import apiFetch from '@wordpress/api-fetch';
-import { LiveProductMatches, ResultProductFilter } from '../../resources/admin/src/builder/ResultProductFilter';
+import { LiveProductMatches } from '../../resources/admin/src/builder/ResultProductFilter';
+import { ResultProductFilter } from '../../pro/modules/journeys/admin/ResultProductFilter';
 vi.mock('@wordpress/api-fetch', () => ({ default: vi.fn() }));
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 

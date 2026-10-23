@@ -903,6 +903,9 @@ composer verify:source # the source contract
 npm test               # Vitest — free's tree and Pro's
 npm run typecheck      # tsc --noEmit
 npm run lint           # ESLint, --max-warnings=0
+npm run check:pot      # every translatable call is in its POT (needs wp-cli + npm run build)
+npm run build:pot      # free's POT → dist/languages/wconvert.pot (wp.org makes its own)
+npm run build:pot:pro  # Pro's POT → pro/resources/languages/wconvert-pro.pot (ships in Pro's ZIP)
 npm run preflight      # what CI would run for this diff, before pushing
 ```
 
@@ -912,6 +915,33 @@ stopping at the first failure and printing a timing summary. `--all` ignores
 the diff, `--visual` adds the Playwright suites (popup and fullscreen fail
 locally from a path with a space in it), and `--dry-run` lists the steps
 without running them. The MySQL database job stays CI-only.
+
+### Translations
+
+Two plugins mean two catalogues, and a string's text domain says which one it
+can ever be found in (ADR 0165). Code under `pro/` says `'wconvert-pro'`, and
+everything else says `'wconvert'`. ESLint enforces this per directory.
+
+- **Free** ships no `.pot`. wp.org builds its language pack from free's ZIP, so
+  its catalogue holds exactly the strings free's shipped PHP and built JS carry.
+- **Pro** is not on wp.org, so `bin/build.sh pro` makes
+  `resources/languages/wconvert-pro.pot` from the built bundles. Any `.po` there
+  is updated to it and compiled to `.mo`, `.l10n.php` and per-script `.json` in
+  the stage. Commit `.po` files only. The `.pot` names content-hashed bundle
+  files, so it is rebuilt every time and is gitignored.
+
+The extractors read the **built JavaScript**, never the TypeScript, by callee
+name. The admin bundle is therefore minified with `GETTEXT_SAFE_TERSER`
+(`vite.admin-config.mjs`), and `npm run check:pot` proves every literal call
+reached its POT. It runs in CI as its own job. Locally it needs wp-cli on the
+PATH and `npm run build` first. A free helper that only Pro's bundle ships fails
+the check: no catalogue can hold it, so it belongs under `pro/`.
+
+To see a locale for real, turn both POTs into pseudo-translated `.po` files,
+compile them with `wp i18n make-json` and `make-php`, mount them as
+`wp-content/languages` (Pro's into `pro/resources/languages`), and force the
+locale with a one-line mu-plugin: `add_filter('locale', fn () => 'de_DE')`.
+`WPLANG` is refused for a locale whose core pack is not installed.
 
 ## Releasing
 

@@ -172,11 +172,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # wp-cli makes Pro's catalogue template, which ships in the ZIP because
+      # Pro is not on wp.org (bin/build.sh, `npm run build:pot:pro`).
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.1'
           coverage: none
+          tools: composer, wp-cli
 
       - uses: actions/setup-node@v4
         with:

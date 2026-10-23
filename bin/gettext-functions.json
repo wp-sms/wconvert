@@ -1,0 +1,31 @@
+{
+  "$comment": [
+    "Every gettext function the translation guards read, and the 1-based argument each part of a",
+    "translatable string sits in. ONE table: bin/gettext-calls.php (the PHP reader behind",
+    "pot-call-sites.php) and bin/pot-coverage.mjs (the JS/TS reader) both load it, so the two halves",
+    "of `npm run check:pot` cannot disagree about where _nx() keeps its domain. The positions are",
+    "WordPress's own, and @wordpress/i18n uses the same ones for the four functions it exports",
+    "(__, _x, _n, _nx). Ported from WSMS 8's bin/gettext-functions.json."
+  ],
+  "functions": {
+    "__":                             { "msgid": 1, "domain": 2 },
+    "_e":                             { "msgid": 1, "domain": 2 },
+    "esc_attr__":                     { "msgid": 1, "domain": 2 },
+    "esc_attr_e":                     { "msgid": 1, "domain": 2 },
+    "esc_html__":                     { "msgid": 1, "domain": 2 },
+    "esc_html_e":                     { "msgid": 1, "domain": 2 },
+    "esc_xml__":                      { "msgid": 1, "domain": 2 },
+    "esc_xml_e":                      { "msgid": 1, "domain": 2 },
+    "translate":                      { "msgid": 1, "domain": 2 },
+    "_x":                             { "msgid": 1, "context": 2, "domain": 3 },
+    "_ex":                            { "msgid": 1, "context": 2, "domain": 3 },
+    "esc_attr_x":                     { "msgid": 1, "context": 2, "domain": 3 },
+    "esc_html_x":                     { "msgid": 1, "context": 2, "domain": 3 },
+    "esc_xml_x":                      { "msgid": 1, "context": 2, "domain": 3 },
+    "translate_with_gettext_context": { "msgid": 1, "context": 2, "domain": 3 },
+    "_n_noop":                        { "msgid": 1, "plural": 2, "domain": 3 },
+    "_n":                             { "msgid": 1, "plural": 2, "domain": 4 },
+    "_nx_noop":                       { "msgid": 1, "plural": 2, "context": 3, "domain": 4 },
+    "_nx":                            { "msgid": 1, "plural": 2, "context": 4, "domain": 5 }
+  }
+}

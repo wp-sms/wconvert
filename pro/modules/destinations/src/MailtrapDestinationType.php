@@ -16,18 +16,18 @@ defined('ABSPATH') || exit;
 final class MailtrapDestinationType implements DestinationType
 {
     public function id(): string { return 'mailtrap'; }
-    public function label(): string { return __('Mailtrap', 'wconvert'); }
+    public function label(): string { return __('Mailtrap', 'wconvert-pro'); }
     public function icon(): string { return 'mail'; }
     public function tier(): Tier { return Tier::Pro; }
     public function requires(): ?\WConvert\Support\SiteDependency { return null; }
     /** A push makes one lookup and at most one write; Mailtrap allows 200 Contacts API requests per minute. */
     public function throughput(): int { return 60; }
     /** @return array<string, mixed> */
-    public function connectionSchema(): array { return ['api_token' => ['type' => 'password', 'label' => __('Mailtrap API token', 'wconvert')]]; }
+    public function connectionSchema(): array { return ['api_token' => ['type' => 'password', 'label' => __('Mailtrap API token', 'wconvert-pro')]]; }
 
     public function requirements(): DestinationRequirements
     {
-        return new DestinationRequirements([CanonicalFields::EMAIL], ['lists' => ['label' => __('List', 'wconvert'), 'type' => 'ids', 'max' => 1]], [CanonicalFields::EMAIL, CanonicalFields::NAME], [], ['email']);
+        return new DestinationRequirements([CanonicalFields::EMAIL], ['lists' => ['label' => __('List', 'wconvert-pro'), 'type' => 'ids', 'max' => 1]], [CanonicalFields::EMAIL, CanonicalFields::NAME], [], ['email']);
     }
 
     /** Mailtrap does not document which token permission the Contacts API needs, so reading the lists is the proof. */
@@ -53,7 +53,7 @@ final class MailtrapDestinationType implements DestinationType
     /** Mailtrap has no name field, so the Destination says where it goes (ADR 0110). Lists are unpaged: at most 50. */
     public function settingsSchema(array $credentials): array
     {
-        if (empty($credentials['api_token'])) return ['lists' => ['type' => 'ids', 'label' => __('List', 'wconvert'), 'max' => 1]];
+        if (empty($credentials['api_token'])) return ['lists' => ['type' => 'ids', 'label' => __('List', 'wconvert-pro'), 'max' => 1]];
         [$status, $lists] = $this->request($credentials, 'GET', '/contacts/lists');
         if ($status !== 200) throw new \RuntimeException('Mailtrap lists could not be read.');
         $options = [];
@@ -61,13 +61,13 @@ final class MailtrapDestinationType implements DestinationType
             if (is_array($list) && isset($list['id'], $list['name'])) $options[] = ['value' => (string) $list['id'], 'label' => (string) $list['name']];
         }
         $textFields = $this->fields($credentials);
-        $nameSetting = ['type' => 'select', 'label' => __('Name goes to', 'wconvert'), 'options' => $textFields];
+        $nameSetting = ['type' => 'select', 'label' => __('Name goes to', 'wconvert-pro'), 'options' => $textFields];
         if (in_array('first_name', array_column($textFields, 'value'), true)) $nameSetting['default'] = 'first_name';
-        return ['lists' => ['type' => 'ids', 'label' => __('List', 'wconvert'), 'max' => 1, 'options' => $options],
+        return ['lists' => ['type' => 'ids', 'label' => __('List', 'wconvert-pro'), 'max' => 1, 'options' => $options],
             'name_field' => $nameSetting,
-            'existing_contact' => ['type' => 'select', 'label' => __('If the contact exists', 'wconvert'), 'default' => 'keep', 'options' => [
-                ['value' => 'keep', 'label' => __('Keep existing details', 'wconvert')],
-                ['value' => 'update', 'label' => __('Update mapped fields', 'wconvert')],
+            'existing_contact' => ['type' => 'select', 'label' => __('If the contact exists', 'wconvert-pro'), 'default' => 'keep', 'options' => [
+                ['value' => 'keep', 'label' => __('Keep existing details', 'wconvert-pro')],
+                ['value' => 'update', 'label' => __('Update mapped fields', 'wconvert-pro')],
             ]]];
     }
 
@@ -103,9 +103,9 @@ final class MailtrapDestinationType implements DestinationType
     public function push(PushSubject $subject, PushContext $context): PushResult
     {
         $email = $subject->values[CanonicalFields::EMAIL] ?? '';
-        if (!is_email($email)) return PushResult::terminal(__('This submission has no valid email address.', 'wconvert'));
+        if (!is_email($email)) return PushResult::terminal(__('This submission has no valid email address.', 'wconvert-pro'));
         $lists = DestinationRequirements::ids($context->settings['lists'] ?? null);
-        if (count($lists) !== 1 || !ctype_digit($lists[0])) return PushResult::attention(__('Choose one Mailtrap list.', 'wconvert'));
+        if (count($lists) !== 1 || !ctype_digit($lists[0])) return PushResult::attention(__('Choose one Mailtrap list.', 'wconvert-pro'));
         $listId = (int) $lists[0];
         $nameField = $context->settings['name_field'] ?? '';
         $nameField = is_string($nameField) && self::isTag($nameField) ? $nameField : '';
@@ -129,14 +129,14 @@ final class MailtrapDestinationType implements DestinationType
             }
             if ($found !== 200) return $this->failure($found);
             $id = $existing['data']['id'] ?? null;
-            if (!is_string($id) || !preg_match('/^[A-Za-z0-9-]{1,64}$/D', $id)) return PushResult::retryable(__('Mailtrap is temporarily unavailable.', 'wconvert'));
+            if (!is_string($id) || !preg_match('/^[A-Za-z0-9-]{1,64}$/D', $id)) return PushResult::retryable(__('Mailtrap is temporarily unavailable.', 'wconvert-pro'));
             // Keep: an existing Contact's details stay as they are; a signup only adds the list.
             $update = ($context->settings['existing_contact'] ?? 'keep') === 'update' && $fields !== [] ? ['fields' => $fields] : [];
             $change = $update + ($marketing ? ['list_ids_included' => [$listId]] : []);
             if ($change === []) return PushResult::success();
             return $this->outcome(...$this->request($context->credentials, 'PATCH', '/contacts/' . $id, ['contact' => ['email' => $email] + $change]));
         } catch (\Throwable $failure) {
-            return PushResult::retryable(__('Mailtrap could not be reached. The result may be uncertain.', 'wconvert'));
+            return PushResult::retryable(__('Mailtrap could not be reached. The result may be uncertain.', 'wconvert-pro'));
         }
     }
 
@@ -155,10 +155,10 @@ final class MailtrapDestinationType implements DestinationType
     /** By status alone: Mailtrap's error bodies differ by endpoint, and none of them is shown. */
     private function failure(int $status): PushResult
     {
-        if ($status === 401 || $status === 403) return PushResult::attention(__('Mailtrap access was refused. Check this account.', 'wconvert'));
+        if ($status === 401 || $status === 403) return PushResult::attention(__('Mailtrap access was refused. Check this account.', 'wconvert-pro'));
         // 409: the Contact is still being written by an earlier request.
-        if ($status === 409 || $status === 429 || $status >= 500) return PushResult::retryable(__('Mailtrap is temporarily unavailable.', 'wconvert'));
-        return PushResult::terminal(__('Mailtrap rejected this contact or list.', 'wconvert'));
+        if ($status === 409 || $status === 429 || $status >= 500) return PushResult::retryable(__('Mailtrap is temporarily unavailable.', 'wconvert-pro'));
+        return PushResult::terminal(__('Mailtrap rejected this contact or list.', 'wconvert-pro'));
     }
 
     /** A merge tag in the shape a campaign mapping can store (`PushSubject::of`), so nothing offered is later dropped. */

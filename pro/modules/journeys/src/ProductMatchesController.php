@@ -37,9 +37,9 @@ final class ProductMatchesController implements RestController
 
     public function matches(WP_REST_Request $request): WP_REST_Response|WP_Error
     {
-        if (!JourneySupport::active() || !class_exists('WooCommerce')) return new WP_Error('wconvert_products_unavailable', __('Product results need WooCommerce and an active journeys module.', 'wconvert'), ['status' => 503]);
+        if (!JourneySupport::active() || !class_exists('WooCommerce')) return new WP_Error('wconvert_products_unavailable', __('Product results need WooCommerce and an active journeys module.', 'wconvert-pro'), ['status' => 503]);
         $source = json_decode((string) $request->get_param('filter'), true);
-        if (!ResultProductSource::available($source)) return new WP_Error('wconvert_product_filter', __('Choose an existing category and attribute values.', 'wconvert'), ['status' => 400]);
+        if (!ResultProductSource::available($source)) return new WP_Error('wconvert_product_filter', __('Choose an existing category and attribute values.', 'wconvert-pro'), ['status' => 400]);
         [$orderby, $order] = match ($source['order'] ?? 'oldest') {
             'newest' => ['date', 'desc'], 'price_low' => ['price', 'asc'], 'price_high' => ['price', 'desc'],
             default => ['id', 'asc'],
@@ -74,7 +74,7 @@ final class ProductMatchesController implements RestController
         $read = new WP_REST_Request('GET', '/wc/store/v1/products');
         foreach ($params as $key => $value) $read->set_param($key, $value);
         $response = rest_do_request($read);
-        if ($response->get_status() >= 400 || !is_array($response->get_data())) return new WP_Error('wconvert_product_read', __('Products could not load. Try again.', 'wconvert'), ['status' => 503]);
+        if ($response->get_status() >= 400 || !is_array($response->get_data())) return new WP_Error('wconvert_product_read', __('Products could not load. Try again.', 'wconvert-pro'), ['status' => 503]);
         return array_values(array_filter($response->get_data(), static fn ($row): bool => is_array($row) && is_int($row['id'] ?? null) && ($row['is_purchasable'] ?? false) === true
             && ($row['is_in_stock'] ?? false) === true && ($row['is_password_protected'] ?? false) !== true));
     }
@@ -82,7 +82,7 @@ final class ProductMatchesController implements RestController
     /** Search up to 40 choices, plus the saved selection, so large catalogs remain usable. */
     public function options(WP_REST_Request $request): WP_REST_Response|WP_Error
     {
-        if (!class_exists('WooCommerce')) return new WP_Error('wconvert_products_unavailable', __('Activate WooCommerce to choose products.', 'wconvert'), ['status' => 503]);
+        if (!class_exists('WooCommerce')) return new WP_Error('wconvert_products_unavailable', __('Activate WooCommerce to choose products.', 'wconvert-pro'), ['status' => 503]);
         $taxonomy = (string) $request->get_param('taxonomy');
         $search = (string) $request->get_param('search');
         $selected = (string) $request->get_param('selected');
@@ -97,7 +97,7 @@ final class ProductMatchesController implements RestController
             $chosen = array_values(array_filter($choices, static fn (array $choice): bool => $choice['id'] === $selected));
             return new WP_REST_Response(['items' => array_values(array_unique(array_merge($chosen, array_slice($choices, 0, 40)), SORT_REGULAR)), 'more' => count($choices) > 40]);
         }
-        if ($taxonomy !== 'product_cat' && (!str_starts_with($taxonomy, 'pa_') || !is_object_in_taxonomy('product', $taxonomy))) return new WP_Error('wconvert_product_taxonomy', __('Choose an existing attribute.', 'wconvert'), ['status' => 400]);
+        if ($taxonomy !== 'product_cat' && (!str_starts_with($taxonomy, 'pa_') || !is_object_in_taxonomy('product', $taxonomy))) return new WP_Error('wconvert_product_taxonomy', __('Choose an existing attribute.', 'wconvert-pro'), ['status' => 400]);
         $terms = get_terms(['taxonomy' => $taxonomy, 'hide_empty' => false, 'number' => 41, 'search' => $search, 'orderby' => 'name', 'order' => 'ASC']);
         if ($terms instanceof WP_Error) return $terms;
         $chosen = $selected !== '' ? get_term((int) $selected, $taxonomy) : null;

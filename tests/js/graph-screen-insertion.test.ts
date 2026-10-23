@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import type { QuestionCondition, TemplateTree } from '@renderer/types';
 import { graphTrace } from '@loader/journey-graph';
-import { addGraphScreen, graphInsertionLocations } from '../../resources/admin/src/builder/structure/graphInsertion';
+import { addGraphScreen, graphInsertionLocations } from '../../pro/modules/journeys/admin/structure/graphInsertion';
 import { referencedJourney, walkNodes } from '../../resources/admin/src/builder/structure/journey';
 import fixture from '../fixtures/journey-graph-enquiry.json';
 

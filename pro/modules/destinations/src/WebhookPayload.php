@@ -52,7 +52,7 @@ final class WebhookPayload
                 // An object even when empty, so a receiver never sees `[]` one day and `{}` the next.
                 'answers' => (object) ($details['answers'] ?? []),
                 'campaign' => $sample
-                    ? ['id' => 'sample', 'name' => __('Sample campaign', 'wconvert'), 'goal' => 'grow_email_list']
+                    ? ['id' => 'sample', 'name' => __('Sample campaign', 'wconvert-pro'), 'goal' => 'grow_email_list']
                     : ['id' => $context->optinId, 'name' => $context->optinName, 'goal' => $context->goal],
                 'source' => [
                     'page_url' => $details['source']['page_url'] ?? null,

@@ -51,8 +51,14 @@ final class BootGuard
      * before anything that needs to set one, and the request breaks in ways
      * that have nothing to do with WConvert. `admin_notices` fires long after
      * `init`, where the same __() calls are simply correct — and where the
-     * refusal actually gets translated, which it never did here, because this
-     * path is the one that returns before the text domain is loaded.
+     * refusal actually gets translated, which it never did here.
+     *
+     * *Corrected: that was half true.* Calling late is necessary but not
+     * enough, because Pro's catalogue lives in Pro's own directory, where
+     * WordPress's just-in-time loader never looks — and `Bootstrap::setup()`
+     * hooked `loadTextdomain()` only PAST the guard, on the path a refusal
+     * never takes. So the notice rendered in English on every translated site
+     * all the same. The hook now goes on before the verdict is read.
      *
      * Free had the same fault and did not know it (#52): its service provider
      * resolved every REST controller on `plugins_loaded`, and building one read

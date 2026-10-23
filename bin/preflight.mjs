@@ -93,6 +93,12 @@ const steps = [
     ['Vitest', npm('test'), { WCONVERT_DUMP_CONVERSIONS: dump }],
     ['Converted designs', ['php', 'bin/verify-converted-designs.php', dump]],
   ] : []),
+  // Every bundle, then the POTs read out of them. Needs wp-cli on the PATH;
+  // without it the check exits 2 and says so rather than passing.
+  ...(hit.php || hit.js ? [
+    ['Build', npm('run', 'build')],
+    ['POT coverage', npm('run', 'check:pot')],
+  ] : []),
   ...(hit.service ? [
     ['Design library', ['bash', 'tools/design-library/build.sh', 'renderer']],
     ['Template studio', npm('run', 'test:template-studio')],
@@ -102,7 +108,6 @@ const steps = [
     ['Worker tests', npm('test'), {}, 'tools/template-server'],
   ] : []),
   ...(hit.js && args.has('--visual') ? [
-    ['Build', npm('run', 'build')],
     ...['test:visual', 'test:visual:inline', 'test:visual:reopen', 'test:visual:content-lock', 'test:visual:popup', 'test:visual:events', 'test:visual:analytics', 'test:visual:fullscreen']
       .map(script => [`Visual: ${script.replace(/^test:visual:?/, '') || 'admin'}`, npm('run', script)]),
   ] : []),

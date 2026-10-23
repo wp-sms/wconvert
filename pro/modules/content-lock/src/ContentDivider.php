@@ -19,9 +19,9 @@ final class ContentDivider
         add_action('init', static function (): void {
             register_block_type(self::BLOCK, [
                 'api_version' => 3,
-                'title' => __('WConvert lock from here', 'wconvert'),
-                'keywords' => [__('wconvert', 'wconvert'), __('content lock', 'wconvert'), __('divider', 'wconvert'), __('gate', 'wconvert'), __('unlock', 'wconvert'), __('read more', 'wconvert')],
-                'description' => __('Reveal the rest of this article after a successful form submission.', 'wconvert'),
+                'title' => __('WConvert lock from here', 'wconvert-pro'),
+                'keywords' => [__('wconvert', 'wconvert-pro'), __('content lock', 'wconvert-pro'), __('divider', 'wconvert-pro'), __('gate', 'wconvert-pro'), __('unlock', 'wconvert-pro'), __('read more', 'wconvert-pro')],
+                'description' => __('Reveal the rest of this article after a successful form submission.', 'wconvert-pro'),
                 'category' => 'widgets',
                 'attributes' => ['optinId' => ['type' => 'string', 'default' => '']],
                 'supports' => ['html' => false, 'multiple' => false, 'reusable' => false],
