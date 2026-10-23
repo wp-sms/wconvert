@@ -6,16 +6,16 @@ defined('ABSPATH') || exit;
 
 return [
     'id' => 'finish-the-set',
-    'name' => __('Finish the set on a product page', 'wconvert'),
+    'name' => __('Finish the set on a product page', 'wconvert-pro'),
     'goal' => 'increase_basket_value',
     'template_id' => 'product-trio',
     'business_types' => ['stores'],
-    'notes' => __('Shows on one product\'s page: choose that main product and up to three items that go with it. For another product, make a copy of the campaign. Each item has an add-to-basket button, and items already in the basket stay hidden. Counts confirmed additions, not orders.', 'wconvert'),
+    'notes' => __('Shows on one product\'s page: choose that main product and up to three items that go with it. For another product, make a copy of the campaign. Each item has an add-to-basket button, and items already in the basket stay hidden. Counts confirmed additions, not orders.', 'wconvert-pro'),
     'copy' => [
-        'eyebrow' => __('Goes well with it', 'wconvert'),
-        'headline' => __('Finish the set.', 'wconvert'),
+        'eyebrow' => __('Goes well with it', 'wconvert-pro'),
+        'headline' => __('Finish the set.', 'wconvert-pro'),
         'body' => __('Three pieces picked to go with this one.
-Add any of them from here.', 'wconvert'),
+Add any of them from here.', 'wconvert-pro'),
     ],
     'rules' => [
         ['type' => 'time_on_page', 'seconds' => 20],

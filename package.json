@@ -62,6 +62,9 @@
     "templates:controls:proof": "npm run templates:pilot && node tools/design-library/build/control-proof.mjs",
     "prototype:commerce": "vite --config tools/design-library/commerce-prototype/vite.config.mjs",
     "prototype:winter": "vite --config tools/design-library/winter-prototype/vite.config.mjs",
+    "build:pot": "php -d error_reporting=E_ERROR -d memory_limit=2G $(which wp) i18n make-pot . dist/languages/wconvert.pot --slug=wconvert --domain=wconvert --skip-audit --exclude=pro,node_modules,vendor,packages,dist,tools,tests,docs,bin,phpstan-stubs,.claude,.agents",
+    "build:pot:pro": "php -d error_reporting=E_ERROR -d memory_limit=2G $(which wp) i18n make-pot pro pro/resources/languages/wconvert-pro.pot --slug=wconvert-pro --domain=wconvert-pro --skip-audit --exclude=node_modules,vendor,packages,tests,bin",
+    "check:pot": "node bin/pot-coverage.mjs",
     "preflight": "node bin/preflight.mjs"
   },
   "dependencies": {
@@ -93,6 +96,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "@wordpress/eslint-plugin": "^23.0.0",
     "@wp-playground/cli": "3.1.54",
     "eslint": "^9.20.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",

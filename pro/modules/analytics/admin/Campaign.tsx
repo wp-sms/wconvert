@@ -24,21 +24,21 @@ export default function Campaign({ value, parentId, onChange }: CampaignAnalytic
     }).catch(reason => { if (active) setEnabled(failed(reason)); });
     return () => { active = false; };
   }, [parentId, retry]);
-  if (parentId) return <p className="m-0">{__('This variant uses its campaign family’s analytics preferences.', 'wconvert')} <a href={editorHref(parentId)}>{__('Open parent campaign', 'wconvert')}</a></p>;
+  if (parentId) return <p className="m-0">{__('This variant uses its campaign family’s analytics preferences.', 'wconvert-pro')} <a href={editorHref(parentId)}>{__('Open parent campaign', 'wconvert-pro')}</a></p>;
   return <div className="flex flex-col gap-3">
     <div className="grid gap-2">
-      <span aria-hidden="true" className="font-medium">{__('Analytics tracking', 'wconvert')}</span>
-      <OptionStrip label={__('Analytics tracking', 'wconvert')} value={preference?.off ? 'off' : 'site'}
-        options={[{ value: 'site', label: __('Use site setting', 'wconvert') }, { value: 'off', label: __('Off for this campaign', 'wconvert') }]}
+      <span aria-hidden="true" className="font-medium">{__('Analytics tracking', 'wconvert-pro')}</span>
+      <OptionStrip label={__('Analytics tracking', 'wconvert-pro')} value={preference?.off ? 'off' : 'site'}
+        options={[{ value: 'site', label: __('Use site setting', 'wconvert-pro') }, { value: 'off', label: __('Off for this campaign', 'wconvert-pro') }]}
         onChange={choice => onChange({ ...preference, off: choice === 'off' })} />
     </div>
     {/* One sentence about the site setting, not a region: a fact inside a form. */}
-    {enabled.status === 'loading' ? <p role="status" className="m-0 text-note text-muted-foreground">{__('Loading site analytics…', 'wconvert')}</p>
+    {enabled.status === 'loading' ? <p role="status" className="m-0 text-note text-muted-foreground">{__('Loading site analytics…', 'wconvert-pro')}</p>
       : enabled.status === 'failed' ? <div role="alert" className="flex flex-wrap items-center gap-3 text-note text-destructive"><span>{enabled.message}</span><TryAgain onClick={() => setRetry(n => n + 1)} /></div>
-      : <p className="m-0 text-note">{enabled.data ? __('Published preferences apply to enabled external analytics and campaign sales, subject to consent.', 'wconvert') : __('External analytics is off. Campaign sales has a separate site setting.', 'wconvert')}</p>}
-    <p className="m-0 text-note text-muted-foreground">{__('Off excludes this campaign from external analytics and sales attribution. Its own results still count.', 'wconvert')}</p>
-    <Field label={__('Public analytics label (optional)', 'wconvert')} htmlFor={labelId} hintId={`${labelId}-hint`}
-      hint={__('Sent to your analytics provider, so use no personal information. Leave blank for a neutral label. Save and publish to apply.', 'wconvert')}>
+      : <p className="m-0 text-note">{enabled.data ? __('Published preferences apply to enabled external analytics and campaign sales, subject to consent.', 'wconvert-pro') : __('External analytics is off. Campaign sales has a separate site setting.', 'wconvert-pro')}</p>}
+    <p className="m-0 text-note text-muted-foreground">{__('Off excludes this campaign from external analytics and sales attribution. Its own results still count.', 'wconvert-pro')}</p>
+    <Field label={__('Public analytics label (optional)', 'wconvert-pro')} htmlFor={labelId} hintId={`${labelId}-hint`}
+      hint={__('Sent to your analytics provider, so use no personal information. Leave blank for a neutral label. Save and publish to apply.', 'wconvert-pro')}>
       <Input id={labelId} maxLength={80} value={preference?.label ?? ''} aria-describedby={`${labelId}-hint`} onChange={e => onChange({ ...preference, label: e.target.value })} />
     </Field>
   </div>;

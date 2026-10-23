@@ -57,6 +57,7 @@ final class ViteHelper
             WCONVERT_DIR . self::ADMIN_DIST,
             WCONVERT_URL . self::ADMIN_DIST,
             self::TEXT_DOMAIN,
+            '',
             $notices
         );
     }
@@ -83,9 +84,13 @@ final class ViteHelper
      * moved its build output.
      *
      * @param string $textDomain The catalogue `wp_set_script_translations()`
-     *                           loads. One domain per handle is all WordPress
-     *                           allows, which is why Pro's own strings arrive
-     *                           through {@see self::inlineTranslations()}.
+     *                           loads, for the entry and for every chunk. One
+     *                           domain per handle is all WordPress allows, which
+     *                           is why free's strings in Pro's bundle arrive
+     *                           through {@see self::inlineAdminTranslations()}.
+     * @param string $languagesDir Where that domain's `.json` catalogues live,
+     *                           or '' for WordPress's own languages folder —
+     *                           free's case, since wp.org's packs land there.
      * @param AdminNotices|null $notices Where a broken build is reported, or
      *                           null where the caller reports it itself.
      * @return bool Whether a usable build was found and enqueued.
@@ -95,6 +100,7 @@ final class ViteHelper
         string $distDir,
         string $distUrl,
         string $textDomain,
+        string $languagesDir,
         ?AdminNotices $notices
     ): bool {
         $entry = self::built($distDir, self::ENTRY);
@@ -150,14 +156,62 @@ final class ViteHelper
 
         self::serveAsModule($handle);
 
-        wp_set_script_translations($handle, $textDomain);
-        self::chunkTranslations($handle, $distDir, $distUrl, $textDomain);
+        wp_set_script_translations($handle, $textDomain, $languagesDir);
+        self::inlineCatalogues($handle, $distDir, $distUrl, [self::BUILDER_CHUNK], $textDomain, $languagesDir);
 
         return true;
     }
 
     /**
-     * The lazily loaded chunks' strings, handed to `wp.i18n` before the entry runs.
+     * FREE's admin catalogue, on another plugin's handle — Pro's.
+     *
+     * ========================================================================
+     * WP.ORG KEYS A CATALOGUE BY THE FILE IT CAME FROM, AND PRO'S ISN'T FREE'S.
+     * ========================================================================
+     * Pro's bundle is free's screens plus Pro's, so most of its strings are in
+     * free's domain. But a language pack names each JSON catalogue after the
+     * md5 of the shipped file's path — `public/admin/main-<hash>.js` in FREE's
+     * plugin — and Pro's bundle is a different file with a different hash. So
+     * binding `wconvert` to Pro's handle, which is what this replaced, looked
+     * up a catalogue nothing ever writes: every free string rendered in English
+     * on a Pro install, on a site whose free install was fully translated.
+     *
+     * The strings are the same strings, though, so free's own catalogues are
+     * the right ones to read. Each of free's built files — entry and chunks —
+     * is registered (never enqueued) so `load_script_textdomain()` resolves its
+     * real path, and every one of them is merged into the `wconvert` domain on
+     * the caller's handle. Which of Pro's chunks a string ended up in no longer
+     * matters: `setLocaleData` is per domain, not per file.
+     *
+     * Free owns the path because the files are free's. Pro spelling
+     * `public/admin/` for free would be the coupling {@see self::enqueueAdminFrom()}
+     * refuses in the other direction.
+     *
+     * What this cannot reach is a free string that only Pro's bundle carries —
+     * a free module free's own entry never imports. No free catalogue holds it.
+     *
+     * @param string $freeDir Free's plugin directory, trailing slash. A
+     *                        parameter only so a test can point it at a
+     *                        fixture; production passes nothing.
+     * @param string $freeUrl Free's plugin URL, trailing slash.
+     */
+    public static function inlineAdminTranslations(
+        string $handle,
+        string $freeDir = WCONVERT_DIR,
+        string $freeUrl = WCONVERT_URL
+    ): void {
+        self::inlineCatalogues(
+            $handle,
+            $freeDir . self::ADMIN_DIST,
+            $freeUrl . self::ADMIN_DIST,
+            [self::ENTRY, self::BUILDER_CHUNK],
+            self::TEXT_DOMAIN,
+            ''
+        );
+    }
+
+    /**
+     * Built files' strings, handed to `wp.i18n` before the entry runs.
      *
      * ========================================================================
      * A CATALOGUE IS PER FILE, AND THE BUILDER IS SEVERAL FILES.
@@ -169,25 +223,39 @@ final class ViteHelper
      * because the entry `import()`s them, so there is no handle of theirs for
      * WordPress to print a catalogue against.
      *
-     * Each chunk is therefore registered — never enqueued, so nothing prints
+     * Each file is therefore registered — never enqueued, so nothing prints
      * its tag — purely so `load_script_textdomain()` can resolve its path, and
-     * its catalogue is merged into the entry's domain with `setLocaleData`.
-     * Merged rather than replaced: `setLocaleData` adds to the domain's data.
+     * its catalogue is merged into the domain with `setLocaleData`. Merged
+     * rather than replaced: `setLocaleData` adds to the domain's data.
+     *
+     * The handle carries the domain as well as the file name, so free's
+     * `builder-<hash>` and Pro's can never claim one registration between
+     * them on Pro's screen, where both sets are read.
+     *
+     * @param list<string> $patterns The built files to read, as globs.
      */
-    private static function chunkTranslations(string $handle, string $distDir, string $distUrl, string $textDomain): void
-    {
-        $chunks = glob($distDir . self::BUILDER_CHUNK);
+    private static function inlineCatalogues(
+        string $handle,
+        string $distDir,
+        string $distUrl,
+        array $patterns,
+        string $textDomain,
+        string $languagesDir
+    ): void {
+        foreach ($patterns as $pattern) {
+            $files = glob($distDir . $pattern);
 
-        foreach (is_array($chunks) ? $chunks : [] as $chunk) {
-            $chunkHandle = $handle . '-' . basename($chunk, '.js');
-            // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- registered for its path only and never printed; see above.
-            wp_register_script($chunkHandle, $distUrl . basename($chunk), [], null, true);
-            self::inlineTranslations($handle, $textDomain, '', $chunkHandle);
+            foreach (is_array($files) ? $files : [] as $file) {
+                $fileHandle = $handle . '-' . $textDomain . '-' . basename($file, '.js');
+                // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- registered for its path only and never printed; see above.
+                wp_register_script($fileHandle, $distUrl . basename($file), [], null, true);
+                self::inlineTranslations($handle, $textDomain, $languagesDir, $fileHandle);
+            }
         }
     }
 
     /**
-     * A SECOND catalogue on one handle, inlined.
+     * A catalogue on a handle it was not bound to, inlined.
      *
      * ========================================================================
      * WORDPRESS ALLOWS ONE DOMAIN PER HANDLE, AND PRO'S BUNDLE HOLDS TWO.
@@ -198,13 +266,13 @@ final class ViteHelper
      * twice and the second replaces the first — so exactly one of the two can
      * be loaded the ordinary way, and the other has to be handed to `wp.i18n`
      * directly. This does that: it reads the JSON catalogue WordPress would
-     * have served and calls `setLocaleData` for the second domain before the
-     * bundle runs.
+     * have served and calls `setLocaleData` before the bundle runs. The lazily
+     * loaded chunks go through it too, in either domain, since no handle of
+     * theirs is ever printed.
      *
      * It is free's file because the machinery is not premium — it is the same
      * enqueue this class already does — and because free's tree may not name
-     * Pro. Free never calls it: free's bundle carries one domain and has no
-     * second catalogue to load.
+     * Pro.
      *
      * `ViteHelper::inlinePremiumTranslations()` in WSMS is the same method, and
      * the difference is worth recording: WSMS needs it because its free and
@@ -217,13 +285,13 @@ final class ViteHelper
      * locale has no catalogue, which is the normal case rather than a fault.
      *
      * @param string $handle       The registered script the data is attached to.
-     * @param string $textDomain   The SECOND domain, the one not bound to the handle.
+     * @param string $textDomain   The domain the catalogue is merged into.
      * @param string $languagesDir Where that domain's `.json` catalogues live,
      *                             or '' for WordPress's own languages folder.
      * @param string|null $source  The script whose catalogue is read, where it
-     *                             is not `$handle` — a lazily loaded chunk.
+     *                             is not `$handle` — a chunk, or free's file.
      */
-    public static function inlineTranslations(string $handle, string $textDomain, string $languagesDir, ?string $source = null): void
+    private static function inlineTranslations(string $handle, string $textDomain, string $languagesDir, ?string $source = null): void
     {
         $json = load_script_textdomain($source ?? $handle, $textDomain, $languagesDir);
 

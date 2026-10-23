@@ -30,6 +30,6 @@ export function RouteEditor({ tree, step, focusPath, focusTarget, onChange, onSe
     : <RouteSettings tree={tree} step={step} focusPath={typeof focusPath === 'number' ? focusPath : null} onChange={onChange} onInsert={onInsertOnPath} />;
 
   // The question's panel names the section; elsewhere a disclosure or tab already does.
-  return titled ? <PanelSection title={__('Where visitors go next', 'wconvert')} className="wconvert-question-next"
-    tip={__('First match wins, top to bottom. All other answers follow the last line.', 'wconvert')}>{routes}</PanelSection> : routes;
+  return titled ? <PanelSection title={__('Where visitors go next', 'wconvert-pro')} className="wconvert-question-next"
+    tip={__('First match wins, top to bottom. All other answers follow the last line.', 'wconvert-pro')}>{routes}</PanelSection> : routes;
 }

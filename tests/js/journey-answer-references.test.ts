@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import type { TemplateTree } from '@renderer/types';
-import { answerReferences } from '../../resources/admin/src/builder/structure/answerReferences';
+import { answerReferences } from '../../pro/modules/journeys/admin/structure/answerReferences';
 import fixture from '../fixtures/journey-graph-enquiry.json';
 it('addresses each use separately and filters removal review to the selected answer', () => {
   const tree = fixture as TemplateTree;

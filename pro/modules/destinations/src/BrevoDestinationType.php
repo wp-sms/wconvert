@@ -16,17 +16,17 @@ defined('ABSPATH') || exit;
 final class BrevoDestinationType implements DestinationType
 {
     public function id(): string { return 'brevo'; }
-    public function label(): string { return __('Brevo', 'wconvert'); }
+    public function label(): string { return __('Brevo', 'wconvert-pro'); }
     public function icon(): string { return 'mail'; }
     public function tier(): Tier { return Tier::Pro; }
     public function requires(): ?\WConvert\Support\SiteDependency { return null; }
     public function throughput(): int { return 60; }
     /** @return array<string, mixed> */
-    public function connectionSchema(): array { return ['api_key' => ['type' => 'password', 'label' => __('Brevo API key', 'wconvert')]]; }
+    public function connectionSchema(): array { return ['api_key' => ['type' => 'password', 'label' => __('Brevo API key', 'wconvert-pro')]]; }
 
     public function requirements(): DestinationRequirements
     {
-        return new DestinationRequirements([CanonicalFields::EMAIL], ['lists' => ['label' => __('List', 'wconvert'), 'type' => 'ids', 'max' => 1]], [CanonicalFields::EMAIL, CanonicalFields::NAME], [], ['email']);
+        return new DestinationRequirements([CanonicalFields::EMAIL], ['lists' => ['label' => __('List', 'wconvert-pro'), 'type' => 'ids', 'max' => 1]], [CanonicalFields::EMAIL, CanonicalFields::NAME], [], ['email']);
     }
 
     public function testConnection(array $credentials): void
@@ -48,7 +48,7 @@ final class BrevoDestinationType implements DestinationType
 
     public function settingsSchema(array $credentials): array
     {
-        if (empty($credentials['api_key'])) return ['lists' => ['type' => 'ids', 'label' => __('List', 'wconvert'), 'max' => 1]];
+        if (empty($credentials['api_key'])) return ['lists' => ['type' => 'ids', 'label' => __('List', 'wconvert-pro'), 'max' => 1]];
         $options = [];
         for ($offset = 0; $offset < 10000; $offset += 50) {
             [$status, $body] = $this->request($credentials, 'GET', '/contacts/lists?limit=50&offset=' . $offset);
@@ -60,10 +60,10 @@ final class BrevoDestinationType implements DestinationType
             if (count($lists) < 50 || (isset($body['count']) && $offset + count($lists) >= (int) $body['count'])) break;
             if ($offset + 50 >= 10000) throw new \RuntimeException('Brevo has too many lists to display.');
         }
-        return ['lists' => ['type' => 'ids', 'label' => __('List', 'wconvert'), 'max' => 1, 'options' => $options],
-            'existing_contact' => ['type' => 'select', 'label' => __('If the contact exists', 'wconvert'), 'default' => 'keep', 'options' => [
-                ['value' => 'keep', 'label' => __('Keep existing details', 'wconvert')],
-                ['value' => 'update', 'label' => __('Update mapped fields', 'wconvert')],
+        return ['lists' => ['type' => 'ids', 'label' => __('List', 'wconvert-pro'), 'max' => 1, 'options' => $options],
+            'existing_contact' => ['type' => 'select', 'label' => __('If the contact exists', 'wconvert-pro'), 'default' => 'keep', 'options' => [
+                ['value' => 'keep', 'label' => __('Keep existing details', 'wconvert-pro')],
+                ['value' => 'update', 'label' => __('Update mapped fields', 'wconvert-pro')],
             ]]];
     }
 
@@ -89,9 +89,9 @@ final class BrevoDestinationType implements DestinationType
     public function push(PushSubject $subject, PushContext $context): PushResult
     {
         $email = $subject->values[CanonicalFields::EMAIL] ?? '';
-        if (!is_email($email)) return PushResult::terminal(__('This submission has no valid email address.', 'wconvert'));
+        if (!is_email($email)) return PushResult::terminal(__('This submission has no valid email address.', 'wconvert-pro'));
         $lists = DestinationRequirements::ids($context->settings['lists'] ?? null);
-        if (count($lists) !== 1 || !ctype_digit($lists[0])) return PushResult::attention(__('Choose one Brevo list.', 'wconvert'));
+        if (count($lists) !== 1 || !ctype_digit($lists[0])) return PushResult::attention(__('Choose one Brevo list.', 'wconvert-pro'));
         $listId = (int) $lists[0];
         $attributes = [];
         if (isset($subject->values[CanonicalFields::NAME])) $attributes['FIRSTNAME'] = $subject->values[CanonicalFields::NAME];
@@ -120,15 +120,15 @@ final class BrevoDestinationType implements DestinationType
             }
             return $this->failure($status);
         } catch (\Throwable $failure) {
-            return PushResult::retryable(__('Brevo could not be reached. The result may be uncertain.', 'wconvert'));
+            return PushResult::retryable(__('Brevo could not be reached. The result may be uncertain.', 'wconvert-pro'));
         }
     }
 
     private function failure(int $status): PushResult
     {
-        if ($status === 401 || $status === 403) return PushResult::attention(__('Brevo access was refused. Check this account.', 'wconvert'));
-        if ($status === 425 || $status === 429 || $status >= 500) return PushResult::retryable(__('Brevo is temporarily unavailable.', 'wconvert'));
-        return PushResult::terminal(__('Brevo rejected this contact or list.', 'wconvert'));
+        if ($status === 401 || $status === 403) return PushResult::attention(__('Brevo access was refused. Check this account.', 'wconvert-pro'));
+        if ($status === 425 || $status === 429 || $status >= 500) return PushResult::retryable(__('Brevo is temporarily unavailable.', 'wconvert-pro'));
+        return PushResult::terminal(__('Brevo rejected this contact or list.', 'wconvert-pro'));
     }
 
     /** @param array<string, mixed> $credentials

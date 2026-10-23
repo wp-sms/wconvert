@@ -1,0 +1,51 @@
+{
+  "id": "collection-halloween-2026",
+  "revision": "6d42bac68703a526b6be60549facc951432c48ce1c7b3e598ea91843ba1bf66b",
+  "base_id": "4520fb86447457f05cd923ea5bacae393a5fd19465dc77a7e3e94bf65bd204a7",
+  "decision": "approved",
+  "reviewer": "Navid Kashani — text-domain re-approval",
+  "note": "Re-approved after the Pro text-domain change (PR #337, ADR 0165). Every re-hashed member differs from main only in its gettext domain and translators comments; designs unchanged. See manifest.",
+  "at": "2026-10-23T17:20:28.516Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/README.md",
+          "sha256": "8fc43e91e2224ce3ed9c2b9381d11d50ca0095daeb5371659c32011943e76a72"
+        },
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/manifest.json",
+          "sha256": "4c4aeb18167dd8ea7eb63da3f396094cb154ecc802af79e7a907109d2d3cbbfd"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/README.md",
+          "sha256": "8fc43e91e2224ce3ed9c2b9381d11d50ca0095daeb5371659c32011943e76a72"
+        },
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/manifest.json",
+          "sha256": "4c4aeb18167dd8ea7eb63da3f396094cb154ecc802af79e7a907109d2d3cbbfd"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/README.md",
+          "sha256": "8fc43e91e2224ce3ed9c2b9381d11d50ca0095daeb5371659c32011943e76a72"
+        },
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/manifest.json",
+          "sha256": "4c4aeb18167dd8ea7eb63da3f396094cb154ecc802af79e7a907109d2d3cbbfd"
+        }
+      ]
+    }
+  },
+  "record_id": "9888ba3226056b51b0169f3ce4982168a636502c6fcdbc908b624031e57a4a96"
+}

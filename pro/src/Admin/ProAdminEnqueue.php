@@ -144,14 +144,19 @@ final class ProAdminEnqueue
             $this->pluginDir . self::DIST,
             $this->pluginUrl . self::DIST,
             // ================================================================
-            // FREE'S DOMAIN ON THE HANDLE, PRO'S INLINED BESIDE IT.
+            // PRO'S DOMAIN ON THE HANDLE, FREE'S INLINED BESIDE IT.
             // ================================================================
             // Pro's bundle is free's screens plus Pro's, so it holds strings
             // from both catalogues — and `wp_set_script_translations()` binds
-            // exactly ONE domain to a handle. Free's is the bound one because
-            // it is almost all of the strings; Pro's arrives through
-            // `setLocaleData` below.
-            'wconvert',
+            // exactly ONE domain to a handle. Pro's is the bound one because
+            // its catalogue is the one keyed by THIS file: Pro ships its own
+            // (it is not on wp.org), built from Pro's own bundle, so the md5
+            // WordPress computes for `public/admin/main-<hash>.js` here is the
+            // md5 that catalogue was named with. Free's catalogue is keyed by
+            // free's files instead, and arrives through
+            // `ViteHelper::inlineAdminTranslations()` below.
+            'wconvert-pro',
+            $this->pluginDir . self::LANGUAGES,
             // Not free's notices object: free reports its OWN missing bundle
             // through that, and a Pro build that failed to unpack must not be
             // reported as free's plugin being broken. This class says what
@@ -165,7 +170,7 @@ final class ProAdminEnqueue
             return;
         }
 
-        ViteHelper::inlineTranslations(self::HANDLE, 'wconvert-pro', $this->pluginDir . self::LANGUAGES);
+        ViteHelper::inlineAdminTranslations(self::HANDLE);
 
         // ====================================================================
         // THE SETTINGS TRAVEL WITH THE SCRIPT, BECAUSE THEY BELONG TO ONE.

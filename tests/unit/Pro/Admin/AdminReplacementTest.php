@@ -254,16 +254,36 @@ final class AdminReplacementTest extends TestCase
      * ========================================================================
      * Pro's bundle is free's screens plus Pro's, so it holds strings from
      * `wconvert` AND `wconvert-pro`. `wp_set_script_translations()` binds ONE
-     * domain to a handle — call it twice and the second replaces the first — so
-     * free's is bound (it is almost all of the strings) and Pro's is handed to
-     * `wp.i18n` directly.
-     *
-     * Without this every Pro string renders in English on a translated site,
-     * and nothing anywhere says why.
+     * domain to a handle, and the one that can be bound is the one whose
+     * catalogue is keyed by THIS file: Pro's, which Pro builds from its own
+     * bundle. Binding free's — what this asserted before — looked up a
+     * catalogue named after Pro's file in free's language pack, which only
+     * ever holds free's file names, so every free string rendered in English.
+     * Free's arrives through `ViteHelper::inlineAdminTranslations()` instead
+     * (`tests/unit/Assets/ViteHelperTest.php`).
      */
-    public function testProsOwnCatalogueArrivesBesideFreesRatherThanInsteadOfIt(): void
+    public function testProsOwnDomainIsTheOneBoundToProsHandle(): void
     {
-        $GLOBALS['wconvertTestScriptCatalogues'][ProAdminEnqueue::HANDLE . '|wconvert-pro'] =
+        self::freeEnqueuesItsAdmin();
+        self::pro()->hooks();
+
+        do_action('admin_enqueue_scripts');
+
+        $this->assertSame(
+            'wconvert-pro',
+            $GLOBALS['wconvertTestScriptTranslations'][ProAdminEnqueue::HANDLE] ?? null,
+            'Pro\'s domain is the one bound to the handle'
+        );
+    }
+
+    /**
+     * And Pro's lazily loaded chunks, which have no printed handle of their
+     * own, bring Pro's catalogue for THEIR file — the bound domain only ever
+     * covers the entry.
+     */
+    public function testProsChunksBringProsCatalogueForTheirOwnFiles(): void
+    {
+        $GLOBALS['wconvertTestScriptCatalogues'][ProAdminEnqueue::HANDLE . '-wconvert-pro-builder-def67890|wconvert-pro'] =
             (string) json_encode(['locale_data' => ['messages' => ['' => [], 'Exit intent' => ['Absicht zu gehen']]]]);
 
         self::freeEnqueuesItsAdmin();
@@ -271,21 +291,15 @@ final class AdminReplacementTest extends TestCase
 
         do_action('admin_enqueue_scripts');
 
-        $this->assertSame(
-            'wconvert',
-            $GLOBALS['wconvertTestScriptTranslations'][ProAdminEnqueue::HANDLE] ?? null,
-            'free\'s domain is the one bound to the handle'
-        );
-
         $inline = $GLOBALS['wconvertTestInlineScripts'][ProAdminEnqueue::HANDLE] ?? [];
         $locale = array_values(array_filter(
             $inline,
-            static fn (array $script): bool => str_contains($script['data'], 'setLocaleData')
+            static fn (array $script): bool => str_contains($script['data'], 'Absicht zu gehen')
         ));
 
-        $this->assertCount(1, $locale, 'Pro\'s own strings have no catalogue on the page');
-        $this->assertStringContainsString('wconvert-pro', $locale[0]['data']);
-        $this->assertStringContainsString('Absicht zu gehen', $locale[0]['data']);
+        $this->assertCount(1, $locale, 'Pro\'s builder strings have no catalogue on the page');
+        $this->assertStringContainsString('"wconvert-pro"', $locale[0]['data']);
+        $this->assertSame('before', $locale[0]['position']);
     }
 
     /** An untranslated locale has no catalogue, which is normal rather than a fault. */

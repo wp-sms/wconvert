@@ -44,40 +44,40 @@ export default function ReopenSettings({ value, template, onChange }: ReopenProp
         <RotateCcw aria-hidden="true" />
         <span className="sr-only">{sprintf(
           /* translators: %s: what the color is for, e.g. “Background”. */
-          __('Put %s back to the campaign’s own', 'wconvert'), label)}</span>
+          __('Put %s back to the campaign’s own', 'wconvert-pro'), label)}</span>
       </Button>}
     </div>;
   };
   const missingLabel = config !== null && !config.label.trim();
   const ownColors = config?.background || config?.color;
-  const summary = [ownColors ? __('Own colors', 'wconvert') : __('Design colors', 'wconvert'),
-    config?.mobile?.visible === false ? __('Hidden on mobile', 'wconvert') : __('Shown on mobile', 'wconvert')].join(' · ');
+  const summary = [ownColors ? __('Own colors', 'wconvert-pro') : __('Design colors', 'wconvert-pro'),
+    config?.mobile?.visible === false ? __('Hidden on mobile', 'wconvert-pro') : __('Shown on mobile', 'wconvert-pro')].join(' · ');
 
-  return <PanelSection title={__('Reopen button', 'wconvert')} tipLabel={__('About reopen buttons', 'wconvert')}
-    tip={__('After closing, visitors can bring it back from a small button on the page.', 'wconvert')}>
-    <CheckRow className="wconvert-check wconvert-reopen-toggle" label={__('Show a reopen button', 'wconvert')} checked={config !== null}
-      onChange={event => onChange(event.target.checked ? { label: __('View offer', 'wconvert') } : null)} />
+  return <PanelSection title={__('Reopen button', 'wconvert-pro')} tipLabel={__('About reopen buttons', 'wconvert-pro')}
+    tip={__('After closing, visitors can bring it back from a small button on the page.', 'wconvert-pro')}>
+    <CheckRow className="wconvert-check wconvert-reopen-toggle" label={__('Show a reopen button', 'wconvert-pro')} checked={config !== null}
+      onChange={event => onChange(event.target.checked ? { label: __('View offer', 'wconvert-pro') } : null)} />
     {config && <>
-      <PanelField label={__('Button text', 'wconvert')} htmlFor={`${id}-label`}>
+      <PanelField label={__('Button text', 'wconvert-pro')} htmlFor={`${id}-label`}>
         <Input id={`${id}-label`} value={config.label} aria-invalid={missingLabel || undefined} aria-describedby={missingLabel ? `${id}-label-error` : undefined}
           onChange={event => update({ label: [...event.target.value].slice(0, 80).join('') })} />
-        {missingLabel && <p id={`${id}-label-error`} role="alert" className="m-0 text-note text-destructive">{__('Enter button text before saving.', 'wconvert')}</p>}
+        {missingLabel && <p id={`${id}-label-error`} role="alert" className="m-0 text-note text-destructive">{__('Enter button text before saving.', 'wconvert-pro')}</p>}
       </PanelField>
       <div className="wconvert-panel-pair">
-        {position(`${id}-position`, __('Position', 'wconvert'), config.placement, placement => update({ placement }))}
-        {distance(`${id}-gap`, __('Distance (px)', 'wconvert'), config.gap ?? 16, gap => update({ gap }))}
+        {position(`${id}-position`, __('Position', 'wconvert-pro'), config.placement, placement => update({ placement }))}
+        {distance(`${id}-gap`, __('Distance (px)', 'wconvert-pro'), config.gap ?? 16, gap => update({ gap }))}
       </div>
-      <Disclosure variant="inline" title={__('Colors and mobile', 'wconvert')} summary={summary}>
+      <Disclosure variant="inline" title={__('Colors and mobile', 'wconvert-pro')} summary={summary}>
         <div className="wconvert-palette">
-          {color('background', __('Background', 'wconvert'), template.tokens.accent || '#2563eb')}
-          {color('color', __('Text', 'wconvert'), template.tokens['accent-fg'] || '#ffffff')}
+          {color('background', __('Background', 'wconvert-pro'), template.tokens.accent || '#2563eb')}
+          {color('color', __('Text', 'wconvert-pro'), template.tokens['accent-fg'] || '#ffffff')}
         </div>
-        <CheckRow className="wconvert-check" label={__('Show on mobile', 'wconvert')} checked={config.mobile?.visible !== false} onChange={event => updateMobile({ visible: event.target.checked })} />
+        <CheckRow className="wconvert-check" label={__('Show on mobile', 'wconvert-pro')} checked={config.mobile?.visible !== false} onChange={event => updateMobile({ visible: event.target.checked })} />
         <div className="wconvert-panel-pair">
-          {position(`${id}-mobile-position`, __('Mobile position', 'wconvert'), config.mobile?.placement ?? config.placement, placement => updateMobile({ placement }))}
-          {distance(`${id}-mobile-gap`, __('Mobile distance (px)', 'wconvert'), config.mobile?.gap ?? config.gap ?? 16, gap => updateMobile({ gap }))}
+          {position(`${id}-mobile-position`, __('Mobile position', 'wconvert-pro'), config.mobile?.placement ?? config.placement, placement => updateMobile({ placement }))}
+          {distance(`${id}-mobile-gap`, __('Mobile distance (px)', 'wconvert-pro'), config.mobile?.gap ?? config.gap ?? 16, gap => updateMobile({ gap }))}
         </div>
-        <Button variant="outline" size="sm" className="justify-self-start" disabled={config.mobile === undefined} onClick={() => update({ mobile: undefined })}>{__('Reset mobile', 'wconvert')}</Button>
+        <Button variant="outline" size="sm" className="justify-self-start" disabled={config.mobile === undefined} onClick={() => update({ mobile: undefined })}>{__('Reset mobile', 'wconvert-pro')}</Button>
       </Disclosure>
     </>}
   </PanelSection>;

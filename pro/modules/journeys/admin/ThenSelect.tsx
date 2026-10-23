@@ -25,7 +25,7 @@ export function ThenSelect({ tree, step, onChange, onUpgrade, onBranch }: {
   const order = graphDisplayOrder(tree).filter(index => index !== step);
   // A graph screen with no path out yet gets one, unless nothing may follow it (a final result).
   if (graph && !fallback && !order.some(index => canAddGraphConnection(tree, screen.id, tree.steps[index].id))) {
-    return <FactRow label={__('Then', 'wconvert')}>{__('The campaign ends here', 'wconvert')}</FactRow>;
+    return <FactRow label={__('Then', 'wconvert-pro')}>{__('The campaign ends here', 'wconvert-pro')}</FactRow>;
   }
   const reachable = (target: string) => graph ? canTargetGraphScreen(tree, screen.id, target) : tree.steps.findIndex(item => item.id === target) > step;
   const choose = (target: string) => {
@@ -39,15 +39,15 @@ export function ThenSelect({ tree, step, onChange, onUpgrade, onBranch }: {
   // When the next screen has "Only if…", say who sees it and where everyone else goes (the prototype's panel, ADR 0142).
   const skipTo = graph && next?.when ? skipEdge(graph, next.id)?.to : undefined;
   return <>
-    <FactRow label={__('Then', 'wconvert')} htmlFor={`${id}-then`}>
+    <FactRow label={__('Then', 'wconvert-pro')} htmlFor={`${id}-then`}>
       <select id={`${id}-then`} data-then value={nextId ?? ''} onChange={event => choose(event.target.value)}>
-        {nextId === undefined && <option value="">{__('Choose a screen', 'wconvert')}</option>}
+        {nextId === undefined && <option value="">{__('Choose a screen', 'wconvert-pro')}</option>}
         {order.map(index => <option key={tree.steps[index].id} value={tree.steps[index].id} disabled={!reachable(tree.steps[index].id)}>{tree.steps[index].name}</option>)}
       </select>
     </FactRow>
-    {box ? <PanelHint>{sprintf(/* translators: %s: a screen's name. */ __('Visitors with any matching answer go through the follow-ups. The rest go straight to “%s”.', 'wconvert'), tree.steps.find(item => item.id === box.next)?.name ?? '')}</PanelHint>
-      : next?.when && skipTo && <PanelHint>{sprintf(/* translators: 1: a rule. 2, 3: screen names. */ __('Only visitors with %1$s see “%2$s”. All other answers go to “%3$s”.', 'wconvert'),
+    {box ? <PanelHint>{sprintf(/* translators: %s: a screen's name. */ __('Visitors with any matching answer go through the follow-ups. The rest go straight to “%s”.', 'wconvert-pro'), tree.steps.find(item => item.id === box.next)?.name ?? '')}</PanelHint>
+      : next?.when && skipTo && <PanelHint>{sprintf(/* translators: 1: a rule. 2, 3: screen names. */ __('Only visitors with %1$s see “%2$s”. All other answers go to “%3$s”.', 'wconvert-pro'),
         conditionText(tree, next.when), next.name, tree.steps.find(item => item.id === skipTo)?.name ?? '')}</PanelHint>}
-    {onBranch && <button type="button" className="wconvert-panel-link" onClick={onBranch}>{__('Send some answers to a different screen', 'wconvert')}</button>}
+    {onBranch && <button type="button" className="wconvert-panel-link" onClick={onBranch}>{__('Send some answers to a different screen', 'wconvert-pro')}</button>}
   </>;
 }

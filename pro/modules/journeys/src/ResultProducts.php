@@ -49,10 +49,10 @@ final class ResultProducts
      * @return array{state: string, message: string} */
     private static function quiz(array $result): array
     {
-        if (($result['product_action'] ?? 'link') !== 'link') return ProductHealth::check('unknown', __('Activate WConvert Pro to check cart buttons.', 'wconvert'));
+        if (($result['product_action'] ?? 'link') !== 'link') return ProductHealth::check('unknown', __('Activate WConvert Pro to check cart buttons.', 'wconvert-pro'));
         $ids = array_values(array_slice($result['product_ids'] ?? [], 0, 6));
         $filtered = isset($result['product_filter']);
-        if ($filtered && !ResultProductSource::available($result['product_filter'])) return ProductHealth::check('warning', __('A category or attribute is missing. Update this result’s filters.', 'wconvert'));
+        if ($filtered && !ResultProductSource::available($result['product_filter'])) return ProductHealth::check('warning', __('A category or attribute is missing. Update this result’s filters.', 'wconvert-pro'));
         if (!$filtered && $ids === []) return ProductHealth::selection([], []);
         $read = new \WP_REST_Request('GET', '/wc/store/v1/products');
         if ($filtered) {
@@ -62,9 +62,9 @@ final class ResultProducts
             foreach (['include' => $ids, 'catalog_visibility' => 'visible', 'per_page' => count($ids)] as $key => $value) $read->set_param($key, $value);
             $response = rest_do_request($read);
         }
-        if ($response instanceof \WP_Error || $response->get_status() >= 400 || !is_array($response->get_data())) return ProductHealth::check('unknown', __('Products could not be checked. Try again.', 'wconvert'));
+        if ($response instanceof \WP_Error || $response->get_status() >= 400 || !is_array($response->get_data())) return ProductHealth::check('unknown', __('Products could not be checked. Try again.', 'wconvert-pro'));
         $rows = array_filter($response->get_data(), static fn ($row): bool => is_array($row) && ($row['is_purchasable'] ?? false) === true && ($row['is_in_stock'] ?? false) === true && ($row['is_password_protected'] ?? false) !== true);
-        if ($filtered && ResultProductSource::missingPins($result['product_filter'], array_column($rows, 'id'))) return ProductHealth::check('warning', __('A pinned product is unavailable or does not match. Review this result’s pins.', 'wconvert'));
-        return $filtered ? ProductHealth::check($rows ? 'ok' : 'warning', $rows ? __('Matching products are available.', 'wconvert') : __('No available products match. Review this result’s filters.', 'wconvert')) : ProductHealth::selection($ids, array_column($rows, 'id'));
+        if ($filtered && ResultProductSource::missingPins($result['product_filter'], array_column($rows, 'id'))) return ProductHealth::check('warning', __('A pinned product is unavailable or does not match. Review this result’s pins.', 'wconvert-pro'));
+        return $filtered ? ProductHealth::check($rows ? 'ok' : 'warning', $rows ? __('Matching products are available.', 'wconvert-pro') : __('No available products match. Review this result’s filters.', 'wconvert-pro')) : ProductHealth::selection($ids, array_column($rows, 'id'));
     }
 }

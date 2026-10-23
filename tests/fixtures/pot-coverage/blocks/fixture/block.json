@@ -1,0 +1,6 @@
+{
+  "apiVersion": 3,
+  "name": "wconvert/fixture",
+  "title": "Fixture block",
+  "textdomain": "wconvert-fixture"
+}

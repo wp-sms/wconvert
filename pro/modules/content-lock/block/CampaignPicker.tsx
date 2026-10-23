@@ -38,9 +38,9 @@ function rules(): PickerRules<Campaign> {
   return {
     ready: item => item.status === 'ready',
     empty: data => data.campaigns.some(item => item.status === 'unavailable')
-      ? __('No content lock campaigns are available right now.', 'wconvert')
-      : __('No published content lock campaigns yet.', 'wconvert'),
-    askAdministrator: __('Ask your administrator to publish a content lock campaign.', 'wconvert'),
+      ? __('No content lock campaigns are available right now.', 'wconvert-pro')
+      : __('No published content lock campaigns yet.', 'wconvert-pro'),
+    askAdministrator: __('Ask your administrator to publish a content lock campaign.', 'wconvert-pro'),
   };
 }
 
@@ -52,12 +52,12 @@ function rules(): PickerRules<Campaign> {
 export function boundaryLabel(value: string, state: LockState, unset: string): string {
   if (!value) return unset;
   // No list is not a verdict on the campaign; claim nothing about it.
-  if (state.data === null) return __('Campaign choices not loaded', 'wconvert');
+  if (state.data === null) return __('Campaign choices not loaded', 'wconvert-pro');
   const selected = state.data.campaigns.find(item => item.id === value);
-  if (!selected) return __('Campaign unpublished', 'wconvert');
-  if (selected.status === 'disabled') return __('Content lock off for this campaign', 'wconvert');
-  if (selected.status === 'unavailable') return __('Campaign unavailable', 'wconvert');
-  return selected.name !== '' ? selected.name : __('Unnamed campaign', 'wconvert');
+  if (!selected) return __('Campaign unpublished', 'wconvert-pro');
+  if (selected.status === 'disabled') return __('Content lock off for this campaign', 'wconvert-pro');
+  if (selected.status === 'unavailable') return __('Campaign unavailable', 'wconvert-pro');
+  return selected.name !== '' ? selected.name : __('Unnamed campaign', 'wconvert-pro');
 }
 
 /** Used in the canvas as well as settings, so repair guidance never disappears. */
@@ -65,12 +65,12 @@ export function CampaignStatus({ value, state }: { value: string; state: LockSta
   const { data } = state;
   const selected = data?.campaigns.find(item => item.id === value);
   return <>
-    {data === null && <Notice status="warning" isDismissible={false}>{__('Campaign choices could not be loaded. Try Refresh campaigns.', 'wconvert')}</Notice>}
+    {data === null && <Notice status="warning" isDismissible={false}>{__('Campaign choices could not be loaded. Try Refresh campaigns.', 'wconvert-pro')}</Notice>}
     {value && data !== null && selected?.status !== 'ready' && <Notice status="warning" isDismissible={false}>{!selected
-      ? __('This campaign is no longer published as inline. Choose another or republish it. Content stays public.', 'wconvert')
+      ? __('This campaign is no longer published as inline. Choose another or republish it. Content stays public.', 'wconvert-pro')
       : selected.status === 'disabled'
-        ? __('Turn on content lock and republish this campaign, or choose another. Content stays public.', 'wconvert')
-        : __('This campaign is unavailable. Content stays public.', 'wconvert')}</Notice>}
+        ? __('Turn on content lock and republish this campaign, or choose another. Content stays public.', 'wconvert-pro')
+        : __('This campaign is unavailable. Content stays public.', 'wconvert-pro')}</Notice>}
   </>;
 }
 
@@ -78,7 +78,7 @@ export function CampaignPickerFields({ state, ...props }: PickerProps & { state:
   return <>
     <SharedFields {...props} state={state} rules={rules()}><CampaignStatus value={props.value} state={state} /></SharedFields>
     {/* The trap a merchant falls into first: previewing a draft, seeing it unlocked, and concluding the lock is broken. */}
-    <p className="wconvert-lock-settings__hint">{__('Draft previews stay unlocked. Check the published page in a private window.', 'wconvert')}</p>
+    <p className="wconvert-lock-settings__hint">{__('Draft previews stay unlocked. Check the published page in a private window.', 'wconvert-pro')}</p>
   </>;
 }
 

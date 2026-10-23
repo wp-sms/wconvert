@@ -112,6 +112,52 @@ function wordpressGlobals() {
 }
 
 /**
+ * The minifier settings that keep every gettext call extractable.
+ *
+ * ============================================================================
+ * A TRANSLATION CATALOGUE IS READ OUT OF THE BUILT FILE, BY CALLEE NAME.
+ * ============================================================================
+ * Neither wp.org's language packs nor `wp i18n make-pot` read the TypeScript:
+ * both parse the shipped `.js`, and both recognise a call only by its callee's
+ * NAME — `__(…)`, `x.__(…)`, `(0, x.__)(…)`. `wordpressGlobals()` above
+ * destructures `__` into a module-scope local, and esbuild's minifier (Vite's
+ * default) renames every local, so the built entry read
+ * `c("Build and manage campaigns","wconvert")` — 3,703 calls in free's bundle
+ * and 4,641 in Pro's, and not one of them extractable. Every screen rendered in
+ * English on every translated site, with a green suite.
+ *
+ * `mangle.reserved` keeps the four gettext names and `sprintf`; every other
+ * local is still mangled. WSMS ships the same setting on every bundle. The
+ * comments filter keeps the one comment make-pot reads — `translators:`, taken
+ * from the callee's leading comment — which stripping every comment would drop
+ * from every catalogue.
+ *
+ * TWO COMPRESSIONS ARE OFF, AND EACH LOST STRINGS WITH THE NAMES KEPT.
+ * `npm run check:pot` found both on its first run:
+ *
+ *   - `conditionals` folds `m ? __('Publish…', d) : __('Unpublish…', d)` into
+ *     `__(m ? 'Publish…' : 'Unpublish…', d)` — one call whose msgid is not a
+ *     literal, so neither string is extracted. Hundreds of the admin's calls
+ *     have that shape.
+ *   - `inline` above 1 inlines a function that takes arguments as
+ *     `(a = x, b = y, [...new Map(…)])`, and make-pot's JavaScript parser
+ *     (Peast) cannot read a parenthesised sequence holding a spread of `new`.
+ *     It skips the WHOLE FILE with a debug-only message — one builder chunk,
+ *     2,000 strings.
+ *
+ * Measured with both off: free's admin 478 kB gzipped and Pro's 551 kB,
+ * against 490 kB and 566 kB from esbuild — still smaller than what it replaced.
+ *
+ * Exported because `bin/pot-coverage.mjs` minifies its fixture with exactly
+ * this, so `npm run check:pot` fails the day a name leaves the list.
+ */
+export const GETTEXT_SAFE_TERSER = {
+  compress: { conditionals: false, inline: 1 },
+  mangle: { reserved: ['__', '_x', '_n', '_nx', 'sprintf'] },
+  format: { comments: /translators:/i },
+};
+
+/**
  * Print what each half of the admin costs, every build (ADR 0038).
  *
  * **It reports and does not gate**, which is the whole decision. The loader's
@@ -261,6 +307,9 @@ export function adminConfig({ entry, outDir }) {
       // emitted. The one chunk is fetched by a native `import()` when it is
       // wanted, which is the whole point of the boundary.
       modulePreload: false,
+      // Terser, with the gettext names kept — see GETTEXT_SAFE_TERSER.
+      minify: 'terser',
+      terserOptions: GETTEXT_SAFE_TERSER,
       rollupOptions: {
         // **An application entry, NOT `build.lib`.** Lib mode is for a package
         // somebody else bundles, and it carries a rule that is wrong here: Vite

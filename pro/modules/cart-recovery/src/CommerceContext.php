@@ -103,7 +103,7 @@ final class CommerceContext
     {
         if (array_filter($entries, [self::class, 'needed']) === []) return $attributes;
         $attributes['data-commerce-runtime'] = WCONVERT_PRO_URL . 'modules/cart-recovery/public/commerce.js?v=' . \WConvert\Assets\BuiltAsset::version(WCONVERT_PRO_DIR . 'modules/cart-recovery/public/commerce.js');
-        $attributes['data-commerce-labels'] = wp_json_encode([__('No further suggestions right now.', 'wconvert'), __('Product suggestions are unavailable right now.', 'wconvert')]);
+        $attributes['data-commerce-labels'] = wp_json_encode([__('No further suggestions right now.', 'wconvert-pro'), __('Product suggestions are unavailable right now.', 'wconvert-pro')]);
         if (is_singular('product') && self::publicProduct((int) get_queried_object_id())) {
             $id = (int) get_queried_object_id();
             $attributes['data-commerce-product'] = $id . ':' . wp_hash('wconvert-product:' . $id);
@@ -113,7 +113,7 @@ final class CommerceContext
         $attributes['data-commerce-begin'] = \WC_AJAX::get_endpoint('wconvert_cart_begin');
         $attributes['data-commerce-add'] = \WC_AJAX::get_endpoint('wconvert_cart_add');
         $attributes['data-commerce-cart'] = wc_get_cart_url();
-        $attributes['data-commerce-add-labels'] = wp_json_encode([__('Adding…', 'wconvert'), __('Added to your basket.', 'wconvert'), __('Not added. Open the product to try again.', 'wconvert'), __('Check your basket before trying again.', 'wconvert'), __('View basket', 'wconvert'), __('View product', 'wconvert'), __('Added', 'wconvert')]);
+        $attributes['data-commerce-add-labels'] = wp_json_encode([__('Adding…', 'wconvert-pro'), __('Added to your basket.', 'wconvert-pro'), __('Not added. Open the product to try again.', 'wconvert-pro'), __('Check your basket before trying again.', 'wconvert-pro'), __('View basket', 'wconvert-pro'), __('View product', 'wconvert-pro'), __('Added', 'wconvert-pro')]);
         $attributes['data-commerce'] = \WC_AJAX::get_endpoint('wconvert_cart_context');
         return $attributes;
     }
@@ -125,20 +125,20 @@ final class CommerceContext
     {
         foreach (DisplayPlan::rules($config['display_rules'] ?? []) as $rule) {
             if (!in_array($rule['type'], CartRules::TYPES, true)) continue;
-            if (!CartRules::valid($rule)) { $issues[] = __('Complete the cart rule with valid values.', 'wconvert'); continue; }
-            if (isset($rule['ids']) && count($this->existing($rule)) !== count($rule['ids'])) $issues[] = __('A selected cart product or category is unavailable. Review your selection.', 'wconvert');
-            if ($rule['type'] === 'cart_amount' && ($rule['range']['currency'] !== get_woocommerce_currency() || $rule['range']['decimals'] !== wc_get_price_decimals())) $issues[] = __('The store currency changed. Review the cart amount rule.', 'wconvert');
+            if (!CartRules::valid($rule)) { $issues[] = __('Complete the cart rule with valid values.', 'wconvert-pro'); continue; }
+            if (isset($rule['ids']) && count($this->existing($rule)) !== count($rule['ids'])) $issues[] = __('A selected cart product or category is unavailable. Review your selection.', 'wconvert-pro');
+            if ($rule['type'] === 'cart_amount' && ($rule['range']['currency'] !== get_woocommerce_currency() || $rule['range']['decimals'] !== wc_get_price_decimals())) $issues[] = __('The store currency changed. Review the cart amount rule.', 'wconvert-pro');
         }
         $products = self::products($config);
         if ($products !== null && (($products['context'] ?? 'cart') === 'product' || array_key_exists('main_product_id', $products)) && !self::publicProduct((int) ($products['main_product_id'] ?? 0))) {
-            $issues[] = __('Choose an available main product for these recommendations.', 'wconvert');
+            $issues[] = __('Choose an available main product for these recommendations.', 'wconvert-pro');
         }
         if (($config['inline_placement']['position'] ?? '') === 'after_product_summary' && wp_is_block_theme()) {
-            $issues[] = __('For a block theme, place the campaign block in the product template and choose Manual placement.', 'wconvert');
+            $issues[] = __('For a block theme, place the campaign block in the product template and choose Manual placement.', 'wconvert-pro');
         }
         if ($products !== null && ($products['source'] ?? 'selected') !== 'cross_sells') {
             $ids = $products['product_ids'] ?? [];
-            if (!RuleValue::ids($ids) || count($ids) > 6 || count($this->existing(['type' => 'recommendation', 'ids' => $ids])) !== count($ids)) $issues[] = __('Choose up to six available catalog products for the recommendations.', 'wconvert');
+            if (!RuleValue::ids($ids) || count($ids) > 6 || count($this->existing(['type' => 'recommendation', 'ids' => $ids])) !== count($ids)) $issues[] = __('Choose up to six available catalog products for the recommendations.', 'wconvert-pro');
         }
         if ($products !== null && ($products['action'] ?? 'link') === 'add_to_cart') {
             $main = (int) ($products['main_product_id'] ?? 0);
@@ -149,7 +149,7 @@ final class CommerceContext
                 return $id !== $main && $product && CartAddition::supported($product) && $product->get_status() === 'publish'
                     && $product->is_visible() && $product->is_purchasable() && $product->is_in_stock() && get_post_field('post_password', $id) === '';
             });
-            if ($supported === []) $issues[] = __('Choose at least one available simple product that supports Add to cart. Products requiring options use their product page.', 'wconvert');
+            if ($supported === []) $issues[] = __('Choose at least one available simple product that supports Add to cart. Products requiring options use their product page.', 'wconvert-pro');
         }
         return $issues;
     }
@@ -317,13 +317,13 @@ final class CommerceContext
         return ['id' => $id, 'name' => $product->get_name(), 'url' => $product->get_permalink(), 'image' => wp_get_attachment_image_url($product->get_image_id(), 'woocommerce_thumbnail') ?: '',
             'price' => html_entity_decode(wp_strip_all_tags($product->get_price_html()), ENT_QUOTES, 'UTF-8'),
             'price_key' => hash('sha256', $product->get_price() . '|' . get_woocommerce_currency()), 'can_add' => $canAdd,
-            'label' => $canAdd ? __('Add to cart', 'wconvert') : ($product->is_type('variable') ? __('Choose options', 'wconvert') : __('View product', 'wconvert'))];
+            'label' => $canAdd ? __('Add to cart', 'wconvert-pro') : ($product->is_type('variable') ? __('Choose options', 'wconvert-pro') : __('View product', 'wconvert-pro'))];
     }
 
     /** Authenticated, stateless draft simulation; never reads or mutates a Woo session. */
     public function preview(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
-        $invalid = static fn () => new \WP_Error('wconvert_invalid_sample', __('Review the sample basket and try again.', 'wconvert'), ['status' => 400]);
+        $invalid = static fn () => new \WP_Error('wconvert_invalid_sample', __('Review the sample basket and try again.', 'wconvert-pro'), ['status' => 400]);
         if (strlen($request->get_body()) > 32768) return $invalid();
         $input = $request->get_json_params();
         if (!is_array($input)) return $invalid();

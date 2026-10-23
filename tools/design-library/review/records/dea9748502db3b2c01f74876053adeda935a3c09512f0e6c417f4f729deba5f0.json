@@ -1,0 +1,51 @@
+{
+  "id": "collection-black-friday-2026",
+  "revision": "351cab72b9722fea8f3d3edd06d655d7600b5b18ff1843719cf0fbf882172f25",
+  "base_id": "a71d694dfb541d3cc3f6aaf1fa6024988604572e71df4c5ea1163e595a475a5e",
+  "decision": "approved",
+  "reviewer": "Navid Kashani — text-domain re-approval",
+  "note": "Re-approved after the Pro text-domain change (PR #337, ADR 0165). Every re-hashed member differs from main only in its gettext domain and translators comments; designs unchanged. See manifest.",
+  "at": "2026-10-23T17:20:28.516Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/README.md",
+          "sha256": "8fc43e91e2224ce3ed9c2b9381d11d50ca0095daeb5371659c32011943e76a72"
+        },
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/manifest.json",
+          "sha256": "4c4aeb18167dd8ea7eb63da3f396094cb154ecc802af79e7a907109d2d3cbbfd"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/README.md",
+          "sha256": "8fc43e91e2224ce3ed9c2b9381d11d50ca0095daeb5371659c32011943e76a72"
+        },
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/manifest.json",
+          "sha256": "4c4aeb18167dd8ea7eb63da3f396094cb154ecc802af79e7a907109d2d3cbbfd"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/README.md",
+          "sha256": "8fc43e91e2224ce3ed9c2b9381d11d50ca0095daeb5371659c32011943e76a72"
+        },
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/manifest.json",
+          "sha256": "4c4aeb18167dd8ea7eb63da3f396094cb154ecc802af79e7a907109d2d3cbbfd"
+        }
+      ]
+    }
+  },
+  "record_id": "dea9748502db3b2c01f74876053adeda935a3c09512f0e6c417f4f729deba5f0"
+}

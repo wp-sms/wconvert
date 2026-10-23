@@ -62,6 +62,14 @@ rather than enqueued, so their strings had no catalogue loaded at all.
 `load_script_textdomain()` can resolve its path, and merges its catalogue into
 the entry's domain with `setLocaleData` before the entry runs.*
 
+*Corrected by [ADR 0165](0165-every-string-reaches-a-catalogue.md): keeping
+`wp.i18n` WordPress's was necessary and not enough. The shim destructures `__`
+into a local, Vite's default minifier renamed it, and so make-pot and wp.org
+could extract none of the admin's strings. There was no catalogue to load. The
+admin is now minified by terser with the gettext names reserved
+(`GETTEXT_SAFE_TERSER`). `chunkTranslations()` became `inlineCatalogues()`, and
+Pro's handle binds Pro's domain and inlines free's catalogues.*
+
 So a Vite plugin resolves each specifier to a module whose whole body reads the
 global back out. The import stays an import, the code that runs is still
 WordPress's, and no `@wordpress` source ships. Two guards sit on it, because a

@@ -8,6 +8,7 @@ name: CI
 #   changes ── one dorny/paths-filter run, the only place the filters live
 #     ├── PHP tests        php-tests.yml
 #     ├── Frontend tests   frontend-tests.yml
+#     ├── POT coverage     every bundle built, then bin/pot-coverage.mjs
 #     ├── Template service tools/template-server + tools/design-library suites
 #     └── Required checks ──── always runs, aggregates needs.*.result
 #
@@ -210,6 +211,48 @@ jobs:
     uses: ./.github/workflows/frontend-tests.yml
 
   # ---------------------------------------------------------------------------
+  # EVERY TRANSLATABLE STRING REACHES A CATALOGUE (bin/pot-coverage.mjs).
+  #
+  # Its own job because it needs what no other job has together: every bundle
+  # built — make-pot reads JS strings out of the built files, never the
+  # TypeScript — and wp-cli, which makes the two POTs it compares against.
+  # Both are installed here and a missing one is a red step, never a skip: a
+  # check that can skip itself is how the whole admin went untranslatable
+  # with every suite green.
+  #
+  # PHP or JS, because either side can lose a string: a PHP call make-pot
+  # cannot parse, a minifier setting that renames `__`, a Pro call in free's
+  # domain.
+  # ---------------------------------------------------------------------------
+  pot-coverage:
+    name: 'POT coverage (every string extracted)'
+    needs: changes
+    if: needs.changes.outputs.php == 'true' || needs.changes.outputs.js == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+          tools: wp-cli
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - name: Every translatable call is in its POT
+        run: npm run check:pot
+
+  # ---------------------------------------------------------------------------
   # THE HOSTED CATALOGUE. The Worker and the publisher that feeds it are not in
   # the plugin ZIP, so neither suite above reaches them; this is the only place
   # a pull request proves them. Two `node --test` runs and a Wrangler dry-run.
@@ -287,7 +330,7 @@ jobs:
   required-checks:
     name: 'Required checks'
     if: always()
-    needs: [source-contract, loader-contract, changes, php-tests, frontend-tests, template-service]
+    needs: [source-contract, loader-contract, changes, php-tests, frontend-tests, pot-coverage, template-service]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

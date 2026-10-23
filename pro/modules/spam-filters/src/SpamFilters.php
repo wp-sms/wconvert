@@ -25,9 +25,9 @@ final class SpamFilters
     public static function fields(array $fields, array $rules): array
     {
         return [
-            ['id' => 'blocked_domains', 'label' => __('Blocked email domains', 'wconvert'), 'help' => __('One exact domain per line (example.com). List subdomains separately.', 'wconvert'), 'value' => implode("\n", $rules['blocked_domains'] ?? [])],
-            ['id' => 'blocked_emails', 'label' => __('Blocked email addresses', 'wconvert'), 'help' => __('One email address per line.', 'wconvert'), 'value' => implode("\n", $rules['blocked_emails'] ?? [])],
-            ['id' => 'allowed_emails', 'label' => __('Always allow these emails', 'wconvert'), 'help' => __('One email per line. Bypasses email filters only.', 'wconvert'), 'value' => implode("\n", $rules['allowed_emails'] ?? [])],
+            ['id' => 'blocked_domains', 'label' => __('Blocked email domains', 'wconvert-pro'), 'help' => __('One exact domain per line (example.com). List subdomains separately.', 'wconvert-pro'), 'value' => implode("\n", $rules['blocked_domains'] ?? [])],
+            ['id' => 'blocked_emails', 'label' => __('Blocked email addresses', 'wconvert-pro'), 'help' => __('One email address per line.', 'wconvert-pro'), 'value' => implode("\n", $rules['blocked_emails'] ?? [])],
+            ['id' => 'allowed_emails', 'label' => __('Always allow these emails', 'wconvert-pro'), 'help' => __('One email per line. Bypasses email filters only.', 'wconvert-pro'), 'value' => implode("\n", $rules['allowed_emails'] ?? [])],
         ];
     }
 
@@ -63,13 +63,13 @@ final class SpamFilters
         if ($email === '' || in_array($email, $rules['allowed_emails'] ?? [], true)) { return null; }
         $domain = substr($email, (int) strrpos($email, '@') + 1);
         if (in_array($email, $rules['blocked_emails'] ?? [], true) || in_array($domain, $rules['blocked_domains'] ?? [], true)) {
-            return new WP_Error('wconvert_email_filter', __('Please use a different email address.', 'wconvert'), ['status' => 422, 'field' => 'email']);
+            return new WP_Error('wconvert_email_filter', __('Please use a different email address.', 'wconvert-pro'), ['status' => 422, 'field' => 'email']);
         }
         return null;
     }
 
     private static function invalid(): WP_Error
     {
-        return new WP_Error('wconvert_filter_settings', __('Enter up to 100 valid addresses or exact domains per list, one per line. Wildcards are not supported.', 'wconvert'), ['status' => 422]);
+        return new WP_Error('wconvert_filter_settings', __('Enter up to 100 valid addresses or exact domains per list, one per line. Wildcards are not supported.', 'wconvert-pro'), ['status' => 422]);
     }
 }

@@ -68,7 +68,7 @@ final class Hooks
     public function save(WP_REST_Request $request): WP_REST_Response|WP_Error
     {
         $body = $request->get_json_params();
-        if (strlen($request->get_body()) > 4096 || !is_array($body)) return new WP_Error('wconvert_analytics_input', __('Invalid analytics settings.', 'wconvert'), ['status' => 422]);
+        if (strlen($request->get_body()) > 4096 || !is_array($body)) return new WP_Error('wconvert_analytics_input', __('Invalid analytics settings.', 'wconvert-pro'), ['status' => 422]);
         try { $this->settings->save($body, home_url('/')); }
         catch (\InvalidArgumentException $error) { return new WP_Error('wconvert_analytics_input', $error->getMessage(), ['status' => 422]); }
         $this->optins->rebuildForInstall();
@@ -101,20 +101,20 @@ final class Hooks
         $config['dry_run'] = $debug;
         if ($debug) {
             $config['environment'] = wp_get_environment_type();
-            $config['labels'] = [__('Analytics check', 'wconvert'), __('Local inspection only. Campaign activity is not sent from this test page.', 'wconvert'),
-                __('Send synthetic test event', 'wconvert'), __('Test stream Measurement ID (G-…)', 'wconvert'),
-                $settings['route'] === 'plausible' ? __('Plausible sends WConvert Test to the site configured by your installed script. Use a dedicated test site and verify receipt in Plausible.', 'wconvert') : __('GTM sends to the stream configured in your container. Use a test workspace/property.', 'wconvert'),
-                __('Handed off does not confirm receipt. Verify wconvert_test in GA DebugView or Realtime.', 'wconvert'),
-                __('Close analytics check', 'wconvert'), $settings['route'] === 'plausible' ? __('Collection delegated to the existing Plausible setup', 'wconvert') : __('Consent delegated to the existing Google tag / GTM', 'wconvert')];
+            $config['labels'] = [__('Analytics check', 'wconvert-pro'), __('Local inspection only. Campaign activity is not sent from this test page.', 'wconvert-pro'),
+                __('Send synthetic test event', 'wconvert-pro'), __('Test stream Measurement ID (G-…)', 'wconvert-pro'),
+                $settings['route'] === 'plausible' ? __('Plausible sends WConvert Test to the site configured by your installed script. Use a dedicated test site and verify receipt in Plausible.', 'wconvert-pro') : __('GTM sends to the stream configured in your container. Use a test workspace/property.', 'wconvert-pro'),
+                __('Handed off does not confirm receipt. Verify wconvert_test in GA DebugView or Realtime.', 'wconvert-pro'),
+                __('Close analytics check', 'wconvert-pro'), $settings['route'] === 'plausible' ? __('Collection delegated to the existing Plausible setup', 'wconvert-pro') : __('Consent delegated to the existing Google tag / GTM', 'wconvert-pro')];
             $config['statuses'] = [
-                'handed_off' => __('Handed off; verify receipt in analytics', 'wconvert'),
-                'consent_unknown' => __('Consent is not initialized', 'wconvert'),
-                'consent_withheld' => __('Statistics consent withheld', 'wconvert'),
-                'tag_unavailable' => __('Existing tag, data layer or stream is unavailable', 'wconvert'),
-                'ignored' => __('Excluded or not an enabled event', 'wconvert'),
-                'dry_run' => __('Observed locally; not sent', 'wconvert'),
-                'failed' => __('The site tag failed', 'wconvert'),
-                'prerender' => __('Prerendered page; not sent', 'wconvert'),
+                'handed_off' => __('Handed off; verify receipt in analytics', 'wconvert-pro'),
+                'consent_unknown' => __('Consent is not initialized', 'wconvert-pro'),
+                'consent_withheld' => __('Statistics consent withheld', 'wconvert-pro'),
+                'tag_unavailable' => __('Existing tag, data layer or stream is unavailable', 'wconvert-pro'),
+                'ignored' => __('Excluded or not an enabled event', 'wconvert-pro'),
+                'dry_run' => __('Observed locally; not sent', 'wconvert-pro'),
+                'failed' => __('The site tag failed', 'wconvert-pro'),
+                'prerender' => __('Prerendered page; not sent', 'wconvert-pro'),
             ];
         }
         add_action('wp_head', static function () use ($config): void {

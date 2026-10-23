@@ -9,7 +9,8 @@ import service from '../../modules/journeys/templates/journey-service-enquiry.js
 import guide from '../../modules/journeys/templates/journey-content-guide.json';
 import enquiryGraph from '../../../tests/fixtures/journey-graph-enquiry.json';
 import { showProducts } from '../../modules/journeys/loader/products';
-import { resultAccess, walkNodes } from '../../../resources/admin/src/builder/structure/journey';
+import { walkNodes } from '../../../resources/admin/src/builder/structure/journey';
+import { resultAccess } from '../../modules/journeys/admin/structure/resultAccess';
 import { upgradeToGraph } from '../../../resources/admin/src/builder/structure/graph';
 import { convertingActOf } from '../../../resources/admin/src/builder/structure/guards';
 

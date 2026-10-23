@@ -23,20 +23,20 @@ export const MAKE_KEY_HEADER = 'x-make-apikey';
 const RECEIVERS: readonly Receiver[] = ['zapier', 'make', 'n8n', 'code'];
 
 /** Brand names stay as the companies write them; only "Your own code" is ours to translate. */
-const nameOf = (receiver: Receiver): string => ({ zapier: 'Zapier', make: 'Make', n8n: 'n8n', code: __('Your own code', 'wconvert') })[receiver];
+const nameOf = (receiver: Receiver): string => ({ zapier: 'Zapier', make: 'Make', n8n: 'n8n', code: __('Your own code', 'wconvert-pro') })[receiver];
 
 const summaryOf = (receiver: Receiver): string => ({
-  zapier: __('Paste a Catch Hook URL.', 'wconvert'),
-  make: __('Paste a Custom webhook URL, with an optional API key.', 'wconvert'),
-  n8n: __('Paste a Webhook node URL, with Header Auth if you use it.', 'wconvert'),
-  code: __('Any URL. Check each request with the signing secret.', 'wconvert'),
+  zapier: __('Paste a Catch Hook URL.', 'wconvert-pro'),
+  make: __('Paste a Custom webhook URL, with an optional API key.', 'wconvert-pro'),
+  n8n: __('Paste a Webhook node URL, with Header Auth if you use it.', 'wconvert-pro'),
+  code: __('Any URL. Check each request with the signing secret.', 'wconvert-pro'),
 })[receiver];
 
 const urlHintOf = (receiver: Receiver): string => ({
-  zapier: __('Webhooks by Zapier → Catch Hook. Copy the URL it shows.', 'wconvert'),
-  make: __('In Make, add Webhooks → Custom webhook and copy its address.', 'wconvert'),
-  n8n: __('A Webhook node with method POST. Set Respond to Immediately, or a slow workflow is sent again.', 'wconvert'),
-  code: __('Any address that accepts a JSON POST.', 'wconvert'),
+  zapier: __('Webhooks by Zapier → Catch Hook. Copy the URL it shows.', 'wconvert-pro'),
+  make: __('In Make, add Webhooks → Custom webhook and copy its address.', 'wconvert-pro'),
+  n8n: __('A Webhook node with method POST. Set Respond to Immediately, or a slow workflow is sent again.', 'wconvert-pro'),
+  code: __('Any address that accepts a JSON POST.', 'wconvert-pro'),
 })[receiver];
 
 const URL_PLACEHOLDER: Record<Receiver, string> = {
@@ -82,7 +82,7 @@ export const insecure = (url: string) => /^\s*http:\/\//i.test(url);
 export function WebhookConnectionForm({ type, account, title, meta, back, onSaved, onCancel, onDirtyChange }: ConnectionFormProps) {
   const id = useId();
   const editing = account !== undefined;
-  const headersField = type.connection_schema?.headers ?? { type: 'headers', label: __('Custom headers', 'wconvert'), max: 5 };
+  const headersField = type.connection_schema?.headers ?? { type: 'headers', label: __('Custom headers', 'wconvert-pro'), max: 5 };
   const secretField = type.connection_schema?.signing_secret;
   const max = headersField.max ?? 5;
   const stored = useMemo(() => storedHeaders(account?.credentials.headers), [account]);
@@ -141,15 +141,15 @@ export function WebhookConnectionForm({ type, account, title, meta, back, onSave
 
   const header = (heading: ReactNode, line: ReactNode) => title === undefined ? null : <AdminDialogHeader title={heading} meta={line} />;
   const cancel = back ?? <Button type="button" variant="outline" disabled={busy} onClick={onCancel}>
-    {revealed !== null && !dirty ? __('Done', 'wconvert') : __('Cancel', 'wconvert')}
+    {revealed !== null && !dirty ? __('Done', 'wconvert-pro') : __('Cancel', 'wconvert-pro')}
   </Button>;
 
   if (step === 'choose') {
     return <form className="flex min-h-0 flex-1 flex-col" onSubmit={(event) => { event.preventDefault(); setStep('form'); }}>
-      {header(title, __('Step 1 of 2', 'wconvert'))}
+      {header(title, __('Step 1 of 2', 'wconvert-pro'))}
       <AdminDialogBody>
         <fieldset className="wconvert-radio-cards wconvert-webhook-tools">
-          <legend className="wconvert-webhook-tools__legend">{__('Where should signups go?', 'wconvert')}</legend>
+          <legend className="wconvert-webhook-tools__legend">{__('Where should signups go?', 'wconvert-pro')}</legend>
           {RECEIVERS.map((each, index) => <label key={each} className="wconvert-radio-card wconvert-webhook-tool">
             <input ref={index === 0 ? first : undefined} type="radio" name={`${id}-receiver`} value={each} checked={receiver === each}
               aria-labelledby={`${id}-${each}`} aria-describedby={`${id}-${each}-help`} onChange={() => setReceiver(each)} />
@@ -159,7 +159,7 @@ export function WebhookConnectionForm({ type, account, title, meta, back, onSave
         </fieldset>
       </AdminDialogBody>
       <AdminDialogFooter back={cancel}>
-        <Button type="submit">{__('Continue', 'wconvert')}</Button>
+        <Button type="submit">{__('Continue', 'wconvert-pro')}</Button>
       </AdminDialogFooter>
     </form>;
   }
@@ -168,65 +168,65 @@ export function WebhookConnectionForm({ type, account, title, meta, back, onSave
   return <form className="flex min-h-0 flex-1 flex-col" onSubmit={(event) => { event.preventDefault(); if (!confirming) save(); }}>
     {editing ? header(title, meta) : header(
       <span className="wconvert-webhook-heading"><ReceiverMark receiver={receiver} /><span>{receiver === 'code'
-        ? sprintf(/* translators: %s: a service, e.g. “Webhook”. */ __('Connect %s', 'wconvert'), type.label)
-        : sprintf(/* translators: %s: a tool, e.g. “Make”. */ __('Connect %s', 'wconvert'), nameOf(receiver))}</span></span>,
+        ? sprintf(/* translators: %s: a service, e.g. “Webhook”. */ __('Connect %s', 'wconvert-pro'), type.label)
+        : sprintf(/* translators: %s: a tool, e.g. “Make”. */ __('Connect %s', 'wconvert-pro'), nameOf(receiver))}</span></span>,
       receiver === 'code'
-        ? sprintf(/* translators: %s: “Your own code”. */ __('Step 2 of 2 · %s', 'wconvert'), nameOf(receiver))
-        : sprintf(/* translators: %s: a service, e.g. “Webhook”. */ __('Step 2 of 2 · %s', 'wconvert'), type.label))}
+        ? sprintf(/* translators: %s: “Your own code”. */ __('Step 2 of 2 · %s', 'wconvert-pro'), nameOf(receiver))
+        : sprintf(/* translators: %s: a service, e.g. “Webhook”. */ __('Step 2 of 2 · %s', 'wconvert-pro'), type.label))}
     <AdminDialogBody>
       <fieldset disabled={busy} className="wconvert-webhook-form">
         {title === undefined && !editing && <p className="wconvert-webhook-form__step">
           <ReceiverMark receiver={receiver} />
-          {sprintf(/* translators: %s: a tool, e.g. “Make”. */ __('Step 2 of 2 · %s', 'wconvert'), nameOf(receiver))}
+          {sprintf(/* translators: %s: a tool, e.g. “Make”. */ __('Step 2 of 2 · %s', 'wconvert-pro'), nameOf(receiver))}
         </p>}
-        <Field label={__('Account name', 'wconvert')} htmlFor={field('label')}>
+        <Field label={__('Account name', 'wconvert-pro')} htmlFor={field('label')}>
           <Input ref={first} id={field('label')} value={label} onChange={(event) => setNamed(event.target.value)} />
         </Field>
-        <Field label={__('Webhook URL', 'wconvert')} htmlFor={field('url')} hintId={field('url-hint')}
-          hint={<>{urlHintOf(receiver)}{receiver === 'code' && secretField?.guide && <>{' '}<GuideLink href={secretField.guide}>{__('How to verify', 'wconvert')}</GuideLink></>}</>}>
+        <Field label={__('Webhook URL', 'wconvert-pro')} htmlFor={field('url')} hintId={field('url-hint')}
+          hint={<>{urlHintOf(receiver)}{receiver === 'code' && secretField?.guide && <>{' '}<GuideLink href={secretField.guide}>{__('How to verify', 'wconvert-pro')}</GuideLink></>}</>}>
           <Input id={field('url')} inputMode="url" dir="ltr" autoComplete="off" spellCheck={false} value={url}
-            placeholder={editing ? __('Stored; enter a replacement', 'wconvert') : URL_PLACEHOLDER[receiver]}
+            placeholder={editing ? __('Stored; enter a replacement', 'wconvert-pro') : URL_PLACEHOLDER[receiver]}
             aria-describedby={[field('url-hint'), warnPlain ? field('url-warn') : ''].filter(Boolean).join(' ')}
             onChange={(event) => setUrl(event.target.value)} />
         </Field>
         {warnPlain && <p id={field('url-warn')} className="wconvert-webhook-warning">
           <TriangleAlert aria-hidden="true" />
-          <span>{__('http:// isn’t encrypted, so your header and every lead travel readable. Use https://.', 'wconvert')}</span>
+          <span>{__('http:// isn’t encrypted, so your header and every lead travel readable. Use https://.', 'wconvert-pro')}</span>
         </p>}
 
-        {!editing && receiver === 'make' && <Field label={<>{__('API key', 'wconvert')} <span className="wconvert-webhook-optional">{__('· optional', 'wconvert')}</span></>}
+        {!editing && receiver === 'make' && <Field label={<>{__('API key', 'wconvert-pro')} <span className="wconvert-webhook-optional">{__('· optional', 'wconvert-pro')}</span></>}
           htmlFor={field('make-key')} hintId={field('make-key-hint')}
-          hint={<>{sprintf(/* translators: %s: a header name, x-make-apikey. */ __('Sent as the %s header.', 'wconvert'), MAKE_KEY_HEADER)}{' '}
+          hint={<>{sprintf(/* translators: %s: a header name, x-make-apikey. */ __('Sent as the %s header.', 'wconvert-pro'), MAKE_KEY_HEADER)}{' '}
             {!otherHeaders && <OtherHeaders onOpen={() => setOtherHeaders(true)} />}</>}>
           <Input id={field('make-key')} type="password" autoComplete="off" dir="ltr" value={makeKey} aria-describedby={field('make-key-hint')}
-            placeholder={__('Paste the key from the webhook’s settings', 'wconvert')} onChange={(event) => setMakeKey(event.target.value)} />
+            placeholder={__('Paste the key from the webhook’s settings', 'wconvert-pro')} onChange={(event) => setMakeKey(event.target.value)} />
         </Field>}
 
         {!editing && receiver === 'n8n' && <div className="wconvert-webhook-pair">
-          <Field label={<>{__('Header Auth name', 'wconvert')} <span className="wconvert-webhook-optional">{__('· optional', 'wconvert')}</span></>} htmlFor={field('auth-name')}>
+          <Field label={<>{__('Header Auth name', 'wconvert-pro')} <span className="wconvert-webhook-optional">{__('· optional', 'wconvert-pro')}</span></>} htmlFor={field('auth-name')}>
             <Input id={field('auth-name')} dir="ltr" autoComplete="off" spellCheck={false} value={authName} placeholder="X-N8N-Auth"
               onChange={(event) => setAuthName(event.target.value)} />
           </Field>
-          <Field label={__('Header Auth value', 'wconvert')} htmlFor={field('auth-value')}>
+          <Field label={__('Header Auth value', 'wconvert-pro')} htmlFor={field('auth-value')}>
             <Input id={field('auth-value')} type="password" dir="ltr" autoComplete="off" value={authValue} disabled={authName.trim() === ''}
               onChange={(event) => setAuthValue(event.target.value)} />
           </Field>
-          {authName.trim() !== '' && authValue.trim() === '' && <p className="wconvert-webhook-problem">{__('Enter the value n8n expects.', 'wconvert')}</p>}
+          {authName.trim() !== '' && authValue.trim() === '' && <p className="wconvert-webhook-problem">{__('Enter the value n8n expects.', 'wconvert-pro')}</p>}
         </div>}
 
         {(editing || receiver === 'code' || otherHeaders)
           ? <HeadersEditor field={{ ...headersField, max: max - own.length }} value={extra} onChange={setExtra}
             stored={editing ? stored.map((pair) => pair.name) : []}
-            label={!editing && receiver !== 'code' ? __('Other headers', 'wconvert') : undefined} />
+            label={!editing && receiver !== 'code' ? __('Other headers', 'wconvert-pro') : undefined} />
           : receiver !== 'make' && <div><OtherHeaders onOpen={() => setOtherHeaders(true)} /></div>}
 
         {editing && revealed === null && <div className="wconvert-webhook-secret">
           <div>
-            <div className="wconvert-webhook-secret__label">{secretField?.label ?? __('Signing secret', 'wconvert')}</div>
-            <div className="wconvert-webhook-secret__state">{__('Stored. Shown only when it is made.', 'wconvert')}</div>
+            <div className="wconvert-webhook-secret__label">{secretField?.label ?? __('Signing secret', 'wconvert-pro')}</div>
+            <div className="wconvert-webhook-secret__state">{__('Stored. Shown only when it is made.', 'wconvert-pro')}</div>
           </div>
           <Button type="button" variant="outline" aria-pressed={confirming} onClick={() => { setError(null); setConfirming(true); }}>
-            {__('Regenerate', 'wconvert')}
+            {__('Regenerate', 'wconvert-pro')}
           </Button>
         </div>}
         {revealed !== null && <RevealedSecret type={type} revealed={revealed} />}
@@ -234,26 +234,26 @@ export function WebhookConnectionForm({ type, account, title, meta, back, onSave
     </AdminDialogBody>
     {confirming
       // The question takes the footer's place, never a dialog over this one (§9).
-      ? <AdminDialogFooter error={error} note={<span role="status">{__('Regenerate now? The next request is signed with the new secret, and your receiver refuses it until you update it there.', 'wconvert')}</span>}>
-        <Button type="button" variant="outline" disabled={busy} onClick={() => setConfirming(false)}>{__('Keep current', 'wconvert')}</Button>
+      ? <AdminDialogFooter error={error} note={<span role="status">{__('Regenerate now? The next request is signed with the new secret, and your receiver refuses it until you update it there.', 'wconvert-pro')}</span>}>
+        <Button type="button" variant="outline" disabled={busy} onClick={() => setConfirming(false)}>{__('Keep current', 'wconvert-pro')}</Button>
         <Button type="button" variant="destructive" disabled={busy} onClick={regenerate}>
-          {busy ? __('Regenerating…', 'wconvert') : __('Regenerate secret', 'wconvert')}
+          {busy ? __('Regenerating…', 'wconvert-pro') : __('Regenerate secret', 'wconvert-pro')}
         </Button>
       </AdminDialogFooter>
-      : <AdminDialogFooter error={error} note={editing ? undefined : __('Creates a signing secret', 'wconvert')}
+      : <AdminDialogFooter error={error} note={editing ? undefined : __('Creates a signing secret', 'wconvert-pro')}
         back={editing ? cancel : <Button type="button" variant="outline" disabled={busy} onClick={() => { setError(null); setStep('choose'); }}>
-          <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back', 'wconvert')}
+          <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back', 'wconvert-pro')}
         </Button>}>
         <Button type="submit" disabled={busy || label.trim() === '' || urlMissing || headerRefused
           || (receiver === 'n8n' && !editing && authName.trim() !== '' && authValue.trim() === '')}>
-          {busy ? __('Checking…', 'wconvert') : __('Check and save account', 'wconvert')}
+          {busy ? __('Checking…', 'wconvert-pro') : __('Check and save account', 'wconvert-pro')}
         </Button>
       </AdminDialogFooter>}
   </form>;
 }
 
 function OtherHeaders({ onOpen }: { onOpen: () => void }) {
-  return <Button type="button" variant="link" className="h-auto p-0" onClick={onOpen}>{__('Other headers', 'wconvert')}</Button>;
+  return <Button type="button" variant="link" className="h-auto p-0" onClick={onOpen}>{__('Other headers', 'wconvert-pro')}</Button>;
 }
 
 /** A tool's own logo, in colour; the webhook mark for the merchant's own code. */

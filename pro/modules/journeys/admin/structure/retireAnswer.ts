@@ -1,17 +1,17 @@
 import { __ } from '@wordpress/i18n';
 import type { QuestionCondition, TemplateNode, TemplateTree } from '@renderer/types';
-import { walkNodes, unreachableScreenIds } from './journey';
-import { graphRemoval, graphRemovalPlan } from './graphRemoval';
-import { journeyReadinessIssues } from './journeyReadiness';
-import { journeyBoundaryIssues } from './journeyBoundaryReadiness';
+import { walkNodes, unreachableScreenIds } from '@/builder/structure/journey';
+import { graphRemoval, graphRemovalPlan } from '@/builder/structure/graphRemoval';
+import { journeyReadinessIssues } from '@/builder/structure/journeyReadiness';
+import { journeyBoundaryIssues } from '@/builder/structure/journeyBoundaryReadiness';
 
 /** Stage a complete retirement. Mixed rules and shared/dependent content need explicit repair. */
 export function retireAnswerPlan(original: TemplateTree, questionId: string, value: string): { next?: TemplateTree; removed: string[]; reason?: string } {
   const removed: string[] = [];
   const blocked = (reason: string) => ({ removed, reason });
   const question = original.steps.flatMap(screen => walkNodes(screen.content)).find(node => node.type === 'question' && 'id' in node && node.id === questionId);
-  if (!original.graph || !question || question.type !== 'question' || !('options' in question)) return blocked(__('Edit the listed rules one at a time.', 'wconvert'));
-  if ((question.options?.length ?? 0) <= 2) return blocked(__('Keep at least two choices. Add another choice before removing this one.', 'wconvert'));
+  if (!original.graph || !question || question.type !== 'question' || !('options' in question)) return blocked(__('Edit the listed rules one at a time.', 'wconvert-pro'));
+  if ((question.options?.length ?? 0) <= 2) return blocked(__('Keep at least two choices. Add another choice before removing this one.', 'wconvert-pro'));
   const uses = (when?: QuestionCondition) => when?.clauses.some(clause => clause.question === questionId && clause.values.includes(value));
   const only = (when?: QuestionCondition) => when?.clauses.length === 1 && when.clauses[0].question === questionId
     && ['is', 'includes_any'].includes(when.clauses[0].operator) && when.clauses[0].values.length === 1 && when.clauses[0].values[0] === value;
@@ -24,7 +24,7 @@ export function retireAnswerPlan(original: TemplateTree, questionId: string, val
   const tree = { ...original, steps: original.steps.map(screen => ({ ...screen, ...(screen.when ? { when: narrow(screen.when) } : {}),
     ...(screen.results ? { results: screen.results.map(result => result.when ? { ...result, when: narrow(result.when) } : result) } : {}) })), graph };
   const conditions = [...tree.steps.flatMap(screen => [screen.when, ...(screen.results?.map(result => result.when) ?? [])]), ...tree.graph.edges.map(edge => edge.when)];
-  if (conditions.some(when => uses(when) && !only(when))) return blocked(__('Some rules combine this answer with other choices or comparisons. Edit those rules below first so other visitors keep the intended behavior.', 'wconvert'));
+  if (conditions.some(when => uses(when) && !only(when))) return blocked(__('Some rules combine this answer with other choices or comparisons. Edit those rules below first so other visitors keep the intended behavior.', 'wconvert-pro'));
   let next: TemplateTree = { ...tree, steps: tree.steps.map(screen => ({ ...screen, ...(screen.results ? { results: screen.results.filter(result => {
     if (!uses(result.when)) return true;
     removed.push(result.heading); return false;
@@ -34,9 +34,9 @@ export function retireAnswerPlan(original: TemplateTree, questionId: string, val
   }) } };
   for (const screen of tree.steps.filter(screen => uses(screen.when))) {
     const plan = graphRemovalPlan(next, screen.id);
-    if (plan.reason || !plan.preferred) return blocked(plan.reason ?? __('A follow-up goes different ways. Choose where its line goes before retiring this answer.', 'wconvert'));
+    if (plan.reason || !plan.preferred) return blocked(plan.reason ?? __('A follow-up goes different ways. Choose where its line goes before retiring this answer.', 'wconvert-pro'));
     const removal = graphRemoval(next, screen.id, plan.preferred);
-    if (!removal) return blocked(__('Review the affected follow-up before removing it.', 'wconvert'));
+    if (!removal) return blocked(__('Review the affected follow-up before removing it.', 'wconvert-pro'));
     removed.push(screen.name); next = removal.next;
   }
   const alreadyDisconnected = new Set(unreachableScreenIds(tree));
@@ -48,7 +48,7 @@ export function retireAnswerPlan(original: TemplateTree, questionId: string, val
     const screen = next.steps.find(item => item.id === id)!;
     if (plan.reason) return blocked(plan.reason);
     const removal = graphRemoval(next, id, plan.preferred || plan.targets[0]?.id);
-    if (!removal) return blocked(__('A screen no line reaches needs somewhere to go. Check its lines first.', 'wconvert'));
+    if (!removal) return blocked(__('A screen no line reaches needs somewhere to go. Check its lines first.', 'wconvert-pro'));
     removed.push(screen.name); next = removal.next;
   }
   const removeChoice = (node: TemplateNode): TemplateNode => {

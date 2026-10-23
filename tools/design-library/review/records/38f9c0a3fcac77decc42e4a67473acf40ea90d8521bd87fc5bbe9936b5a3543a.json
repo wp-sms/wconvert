@@ -1,0 +1,51 @@
+{
+  "id": "collection-help-shoppers-choose",
+  "revision": "80ae06a20d5dae0ebacbee5d21a5af90d7dfe6721203f49933bc12936c810eec",
+  "base_id": "c31f21f1d0feee5eb68ecfd7f074f77ba774ae20466aa104fe093e583146b09f",
+  "decision": "approved",
+  "reviewer": "Navid Kashani — text-domain re-approval",
+  "note": "Re-approved after the Pro text-domain change (PR #337, ADR 0165). Every re-hashed member differs from main only in its gettext domain and translators comments; designs unchanged. See manifest.",
+  "at": "2026-10-23T17:20:28.516Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/README.md",
+          "sha256": "8fc43e91e2224ce3ed9c2b9381d11d50ca0095daeb5371659c32011943e76a72"
+        },
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/manifest.json",
+          "sha256": "4c4aeb18167dd8ea7eb63da3f396094cb154ecc802af79e7a907109d2d3cbbfd"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/README.md",
+          "sha256": "8fc43e91e2224ce3ed9c2b9381d11d50ca0095daeb5371659c32011943e76a72"
+        },
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/manifest.json",
+          "sha256": "4c4aeb18167dd8ea7eb63da3f396094cb154ecc802af79e7a907109d2d3cbbfd"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/README.md",
+          "sha256": "8fc43e91e2224ce3ed9c2b9381d11d50ca0095daeb5371659c32011943e76a72"
+        },
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/manifest.json",
+          "sha256": "4c4aeb18167dd8ea7eb63da3f396094cb154ecc802af79e7a907109d2d3cbbfd"
+        }
+      ]
+    }
+  },
+  "record_id": "38f9c0a3fcac77decc42e4a67473acf40ea90d8521bd87fc5bbe9936b5a3543a"
+}

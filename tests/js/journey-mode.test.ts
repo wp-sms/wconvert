@@ -4,7 +4,7 @@ import type { TemplateTree } from '@renderer/types';
 import finder from '../../pro/modules/journeys/templates/journey-product-finder.json';
 import signup from '../../resources/templates/library/journey-email-only.json';
 import { upgradeToGraph } from '../../resources/admin/src/builder/structure/graph';
-import { addGraphResultSignup, resultAccess } from '../../resources/admin/src/builder/structure/journey';
+import { addGraphResultSignup, resultAccess } from '../../pro/modules/journeys/admin/structure/resultAccess';
 
 it('keeps an anonymous result independent of signup', () => {
   expect(isResultFirst(finder.tree as TemplateTree)).toBe(true);

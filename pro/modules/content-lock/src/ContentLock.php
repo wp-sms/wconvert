@@ -21,7 +21,11 @@ final class ContentLock
                 wp_register_style('wconvert-content-lock-editor', WCONVERT_PRO_URL . 'public/blocks/content-lock.css',
                     [InlineOptinBlock::HANDLE], BuiltAsset::version(WCONVERT_PRO_DIR . 'public/blocks/content-lock.css'));
                 $args['editor_style'] = 'wconvert-content-lock-editor';
-                wp_set_script_translations('wconvert-content-lock-editor', 'wconvert');
+                // Pro's own catalogue, keyed by this file. The free strings
+                // this bundle carries — the shared campaign picker — resolve
+                // from the free block's catalogue, which the dependency
+                // above loads into the same `wp.i18n` first.
+                wp_set_script_translations('wconvert-content-lock-editor', 'wconvert-pro', WCONVERT_PRO_DIR . 'resources/languages');
                 $args['editor_script'] = 'wconvert-content-lock-editor';
                 $args['supports']['inserter'] = true;
             }

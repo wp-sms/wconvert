@@ -46,9 +46,9 @@ export default function PlacementSettings({ optinId, published, config, vocabula
 
   /** What switching to `next` would change in the other questions. */
   const changesFor = (next: Exclude<Method, 'manual'>) => [
-    ...(compatible ? [] : [{ question: __('When does it open?', 'wconvert'), from: when.open ? __('Custom rules', 'wconvert') : when.label(value), to: __('Right away', 'wconvert') }]),
-    ...(next === 'automatic' && !targeting.include?.length ? [{ question: __('Where does it show?', 'wconvert'),
-      from: whereReading(derive('where', value, vocabulary).id, targeting, vocabulary.targeting ?? []).answer.text, to: __('Blog posts only', 'wconvert') }] : []),
+    ...(compatible ? [] : [{ question: __('When does it open?', 'wconvert-pro'), from: when.open ? __('Custom rules', 'wconvert-pro') : when.label(value), to: __('Right away', 'wconvert-pro') }]),
+    ...(next === 'automatic' && !targeting.include?.length ? [{ question: __('Where does it show?', 'wconvert-pro'),
+      from: whereReading(derive('where', value, vocabulary).id, targeting, vocabulary.targeting ?? []).answer.text, to: __('Blog posts only', 'wconvert-pro') }] : []),
   ];
   const apply = (next: Exclude<Method, 'manual'>) => {
     onChange({ inline_placement: next === 'lock' ? null : { position: 'after_content' }, content_lock: next === 'lock' ? { mode: 'hide' } : null,
@@ -63,23 +63,23 @@ export default function PlacementSettings({ optinId, published, config, vocabula
     else setConfirm(next);
   };
   useEffect(() => { if (confirm) title.current?.focus(); }, [confirm]);
-  const methodName = (each: Method) => each === 'manual' ? __('Manual', 'wconvert') : each === 'automatic' ? __('Automatic', 'wconvert') : __('Content lock', 'wconvert');
+  const methodName = (each: Method) => each === 'manual' ? __('Manual', 'wconvert-pro') : each === 'automatic' ? __('Automatic', 'wconvert-pro') : __('Content lock', 'wconvert-pro');
 
   return <div className="wconvert-inline-placement">
-    <ChoiceChips label={__('Placement method', 'wconvert')} value={method} onChange={choose}
+    <ChoiceChips label={__('Placement method', 'wconvert-pro')} value={method} onChange={choose}
       options={(['manual', 'automatic', 'lock'] as const).map(each => ({ value: each, label: methodName(each) }))} />
 
     {confirm && <section className="wconvert-placement-confirm" aria-labelledby={`${id}-confirm`}>
       <p id={`${id}-confirm`} ref={title} tabIndex={-1} className="wconvert-placement-confirm__title">
-        {confirm === 'lock' ? __('Switch to content lock?', 'wconvert') : __('Switch to automatic placement?', 'wconvert')}</p>
+        {confirm === 'lock' ? __('Switch to content lock?', 'wconvert-pro') : __('Switch to automatic placement?', 'wconvert-pro')}</p>
       <p className="wconvert-display-hint">{confirm === 'lock'
-        ? __('A content lock covers the article as the page loads, so it has to open right away. This also changes:', 'wconvert')
-        : __('Automatic placement adds the form to the page as it loads, so it has to open right away. This also changes:', 'wconvert')}</p>
+        ? __('A content lock covers the article as the page loads, so it has to open right away. This also changes:', 'wconvert-pro')
+        : __('Automatic placement adds the form to the page as it loads, so it has to open right away. This also changes:', 'wconvert-pro')}</p>
       <ul className="wconvert-placement-confirm__changes">
         {changesFor(confirm).map(change => <li key={change.question}>
           <span className="wconvert-placement-confirm__question">{change.question}</span>
           <span className="wconvert-placement-confirm__from">{change.from}</span>
-          <ArrowRight aria-label={__('becomes', 'wconvert')} className="rtl:-scale-x-100" />
+          <ArrowRight aria-label={__('becomes', 'wconvert-pro')} className="rtl:-scale-x-100" />
           <span className="wconvert-placement-confirm__to">{change.to}</span>
         </li>)}
       </ul>
@@ -87,8 +87,8 @@ export default function PlacementSettings({ optinId, published, config, vocabula
       <div className="wconvert-placement-confirm__actions wconvert-toolbar">
         <Button variant="outline" onClick={() => setConfirm(false)}>{sprintf(
           /* translators: %s: the placement method in use, e.g. “Manual”. */
-          __('Keep %s', 'wconvert'), methodName(method))}</Button>
-        <Button onClick={() => apply(confirm)}>{confirm === 'lock' ? __('Switch to content lock', 'wconvert') : __('Switch to automatic placement', 'wconvert')}</Button>
+          __('Keep %s', 'wconvert-pro'), methodName(method))}</Button>
+        <Button onClick={() => apply(confirm)}>{confirm === 'lock' ? __('Switch to content lock', 'wconvert-pro') : __('Switch to automatic placement', 'wconvert-pro')}</Button>
       </div>
     </section>}
 
@@ -106,39 +106,39 @@ function Automatic({ id, placement, compatible, priority, onPlacement, onPriorit
 }) {
   const validParagraph = Number.isInteger(placement.paragraph) && (placement.paragraph ?? 0) >= 1 && (placement.paragraph ?? 0) <= 100;
   const positions = [
-    { value: 'before_content', label: __('Before the content', 'wconvert') },
-    { value: 'after_content', label: __('After the content', 'wconvert') },
+    { value: 'before_content', label: __('Before the content', 'wconvert-pro') },
+    { value: 'after_content', label: __('After the content', 'wconvert-pro') },
     { value: 'after_paragraph', label: placement.position === 'after_paragraph'
-      ? <>{__('After paragraph', 'wconvert')}
-        <input type="number" className="wconvert-quick-pick__number" min={1} max={100} aria-label={__('Paragraph number', 'wconvert')} aria-invalid={!validParagraph || undefined}
+      ? <>{__('After paragraph', 'wconvert-pro')}
+        <input type="number" className="wconvert-quick-pick__number" min={1} max={100} aria-label={__('Paragraph number', 'wconvert-pro')} aria-invalid={!validParagraph || undefined}
           value={placement.paragraph ?? ''} onChange={event => onPlacement({ ...placement, paragraph: event.target.value === '' ? undefined : Number(event.target.value) })} /></>
-      : __('After a paragraph', 'wconvert') },
-    ...(commerceSupported() || placement.position === 'after_product_summary' ? [{ value: 'after_product_summary', label: __('After the product summary', 'wconvert') }] : []),
+      : __('After a paragraph', 'wconvert-pro') },
+    ...(commerceSupported() || placement.position === 'after_product_summary' ? [{ value: 'after_product_summary', label: __('After the product summary', 'wconvert-pro') }] : []),
   ];
 
   return <div className="wconvert-placement-panel">
     {!compatible && <p className="wconvert-display-hint" data-attention="true" role="alert">
-      {__('Automatic placement needs “When does it open?” set to Right away.', 'wconvert')}{' '}
-      <button type="button" className="wconvert-display-link" onClick={onRightAway}>{__('Set it to Right away', 'wconvert')}</button>
+      {__('Automatic placement needs “When does it open?” set to Right away.', 'wconvert-pro')}{' '}
+      <button type="button" className="wconvert-display-link" onClick={onRightAway}>{__('Set it to Right away', 'wconvert-pro')}</button>
     </p>}
     <div className="wconvert-placement-field">
-      <p className="wconvert-placement-row__title">{__('Position in the content', 'wconvert')}</p>
-      <ChoiceChips label={__('Position in the content', 'wconvert')} value={placement.position} options={positions}
+      <p className="wconvert-placement-row__title">{__('Position in the content', 'wconvert-pro')}</p>
+      <ChoiceChips label={__('Position in the content', 'wconvert-pro')} value={placement.position} options={positions}
         onChange={next => onPlacement(next === 'after_paragraph' ? { position: 'after_paragraph', paragraph: 3, fallback: 'after_content' } : { position: next })} />
-      {placement.position === 'after_paragraph' && !validParagraph && <p role="alert" className="wconvert-quick-picks__error">{__('Enter a whole paragraph number from 1 to 100.', 'wconvert')}</p>}
-      {placement.position === 'after_product_summary' && <p className="wconvert-display-hint">{__('Classic WooCommerce themes only. For a block theme, choose Manual and add the block to the product template.', 'wconvert')}</p>}
+      {placement.position === 'after_paragraph' && !validParagraph && <p role="alert" className="wconvert-quick-picks__error">{__('Enter a whole paragraph number from 1 to 100.', 'wconvert-pro')}</p>}
+      {placement.position === 'after_product_summary' && <p className="wconvert-display-hint">{__('Classic WooCommerce themes only. For a block theme, choose Manual and add the block to the product template.', 'wconvert-pro')}</p>}
     </div>
-    {placement.position === 'after_paragraph' && <Field label={__('If there are fewer paragraphs', 'wconvert')} htmlFor={`${id}-fallback`}>
+    {placement.position === 'after_paragraph' && <Field label={__('If there are fewer paragraphs', 'wconvert-pro')} htmlFor={`${id}-fallback`}>
       <NativeSelect id={`${id}-fallback`} className="self-start" value={placement.fallback ?? 'after_content'} onChange={event => onPlacement({ ...placement, fallback: event.target.value })}>
-        <option value="after_content">{__('Place it after the content', 'wconvert')}</option>
-        <option value="skip">{__('Don’t show it on that page', 'wconvert')}</option>
+        <option value="after_content">{__('Place it after the content', 'wconvert-pro')}</option>
+        <option value="skip">{__('Don’t show it on that page', 'wconvert-pro')}</option>
       </NativeSelect>
     </Field>}
-    <Field label={__('Priority', 'wconvert')} htmlFor={`${id}-priority`} hintId={`${id}-priority-help`}
-      hint={__('From 0 to 100. One automatic campaign shows per page, the highest priority first. A campaign placed by hand always comes first.', 'wconvert')}>
+    <Field label={__('Priority', 'wconvert-pro')} htmlFor={`${id}-priority`} hintId={`${id}-priority-help`}
+      hint={__('From 0 to 100. One automatic campaign shows per page, the highest priority first. A campaign placed by hand always comes first.', 'wconvert-pro')}>
       <Input id={`${id}-priority`} className="w-24" type="number" min={0} max={100} value={priority} aria-describedby={`${id}-priority-help`}
         onChange={event => onPriority(Math.max(0, Math.min(100, Math.trunc(Number(event.target.value) || 0))))} />
     </Field>
-    <p className="wconvert-display-hint">{__('Using a page builder or a custom layout? Choose Manual instead.', 'wconvert')}</p>
+    <p className="wconvert-display-hint">{__('Using a page builder or a custom layout? Choose Manual instead.', 'wconvert-pro')}</p>
   </div>;
 }

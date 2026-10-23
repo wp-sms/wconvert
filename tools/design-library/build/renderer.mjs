@@ -46,6 +46,11 @@ const entry = resolve(OUT, 'renderer-entry.ts');
 // that tree has it.
 const closeReserve = resolve(PLUGIN, 'pro/modules/display-types/loader/close-reserve');
 
+// Pro's since the translation split; an older tree visual-diff builds still
+// has it in free's admin.
+const productPreview = [resolve(PLUGIN, 'pro/resources/admin/src/productPreview'), resolve(PLUGIN, 'resources/admin/src/productPreview')]
+  .find(path => existsSync(`${path}.ts`));
+
 writeFileSync(
   entry,
   [
@@ -59,7 +64,7 @@ writeFileSync(
     `import { mountedStyles } from '${resolve(PLUGIN, 'resources/renderer/src/css')}';`,
     `import { registerPremiumJourneyRenderer } from '${resolve(PLUGIN, 'pro/modules/journeys/loader/render')}';`,
     `registerPremiumJourneyRenderer();`,
-    `import { registerProductPreview } from '${resolve(PLUGIN, 'resources/admin/src/productPreview')}';`,
+    `import { registerProductPreview } from '${productPreview}';`,
     `registerProductPreview();`,
     `export const SHADOW_CSS = mountedStyles();`,
     `export { chooseResult, journeyTrace } from '${resolve(PLUGIN, 'resources/loader/src/journey-rules')}';`,

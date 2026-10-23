@@ -21,7 +21,7 @@
         {
           "setup_id": "sale-deadline",
           "stage": "during",
-          "setup_hash": "836d01c7bd7d6c014ed1d6632ba82f1f87fe5fd946c3eab5d420c1b49cc71ff2",
+          "setup_hash": "cde6e1ca56415bbcb340ddefae16d925ef534ab68cece7d5398cc1dd04c5fc43",
           "design_hash": "9c345ebb5bff7e47f337e4079d45353694f464276090ba3510cd631385883aad"
         },
         {
@@ -199,7 +199,7 @@
         {
           "setup_id": "sale-deadline",
           "stage": "during",
-          "setup_hash": "836d01c7bd7d6c014ed1d6632ba82f1f87fe5fd946c3eab5d420c1b49cc71ff2",
+          "setup_hash": "cde6e1ca56415bbcb340ddefae16d925ef534ab68cece7d5398cc1dd04c5fc43",
           "design_hash": "9c345ebb5bff7e47f337e4079d45353694f464276090ba3510cd631385883aad"
         },
         {
@@ -231,43 +231,43 @@
         {
           "setup_id": "recommend-accessory",
           "stage": "any",
-          "setup_hash": "382238823d1c6f34af6f38cfb2deb7a3cea589deb6cc1ee33c80412ece631280",
+          "setup_hash": "97b1436fdf753650f06cd257a4bf57bd908ddc1cb4cbc64babe3006420281699",
           "design_hash": "aeee64fce2435c10710e0ecfb379ca61d3f8384b28ab1f2445658a4e0d9bcc03"
         },
         {
           "setup_id": "explore-compatible-extras",
           "stage": "any",
-          "setup_hash": "88dca4a3a693cdd3784ba4164bfbccae57cff05fd13cd3b1d9ab4300d804d25d",
+          "setup_hash": "d215971aa937be9b60c3f54be88f5ebaff968f212923b60386a592da5ebe4ac3",
           "design_hash": "cbab584f5977c35f3732d2b104d56bff98a80083e7b6e859c3799b4ff4bac840"
         },
         {
           "setup_id": "add-useful-extras",
           "stage": "any",
-          "setup_hash": "b182091e91a1224c639f74cc2d8813c439b7ef0600febc230143f65b79fdc2f6",
+          "setup_hash": "67f92d48b832aae964c6edbd11ee8edbeba971365cdcd443ec6326c695f874ef",
           "design_hash": "efee3e5109441272ac8cdd5c652fe677bff2d10dff939279c4a73aecb291d0d5"
         },
         {
           "setup_id": "basket-cross-sells",
           "stage": "any",
-          "setup_hash": "20d274dd56881c686ab40b91f3258c2ea7278a061e8caacdd94f79bb47a485f4",
+          "setup_hash": "c4040aee956649280dd3e14199c4a333081187d6536e0d34d8292bfff923a289",
           "design_hash": "80926b1e1a4954ff43866c674eb2dafa0b608b119bc21a4a23632125b695993d"
         },
         {
           "setup_id": "coffee-taste-finder",
           "stage": "any",
-          "setup_hash": "4f03b922b7dfc1f8c215d8fb0a0623a7877c5f5c43af3b56bd398ec9797679ae",
+          "setup_hash": "36a036f20d02aae48b3a102127dc5f4d8658afb4a7cd141a9e1e7f5501336c89",
           "design_hash": "9b214034fabc90988860eea8081cd49cadac5f74f4d5de7fb3c2042463e5c66a"
         },
         {
           "setup_id": "shopping-guidance",
           "stage": "any",
-          "setup_hash": "7b09af0ee424de83700161b7f73623a461069c1a59638b456d7d52397fab9e9d",
+          "setup_hash": "49236b2034f91125a33798a6a197b7d010e917bc0dd2e011f96d509eb599c8b9",
           "design_hash": "7b3219d5a9f76005dc5d29da3d553ec9aa99cbbdb3be79337e8388b5fd851dbe"
         },
         {
           "setup_id": "upholstery-samples",
           "stage": "any",
-          "setup_hash": "1baf4a7cf3acd9f125bc85b33be25f28ac16af331c309ccd3eb8f0111845217a",
+          "setup_hash": "1fbbefae0ed623110af28b3f2816d1fefc1236f0da222c5901375a09825a9445",
           "design_hash": "e9c38c705f2e3d462e5d2dd426cb0e2df535c9e5b7e890c98f292760bd6e966e"
         }
       ]
@@ -292,7 +292,7 @@
         {
           "setup_id": "accessible-visit-note",
           "stage": "any",
-          "setup_hash": "8bedd8afd3553bb583b45c0ed41522241daf1766504d395b9d0c6de51f9ef69d",
+          "setup_hash": "b3effaa2322221991e3e8c18b43942dccd2caa531bc8f5eab41e255681b4c2e0",
           "design_hash": "ea3f4be04e19cb28c0273dae3ebeb5015178a18db44d98d55968578c334682f9"
         },
         {
@@ -310,7 +310,7 @@
         {
           "setup_id": "callback-slip",
           "stage": "any",
-          "setup_hash": "3f7a71036fa0bd4e5536fcfd1357266385bb09802b15731e2977c0c3775cc69d",
+          "setup_hash": "2f74ed7d30c6e3c7df2cfbefe8aaf15a57cc653afdd27b6f135fc872addcc794",
           "design_hash": "fdee297b413173b94940049ebee5e55e9833dab9c2d144d263c8b070d13f52e5"
         }
       ]
@@ -335,7 +335,7 @@
         {
           "setup_id": "launch-index",
           "stage": "any",
-          "setup_hash": "3b5358d7540716a40dfe2510b9154bbe891ab32ead8c445a210711519db58a3c",
+          "setup_hash": "35f98d6f025b141294a7021cca211ff453e987c25900c9c0fa6b36df7289df7f",
           "design_hash": "db76e68675fa8699760cf2a336c8e1f73b0f5952b53423f23a2e567e24878a16"
         },
         {
@@ -421,7 +421,7 @@
         {
           "setup_id": "halloween-sale-countdown",
           "stage": "any",
-          "setup_hash": "df569ec8a5abeb3ffc2507ddc4be949892383f4a16ed502efc9432e6c351becb",
+          "setup_hash": "272a357b16bda6ad0965ce953f78bae80babef50bc34a99de69dfc1c3531d0a4",
           "design_hash": "f1def6a2fe51ff56bf6ebfd5f296db37d8a2e134dcaf366a4bbf78ab5d33b665"
         }
       ],
@@ -448,7 +448,7 @@
         {
           "setup_id": "bf-midnight-atelier",
           "stage": "during",
-          "setup_hash": "53794e237cffd03e0a2b706a19207448325cc427c7ceb006f57589846f2ec790",
+          "setup_hash": "232214f40cd41ee64697c74b20dc9b60cc0dfa7575b2554d1da287db89ea0c1e",
           "design_hash": "eb38880d7332d21eec66701e0c744fc2271d93620a2ace9e8623cc9196975d26"
         },
         {
@@ -466,13 +466,13 @@
         {
           "setup_id": "bf-good-deal-receipt",
           "stage": "during",
-          "setup_hash": "c2623882cef8d0dfe87c39429a9dedee4d305051c4e5e6e614ada97be228a39b",
+          "setup_hash": "5e89b868936160cdb8124ff54d2e861eb441a7a5890f2841592f7545878753bf",
           "design_hash": "69f0baf26208df4ffbe7a8778a4d3b3ff46f683a416ffcd88bd19b7b3fd487c2"
         },
         {
           "setup_id": "bf-blackout-strip",
           "stage": "during",
-          "setup_hash": "e9e07b5cab6370fdfbcf0e3d4585c484fd56a8442f1d871dcf43e3d69d823d6a",
+          "setup_hash": "5b4837629723c24bc3f4f763a6ffd549ef1fd336346a72c57765cd7482be092f",
           "design_hash": "1d9cda9ae4d01e7a91a58551079bb6b1be1d3a412bd6d91bafb67cfe6ca643bd"
         },
         {
@@ -484,49 +484,49 @@
         {
           "setup_id": "bf-velvet-rope",
           "stage": "before",
-          "setup_hash": "87f0c99cd684d5f2aab0db697ccb457763bf7653d5d506cda58102baba0c1818",
+          "setup_hash": "c5c532ee45552cbdb35b046709e4c7c843f80c8405838b2cd2a1285d5ec63ca9",
           "design_hash": "67cebadb374c5df2dd2ff7945f20af0169c013ef07826a763b7e181f8df13be4"
         },
         {
           "setup_id": "bf-little-black-gift",
           "stage": "during",
-          "setup_hash": "83259a9dce6dd1392e16b0d82af10a83497075ca49993a17bfecac4239aa98c1",
+          "setup_hash": "b6f52b69717f2b243889de9d7e89ad679f3b214289b284f95d61a5964870c0f5",
           "design_hash": "14e4af47492d01600ce33c15310fadc5d079a9c6b5cda103822594905bba9f16"
         },
         {
           "setup_id": "cm-chrome-hour",
           "stage": "during",
-          "setup_hash": "f693dcd233a0de82646975669741dbb45ca2f612f3460caad9dec5c0709aa39c",
+          "setup_hash": "5f89d0bb2e7e80f3e05b337fdbac317f08990a76539646d5657f797b9ef7c13c",
           "design_hash": "6c787c954537449bf842b1167239bd8a9794d281ca3a5d43d07be494208db3b0"
         },
         {
           "setup_id": "cm-system-upgrade",
           "stage": "during",
-          "setup_hash": "de460ce242b34bc917d34cf0d2525615453e69a71e4f313451c40dfd729aedd1",
+          "setup_hash": "3a1e71b9cc6375d2fd5def79fb2d179f1b1168a2c96c04a05ca295668140d69e",
           "design_hash": "bfde44156ffb1bc6435e6190f0f30e54047cd5c986c901fe574e95d315198679"
         },
         {
           "setup_id": "cm-command-save",
           "stage": "during",
-          "setup_hash": "7b205f29534e2a0c47d7d6fa7d939d2abbed28c44a55532db99720a5438a73a2",
+          "setup_hash": "ccedfeb821ccd1a119962ebbcf55ebe3063885bc1673b35fe5e59289c6dc6c38",
           "design_hash": "f0bf9226176c1c97839f6fde891923ea875de55bb323428dfb77988fcbaf352c"
         },
         {
           "setup_id": "cm-pixel-drop",
           "stage": "before",
-          "setup_hash": "0187c3cb0a88c86819df40510d47f19aeb1055373845bec4a7307bda92e848c0",
+          "setup_hash": "6e141c6b5e768f8ad0c74ad788c7ee19013f4b0c96907ada5438f29a39d919de",
           "design_hash": "06990fd40cb735584b192b0fee66b598746781db370641f6c2a935026324ff2d"
         },
         {
           "setup_id": "cm-electric-aisle",
           "stage": "during",
-          "setup_hash": "e47b8e766631fbe15f1159c23e7f066fc4de05511fd2ff8609f80fa93d8b1bd1",
+          "setup_hash": "045260da038d6802d139d3376de59b44ff0078f4d1aa6f123e3badc6c4f805d9",
           "design_hash": "f37c8f683ec8aaffb7ab7f87cf93c5329b2674c7a23ea898bac463437085ac9c"
         },
         {
           "setup_id": "cm-night-shift",
           "stage": "during",
-          "setup_hash": "4ad39f3a92d6d1171ab32032e7eb50817a8a728dda9f36228ad999d24399fe97",
+          "setup_hash": "1a324f8d413140996bc22a57ac4c145d7499beaef98d936cb938de83ec438dc1",
           "design_hash": "0bfe934692db57f90583bd26ba407e9fbcb33ae5b212d0ad5b1a16cad26c9e20"
         },
         {
@@ -538,13 +538,13 @@
         {
           "setup_id": "bf-final-markdown",
           "stage": "during",
-          "setup_hash": "1dec499f3c58f1ea0ebcb9fcd9e8da1643ab59d68f6e484d70eb86d225e441ab",
+          "setup_hash": "b975344de4d863e3963743c60c1bc35d32c1c607c7c1d44f982a349f05b84f80",
           "design_hash": "d6f566ecd6bd3f1766a6272f4938e8c929561a7432d4d735761cccf00fee32a6"
         },
         {
           "setup_id": "bf-closing-time",
           "stage": "during",
-          "setup_hash": "6d19a3aa2b93df0cb0b366edfb391f48a1a4a00514ec157f9d71535c62ae130c",
+          "setup_hash": "71035209be998ed0109d9dea10b4799bfd21d6d23a3092d76a7d262abdf02fd4",
           "design_hash": "9d7e6c2cbf2c484154e67995602feb4b144888d74488c100694b188141314079"
         },
         {
@@ -556,13 +556,13 @@
         {
           "setup_id": "cm-midnight-transmission",
           "stage": "during",
-          "setup_hash": "12319584bb27fa0a698d61fd5f519482c2a2ff6d08ff7dbb26bf0e6d63d92bc4",
+          "setup_hash": "32d160d43b439ee49c0527889603504acf42f91589d2fb7d1469a94d1472421e",
           "design_hash": "096f8c8063e8994468cbcc6e7d6baa17095cd60727ba94002cb232e25f2a69f7"
         },
         {
           "setup_id": "bf-weekend-curtain",
           "stage": "during",
-          "setup_hash": "9a578fcdde34773cff14fcab6efae2243304ac33d91b1f8f0e8419603ef26f2a",
+          "setup_hash": "49dc5c4109092a2e3a08742fac47e0797a1ea467b407e843992ee020dcfa7a87",
           "design_hash": "50af6c1fac862e6af757b746dd5139395b3f26199b0bff519b97e7b94d7a46b5"
         }
       ],
@@ -589,7 +589,7 @@
         {
           "setup_id": "winter-ribbon-room",
           "stage": "during",
-          "setup_hash": "18940bc15b64f8c4b333aea532c4b71933f2e782a634d3db8dc468191b345be3",
+          "setup_hash": "71c490b4200ba35c0bc99a450e5faeb7472e892568cc72c9cab4a9f3cebc8ea9",
           "design_hash": "02a56323074d5b2d8c9b408026b5fae6d916c6a8c27c1f886d1a0799d19704ae"
         },
         {
@@ -601,13 +601,13 @@
         {
           "setup_id": "winter-winter-windows",
           "stage": "during",
-          "setup_hash": "1b20c180e8325a325e66106124d497dde9ee687aa9df84cad53733193a3a8dda",
+          "setup_hash": "b36a226cae51ce175f66d3ed3b0a5da484af9cc936080529a087815ad9cb0319",
           "design_hash": "f0bdc47a10d6d26520781e2aa01bb88e420d95bdac02ab55de34e000c4e9ee6c"
         },
         {
           "setup_id": "winter-ornament-edit",
           "stage": "during",
-          "setup_hash": "ff19006782b02c30a3d6b1724f795ca0b7495f41d09644cfc6ec5ccbf4808239",
+          "setup_hash": "2830c371c893c0d71a4443def822da194bb5b50b1b421b616c5ff4a044bcdebc",
           "design_hash": "605d4dc6315f4263ed863392a46c2ac83937a203baaa868d23f19bd86cad1acc"
         },
         {
@@ -619,13 +619,13 @@
         {
           "setup_id": "winter-candle-club",
           "stage": "before",
-          "setup_hash": "d36c5f18142e17699e853e22dc7274c58ba0724e2d5b8e02dfe80e0c579e48a9",
+          "setup_hash": "087ca73387d6417c3494e04d3622f09d8d7763ec741fbe46a0cfb5c51ecf32b2",
           "design_hash": "74e792f07b49dbaabbbdcc467f0e04b27dd01a0df5ae11a2343aa1bb6db8c895"
         },
         {
           "setup_id": "winter-wrapped-in-colour",
           "stage": "during",
-          "setup_hash": "0e25e6aa0458450fd6e316a0e221eb5663c6abc347165301af1ac68f79e87526",
+          "setup_hash": "ede9ba10fd9acd7a5e68d1ab3bcddc9a33fb73b2fc2304bcd026b1c618db7ec6",
           "design_hash": "799c36194721bb42631adc14fbf0b13c5e86c0081dbd80500c961c56a99dc0b7"
         },
         {
@@ -637,13 +637,13 @@
         {
           "setup_id": "winter-ribbon-reminder",
           "stage": "during",
-          "setup_hash": "af38b85ce8c349422507e63a3904ab5c50ed7ddee88b02638a641b6cb7749b6d",
+          "setup_hash": "e5a749754bda7d2e616814cc31d0367aa699ec05d1f98f1a8cb5f813837cf63f",
           "design_hash": "481f61eb0480a59e6ac9a1395c930f562302cc6f984d88363f86522532220ca4"
         },
         {
           "setup_id": "winter-gift-atelier",
           "stage": "during",
-          "setup_hash": "7f8218ede99d69d0eb01cf455aa211f6939f1a3cd77c4735726c8bba7486690b",
+          "setup_hash": "1ef1733094149bc7ab126c28920c9679e87b4d3fdff72e885f2a28cd3c873978",
           "design_hash": "47f12a0910454183460ee84e775af64181e5ca73d61f62b5a85f80873a146ae5"
         },
         {
@@ -655,13 +655,13 @@
         {
           "setup_id": "winter-winter-postcards",
           "stage": "before",
-          "setup_hash": "6f0340a948efe2994e8ed58a9c314ff0901c63d82548cc8c8cebaacb746971cc",
+          "setup_hash": "8c5011629c3f31a16fe6d31edcdd0343af714163804fad913161ace859f92281",
           "design_hash": "0f6473213caa341ce8057214b3959588afd407691f95b8c85355a3649bb91b63"
         },
         {
           "setup_id": "winter-snowglobe-society",
           "stage": "before",
-          "setup_hash": "e7f17bb53d0585c870ef3da2723164e9baa699c078df22796c8c3868135490db",
+          "setup_hash": "b56d001d04aebec8584b1f85b485ba7c9e49acd04541523b092c859f6486d129",
           "design_hash": "f7611b54600204e7e8e37a4e16138cbf418a2baca95478e6c6256637e5b959de"
         },
         {
@@ -673,19 +673,19 @@
         {
           "setup_id": "winter-after-hours-atelier",
           "stage": "before",
-          "setup_hash": "165a108e79076001b7f04a93334c4917db4bac6e3c687cf5495f7f611ede16a2",
+          "setup_hash": "7091e46bb2c7649d42199924c3969f5670576f6282249f5dc6465850cf5b35ca",
           "design_hash": "edbd37d88b197402dc837e71b0875f6fa0f614c4aa1c158b4e82c507f80ed509"
         },
         {
           "setup_id": "winter-first-light-access",
           "stage": "before",
-          "setup_hash": "ab2c7a355b277ad4eaf2d45c049775efe4e00b1a78c9cbf151546fb148931f71",
+          "setup_hash": "0bb77bc057fa452f2f65fcb5c3e4492838fbb9169ccbfee78c74f09c51c55737",
           "design_hash": "06e283f380615dede640be5d07dd42eae7a8730163550e4cb7fb08aecb715853"
         },
         {
           "setup_id": "winter-advent-letter",
           "stage": "before",
-          "setup_hash": "55b0ef9b791edcaf7670db9793481307a6d22145ffbed86f63cc932b4b7396d4",
+          "setup_hash": "b2744a2416a6cf1b5f7ec8d814f575fb038f99e3f9c585609971e2b414f99f0e",
           "design_hash": "75565a1b8a294a54c642fa44083a4e1bd6664538d973e25f5209aaf540539c8e"
         },
         {
@@ -697,25 +697,25 @@
         {
           "setup_id": "winter-last-sleigh",
           "stage": "during",
-          "setup_hash": "a55a4ba4d8a668f53cb71571ea5ac7a0ece7d72351aaf9e86df9e9e6183e065c",
+          "setup_hash": "f18454d1062b32efc317f4c0563b8f8c684b3bf6f462fadfc2a6435db85a73d2",
           "design_hash": "98bb04baef7e1adca8585cf4a770dbfbae972455d7b69642abec6a8b9fa6010a"
         },
         {
           "setup_id": "winter-before-the-bow",
           "stage": "during",
-          "setup_hash": "f198bce349f79bf70e5a2f24fce96433e911a7121d64410281e3640dca06b025",
+          "setup_hash": "d93e4d68b2b6fb5ae88f6d75de41fc0ef486a96b9d29c7a25404b93c3d288dd4",
           "design_hash": "7dac74af99da114b044ed886f513ee87b738d40eeae324ef1f47e20838aba327"
         },
         {
           "setup_id": "winter-dispatch-desk",
           "stage": "during",
-          "setup_hash": "65f131cae26dbdd04826aeb5711965f33e6887a1d361f1ec485a917e74e336ff",
+          "setup_hash": "1d245e286fb2f3a9622e1fb13d685b18dfbec011eb5b5cca0930ea80aa005ed0",
           "design_hash": "3006ffff0fcb8903de3da97b8b0a48b1e6685b2c72602171c393a480d905a6d4"
         },
         {
           "setup_id": "winter-digital-gift",
           "stage": "during",
-          "setup_hash": "39af20af9d939754086369130d4418bfe5120aa70d2ac0dc97d5935c906cbe0d",
+          "setup_hash": "00df568c55947c74ce5f7b2d4c0e2032cee77abb2056fe9d118f37c746721601",
           "design_hash": "1ae47d6a20afe85ed1cd0c0b44941411e0b96d622d77fec2c17b918c3b207cd0"
         },
         {
@@ -727,19 +727,19 @@
         {
           "setup_id": "winter-pickup-window",
           "stage": "during",
-          "setup_hash": "1f50eb63689b2da9f84a2ab8d1e4449c34462505ee6128b037667f6ee5f6b00a",
+          "setup_hash": "b17a45ce92a7010666f6b5dd4758910d393f1f69a065e686e4b9e193650d59d2",
           "design_hash": "ee9a4235b6d0a59d716cd5b115585e631e2fde4084cd78ecc703d66029fee25f"
         },
         {
           "setup_id": "winter-final-sparkle",
           "stage": "during",
-          "setup_hash": "74290a0476c307dc14a37ca5af9d5e88363860cc027af0c8cf255d8f46367861",
+          "setup_hash": "52f41495d59a7ac56421f75aa7efc00b7b49548a97fe8445611b9a065e4fdd69",
           "design_hash": "9ccf6b94b34d93b64a212cabc31dc65902eada851c350fec45a73905b5641e68"
         },
         {
           "setup_id": "winter-softer-beginning",
           "stage": "after",
-          "setup_hash": "a15fcf0a8709b0d891f4882afb9dafee38e2a87bf18ed26874dcfa5a535a735a",
+          "setup_hash": "318cb9aa4b160f7165fe63f97372cbea74a53808f4cc28c5c5c16dfa8c853870",
           "design_hash": "9e233a002939c706392bdd92b42bd5b0e287ba37a9877924177720b14454bbc1"
         },
         {
@@ -751,19 +751,19 @@
         {
           "setup_id": "winter-midnight-garden",
           "stage": "after",
-          "setup_hash": "470f4beb25e3654f27e400a68e985bb11cdf1b38d6129b124acbf28375c75c70",
+          "setup_hash": "a7c44b0679604b1f784d95336605bc556b9fef4c7c5d298abdefc06e838bce7f",
           "design_hash": "e874507805d2eacaa0115b6487575dbb168be2123a2479fe76916ad0c19eb084"
         },
         {
           "setup_id": "winter-bright-new-chapter",
           "stage": "after",
-          "setup_hash": "2226c9ad96b25ca3b242f908a0d4407f074e6d66448a65271e539ba0faa12957",
+          "setup_hash": "77857cd9fb235564a1ad048e5facb0eb3197a5e7fa1f804885ff59eb2865b29a",
           "design_hash": "708e26e409a0f7643538e6f6e94e89eecd33fa9d13fed5d21edaee9e2cc64896"
         },
         {
           "setup_id": "winter-first-page",
           "stage": "after",
-          "setup_hash": "b80d68db5bb7b77e28f756b4d65694f17be5c593d3f5550a164cde65be22f625",
+          "setup_hash": "6966df5108a46f2fa39a383ad473c1def10d9dcc05946a13f76d12f41798bcd0",
           "design_hash": "429897c903e5455cac8e113135d332e9ad86a104d3df8623053cac2c6b0d808a"
         },
         {
@@ -775,13 +775,13 @@
         {
           "setup_id": "winter-shop-is-sleeping",
           "stage": "during",
-          "setup_hash": "33e4a10ebad9df459e2e09d16f1f8c764064812256f1c2eea313509cf79f081a",
+          "setup_hash": "483bcdeff232c3eb57617e3aac5a176b892e8c9c010d3b707732b2ccdef6199d",
           "design_hash": "0cdad711a5d40d56da1efa55c340e44ecbcae22bfa927121a1b64b7731203c6f"
         },
         {
           "setup_id": "winter-by-the-fire",
           "stage": "during",
-          "setup_hash": "12684543a79212ccbc36639f46d86bd20990fa47e17092bae179ab7957039bce",
+          "setup_hash": "5df80eb8d27c82269dee6c0731b033d5e90abd0e0c9dfba9fb09e0a3b43d56c6",
           "design_hash": "0186b703c735359816c9de04131f093932089018138c410f194833f2d1ec456b"
         },
         {
@@ -793,37 +793,37 @@
         {
           "setup_id": "winter-winter-hours",
           "stage": "during",
-          "setup_hash": "237e9df0fe960924e8e1ecd1045c366c23e56d7f7644a9719e22e1a9240e62e9",
+          "setup_hash": "e45549499d32585178a22be50e5f4755584f1591ba91de27b60c2920ad3af957",
           "design_hash": "0c4e694ccb0632c74ef9bbe6184298f634fb0de2f2485ad3b8ab0506da16edfa"
         },
         {
           "setup_id": "winter-tied-with-joy",
           "stage": "during",
-          "setup_hash": "804df081b308e4f607f44d139bea7f799488df281dba1f0732fd815db5d85251",
+          "setup_hash": "092c84764e1f4641f18b38b304b3199d0457abd108a36d17987b13c31ac83c51",
           "design_hash": "49923d06a48cea70e3794689b569d08462645c20c8f1030f12cb3cd25beeacc5"
         },
         {
           "setup_id": "winter-all-wrapped-up",
           "stage": "during",
-          "setup_hash": "a873a4fcc15016ac39787c8588319376ac5d62903775ca94b8cc6643d68071a6",
+          "setup_hash": "5ad58a55ed5ad0e6d585a7c63b3608b6621b4d6163dcce73bba83205d603fb82",
           "design_hash": "420646046544d4b7ecff5c7d7ee918524eaa98795378bba922d831640fe19576"
         },
         {
           "setup_id": "winter-christmas-express",
           "stage": "during",
-          "setup_hash": "f98e7e3b5ba8fce17db961e4757bfffdeecc4caaa26695c40fbe455a35d6e54c",
+          "setup_hash": "ac3509af4a6a83f5cccea90f719c992acb1a3204d45b32033caee6b3260e343f",
           "design_hash": "598a25e85a57c79b929dd757265a1772d1f81a6c5cd60f25e04a627abdacb4cc"
         },
         {
           "setup_id": "winter-santa-letter",
           "stage": "before",
-          "setup_hash": "d1a6c3495759dbc2f69a5737c48049ce2b9077bb3d47e58017cf8c525cb921c1",
+          "setup_hash": "e64bb1cbf26bd1029c38daa51218c832e73d345d5dddd70910c6d3dc2cdb2129",
           "design_hash": "ed2f4bc5fdb2f5bc2643530c7f1c8bb07f612f7051dca7ed423f0b08d702688e"
         },
         {
           "setup_id": "winter-hello-2027",
           "stage": "after",
-          "setup_hash": "d4b0ce33280b3e6dd39118efa96a5b5d7aa9c338d87ab881a1d94673595236bc",
+          "setup_hash": "c7e59585baed6d8a1d8ddbe8818ad815fd13cc01a4bdf86d6b4a56c25e3e363b",
           "design_hash": "5beb0ee7012577ba0e66889993383fbfecc4eb281bc82724d62582b85c8801b5"
         }
       ],

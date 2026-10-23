@@ -28,7 +28,7 @@ interface Report {
 }
 /** An amount in its order's currency, with the store's symbol; a missing one is said, not zeroed. */
 function money(amount: number | null, currency: string) {
-  return amount === null ? __('Unavailable', 'wconvert') : formatMoney(amount, currency);
+  return amount === null ? __('Unavailable', 'wconvert-pro') : formatMoney(amount, currency);
 }
 
 /**
@@ -38,15 +38,15 @@ function money(amount: number | null, currency: string) {
  */
 function orderStatus(status: string): string {
   return labelOf(status.replace(/^wc-/, ''), {
-    pending: __('Pending payment', 'wconvert'),
-    processing: __('Processing', 'wconvert'),
-    'on-hold': __('On hold', 'wconvert'),
-    completed: __('Completed', 'wconvert'),
-    cancelled: __('Cancelled', 'wconvert'),
-    refunded: __('Refunded', 'wconvert'),
-    failed: __('Failed', 'wconvert'),
-    'checkout-draft': __('Draft', 'wconvert'),
-  }, __('Other status', 'wconvert'));
+    pending: __('Pending payment', 'wconvert-pro'),
+    processing: __('Processing', 'wconvert-pro'),
+    'on-hold': __('On hold', 'wconvert-pro'),
+    completed: __('Completed', 'wconvert-pro'),
+    cancelled: __('Cancelled', 'wconvert-pro'),
+    refunded: __('Refunded', 'wconvert-pro'),
+    failed: __('Failed', 'wconvert-pro'),
+    'checkout-draft': __('Draft', 'wconvert-pro'),
+  }, __('Other status', 'wconvert-pro'));
 }
 
 /** Thrown when a response answers a different period than the one on screen. */
@@ -75,7 +75,7 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
     }).catch((cause: unknown) => {
       if (controller.signal.aborted) return;
       const reason = cause instanceof Error && cause.message === MISMATCH ? '' : messageOf(cause);
-      setError(sprintf(__('Could not load campaign sales for these dates. %s', 'wconvert'), reason).trim());
+      setError(sprintf(__('Could not load campaign sales for these dates. %s', 'wconvert-pro'), reason).trim());
     }).finally(() => { if (!controller.signal.aborted) setUpdating(false); });
     return () => controller.abort();
   }, [period.from, period.to, windowQuery, optinId, retry]); // eslint-disable-line react-hooks/exhaustive-deps -- keyed on the dates, not the period object, so a new object for the same window does not refetch
@@ -93,76 +93,76 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
   async function change(enabled: boolean) {
     setBusy(true); setError('');
     try { const saved = await apiFetch<{ settings: Report['settings'] }>({ path: '/wconvert/v1/revenue', method: 'POST', data: { enabled } }); setReport(previous => previous ? { ...previous, settings: saved.settings, site_matches: true } : previous); setRetry(n => n + 1); }
-    catch (cause) { setError(sprintf(__('Could not save the tracking setting. %s', 'wconvert'), messageOf(cause))); }
+    catch (cause) { setError(sprintf(__('Could not save the tracking setting. %s', 'wconvert-pro'), messageOf(cause))); }
     finally { setBusy(false); }
   }
-  if (!report && !error) return <RegionSkeleton label={__('Campaign sales', 'wconvert')} lines={3} />;
-  if (report && !report.available) return report.settings.since ? <Region className="wa-report"><RegionHeader title={__('Campaign sales', 'wconvert')} icon={<ShoppingBag />} /><EmptyState icon={ShoppingBag} title={__('WooCommerce is unavailable', 'wconvert')}>{__('Activate WooCommerce to read sales. Your tracking settings are kept.', 'wconvert')}</EmptyState></Region> : null;
+  if (!report && !error) return <RegionSkeleton label={__('Campaign sales', 'wconvert-pro')} lines={3} />;
+  if (report && !report.available) return report.settings.since ? <Region className="wa-report"><RegionHeader title={__('Campaign sales', 'wconvert-pro')} icon={<ShoppingBag />} /><EmptyState icon={ShoppingBag} title={__('WooCommerce is unavailable', 'wconvert-pro')}>{__('Activate WooCommerce to read sales. Your tracking settings are kept.', 'wconvert-pro')}</EmptyState></Region> : null;
   const Failure = report ? RegionError : RegionErrorState;
   const enabled = !!report?.settings.enabled && report.site_matches;
   const firstSetup = report && !report.settings.since;
-  const status = !enabled ? __('Tracking is off', 'wconvert') : !report.consent_ready ? __('Needs consent setup', 'wconvert') : __('Tracking is on', 'wconvert');
+  const status = !enabled ? __('Tracking is off', 'wconvert-pro') : !report.consent_ready ? __('Needs consent setup', 'wconvert-pro') : __('Tracking is on', 'wconvert-pro');
   // Turning tracking off is confirmed; turning it on is the setup step itself.
-  const trackingControl = report && !optinId ? <Button ref={toggle} variant={firstSetup ? 'default' : 'outline'} disabled={busy} onClick={() => enabled ? setConfirmOff(true) : void change(true)}>{busy ? __('Saving…', 'wconvert') : enabled ? __('Turn off tracking', 'wconvert') : __('Turn on tracking', 'wconvert')}</Button> : null;
-  return <ReportTarget name="sales" label={__('Sales', 'wconvert')}><Region className="wa-report">
-    <RegionHeader title={__('Campaign sales', 'wconvert')} icon={<ShoppingBag />} description={__('Paid orders linked to your campaigns.', 'wconvert')} trailing={report && <Badge variant={enabled && !report.consent_ready ? 'warning' : 'outline'}>{status}</Badge>} />
+  const trackingControl = report && !optinId ? <Button ref={toggle} variant={firstSetup ? 'default' : 'outline'} disabled={busy} onClick={() => enabled ? setConfirmOff(true) : void change(true)}>{busy ? __('Saving…', 'wconvert-pro') : enabled ? __('Turn off tracking', 'wconvert-pro') : __('Turn on tracking', 'wconvert-pro')}</Button> : null;
+  return <ReportTarget name="sales" label={__('Sales', 'wconvert-pro')}><Region className="wa-report">
+    <RegionHeader title={__('Campaign sales', 'wconvert-pro')} icon={<ShoppingBag />} description={__('Paid orders linked to your campaigns.', 'wconvert-pro')} trailing={report && <Badge variant={enabled && !report.consent_ready ? 'warning' : 'outline'}>{status}</Badge>} />
     {error && <Failure message={error} onRetry={() => setRetry(n => n + 1)} />}
     {report && <>
       {firstSetup ? <><RegionBody className="wa-sales-setup">
-        <div><h3>{__('Link campaigns to paid orders', 'wconvert')}</h3><p className="wa-muted">{__('Link future orders to a signup or click. Earlier orders stay unlinked.', 'wconvert')}</p>
+        <div><h3>{__('Link campaigns to paid orders', 'wconvert-pro')}</h3><p className="wa-muted">{__('Link future orders to a signup or click. Earlier orders stay unlinked.', 'wconvert-pro')}</p>
           <ol className="wa-setup-steps">
-            <li><strong>{__('Set up consent', 'wconvert')}</strong><span>{report.consent_ready ? __('Consent integration detected. Visitors must still grant statistics consent.', 'wconvert') : __('Use a consent plugin that supports the WP Consent API.', 'wconvert')}</span></li>
-            <li><strong>{__('Turn on tracking', 'wconvert')}</strong><span>{__('A signup or eligible click can link one checkout within 30 minutes.', 'wconvert')}</span></li>
+            <li><strong>{__('Set up consent', 'wconvert-pro')}</strong><span>{report.consent_ready ? __('Consent integration detected. Visitors must still grant statistics consent.', 'wconvert-pro') : __('Use a consent plugin that supports the WP Consent API.', 'wconvert-pro')}</span></li>
+            <li><strong>{__('Turn on tracking', 'wconvert-pro')}</strong><span>{__('A signup or eligible click can link one checkout within 30 minutes.', 'wconvert-pro')}</span></li>
           </ol>
         </div>
-        </RegionBody><RegionFooter><div className="wa-report-actions">{trackingControl}{optinId && <Button asChild variant="outline"><a href={reportHref()}>{__('Open sales setup', 'wconvert')}</a></Button>}<a href={docsUrl(GUIDES.campaignSales)} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert')}</a></div>
+        </RegionBody><RegionFooter><div className="wa-report-actions">{trackingControl}{optinId && <Button asChild variant="outline"><a href={reportHref()}>{__('Open sales setup', 'wconvert-pro')}</a></Button>}<a href={docsUrl(GUIDES.campaignSales)} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert-pro')}</a></div>
       </RegionFooter></> : <>
         <RegionBody>
-          <div className="wa-report-meta"><span>{report.from && report.to ? formatRange(report.from, report.to) : __('Report not loaded', 'wconvert')}</span><span>{__('By order paid date', 'wconvert')}</span>{updating && <span role="status">{__('Updating… Previous dates shown.', 'wconvert')}</span>}</div>
-          {enabled && !report.consent_ready && <div className="wa-report-notice"><strong>{__('Finish consent setup to link new orders.', 'wconvert')}</strong><a href={docsUrl(GUIDES.campaignSales, 'turn-on-tracking')} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert')}</a></div>}
-          {!report.site_matches && <p className="wa-report-notice">{__('The site address changed. Turn on tracking again in Tracking & setup below.', 'wconvert')}</p>}
-          {period.days === 0 ? <EmptyState icon={ShoppingBag} title={__('No complete days yet', 'wconvert')}>{todayAppearsTomorrow()} {chooseToday()}</EmptyState>
-            : report.complete === undefined ? <p className="wa-muted">{__('Sales totals have not loaded yet.', 'wconvert')}</p>
-            : report.complete === false ? <EmptyState icon={ShoppingBag} title={__('Choose a shorter period', 'wconvert')}>{__('This report is too large to total safely. No partial totals are shown.', 'wconvert')}</EmptyState>
-            : (report.linked_orders ?? 0) === 0 ? <EmptyState icon={ShoppingBag} title={__('No linked orders in this period', 'wconvert')}>{__('With tracking on and statistics consent granted, a signup or click can link a checkout within 30 minutes.', 'wconvert')}{!live && <> {todayAppearsTomorrow()}</>}</EmptyState>
+          <div className="wa-report-meta"><span>{report.from && report.to ? formatRange(report.from, report.to) : __('Report not loaded', 'wconvert-pro')}</span><span>{__('By order paid date', 'wconvert-pro')}</span>{updating && <span role="status">{__('Updating… Previous dates shown.', 'wconvert-pro')}</span>}</div>
+          {enabled && !report.consent_ready && <div className="wa-report-notice"><strong>{__('Finish consent setup to link new orders.', 'wconvert-pro')}</strong><a href={docsUrl(GUIDES.campaignSales, 'turn-on-tracking')} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert-pro')}</a></div>}
+          {!report.site_matches && <p className="wa-report-notice">{__('The site address changed. Turn on tracking again in Tracking & setup below.', 'wconvert-pro')}</p>}
+          {period.days === 0 ? <EmptyState icon={ShoppingBag} title={__('No complete days yet', 'wconvert-pro')}>{todayAppearsTomorrow()} {chooseToday()}</EmptyState>
+            : report.complete === undefined ? <p className="wa-muted">{__('Sales totals have not loaded yet.', 'wconvert-pro')}</p>
+            : report.complete === false ? <EmptyState icon={ShoppingBag} title={__('Choose a shorter period', 'wconvert-pro')}>{__('This report is too large to total safely. No partial totals are shown.', 'wconvert-pro')}</EmptyState>
+            : (report.linked_orders ?? 0) === 0 ? <EmptyState icon={ShoppingBag} title={__('No linked orders in this period', 'wconvert-pro')}>{__('With tracking on and statistics consent granted, a signup or click can link a checkout within 30 minutes.', 'wconvert-pro')}{!live && <> {todayAppearsTomorrow()}</>}</EmptyState>
             : <SalesTotals report={report} />}
-          {report.complete && period.days > 0 && <p className="wa-muted wa-report-context">{__('Linked after a signup or eligible click within 30 minutes. A link does not prove the campaign caused the sale.', 'wconvert')}</p>}
-          {report.complete && period.days > 0 && <p className="wa-muted wa-report-store-total">{sprintf(__('%s eligible paid orders across your store in this period.', 'wconvert'), formatCount(report.eligible_orders ?? 0))} <InfoTip label={__('About linked orders', 'wconvert')}>{__('Orders may be unlinked because consent was not granted, the interaction expired or tracking failed.', 'wconvert')}</InfoTip></p>}
+          {report.complete && period.days > 0 && <p className="wa-muted wa-report-context">{__('Linked after a signup or eligible click within 30 minutes. A link does not prove the campaign caused the sale.', 'wconvert-pro')}</p>}
+          {report.complete && period.days > 0 && <p className="wa-muted wa-report-store-total">{sprintf(__('%s eligible paid orders across your store in this period.', 'wconvert-pro'), formatCount(report.eligible_orders ?? 0))} <InfoTip label={__('About linked orders', 'wconvert-pro')}>{__('Orders may be unlinked because consent was not granted, the interaction expired or tracking failed.', 'wconvert-pro')}</InfoTip></p>}
         </RegionBody>
-        {report.complete && period.days > 0 && !!report.orders?.length && <ReportDisclosure title={__('View linked orders', 'wconvert')}>
-          <p className="wa-muted">{sprintf(__('Up to %s recent linked orders. Open an order to review it in WooCommerce.', 'wconvert'), formatCount(50))}</p>
-          <DataTable label={__('Linked orders', 'wconvert')}>
-            <DataTableHead><DataTableColumn>{__('Order', 'wconvert')}</DataTableColumn><DataTableColumn>{__('Campaign', 'wconvert')}</DataTableColumn><DataTableColumn>{__('Paid on', 'wconvert')}</DataTableColumn><DataTableColumn>{__('Status', 'wconvert')}</DataTableColumn><DataTableColumn numeric>{__('Net product revenue', 'wconvert')}</DataTableColumn></DataTableHead>
+        {report.complete && period.days > 0 && !!report.orders?.length && <ReportDisclosure title={__('View linked orders', 'wconvert-pro')}>
+          <p className="wa-muted">{sprintf(__('Up to %s recent linked orders. Open an order to review it in WooCommerce.', 'wconvert-pro'), formatCount(50))}</p>
+          <DataTable label={__('Linked orders', 'wconvert-pro')}>
+            <DataTableHead><DataTableColumn>{__('Order', 'wconvert-pro')}</DataTableColumn><DataTableColumn>{__('Campaign', 'wconvert-pro')}</DataTableColumn><DataTableColumn>{__('Paid on', 'wconvert-pro')}</DataTableColumn><DataTableColumn>{__('Status', 'wconvert-pro')}</DataTableColumn><DataTableColumn numeric>{__('Net product revenue', 'wconvert-pro')}</DataTableColumn></DataTableHead>
             <DataTableBody>{report.orders.map(order => <DataTableRow key={order.id}>
-              <DataTableCell label={__('Order', 'wconvert')}>{order.url ? <a href={order.url}>#{order.id}</a> : `#${order.id}`}</DataTableCell>
-              <DataTableCell label={__('Campaign', 'wconvert')}>{campaignNames[order.campaign] ? <a href={reportHref({ ...report.window, optinId: order.campaign })}><bdi>{campaignNames[order.campaign]}</bdi></a> : __('Deleted campaign', 'wconvert')}</DataTableCell>
-              <DataTableCell label={__('Paid on', 'wconvert')}>{formatDay(order.paid)}</DataTableCell>
-              <DataTableCell label={__('Status', 'wconvert')}>{orderStatus(order.status)}{order.refunded && <small className="block wa-muted">{__('Refund recorded', 'wconvert')}</small>}</DataTableCell>
-              <DataTableCell label={__('Net product revenue', 'wconvert')} numeric>{money(order.amount, order.currency)}</DataTableCell>
+              <DataTableCell label={__('Order', 'wconvert-pro')}>{order.url ? <a href={order.url}>#{order.id}</a> : `#${order.id}`}</DataTableCell>
+              <DataTableCell label={__('Campaign', 'wconvert-pro')}>{campaignNames[order.campaign] ? <a href={reportHref({ ...report.window, optinId: order.campaign })}><bdi>{campaignNames[order.campaign]}</bdi></a> : __('Deleted campaign', 'wconvert-pro')}</DataTableCell>
+              <DataTableCell label={__('Paid on', 'wconvert-pro')}>{formatDay(order.paid)}</DataTableCell>
+              <DataTableCell label={__('Status', 'wconvert-pro')}>{orderStatus(order.status)}{order.refunded && <small className="block wa-muted">{__('Refund recorded', 'wconvert-pro')}</small>}</DataTableCell>
+              <DataTableCell label={__('Net product revenue', 'wconvert-pro')} numeric>{money(order.amount, order.currency)}</DataTableCell>
             </DataTableRow>)}</DataTableBody>
           </DataTable>
         </ReportDisclosure>}
-        <ReportDisclosure title={__('Tracking & setup', 'wconvert')}>
-          <div className="wa-report-setting"><SlidersHorizontal aria-hidden="true" className="size-5" /><div><strong>{status}</strong><p className="wa-muted">{__('Turning tracking off keeps existing order links.', 'wconvert')}</p></div><div className="wconvert-toolbar">{trackingControl}{optinId && <a href={reportHref()}>{__('Manage tracking', 'wconvert')}</a>}</div></div>
-          <p className="wa-muted">{sprintf(__('First turned on %s', 'wconvert'), formatWhen(report.settings.since, 'detail'))}</p>
-          <a href={docsUrl(GUIDES.campaignSales)} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert')}</a>
+        <ReportDisclosure title={__('Tracking & setup', 'wconvert-pro')}>
+          <div className="wa-report-setting"><SlidersHorizontal aria-hidden="true" className="size-5" /><div><strong>{status}</strong><p className="wa-muted">{__('Turning tracking off keeps existing order links.', 'wconvert-pro')}</p></div><div className="wconvert-toolbar">{trackingControl}{optinId && <a href={reportHref()}>{__('Manage tracking', 'wconvert-pro')}</a>}</div></div>
+          <p className="wa-muted">{sprintf(__('First turned on %s', 'wconvert-pro'), formatWhen(report.settings.since, 'detail'))}</p>
+          <a href={docsUrl(GUIDES.campaignSales)} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert-pro')}</a>
         </ReportDisclosure>
       </>}
-      <ReportDisclosure title={__('How sales are linked', 'wconvert')}>
+      <ReportDisclosure title={__('How sales are linked', 'wconvert-pro')}>
         <dl className="wa-report-definitions">
-          <div><dt>{__('Last interaction · 30-minute window', 'wconvert')}</dt><dd>{__('An accepted signup, offer click, cart-return click or quiz result-link click can link one checkout in the same WooCommerce session. Being shown, dismissals and coupon copies do not qualify.', 'wconvert')}</dd></div>
-          <div><dt>{__('Net product revenue', 'wconvert')}</dt><dd>{__('Product totals after discounts and product refunds. Tax, shipping and fees are excluded. Currencies stay separate; an unallocated refund makes the amount unavailable.', 'wconvert')}</dd></div>
-          <div><dt>{__('Paid orders only', 'wconvert')}</dt><dd>{__('Orders use their paid date. Later refunds update that original period. Unpaid, failed and cancelled orders are excluded. Unmarked gateway test payments may be included.', 'wconvert')}</dd></div>
+          <div><dt>{__('Last interaction · 30-minute window', 'wconvert-pro')}</dt><dd>{__('An accepted signup, offer click, cart-return click or quiz result-link click can link one checkout in the same WooCommerce session. Being shown, dismissals and coupon copies do not qualify.', 'wconvert-pro')}</dd></div>
+          <div><dt>{__('Net product revenue', 'wconvert-pro')}</dt><dd>{__('Product totals after discounts and product refunds. Tax, shipping and fees are excluded. Currencies stay separate; an unallocated refund makes the amount unavailable.', 'wconvert-pro')}</dd></div>
+          <div><dt>{__('Paid orders only', 'wconvert-pro')}</dt><dd>{__('Orders use their paid date. Later refunds update that original period. Unpaid, failed and cancelled orders are excluded. Unmarked gateway test payments may be included.', 'wconvert-pro')}</dd></div>
         </dl>
-        <p className="wa-muted">{__('Sales require statistics consent. Other devices and later sessions are not linked.', 'wconvert')}</p>
+        <p className="wa-muted">{__('Sales require statistics consent. Other devices and later sessions are not linked.', 'wconvert-pro')}</p>
       </ReportDisclosure>
     </>}
     <ConfirmDialog
       open={confirmOff}
       onOpenChange={setConfirmOff}
-      title={__('Turn off sales tracking?', 'wconvert')}
-      description={__('New orders stop being linked to your campaigns. Orders already linked stay in this report.', 'wconvert')}
-      confirmLabel={__('Turn off tracking', 'wconvert')}
+      title={__('Turn off sales tracking?', 'wconvert-pro')}
+      description={__('New orders stop being linked to your campaigns. Orders already linked stay in this report.', 'wconvert-pro')}
+      confirmLabel={__('Turn off tracking', 'wconvert-pro')}
       onConfirm={() => void change(false)}
       returnFocusTo={toggle}
     />
@@ -173,18 +173,18 @@ function SalesTotals({ report }: { report: Report }) {
   const currencies = report.currencies ?? [];
   if (currencies.length === 1) {
     const row = currencies[0];
-    return <dl className="wa-report-metrics" aria-label={__('Linked sales', 'wconvert')}>
-      <div><dt>{__('Net product revenue', 'wconvert')}</dt><dd>{money(row.amount, row.currency)}</dd><small>{__('After discounts and product refunds', 'wconvert')}</small>{row.unallocated_refunds > 0 && <p className="wa-muted">{__('A refund has no product allocation.', 'wconvert')}</p>}</div>
-      <div><dt>{__('Linked paid orders', 'wconvert')}</dt><dd>{formatCount(row.orders)}</dd><small>{__('After a signup or eligible click', 'wconvert')}</small></div>
-      <div><dt>{__('Average order value', 'wconvert')}</dt><dd>{money(row.amount === null ? null : row.amount / row.orders, row.currency)}</dd><small>{__('Based on net product revenue', 'wconvert')}</small></div>
+    return <dl className="wa-report-metrics" aria-label={__('Linked sales', 'wconvert-pro')}>
+      <div><dt>{__('Net product revenue', 'wconvert-pro')}</dt><dd>{money(row.amount, row.currency)}</dd><small>{__('After discounts and product refunds', 'wconvert-pro')}</small>{row.unallocated_refunds > 0 && <p className="wa-muted">{__('A refund has no product allocation.', 'wconvert-pro')}</p>}</div>
+      <div><dt>{__('Linked paid orders', 'wconvert-pro')}</dt><dd>{formatCount(row.orders)}</dd><small>{__('After a signup or eligible click', 'wconvert-pro')}</small></div>
+      <div><dt>{__('Average order value', 'wconvert-pro')}</dt><dd>{money(row.amount === null ? null : row.amount / row.orders, row.currency)}</dd><small>{__('Based on net product revenue', 'wconvert-pro')}</small></div>
     </dl>;
   }
-  return <DataTable label={__('Linked product revenue by currency', 'wconvert')}>
-    <DataTableHead><DataTableColumn>{__('Currency', 'wconvert')}</DataTableColumn><DataTableColumn numeric>{__('Paid orders', 'wconvert')}</DataTableColumn><DataTableColumn numeric>{__('Net product revenue', 'wconvert')}</DataTableColumn><DataTableColumn numeric>{__('Average order value', 'wconvert')}</DataTableColumn></DataTableHead>
+  return <DataTable label={__('Linked product revenue by currency', 'wconvert-pro')}>
+    <DataTableHead><DataTableColumn>{__('Currency', 'wconvert-pro')}</DataTableColumn><DataTableColumn numeric>{__('Paid orders', 'wconvert-pro')}</DataTableColumn><DataTableColumn numeric>{__('Net product revenue', 'wconvert-pro')}</DataTableColumn><DataTableColumn numeric>{__('Average order value', 'wconvert-pro')}</DataTableColumn></DataTableHead>
     <DataTableBody>{currencies.map(row => <DataTableRow key={row.currency}>
-      <DataTableCell label={__('Currency', 'wconvert')}>{row.currency}</DataTableCell><DataTableCell label={__('Paid orders', 'wconvert')} numeric>{formatCount(row.orders)}</DataTableCell>
-      <DataTableCell label={__('Net product revenue', 'wconvert')} numeric>{money(row.amount, row.currency)}{row.unallocated_refunds > 0 && <small className="block">{__('A refund has no product allocation.', 'wconvert')}</small>}</DataTableCell>
-      <DataTableCell label={__('Average order value', 'wconvert')} numeric>{money(row.amount === null ? null : row.amount / row.orders, row.currency)}</DataTableCell>
+      <DataTableCell label={__('Currency', 'wconvert-pro')}>{row.currency}</DataTableCell><DataTableCell label={__('Paid orders', 'wconvert-pro')} numeric>{formatCount(row.orders)}</DataTableCell>
+      <DataTableCell label={__('Net product revenue', 'wconvert-pro')} numeric>{money(row.amount, row.currency)}{row.unallocated_refunds > 0 && <small className="block">{__('A refund has no product allocation.', 'wconvert-pro')}</small>}</DataTableCell>
+      <DataTableCell label={__('Average order value', 'wconvert-pro')} numeric>{money(row.amount === null ? null : row.amount / row.orders, row.currency)}</DataTableCell>
     </DataTableRow>)}</DataTableBody>
   </DataTable>;
 }
