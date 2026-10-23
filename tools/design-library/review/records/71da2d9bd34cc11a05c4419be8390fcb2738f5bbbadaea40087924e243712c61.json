@@ -1,0 +1,47 @@
+{
+  "id": "winter-thoughtful-list",
+  "revision": "0f99928126c250d94ad7d8dda6960ccae18329895bf2f18b53b1cf303d7f7f7e",
+  "base_id": "0bca9aa92c8c8df3a0b5ee2994fa44d64f02d2f4cdeb1b48c34c68fad2115989",
+  "decision": "approved",
+  "reviewer": "Codex final copy review",
+  "note": "Replaced spacing used as punctuation with explicit separators; rechecked final native composition and WordPress flows. No changed action, tier, asset or timing.",
+  "at": "2026-10-23T09:07:15.720Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-thoughtful-list-320.png",
+          "sha256": "f0eee6d827cadd742ea8f679900610de43cecbdecec7d8a49fb529520fbaa5d6"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-thoughtful-list-1440.png",
+          "sha256": "12514b9769dcdb40415cdc2f0ece8f77304db74ed4f810a66fda62cd8666d3a1"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "fa3f984264aecd8f98dfd3fec90cfba040d3159e8624c8d701d90734caa705fa"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "fa3f984264aecd8f98dfd3fec90cfba040d3159e8624c8d701d90734caa705fa"
+        }
+      ]
+    }
+  },
+  "record_id": "71da2d9bd34cc11a05c4419be8390fcb2738f5bbbadaea40087924e243712c61"
+}

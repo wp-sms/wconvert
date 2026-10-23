@@ -1,0 +1,248 @@
+{
+  "release": "b236a4b0797a9669711bafa5314c2e28f8c9c5cf613c3bd739fb23a1e5726e92",
+  "designs": [
+    {
+      "id": "winter-advent-letter",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-after-hours-atelier",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-all-wrapped-up",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-before-the-bow",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-bright-new-chapter",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-by-the-fire",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-candle-club",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-christmas-express",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-dear-december",
+      "tier": "free",
+      "revision": 1
+    },
+    {
+      "id": "winter-digital-gift",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-dispatch-desk",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-final-sparkle",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-first-light-access",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-first-page",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-fresh-start-club",
+      "tier": "free",
+      "revision": 1
+    },
+    {
+      "id": "winter-gift-atelier",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-hello-2027",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-hello-tomorrow",
+      "tier": "free",
+      "revision": 1
+    },
+    {
+      "id": "winter-holiday-post",
+      "tier": "free",
+      "revision": 1
+    },
+    {
+      "id": "winter-last-sleigh",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-little-gift",
+      "tier": "free",
+      "revision": 1
+    },
+    {
+      "id": "winter-midnight-garden",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-ornament-edit",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-paper-pine",
+      "tier": "free",
+      "revision": 1
+    },
+    {
+      "id": "winter-pickup-window",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-ribbon-reminder",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-ribbon-room",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-santa-letter",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-shop-is-sleeping",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-small-kindness",
+      "tier": "free",
+      "revision": 1
+    },
+    {
+      "id": "winter-snowglobe-society",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-softer-beginning",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-still-time",
+      "tier": "free",
+      "revision": 1
+    },
+    {
+      "id": "winter-thoughtful-list",
+      "tier": "free",
+      "revision": 2
+    },
+    {
+      "id": "winter-tied-with-joy",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-winter-hours",
+      "tier": "pro",
+      "revision": 2
+    },
+    {
+      "id": "winter-winter-postcards",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-winter-reading-room",
+      "tier": "free",
+      "revision": 1
+    },
+    {
+      "id": "winter-winter-windows",
+      "tier": "pro",
+      "revision": 1
+    },
+    {
+      "id": "winter-wrapped-in-colour",
+      "tier": "pro",
+      "revision": 1
+    }
+  ],
+  "setups": [
+    "winter-advent-letter",
+    "winter-after-hours-atelier",
+    "winter-all-wrapped-up",
+    "winter-before-the-bow",
+    "winter-bright-new-chapter",
+    "winter-by-the-fire",
+    "winter-candle-club",
+    "winter-christmas-express",
+    "winter-dear-december",
+    "winter-digital-gift",
+    "winter-dispatch-desk",
+    "winter-final-sparkle",
+    "winter-first-light-access",
+    "winter-first-page",
+    "winter-fresh-start-club",
+    "winter-gift-atelier",
+    "winter-hello-2027",
+    "winter-hello-tomorrow",
+    "winter-holiday-post",
+    "winter-last-sleigh",
+    "winter-little-gift",
+    "winter-midnight-garden",
+    "winter-ornament-edit",
+    "winter-paper-pine",
+    "winter-pickup-window",
+    "winter-ribbon-reminder",
+    "winter-ribbon-room",
+    "winter-santa-letter",
+    "winter-shop-is-sleeping",
+    "winter-small-kindness",
+    "winter-snowglobe-society",
+    "winter-softer-beginning",
+    "winter-still-time",
+    "winter-thoughtful-list",
+    "winter-tied-with-joy",
+    "winter-winter-hours",
+    "winter-winter-postcards",
+    "winter-winter-reading-room",
+    "winter-winter-windows",
+    "winter-wrapped-in-colour"
+  ],
+  "passed": true
+}

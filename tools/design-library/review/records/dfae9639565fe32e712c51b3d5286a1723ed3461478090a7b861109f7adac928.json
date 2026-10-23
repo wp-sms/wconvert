@@ -1,0 +1,47 @@
+{
+  "id": "winter-still-time",
+  "revision": "7f0de2540db110ff845d11fa19ebff2d39ab4ad6015460a19b44efd9395142b7",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "The pale-blue offer makes a digital-gift saving specific; the coupon control and timed shopping link fit the phone without horizontal scrolling.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-still-time-320.png",
+          "sha256": "a361032bd44ab6b6c11f8c01be4d2709a8651e2a5996c6a40ba1396a8d6a7f28"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-still-time-1440.png",
+          "sha256": "aad933ebf40512ffdb90c1aefcac66cff423c9a74fa0db456d0eeb065b7ec5dd"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "dfae9639565fe32e712c51b3d5286a1723ed3461478090a7b861109f7adac928"
+}

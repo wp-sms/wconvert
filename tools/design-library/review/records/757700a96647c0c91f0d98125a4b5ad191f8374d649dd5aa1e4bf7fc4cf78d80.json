@@ -1,0 +1,47 @@
+{
+  "id": "winter-winter-windows",
+  "revision": "58b1fe8e8ed8ff0168f2bb76e421d5b9de0e18f4fe72e2f264368421e0c5f9ca",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "The illustrated village anchors the fullscreen invitation below readable centred copy; restrained native sparkle motion stays away from the words.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-winter-windows-320.png",
+          "sha256": "9a9688df5a60d0b865ec5d86fce108d100b38e25d2af09c56834c276e96af571"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-winter-windows-1440.png",
+          "sha256": "263b445a360d155379fbe6e8a03cbfb9e9105206e7ec532efb43b31781d77735"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "757700a96647c0c91f0d98125a4b5ad191f8374d649dd5aa1e4bf7fc4cf78d80"
+}

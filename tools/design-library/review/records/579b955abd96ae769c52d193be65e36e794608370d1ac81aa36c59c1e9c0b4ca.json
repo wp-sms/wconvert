@@ -1,0 +1,47 @@
+{
+  "id": "winter-winter-hours",
+  "revision": "9b2c06718128cce3d5cbdaebd7d5141edaf87387212462cbf9c69ade93ee72a6",
+  "base_id": "6c9455aa1582d0de6a36ffea846a5f890f30e81747d56a257e5b9335c540d78c",
+  "decision": "approved",
+  "reviewer": "Codex final copy review",
+  "note": "Replaced spacing used as punctuation with explicit separators; rechecked final native composition and WordPress flows. No changed action, tier, asset or timing.",
+  "at": "2026-10-23T09:07:15.721Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-winter-hours-320.png",
+          "sha256": "e509926faf984fbdb4980b83f3089399d61cd34103dbb03846a79d1f1f769e59"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-winter-hours-1440.png",
+          "sha256": "ed02fbababd449212d9bde9d66f8b723977f8ea8bd40833e3333948bad47e5e5"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "fa3f984264aecd8f98dfd3fec90cfba040d3159e8624c8d701d90734caa705fa"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "fa3f984264aecd8f98dfd3fec90cfba040d3159e8624c8d701d90734caa705fa"
+        }
+      ]
+    }
+  },
+  "record_id": "579b955abd96ae769c52d193be65e36e794608370d1ac81aa36c59c1e9c0b4ca"
+}

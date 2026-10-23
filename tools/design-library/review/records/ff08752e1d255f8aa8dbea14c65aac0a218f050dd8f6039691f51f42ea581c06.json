@@ -1,0 +1,47 @@
+{
+  "id": "winter-all-wrapped-up",
+  "revision": "e7867bfdd77222b6b62384736cdf83fac216d83f271e23d1e36ca8e70ae4e656",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "The approved sleepy ginger cat is one replaceable illustration. The cream offer card below it stays editable, with restrained native sparkles outside the headline.",
+  "at": "2026-10-23T09:01:15.960Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-all-wrapped-up-320.png",
+          "sha256": "687596ea682f6b7deed3a2a8e5fe66b361832b4447670446deafa3aaf41b5ff1"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-all-wrapped-up-1440.png",
+          "sha256": "d979e0c7cd1478d68eb0dae0c6e6868849dd386f335f8f65f60194e40e9e6fac"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "ff08752e1d255f8aa8dbea14c65aac0a218f050dd8f6039691f51f42ea581c06"
+}

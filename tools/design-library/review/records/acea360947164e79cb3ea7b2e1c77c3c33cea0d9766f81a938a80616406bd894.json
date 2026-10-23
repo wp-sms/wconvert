@@ -1,0 +1,47 @@
+{
+  "id": "winter-ornament-edit",
+  "revision": "92f7bb5236ec26b9438fe02da249ef28ae55796e40b7e8971f5a891129a06278",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "Hanging ornaments balance the offer and compact clock; mobile stacks the complete illustration before the timed offer.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-ornament-edit-320.png",
+          "sha256": "03918b78ae00b75870af70a27082607bdf524de44d316708b3c34caa8cc1e076"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-ornament-edit-1440.png",
+          "sha256": "15feecb52fcbe00a2891fb249381ff7aabe8acd61f628374f623c23b9b27ec16"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "acea360947164e79cb3ea7b2e1c77c3c33cea0d9766f81a938a80616406bd894"
+}

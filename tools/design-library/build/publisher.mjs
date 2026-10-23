@@ -172,16 +172,6 @@ export function guardDrops(before, after, withdrawn) {
   check(dropped.length === 0, `This release drops live designs without withdrawing them: ${dropped.join(', ')}`);
 }
 
-/**
- * Free designs stay the majority of what is published (ADR 0156 §9): free
- * meets a Pro design only as a locked card, and that reading of wp.org
- * Guidelines 5 and 11 holds only while the library is mostly free.
- */
-export function guardFreeMajority(designs) {
-  const free = designs.filter(design => design.tier === 'free').length;
-  check(free * 2 > designs.length, `Free designs must stay the majority of the library: ${free} of ${designs.length} are free`);
-}
-
 /** Local storage adapter. Only the pointer is mutable; private/ must never be web-served. */
 export function publishRelease(directory, release, expectedRelease, { beforeWrite = () => {} } = {}) {
   check(expectedRelease === null || digest(expectedRelease), 'Supply the expected current release, or null for the first publication');

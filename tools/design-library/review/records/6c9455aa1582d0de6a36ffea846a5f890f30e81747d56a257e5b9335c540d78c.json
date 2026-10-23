@@ -1,0 +1,47 @@
+{
+  "id": "winter-winter-hours",
+  "revision": "e75302a3d622d45b96b353b36d4b1e09eb0f6558e1aef6d0251efa806a23c575",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "Opening-hour rows and dividers remain editable text; the compact card exposes the full-hours link and keeps all dates readable on phones.",
+  "at": "2026-10-23T09:01:15.960Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-winter-hours-320.png",
+          "sha256": "346354d80b0c095427fcff3b35b1c43df65b826450bafc6a5a7e87f36f92d536"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-winter-hours-1440.png",
+          "sha256": "93787798ff9e962ed9a66a4797c1756c2fb78d645af524909d0aaba5ac94403b"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "6c9455aa1582d0de6a36ffea846a5f890f30e81747d56a257e5b9335c540d78c"
+}

@@ -3036,6 +3036,486 @@
           "note": "Remove the added lime email-field panel; restore an outlined field on the dark surface from prototype 12, with a theme-safe border."
         }
       ]
+    },
+    {
+      "id": "winter-advent-letter",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "5c7a86b4af55d2527ba406ee6041aeeaf452caf5aad75a52ce90f54246ab63b0",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-after-hours-atelier",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "842f3ecc6afd89f6c362454aef5bca2139ae58f10cea47f4ed69a4a4e3801e20",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-all-wrapped-up",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "b621d401ab31d43a850f49a5eebb8690fb0eccd538160bbe809deefc36f26e1e",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-before-the-bow",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "682086576d3219647e8c1694126c4bdf164ad615e80607533b6374df17df87b9",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-bright-new-chapter",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "aa6027de6d4b1d4ce1872f4a72c360ca9737a3a46b0ccf44ade350006d7d3a92",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-by-the-fire",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "a8377c9c300295e395a1559fb3414ce1b629ab7da945a9970ac36559ce730a5f",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-candle-club",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "f78140e16e071ad2e658ee0fc369de482a45950137bcf8246f1e30809a6b0a79",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-christmas-express",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "1d39a79b1c8f965d2e57c7fb13e06855d53d91a56a6a35bb95e6462674c98add",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-digital-gift",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "a1a1a22130df4ab7817f6d30370bf826a466823a537d095d810418827debb48f",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-dispatch-desk",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "102c5607091a445d936cb71297df321c42edada6fdfb1085c28f46dff43ce637",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-final-sparkle",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "c27548d52a97d4526e5d075fdbf796977ae64d7fb935e104af420375db7a78fe",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-first-light-access",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "5bf8a19b7416c8e7974675c81fbede0d25b225aded2b5cf0a61a89472fd49d94",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-first-page",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "8ad7f16eff0aad556545a871e03f74b6f621e9f72886b96c156b1148adc0561a",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-gift-atelier",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "88129d01bb4919dcde5d164a4a4d4313b434f27472e265a455428f07ad7e8332",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-hello-2027",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "0f775ae4c9f06988ee8bad8542bf3ff1454150b2a6585354673c187b564f9a9f",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-last-sleigh",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "7b25cb50d3e5fe27e13a15977e336955cf3e2641d4d6c66df29f262fc9bbe7eb",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-midnight-garden",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "37e89df685276a629a6c712b44f720c2ca13a1221207c1c6a6cd54930ce4cce0",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-ornament-edit",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "c3657233b18a497eada9035946f3caf426529009ae1739d7e479a8fa1fc64ac0",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-pickup-window",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "577216c430775b2b7bcdabb5386e4db7288c4d849122377759dfbfc1b8573581",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-ribbon-reminder",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "d819f1bdf58a0abb06f60de02622ebc8566e16e4e07325956b9ee42a10ff0f64",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-ribbon-room",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "dfc75af3e198617faa2488c45381fca9998b1240cbc2c1593b97db7bbea15644",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-santa-letter",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "488de3974b9d6b9e030ef1e4674ab251bd78980e359d7a2ff6269cc41acae70f",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-shop-is-sleeping",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "e55c3bbad02ad6b6e18d5ca0fb2cec13d53b36397833f72cc70325cb70172ffe",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-snowglobe-society",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "b5ce5308a6458ba9c0d86a5367e8978ddc15a84b45492f2c980047a5c5091c8b",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-softer-beginning",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "26bab6ed2f9de5640889a01db1babcc29a5e4dac8e8cb7fa405ac92fb5784bab",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-tied-with-joy",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "116d4f7c63902614a57e95e0e21dbd4143e2169dc9456d4491e199df6068fc45",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-winter-hours",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "a0159f73f0d5b40790951b3ef95cb303391eb0716b535de0fe8bbd30b1f2cb26",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-winter-postcards",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "9b6409e6b8e0c65080090f66475c6ce7c47f329b4b45acec7e169a4f3c3a3f70",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-winter-windows",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "4f8365ba61cd1fc7b82afe79016f4447e6ad01bd976d93c26c46f1a08513aaca",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-wrapped-in-colour",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "043f5d63a0cdb289f48b9f9cfd3e77fd8960c0c99ac25d8f33094925b5edebf5",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-dear-december",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "8987f8d504782ac95082762e7968e00495e64fea35efdddcce5e85ad8c2176d4",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-fresh-start-club",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "ea945cc945b253a2606d8ad7d364bb74a2d535d39a0eb433812b82c99c7fdc42",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-hello-tomorrow",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "0ccf630a5558de997b232f736c0db56b49ed7f8e2137702e6a74e6e2b58b9f87",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-holiday-post",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "18d76369bc23fb1af090292e10271d0c7a4a485bbe79138ba99f1cd21fc6c3f8",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-little-gift",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "b342cbdd681315fef3db1278fbfe65f688e18777be2ff155ea4335c17f9f3882",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-paper-pine",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "1bd100a2709e5b888ec8d65d7faa857597423586f052e0e299da1bad0fb27db8",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-small-kindness",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "8a8f6e934f4165aa0a5336af6ce36f19c46a9403f32e61e23baa120197354483",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-still-time",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "4b9a93d206059a2476cd0d90efb8d6650f066bc9c81bfab722ab7390f428814d",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-thoughtful-list",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "5553365057a169ec4aec6c863c650699afaeaefd3bc326e60069cd0dc7cb6f2e",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
+    },
+    {
+      "id": "winter-winter-reading-room",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-23",
+          "revision": "b33dc758151f61d6ac22f44c8faa851af2667672aed8f668f0dd1e27d1ff5d57",
+          "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        }
+      ]
     }
   ]
 }

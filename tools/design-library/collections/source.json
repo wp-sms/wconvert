@@ -573,6 +573,267 @@
         "feature_start": "2026-10-16",
         "feature_end_exclusive": "2026-12-01"
       }
+    },
+    {
+      "id": "christmas-new-year-2026",
+      "name": "Christmas & New Year",
+      "description": "Forty illustrated designs for gift edits, winter email signups, order deadlines, holiday hours and a fresh New Year. Ten Free downloads and thirty Pro designs. Set your own links, offers, coupons and real campaign dates.",
+      "cover": "sale",
+      "business_types": [
+        "stores"
+      ],
+      "markets": [],
+      "priority": 85,
+      "catalogue_only": true,
+      "items": [
+        {
+          "setup_id": "winter-ribbon-room",
+          "stage": "during",
+          "setup_hash": "18940bc15b64f8c4b333aea532c4b71933f2e782a634d3db8dc468191b345be3",
+          "design_hash": "d3590ee6765ace2743f43259e41dbe1847fcd59621f403b24d79f1f5e0ab490a"
+        },
+        {
+          "setup_id": "winter-little-gift",
+          "stage": "during",
+          "setup_hash": "62ab114803e83742fd441e2eb91464a6bf995f0491576ff40baeac956baa4919",
+          "design_hash": "15861a2b2a9b378c3a0eb4f75a8f293f9b82c717142210532bb89d323548f315"
+        },
+        {
+          "setup_id": "winter-winter-windows",
+          "stage": "during",
+          "setup_hash": "1b20c180e8325a325e66106124d497dde9ee687aa9df84cad53733193a3a8dda",
+          "design_hash": "2a54689be7fc4d33df491b7ba1987559c3b7ee8c3f6b69584660186037fe084a"
+        },
+        {
+          "setup_id": "winter-ornament-edit",
+          "stage": "during",
+          "setup_hash": "a7bac3baad8ee6d9689b8f4c32bb78045c765747a7fdac495a87247c93f6335b",
+          "design_hash": "91d7c35e13c0c60c579609b05b23e86ef2fe62478250709866fa39a41d1aca5a"
+        },
+        {
+          "setup_id": "winter-paper-pine",
+          "stage": "during",
+          "setup_hash": "6e1707760505f5595891b7f4718f763fec9012601649426c5f4a0f0704cabe96",
+          "design_hash": "afb5edafaad70ea0f7ed17da6221854620a37a8f72d9e82c72b83527ebfc331d"
+        },
+        {
+          "setup_id": "winter-candle-club",
+          "stage": "before",
+          "setup_hash": "a46b4b78cf81ab0d25f3acf26472314332556dabe6df28de809f12f217b80228",
+          "design_hash": "15b499519fe97c074aaddb484cafbf12d798736f3e1db24993daec052840c1d9"
+        },
+        {
+          "setup_id": "winter-wrapped-in-colour",
+          "stage": "during",
+          "setup_hash": "0e25e6aa0458450fd6e316a0e221eb5663c6abc347165301af1ac68f79e87526",
+          "design_hash": "0af0d720e15594b38d61635c8c9a9f037c12402a886eae954258e9796b425e6b"
+        },
+        {
+          "setup_id": "winter-thoughtful-list",
+          "stage": "before",
+          "setup_hash": "f5caff3b2d3b0c255481f0605e3d3cf3059384df5b1bbb53ded5fc1c334df206",
+          "design_hash": "8afed7e49478512d4a73ad23eedb2bed818e7c470f8f67b919f88ba18719f4dd"
+        },
+        {
+          "setup_id": "winter-ribbon-reminder",
+          "stage": "during",
+          "setup_hash": "f3b3cac81c507271b643163f4e019ed8613967e3f7eaf4b0594f9959b9bd4e3f",
+          "design_hash": "781a733cfc13cd824e1a5283c6c8f1f61417e5c627cbcbb3e4798048223aee4d"
+        },
+        {
+          "setup_id": "winter-gift-atelier",
+          "stage": "during",
+          "setup_hash": "b8c750202e690bf39a5cd28232f8db796e29988030001dadc4abbb194d2e37dd",
+          "design_hash": "40e4d9b2729581fa4d2184e5f6ba221e272936811917bc2b31b9db9df99d7890"
+        },
+        {
+          "setup_id": "winter-dear-december",
+          "stage": "before",
+          "setup_hash": "567127fe3e017acca7a91afa70b601eff529732d4cf06cc2780fbeeeffafae0d",
+          "design_hash": "f3aec4956ca22375a13b0428a8f55a0561921c67a7426da37f5f5bc954162f75"
+        },
+        {
+          "setup_id": "winter-winter-postcards",
+          "stage": "before",
+          "setup_hash": "76d98a001f5aaecc378587be562ed9b7179a2ebbd3e2dc3b8562a55e931ef52a",
+          "design_hash": "a4344e6f684eb2f4827d6e5499ecefae5d1d4c3368121e16f830cdac3f550c58"
+        },
+        {
+          "setup_id": "winter-snowglobe-society",
+          "stage": "before",
+          "setup_hash": "6f0886ef36f7edd4de6993afda8e2d7c5ba435d63c521faff3578b7dce225a9b",
+          "design_hash": "80b7030c6cbe5766fbabd045c496042024e269740d723ba40ba15f7b524f762b"
+        },
+        {
+          "setup_id": "winter-small-kindness",
+          "stage": "before",
+          "setup_hash": "804ac8c5326946a32f58615f062a26fb30ed74a009fce629e65d994ad7250f7b",
+          "design_hash": "8cf0b3751462d84c1c4dec04682e7e8d92c758e1fec9b7cdf8012a6309aeee4c"
+        },
+        {
+          "setup_id": "winter-after-hours-atelier",
+          "stage": "before",
+          "setup_hash": "0b5decce5bb5bfa8a408cf9e79b299db534950ba76849fe2dcdadf3a036e377a",
+          "design_hash": "84336ca93d48c5cc73260482fa1bd17e7e1c671a975432207aeb36c955a1f128"
+        },
+        {
+          "setup_id": "winter-first-light-access",
+          "stage": "before",
+          "setup_hash": "351dc67b9ba3e99c3245d29308cc6229dab078636b892262b0b41771a740ba81",
+          "design_hash": "c2dd4e9353484fab693b35cc264049dcd6492419ef5fd379c858cfa65cab16f7"
+        },
+        {
+          "setup_id": "winter-advent-letter",
+          "stage": "before",
+          "setup_hash": "334d5168f71f99c01216f424935e7e090f3a290a74a338238bcd5e6093060891",
+          "design_hash": "c49b8077623c0cbc1892cba12d6350222a719f439e94d4cc4140db508baa8fef"
+        },
+        {
+          "setup_id": "winter-winter-reading-room",
+          "stage": "before",
+          "setup_hash": "6aa6c3919ca88d9fe548a2aee547a0bc1655f5fac16b06dba8102bc46adf045f",
+          "design_hash": "d1740865b623271e3c023b59b05941abc267e8415b3d7f1c114614f1afba3415"
+        },
+        {
+          "setup_id": "winter-last-sleigh",
+          "stage": "during",
+          "setup_hash": "723d9c97ef252d53859d7c74b8fe825a911ea512f74e197d9b0475a331577ece",
+          "design_hash": "8287552227c1833763c83dfd0a7cdc559ecef9faac47af00183d56a6f6c358a5"
+        },
+        {
+          "setup_id": "winter-before-the-bow",
+          "stage": "during",
+          "setup_hash": "a1ad2cdaf566b1204f870e30bcf5615ef2cb3a48f10121a447800b102f647739",
+          "design_hash": "299abd50e96bb7a616a69f0a7922f632af1bd6a7a4a0561c512b918e8b5c4de1"
+        },
+        {
+          "setup_id": "winter-dispatch-desk",
+          "stage": "during",
+          "setup_hash": "e213290fff8d23e4c00b52832bc28aecbb2215e2687938c75eb01a2949901520",
+          "design_hash": "d837c5228fe783b348c8256339edaabfc6a53e8b76847c48d7ada4968c363f55"
+        },
+        {
+          "setup_id": "winter-digital-gift",
+          "stage": "during",
+          "setup_hash": "d355df3d1cbe315a8e4872b049a3dfd554b8945820ea4efd77bc2f8ba440201d",
+          "design_hash": "758bb0c218b10262fd8e626742f4ee9101dbaf85cf4217b2ef7059f949bea0c9"
+        },
+        {
+          "setup_id": "winter-still-time",
+          "stage": "during",
+          "setup_hash": "ca0b2524a95b25c9247096375497c9972fb0217d8cc28232da57073f42602d93",
+          "design_hash": "18711f85c85f336488484a12c1369b58da0da89f88a92d1422256eed0742bf37"
+        },
+        {
+          "setup_id": "winter-pickup-window",
+          "stage": "during",
+          "setup_hash": "f919d1c6e502bdd077400005ad3c4fb62f92b3184bb64cfd67fcbdadda64cbbb",
+          "design_hash": "1cfac1e70063ae2f45cbbfefa2ebdaa0ca6d5b6111dd55e7ae48507495ebc5b2"
+        },
+        {
+          "setup_id": "winter-final-sparkle",
+          "stage": "during",
+          "setup_hash": "6e2e150a095218e62f88bb4a5f336401f7f8ae1ec899e23137da77737940e61c",
+          "design_hash": "0e9ddc95889d0c4bdc42692edd5f4411cdcb01cf5588104073c84394599fe0c0"
+        },
+        {
+          "setup_id": "winter-softer-beginning",
+          "stage": "after",
+          "setup_hash": "29c3760b41aa5065332cb27cee7d953882f4d9063d98d587a7a16f22422cfeb5",
+          "design_hash": "c416ff5f800e6ef90b0a2caf15ec994ccf68778bd68ad0363065b1d75be20b93"
+        },
+        {
+          "setup_id": "winter-hello-tomorrow",
+          "stage": "after",
+          "setup_hash": "754c7bcd4b17b88c880ec95030408d583176ea4903ac9b998ce40d2a1210c551",
+          "design_hash": "24ef5ba9625f0a152f82f34745fd4decaea97f65b7d996cd7060d967c5d6a516"
+        },
+        {
+          "setup_id": "winter-midnight-garden",
+          "stage": "after",
+          "setup_hash": "f180443dbe00ced88216b1a9d9a83cce919f6fff8b138bb4a263e3e4104d9852",
+          "design_hash": "e3b20711b0ab112a25aac8c26cad1cbfb3d84eef4ba51a0c6cdec574956def02"
+        },
+        {
+          "setup_id": "winter-bright-new-chapter",
+          "stage": "after",
+          "setup_hash": "c43b54c93722bd5ccad72200d036b4c24e2cd830cbabd121cd0d7ab729be0555",
+          "design_hash": "db1eb7140eebe450b3a5a280052d37e2e88dc8d5ec679e82d2f27afe47c8480f"
+        },
+        {
+          "setup_id": "winter-first-page",
+          "stage": "after",
+          "setup_hash": "a8d64bd375901a7924c73dc2f127324c4abea1cbea436638e815153642556aea",
+          "design_hash": "9559a849203a54d1aa03e8312ca3a7223c37b29acdd08dbb57120a9e232bd045"
+        },
+        {
+          "setup_id": "winter-fresh-start-club",
+          "stage": "after",
+          "setup_hash": "e35cc5f24567f4819f8e7d30de88e56eccb5974837866525bd0d47c73722d4f1",
+          "design_hash": "bd49d19ece0bafe91d2e4696d95fcfbdb3219fec79a50f45f3cdc0d15d5c6e3a"
+        },
+        {
+          "setup_id": "winter-shop-is-sleeping",
+          "stage": "during",
+          "setup_hash": "33e4a10ebad9df459e2e09d16f1f8c764064812256f1c2eea313509cf79f081a",
+          "design_hash": "4d5cef1e1813e6c2b46203aa5e934eee4f0ff4623aef0e0217ff30f1835d16a8"
+        },
+        {
+          "setup_id": "winter-by-the-fire",
+          "stage": "during",
+          "setup_hash": "12684543a79212ccbc36639f46d86bd20990fa47e17092bae179ab7957039bce",
+          "design_hash": "5e50f9ebd8ab91c611dabf40b1df6281bc2887ba1158b2a5467662bf1b29b2b2"
+        },
+        {
+          "setup_id": "winter-holiday-post",
+          "stage": "during",
+          "setup_hash": "54a31bf991e5ea49fa22e6feb225146cdf65c819c3bce7eb6ff5acf9567ab51c",
+          "design_hash": "400e8119d6fe737898d69a5e90640a64ba8eaf0fdaa16548a576f48941275de4"
+        },
+        {
+          "setup_id": "winter-winter-hours",
+          "stage": "during",
+          "setup_hash": "07afc4d3d597d23b43b4bb9ae4955fada9d67a81434b829193d5fc636d9c222d",
+          "design_hash": "bdf280049fe9bc489f843858c1f9f83979d975bb24f82e75c85db9a8e0d456f0"
+        },
+        {
+          "setup_id": "winter-tied-with-joy",
+          "stage": "during",
+          "setup_hash": "f1f7119e5d7bded47a6d829ebc3b8b783a386a9eda98c253e477aa8258edaaec",
+          "design_hash": "f4b9885de23ecda76abf1f7a58e8f7c2ccbede27646ca1cf5e174438b09c2206"
+        },
+        {
+          "setup_id": "winter-all-wrapped-up",
+          "stage": "during",
+          "setup_hash": "5aa027247fd23cf26f934c98534a6a941eb0abbdc245a38c7d0de995425b3ab1",
+          "design_hash": "5d5f93d26a662ce9cd0e787546df6e1ed8ddd96ee88141c8f13b35960fe3e01f"
+        },
+        {
+          "setup_id": "winter-christmas-express",
+          "stage": "during",
+          "setup_hash": "317641518759f54b28849d4d0aa03d981c5ac3b2a03a2cc038e1990c11768aab",
+          "design_hash": "9390d1c289bb232456cb8aca1e24237554f31814aebd7e5f9ff291900b8325a7"
+        },
+        {
+          "setup_id": "winter-santa-letter",
+          "stage": "before",
+          "setup_hash": "5390a1b6ce8069e4c10c3bdce0f6e8c8650a255a5a8844931f57ea77febe9218",
+          "design_hash": "8935a3a3e9053dace44cbb6377dc5436b4f775fc30266712c42e156c116773ff"
+        },
+        {
+          "setup_id": "winter-hello-2027",
+          "stage": "after",
+          "setup_hash": "d0616a3922819ea5d849587befdc2fb23c6dc5a39f48f0813576dca363ae2b39",
+          "design_hash": "94944b8d77f24857f83b7bbcec6e089d0c008cecd747bd9cde4f4809b1100e39"
+        }
+      ],
+      "event": {
+        "family": "christmas-new-year",
+        "start": "2026-12-01",
+        "end_exclusive": "2027-01-06",
+        "feature_start": "2026-11-01",
+        "feature_end_exclusive": "2027-01-06"
+      }
     }
   ]
 }

@@ -1,0 +1,252 @@
+{
+  "id": "winter-hello-2027",
+  "name": "Hello, twenty twenty-seven",
+  "display_type": "fullscreen",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#f9edb8",
+    "fg": "#183d32",
+    "muted": "#183d32",
+    "accent": "#183d32",
+    "accent-fg": "#fff8e7",
+    "border": "#183d32",
+    "input-bg": "#b93c2f",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Instrument Serif\", Georgia, serif",
+    "heading-size": "3rem",
+    "heading-weight": "400",
+    "text-size": "1rem",
+    "leading": "1.55",
+    "tracking": "-.02em",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "100%",
+    "align": "start",
+    "close-fg": "#fff5d9",
+    "close-bg": "#b93c2f",
+    "close-border": "border",
+    "close-radius": "50%",
+    "error-fg": "#991b1b",
+    "error-bg": "#fff1f2"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "text": "SOMETHING GOOD IS JUST BEGINNING",
+                  "role": "eyebrow",
+                  "tokens": {
+                    "text-size": ".75rem",
+                    "tracking": ".12em"
+                  },
+                  "id": "n1"
+                },
+                {
+                  "type": "heading",
+                  "narrow": {
+                    "heading-size": "3.9rem"
+                  },
+                  "text": "HELLO,\n2027.",
+                  "role": "headline",
+                  "tokens": {
+                    "heading-size": "clamp(5rem,18cqi,14rem)",
+                    "heading-font": "\"DM Sans\", Arial, sans-serif",
+                    "heading-weight": "400",
+                    "fg": "input-bg"
+                  },
+                  "id": "n2"
+                },
+                {
+                  "type": "text",
+                  "text": "a fresh start looks good on you.",
+                  "role": "body",
+                  "id": "n3"
+                }
+              ],
+              "tokens": {
+                "pad": "4rem 3rem",
+                "gap": "1rem",
+                "radius": "0",
+                "align": "center"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": ".85rem"
+              },
+              "decorations": {
+                "label": "Festive sparkles",
+                "hidden": false,
+                "items": [
+                  {
+                    "kind": "sparkle",
+                    "x": 8,
+                    "y": 4,
+                    "size": 28,
+                    "motion": "float",
+                    "color": "fg"
+                  },
+                  {
+                    "kind": "sparkle",
+                    "x": 92,
+                    "y": 96,
+                    "size": 22,
+                    "motion": "blink",
+                    "color": "fg"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "split",
+                  "start": [
+                    {
+                      "type": "stack",
+                      "children": [
+                        {
+                          "type": "text",
+                          "text": "Good things ahead. Start with 20% off our New Year edit, until 5 January.",
+                          "role": "body",
+                          "id": "n4"
+                        },
+                        {
+                          "type": "button",
+                          "label": "Meet your new favourites",
+                          "action": "link",
+                          "role": "cta_label",
+                          "tokens": {
+                            "text-size": "1rem",
+                            "radius": ".15rem",
+                            "border": "fg",
+                            "tracking": "normal",
+                            "accent": "fg",
+                            "accent-fg": "bg"
+                          },
+                          "id": "n5"
+                        }
+                      ],
+                      "tokens": {
+                        "gap": "1rem"
+                      }
+                    }
+                  ],
+                  "end": [
+                    {
+                      "type": "stack",
+                      "children": [
+                        {
+                          "type": "countdown",
+                          "layout": "boxes",
+                          "density": "compact",
+                          "days_label": "Days",
+                          "hours_label": "Hrs",
+                          "minutes_label": "Mins",
+                          "seconds_label": "Secs",
+                          "role": "countdown_units",
+                          "tokens": {
+                            "text-size": "1.15rem",
+                            "tracking": "normal",
+                            "radius": ".1rem",
+                            "input-bg": "transparent"
+                          },
+                          "id": "n6"
+                        }
+                      ],
+                      "tokens": {
+                        "gap": "1rem"
+                      }
+                    }
+                  ],
+                  "ratio": "0.5",
+                  "basis": "20rem",
+                  "tokens": {
+                    "gap": "0"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "2.25rem",
+                "gap": "1rem",
+                "radius": "0",
+                "bg": "accent",
+                "fg": "accent-fg",
+                "muted": "accent-fg"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": ".85rem"
+              }
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "text",
+                  "text": "Selected items. Until 5 January. Offer terms apply.",
+                  "role": "fine_print",
+                  "tokens": {
+                    "text-size": ".875rem",
+                    "tracking": "normal"
+                  },
+                  "id": "n7"
+                }
+              ],
+              "tokens": {
+                "pad": "1rem",
+                "gap": "1rem",
+                "radius": "0",
+                "align": "center"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": ".85rem"
+              }
+            }
+          ],
+          "tokens": {
+            "gap": "0"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

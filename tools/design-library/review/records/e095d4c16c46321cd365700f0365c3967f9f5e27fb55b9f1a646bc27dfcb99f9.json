@@ -1,0 +1,43 @@
+{
+  "id": "collection-christmas-new-year-2026",
+  "revision": "d327c4f631b7e0a71625f62146855671e5b2ab85122759f4e68c0a8faeb5a777",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "All 40 native setups reviewed across Christmas gifting, signup, delivery information and New Year; 30 Pro and 10 hosted-only Free. Grouping, staged timing and practical setup guidance match the collection description.",
+  "at": "2026-10-23T09:01:16.071Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/layout-audit.json",
+          "sha256": "617cb32524acecf31f1348b8ea1bd3bebd7aefebaa8af03c2e15c5c18888a2cd"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "e095d4c16c46321cd365700f0365c3967f9f5e27fb55b9f1a646bc27dfcb99f9"
+}

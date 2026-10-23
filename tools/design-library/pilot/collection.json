@@ -1,7 +1,7 @@
 {
   "schema": 2,
   "name": "Purpose-built campaign library",
-  "target_setups": 400,
+  "target_setups": 220,
   "entries": [
     {
       "id": "studio-welcome",
@@ -4852,6 +4852,982 @@
         ],
         "reason": "Distinct approved prototype composition, re-authored with editable native elements."
       }
+    },
+    {
+      "id": "winter-ribbon-room",
+      "audience": "stores",
+      "family": "The ribbon room",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 01: The ribbon room. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-midnight-atelier"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-little-gift",
+      "audience": "stores",
+      "family": "A little gift",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 02: A little gift. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-midnight-atelier"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-winter-windows",
+      "audience": "stores",
+      "family": "Winter windows",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 03: Winter windows. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "cm-midnight-transmission"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-ornament-edit",
+      "audience": "stores",
+      "family": "The ornament edit",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 04: The ornament edit. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates",
+        "Set a genuine campaign end date"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page. Set a real campaign end date and time and update every displayed deadline to match. The countdown uses that end date."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-midnight-atelier"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-paper-pine",
+      "audience": "stores",
+      "family": "Paper & pine",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 05: Paper & pine. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page. Place the block or shortcode where this belongs."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "cm-cyber-club"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-candle-club",
+      "audience": "stores",
+      "family": "The candle club",
+      "visitor_need": "Collect requests for seasonal emails.",
+      "difference": "Approved winter concept 06: The candle club. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Collect requests for seasonal emails. Choose an email destination or Collect only. Create a valid coupon and match its discount and terms."
+      ],
+      "measure": "Accepted email submissions.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-closing-time"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-wrapped-in-colour",
+      "audience": "stores",
+      "family": "Wrapped in colour",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 07: Wrapped in colour. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page. Place the block or shortcode where this belongs."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "cm-cyber-club"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-thoughtful-list",
+      "audience": "stores",
+      "family": "The thoughtful list",
+      "visitor_need": "Collect requests for seasonal emails.",
+      "difference": "Approved winter concept 08: The thoughtful list. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Collect requests for seasonal emails. Choose an email destination or Collect only. Create a valid coupon and match its discount and terms. Place the block or shortcode where this belongs."
+      ],
+      "measure": "Accepted email submissions.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "cm-cyber-club"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-ribbon-reminder",
+      "audience": "stores",
+      "family": "A ribbon reminder",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 09: A ribbon reminder. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates",
+        "Set a genuine campaign end date"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page. Set a real campaign end date and time and update every displayed deadline to match. The countdown uses that end date."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-weekend-curtain"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-gift-atelier",
+      "audience": "stores",
+      "family": "The gift atelier",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 10: The gift atelier. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates",
+        "Set a genuine campaign end date"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page. Set a real campaign end date and time and update every displayed deadline to match. The countdown uses that end date."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "cm-midnight-transmission"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-dear-december",
+      "audience": "stores",
+      "family": "Dear December",
+      "visitor_need": "Collect requests for seasonal emails.",
+      "difference": "Approved winter concept 11: Dear December. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Collect requests for seasonal emails. Choose an email destination or Collect only. Create a valid coupon and match its discount and terms."
+      ],
+      "measure": "Accepted email submissions.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-midnight-atelier"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-winter-postcards",
+      "audience": "stores",
+      "family": "Postcards from winter",
+      "visitor_need": "Collect requests for seasonal emails.",
+      "difference": "Approved winter concept 12: Postcards from winter. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Collect requests for seasonal emails. Choose an email destination or Collect only. Create a valid coupon and match its discount and terms. Place the block or shortcode where this belongs."
+      ],
+      "measure": "Accepted email submissions.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "cm-cyber-club"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-snowglobe-society",
+      "audience": "stores",
+      "family": "The snowglobe society",
+      "visitor_need": "Collect requests for seasonal emails.",
+      "difference": "Approved winter concept 13: The snowglobe society. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Collect requests for seasonal emails. Choose an email destination or Collect only. Create a valid coupon and match its discount and terms."
+      ],
+      "measure": "Accepted email submissions.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-midnight-atelier"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-small-kindness",
+      "audience": "stores",
+      "family": "A small kindness",
+      "visitor_need": "Collect requests for seasonal emails.",
+      "difference": "Approved winter concept 14: A small kindness. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Collect requests for seasonal emails. Choose an email destination or Collect only. Place the block or shortcode where this belongs."
+      ],
+      "measure": "Accepted email submissions.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "cm-cyber-club"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-after-hours-atelier",
+      "audience": "stores",
+      "family": "After-hours at the atelier",
+      "visitor_need": "Collect requests for seasonal emails.",
+      "difference": "Approved winter concept 15: After-hours at the atelier. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Collect requests for seasonal emails. Choose an email destination or Collect only. Create a valid coupon and match its discount and terms."
+      ],
+      "measure": "Accepted email submissions.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-closing-time"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-first-light-access",
+      "audience": "stores",
+      "family": "First light access",
+      "visitor_need": "Collect requests for seasonal emails.",
+      "difference": "Approved winter concept 16: First light access. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates",
+        "Set a genuine campaign end date"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Collect requests for seasonal emails. Choose an email destination or Collect only. Create a valid coupon and match its discount and terms. Set a real campaign end date and time and update every displayed deadline to match. The countdown uses that end date."
+      ],
+      "measure": "Accepted email submissions.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-closing-time"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-advent-letter",
+      "audience": "stores",
+      "family": "The advent letter",
+      "visitor_need": "Collect requests for seasonal emails.",
+      "difference": "Approved winter concept 17: The advent letter. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Collect requests for seasonal emails. Choose an email destination or Collect only. Create a valid coupon and match its discount and terms. Place the block or shortcode where this belongs."
+      ],
+      "measure": "Accepted email submissions.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "cm-cyber-club"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-winter-reading-room",
+      "audience": "stores",
+      "family": "The winter reading room",
+      "visitor_need": "Collect requests for seasonal emails.",
+      "difference": "Approved winter concept 18: The winter reading room. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Collect requests for seasonal emails. Choose an email destination or Collect only. Create a valid coupon and match its discount and terms."
+      ],
+      "measure": "Accepted email submissions.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-midnight-atelier"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-last-sleigh",
+      "audience": "stores",
+      "family": "The last sleigh",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 19: The last sleigh. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates",
+        "Set a genuine campaign end date"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page. Set a real campaign end date and time and update every displayed deadline to match. The countdown uses that end date."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-weekend-curtain"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-before-the-bow",
+      "audience": "stores",
+      "family": "Before the bow",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 20: Before the bow. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates",
+        "Set a genuine campaign end date"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page. Set a real campaign end date and time and update every displayed deadline to match. The countdown uses that end date."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-midnight-atelier"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-dispatch-desk",
+      "audience": "stores",
+      "family": "The dispatch desk",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 21: The dispatch desk. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates",
+        "Set a genuine campaign end date"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page. Set a real campaign end date and time and update every displayed deadline to match. The countdown uses that end date. Place the block or shortcode where this belongs."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "cm-cyber-club"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-digital-gift",
+      "audience": "stores",
+      "family": "The digital gift",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 22: The digital gift. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates",
+        "Set a genuine campaign end date"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page. Set a real campaign end date and time and update every displayed deadline to match. The countdown uses that end date."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-closing-time"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-still-time",
+      "audience": "stores",
+      "family": "Still time for something",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 23: Still time for something. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates",
+        "Set a genuine campaign end date"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page. Set a real campaign end date and time and update every displayed deadline to match. The countdown uses that end date."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-midnight-atelier"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-pickup-window",
+      "audience": "stores",
+      "family": "The pickup window",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 24: The pickup window. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates",
+        "Set a genuine campaign end date"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page. Set a real campaign end date and time and update every displayed deadline to match. The countdown uses that end date."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-weekend-curtain"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-final-sparkle",
+      "audience": "stores",
+      "family": "A final little sparkle",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 25: A final little sparkle. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates",
+        "Set a genuine campaign end date"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page. Set a real campaign end date and time and update every displayed deadline to match. The countdown uses that end date."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "cm-midnight-transmission"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-softer-beginning",
+      "audience": "stores",
+      "family": "A softer beginning",
+      "visitor_need": "Collect requests for seasonal emails.",
+      "difference": "Approved winter concept 26: A softer beginning. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Collect requests for seasonal emails. Choose an email destination or Collect only. Create a valid coupon and match its discount and terms."
+      ],
+      "measure": "Accepted email submissions.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-midnight-atelier"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-hello-tomorrow",
+      "audience": "stores",
+      "family": "Hello, tomorrow",
+      "visitor_need": "Collect requests for seasonal emails.",
+      "difference": "Approved winter concept 27: Hello, tomorrow. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Collect requests for seasonal emails. Choose an email destination or Collect only. Create a valid coupon and match its discount and terms. Place the block or shortcode where this belongs."
+      ],
+      "measure": "Accepted email submissions.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "cm-cyber-club"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-midnight-garden",
+      "audience": "stores",
+      "family": "The midnight garden",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 28: The midnight garden. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates",
+        "Set a genuine campaign end date"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page. Set a real campaign end date and time and update every displayed deadline to match. The countdown uses that end date."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "cm-midnight-transmission"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-bright-new-chapter",
+      "audience": "stores",
+      "family": "A bright new chapter",
+      "visitor_need": "Collect requests for seasonal emails.",
+      "difference": "Approved winter concept 29: A bright new chapter. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Collect requests for seasonal emails. Choose an email destination or Collect only. Create a valid coupon and match its discount and terms."
+      ],
+      "measure": "Accepted email submissions.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-closing-time"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-first-page",
+      "audience": "stores",
+      "family": "The first page",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 30: The first page. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates",
+        "Set a genuine campaign end date"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page. Set a real campaign end date and time and update every displayed deadline to match. The countdown uses that end date."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-weekend-curtain"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-fresh-start-club",
+      "audience": "stores",
+      "family": "Fresh start club",
+      "visitor_need": "Collect requests for seasonal emails.",
+      "difference": "Approved winter concept 31: Fresh start club. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Collect requests for seasonal emails. Choose an email destination or Collect only. Create a valid coupon and match its discount and terms."
+      ],
+      "measure": "Accepted email submissions.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-midnight-atelier"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-shop-is-sleeping",
+      "audience": "stores",
+      "family": "The shop is sleeping",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 32: The shop is sleeping. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page. Replace all example opening dates and hours before publishing."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-weekend-curtain"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-by-the-fire",
+      "audience": "stores",
+      "family": "See you by the fire",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 33: See you by the fire. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page. Replace all example opening dates and hours before publishing."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-closing-time"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-holiday-post",
+      "audience": "stores",
+      "family": "Holiday post",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 34: Holiday post. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page. Place the block or shortcode where this belongs. Replace all example opening dates and hours before publishing."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "cm-cyber-club"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-winter-hours",
+      "audience": "stores",
+      "family": "Winter hours",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 35: Winter hours. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page. Replace all example opening dates and hours before publishing."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-closing-time"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-tied-with-joy",
+      "audience": "stores",
+      "family": "Tied with a little joy",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 36: Tied with a little joy. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates",
+        "Set a genuine campaign end date"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page. Set a real campaign end date and time and update every displayed deadline to match. The countdown uses that end date."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-midnight-atelier"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-all-wrapped-up",
+      "audience": "stores",
+      "family": "All wrapped up",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 37: All wrapped up. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page. Place the block or shortcode where this belongs."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "cm-cyber-club"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-christmas-express",
+      "audience": "stores",
+      "family": "The Christmas express",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 38: The Christmas express. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates",
+        "Set a genuine campaign end date"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page. Set a real campaign end date and time and update every displayed deadline to match. The countdown uses that end date."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-closing-time"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-santa-letter",
+      "audience": "stores",
+      "family": "A letter from Santa",
+      "visitor_need": "Collect requests for seasonal emails.",
+      "difference": "Approved winter concept 39: A letter from Santa. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Collect requests for seasonal emails. Choose an email destination or Collect only. Create a valid coupon and match its discount and terms."
+      ],
+      "measure": "Accepted email submissions.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bf-midnight-atelier"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
+    },
+    {
+      "id": "winter-hello-2027",
+      "audience": "stores",
+      "family": "Hello, twenty twenty-seven",
+      "visitor_need": "Link to your seasonal gift edit or information page.",
+      "difference": "Approved winter concept 40: Hello, twenty twenty-seven. Native composition retains its illustration, typography and seasonal purpose.",
+      "requirements": [
+        "Review offer wording, links and example dates",
+        "Set a genuine campaign end date"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert winter prototype, 23 October 2026.",
+      "suggested_setup": [
+        "Link to your seasonal gift edit or information page. Set a real campaign end date and time and update every displayed deadline to match. The countdown uses that end date."
+      ],
+      "measure": "Information or offer link clicks.",
+      "batch": "christmas-new-year-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "cm-midnight-transmission"
+        ],
+        "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
+      }
     }
   ],
   "batches": [
@@ -4930,6 +5906,10 @@
     {
       "id": "shopping-weekend-2026",
       "name": "Black Friday and Cyber Monday"
+    },
+    {
+      "id": "christmas-new-year-2026",
+      "name": "Christmas and New Year"
     }
   ]
 }

@@ -1,0 +1,47 @@
+{
+  "id": "winter-dispatch-desk",
+  "revision": "0f01b357d4a94ff1c6e7cf5a6282e6a7248d0e398f80a2e24f5949ea4782c064",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "The terracotta date panel uses editable display text with a clear month caption. The adjacent delivery copy and clock stack below it on phones.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-dispatch-desk-320.png",
+          "sha256": "71dfdaf604d219a6aac9949582c5598e72ff080f66058fe7d4a4681e8eeba04c"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-dispatch-desk-1440.png",
+          "sha256": "3ab2b1ccb323e2645fe429504d664095c4ef1013ed98c4e21c5ecc4be06f57fd"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "ab790cf173baf9338e58b70875741bb10d05dc867242457a1014689bea7ab43d"
+}

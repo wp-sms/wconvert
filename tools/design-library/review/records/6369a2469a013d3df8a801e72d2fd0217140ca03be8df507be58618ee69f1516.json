@@ -1,0 +1,47 @@
+{
+  "id": "winter-hello-tomorrow",
+  "revision": "7acf187c7ec4f144b7d2a87fe1926fdd3084b0fdcb41bb64c1bc8505004bea35",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "The lavender type-led split has no oversized decorative arrow; headline and signup remain live text and stack in a clear phone reading order.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-hello-tomorrow-320.png",
+          "sha256": "f0101a413c98e04df67800a82afa62f7b454ba87c9f104eb54232a01859b0181"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-hello-tomorrow-1440.png",
+          "sha256": "7fccb45c8750b3d4788eb29d988a748706b482936af61bc6364aed62fae0cc8b"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "6369a2469a013d3df8a801e72d2fd0217140ca03be8df507be58618ee69f1516"
+}

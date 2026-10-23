@@ -135,6 +135,195 @@
       "redistribution": true,
       "reviewedBy": "Codex — source provenance and export review, 2026-10-22",
       "access": "premium"
+    },
+    "a5f48d2866b1dfb077bb3140fc14dcd5e6580834aad862a987502b6a844334d1": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP village.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "edd182ae2983ca73c2014375ab41216ba0c068d7853f79f5ee7543ed76ff61ba": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP bookBanner.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "free"
+    },
+    "1397585ff63ec13d6de89e40136f4ec30874098524ce93b59fb6b7af5d2e498c": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP villageWide.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "0b69e85ff356702b2382db1f62eb7d90306273718a3b2a40a9530219bf3245e1": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP envelopeBanner.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "free"
+    },
+    "0c93ac9325a58e12246f6d55c90484297808d95e2cb72f71d7885807524f2b46": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP parcel.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "free"
+    },
+    "b97dbeb4c8a1d1899d9af4ceec8d575a67409ca4912651b7f3dd2a79eed880d0": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP starsBanner.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "da5498f04ab1963499af95e94869099ea61b884efbe13728c4c87842739c2c96": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP mugBanner.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "d75388806d3c1fba0fe9ce3543cfb4cf581f7ce3ebf049dfb9f4439c70000b43": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP baubles.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "d332f37d839a5f292034233a88bba8b969a336ed8d7d349efaf36c4c3a389ca2": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP presentsBanner.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "de629844b1960d6bd6cf67b1b22e768a3e548c5862ff507cb659c3cc5790ff74": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP globeBanner.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "f55a42212869793a0c8f754e2fd40a6328f777493d63517ca74242d9cd07839f": {
+      "kind": "ai-generated",
+      "source": "Original WConvert winter prototype, optimised WebP ribboncard.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "2acbcde1a05bf04e70a4d3a13c9ef4101b70a47aea49a34b3b3dcc25f8dc5b5c": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP advent.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "465da2c7a346b1f6ea0ad15bc8ec0f7c1618ac7ebc79a1ea719a1af7a729e07b": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP ribbon.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "a4a1e85201de54020dd43d3d5c2bd75df5270b24c051676f7fcbaf797fd4f29f": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP ribbonBanner.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "f3d1c2c7fbefd4970ffc40069f8ffb91aca11ef0fb93cadc141ce297f1a78397": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP dawnBanner.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "free"
+    },
+    "2ba5bbd400f6aae799ccc314e94acbdab12bc8f0deaabeefd984d3241413d5b7": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP moon.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "46bd8930a73fc55e842ce0423ed811a5c4088e9b3f3a8239d8482ca00a788018": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP book.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "free"
+    },
+    "3bbc5e3efaf679ee36d43f8394b840fc283f71c824987524e0774130b95f7ae0": {
+      "kind": "ai-generated",
+      "source": "Original WConvert winter prototype, optimised WebP catnap.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "2907cc8d3ae53dfdceca9889e54ec92c4dc3fcccc7f9dc2365d1fefaa7ec3002": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP villageBanner.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "b0127299ae7109b62ebefa7122e021481862d16c836ff71c433260177001f5dd": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP flower.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "free"
+    },
+    "8096bde6894350bb2fe11d6a0edad3a66b91c00ee2697f0b28aedd81c2f95e29": {
+      "kind": "ai-generated",
+      "source": "Original WConvert winter prototype, optimised WebP santaletter.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "b2dee59f53a1b71502229bbf0d49631d1c745b355fae5df1886d1b408c4320bc": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP botanical.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "d4afc02abb208f7bb3b1da1c4ba2538b36a68d414a94d3d5e13227a3a04ce802": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP dawn.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "1b86313571571d05535dd2ec3a35e6ae24ad8d3a481cff5e4b9db86d948e0286": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP presents.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "free"
+    },
+    "b7c0fa583e883fe65ddfc583b12b5a91b2c789bba3618fc15d18b794b0389b13": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP candlesBanner.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "db4c9006572a68eed3c9a78457e6f28e107698fd472b37bebe2a02d853537938": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP flowerGreen.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "free"
+    },
+    "0fd3a75f3a730c73c9f2fe5fcd1f5203e8ec19faec8ed2a7a90c322f692ccf90": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP pine.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "free"
     }
   },
   "artwork_exports": {

@@ -1,0 +1,47 @@
+{
+  "id": "winter-ribbon-reminder",
+  "revision": "4ec8e50fce8c70258743d127199caa13b85273099df0e8e514d6f66f9ce97ca9",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "A short gift-wrap strip groups offer, clock and shopping action; the phone arrangement reserves dismissal space and stacks the groups.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-ribbon-reminder-320.png",
+          "sha256": "12852718434c695fa9a46ea08b1ee753689f214c7e2d26d504a81ca5212fb4d4"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-ribbon-reminder-1440.png",
+          "sha256": "64984444c3972c9f3d5d4562fffd3938f7b7847f44ca3887cd3cc87d7617eb3e"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "ef7fdcd97572079af5ccc9899053070d5b307642093eaab0cf81945abace7a78"
+}

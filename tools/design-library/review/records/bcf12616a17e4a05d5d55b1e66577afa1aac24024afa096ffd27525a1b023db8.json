@@ -1,0 +1,47 @@
+{
+  "id": "winter-winter-reading-room",
+  "revision": "18f722c34a7bbb9b270131121726714561441c071ebd938a8de41267f85a90ce",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "The book illustration's sage ground fills its pane. The shopping promise, transparent field and welcome-code acknowledgement remain native.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-winter-reading-room-320.png",
+          "sha256": "5e20cbfee8c2c1d4b305b9c9e38ade1b5b5c1720bde4ad83f58a952d6f12e77c"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-winter-reading-room-1440.png",
+          "sha256": "bfeca1fd360a0dcd320f46332cb7a7e4ac5cccf3e6cb349b02252194657c525a"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "bcf12616a17e4a05d5d55b1e66577afa1aac24024afa096ffd27525a1b023db8"
+}

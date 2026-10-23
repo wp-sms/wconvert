@@ -1,0 +1,47 @@
+{
+  "id": "winter-thoughtful-list",
+  "revision": "40d25cd003d260cdc212e4baca658fd88908022bc8f2e189de029332d4e3f041",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "The green introduction and cream signup remain distinct panels. Benefit lines are ordinary editable text; the acknowledgement gives the promised coupon.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-thoughtful-list-320.png",
+          "sha256": "8636d0c4665422fcc75bf4b258574bd0917e4c1f0218bd3d54595e6adb8637a8"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-thoughtful-list-1440.png",
+          "sha256": "57cfbd25d9f2cd22a35395e9fa887241a693dd67fe39cb0506f1ff4430fc5ce3"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "0bca9aa92c8c8df3a0b5ee2994fa44d64f02d2f4cdeb1b48c34c68fad2115989"
+}

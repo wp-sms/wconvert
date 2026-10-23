@@ -1,0 +1,47 @@
+{
+  "id": "winter-first-light-access",
+  "revision": "c851c3141ef70f30ca9d7a46090ae515ca0a60b429b7e9ed6ce7d41c8f28e077",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "Sunrise art introduces a dated preview signup. Its clock uses the campaign deadline; an already-open form remains usable after expiry, following the existing capture contract.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-first-light-access-320.png",
+          "sha256": "80d884ea6dc6bad13a26f316f8f19f4dc369175e5095085dfdde04ef8768ab96"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-first-light-access-1440.png",
+          "sha256": "4e2bdb23629c6d6a91cba314da9a49dbf1f2785557037e66727e64cf72629c87"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "602257bec997fa59dbb857945deb3127529646047a39219937791625439ab309"
+}

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, readFileSync, rmSync, statSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { buildRelease, buildPointer, publishRelease, guardDrops, guardFreeMajority, sha256, LIMITS } from './publisher.mjs';
+import { buildRelease, buildPointer, publishRelease, guardDrops, sha256, LIMITS } from './publisher.mjs';
 
 const image = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jA1sAAAAASUVORK5CYII=', 'base64');
 const rights = { redistribution: true, kind: 'original', source: 'Original test pixel', reviewedBy: 'test' };
@@ -70,9 +70,13 @@ test('a release may not drop a live design unless it withdraws it', () => {
   assert.throws(() => buildPointer({ release: '0'.repeat(64), withdrawn: [{ id: 'b', reason: 'shrug' }] }), /Invalid withdrawal/);
 });
 
-test('free designs must stay the majority of what is published', () => {
-  assert.doesNotThrow(() => guardFreeMajority([{ tier: 'free' }, { tier: 'free' }, { tier: 'pro' }]));
-  assert.throws(() => guardFreeMajority([{ tier: 'free' }, { tier: 'pro' }]), /1 of 2 are free/);
+test('a Pro-heavy seasonal release keeps its chosen tiers and private objects', () => {
+  const designs = Array.from({ length: 40 }, (_, i) => design(`winter-${i}`, { tier: i < 10 ? 'free' : 'pro' }));
+  const release = buildRelease({ designs, setups: designs.map(d => setup(`start-${d.id}`, d, d.tier)) });
+  for (const kind of ['designs', 'setups']) {
+    assert.equal(release.objects.filter(o => o.scope === 'public' && o.key.startsWith(`v3/${kind}/`)).length, 10);
+    assert.equal(release.objects.filter(o => o.scope === 'private' && o.key.startsWith(`v3/${kind}/`)).length, 30);
+  }
 });
 
 test('local publication reuses immutable objects, guards drops, and swaps only the pointer', t => {

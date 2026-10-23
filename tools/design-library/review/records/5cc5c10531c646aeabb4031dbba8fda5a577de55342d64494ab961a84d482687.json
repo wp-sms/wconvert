@@ -1,0 +1,47 @@
+{
+  "id": "winter-by-the-fire",
+  "revision": "0b1babe30685c0bcfc156ef2f22025198e83560a7aca573a9e416703b72249d9",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "A complete warm mug banner introduces a visit invitation; editable text directs visitors to opening hours before travelling.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-by-the-fire-320.png",
+          "sha256": "46aa05e0867c42e8f8157c9529b0427eb7a42beeac9311617b84eef312f61200"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-by-the-fire-1440.png",
+          "sha256": "251860a9ebd4665bf4c78b0f9daa8f33e90494e911bfe629b99b5b9a89662684"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "5cc5c10531c646aeabb4031dbba8fda5a577de55342d64494ab961a84d482687"
+}

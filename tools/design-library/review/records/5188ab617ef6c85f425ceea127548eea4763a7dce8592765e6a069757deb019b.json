@@ -1,0 +1,47 @@
+{
+  "id": "winter-after-hours-atelier",
+  "revision": "c22701ab624fa800b312bb8df973a793df5d62d3a957f48614f36fbcdeff6322",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "The dark invitation uses a divider and warm outlined field. Consent aligns with its first text line, and the acknowledgement makes Continue browsing secondary.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-after-hours-atelier-320.png",
+          "sha256": "c8093a13cb52bdce0088b9b4547f9301efe386348ddf7cc48f7685a7bb219f99"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-after-hours-atelier-1440.png",
+          "sha256": "9023c21eca96757b551b73b9c00b62ee578dd0985ddc6568b09d4149b61f2c61"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "5188ab617ef6c85f425ceea127548eea4763a7dce8592765e6a069757deb019b"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "winter-digital-gift",
+  "revision": "733aa0d8c243254e9a02dfa5742a44944b970790c892e4dc3af92c8465fa0635",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "A dark gift-card heading panel separates the product category from the offer; the clock and link follow the explanation on a narrow slide-in.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-digital-gift-320.png",
+          "sha256": "fd8761fcf6b1b2817bed9625aeed3ad5d16e7fb3ee6d968c9bf18fc3a28c9c21"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-digital-gift-1440.png",
+          "sha256": "668f66751e349091e1f76c4f2683016d863da273ae3e0ad64324b09fb42c51ec"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "ef785c921b165d310638d1a39bee55de0934506e3d661c74283912c114173579"
+}

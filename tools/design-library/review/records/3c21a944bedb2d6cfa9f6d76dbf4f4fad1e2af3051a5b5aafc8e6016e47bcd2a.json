@@ -1,0 +1,47 @@
+{
+  "id": "winter-before-the-bow",
+  "revision": "289d151ff6acb884e2d3d461fcf2ccb9b635627683e4168969ea9794b38cf18e",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "A ribbon banner introduces the order cutoff; the compact clock fits even when the CTA wraps to two lines.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-before-the-bow-320.png",
+          "sha256": "14fba1a22e5dd060568b3daec713f8397362c63a85f2ae5d3e387964e67bc2e6"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-before-the-bow-1440.png",
+          "sha256": "884c5f39eac566938d5686ebf3333fca09a3e1776f2dfc6bef302aad6390a4be"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "3c21a944bedb2d6cfa9f6d76dbf4f4fad1e2af3051a5b5aafc8e6016e47bcd2a"
+}

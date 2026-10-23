@@ -1,0 +1,277 @@
+{
+  "id": "winter-christmas-express",
+  "name": "The Christmas express",
+  "display_type": "slide_in",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#174f41",
+    "fg": "#fff0c9",
+    "muted": "#fff0c9",
+    "accent": "#fff0c9",
+    "accent-fg": "#174f41",
+    "border": "#fff0c9",
+    "input-bg": "transparent",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Instrument Serif\", Georgia, serif",
+    "heading-size": "3rem",
+    "heading-weight": "400",
+    "text-size": "1rem",
+    "leading": "1.55",
+    "tracking": "-.02em",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "25rem",
+    "align": "start",
+    "close-fg": "fg",
+    "close-bg": "bg",
+    "close-border": "border",
+    "close-radius": "50%",
+    "error-fg": "#991b1b",
+    "error-bg": "#fff1f2"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "text": "THE CHRISTMAS EXPRESS",
+                  "role": "eyebrow",
+                  "tokens": {
+                    "text-size": ".75rem",
+                    "tracking": ".12em"
+                  },
+                  "id": "n1"
+                },
+                {
+                  "type": "text",
+                  "text": "FROM OUR WORKSHOP / TO YOUR DOOR",
+                  "role": "fine_print",
+                  "tokens": {
+                    "text-size": ".875rem",
+                    "tracking": "normal"
+                  },
+                  "id": "n2"
+                }
+              ],
+              "tokens": {
+                "pad": "3.5rem 1rem 1rem",
+                "gap": "1rem",
+                "radius": "0",
+                "align": "center"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": ".85rem"
+              },
+              "edges": "all"
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "heading",
+                  "narrow": {
+                    "heading-size": "2.35rem"
+                  },
+                  "text": "All aboard\nfor Christmas.",
+                  "role": "headline",
+                  "tokens": {
+                    "heading-size": "2.4rem",
+                    "heading-font": "\"Instrument Serif\", Georgia, serif",
+                    "heading-weight": "400"
+                  },
+                  "id": "n3"
+                },
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "text",
+                      "text": "ORDER\nBY",
+                      "role": "fine_print",
+                      "tokens": {
+                        "text-size": ".875rem",
+                        "tracking": "normal"
+                      },
+                      "id": "n4"
+                    },
+                    {
+                      "type": "text",
+                      "narrow": {
+                        "text-size": "2rem"
+                      },
+                      "text": "18",
+                      "role": "fine_print",
+                      "tokens": {
+                        "text-size": "2.5rem",
+                        "leading": "1",
+                        "align": "center",
+                        "muted": "fg"
+                      },
+                      "size": "2xl",
+                      "id": "n5"
+                    },
+                    {
+                      "type": "text",
+                      "text": "DEC\n2026",
+                      "role": "fine_print",
+                      "tokens": {
+                        "text-size": ".875rem",
+                        "tracking": "normal"
+                      },
+                      "id": "n6"
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "1rem",
+                    "align": "center"
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "Order by 18 December. Check delivery areas and dispatch dates before you buy.",
+                  "role": "body",
+                  "id": "n7"
+                }
+              ],
+              "tokens": {
+                "pad": "2.25rem",
+                "gap": "1rem",
+                "radius": "0",
+                "align": "center"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": ".85rem"
+              },
+              "decorations": {
+                "label": "Festive sparkles",
+                "hidden": false,
+                "items": [
+                  {
+                    "kind": "sparkle",
+                    "x": 8,
+                    "y": 4,
+                    "size": 14,
+                    "motion": "float",
+                    "color": "fg"
+                  },
+                  {
+                    "kind": "sparkle",
+                    "x": 92,
+                    "y": 96,
+                    "size": 12,
+                    "motion": "blink",
+                    "color": "fg"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "countdown",
+                  "layout": "boxes",
+                  "density": "compact",
+                  "days_label": "Days",
+                  "hours_label": "Hrs",
+                  "minutes_label": "Mins",
+                  "seconds_label": "Secs",
+                  "role": "countdown_units",
+                  "tokens": {
+                    "text-size": "1.15rem",
+                    "tracking": "normal",
+                    "radius": ".1rem",
+                    "input-bg": "transparent"
+                  },
+                  "id": "n8"
+                },
+                {
+                  "type": "button",
+                  "label": "Check delivery dates",
+                  "action": "link",
+                  "role": "cta_label",
+                  "tokens": {
+                    "text-size": "1rem",
+                    "radius": ".15rem",
+                    "border": "fg",
+                    "tracking": "normal"
+                  },
+                  "id": "n9"
+                },
+                {
+                  "type": "text",
+                  "text": "Thoughtful gifts. Thoughtfully timed.",
+                  "role": "fine_print",
+                  "tokens": {
+                    "text-size": ".875rem",
+                    "tracking": "normal"
+                  },
+                  "id": "n10"
+                }
+              ],
+              "tokens": {
+                "pad": "2.25rem",
+                "gap": "1rem",
+                "radius": "0",
+                "align": "center"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": ".85rem"
+              },
+              "edges": "block-start",
+              "notch": true
+            }
+          ],
+          "tokens": {
+            "pad": ".75rem",
+            "gap": "0",
+            "radius": "0"
+          },
+          "narrow": {
+            "pad": ".75rem",
+            "gap": "0"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

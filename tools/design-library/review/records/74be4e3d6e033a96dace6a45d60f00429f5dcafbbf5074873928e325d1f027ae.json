@@ -1,0 +1,47 @@
+{
+  "id": "winter-final-sparkle",
+  "revision": "379e538a39bfd465b509ac101f5c7833ad8f584f9d1d4231ea655f6d3cdb2e91",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "A pink ornament poster carries a final shopping deadline; the picture remains complete and the fullscreen layout scrolls vertically on short phones.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-final-sparkle-320.png",
+          "sha256": "f0cef949733cc4375dd11c7465732a96382d8e00a8868f4336542db466e56d78"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-final-sparkle-1440.png",
+          "sha256": "c3ec3e3d1ce036e8aebd74d8b4086049e3f5a9c09a2f1ca15d31a6b90fd17e02"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "74be4e3d6e033a96dace6a45d60f00429f5dcafbbf5074873928e325d1f027ae"
+}

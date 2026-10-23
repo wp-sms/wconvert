@@ -1,0 +1,47 @@
+{
+  "id": "winter-holiday-post",
+  "revision": "2eb28744b1c2874ca47568bf5aade962c413758c5d4d11281c5ff45b6963f99f",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "The parcel image and delivery-information link form a simple inline split. No countdown or unsupported claim of delivery is added.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-holiday-post-320.png",
+          "sha256": "e9f7d7df145875ed3b8d6a4d0e53d4c48653f8b0f1ca88a32216f2e3a6c374ce"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-holiday-post-1440.png",
+          "sha256": "5c704afa43f29745800bdddf20b4f806e4c25f314b06d525a663fc508ebcffee"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "b50c0bf1acb80bcdcfc51e2fbe0d108006bd0f70ac1dde65acb67a005f8ee65d"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "winter-winter-postcards",
+  "revision": "e0a417036d03a3b41ec3550cf6af6aa353a31b960bad605c9385a76afb76a265",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "The winter postcard image is contained, not cropped; email entry follows the offer and the native acknowledgement provides the welcome code.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-winter-postcards-320.png",
+          "sha256": "20bc249e30a58103bd442eaf2cf0981458090ae1aade4eb5ba3348481604de14"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-winter-postcards-1440.png",
+          "sha256": "a0fe081e3e73752db930e3317803a0576eab7980f7f6d195028d3530dbf8455f"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "ec05b0b4905e2fb52001fcc17edefd90831038085de896e0984902c56dbf1074"
+}

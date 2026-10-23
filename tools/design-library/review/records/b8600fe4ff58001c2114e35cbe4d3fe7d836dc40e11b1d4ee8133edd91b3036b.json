@@ -1,0 +1,47 @@
+{
+  "id": "winter-bright-new-chapter",
+  "revision": "a3b6be73d8cd70ab97e5d4b190019bfbcbcf5f6bc443265d0cb9f7b23be4a653",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex native template review",
+  "note": "A star illustration tops the lilac January signup; the artwork is replaceable independently of the offer, field and acknowledgement.",
+  "at": "2026-10-23T09:01:15.959Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-bright-new-chapter-320.png",
+          "sha256": "225fd4f23fe9746ebf07d42342308e56b3955c9c8f9dd7df98ee9ad709aeeb83"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/winter-bright-new-chapter-1440.png",
+          "sha256": "eb4d1d01dcf047900f708024377db9a040e6dcd1b6b82b50d662283ddd7c31e6"
+        },
+        {
+          "path": "docs/reviews/winter-2026-10-23/review.md",
+          "sha256": "ecd583e8e11dcef5589f4e8cf07cf69cdd93e8d04f1f92ce2db75b9c48ee24ff"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-2026-10-23/results.json",
+          "sha256": "708a2f96319a5d91aae350d4910e95bceffee556e7ea3b186bbb80ba5887dbba"
+        }
+      ]
+    }
+  },
+  "record_id": "b8600fe4ff58001c2114e35cbe4d3fe7d836dc40e11b1d4ee8133edd91b3036b"
+}

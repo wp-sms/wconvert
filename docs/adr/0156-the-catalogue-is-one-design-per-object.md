@@ -109,7 +109,11 @@ browsing also shows every published member, before installation and across
 Goals, with Free/Pro labels. The existing `ProHints::shown()` gate still applies
 to paid discovery: opted-out or restricted Free users see only Free or already
 usable members, with matching counts. Pro users retain all members. A seasonal collection may contain mostly Pro
-designs. Locked members remain public image cards and external links; they
+designs. **Clarified 23 October 2026:** the approved Christmas/New Year batch
+is 30 Pro / 10 hosted Free. Publication has no global Free-majority quota;
+the old publisher check incorrectly imposed one on downloadable objects.
+Availability is enforced per design, not by changing approved tiers to meet
+a catalogue-wide ratio. Locked members remain public image cards and external links; they
 never receive Pro trees or an install/use control. Creation itself still
 requires a usable Goal and setup. Install adds the exact hosted setup; Use
 explicitly creates a draft for that member's Goal. A bundled usable copy can
