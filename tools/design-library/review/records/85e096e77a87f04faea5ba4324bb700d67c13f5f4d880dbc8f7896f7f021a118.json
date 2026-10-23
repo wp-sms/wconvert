@@ -1,0 +1,43 @@
+{
+  "id": "halloween-treat-signup",
+  "revision": "6f53ac38f4520cd2fb3f8108739d015f40fa4d01eb8893bce8b8ad8ac87d2e7c",
+  "base_id": "1b47805e7536d019968c0be81a3531463e568b11e09e8052ffa1c9589d686b9d",
+  "decision": "approved",
+  "reviewer": "Codex visual and WordPress review",
+  "note": "Reviewed shared-renderer before/after: image/text wrapping remains balanced and the treat signup retains its hierarchy. WordPress validation, consent, failure/retry and acknowledgement pass at both widths.",
+  "at": "2026-10-23T11:24:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/shared-renderer-2.jpg",
+          "sha256": "9f7f9e0b20fdd7fa83bf079db6c07b9c56bbfcfa18f4c5484d0f75aab87442c1"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "85e096e77a87f04faea5ba4324bb700d67c13f5f4d880dbc8f7896f7f021a118"
+}

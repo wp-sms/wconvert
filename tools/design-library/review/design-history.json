@@ -2368,6 +2368,12 @@
           "date": "2026-10-20",
           "revision": "146f12bc050ac3727546d954419196c1dd1a7ab674af1bd17f74958d2987df08",
           "note": "Polish original composition after desktop, phone, intermediate-width and native review."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-23",
+          "revision": "be68a45e0705afb807b3d68d6f835f36336dbf27127bbe31073ffc4b1cc6d234",
+          "note": "Normalize repeated spaces in numbered editorial copy exposed by the corrected layout export validator."
         }
       ]
     },
@@ -3046,6 +3052,12 @@
           "date": "2026-10-23",
           "revision": "5c7a86b4af55d2527ba406ee6041aeeaf452caf5aad75a52ce90f54246ab63b0",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "3dc3c4a2ef488a4ef86fcecc180194ba9403ae38bf98df5deeec6b3b2aed2fa3",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3058,6 +3070,12 @@
           "date": "2026-10-23",
           "revision": "842f3ecc6afd89f6c362454aef5bca2139ae58f10cea47f4ed69a4a4e3801e20",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "824d720b9540160c6efddff9384269b9f067ae311007663ee57cfdfe837efffb",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3070,6 +3088,12 @@
           "date": "2026-10-23",
           "revision": "b621d401ab31d43a850f49a5eebb8690fb0eccd538160bbe809deefc36f26e1e",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "2a1979d5c660ebd5cdfba29aa8d7d49132ecac435229f382ba93eff61c20b664",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3082,6 +3106,12 @@
           "date": "2026-10-23",
           "revision": "682086576d3219647e8c1694126c4bdf164ad615e80607533b6374df17df87b9",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "3e777953d7c65a792de052d2685058e4438f9d92e6c3e751a8d05456be8603a2",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3094,6 +3124,12 @@
           "date": "2026-10-23",
           "revision": "aa6027de6d4b1d4ce1872f4a72c360ca9737a3a46b0ccf44ade350006d7d3a92",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "558d95d391ffc8ef2e8bb3752fa2e03657e11ab59d044c04459b9a81833bf0f9",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3106,6 +3142,12 @@
           "date": "2026-10-23",
           "revision": "a8377c9c300295e395a1559fb3414ce1b629ab7da945a9970ac36559ce730a5f",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "cdaa42c639eae461e3f48d71c3063b821202df60430802d5c2547b3f49edffa5",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3118,6 +3160,12 @@
           "date": "2026-10-23",
           "revision": "f78140e16e071ad2e658ee0fc369de482a45950137bcf8246f1e30809a6b0a79",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "d1f453a3c57f6ae0c93ab5c23845e7a6738611e095a35f2c807a02a3392fdaf2",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3130,6 +3178,12 @@
           "date": "2026-10-23",
           "revision": "1d39a79b1c8f965d2e57c7fb13e06855d53d91a56a6a35bb95e6462674c98add",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "8ac332433602b6ec242664d59bdf919a1666cb2c6d6e5011611a4701812fd060",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3142,6 +3196,12 @@
           "date": "2026-10-23",
           "revision": "a1a1a22130df4ab7817f6d30370bf826a466823a537d095d810418827debb48f",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "185ea0a69a2e4b616da3957fd54b129adad925fb42783e610a78ba7bfd4e0bc1",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3154,6 +3214,12 @@
           "date": "2026-10-23",
           "revision": "102c5607091a445d936cb71297df321c42edada6fdfb1085c28f46dff43ce637",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "7d9c416cddda8bcca4a822cf3f6f9143ddbf6e141a40d3a825a7c5092e40c26f",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3166,6 +3232,12 @@
           "date": "2026-10-23",
           "revision": "c27548d52a97d4526e5d075fdbf796977ae64d7fb935e104af420375db7a78fe",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "00d30c51c80b6c00d235ead13c78614d3de5b75afb66bca234ba593a4dcc33cc",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3178,6 +3250,12 @@
           "date": "2026-10-23",
           "revision": "5bf8a19b7416c8e7974675c81fbede0d25b225aded2b5cf0a61a89472fd49d94",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "31a849ba55da8c38de7839ebe1e487666881ee21ca7cbadb6fdf2882693018fe",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3190,6 +3268,12 @@
           "date": "2026-10-23",
           "revision": "8ad7f16eff0aad556545a871e03f74b6f621e9f72886b96c156b1148adc0561a",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "bd1ae0115cd5e3f03fb9c7710e0f06e46a485408b6810b650b45ec98c08772eb",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3208,6 +3292,12 @@
           "date": "2026-10-23",
           "revision": "972e465704bfe5c2cd20e5ec3155d98fc5346bd168302ccd71e571e7d46df530",
           "note": "Give the heading room at the 680px split transition; retain phone padding."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-23",
+          "revision": "08e5de3b6b38df0a9d3b1c6fa0b643e632de90a59cd8fdad222073b0c6d743ce",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3220,6 +3310,12 @@
           "date": "2026-10-23",
           "revision": "0f775ae4c9f06988ee8bad8542bf3ff1454150b2a6585354673c187b564f9a9f",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "f415fdd2e7202e421511cea186fc73e2f1dc4af00dc079d90c2f26177f37f9be",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3232,6 +3328,12 @@
           "date": "2026-10-23",
           "revision": "7b25cb50d3e5fe27e13a15977e336955cf3e2641d4d6c66df29f262fc9bbe7eb",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "cf7b4629c242014f421a0df9f4e478f6be4aa0018798caafe5b2a5a64c888226",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3244,6 +3346,12 @@
           "date": "2026-10-23",
           "revision": "37e89df685276a629a6c712b44f720c2ca13a1221207c1c6a6cd54930ce4cce0",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "b628c72a02647d4d7edfb234543a3dd56385689a09a642c6f4b549906d6659d7",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3256,6 +3364,12 @@
           "date": "2026-10-23",
           "revision": "c3657233b18a497eada9035946f3caf426529009ae1739d7e479a8fa1fc64ac0",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "07285db2ecd5cd10d0e0607e987af13f716d65164dd7701594849a9b10b7b503",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3268,6 +3382,12 @@
           "date": "2026-10-23",
           "revision": "577216c430775b2b7bcdabb5386e4db7288c4d849122377759dfbfc1b8573581",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "7cc35830909975c176e40991ab44c3a1050ad8233682791638055620be758302",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3280,6 +3400,12 @@
           "date": "2026-10-23",
           "revision": "d819f1bdf58a0abb06f60de02622ebc8566e16e4e07325956b9ee42a10ff0f64",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "2a29244678265c780ebfbf9da1225a7e483e5ce99a4955f467cfa9d78d703ff7",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3292,6 +3418,12 @@
           "date": "2026-10-23",
           "revision": "dfc75af3e198617faa2488c45381fca9998b1240cbc2c1593b97db7bbea15644",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "f7cacaa43fb00b3b0d4b2a62faee0b5802507d5c072153ad57683e7e1826ebe4",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3304,6 +3436,12 @@
           "date": "2026-10-23",
           "revision": "488de3974b9d6b9e030ef1e4674ab251bd78980e359d7a2ff6269cc41acae70f",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "32404495b3d4173ddcb6205a950f7eda8d3340af3e6de8fc2a95d466153b481c",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3316,6 +3454,12 @@
           "date": "2026-10-23",
           "revision": "e55c3bbad02ad6b6e18d5ca0fb2cec13d53b36397833f72cc70325cb70172ffe",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "b87d953728de267c8953315e901dec456b31e4ebddd8f5e1fdcd19d39d0a661f",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3328,6 +3472,12 @@
           "date": "2026-10-23",
           "revision": "b5ce5308a6458ba9c0d86a5367e8978ddc15a84b45492f2c980047a5c5091c8b",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "83b49b2aec400c0467c41e9ff2db7f3f4a668e1267f6f43ccdbf27915e1b3b8f",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3340,6 +3490,12 @@
           "date": "2026-10-23",
           "revision": "26bab6ed2f9de5640889a01db1babcc29a5e4dac8e8cb7fa405ac92fb5784bab",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "80aadb6f6cc4a427b07e079593ed17be811567ebeb930648f42bfd7f4c4401ba",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3352,6 +3508,12 @@
           "date": "2026-10-23",
           "revision": "116d4f7c63902614a57e95e0e21dbd4143e2169dc9456d4491e199df6068fc45",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "fccf3304cd82be5a9cd35e1a5b5acc2e39abc8fb5efbc626886d3ddc1194c0f3",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3364,6 +3526,12 @@
           "date": "2026-10-23",
           "revision": "a0159f73f0d5b40790951b3ef95cb303391eb0716b535de0fe8bbd30b1f2cb26",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "8fe3d9ff73c83c65decfb6daf3948535b2963e4bf0db1be650d69e0dd2966a6c",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3376,6 +3544,12 @@
           "date": "2026-10-23",
           "revision": "9b6409e6b8e0c65080090f66475c6ce7c47f329b4b45acec7e169a4f3c3a3f70",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "26aba904f77d299b39b96a29e3f3dfe41ee4330251275214f3c42f31480ebfde",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3388,6 +3562,12 @@
           "date": "2026-10-23",
           "revision": "4f8365ba61cd1fc7b82afe79016f4447e6ad01bd976d93c26c46f1a08513aaca",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "194ef78149da9826f6b6fcdfc80ae0247d03250f6b78e8bd5f1efa1f270d8e08",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3400,6 +3580,12 @@
           "date": "2026-10-23",
           "revision": "043f5d63a0cdb289f48b9f9cfd3e77fd8960c0c99ac25d8f33094925b5edebf5",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "c9638f166f818135cf2050f951af2994d5367a6af7437bcbb03707309d29c4b6",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3412,6 +3598,12 @@
           "date": "2026-10-23",
           "revision": "8987f8d504782ac95082762e7968e00495e64fea35efdddcce5e85ad8c2176d4",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "e288ef172ab1d66777dc62738fe698eb50a6fc4b2685ecffb7fbfe2d7bcad9ff",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3424,6 +3616,12 @@
           "date": "2026-10-23",
           "revision": "ea945cc945b253a2606d8ad7d364bb74a2d535d39a0eb433812b82c99c7fdc42",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "50b095167c0d99997fe66369bf09969588f9dfb3c61641c7dd2f521cde7e2b23",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3436,6 +3634,12 @@
           "date": "2026-10-23",
           "revision": "0ccf630a5558de997b232f736c0db56b49ed7f8e2137702e6a74e6e2b58b9f87",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "2457e46e77db0825cb64495373dfaa4c09688ec6b1b02b9f68e02264adb8005f",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3448,6 +3652,12 @@
           "date": "2026-10-23",
           "revision": "18d76369bc23fb1af090292e10271d0c7a4a485bbe79138ba99f1cd21fc6c3f8",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "8d58380e23fafa420a6ab9b4c2aa0700465eb1582e5e58c663d1d7a2c1ea7e64",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3460,6 +3670,12 @@
           "date": "2026-10-23",
           "revision": "b342cbdd681315fef3db1278fbfe65f688e18777be2ff155ea4335c17f9f3882",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "308d604157485825e412aeb0359bcfd7bed0c4ad4ea7dec5f75823f88be07856",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3472,6 +3688,12 @@
           "date": "2026-10-23",
           "revision": "1bd100a2709e5b888ec8d65d7faa857597423586f052e0e299da1bad0fb27db8",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "0180a9bf83c11b2bf28b435bcd1c1841419bb2517a46bc8acdcb976fddd85cf1",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3484,6 +3706,12 @@
           "date": "2026-10-23",
           "revision": "8a8f6e934f4165aa0a5336af6ce36f19c46a9403f32e61e23baa120197354483",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "3e29a8c9cc077c825bb8bc28256d6fa830fef681c09b8a80199c42080ec7d454",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3496,6 +3724,12 @@
           "date": "2026-10-23",
           "revision": "4b9a93d206059a2476cd0d90efb8d6650f066bc9c81bfab722ab7390f428814d",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "6c6a55efd99b7cb4da33044583de1668405846d6be08c855145705dc44949e0f",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3508,6 +3742,12 @@
           "date": "2026-10-23",
           "revision": "5553365057a169ec4aec6c863c650699afaeaefd3bc326e60069cd0dc7cb6f2e",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "5fd1bb8b91c18223d744ffad73c5b69b50b3db872c383482c61f6632a0b2d773",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     },
@@ -3520,6 +3760,12 @@
           "date": "2026-10-23",
           "revision": "b33dc758151f61d6ac22f44c8faa851af2667672aed8f668f0dd1e27d1ff5d57",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "e91b071491ed01df3dbfbc644dcf1c35c58113facf38b618c5a26286741e3a61",
+          "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
     }

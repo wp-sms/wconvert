@@ -362,14 +362,14 @@ const CLEARABLE: readonly string[] = ['close-bg', 'close-border'];
  */
 const LOOK_SECTIONS: readonly { id: string; title: () => string; groups: readonly TokenGroupId[]; rows: readonly (readonly string[])[]; labels?: () => Readonly<Record<string, string>> }[] = [
   { id: 'fonts', title: () => __('Fonts', 'wconvert'), groups: ['type', 'heading'],
-    rows: [['font', 'text-size'], ['leading'], ['heading-font', 'heading-size'], ['heading-weight', 'tracking']],
+    rows: [['font', 'text-size'], ['leading'], ['heading-font', 'heading-size'], ['heading-weight', 'tracking'], ['heading-leading', 'heading-style'], ['countdown-size']],
     labels: () => ({ font: __('Body text', 'wconvert'), 'heading-font': __('Headings', 'wconvert'), tracking: __('Letter spacing', 'wconvert') }) },
   { id: 'space', title: () => groupName('space'), groups: ['space'], rows: [['width'], ['pad'], ['gap'], ['radius'], ['align']] },
-  { id: 'image', title: () => groupName('image'), groups: ['image'], rows: [['bg-image'], ['image-position'], ['overlay']] },
+  { id: 'image', title: () => groupName('image'), groups: ['image'], rows: [['bg-image'], ['image-position'], ['image-height'], ['bg-size'], ['overlay']] },
   { id: 'effects', title: () => groupName('effects'), groups: ['effects'], rows: [['shadow'], ['motion']] },
   // Shape in the plain view; its colours are Advanced's, since a merchant who
   // changes only brand colours should not meet three more swatches for the ×.
-  { id: 'close', title: () => groupName('close'), groups: ['close'], rows: [['close-radius'], ['close-fg'], ['close-bg', 'close-border']] },
+  { id: 'close', title: () => groupName('close'), groups: ['close'], rows: [['close-radius'], ['close-inset'], ['close-fg'], ['close-bg', 'close-border']] },
   { id: 'other', title: () => groupName('other'), groups: ['other'], rows: [] },
 ];
 

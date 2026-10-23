@@ -1,0 +1,47 @@
+{
+  "id": "winter-pickup-window",
+  "revision": "8020ef8749d9f906fcd25dccb55a4721adf7a04c7dea76740f4ff44b135dee66",
+  "base_id": "5e3a001d31ed12d7a78bf4b76a7dd9583bc202866eaa60926777a0c1b8ed6d4c",
+  "decision": "approved",
+  "reviewer": "Codex visual and WordPress review",
+  "note": "Pickup notice keeps location/action intent together and its clock clear at both desktop and phone sizes.",
+  "at": "2026-10-23T11:24:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-6.jpg",
+          "sha256": "fb4e2a22d042a10b7b0e78f34234df8ab0fe011d4c37628b69d624d8657173bd"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-6.jpg",
+          "sha256": "e2d62cc963c0936df1151861c6375611960cc7548cd0ef97f7a04055b87542d2"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "95eb36bf1e1236cba3ffd91ec387c11ab1873cc638421a6847cccc3fe2271eb0"
+}

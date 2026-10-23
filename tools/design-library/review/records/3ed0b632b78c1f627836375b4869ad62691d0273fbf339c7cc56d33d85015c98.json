@@ -1,0 +1,39 @@
+{
+  "id": "collection-christmas-new-year-2026",
+  "revision": "55071b34a75d12cc7b9e58a68c8333cf6725756a47e7f7e764eb2d06a8086a17",
+  "base_id": "386b349abb665e23406db1adbb3a916d6b6e0efd9c929ec514b9b913a04f7091",
+  "decision": "approved",
+  "reviewer": "Codex visual and WordPress review",
+  "note": "Reviewed Christmas & New Year: membership, order, entitlement and catalogue delivery unchanged; all dependencies current after the documented fidelity/shared-renderer reviews.",
+  "at": "2026-10-23T11:25:09Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "3ed0b632b78c1f627836375b4869ad62691d0273fbf339c7cc56d33d85015c98"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "winter-still-time",
+  "revision": "be86ed784d93b0339fd1eb60a7952551f831e4163fa1edc19781d2f372960c80",
+  "base_id": "dfae9639565fe32e712c51b3d5286a1723ed3461478090a7b861109f7adac928",
+  "decision": "approved",
+  "reviewer": "Codex visual and WordPress review",
+  "note": "Still-time notice retains its compact hierarchy and readable mobile countdown.",
+  "at": "2026-10-23T11:24:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-6.jpg",
+          "sha256": "fb4e2a22d042a10b7b0e78f34234df8ab0fe011d4c37628b69d624d8657173bd"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-6.jpg",
+          "sha256": "e2d62cc963c0936df1151861c6375611960cc7548cd0ef97f7a04055b87542d2"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "8611559e125df37fb4c140cabe2b391062b10709f86cbbf416694df892d0bc1c"
+}

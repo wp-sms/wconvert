@@ -1,3 +1,4 @@
+import { previewFonts } from './preview-fonts.mjs';
 /**
  * Every prepared screen of a set of setups on one page, for the reviewer's judgement.
  *
@@ -29,6 +30,7 @@ if (!entries.length) throw new Error('Nothing to review here. Rebuild the pilot 
 const data = { title: name, intro: 'Prepared campaign setups, every screen. Review four widths, both directions, visible consent and longer copy. These previews create no leads or messages.', entries, before: [], decisions: {} };
 const file = resolve(out, `${selection}-audit.html`);
 writeFileSync(file, readFileSync(resolve(root, 'tools/design-library/review/library.html'), 'utf8')
+  .replace('<style>', () => `<style>${previewFonts(entries)}`)
   .replace('/*__RENDERER__*/', () => readFileSync(resolve(out, 'renderer.iife.js'), 'utf8'))
   .replace('/*__DATA__*/', () => JSON.stringify(data).replaceAll('<', '\\u003c')));
 console.log(`${selection}-audit.html: ${entries.length} prepared setups, every screen`);

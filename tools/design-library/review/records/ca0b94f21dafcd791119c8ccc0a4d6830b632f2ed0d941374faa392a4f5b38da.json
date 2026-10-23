@@ -1,0 +1,47 @@
+{
+  "id": "winter-small-kindness",
+  "revision": "ce6d7da7f07250301c3abeb05b94937aa751f7b35d7b015131c53c4cdaad95f7",
+  "base_id": "ae02c19825873f89397b4c631bbcb3265a7449bdad5b7352982e3c71a5a96bad",
+  "decision": "approved",
+  "reviewer": "Codex visual and WordPress review",
+  "note": "Quiet illustration and small-kindness offer restored; wider split basis prevents crushed intermediate columns.",
+  "at": "2026-10-23T11:24:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-4.jpg",
+          "sha256": "bbce5ed08da7233fb00323f481ed067fc9763d139a420dad9046808fe4778d89"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-4.jpg",
+          "sha256": "a89d727c168a10755fc48526e07138c06731b0a4b97079f560cdd4080d38d246"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "ca0b94f21dafcd791119c8ccc0a4d6830b632f2ed0d941374faa392a4f5b38da"
+}

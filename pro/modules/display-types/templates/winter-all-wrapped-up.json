@@ -6,29 +6,31 @@
   "tokens": {
     "bg": "#fff2d8",
     "fg": "#823239",
-    "muted": "#823239",
+    "muted": "fg",
     "accent": "#244c3e",
-    "accent-fg": "#fff8e7",
-    "border": "#823239",
+    "accent-fg": "#fff2d8",
+    "border": "#a9343e",
     "input-bg": "#fbe7e7",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Instrument Serif\", Georgia, serif",
     "heading-size": "3rem",
     "heading-weight": "400",
-    "text-size": "1rem",
-    "leading": "1.55",
-    "tracking": "-.02em",
+    "text-size": ".9375rem",
+    "leading": "1.65",
+    "tracking": "-.025em",
     "pad": "0",
     "gap": "0",
-    "radius": "0",
-    "width": "34rem",
+    "radius": "0px",
+    "width": "34.375rem",
     "align": "start",
     "close-fg": "fg",
     "close-bg": "bg",
     "close-border": "border",
     "close-radius": "50%",
     "error-fg": "#991b1b",
-    "error-bg": "#fff1f2"
+    "error-bg": "#fff1f2",
+    "placeholder": "fg",
+    "heading-leading": ".98"
   },
   "tree": {
     "v": 2,
@@ -91,7 +93,7 @@
                   "text": "A VERY COSY CHRISTMAS",
                   "role": "eyebrow",
                   "tokens": {
-                    "text-size": ".75rem",
+                    "text-size": ".833333rem",
                     "tracking": ".12em"
                   },
                   "id": "n2"
@@ -99,14 +101,18 @@
                 {
                   "type": "heading",
                   "narrow": {
-                    "heading-size": "2.15rem"
+                    "heading-size": "2.125rem",
+                    "heading-leading": "1.04"
                   },
                   "text": "All wrapped up.\nTime to curl up.",
                   "role": "headline",
                   "tokens": {
-                    "heading-size": "3rem",
-                    "heading-font": "\"Instrument Serif\", Georgia, serif",
-                    "heading-weight": "400"
+                    "heading-size": "3.1875rem",
+                    "heading-font": "Georgia, serif",
+                    "heading-weight": "400",
+                    "heading-style": "italic",
+                    "heading-leading": "1.04",
+                    "tracking": "-0.055em"
                   },
                   "id": "n3"
                 },
@@ -122,33 +128,46 @@
                   "action": "link",
                   "role": "cta_label",
                   "tokens": {
-                    "text-size": "1rem",
+                    "text-size": ".875rem",
                     "radius": ".15rem",
                     "border": "fg",
-                    "tracking": "normal"
+                    "tracking": "normal",
+                    "leading": "1.4"
                   },
                   "id": "n5"
                 },
                 {
                   "type": "text",
-                  "text": "With love, from our little shop",
+                  "text": "%i",
                   "role": "fine_print",
                   "tokens": {
                     "text-size": ".875rem",
-                    "tracking": "normal"
+                    "tracking": "normal",
+                    "font": "Georgia, serif"
                   },
-                  "id": "n6"
+                  "id": "n6",
+                  "italic": "With love, from our little shop"
                 }
               ],
               "tokens": {
-                "pad": "0 3rem 2rem",
-                "gap": "1rem",
+                "pad": "0 12% 32px",
+                "gap": "1.25rem",
                 "radius": "0",
                 "align": "center"
               },
               "narrow": {
-                "pad": "0 1.5rem 2rem",
-                "gap": ".85rem"
+                "pad": "0 9% 27px",
+                "gap": "1.1rem"
+              }
+            },
+            {
+              "type": "panel",
+              "children": [],
+              "tokens": {
+                "pad": "5px",
+                "gap": "0",
+                "radius": "0",
+                "bg": "border"
               }
             }
           ],

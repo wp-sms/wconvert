@@ -1,0 +1,47 @@
+{
+  "id": "winter-candle-club",
+  "revision": "a144dca79f51f4f12f17ee059f14de0308fc4ce8d9af398dba28c37d532c2d1c",
+  "base_id": "ee3bccccf0e04b581b85daa71198d053c74f461ff044f5ca99aeee75f1ae8ff8",
+  "decision": "approved",
+  "reviewer": "Codex visual and WordPress review",
+  "note": "Candles fit inside the image band without cutting the flames; maroon signup and acknowledgement preserve the same visual identity.",
+  "at": "2026-10-23T11:24:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-2.jpg",
+          "sha256": "214b9d98fddacd196caf033433f998298de1957cbdda002bf841cd5656770fdb"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-2.jpg",
+          "sha256": "3acf038bbf82af72e6a73773f72a8f060578ab6a8f7a4d125d65e2cffdd51906"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "61791ab9254eecd6ad61bb321769cfd5be13ebd6c15fa29301efe1a6fb72af5a"
+}

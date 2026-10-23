@@ -1,0 +1,477 @@
+[
+  {
+    "id": "winter-ribbon-room",
+    "before": 671,
+    "after": 672,
+    "from": "2",
+    "to": "1",
+    "results": [
+      {
+        "width": 671,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 672,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  },
+  {
+    "id": "winter-ornament-edit",
+    "before": 671,
+    "after": 672,
+    "from": "2",
+    "to": "1",
+    "results": [
+      {
+        "width": 671,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 672,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  },
+  {
+    "id": "winter-paper-pine",
+    "before": 511,
+    "after": 512,
+    "from": "2",
+    "to": "1",
+    "results": [
+      {
+        "width": 511,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 512,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  },
+  {
+    "id": "winter-thoughtful-list",
+    "before": 639,
+    "after": 640,
+    "from": "2",
+    "to": "1",
+    "results": [
+      {
+        "width": 639,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 640,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  },
+  {
+    "id": "winter-ribbon-reminder",
+    "before": 511,
+    "after": 512,
+    "from": "2,2",
+    "to": "2,1",
+    "results": [
+      {
+        "width": 511,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 512,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  },
+  {
+    "id": "winter-ribbon-reminder",
+    "before": 919,
+    "after": 920,
+    "from": "2,1",
+    "to": "1,1",
+    "results": [
+      {
+        "width": 919,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 920,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  },
+  {
+    "id": "winter-gift-atelier",
+    "before": 767,
+    "after": 768,
+    "from": "2",
+    "to": "1",
+    "results": [
+      {
+        "width": 767,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 768,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  },
+  {
+    "id": "winter-winter-postcards",
+    "before": 639,
+    "after": 640,
+    "from": "2",
+    "to": "1",
+    "results": [
+      {
+        "width": 639,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 640,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  },
+  {
+    "id": "winter-small-kindness",
+    "before": 639,
+    "after": 640,
+    "from": "2",
+    "to": "1",
+    "results": [
+      {
+        "width": 639,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 640,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  },
+  {
+    "id": "winter-advent-letter",
+    "before": 639,
+    "after": 640,
+    "from": "2",
+    "to": "1",
+    "results": [
+      {
+        "width": 639,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 640,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  },
+  {
+    "id": "winter-winter-reading-room",
+    "before": 543,
+    "after": 544,
+    "from": "2",
+    "to": "1",
+    "results": [
+      {
+        "width": 543,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 544,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  },
+  {
+    "id": "winter-last-sleigh",
+    "before": 511,
+    "after": 512,
+    "from": "2,2",
+    "to": "2,1",
+    "results": [
+      {
+        "width": 511,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 512,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  },
+  {
+    "id": "winter-last-sleigh",
+    "before": 919,
+    "after": 920,
+    "from": "2,1",
+    "to": "1,1",
+    "results": [
+      {
+        "width": 919,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 920,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  },
+  {
+    "id": "winter-dispatch-desk",
+    "before": 639,
+    "after": 640,
+    "from": "2",
+    "to": "1",
+    "results": [
+      {
+        "width": 639,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 640,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  },
+  {
+    "id": "winter-pickup-window",
+    "before": 511,
+    "after": 512,
+    "from": "2,2",
+    "to": "2,1",
+    "results": [
+      {
+        "width": 511,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 512,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  },
+  {
+    "id": "winter-pickup-window",
+    "before": 919,
+    "after": 920,
+    "from": "2,1",
+    "to": "1,1",
+    "results": [
+      {
+        "width": 919,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 920,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  },
+  {
+    "id": "winter-final-sparkle",
+    "before": 767,
+    "after": 768,
+    "from": "2",
+    "to": "1",
+    "results": [
+      {
+        "width": 767,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 768,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  },
+  {
+    "id": "winter-softer-beginning",
+    "before": 671,
+    "after": 672,
+    "from": "2",
+    "to": "1",
+    "results": [
+      {
+        "width": 671,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 672,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  },
+  {
+    "id": "winter-hello-tomorrow",
+    "before": 767,
+    "after": 768,
+    "from": "2",
+    "to": "1",
+    "results": [
+      {
+        "width": 767,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 768,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  },
+  {
+    "id": "winter-midnight-garden",
+    "before": 639,
+    "after": 640,
+    "from": "2",
+    "to": "1",
+    "results": [
+      {
+        "width": 639,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 640,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  },
+  {
+    "id": "winter-first-page",
+    "before": 511,
+    "after": 512,
+    "from": "2,1,2",
+    "to": "2,1,1",
+    "results": [
+      {
+        "width": 511,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 512,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  },
+  {
+    "id": "winter-first-page",
+    "before": 919,
+    "after": 920,
+    "from": "2,1,1",
+    "to": "1,1,1",
+    "results": [
+      {
+        "width": 919,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 920,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  },
+  {
+    "id": "winter-shop-is-sleeping",
+    "before": 919,
+    "after": 920,
+    "from": "2,1",
+    "to": "1,1",
+    "results": [
+      {
+        "width": 919,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 920,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  },
+  {
+    "id": "winter-holiday-post",
+    "before": 639,
+    "after": 640,
+    "from": "2",
+    "to": "1",
+    "results": [
+      {
+        "width": 639,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 640,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  },
+  {
+    "id": "winter-hello-2027",
+    "before": 765,
+    "after": 766,
+    "from": "2",
+    "to": "1",
+    "results": [
+      {
+        "width": 765,
+        "overflow": [],
+        "composition": []
+      },
+      {
+        "width": 766,
+        "overflow": [],
+        "composition": []
+      }
+    ]
+  }
+]

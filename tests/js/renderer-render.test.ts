@@ -336,7 +336,8 @@ describe('the layout vocabulary', () => {
     expect(grid.children).toHaveLength(1);
     // No `--wc-columns`, because there is no such thing any more. The whole
     // point of `auto-fit` is that the column count is not a stored number.
-    expect(grid.getAttribute('style')).toBeNull();
+    expect(grid.style.getPropertyValue('--wc-columns')).toBe('');
+    expect(grid.style.getPropertyValue('--wc-basis')).toBe('8rem');
   });
 
   /**

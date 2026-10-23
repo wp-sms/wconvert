@@ -1,0 +1,16 @@
+{
+  "release": "409ee17397172aea39db7e9378e3ee42f02143d654e2ff287d03399fef27c9b2",
+  "designs": 134,
+  "setups": 157,
+  "freeDesigns": 65,
+  "premiumRefusals": 143,
+  "images": 16,
+  "thumbnails": 302,
+  "previews": 151,
+  "og": 151,
+  "details": 151,
+  "withdrawn": 0,
+  "localOnly": true,
+  "pointerSha256": "23a8c7677f395396ac0565fdd88a6a3aeb2ff071d70330000515ffcba8478f4c",
+  "transport": "Workerd/R2 emulation; no hosted requests"
+}

@@ -1,0 +1,99 @@
+{
+  "id": "room-planning-worksheet",
+  "revision": "2175afa53d522b3b8df3081d7727ad7705a04d6bb09702d67df1fda15d133014",
+  "base_id": "885aa65170b48fda2233dbb6b82dbdaababca02d210d767da84bc0a09ff5e8d2",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 133069b98aa4f6ea86d5008238d1e6bbc2210ab1, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-23T11:17:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+          "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+          "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+          "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+          "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+          "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+          "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+          "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+          "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+          "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+          "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+          "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+          "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+          "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+          "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+          "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+          "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+          "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+          "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+        }
+      ]
+    }
+  },
+  "record_id": "c0b1dc3bf67e3d7e2a007a57b718c38a4713c57e901557acf7251cef07dba867"
+}

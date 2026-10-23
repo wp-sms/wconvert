@@ -1,0 +1,47 @@
+{
+  "id": "course-advice-request",
+  "revision": "df91cc9d7fc79eb12f6707b83a98d11479f09507dbf2002eb5a6708978d2ff44",
+  "base_id": "333e2321ac20b4c9bd9eb752ea789b5149ed507428d73f99e316f9dd140f929d",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 133069b98aa4f6ea86d5008238d1e6bbc2210ab1, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-23T11:17:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/course-advice-request-320.png",
+          "sha256": "ce6e73e903d818bfb2d5bca4483a57980b1555e8f003ee73bf8f90f9489448ab"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/course-advice-request-1440.png",
+          "sha256": "bd04285df699c7110b5b080288ada81b97fe294eb62be241c0caf9cd55d88e47"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "d58d202a10b1b32aa3100cad4eedcc897476cd7eb32d7f507a485baedd25d8b8"
+}

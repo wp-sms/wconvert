@@ -1,0 +1,79 @@
+{
+  "schema": 1,
+  "at": "2026-10-23T11:39:44.799Z",
+  "site": "disposable local WordPress",
+  "checks": [
+    "journey",
+    "wordpress"
+  ],
+  "setups": [
+    {
+      "id": "winter-ornament-edit",
+      "revision": "49a92f97284873a3ec85d5fcbf05be32ff5e8e3bdbc3a6903ae498b82ec8f757",
+      "width": 320,
+      "passed": true,
+      "screens": 1,
+      "validation": false,
+      "consentChecked": false,
+      "backChecked": false,
+      "simulatedFailureRetry": false,
+      "localLeadSaved": false,
+      "configuredResource": 200,
+      "actualCtaOpened": true,
+      "couponChecked": false,
+      "copiedCode": false,
+      "localResourceEmail": false
+    },
+    {
+      "id": "winter-ornament-edit",
+      "revision": "49a92f97284873a3ec85d5fcbf05be32ff5e8e3bdbc3a6903ae498b82ec8f757",
+      "width": 1280,
+      "passed": true,
+      "screens": 1,
+      "validation": false,
+      "consentChecked": false,
+      "backChecked": false,
+      "simulatedFailureRetry": false,
+      "localLeadSaved": false,
+      "configuredResource": 200,
+      "actualCtaOpened": true,
+      "couponChecked": false,
+      "copiedCode": false,
+      "localResourceEmail": false
+    },
+    {
+      "id": "winter-santa-letter",
+      "revision": "daebf9b1181015c89bbbfaab80c17ade4e164cc7aa87179259c79174017447df",
+      "width": 320,
+      "passed": true,
+      "screens": 2,
+      "validation": true,
+      "consentChecked": true,
+      "backChecked": false,
+      "simulatedFailureRetry": true,
+      "localLeadSaved": true,
+      "configuredResource": 200,
+      "actualCtaOpened": false,
+      "couponChecked": false,
+      "copiedCode": true,
+      "localResourceEmail": false
+    },
+    {
+      "id": "winter-santa-letter",
+      "revision": "daebf9b1181015c89bbbfaab80c17ade4e164cc7aa87179259c79174017447df",
+      "width": 1280,
+      "passed": true,
+      "screens": 2,
+      "validation": true,
+      "consentChecked": true,
+      "backChecked": false,
+      "simulatedFailureRetry": true,
+      "localLeadSaved": true,
+      "configuredResource": 200,
+      "actualCtaOpened": false,
+      "couponChecked": false,
+      "copiedCode": true,
+      "localResourceEmail": false
+    }
+  ]
+}

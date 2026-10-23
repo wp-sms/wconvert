@@ -124,7 +124,7 @@
                     {
                       "type": "text",
                       "id": "n6",
-                      "text": "01   One considered essay",
+                      "text": "01 One considered essay",
                       "role": "body"
                     },
                     {
@@ -134,7 +134,7 @@
                     {
                       "type": "text",
                       "id": "n8",
-                      "text": "02   Something worth keeping",
+                      "text": "02 Something worth keeping",
                       "role": "body"
                     },
                     {
@@ -144,7 +144,7 @@
                     {
                       "type": "text",
                       "id": "n10",
-                      "text": "03   A question to carry",
+                      "text": "03 A question to carry",
                       "role": "body"
                     }
                   ],

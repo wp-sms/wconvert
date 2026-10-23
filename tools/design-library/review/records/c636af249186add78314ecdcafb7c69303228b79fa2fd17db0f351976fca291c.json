@@ -1,0 +1,47 @@
+{
+  "id": "winter-christmas-express",
+  "revision": "28e0f734738a4501a066529cccc29ed590f798052b5ec0a21c490fd0790d29a1",
+  "base_id": "3d59985ae98ed79fd6c0e26a59cdfc62b23b7ec2ea4040f02df681bc8719b198",
+  "decision": "approved",
+  "reviewer": "Codex visual and WordPress review",
+  "note": "Christmas train art retains its postcard treatment; deadline and action remain editable and readable on phone.",
+  "at": "2026-10-23T11:24:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-10.jpg",
+          "sha256": "17d6490c0a95cc7dd6954e526999b81a2ccb066ff8ff466b8c93ae7abc82fdb0"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-10.jpg",
+          "sha256": "008a2fe876c16a38a80c3534892a1592834818c6ba882a46ba43b0d79a123163"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "c636af249186add78314ecdcafb7c69303228b79fa2fd17db0f351976fca291c"
+}

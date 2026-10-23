@@ -4,23 +4,23 @@
   "display_type": "floating_bar",
   "tier": "pro",
   "tokens": {
-    "bg": "#e7dcb8",
-    "fg": "#4e5338",
-    "muted": "#4e5338",
-    "accent": "#4e5338",
-    "accent-fg": "#fff8e7",
+    "bg": "#ece2c5",
+    "fg": "#4d5560",
+    "muted": "fg",
+    "accent": "#485563",
+    "accent-fg": "#fff4dd",
     "border": "#4e5338",
     "input-bg": "transparent",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Instrument Serif\", Georgia, serif",
     "heading-size": "3rem",
     "heading-weight": "400",
-    "text-size": "1rem",
-    "leading": "1.55",
-    "tracking": "-.02em",
+    "text-size": ".9375rem",
+    "leading": "1.65",
+    "tracking": "-.025em",
     "pad": "0",
     "gap": "0",
-    "radius": "0",
+    "radius": "0px",
     "width": "100%",
     "align": "start",
     "close-fg": "fg",
@@ -28,7 +28,9 @@
     "close-border": "border",
     "close-radius": "50%",
     "error-fg": "#991b1b",
-    "error-bg": "#fff1f2"
+    "error-bg": "#fff1f2",
+    "placeholder": "fg",
+    "heading-leading": ".98"
   },
   "tree": {
     "v": 2,
@@ -41,106 +43,184 @@
           "type": "panel",
           "children": [
             {
-              "type": "row",
-              "children": [
+              "type": "split",
+              "start": [
                 {
-                  "type": "text",
-                  "narrow": {
-                    "text-size": "2rem"
-                  },
-                  "text": "2027",
-                  "role": "fine_print",
-                  "tokens": {
-                    "text-size": "2.5rem",
-                    "leading": "1",
-                    "align": "center",
-                    "muted": "fg"
-                  },
-                  "size": "2xl",
-                  "id": "n1"
-                },
-                {
-                  "type": "stack",
-                  "children": [
+                  "type": "split",
+                  "start": [
                     {
-                      "type": "eyebrow",
-                      "text": "THE FIRST PAGE",
-                      "role": "eyebrow",
+                      "type": "stack",
+                      "children": [
+                        {
+                          "type": "text",
+                          "narrow": {
+                            "text-size": "2.625rem"
+                          },
+                          "text": "2027",
+                          "role": "body",
+                          "tokens": {
+                            "text-size": "3.625rem",
+                            "leading": ".9",
+                            "align": "center",
+                            "muted": "fg",
+                            "font": "\"Instrument Serif\", Georgia, serif"
+                          },
+                          "id": "n1"
+                        }
+                      ],
                       "tokens": {
-                        "text-size": ".75rem",
-                        "tracking": ".12em"
-                      },
-                      "id": "n2"
-                    },
-                    {
-                      "type": "heading",
-                      "narrow": {
-                        "heading-size": "1.3rem"
-                      },
-                      "text": "Start the year with 20% off.",
-                      "role": "headline",
-                      "tokens": {
-                        "heading-size": "1.4rem",
-                        "heading-font": "\"DM Sans\", Arial, sans-serif",
-                        "heading-weight": "400"
-                      },
-                      "id": "n3"
-                    },
-                    {
-                      "type": "text",
-                      "text": "Our 20% New Year edit ends on 5 January.",
-                      "role": "body",
-                      "id": "n4"
+                        "gap": "0"
+                      }
                     }
                   ],
+                  "end": [
+                    {
+                      "type": "stack",
+                      "children": [
+                        {
+                          "type": "eyebrow",
+                          "text": "THE FIRST PAGE",
+                          "role": "eyebrow",
+                          "tokens": {
+                            "text-size": ".833333rem",
+                            "tracking": ".12em"
+                          },
+                          "id": "n2"
+                        },
+                        {
+                          "type": "heading",
+                          "narrow": {
+                            "heading-size": "1.1875rem",
+                            "heading-leading": "1.2"
+                          },
+                          "text": "Start the year with 20% off.",
+                          "role": "headline",
+                          "tokens": {
+                            "heading-size": "1.25rem",
+                            "heading-font": "\"DM Sans\", Arial, sans-serif",
+                            "heading-weight": "700",
+                            "heading-style": "normal",
+                            "heading-leading": "1.3",
+                            "tracking": "-0.03em"
+                          },
+                          "id": "n3"
+                        },
+                        {
+                          "type": "text",
+                          "text": "Our 20% New Year edit ends on 5 January.",
+                          "role": "body",
+                          "id": "n4",
+                          "tokens": {
+                            "text-size": ".875rem"
+                          }
+                        }
+                      ],
+                      "tokens": {
+                        "gap": ".35rem",
+                        "align": "start"
+                      }
+                    }
+                  ],
+                  "ratio": 0.0,
+                  "basis": "6rem",
                   "tokens": {
-                    "gap": ".35rem"
+                    "gap": "0"
                   }
-                },
-                {
-                  "type": "countdown",
-                  "layout": "boxes",
-                  "density": "compact",
-                  "days_label": "Days",
-                  "hours_label": "Hrs",
-                  "minutes_label": "Mins",
-                  "seconds_label": "Secs",
-                  "role": "countdown_units",
-                  "tokens": {
-                    "text-size": "1.15rem",
-                    "tracking": "normal",
-                    "radius": ".1rem",
-                    "input-bg": "transparent"
-                  },
-                  "id": "n5"
-                },
-                {
-                  "type": "button",
-                  "label": "Shop the New Year edit",
-                  "action": "link",
-                  "role": "cta_label",
-                  "tokens": {
-                    "text-size": "1rem",
-                    "radius": ".15rem",
-                    "border": "fg",
-                    "tracking": "normal"
-                  },
-                  "id": "n6"
                 }
               ],
+              "end": [
+                {
+                  "type": "split",
+                  "start": [
+                    {
+                      "type": "stack",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "n9002",
+                          "role": "fine_print",
+                          "text": "NEW YEAR OFFER ENDS IN",
+                          "tokens": {
+                            "text-size": ".875rem",
+                            "font": "\"DM Sans\", Arial, sans-serif"
+                          }
+                        },
+                        {
+                          "type": "countdown",
+                          "layout": "boxes",
+                          "density": "compact",
+                          "days_label": "Days",
+                          "hours_label": "Hrs",
+                          "minutes_label": "Mins",
+                          "seconds_label": "Secs",
+                          "role": "countdown_units",
+                          "tokens": {
+                            "text-size": "1.15rem",
+                            "tracking": "normal",
+                            "radius": ".1rem",
+                            "input-bg": "transparent",
+                            "countdown-size": "1.625rem",
+                            "font": "\"Instrument Serif\", Georgia, serif",
+                            "heading-weight": "400",
+                            "border": "transparent",
+                            "align": "start"
+                          },
+                          "id": "n5",
+                          "narrow": {
+                            "countdown-size": "1.75rem"
+                          }
+                        }
+                      ],
+                      "tokens": {
+                        "gap": ".6875rem"
+                      }
+                    }
+                  ],
+                  "end": [
+                    {
+                      "type": "stack",
+                      "children": [
+                        {
+                          "type": "button",
+                          "label": "Shop the New Year edit",
+                          "action": "link",
+                          "role": "cta_label",
+                          "tokens": {
+                            "text-size": ".875rem",
+                            "radius": ".15rem",
+                            "border": "fg",
+                            "tracking": "normal",
+                            "leading": "1.4"
+                          },
+                          "id": "n6"
+                        }
+                      ],
+                      "tokens": {
+                        "gap": "0"
+                      }
+                    }
+                  ],
+                  "ratio": 0.5,
+                  "basis": "12rem",
+                  "tokens": {
+                    "gap": "0"
+                  }
+                }
+              ],
+              "ratio": 0.5,
+              "basis": "24rem",
               "tokens": {
-                "gap": "1rem",
-                "align": "center"
+                "gap": "1.5rem"
               }
             }
           ],
           "tokens": {
-            "pad": "1.25rem 3.5rem",
+            "pad": "28px 64px 25px",
             "gap": "1rem",
             "radius": "0"
           },
           "narrow": {
-            "pad": "3rem 1.25rem 1.25rem",
+            "pad": "56px 24px 24px",
             "gap": ".85rem"
           }
         }

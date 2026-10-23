@@ -1,0 +1,155 @@
+{
+  "id": "collection-black-friday-2026",
+  "revision": "6dab8e08ab01faf7b69f0965eac9d7d824f2f85d1304157b1f1d95de258323d6",
+  "base_id": "00acb6faeded8f25b3ef2c6a395d65e39e30e308739f7bd4faea5032e68f53e3",
+  "decision": "approved",
+  "reviewer": "Renderer carry (ADR 0156)",
+  "note": "Every setup in it pixel-identical under the new renderer and carried by templates:visual-diff; items, order and words unchanged; only setup revisions moved. Not a new review.",
+  "at": "2026-10-23T11:17:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/collections.md",
+          "sha256": "d86cf90b04a0c58daf89a60851d0ee5c09cc2f00bb745e6d02178562b7f63ae6"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/collection-revisions.json",
+          "sha256": "66877cf6c8abaa260094425e80c202da4de695e6d033ddbbf5ac68424707e1fb"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/collections-free.png",
+          "sha256": "7ab46ed95eba031f1fec848d3dfde87cbd865a0dfba28f4a37b8bd62a6cc0551"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/collections-pro.png",
+          "sha256": "f83c37015163283573d5da70877758e1601e78abb7d2a307b045b3bd9377409e"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/discovery-free.json",
+          "sha256": "cd75b97af47b3cf1da2daac1fad8c85aa39b5a28a32e4d260d4a70b256279fd8"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/discovery-pro.json",
+          "sha256": "6a1fbaebb906a9965ddda6be6339311b11e19e4acd7a8ca91cc76c698804eeb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/results.json",
+          "sha256": "f3f738860a223a3ad9ff8cb108ebbfcc7eb4dccc8101beb9a196b3e79bfc8e88"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/results.json",
+          "sha256": "9487e0f5236e4aba0b8913e723ddc46d46be07ab8221e4a8d81312d36f0f0e99"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/collections-carry.md",
+          "sha256": "74838d57a2255dec3e580f90acb415247f7560c45937b3fe68e4cfdd48433a7c"
+        },
+        {
+          "path": "docs/reviews/visual-diff-2026-10-21/collections-carry-main.md",
+          "sha256": "d3b2b3885e2cbb7269ee5c9886519bca38bd6b34846276174c25a286f62b01d5"
+        },
+        {
+          "path": "docs/reviews/visual-diff-2026-10-21/collections-carry-HEAD.md",
+          "sha256": "222486f3d0a9a371334369d587671cd460b149bba4460e2a02c30d1a782034b3"
+        },
+        {
+          "path": "docs/reviews/visual-diff-2026-10-21/collections-carry-93a9b9e1.md",
+          "sha256": "7515a620da2e661ecd6b0def4730f987c9e24c65decf49a5a0ce7e6420c456d4"
+        },
+        {
+          "path": "docs/reviews/visual-diff-2026-10-23/collections-carry-133069b98aa4f6ea86d5008238d1e6bbc2210ab1.md",
+          "sha256": "5c7336fdaa0ada32942a28a525246b01327361f55ad2a556a234a3b7e568aca5"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/collections.md",
+          "sha256": "d86cf90b04a0c58daf89a60851d0ee5c09cc2f00bb745e6d02178562b7f63ae6"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/collection-revisions.json",
+          "sha256": "66877cf6c8abaa260094425e80c202da4de695e6d033ddbbf5ac68424707e1fb"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/collections-free.png",
+          "sha256": "7ab46ed95eba031f1fec848d3dfde87cbd865a0dfba28f4a37b8bd62a6cc0551"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/collections-pro.png",
+          "sha256": "f83c37015163283573d5da70877758e1601e78abb7d2a307b045b3bd9377409e"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/discovery-free.json",
+          "sha256": "cd75b97af47b3cf1da2daac1fad8c85aa39b5a28a32e4d260d4a70b256279fd8"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/discovery-pro.json",
+          "sha256": "6a1fbaebb906a9965ddda6be6339311b11e19e4acd7a8ca91cc76c698804eeb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/results.json",
+          "sha256": "f3f738860a223a3ad9ff8cb108ebbfcc7eb4dccc8101beb9a196b3e79bfc8e88"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/results.json",
+          "sha256": "9487e0f5236e4aba0b8913e723ddc46d46be07ab8221e4a8d81312d36f0f0e99"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/collections.md",
+          "sha256": "d86cf90b04a0c58daf89a60851d0ee5c09cc2f00bb745e6d02178562b7f63ae6"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/collection-revisions.json",
+          "sha256": "66877cf6c8abaa260094425e80c202da4de695e6d033ddbbf5ac68424707e1fb"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/collections-free.png",
+          "sha256": "7ab46ed95eba031f1fec848d3dfde87cbd865a0dfba28f4a37b8bd62a6cc0551"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/collections-pro.png",
+          "sha256": "f83c37015163283573d5da70877758e1601e78abb7d2a307b045b3bd9377409e"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/discovery-free.json",
+          "sha256": "cd75b97af47b3cf1da2daac1fad8c85aa39b5a28a32e4d260d4a70b256279fd8"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/discovery-pro.json",
+          "sha256": "6a1fbaebb906a9965ddda6be6339311b11e19e4acd7a8ca91cc76c698804eeb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/results.json",
+          "sha256": "f3f738860a223a3ad9ff8cb108ebbfcc7eb4dccc8101beb9a196b3e79bfc8e88"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/results.json",
+          "sha256": "9487e0f5236e4aba0b8913e723ddc46d46be07ab8221e4a8d81312d36f0f0e99"
+        }
+      ]
+    }
+  },
+  "record_id": "a71d694dfb541d3cc3f6aaf1fa6024988604572e71df4c5ea1163e595a475a5e"
+}

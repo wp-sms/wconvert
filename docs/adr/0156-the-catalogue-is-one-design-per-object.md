@@ -52,6 +52,20 @@ security boundary, now `DesignObject` wrapped around the unchanged
 downloads like an image. An unknown plan, format, capability or newer `requires.plugin`
 means "update the plugin", never "free". A failure costs one design.
 
+**Corrected during the winter fidelity review (2026-10-23):** layout presets
+are suggestions under [ADR 0054](0054-every-control-has-the-shape-of-its-value.md),
+not categorical settings. Both catalogue and merchant-file readers preserve
+off-preset split ratios (finite numbers or numeric strings from 0 through 1)
+and simple non-negative `px`, `rem` or `em` column bases and panel/media minimum
+heights (up to 10000 units, 32 characters; unitless zero is allowed).
+Unknown categorical choices remain rejected. This corrects an import boundary
+that rejected valid authored layouts without changing their rendered values.
+Composed styles may also reference an exact declared token with
+`var(--wc-<token-name>)`, without a fallback. This keeps palette-based gradients
+editable; unknown tokens, host-page variables, fallback expressions and other
+unsupported CSS functions remain rejected. Validation preserves the original
+style string in both catalogue and merchant-file reads.
+
 **4. Requirements are computed.** Every manifest node, param, content key,
 role, choice, token and field has a `since` stamp in
 `resources/templates/since.json`; a test fails on a missing one. The exporter

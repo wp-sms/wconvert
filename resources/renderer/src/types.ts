@@ -425,6 +425,7 @@ export interface CountdownNode extends HideableNode {
  */
 export interface CodeNode extends HideableNode {
   readonly type: 'code';
+  readonly layout?: 'stack' | 'inline';
   readonly text?: string;
   readonly copy?: boolean;
   readonly copy_label?: string;
@@ -669,6 +670,8 @@ export interface SplitNode {
  */
 export interface GridNode {
   readonly type: 'grid';
+  /** Minimum column width; columns wrap when their content needs more room. */
+  readonly basis?: string;
   readonly children?: readonly TemplateNode[];
   /**
    * Tokens re-declared for this box and everything inside it.

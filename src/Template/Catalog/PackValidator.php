@@ -347,6 +347,14 @@ final class PackValidator
                 else self::check($value === '', __('Pack links and pictures must be supplied by the site owner.', 'wconvert'));
             } elseif (in_array($key, ['hidden', 'required', 'copy', 'notch', 'exclude_cart'], true)) {
                 self::check(is_bool($value) || ($this->portable && $key === 'notch' && in_array($value, ['true', 'false'], true)), __('This design has an invalid switch value.', 'wconvert'));
+            } elseif ($type === 'split' && $key === 'ratio') {
+                // Layout choices are editor presets, not an enum (ADR 0054).
+                self::check((is_int($value) || is_float($value) || is_string($value)) && is_numeric($value)
+                    && is_finite((float) $value) && (float) $value >= 0 && (float) $value <= 1,
+                    __('This design has an invalid column ratio.', 'wconvert'));
+            } elseif ((in_array($type, ['split', 'grid'], true) && $key === 'basis')
+                || (in_array($type, ['panel', 'media'], true) && $key === 'min')) {
+                self::check(self::layoutLength($value), __('This design has an invalid layout size.', 'wconvert'));
             } elseif (isset($definition['choices'][$key])) {
                 self::check(is_string($value) || is_int($value) || is_float($value), __('This design has an invalid setting.', 'wconvert'));
                 self::check(in_array((string) $value, $definition['choices'][$key], true), __('Update required: this design uses an unknown setting.', 'wconvert'));
@@ -372,6 +380,16 @@ final class PackValidator
         if ($type === 'consent' && !$this->portable) self::check(($node['hidden'] ?? null) === true, __('Pack consent must start hidden.', 'wconvert'));
     }
 
+    /** Continuous layout sizes stay simple and bounded at the remote-data boundary. */
+    private static function layoutLength(mixed $value): bool
+    {
+        if ($value === 0 || $value === 0.0) return true;
+        if (!is_string($value) || strlen($value) > 32) return false;
+        if (preg_match('/^(?:\d+(?:\.\d+)?|\.\d+)(?:px|rem|em)?$/D', $value) !== 1) return false;
+        if ((float) $value > 10000) return false;
+        return (float) $value === 0.0 || preg_match('/(?:px|rem|em)$/D', $value) === 1;
+    }
+
     /** A flat, bounded condition. The journey validator checks earlier-question references. */
     private function condition(mixed $condition): void
     {
@@ -390,7 +408,15 @@ final class PackValidator
         foreach ($bag as $name => $value) {
             self::check(isset($this->manifest['tokens'][$name]), __('Update required: this design uses an unknown style.', 'wconvert'));
             self::check(is_string($value) && strlen($value) <= 500 && preg_match('/^[a-zA-Z0-9 #.,()%+\-*\/\'"\s]*$/D', $value) === 1, __('This pack contains unsupported style content.', 'wconvert'));
-            preg_match_all('/([a-zA-Z-]+)\s*\(/', $value, $matches);
+            // A palette reference may compose a gradient, but may not read a
+            // host-page variable or carry an arbitrary fallback expression.
+            // Replace only validated references for the function check below;
+            // the stored value itself is never rewritten.
+            $functions = preg_replace_callback('/(?<![a-zA-Z0-9_-])var\(\s*--wc-([a-z][a-z0-9-]*)\s*\)/', function (array $match): string {
+                self::check(isset($this->manifest['tokens'][$match[1]]), __('This pack references an unknown design style.', 'wconvert'));
+                return '0';
+            }, $value);
+            preg_match_all('/([a-zA-Z-]+)\s*\(/', $functions ?? $value, $matches);
             foreach ($matches[1] as $function) {
                 self::check(in_array(strtolower($function), ['calc', 'clamp', 'min', 'max', 'rgb', 'rgba', 'hsl', 'hsla', 'linear-gradient', 'radial-gradient', 'repeating-linear-gradient'], true), __('This pack contains unsupported style functions or media.', 'wconvert'));
             }

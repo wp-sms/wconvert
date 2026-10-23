@@ -24,6 +24,7 @@ export function previewController(screens, designOnly = false) {
     sample.hidden = invalid;
     if (invalid) { root.replaceChildren(); return; }
     if (select) select.value = String(index);
+    frame.dataset.display = screens[index].type;
     sample.dataset.screen = screens[index].screen;
     sample.dataset.device = device || 'desktop';
     setDevice(device || 'desktop');

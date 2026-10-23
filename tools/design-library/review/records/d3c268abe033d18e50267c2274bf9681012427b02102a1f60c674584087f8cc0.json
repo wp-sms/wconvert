@@ -1,0 +1,47 @@
+{
+  "id": "halloween-midnight-flight-offer",
+  "revision": "60e4475d72dd21cd0dd56b6bbad44367dcc52cfbd0c3f2f2c252265ce73966ea",
+  "base_id": "e0514eaf00225874896e82ecdd72efbb1474ed806000888cda621d4dd32f2eba",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 133069b98aa4f6ea86d5008238d1e6bbc2210ab1, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-23T11:17:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/halloween-midnight-flight-offer-320.png",
+          "sha256": "a72b694a4775279f05257a452a36f2ce9a527e5bd4f4d54d08cb05924023821d"
+        },
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/halloween-midnight-flight-offer-1440.png",
+          "sha256": "45f7c1606a592c5b6fa5fd13db4875f08094fc5bf4d6dfec20a946a0c7cdf6e2"
+        },
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/review.md",
+          "sha256": "ef35ba6c37ecb334228f59a65f5a6cc2b9d0288a28c7be3ebfbbd1b6c712aa4d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/results.json",
+          "sha256": "402c3d44b9b37fac483320a2b09b33b4ddf782431f7e7095c4f478614447b64b"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/results.json",
+          "sha256": "402c3d44b9b37fac483320a2b09b33b4ddf782431f7e7095c4f478614447b64b"
+        }
+      ]
+    }
+  },
+  "record_id": "d3c268abe033d18e50267c2274bf9681012427b02102a1f60c674584087f8cc0"
+}

@@ -1,0 +1,39 @@
+{
+  "id": "collection-halloween-2026",
+  "revision": "d28bf4a1b68f12afca54ce6aee7513f2da60a18406a4a8d34b0b78723763e689",
+  "base_id": "5ebad681c5f796e7483a49700d03c815057883a744a0f855ba4d659100ede589",
+  "decision": "approved",
+  "reviewer": "Codex visual and WordPress review",
+  "note": "Reviewed Prepare for Halloween: membership, order, entitlement and catalogue delivery unchanged; all dependencies current after the documented fidelity/shared-renderer reviews.",
+  "at": "2026-10-23T11:25:09Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "4520fb86447457f05cd923ea5bacae393a5fd19465dc77a7e3e94bf65bd204a7"
+}

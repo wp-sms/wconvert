@@ -107,6 +107,9 @@ const release = buildRelease({
 const base = `${origin.origin}/v3/`;
 const responses = { '@base': base };
 for (const object of release.objects) {
+  // The PHP catalogue reads JSON and image assets, never website preview HTML.
+  // Embedded preview fonts otherwise duplicate megabytes in this transport.
+  if (object.key.endsWith('.html')) continue;
   const path = object.key.slice('v3/'.length);
   const url = base + (object.scope === 'private' ? 'premium/' : '') + path;
   responses[url] = object.bytes.toString(/\.(png|jpg|webp)$/.test(path) ? 'base64' : 'utf8');

@@ -931,3 +931,11 @@ describe('the boxed countdown', () => {
     expect(CSS).toContain('.wc-boxes:has(>.wc-unit[hidden])>.wc-unit{flex-basis:calc(33.33% - .34rem)}');
   });
 });
+
+it('a nested grid starts at its own default column width', () => {
+  const root = renderStep({ type: 'grid', basis: '20rem', children: [{ type: 'grid', children: [
+    { type: 'text', text: 'First' }, { type: 'text', text: 'Second' },
+  ] }] }) as HTMLElement;
+  expect(root.style.getPropertyValue('--wc-basis')).toBe('20rem');
+  expect((root.firstElementChild as HTMLElement).style.getPropertyValue('--wc-basis')).toBe('8rem');
+});

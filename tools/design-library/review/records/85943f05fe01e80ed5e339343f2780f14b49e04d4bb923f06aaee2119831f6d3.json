@@ -1,0 +1,47 @@
+{
+  "id": "winter-paper-pine",
+  "revision": "9cafa19c6f19c62f68d0917e5cf09df845328c8c96392c636ee2780be6f2a61b",
+  "base_id": "3010d8bed14ce9f8b821b8776eda83c9173d185e4417a2fc67503d16590c0d7e",
+  "decision": "approved",
+  "reviewer": "Codex visual and WordPress review",
+  "note": "Paper-and-pine illustration and warm paper palette restored with the large serif headline.",
+  "at": "2026-10-23T11:24:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-2.jpg",
+          "sha256": "214b9d98fddacd196caf033433f998298de1957cbdda002bf841cd5656770fdb"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-2.jpg",
+          "sha256": "3acf038bbf82af72e6a73773f72a8f060578ab6a8f7a4d125d65e2cffdd51906"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "85943f05fe01e80ed5e339343f2780f14b49e04d4bb923f06aaee2119831f6d3"
+}

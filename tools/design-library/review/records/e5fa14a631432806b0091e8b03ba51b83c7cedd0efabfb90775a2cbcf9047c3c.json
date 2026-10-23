@@ -1,0 +1,55 @@
+{
+  "id": "collection-black-friday-cyber-monday-2026",
+  "revision": "ba4b861830512db15331eb3117216372839090853529dd1b4918d33d11e9363e",
+  "base_id": "c59ef9d56dfa8e190e0e5270933af153d815bb8aefa9fb2e49b44038b10423ff",
+  "decision": "approved",
+  "reviewer": "Renderer carry (ADR 0156)",
+  "note": "Every setup in it pixel-identical under the new renderer and carried by templates:visual-diff; items, order and words unchanged; only setup revisions moved. Not a new review.",
+  "at": "2026-10-23T11:17:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/collection.png",
+          "sha256": "37eb36662824c19d6fb829152ce87a274be2807dcfbea918b65dc3f5cf60ea32"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/collection-review.md",
+          "sha256": "95e9392446afb95a0b712c6c0157420fdf0e1df1098011685a87c1b12ed2df56"
+        },
+        {
+          "path": "docs/reviews/visual-diff-2026-10-23/collections-carry-133069b98aa4f6ea86d5008238d1e6bbc2210ab1.md",
+          "sha256": "5c7336fdaa0ada32942a28a525246b01327361f55ad2a556a234a3b7e568aca5"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/collection-discovery.json",
+          "sha256": "a43ace1e15786305ae27561b4ad7185a6766636bbe804aac507ea46636993e76"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+          "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+          "sha256": "c85f03b536b7abdf7f2ed49a246b68ed4b92ed58528a36b7f8f29efff1edcaef"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/countdowns.json",
+          "sha256": "f1ad213373f5f534c0d9be636c0ee434ebcd39ec0579e8bd5f19116d82b204ee"
+        }
+      ]
+    }
+  },
+  "record_id": "e5fa14a631432806b0091e8b03ba51b83c7cedd0efabfb90775a2cbcf9047c3c"
+}

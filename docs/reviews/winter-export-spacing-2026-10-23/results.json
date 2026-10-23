@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "at": "2026-10-23T11:32:10.820Z",
+  "site": "disposable local WordPress",
+  "checks": [
+    "journey",
+    "wordpress"
+  ],
+  "setups": [
+    {
+      "id": "weekend-observations",
+      "revision": "e7dda2bd04e49a33ebb87777ccedd794b2ab676368e899de8d32a4a8890b2cd3",
+      "width": 320,
+      "passed": true,
+      "screens": 2,
+      "validation": true,
+      "consentChecked": true,
+      "backChecked": false,
+      "simulatedFailureRetry": true,
+      "localLeadSaved": true,
+      "configuredResource": 200,
+      "actualCtaOpened": false,
+      "couponChecked": false,
+      "copiedCode": false,
+      "localResourceEmail": false
+    },
+    {
+      "id": "weekend-observations",
+      "revision": "e7dda2bd04e49a33ebb87777ccedd794b2ab676368e899de8d32a4a8890b2cd3",
+      "width": 1280,
+      "passed": true,
+      "screens": 2,
+      "validation": true,
+      "consentChecked": true,
+      "backChecked": false,
+      "simulatedFailureRetry": true,
+      "localLeadSaved": true,
+      "configuredResource": 200,
+      "actualCtaOpened": false,
+      "couponChecked": false,
+      "copiedCode": false,
+      "localResourceEmail": false
+    }
+  ]
+}

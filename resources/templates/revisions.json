@@ -10,6 +10,7 @@
     "callback-notes": 2,
     "centred-card": 2,
     "code-reveal": 2,
+    "colour-atlas": 1,
     "cream-coupon": 2,
     "deadline-panel": 3,
     "edition-pass": 2,
@@ -44,6 +45,7 @@
     "product-shelf": 2,
     "programme-board": 2,
     "project-notebook": 2,
+    "project-workboard": 1,
     "punched-ticket": 2,
     "quieter-frequency": 3,
     "reading-cover": 2,
@@ -64,6 +66,7 @@
     "sunday-marginalia": 2,
     "supper-menu": 2,
     "useful-guide": 2,
+    "weekend-broadsheet": 2,
     "wide-banner": 2
   }
 }

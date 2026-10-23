@@ -1,7 +1,9 @@
 # 0160: Templates declare fonts, decorations and countdown density
 
 Accepted 2026-10-21. Implements the Halloween design exploration without adding
-position, animation or countdown sizing controls to the merchant editor.
+position or animation controls to the merchant editor. The winter fidelity
+review later added a closed countdown-size appearance token; see the inline
+amendment below and [ADR 0067](0067-the-editor-starts-with-the-preview-and-the-selected-element.md).
 Amends 0010, 0052, 0054, 0055, 0062, 0077, 0134, 0136 and 0159.
 
 ## Font requirements and site permission are separate
@@ -60,8 +62,12 @@ listeners are cleaned up. No animation framework is added.
 
 `countdown.density: compact` modifies `layout: boxes`; omitted/regular preserves
 existing output. The template chooses it; `choices` deliberately exposes no
-new editor control. Fixed cell widths (52px wide, 35px in narrow containers)
-and tabular numbers prevent digit changes from resizing the row. Labels wrap
+new editor control. Default cell widths (52px wide, 35px in narrow containers)
+and tabular numbers prevent digit changes from resizing the row.
+
+**Amended by the winter fidelity extension of [ADR 0067](0067-the-editor-starts-with-the-preview-and-the-selected-element.md):** the closed `countdown-size` token now controls
+line, boxed and compact clocks. Compact cells grow with the authored number size,
+retaining their previous widths when no size is supplied. Labels wrap
 inside their allotted cells. Unit labels, colors and deadline remain editable.
 The fixed end time, hiding zero days and one silent timer retain ADR 0052/0159.
 
@@ -88,7 +94,8 @@ compact boxes; its cells are 35px through 32rem containers to fit beside the act
 Original prototype raster backgrounds are encoded to WebP and shipped under
 content hashes. The existing bundled artwork resolver now handles exact
 `bg-image` raster values as well as image leaves, keeping campaign snapshots
-small without adding a token or restricting ordinary image replacement.
+small without restricting ordinary image replacement. The later winter fidelity
+extension adds the closed size token described above.
 Unknown or altered files are never substituted. These bundled examples do not
 publish a hosted catalogue release or change the catalogue asset-binding schema.
 Review evidence lives in `docs/reviews/halloween-library-2026-10-21`.

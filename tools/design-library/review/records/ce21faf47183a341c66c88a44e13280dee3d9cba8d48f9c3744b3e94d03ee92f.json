@@ -1,0 +1,43 @@
+{
+  "id": "collection-discovery",
+  "revision": "253874b8586f8780080c6cb1cdc9b7d113176030e65718753e45100008012b2b",
+  "base_id": "4d47badcd81bda0ba694cd12a7d41d3450b698e8e6d93be21498aabc9eb955fb",
+  "decision": "approved",
+  "reviewer": "Codex visual and WordPress review",
+  "note": "Reviewed shared-renderer before/after at 375 and 1200px: fullscreen children now fill their available height; collection heading, image and action remain balanced. Real WordPress resource action passes at 320/1280px.",
+  "at": "2026-10-23T11:24:53Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/shared-renderer-1.jpg",
+          "sha256": "fe7347742350c8cac8df4775df73667a7c74aed1118ba27d7f02580b02a6372d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "ce21faf47183a341c66c88a44e13280dee3d9cba8d48f9c3744b3e94d03ee92f"
+}
