@@ -74,3 +74,13 @@ Both release ZIPs passed the artifact contract. The Free archive contains zero n
 The publisher's old global Free-majority check conflicted with the approved tier split and the seasonal collection policy. It was removed, with a regression test for a 30 Pro / 10 Free release preserving private Pro objects, and ADR 0156 clarified in place. The disposable WordPress verification runner was also corrected to recognize the v3 verifier's JSON success report instead of its retired v2 prose sentinel.
 
 Final local suites: 3,728 PHP tests, 5,136 JavaScript tests, 90 design-studio tests, ESLint, TypeScript, template registration, source contract and current catalogue/collection revisions.
+
+## Tablet transition review
+
+Inspected all 17 wrapping layouts immediately before and after their column/row transition, using longer headlines, body text and CTAs (`transitions.json`, `transitions-1.jpg` through `transitions-5.jpg`). Reading order remains illustration/headline, explanation, action; field, consent and CTA stay grouped. The 752px New Year poster transition keeps its clock with the offer panel. The long-copy examples become taller rather than clipping. Gift atelier needed less horizontal padding at 680px so “Thoughtful” stays intact; its final 320, 679, 680 and 1440px views, RTL/long-copy audit and two real WordPress cases were rechecked after that change.
+
+## Live catalogue acceptance
+
+Published release `918812d3cd550d8a23e61d578bcab01bfb4728ddbd446e1d090e8773dd51d02c` to the existing service with the conditional pointer-last publisher. The first upload stopped on an unconfirmed immutable-object write; remote status confirmed the previous live pointer was unchanged. The final publication re-read existing objects and verified their hashes before completing. The previous release remains available.
+
+Live HTTPS verification passed for all 40 winter designs and setups, 20 Free JSON downloads, 60 anonymous Pro refusals and 779 public files (`server-release.json`). A fresh Free-only WordPress installation, without the hosted review shim, listed all 40 collection members before installation with 10 Free and 30 Pro. Installing Little gift made exactly one member usable and produced a valid draft starting point; no campaign was created and no Pro tree was exposed (`collection-wordpress.json`). The final release also passed the complete Workerd/R2 check and fresh WordPress install/offline-registration check (`catalogue-service.json`, `catalogue-wordpress.json`). The rebuilt Pro archive contains Gift atelier revision 2 byte-for-byte.

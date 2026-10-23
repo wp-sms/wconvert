@@ -1,5 +1,5 @@
 {
-  "release": "b236a4b0797a9669711bafa5314c2e28f8c9c5cf613c3bd739fb23a1e5726e92",
+  "release": "918812d3cd550d8a23e61d578bcab01bfb4728ddbd446e1d090e8773dd51d02c",
   "designs": [
     {
       "id": "winter-advent-letter",
@@ -79,7 +79,7 @@
     {
       "id": "winter-gift-atelier",
       "tier": "pro",
-      "revision": 1
+      "revision": 2
     },
     {
       "id": "winter-hello-2027",

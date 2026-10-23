@@ -3202,6 +3202,12 @@
           "date": "2026-10-23",
           "revision": "88129d01bb4919dcde5d164a4a4d4313b434f27472e265a455428f07ad7e8332",
           "note": "Implement approved Christmas and New Year prototype with native editable elements."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-23",
+          "revision": "972e465704bfe5c2cd20e5ec3155d98fc5346bd168302ccd71e571e7d46df530",
+          "note": "Give the heading room at the 680px split transition; retain phone padding."
         }
       ]
     },
