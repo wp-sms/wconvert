@@ -963,14 +963,33 @@ final class OptinRepository
      * has no `delete()` to call. An Optin's conversion counts are interpreted
      * by joining this table at report time, so removing the row makes every
      * count that references it uninterpretable (ADR 0002, ADR 0020).
+     *
+     * **Deleting a test's parent deletes its arms with it** (#292). The list
+     * shows a test as its parent row alone, so an arm left behind would keep
+     * serving with nothing left on screen to stop it. Arms an earlier
+     * winner already retired are skipped by {@see self::armsByParent()} and
+     * keep the moment they were retired. Deleting one arm deletes that arm.
      */
     public function delete(string $id): bool
     {
-        if ($this->find($id) === null) {
+        $optin = $this->find($id);
+
+        if ($optin === null) {
             return false;
         }
 
-        $this->db->update(Connection::TABLE_OPTINS, ['deleted_at' => current_time('mysql')], ['id' => $id]);
+        $now = current_time('mysql');
+        $ids = [$id];
+
+        if ($optin->parentId === null) {
+            foreach ($this->armsByParent()[$id] ?? [] as $arm) {
+                $ids[] = (string) ($arm['id'] ?? '');
+            }
+        }
+
+        foreach ($ids as $each) {
+            $this->db->update(Connection::TABLE_OPTINS, ['deleted_at' => $now], ['id' => $each]);
+        }
 
         $this->rebuildPublishedSet();
 
@@ -1059,6 +1078,24 @@ final class OptinRepository
             'SELECT ' . self::PROJECTION_COLUMNS
                 . ' FROM %i WHERE published_config IS NOT NULL AND deleted_at IS NULL ORDER BY id ASC'
         );
+
+        // An arm of a deleted test never goes live, however its parent got
+        // deleted (#292). Not "parent missing from $rows": a paused or
+        // never-published parent is missing too, and its arms still run. The
+        // second read only happens while a test is running, and it re-checks
+        // `deleted_at` in PHP as {@see self::designs()} does.
+        if (array_filter(array_column($rows, 'parent_id')) !== []) {
+            $deleted = [];
+            foreach ($this->db->results(Connection::TABLE_OPTINS, 'SELECT id, deleted_at FROM %i WHERE parent_id IS NULL AND deleted_at IS NOT NULL') as $row) {
+                if (($row['deleted_at'] ?? null) !== null) {
+                    $deleted[(string) $row['id']] = true;
+                }
+            }
+            $rows = array_values(array_filter(
+                $rows,
+                static fn (array $row): bool => !isset($deleted[(string) ($row['parent_id'] ?? '')])
+            ));
+        }
 
         // Include paused parents' last published preferences for live variants.
         // The projection still excludes paused rows from the visitor set.

@@ -123,6 +123,20 @@ it('names a failed action by its campaign, never by its ID', async () => {
   expect(screen.queryByText(new RegExp(OPTIN.id))).toBeNull();
 });
 
+/** #292: deleting a test's row deletes its variants too, so the question says so. */
+it('asks to delete the A/B test, naming how many variants go with it', async () => {
+  const arm = { ...OPTIN, id: '01JQ00000000000000000000AB', name: 'Welcome discount (B)', parent_id: OPTIN.id };
+  optins.listOptins.mockResolvedValue([{ ...OPTIN, arms: [arm] }]);
+  optins.deleteOptin.mockResolvedValue(undefined);
+  render(<OptinList onEdit={vi.fn()} />);
+  await userEvent.click(await screen.findByRole('button', { name: `More actions for ${OPTIN.name}` }));
+  await userEvent.click(await screen.findByRole('menuitem', { name: 'Delete campaign' }));
+  const confirm = await screen.findByRole('alertdialog', { name: 'Delete this A/B test?' });
+  expect(confirm).toHaveTextContent(`“${OPTIN.name}” and its 1 variant stop showing and leave this list. Their leads and results are kept.`);
+  await userEvent.click(within(confirm).getByRole('button', { name: 'Delete test' }));
+  expect(optins.deleteOptin).toHaveBeenCalledWith(OPTIN.id);
+});
+
 it('a free install is never asked about products (ADR 0116)', async () => {
   render(<OptinList onEdit={vi.fn()} />);
   expect(await screen.findByRole('button', { name: OPTIN.name })).toBeInTheDocument();

@@ -575,7 +575,7 @@ export function OptinList({
   };
   const empty = list.status === 'ready' && all.length === 0;
   useEffect(() => onEmptyChange?.(empty), [empty, onEmptyChange]);
-  const decisionWords = decision ? decisionCopy(decision.kind, decision.row.parent_id !== null, nameOf(decision.row)) : null;
+  const decisionWords = decision ? decisionCopy(decision.kind, decision.row.parent_id !== null, nameOf(decision.row), decision.row.arms.length) : null;
   const groupWords = groupConfirm ? groupConfirmCopy(groupConfirm.action, groupConfirm.plan) : null;
   return (
     <div className="wconvert-campaign-workspace" data-layout={layout}>

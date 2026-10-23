@@ -176,7 +176,7 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
     () => kind === 'delete' ? deleteOptin(row.id) : kind === 'pause' ? unpublishOptin(row.id) : publishOptin(row.id),
     campaignName(row),
   );
-  const decisionWords = decision ? decisionCopy(decision.kind, false, campaignName(decision.row)) : null;
+  const decisionWords = decision ? decisionCopy(decision.kind, false, campaignName(decision.row), decision.row.arms.length) : null;
   const exportFile = async () => {
     setBusy(true); setError(null);
     try { download(`${id}.json`, await exportOccasion(id)); }

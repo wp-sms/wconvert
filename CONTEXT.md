@@ -503,6 +503,11 @@ anything, so every row's counters keep meaning exactly one design. There is no
 *finished* flag either — a test is running exactly while a parentless Optin has
 published arms beneath it.
 
+Deleting a test is not ending it: deleting the parent soft-deletes every arm
+still beneath it, because the list shows a test as its parent row alone and an
+arm left behind would keep serving with no row to stop it from (#292). An arm
+whose parent is deleted never reaches the published set.
+
 Which arm a browser draws is held as `v` on the parent's own client record —
 `wcv1[parentId].v` — beside the impressions and dismissals already there. It is
 the arm's **index**, drawn evenly across the published arms the first time this
