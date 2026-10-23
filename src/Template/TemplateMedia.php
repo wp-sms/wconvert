@@ -46,6 +46,7 @@ final class TemplateMedia
             if ($root === false || $path === false || dirname($path) !== $root || is_link($directory . $name)
                 || !is_file($path) || !is_readable($path) || filesize($path) > VerifiedAssets::MAX_BYTES
                 || hash_file('sha256', $path) !== $match[1]) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- a message for an administrator, caught in adopt() and returned as a WP_Error that the admin renders as text.
                 throw new \RuntimeException(__('Template artwork is missing or damaged. Download the template again, or replace its image before saving.', 'wconvert'));
             }
             return ['path' => $path, 'digest' => $match[1], 'extension' => $match[2]];
