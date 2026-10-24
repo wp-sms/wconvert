@@ -4,26 +4,26 @@
   "display_type": "popup",
   "tier": "free",
   "tokens": {
-    "bg": "#201d2c",
-    "fg": "#e9d8b7",
-    "muted": "#e9d8b7",
-    "accent": "#e9d8b7",
-    "accent-fg": "#282231",
+    "bg": "#251b24",
+    "fg": "#f3dcab",
+    "muted": "#f3dcab",
+    "accent": "#ead4a0",
+    "accent-fg": "#332430",
     "border": "#e9d8b7",
     "input-bg": "#201d2c",
     "placeholder": "fg",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Cormorant Garamond\", Georgia, serif",
-    "heading-size": "3.6rem",
+    "heading-size": "45px",
     "heading-weight": "400",
-    "heading-leading": ".95",
-    "text-size": "1rem",
+    "heading-leading": ".96",
+    "text-size": "14px",
     "leading": "1.5",
     "tracking": "0",
-    "pad": "2.75rem 0 0",
+    "pad": "0",
     "gap": "0",
-    "radius": ".25rem",
-    "width": "45rem",
+    "radius": "0",
+    "width": "720px",
     "motion": "0ms",
     "close-bg": "#171a1d",
     "close-fg": "#ffffff",
@@ -44,8 +44,6 @@
           "children": [
             {
               "type": "split",
-              "ratio": 0.5,
-              "basis": "16rem",
               "start": [
                 {
                   "type": "panel",
@@ -54,19 +52,43 @@
                       "type": "eyebrow",
                       "id": "n1",
                       "role": "eyebrow",
-                      "text": "BLACK FRIDAY / FRAGRANCE SALE",
+                      "text": "BLACK FRIDAY / THE FRAGRANCE EDIT",
                       "tokens": {
-                        "text-size": ".625rem",
-                        "tracking": ".12em"
+                        "text-size": "9px",
+                        "tracking": ".1em"
                       }
                     },
                     {
-                      "type": "heading",
-                      "id": "n2",
-                      "role": "headline",
-                      "text": "A SIGNATURE SCENT.\n30% LESS.",
-                      "narrow": {
-                        "heading-size": "2.65rem"
+                      "type": "stack",
+                      "children": [
+                        {
+                          "type": "heading",
+                          "id": "n2",
+                          "role": "headline",
+                          "text": "A SIGNATURE SCENT.",
+                          "narrow": {
+                            "heading-size": "35px"
+                          },
+                          "tokens": {
+                            "heading-size": "45px"
+                          }
+                        },
+                        {
+                          "type": "heading",
+                          "id": "n11",
+                          "role": "headline",
+                          "text": "30% LESS.",
+                          "narrow": {
+                            "heading-size": "35px"
+                          },
+                          "tokens": {
+                            "heading-size": "45px",
+                            "heading-style": "italic"
+                          }
+                        }
+                      ],
+                      "tokens": {
+                        "gap": "0"
                       }
                     },
                     {
@@ -77,11 +99,12 @@
                     }
                   ],
                   "tokens": {
-                    "pad": "2rem",
-                    "gap": ".9rem"
+                    "pad": "56px 32px 28px 32px",
+                    "gap": "16px",
+                    "radius": "0"
                   },
                   "narrow": {
-                    "pad": "1.4rem"
+                    "pad": "56px 23px 25px 23px"
                   }
                 }
               ],
@@ -97,25 +120,28 @@
                       "fit": "cover",
                       "shape": "rect",
                       "tokens": {
-                        "image-height": "23rem",
+                        "image-height": "320px",
                         "image-position": "center",
-                        "radius": "0"
+                        "radius": "140px 140px 0 0"
                       },
                       "narrow": {
-                        "image-height": "16rem"
+                        "image-height": "240px"
                       }
                     }
                   ],
                   "tokens": {
-                    "pad": "1.5rem",
-                    "gap": ".9rem",
-                    "radius": "10rem 10rem 0 0"
+                    "pad": "30px 30px 0",
+                    "gap": "16px",
+                    "radius": "140px 140px 0 0"
                   },
                   "narrow": {
-                    "pad": "1.4rem"
+                    "pad": "24px"
                   }
                 }
               ],
+              "ratio": 0.5,
+              "basis": "15rem",
+              "narrow_layout": "stack",
               "tokens": {
                 "gap": "0"
               }
@@ -128,59 +154,55 @@
                   "children": [
                     {
                       "type": "text",
-                      "id": "n5",
+                      "id": "n9",
                       "role": "body",
                       "text": "%b",
                       "tokens": {
-                        "text-size": "4rem",
-                        "leading": ".95",
-                        "font": "\"Bebas Neue\", Impact, sans-serif"
+                        "font": "\"Bebas Neue\", Impact, sans-serif",
+                        "text-size": "38px"
                       },
-                      "emphasis": "30%",
+                      "emphasis": "30% OFF",
                       "narrow": {
-                        "text-size": "4rem"
+                        "text-size": "38px"
                       }
                     },
                     {
                       "type": "text",
-                      "id": "n6",
+                      "id": "n10",
                       "role": "body",
-                      "text": "SELECTED FRAGRANCES"
+                      "text": "SELECTED FRAGRANCES\nNOVEMBER 27–30"
                     },
                     {
                       "type": "button",
                       "id": "n7",
                       "role": "cta_label",
-                      "label": "Shop fragrance",
+                      "label": "Shop the fragrance sale",
                       "action": "link",
-                      "icon": "arrow"
+                      "icon": "arrow",
+                      "tokens": {
+                        "text-size": "14px",
+                        "radius": "0px"
+                      }
                     }
                   ],
                   "tokens": {
-                    "gap": "1rem"
-                  }
-                },
-                {
-                  "type": "text",
-                  "id": "n8",
-                  "role": "fine_print",
-                  "text": "November 27–30. Selected fragrances.",
-                  "tokens": {
-                    "text-size": ".875rem"
+                    "gap": "20px",
+                    "align": "space-between"
                   }
                 }
               ],
               "tokens": {
-                "pad": "1.5rem",
-                "gap": ".9rem"
+                "pad": "20px 32px 28px",
+                "gap": "16px",
+                "radius": "0"
               },
               "narrow": {
-                "pad": "1.4rem"
+                "pad": "24px"
               }
             }
           ],
           "tokens": {
-            "gap": ".85rem"
+            "gap": "0"
           }
         }
       }
@@ -215,6 +237,10 @@
           {
             "weight": 400,
             "italic": false
+          },
+          {
+            "weight": 400,
+            "italic": true
           }
         ]
       }

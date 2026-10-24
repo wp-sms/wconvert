@@ -61,6 +61,23 @@ final class DesignFeaturesTest extends TestCase
         $this->assertSame(['label' => 'Bats', 'hidden' => false, 'items' => [['kind' => 'bat', 'x' => 0, 'y' => 100, 'size' => 160]]], $decorations);
     }
 
+    public function testResponsiveCompositionOptionsSurviveNormalizationAndRejectInvalidShapes(): void
+    {
+        $vocabulary = TemplateVocabulary::fromManifest(dirname(__DIR__, 3));
+        $tree = ['steps' => [['id' => 'offer', 'name' => 'Offer', 'kind' => 'content', 'content' => [
+            'type' => 'split', 'basis' => '0px', 'narrow_layout' => 'reverse',
+            'start' => [['type' => 'grid', 'narrow_basis' => '4rem', 'children' => []]],
+            'end' => [['type' => 'grid', 'narrow_basis' => 'url(evil)', 'children' => []]],
+        ]]]];
+        $normal = $vocabulary->normalize(['tree' => $tree, 'tokens' => []])['tree']['steps'][0]['content'];
+        $this->assertSame('reverse', $normal['narrow_layout']);
+        $this->assertSame('4rem', $normal['start'][0]['narrow_basis']);
+        $this->assertArrayNotHasKey('narrow_basis', $normal['end'][0]);
+        $tree['steps'][0]['content']['narrow_layout'] = 'arbitrary-css';
+        $normal = $vocabulary->normalize(['tree' => $tree, 'tokens' => []])['tree']['steps'][0]['content'];
+        $this->assertArrayNotHasKey('narrow_layout', $normal);
+    }
+
     public function testFeaturesSurviveSaveSnapshotAndCopyBinding(): void
     {
         $vocabulary = TemplateVocabulary::fromManifest(dirname(__DIR__, 3));
@@ -69,13 +86,14 @@ final class DesignFeaturesTest extends TestCase
         $design = $vocabulary->normalize(['tree' => ['fonts' => [$font], 'steps' => [[
             'id' => 'offer', 'name' => 'Offer', 'kind' => 'content', 'content' => ['type' => 'panel', 'decorations' => $decorations, 'children' => [
                 ['type' => 'heading', 'id' => 'n1', 'role' => 'headline', 'text' => 'Halloween'],
-                ['type' => 'countdown', 'id' => 'n2', 'layout' => 'boxes', 'density' => 'compact'],
+                ['type' => 'countdown', 'id' => 'n2', 'layout' => 'boxes', 'density' => 'compact', 'precision' => 'minutes'],
             ]],
         ]]], 'tokens' => ['heading-font' => "'Creepster', cursive"]]);
         $bound = SlotRoles::bind($vocabulary->withoutCopy($design['tree']), ['headline' => 'Your offer'], $vocabulary);
         $this->assertSame([$font], $bound['fonts'] ?? null);
         $this->assertSame($decorations, $bound['steps'][0]['content']['decorations']);
         $this->assertSame('compact', $bound['steps'][0]['content']['children'][1]['density']);
+        $this->assertSame('minutes', $bound['steps'][0]['content']['children'][1]['precision']);
         $this->assertSame('Your offer', $bound['steps'][0]['content']['children'][0]['text']);
         $this->assertFalse(GoogleFonts::enabled());
     }

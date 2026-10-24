@@ -1,0 +1,47 @@
+{
+  "id": "campaign-black-friday-archive",
+  "revision": "72c76af1958bc568226375a658d8c647964225da908acc41a36ad3a29038582f",
+  "base_id": "403af23de07f4db7f7ee0e481aec8c54e08bf46a21467da4ace565b545253f3e",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **17 · Black Friday Archive (Black Friday):** Restored archive strip and large 60% label; corrected repeated “up to” wording. Corrugation is simplified to a flat cardboard colour.",
+  "at": "2026-10-24T13:09:55.646Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-black-friday-archive-320.png",
+          "sha256": "412d5237971efffb5f344d65238fed8e00c2bea084c374c57b1764acb3ce1140"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-black-friday-archive-1440.png",
+          "sha256": "ff4fbea9699530b0368f1b02caa1c35ad3b8a678179bbe0516d3b92d5f27ef61"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "783ca0cabfd1e03e750e875812f55e0bfe8444613c978f03bd4443bb1678a8c8"
+}

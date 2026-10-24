@@ -1,0 +1,47 @@
+{
+  "id": "winter-midnight-garden",
+  "revision": "a65880d93259570e9c7dd75ccba9efebf551fb0d898d281c3587dc23c580af49",
+  "base_id": "1597fb971d902021e222e6f23c10eb24c930ba2b5657aab77e9a3cfac5ce815d",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at d7688edf, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T12:58:11Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-7.jpg",
+          "sha256": "0cbe0c1d76aeae60b840039260bf125f180712abbbab8928e4f68fc39fc24afe"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-7.jpg",
+          "sha256": "1fa3a95540b20188432cd465e99e9987588b253ba537a66ac98b6c9d990f2c19"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "fc6bf65ec12f84f38fa7dff68d58a2f773cf88a6ff9dadf4597246d20af5b667"
+}

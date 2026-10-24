@@ -1,0 +1,47 @@
+{
+  "id": "holiday-service-hours",
+  "revision": "bd4be8cc56e2ac10a169c233053d58117532ffe587b633572d89d272500b1ae2",
+  "base_id": "9ff0fec5f610b553a3926684f2147c4938be080e7d50a0f4d1b7cb30def08043",
+  "decision": "revise",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at d7688edf, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T12:58:11Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/holiday-service-hours-320.png",
+          "sha256": "023abb9557d7465160d55a3edc0599973cfac3687c60e7876692efd6b3763bf5"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/holiday-service-hours-1440.png",
+          "sha256": "8e56df555eb4f05d91bc5b76a4c21b5be58e25efc893ad2107809eec71d2831b"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "d1ccae21e5efa41ca1113345e27c512d78666d661fd1136eba190d824272cf84"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "campaign-drop-alert",
+  "revision": "6a07e415d0e1b81527c642ee26d63ff299f4ec89f42cdc67081c9b8b95898b99",
+  "base_id": "5d6a41d5ca87bd082c00e16abc3f025e7d3b55967bb3ff199dd94563827d1d5c",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **44 · Drop Alert (Black Friday):** Restored oversized 40% lead, black/lime palette and preview form. Consent visibility follows site settings.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-drop-alert-320.png",
+          "sha256": "29fbfc017027216a1dff851c2ea8b98e1972d63654348e3374300be189922981"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-drop-alert-1440.png",
+          "sha256": "4c373e64f524f80a18056e61f4fc4886aa22f00cb255d924c2dde8a8cbe71f27"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "05a9bfc1c6c92be177093cfdcdefb248678393fcf08a661fa41653193551860c"
+}

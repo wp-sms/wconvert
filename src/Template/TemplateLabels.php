@@ -297,6 +297,8 @@ final class TemplateLabels
         return [
             'split.ratio' => __('How the space is divided', 'wconvert'),
             'split.basis' => __('Minimum column width', 'wconvert'),
+            'split.narrow_layout' => __('Compact layout', 'wconvert'),
+            'grid.narrow_basis' => __('Phone minimum column width', 'wconvert'),
             'grid.basis' => __('Minimum column width', 'wconvert'),
             /*
              * ================================================================
@@ -395,6 +397,13 @@ final class TemplateLabels
             'split.ratio.0.5' => __('Even', 'wconvert'),
             /* translators: a side-by-side split. The LOGICAL second pane is narrower — it reads “left” in a right-to-left locale. */
             'split.ratio.0.65' => __('Narrow right', 'wconvert'),
+            'split.narrow_layout.wrap' => __('Wrap naturally', 'wconvert'),
+            'split.narrow_layout.stack' => __('Stack first column on top', 'wconvert'),
+            'split.narrow_layout.reverse' => __('Stack second column on top', 'wconvert'),
+            'grid.narrow_basis.4rem' => __('Small (4rem)', 'wconvert'),
+            'grid.narrow_basis.6rem' => __('Compact (6rem)', 'wconvert'),
+            'grid.narrow_basis.8rem' => __('Roomy (8rem)', 'wconvert'),
+            'grid.narrow_basis.12rem' => __('Wide (12rem)', 'wconvert'),
             'grid.basis.8rem' => __('Small (8rem)', 'wconvert'),
             'grid.basis.12rem' => __('Compact (12rem)', 'wconvert'),
             'grid.basis.16rem' => __('Roomy (16rem)', 'wconvert'),

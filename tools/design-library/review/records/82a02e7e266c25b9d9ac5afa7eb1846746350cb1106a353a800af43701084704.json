@@ -1,0 +1,47 @@
+{
+  "id": "campaign-delivery-buddy",
+  "revision": "920db044aa998bf822592781bf044d234fc271179af584b003b732138bb75f0b",
+  "base_id": "4000de514ddeae63857706b699a5cd57d0543c281cef753319ed1eea9f185840",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **16 · Delivery Buddy (General):** Restored dark-space product image and mint reward. The native split replaces full-bleed image layering.",
+  "at": "2026-10-24T13:09:55.646Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-delivery-buddy-320.png",
+          "sha256": "c78a13f341862d6c5d1f07f48f6545a6ecb86d52660af9fa6da78903f3ad6b0a"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-delivery-buddy-1440.png",
+          "sha256": "b84733ec31a24cd49ffe10ead6a8c4e48e9d62d9fd3ab9b628c63f38d3c6c240"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "82a02e7e266c25b9d9ac5afa7eb1846746350cb1106a353a800af43701084704"
+}

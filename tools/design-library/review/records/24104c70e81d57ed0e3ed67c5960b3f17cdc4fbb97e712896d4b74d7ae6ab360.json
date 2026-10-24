@@ -1,0 +1,47 @@
+{
+  "id": "campaign-deadline-scoreboard",
+  "revision": "40c3237457a5efc16596d19bdfc3f694bb166a7c547f105b1549e237412b43fa",
+  "base_id": "cae93b5fbd7a8114e8550085a1682594ee5014cd129f78b14e8c36f9b565e46f",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **45 · Deadline Scoreboard (Black Friday):** Restored orange header, bold DM Sans offer and open three-unit clock. Removed the blank top strip and boxed four-unit layout.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-deadline-scoreboard-320.png",
+          "sha256": "459246d0995890e27957651d1db001460bada52e3858e2a254162ef9567a48d5"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-deadline-scoreboard-1440.png",
+          "sha256": "70c84c59ea926f3fbcc479a87f943356bbc54464a72c6f36df64009a5e5b3de8"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "24104c70e81d57ed0e3ed67c5960b3f17cdc4fbb97e712896d4b74d7ae6ab360"
+}

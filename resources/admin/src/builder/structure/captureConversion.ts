@@ -80,7 +80,7 @@ function codeGroupOf(root: TemplateNode): TemplateNode | null {
   const parent = walkNodes(root).find(node => isLayout(node) && node !== root && listsOf(node).some(list => list.includes(code)));
   if (!parent) return code;
   const siblings = listsOf(parent).flat();
-  return siblings.every(node => node.type === 'code' || (node.type === 'text' && !['headline', 'body'].includes(text(node, 'role')))) ? parent : code;
+  return siblings.length > 1 && siblings.every(node => node.type === 'code' || (node.type === 'text' && !['headline', 'body'].includes(text(node, 'role')))) ? parent : code;
 }
 
 /** Rebuild one node's lists, child by child. `each` returns what replaces the child. */
@@ -123,6 +123,10 @@ function addForm(tree: TemplateTree, channel: ContactChannel, consentShown: bool
   const link = walkNodes(offer.content).find(isCountedLink);
   const group = codeGroupOf(offer.content);
   const code = group ? walkNodes(group).find(node => node.type === 'code') : undefined;
+  // Labels immediately around a standalone code are part of its context and
+  // retain the sibling anchor used when the merchant removes the form again.
+  const codeParent = code && group === code ? walkNodes(offer.content).find(node => isLayout(node) && listsOf(node).some(list => list.includes(code))) : undefined;
+  const codeLabels = new Set(codeParent ? listsOf(codeParent).flat().filter(node => node.type === 'eyebrow') : []);
   const words = contactWording(channel);
   const label = code ? __('Get my code', 'wconvert') : __('Sign up', 'wconvert');
 
@@ -171,6 +175,7 @@ function addForm(tree: TemplateTree, channel: ContactChannel, consentShown: bool
   let headlined = false;
   const thanks = (node: TemplateNode): TemplateNode[] => {
     if (node === group) return [node];
+    if (codeLabels.has(node)) return [withoutIds(node)];
     if (isLayout(node)) {
       const kept = mapLists(node, child => thanks(child)) as unknown as Node;
       delete kept.id;

@@ -4,26 +4,26 @@
   "display_type": "slide_in",
   "tier": "pro",
   "tokens": {
-    "bg": "#f7e9bd",
-    "fg": "#344435",
-    "muted": "#344435",
-    "accent": "#344435",
-    "accent-fg": "#fff4d9",
+    "bg": "#fff6d8",
+    "fg": "#263e31",
+    "muted": "#263e31",
+    "accent": "#263e31",
+    "accent-fg": "#fff6df",
     "border": "#344435",
     "input-bg": "#f7e9bd",
     "placeholder": "fg",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Bebas Neue\", Impact, sans-serif",
-    "heading-size": "2.7rem",
+    "heading-size": "48px",
     "heading-weight": "400",
-    "heading-leading": ".95",
-    "text-size": "1rem",
+    "heading-leading": ".96",
+    "text-size": "14px",
     "leading": "1.5",
     "tracking": "0",
-    "pad": "2.75rem 0 0",
+    "pad": "0",
     "gap": "0",
-    "radius": ".25rem",
-    "width": "24rem",
+    "radius": "0",
+    "width": "365px",
     "motion": "0ms",
     "close-bg": "#171a1d",
     "close-fg": "#ffffff",
@@ -72,10 +72,10 @@
               "type": "eyebrow",
               "id": "n1",
               "role": "eyebrow",
-              "text": "CLEARANCE SALE",
+              "text": "CLEARANCE / SELECTED FAVORITES",
               "tokens": {
-                "text-size": ".625rem",
-                "tracking": ".12em"
+                "text-size": "9px",
+                "tracking": ".1em"
               }
             },
             {
@@ -84,7 +84,10 @@
               "role": "headline",
               "text": "LESS TO PAY.\nMORE TO KEEP.",
               "narrow": {
-                "heading-size": "2.65rem"
+                "heading-size": "43px"
+              },
+              "tokens": {
+                "heading-size": "48px"
               }
             },
             {
@@ -104,12 +107,13 @@
                 }
               ],
               "tokens": {
-                "gap": "1rem"
+                "gap": "20px",
+                "align": "space-between"
               }
             },
             {
               "type": "divider",
-              "id": "n5"
+              "id": "n13"
             },
             {
               "type": "row",
@@ -128,12 +132,13 @@
                 }
               ],
               "tokens": {
-                "gap": "1rem"
+                "gap": "20px",
+                "align": "space-between"
               }
             },
             {
               "type": "divider",
-              "id": "n8"
+              "id": "n14"
             },
             {
               "type": "row",
@@ -161,16 +166,44 @@
                 }
               ],
               "tokens": {
-                "gap": "1rem"
+                "gap": "20px",
+                "align": "space-between"
               }
             },
             {
               "type": "button",
               "id": "n11",
               "role": "cta_label",
-              "label": "Shop with 30% off",
+              "label": "Shop clearance",
               "action": "link",
-              "icon": "arrow"
+              "icon": "arrow",
+              "tokens": {
+                "text-size": "14px",
+                "radius": "0px"
+              }
+            },
+            {
+              "type": "panel",
+              "children": [],
+              "min": "30px",
+              "tokens": {
+                "pad": "0",
+                "radius": "0"
+              },
+              "decorations": {
+                "label": "Decorative barcode",
+                "hidden": false,
+                "items": [
+                  {
+                    "kind": "barcode",
+                    "x": 50,
+                    "y": 50,
+                    "size": 160,
+                    "color": "fg",
+                    "motion": "none"
+                  }
+                ]
+              }
             },
             {
               "type": "text",
@@ -178,18 +211,17 @@
               "role": "fine_print",
               "text": "Selected clearance items. Exclusions apply.",
               "tokens": {
-                "text-size": ".875rem"
+                "text-size": "14px"
               }
             }
           ],
           "tokens": {
-            "pad": "2.5rem 1.75rem",
-            "gap": ".9rem",
-            "align": "center",
+            "pad": "56px 32px 32px 32px",
+            "gap": "18px",
             "radius": "0"
           },
           "narrow": {
-            "pad": "1.4rem"
+            "pad": "56px 22px 24px 22px"
           }
         }
       }

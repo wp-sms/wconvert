@@ -7,23 +7,23 @@
     "bg": "#101211",
     "fg": "#f4f4eb",
     "muted": "#f4f4eb",
-    "accent": "#d9f86b",
-    "accent-fg": "#181a12",
+    "accent": "#c9ef8c",
+    "accent-fg": "#14180b",
     "border": "#f4f4eb",
     "input-bg": "#101211",
     "placeholder": "fg",
     "font": "\"DM Sans\", Arial, sans-serif",
-    "heading-font": "\"Bebas Neue\", Impact, sans-serif",
-    "heading-size": "2.7rem",
-    "heading-weight": "400",
-    "heading-leading": ".95",
-    "text-size": "1rem",
+    "heading-font": "\"DM Sans\", Arial, sans-serif",
+    "heading-size": "31px",
+    "heading-weight": "900",
+    "heading-leading": ".96",
+    "text-size": "14px",
     "leading": "1.5",
     "tracking": "0",
-    "pad": "2.75rem 0 0",
+    "pad": "0",
     "gap": "0",
-    "radius": ".25rem",
-    "width": "24rem",
+    "radius": "0",
+    "width": "420px",
     "motion": "0ms",
     "close-bg": "#171a1d",
     "close-fg": "#ffffff",
@@ -44,8 +44,6 @@
           "children": [
             {
               "type": "split",
-              "ratio": 0.35,
-              "basis": "8rem",
               "start": [
                 {
                   "type": "panel",
@@ -58,18 +56,19 @@
                       "fit": "cover",
                       "shape": "rect",
                       "tokens": {
-                        "image-height": "16rem",
+                        "image-height": "230px",
                         "image-position": "center",
                         "radius": "0"
                       },
                       "narrow": {
-                        "image-height": "16rem"
+                        "image-height": "230px"
                       }
                     }
                   ],
                   "tokens": {
                     "pad": "0",
-                    "gap": "0"
+                    "gap": "0",
+                    "radius": "0"
                   },
                   "narrow": {
                     "pad": "0"
@@ -84,19 +83,43 @@
                       "type": "eyebrow",
                       "id": "n2",
                       "role": "eyebrow",
-                      "text": "BLACK FRIDAY / APPAREL REMINDER",
+                      "text": "BLACK FRIDAY",
                       "tokens": {
-                        "text-size": ".625rem",
-                        "tracking": ".12em"
+                        "text-size": "9px",
+                        "tracking": ".1em"
                       }
                     },
                     {
-                      "type": "heading",
-                      "id": "n3",
-                      "role": "headline",
-                      "text": "LAYER UP.\nSPEND LESS.",
-                      "narrow": {
-                        "heading-size": "2.65rem"
+                      "type": "stack",
+                      "children": [
+                        {
+                          "type": "heading",
+                          "id": "n3",
+                          "role": "headline",
+                          "text": "LAYER UP.",
+                          "narrow": {
+                            "heading-size": "25px"
+                          },
+                          "tokens": {
+                            "heading-size": "31px"
+                          }
+                        },
+                        {
+                          "type": "heading",
+                          "id": "n7",
+                          "role": "headline",
+                          "text": "SPEND LESS.",
+                          "narrow": {
+                            "heading-size": "25px"
+                          },
+                          "tokens": {
+                            "heading-size": "31px",
+                            "fg": "accent"
+                          }
+                        }
+                      ],
+                      "tokens": {
+                        "gap": "0"
                       }
                     },
                     {
@@ -105,61 +128,52 @@
                       "role": "body",
                       "text": "%b",
                       "tokens": {
-                        "text-size": "2rem",
-                        "leading": ".95",
-                        "font": "\"Bebas Neue\", Impact, sans-serif"
+                        "text-size": "14px",
+                        "fg": "accent"
                       },
-                      "emphasis": "UP TO 40% OFF",
-                      "narrow": {
-                        "text-size": "2rem"
-                      }
+                      "emphasis": "UP TO 40% OFF"
                     },
                     {
                       "type": "text",
                       "id": "n5",
                       "role": "fine_print",
-                      "text": "Up to 40% off selected layers. November 27–30.",
+                      "text": "Selected layers. November 27–30.",
                       "tokens": {
-                        "text-size": ".875rem"
+                        "text-size": "14px"
                       }
                     }
                   ],
                   "tokens": {
-                    "pad": "1.25rem",
-                    "gap": ".9rem"
+                    "pad": "60px 22px 22px",
+                    "gap": "18px",
+                    "radius": "0"
                   },
                   "narrow": {
-                    "pad": "1.4rem"
+                    "pad": "60px 16px 20px"
                   }
                 }
               ],
+              "ratio": 0.34,
+              "basis": "7rem",
               "tokens": {
                 "gap": "0"
               }
             },
             {
-              "type": "panel",
-              "children": [
-                {
-                  "type": "button",
-                  "id": "n6",
-                  "role": "cta_label",
-                  "label": "Shop the layer edit",
-                  "action": "link",
-                  "icon": "arrow"
-                }
-              ],
+              "type": "button",
+              "id": "n6",
+              "role": "cta_label",
+              "label": "Shop the layer edit",
+              "action": "link",
+              "icon": "arrow",
               "tokens": {
-                "pad": "1rem",
-                "gap": ".9rem"
-              },
-              "narrow": {
-                "pad": "1.4rem"
+                "text-size": "14px",
+                "radius": "0px"
               }
             }
           ],
           "tokens": {
-            "gap": ".85rem"
+            "gap": "0"
           }
         }
       }

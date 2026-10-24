@@ -8,22 +8,22 @@
     "fg": "#5c344b",
     "muted": "#5c344b",
     "accent": "#5c344b",
-    "accent-fg": "#fff5d8",
+    "accent-fg": "#fff5d7",
     "border": "#5c344b",
     "input-bg": "#ffe993",
     "placeholder": "fg",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Bebas Neue\", Impact, sans-serif",
-    "heading-size": "2rem",
+    "heading-size": "32px",
     "heading-weight": "400",
-    "heading-leading": ".95",
-    "text-size": "1rem",
+    "heading-leading": ".96",
+    "text-size": "14px",
     "leading": "1.5",
     "tracking": "0",
-    "pad": "2.75rem 0 0",
+    "pad": "0",
     "gap": "0",
-    "radius": ".25rem",
-    "width": "100%",
+    "radius": "12px",
+    "width": "930px",
     "motion": "0ms",
     "close-bg": "#171a1d",
     "close-fg": "#ffffff",
@@ -45,7 +45,7 @@
             {
               "type": "split",
               "ratio": 0.35,
-              "basis": "38rem",
+              "basis": "23rem",
               "start": [
                 {
                   "type": "stack",
@@ -54,10 +54,10 @@
                       "type": "eyebrow",
                       "id": "n1",
                       "role": "eyebrow",
-                      "text": "BLACK FRIDAY / EARLY-ACCESS EMAIL SIGNUP",
+                      "text": "BLACK FRIDAY PREVIEW / NOVEMBER 26",
                       "tokens": {
-                        "text-size": ".625rem",
-                        "tracking": ".12em"
+                        "text-size": "9px",
+                        "tracking": ".1em"
                       }
                     },
                     {
@@ -66,7 +66,10 @@
                       "role": "headline",
                       "text": "FIRST PICK.\nUP TO 30% OFF.",
                       "narrow": {
-                        "heading-size": "2.65rem"
+                        "heading-size": "32px"
+                      },
+                      "tokens": {
+                        "heading-size": "32px"
                       }
                     }
                   ],
@@ -83,29 +86,41 @@
                       "type": "stack",
                       "children": [
                         {
-                          "type": "row",
-                          "children": [
+                          "type": "split",
+                          "tokens": {
+                            "gap": "14px"
+                          },
+                          "start": [
                             {
                               "type": "field",
                               "id": "n3",
                               "name": "email",
                               "label": "Email address",
                               "placeholder": "you@example.com",
-                              "required": true
-                            },
+                              "required": true,
+                              "tokens": {
+                                "text-size": "16px"
+                              }
+                            }
+                          ],
+                          "end": [
                             {
                               "type": "button",
                               "id": "n5",
                               "role": "cta_label",
-                              "label": "Get early access",
+                              "label": "Get access",
                               "icon": "arrow",
                               "action": "submit",
-                              "submission": "email-preview"
+                              "submission": "email-preview",
+                              "tokens": {
+                                "text-size": "16px",
+                                "radius": "5px"
+                              }
                             }
                           ],
-                          "tokens": {
-                            "gap": "1rem"
-                          }
+                          "ratio": 0.52,
+                          "basis": "0px",
+                          "narrow_layout": "stack"
                         },
                         {
                           "type": "consent",
@@ -125,7 +140,7 @@
                       "role": "fine_print",
                       "text": "Preview opens November 26. Selected offers. No purchase required.",
                       "tokens": {
-                        "text-size": ".875rem"
+                        "text-size": "14px"
                       }
                     }
                   ],
@@ -140,12 +155,12 @@
             }
           ],
           "tokens": {
-            "pad": "2rem 3rem 2rem 2rem",
+            "pad": "40px 60px 32px",
             "gap": ".9rem",
             "radius": ".5rem"
           },
           "narrow": {
-            "pad": "1.4rem"
+            "pad": "56px 24px 25px"
           }
         }
       },
@@ -160,7 +175,13 @@
               "type": "heading",
               "id": "n7",
               "role": "success_headline",
-              "text": "Request received"
+              "text": "Request received",
+              "tokens": {
+                "heading-size": "32px"
+              },
+              "narrow": {
+                "heading-size": "32px"
+              }
             },
             {
               "type": "text",
@@ -172,15 +193,18 @@
               "type": "text",
               "id": "n9",
               "role": "fine_print",
-              "text": "You can close this window and continue browsing."
+              "text": "You can close this window and continue browsing.",
+              "tokens": {
+                "text-size": "13px"
+              }
             }
           ],
           "tokens": {
-            "pad": "2rem",
+            "pad": "60px 30px 30px",
             "gap": ".9rem"
           },
           "narrow": {
-            "pad": "1.4rem"
+            "pad": "60px 24px 24px"
           }
         }
       }

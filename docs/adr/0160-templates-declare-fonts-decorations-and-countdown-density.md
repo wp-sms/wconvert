@@ -71,6 +71,12 @@ retaining their previous widths when no size is supplied. Labels wrap
 inside their allotted cells. Unit labels, colors and deadline remain editable.
 The fixed end time, hiding zero days and one silent timer retain ADR 0052/0159.
 
+**Black Friday fidelity amendment (2026-10-24):** a boxed countdown may declare
+`precision: minutes` to render days, hours and minutes without a seconds cell.
+Omission or `seconds` retains all four cells. This only chooses displayed units;
+the same exact `ends_at` instant still controls expiry and the shared timer.
+The option is authored data and survives editor saves and copy binding.
+
 ## Evidence
 
 `tests/fixtures/halloween-features.json` is a review fixture, not a newly
@@ -138,3 +144,5 @@ The closed artwork vocabulary now includes the additional campaign shapes,
 non-rotating motion and ordinary-image motion listed there. The initial loader
 budget statement above describes this ADR's original change; ADR 0167 records
 the additional 1,024 B per loader for campaign features.
+
+**Amended by [0168](0168-approved-compositions-survive-native-rendering.md):** `density: stacked` draws a vertical countdown rail and returns to a horizontal compact row at narrow widths. `precision: minutes` omits the seconds column without changing the deadline or expiry.

@@ -8,22 +8,22 @@
     "fg": "#362c56",
     "muted": "#362c56",
     "accent": "#362c56",
-    "accent-fg": "#fff5df",
+    "accent-fg": "#fff6df",
     "border": "#fff0d6",
-    "input-bg": "#bc454c",
+    "input-bg": "#b83b46",
     "placeholder": "fg",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Bebas Neue\", Impact, sans-serif",
-    "heading-size": "3.6rem",
+    "heading-size": "62px",
     "heading-weight": "400",
-    "heading-leading": ".95",
-    "text-size": "1rem",
+    "heading-leading": ".96",
+    "text-size": "14px",
     "leading": "1.5",
     "tracking": "0",
-    "pad": "2.75rem 0 0",
+    "pad": "0",
     "gap": "0",
-    "radius": ".25rem",
-    "width": "45rem",
+    "radius": "12px",
+    "width": "720px",
     "motion": "0ms",
     "close-bg": "#171a1d",
     "close-fg": "#ffffff",
@@ -41,8 +41,6 @@
         "kind": "content",
         "content": {
           "type": "split",
-          "ratio": 0.5,
-          "basis": "16rem",
           "start": [
             {
               "type": "panel",
@@ -56,15 +54,28 @@
                       "role": "eyebrow",
                       "text": "EXAMPLE PRICE / 40% OFF",
                       "tokens": {
-                        "text-size": ".625rem",
-                        "tracking": ".12em"
+                        "text-size": "9px",
+                        "tracking": ".1em"
                       }
                     },
                     {
                       "type": "text",
                       "id": "n2",
                       "role": "body",
-                      "text": "WAS $100"
+                      "text": "WAS $100",
+                      "tokens": {
+                        "text-size": "28px"
+                      }
+                    },
+                    {
+                      "type": "eyebrow",
+                      "id": "n9",
+                      "role": "eyebrow",
+                      "text": "↓",
+                      "tokens": {
+                        "text-size": "24px",
+                        "tracking": ".08em"
+                      }
                     },
                     {
                       "type": "text",
@@ -80,36 +91,10 @@
                       "narrow": {
                         "text-size": "4.5rem"
                       }
-                    },
-                    {
-                      "type": "panel",
-                      "children": [],
-                      "tokens": {
-                        "pad": "0",
-                        "gap": "0"
-                      },
-                      "narrow": {
-                        "pad": "0"
-                      },
-                      "min": "2rem",
-                      "decorations": {
-                        "label": "Decorative bubbles",
-                        "hidden": false,
-                        "items": [
-                          {
-                            "kind": "bubbles",
-                            "motion": "none",
-                            "x": 50,
-                            "y": 50,
-                            "size": 130,
-                            "color": "fg"
-                          }
-                        ]
-                      }
                     }
                   ],
                   "tokens": {
-                    "pad": "2rem 1rem",
+                    "pad": "35px 20px",
                     "gap": ".9rem",
                     "bg": "input-bg",
                     "fg": "border",
@@ -119,15 +104,17 @@
                   },
                   "narrow": {
                     "pad": "1.4rem"
-                  }
+                  },
+                  "edges": "all"
                 }
               ],
               "tokens": {
-                "pad": "1.75rem",
-                "gap": ".9rem"
+                "pad": "25px",
+                "gap": "16px",
+                "radius": "0"
               },
               "narrow": {
-                "pad": "1.4rem"
+                "pad": "24px"
               }
             }
           ],
@@ -141,17 +128,41 @@
                   "role": "eyebrow",
                   "text": "BLACK FRIDAY / PRICE MARKDOWN",
                   "tokens": {
-                    "text-size": ".625rem",
-                    "tracking": ".12em"
+                    "text-size": "9px",
+                    "tracking": ".1em"
                   }
                 },
                 {
-                  "type": "heading",
-                  "id": "n5",
-                  "role": "headline",
-                  "text": "BLACK FRIDAY.\nPRICE DROP.",
-                  "narrow": {
-                    "heading-size": "2.65rem"
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "id": "n5",
+                      "role": "headline",
+                      "text": "BLACK FRIDAY.",
+                      "narrow": {
+                        "heading-size": "52px"
+                      },
+                      "tokens": {
+                        "heading-size": "62px"
+                      }
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n10",
+                      "role": "headline",
+                      "text": "PRICE DROP.",
+                      "narrow": {
+                        "heading-size": "52px"
+                      },
+                      "tokens": {
+                        "heading-size": "62px",
+                        "fg": "input-bg"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "0"
                   }
                 },
                 {
@@ -164,9 +175,13 @@
                   "type": "button",
                   "id": "n7",
                   "role": "cta_label",
-                  "label": "Shop the savings",
+                  "label": "Shop the price drop",
                   "action": "link",
-                  "icon": "arrow"
+                  "icon": "arrow",
+                  "tokens": {
+                    "text-size": "14px",
+                    "radius": "0px"
+                  }
                 },
                 {
                   "type": "text",
@@ -174,19 +189,23 @@
                   "role": "fine_print",
                   "text": "Illustrative pricing. November 27–30. Selected items.",
                   "tokens": {
-                    "text-size": ".875rem"
+                    "text-size": "14px"
                   }
                 }
               ],
               "tokens": {
-                "pad": "2rem",
-                "gap": ".9rem"
+                "pad": "56px 32px 28px 32px",
+                "gap": "16px",
+                "radius": "0"
               },
               "narrow": {
-                "pad": "1.4rem"
+                "pad": "56px 23px 25px 23px"
               }
             }
           ],
+          "ratio": 0.5,
+          "basis": "15rem",
+          "narrow_layout": "stack",
           "tokens": {
             "gap": "0"
           }

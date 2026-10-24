@@ -1,0 +1,47 @@
+{
+  "id": "campaign-restock-mosaic",
+  "revision": "5dac9012a17e70ed4e05c60bf3a7a07ae4489e6a15d465778b1dde8431d83d6d",
+  "base_id": "d1b9495f9f34ba060ba82797237ed8abc3a121d6f98d91c18090745f6e04165b",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **36 · Restock Mosaic (Black Friday):** Restored three product close-ups and periwinkle reward. Native background crops keep the three windows compact on phones.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-restock-mosaic-320.png",
+          "sha256": "3a2cbd45d3e7b68df917de790b04d3ba4e4ea07896c25ef300b4fb03fb9f8121"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-restock-mosaic-1440.png",
+          "sha256": "34d579623b45367c8c3dc30a433f8646fa1f1c2d41348c633315a86e7111d785"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "2f111310376e825d6b2764d997922a71ce186a93b8d8bedd837edf6412c802f1"
+}

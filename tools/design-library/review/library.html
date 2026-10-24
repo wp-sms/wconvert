@@ -59,7 +59,7 @@ function measure(root,width,displayType){
   if(heading&&field&&button){
    const h=heading.getBoundingClientRect(),f=field.getBoundingClientRect(),b=button.getBoundingClientRect();
    const beside=(h.right<=f.left+1||h.left>=f.right-1)&&h.bottom>f.top&&h.top<b.bottom;
-   if(beside&&b.top>=f.bottom-1)composition.push('Announcement beside a form whose button has wrapped below its field');
+   if(beside&&field.closest('.wc-row')&&field.closest('.wc-row')===button.closest('.wc-row')&&b.top>=f.bottom-1)composition.push('Announcement beside a form whose button has wrapped below its field');
   }
  }
  const leaves=[...root.querySelectorAll('.wc-heading,.wc-text,strong,.wc-products div,.wc-products span,.wc-label,.wc-eyebrow,.wc-badge,.wc-consent-text,.wc-rating-text,.wc-code,input,select,textarea,button,a.wc-button,.wc-question-choice')].filter(e=>e.getBoundingClientRect().height>1);

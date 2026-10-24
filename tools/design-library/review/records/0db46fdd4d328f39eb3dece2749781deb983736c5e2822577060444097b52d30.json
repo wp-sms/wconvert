@@ -1,0 +1,47 @@
+{
+  "id": "campaign-garden-edit",
+  "revision": "50d2037eec1c51559fda316eeb1a6425158d7e5fd357bb0eb51ea0290b075a98",
+  "base_id": "8d90d9a1e799871b5140d9aecdd35f11aa4c819988c3b1e5120f2a95213565dd",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **14 · Garden Edit (General):** Restored the original three-flower artwork and lime/forest palette. Phone order places copy before the flowers.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-garden-edit-320.png",
+          "sha256": "30be039fc4b5711a1dc202c4acc1799cfca1610c83d800052c273c8edf0723d9"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-garden-edit-1440.png",
+          "sha256": "52334e167c2d4bd984fa3b246ebccb17d38c00818d2adb642b9f507f92ffebb0"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "0db46fdd4d328f39eb3dece2749781deb983736c5e2822577060444097b52d30"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "campaign-private-preview",
+  "revision": "08e4a3af45cc692790fdbca1eb85bb3f0320335ba9c8d55e99570df262aa515f",
+  "base_id": "5c345e5726ec16cc9b37524aa17f5b8b8894c4b1c0a40cbee3b2155730a8556a",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **07 · Private Preview (Black Friday):** Restored the glowing doorway and italic serif reward. Entry request, form and acknowledgement remain native; decorative VIP lettering is omitted.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-private-preview-320.png",
+          "sha256": "e19e401b8a7d15980ee2efa7fc0c74c85837b478eb3a1b12af8720277a3056ec"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-private-preview-1440.png",
+          "sha256": "e346a9c689ab61a82362ca9486a3b5d43f1b5a42946608ff367430b6ce978e20"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "dc16b93c81ffbc0f4a82d721e66b41f92333624a5fe87721928d2bab464df230"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "winter-ribbon-room",
+  "revision": "0729e23d379bc61322c9479e4cf9bab189a7d54716c7ba73c3118bbd1da62050",
+  "base_id": "96b6a30ac51be2534ef35abaef0cec6a2a2bb5c9107047dffa229609f71df3a4",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at d7688edf, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T12:58:11Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-1.jpg",
+          "sha256": "f195f8b15c79ecdc8574565d6754a70ac90abacf70371fa897a30f7c00ff065e"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-1.jpg",
+          "sha256": "fc85a120c9baab8cf32f05aaf5c08b54d0b1894aaeaac0ca768a6521156e21d3"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "42251c36d691cc0898371235fabcd156322912e6f5acd2955cf629064e47f189"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "campaign-extra-ten-coupon",
+  "revision": "abd52d85ff0aa9e9e3beddd88a8c8be3551fc842222040837539f3a9774573fd",
+  "base_id": "6670d8e73c45652d442f3ece00ecbebd0c70ee5f0fc3fd91fdead21639ebeeee",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **48 · Extra-Ten Coupon (Black Friday):** Restored shoe photo and salmon divider above the extra-ten offer. The code action avoids repeating the editable coupon value.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-extra-ten-coupon-320.png",
+          "sha256": "4af25feb2dc990cb3506962c2b6a60fc8ecb1fb1bc2b0a971237033432a79763"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-extra-ten-coupon-1440.png",
+          "sha256": "e4fe4845c0df503c341490446c35a423f356910e6ffbae7a27c17dd0072718bd"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "128fe2dfc980ed7b4e8ab8cc551e92a45042ba7ec5ba1d891991675279aaf05e"
+}

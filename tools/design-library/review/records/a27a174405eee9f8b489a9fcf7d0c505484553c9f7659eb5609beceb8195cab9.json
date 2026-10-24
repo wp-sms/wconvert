@@ -1,0 +1,47 @@
+{
+  "id": "campaign-anniversary-event",
+  "revision": "32fea7dea0c205e01ad46401d5ff12d41530af4653df0cabc85e57cc48dcda44",
+  "base_id": "5883ba2486777bdcb0e940ea11c3d4844a79e915d5b698c90053882406a70958",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **30 · Anniversary Event (General):** Restored the original smiling balloons as a decorative background with native centred anniversary copy and action.",
+  "at": "2026-10-24T13:09:55.646Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-anniversary-event-320.png",
+          "sha256": "2d9c9bbf9b62e568526fb7c45746bc6b5068669f3168dde869f2475134b7fb79"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-anniversary-event-1440.png",
+          "sha256": "d4261cbc4f181bc3a15906090d3e67c46c56a4ecd612db49fa0d694f1bb46f55"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "a27a174405eee9f8b489a9fcf7d0c505484553c9f7659eb5609beceb8195cab9"
+}

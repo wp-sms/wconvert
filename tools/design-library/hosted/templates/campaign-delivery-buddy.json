@@ -4,26 +4,26 @@
   "display_type": "popup",
   "tier": "free",
   "tokens": {
-    "bg": "#251b3d",
-    "fg": "#fff0d8",
-    "muted": "#fff0d8",
-    "accent": "#ffe0a3",
-    "accent-fg": "#352446",
-    "border": "#fff0d8",
+    "bg": "#211539",
+    "fg": "#fff0ce",
+    "muted": "#fff0ce",
+    "accent": "#f6b578",
+    "accent-fg": "#392044",
+    "border": "#b5e9ca",
     "input-bg": "#251b3d",
     "placeholder": "fg",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Bebas Neue\", Impact, sans-serif",
-    "heading-size": "3.6rem",
+    "heading-size": "62px",
     "heading-weight": "400",
-    "heading-leading": ".95",
-    "text-size": "1rem",
+    "heading-leading": ".96",
+    "text-size": "14px",
     "leading": "1.5",
     "tracking": "0",
-    "pad": "2.75rem 0 0",
+    "pad": "0",
     "gap": "0",
-    "radius": ".25rem",
-    "width": "45rem",
+    "radius": "0",
+    "width": "720px",
     "motion": "0ms",
     "close-bg": "#171a1d",
     "close-fg": "#ffffff",
@@ -41,8 +41,6 @@
         "kind": "content",
         "content": {
           "type": "split",
-          "ratio": 0.5,
-          "basis": "16rem",
           "start": [
             {
               "type": "panel",
@@ -53,17 +51,41 @@
                   "role": "eyebrow",
                   "text": "SHIPPING THRESHOLD",
                   "tokens": {
-                    "text-size": ".625rem",
-                    "tracking": ".12em"
+                    "text-size": "9px",
+                    "tracking": ".1em"
                   }
                 },
                 {
-                  "type": "heading",
-                  "id": "n2",
-                  "role": "headline",
-                  "text": "GOOD NEWS.\nFREE DELIVERY.",
-                  "narrow": {
-                    "heading-size": "2.65rem"
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "id": "n2",
+                      "role": "headline",
+                      "text": "GOOD NEWS.",
+                      "narrow": {
+                        "heading-size": "54px"
+                      },
+                      "tokens": {
+                        "heading-size": "62px"
+                      }
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n7",
+                      "role": "headline",
+                      "text": "FREE DELIVERY.",
+                      "narrow": {
+                        "heading-size": "54px"
+                      },
+                      "tokens": {
+                        "heading-size": "62px",
+                        "fg": "border"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "0"
                   }
                 },
                 {
@@ -76,9 +98,13 @@
                   "type": "button",
                   "id": "n4",
                   "role": "cta_label",
-                  "label": "Shop essentials",
+                  "label": "Shop with free delivery",
                   "action": "link",
-                  "icon": "arrow"
+                  "icon": "arrow",
+                  "tokens": {
+                    "text-size": "14px",
+                    "radius": "30px"
+                  }
                 },
                 {
                   "type": "text",
@@ -86,16 +112,17 @@
                   "role": "fine_print",
                   "text": "Orders $75+. Standard shipping to eligible destinations.",
                   "tokens": {
-                    "text-size": ".875rem"
+                    "text-size": "14px"
                   }
                 }
               ],
               "tokens": {
-                "pad": "2rem",
-                "gap": ".9rem"
+                "pad": "56px 32px 28px 32px",
+                "gap": "16px",
+                "radius": "0"
               },
               "narrow": {
-                "pad": "1.4rem"
+                "pad": "56px 23px 25px 23px"
               }
             }
           ],
@@ -111,38 +138,28 @@
                   "fit": "cover",
                   "shape": "rect",
                   "tokens": {
-                    "image-height": "27rem",
+                    "image-height": "430px",
                     "image-position": "center",
                     "radius": "0"
                   },
                   "narrow": {
-                    "image-height": "16rem"
+                    "image-height": "240px"
                   }
                 }
               ],
               "tokens": {
                 "pad": "0",
-                "gap": ".9rem"
+                "gap": "0",
+                "radius": "0"
               },
               "narrow": {
-                "pad": "1.4rem"
-              },
-              "decorations": {
-                "label": "Decorative sparkle",
-                "hidden": false,
-                "items": [
-                  {
-                    "kind": "sparkle",
-                    "motion": "pulse",
-                    "x": 82,
-                    "y": 12,
-                    "size": 50,
-                    "color": "accent"
-                  }
-                ]
+                "pad": "0"
               }
             }
           ],
+          "ratio": 0.55,
+          "basis": "15rem",
+          "narrow_layout": "reverse",
           "tokens": {
             "gap": "0"
           }

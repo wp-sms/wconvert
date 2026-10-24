@@ -8,22 +8,22 @@
     "fg": "#f4f4eb",
     "muted": "#f4f4eb",
     "accent": "#e2be8d",
-    "accent-fg": "#181a12",
+    "accent-fg": "#14180b",
     "border": "#f4f4eb",
     "input-bg": "#262b27",
     "placeholder": "fg",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Bebas Neue\", Impact, sans-serif",
-    "heading-size": "3.6rem",
+    "heading-size": "80px",
     "heading-weight": "400",
-    "heading-leading": ".95",
-    "text-size": "1rem",
+    "heading-leading": ".96",
+    "text-size": "14px",
     "leading": "1.5",
     "tracking": "0",
-    "pad": "2.75rem 0 0",
+    "pad": "0",
     "gap": "0",
-    "radius": ".25rem",
-    "width": "45rem",
+    "radius": "0",
+    "width": "800px",
     "motion": "0ms",
     "close-bg": "#171a1d",
     "close-fg": "#ffffff",
@@ -40,9 +40,8 @@
         "name": "Offer",
         "kind": "content",
         "content": {
-          "type": "grid",
-          "basis": "12rem",
-          "children": [
+          "type": "split",
+          "start": [
             {
               "type": "panel",
               "children": [
@@ -54,134 +53,201 @@
                   "fit": "cover",
                   "shape": "rect",
                   "tokens": {
-                    "image-height": "28rem",
+                    "image-height": "365px",
                     "image-position": "center",
                     "radius": "0"
                   },
                   "narrow": {
-                    "image-height": "16rem"
+                    "image-height": "200px"
                   }
                 }
               ],
               "tokens": {
                 "pad": "0",
-                "gap": "0"
+                "gap": "0",
+                "radius": "0"
               },
               "narrow": {
                 "pad": "0"
               }
-            },
+            }
+          ],
+          "end": [
             {
-              "type": "panel",
-              "children": [
+              "type": "split",
+              "start": [
                 {
-                  "type": "eyebrow",
-                  "id": "n2",
-                  "role": "eyebrow",
-                  "text": "BLACK FRIDAY / HOMEWARE SEASONAL SALE",
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n3",
+                      "role": "eyebrow",
+                      "text": "BLACK FRIDAY / HOME",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".1em"
+                      }
+                    },
+                    {
+                      "type": "eyebrow",
+                      "id": "n11",
+                      "role": "eyebrow",
+                      "text": "01 / THE WEEKEND EDIT",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".08em"
+                      }
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n4",
+                      "role": "headline",
+                      "text": "MAKE\nROOM.",
+                      "narrow": {
+                        "heading-size": "62px"
+                      },
+                      "tokens": {
+                        "heading-size": "80px"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n5",
+                      "role": "body",
+                      "text": "A favourite corner.\nA better everyday.\nA Black Friday price."
+                    }
+                  ],
                   "tokens": {
-                    "text-size": ".625rem",
-                    "tracking": ".12em"
-                  }
-                },
-                {
-                  "type": "eyebrow",
-                  "id": "n3",
-                  "role": "eyebrow",
-                  "text": "01 / THE WEEKEND EDIT",
-                  "tokens": {
-                    "text-size": ".625rem",
-                    "tracking": ".12em"
-                  }
-                },
-                {
-                  "type": "heading",
-                  "id": "n4",
-                  "role": "headline",
-                  "text": "MAKE\nROOM.",
-                  "narrow": {
-                    "heading-size": "2.65rem"
-                  }
-                },
-                {
-                  "type": "text",
-                  "id": "n5",
-                  "role": "body",
-                  "text": "A favorite corner. A better everyday. A Black Friday price."
-                }
-              ],
-              "tokens": {
-                "pad": "1.5rem",
-                "gap": ".9rem"
-              },
-              "narrow": {
-                "pad": "1.4rem"
-              }
-            },
-            {
-              "type": "panel",
-              "children": [
-                {
-                  "type": "eyebrow",
-                  "id": "n6",
-                  "role": "eyebrow",
-                  "text": "SELECTED HOMEWARE",
-                  "tokens": {
-                    "text-size": ".625rem",
-                    "tracking": ".12em"
-                  }
-                },
-                {
-                  "type": "text",
-                  "id": "n7",
-                  "role": "body",
-                  "text": "%b",
-                  "tokens": {
-                    "text-size": "6rem",
-                    "leading": ".95",
-                    "font": "\"Bebas Neue\", Impact, sans-serif"
+                    "pad": "56px 24px 30px 24px",
+                    "gap": "24px",
+                    "radius": "0"
                   },
-                  "emphasis": "30%",
                   "narrow": {
-                    "text-size": "4.5rem"
-                  }
-                },
-                {
-                  "type": "text",
-                  "id": "n8",
-                  "role": "body",
-                  "text": "OFF"
-                },
-                {
-                  "type": "button",
-                  "id": "n9",
-                  "role": "cta_label",
-                  "label": "Shop the home edit",
-                  "action": "link",
-                  "icon": "arrow"
-                },
-                {
-                  "type": "text",
-                  "id": "n10",
-                  "role": "fine_print",
-                  "text": "November 27–30. Selected items. Exclusions apply.",
-                  "tokens": {
-                    "text-size": ".875rem"
+                    "pad": "56px 22px 24px 22px"
                   }
                 }
               ],
+              "end": [
+                {
+                  "type": "media",
+                  "children": [
+                    {
+                      "type": "stack",
+                      "children": [
+                        {
+                          "type": "eyebrow",
+                          "id": "n12",
+                          "role": "eyebrow",
+                          "text": "SELECTED HOMEWARE",
+                          "tokens": {
+                            "text-size": "9px",
+                            "tracking": ".08em"
+                          }
+                        },
+                        {
+                          "type": "row",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "n13",
+                              "role": "body",
+                              "text": "%b",
+                              "tokens": {
+                                "font": "\"DM Sans\", Arial, sans-serif",
+                                "text-size": "90px",
+                                "leading": ".95",
+                                "tracking": "-.04em",
+                                "fg": "accent"
+                              },
+                              "emphasis": "30",
+                              "narrow": {
+                                "text-size": "64px"
+                              }
+                            },
+                            {
+                              "type": "text",
+                              "id": "n15",
+                              "role": "body",
+                              "text": "%b",
+                              "tokens": {
+                                "font": "\"DM Sans\", Arial, sans-serif",
+                                "text-size": "34px",
+                                "leading": ".95",
+                                "tracking": "-.04em",
+                                "fg": "accent"
+                              },
+                              "emphasis": "%",
+                              "narrow": {
+                                "text-size": "34px"
+                              }
+                            }
+                          ],
+                          "tokens": {
+                            "gap": "2px"
+                          }
+                        },
+                        {
+                          "type": "eyebrow",
+                          "id": "n14",
+                          "role": "eyebrow",
+                          "text": "OFF",
+                          "tokens": {
+                            "text-size": "9px",
+                            "tracking": ".08em"
+                          }
+                        },
+                        {
+                          "type": "button",
+                          "id": "n9",
+                          "role": "cta_label",
+                          "label": "Shop home",
+                          "action": "link",
+                          "icon": "arrow",
+                          "tokens": {
+                            "text-size": "14px",
+                            "radius": "0px"
+                          }
+                        },
+                        {
+                          "type": "text",
+                          "id": "n10",
+                          "role": "fine_print",
+                          "text": "November 27–30. Selected items. Exclusions apply.",
+                          "tokens": {
+                            "text-size": "14px"
+                          }
+                        }
+                      ],
+                      "tokens": {
+                        "gap": "24px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "42px 24px 30px",
+                    "gap": "24px",
+                    "radius": "0",
+                    "bg": "input-bg"
+                  },
+                  "narrow": {
+                    "pad": "42px 22px 24px"
+                  }
+                }
+              ],
+              "ratio": 0.5,
+              "basis": "0px",
+              "narrow_layout": "stack",
               "tokens": {
-                "pad": "1.5rem",
-                "gap": ".9rem",
-                "bg": "input-bg"
-              },
-              "narrow": {
-                "pad": "1.4rem"
+                "gap": "0"
               }
             }
           ],
+          "ratio": 0.36,
+          "basis": "0px",
+          "narrow_layout": "stack",
           "tokens": {
-            "gap": ".65rem"
+            "gap": "0"
           }
         }
       }

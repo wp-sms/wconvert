@@ -1,0 +1,47 @@
+{
+  "id": "campaign-welcome-perk",
+  "revision": "6ae5d55d6b7187bfdb99cf9640f2c3a1505962d0cd50cc2754035dd9b854ac04",
+  "base_id": "8cd18f8f1ec40d61407ae58a8758791a75ddaa3ea0e5580cdc997ac53e1991a8",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **02 · Welcome Perk (General):** Restored peach dispenser composition and coloured second headline. The action refers to the discount rather than hard-coding a merchant-editable coupon.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-welcome-perk-320.png",
+          "sha256": "fc768ae243d9e8c6c0d965663f1c6e9b87af413df6b3c6f43421848b3ce2183e"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-welcome-perk-1440.png",
+          "sha256": "4240244cdc7be1ea50f4f8c17edd591a50021a0b8ecc6a3d3f0cf5497347133c"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "f80b572e6dcdad3629d00b6d0827e9adf0f47b4cc879b9297ef54136987449a9"
+}

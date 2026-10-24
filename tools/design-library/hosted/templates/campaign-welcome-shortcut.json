@@ -4,26 +4,26 @@
   "display_type": "popup",
   "tier": "free",
   "tokens": {
-    "bg": "#e6c3da",
-    "fg": "#42324a",
-    "muted": "#42324a",
-    "accent": "#42324a",
-    "accent-fg": "#fff5df",
-    "border": "#42324a",
-    "input-bg": "#e6c3da",
+    "bg": "#ffc896",
+    "fg": "#573044",
+    "muted": "#e9efbc",
+    "accent": "#573044",
+    "accent-fg": "#fff6df",
+    "border": "#be92d3",
+    "input-bg": "#e9867b",
     "placeholder": "fg",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Bebas Neue\", Impact, sans-serif",
-    "heading-size": "3.6rem",
+    "heading-size": "51px",
     "heading-weight": "400",
-    "heading-leading": ".95",
-    "text-size": "1rem",
+    "heading-leading": ".96",
+    "text-size": "14px",
     "leading": "1.5",
     "tracking": "0",
-    "pad": "2.75rem 0 0",
+    "pad": "0",
     "gap": "0",
-    "radius": ".25rem",
-    "width": "45rem",
+    "radius": "12px",
+    "width": "720px",
     "motion": "0ms",
     "close-bg": "#171a1d",
     "close-fg": "#ffffff",
@@ -41,84 +41,88 @@
         "kind": "content",
         "content": {
           "type": "split",
-          "ratio": 0.5,
-          "basis": "16rem",
           "start": [
             {
               "type": "panel",
               "children": [
                 {
                   "type": "panel",
-                  "children": [],
-                  "tokens": {
-                    "pad": "0",
-                    "gap": "0"
-                  },
-                  "narrow": {
-                    "pad": "0"
-                  },
-                  "min": "9rem",
-                  "decorations": {
-                    "label": "Decorative rings",
-                    "hidden": false,
-                    "items": [
-                      {
-                        "kind": "rings",
-                        "motion": "pulse",
-                        "x": 50,
-                        "y": 50,
-                        "size": 130,
-                        "color": "accent"
-                      }
-                    ]
-                  }
-                },
-                {
-                  "type": "panel",
                   "children": [
                     {
-                      "type": "text",
-                      "id": "n1",
-                      "role": "body",
-                      "text": "%b",
+                      "type": "panel",
+                      "children": [
+                        {
+                          "type": "panel",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "n8",
+                              "role": "body",
+                              "text": "%b",
+                              "tokens": {
+                                "font": "\"Bebas Neue\", Impact, sans-serif",
+                                "text-size": "63px"
+                              },
+                              "emphasis": "15%",
+                              "narrow": {
+                                "text-size": "63px"
+                              }
+                            },
+                            {
+                              "type": "code",
+                              "id": "n2",
+                              "role": "code_value",
+                              "text": "WELCOME15",
+                              "copy": false,
+                              "tokens": {
+                                "font": "monospace",
+                                "text-size": "12px",
+                                "tracking": "0"
+                              }
+                            }
+                          ],
+                          "tokens": {
+                            "pad": "68px 10px 30px",
+                            "gap": "24px",
+                            "radius": "150px 150px 12px 12px",
+                            "bg": "muted",
+                            "fg": "accent",
+                            "align": "center"
+                          },
+                          "narrow": {
+                            "pad": "45px 5px 25px"
+                          }
+                        }
+                      ],
                       "tokens": {
-                        "text-size": "5rem",
-                        "leading": ".95",
-                        "font": "\"Bebas Neue\", Impact, sans-serif"
+                        "pad": "18px",
+                        "gap": "16px",
+                        "radius": "170px 170px 12px 12px",
+                        "bg": "border"
                       },
-                      "emphasis": "15%",
                       "narrow": {
-                        "text-size": "4.5rem"
+                        "pad": "12px"
                       }
-                    },
-                    {
-                      "type": "code",
-                      "id": "n2",
-                      "role": "code_value",
-                      "text": "WELCOME15",
-                      "copy": false
                     }
                   ],
                   "tokens": {
-                    "pad": "2rem",
-                    "gap": ".9rem",
-                    "bg": "accent",
-                    "fg": "accent-fg",
-                    "muted": "accent-fg",
-                    "align": "center",
-                    "radius": "6rem 6rem 1rem 1rem"
+                    "pad": "18px",
+                    "gap": "16px",
+                    "radius": "190px 190px 12px 12px",
+                    "bg": "input-bg"
                   },
                   "narrow": {
-                    "pad": "1.4rem"
+                    "pad": "12px"
                   }
                 }
               ],
               "tokens": {
-                "pad": "1.5rem",
-                "gap": ".5rem"
+                "pad": "22px",
+                "gap": "16px",
+                "radius": "0"
               },
               "narrow": {
-                "pad": "1.4rem"
+                "pad": "24px"
               }
             }
           ],
@@ -132,8 +136,8 @@
                   "role": "eyebrow",
                   "text": "FIRST-ORDER COUPON",
                   "tokens": {
-                    "text-size": ".625rem",
-                    "tracking": ".12em"
+                    "text-size": "9px",
+                    "tracking": ".1em"
                   }
                 },
                 {
@@ -142,7 +146,10 @@
                   "role": "headline",
                   "text": "YOUR SHORTCUT\nTO 15% OFF.",
                   "narrow": {
-                    "heading-size": "2.65rem"
+                    "heading-size": "45px"
+                  },
+                  "tokens": {
+                    "heading-size": "51px"
                   }
                 },
                 {
@@ -157,7 +164,11 @@
                   "role": "cta_label",
                   "label": "Use my welcome offer",
                   "action": "link",
-                  "icon": "arrow"
+                  "icon": "arrow",
+                  "tokens": {
+                    "text-size": "14px",
+                    "radius": "0px"
+                  }
                 },
                 {
                   "type": "text",
@@ -165,19 +176,24 @@
                   "role": "fine_print",
                   "text": "First order only. Selected items. Exclusions apply.",
                   "tokens": {
-                    "text-size": ".875rem"
+                    "text-size": "14px"
                   }
                 }
               ],
               "tokens": {
-                "pad": "2rem",
-                "gap": ".9rem"
+                "pad": "56px 32px 28px 32px",
+                "gap": "16px",
+                "radius": "0",
+                "muted": "fg"
               },
               "narrow": {
-                "pad": "1.4rem"
+                "pad": "56px 23px 25px 23px"
               }
             }
           ],
+          "ratio": 0.5,
+          "basis": "19rem",
+          "narrow_layout": "stack",
           "tokens": {
             "gap": "0"
           }

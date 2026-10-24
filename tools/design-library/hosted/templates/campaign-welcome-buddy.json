@@ -8,22 +8,22 @@
     "fg": "#39214a",
     "muted": "#39214a",
     "accent": "#39214a",
-    "accent-fg": "#fff5df",
+    "accent-fg": "#fff6df",
     "border": "#39214a",
     "input-bg": "#ffbd86",
     "placeholder": "fg",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Bebas Neue\", Impact, sans-serif",
-    "heading-size": "3.6rem",
+    "heading-size": "53px",
     "heading-weight": "400",
-    "heading-leading": ".95",
-    "text-size": "1rem",
+    "heading-leading": ".96",
+    "text-size": "14px",
     "leading": "1.5",
     "tracking": "0",
-    "pad": "2.75rem 0 0",
+    "pad": "0",
     "gap": "0",
-    "radius": ".25rem",
-    "width": "45rem",
+    "radius": "12px",
+    "width": "720px",
     "motion": "0ms",
     "close-bg": "#171a1d",
     "close-fg": "#ffffff",
@@ -41,8 +41,6 @@
         "kind": "content",
         "content": {
           "type": "split",
-          "ratio": 0.5,
-          "basis": "16rem",
           "start": [
             {
               "type": "panel",
@@ -55,18 +53,19 @@
                   "fit": "cover",
                   "shape": "rect",
                   "tokens": {
-                    "image-height": "28rem",
-                    "image-position": "center",
-                    "radius": "0"
+                    "image-height": "450px",
+                    "image-position": "center 20%",
+                    "radius": "20px 20px 85px 20px"
                   },
                   "narrow": {
-                    "image-height": "16rem"
+                    "image-height": "240px"
                   }
                 }
               ],
               "tokens": {
-                "pad": "0",
-                "gap": "0"
+                "pad": "8px",
+                "gap": "0",
+                "radius": "0"
               },
               "narrow": {
                 "pad": "0"
@@ -83,8 +82,8 @@
                   "role": "eyebrow",
                   "text": "FIRST-ORDER OFFER",
                   "tokens": {
-                    "text-size": ".625rem",
-                    "tracking": ".12em"
+                    "text-size": "9px",
+                    "tracking": ".1em"
                   }
                 },
                 {
@@ -93,7 +92,10 @@
                   "role": "headline",
                   "text": "FIRST ORDER.\n15% LESS.",
                   "narrow": {
-                    "heading-size": "2.65rem"
+                    "heading-size": "45px"
+                  },
+                  "tokens": {
+                    "heading-size": "53px"
                   }
                 },
                 {
@@ -103,55 +105,16 @@
                   "text": "New here? Save 15% on your first order of selected everyday favorites."
                 },
                 {
-                  "type": "panel",
-                  "children": [
-                    {
-                      "type": "row",
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "n2",
-                          "role": "body",
-                          "text": "%b",
-                          "tokens": {
-                            "text-size": "4rem",
-                            "leading": ".95",
-                            "font": "\"Bebas Neue\", Impact, sans-serif"
-                          },
-                          "emphasis": "15%",
-                          "narrow": {
-                            "text-size": "4rem"
-                          }
-                        },
-                        {
-                          "type": "text",
-                          "id": "n3",
-                          "role": "body",
-                          "text": "OFF YOUR\nFIRST ORDER"
-                        }
-                      ],
-                      "tokens": {
-                        "gap": "1rem"
-                      }
-                    }
-                  ],
-                  "tokens": {
-                    "pad": "1rem",
-                    "gap": ".9rem",
-                    "bg": "input-bg",
-                    "radius": "1rem"
-                  },
-                  "narrow": {
-                    "pad": "1.4rem"
-                  }
-                },
-                {
                   "type": "button",
                   "id": "n7",
                   "role": "cta_label",
-                  "label": "Get 15% off",
+                  "label": "Shop with 15% off",
                   "action": "link",
-                  "icon": "arrow"
+                  "icon": "arrow",
+                  "tokens": {
+                    "text-size": "14px",
+                    "radius": "30px"
+                  }
                 },
                 {
                   "type": "text",
@@ -159,19 +122,23 @@
                   "role": "fine_print",
                   "text": "First order only. Selected items. Exclusions apply.",
                   "tokens": {
-                    "text-size": ".875rem"
+                    "text-size": "14px"
                   }
                 }
               ],
               "tokens": {
-                "pad": "2rem",
-                "gap": ".9rem"
+                "pad": "56px 32px 28px 32px",
+                "gap": "16px",
+                "radius": "0"
               },
               "narrow": {
-                "pad": "1.4rem"
+                "pad": "56px 23px 25px 23px"
               }
             }
           ],
+          "ratio": 0.5,
+          "basis": "15rem",
+          "narrow_layout": "stack",
           "tokens": {
             "gap": "0"
           }

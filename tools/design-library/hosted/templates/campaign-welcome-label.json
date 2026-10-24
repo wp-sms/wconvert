@@ -4,26 +4,26 @@
   "display_type": "inline",
   "tier": "free",
   "tokens": {
-    "bg": "#dcf0ce",
-    "fg": "#344335",
-    "muted": "#344335",
-    "accent": "#344335",
-    "accent-fg": "#fff5df",
-    "border": "#344335",
-    "input-bg": "#c0d9b4",
+    "bg": "#f1dfb7",
+    "fg": "#64353f",
+    "muted": "#64353f",
+    "accent": "#64353f",
+    "accent-fg": "#fff2dc",
+    "border": "#344435",
+    "input-bg": "#deefca",
     "placeholder": "fg",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Bebas Neue\", Impact, sans-serif",
-    "heading-size": "3.6rem",
+    "heading-size": "53px",
     "heading-weight": "400",
-    "heading-leading": ".95",
-    "text-size": "1rem",
+    "heading-leading": ".96",
+    "text-size": "14px",
     "leading": "1.5",
     "tracking": "0",
-    "pad": "2.75rem 0 0",
+    "pad": "0",
     "gap": "0",
-    "radius": ".25rem",
-    "width": "45rem",
+    "radius": "12px",
+    "width": "800px",
     "motion": "0ms",
     "close-bg": "#171a1d",
     "close-fg": "#ffffff",
@@ -41,8 +41,6 @@
         "kind": "content",
         "content": {
           "type": "split",
-          "ratio": 0.5,
-          "basis": "16rem",
           "start": [
             {
               "type": "panel",
@@ -51,31 +49,30 @@
                   "type": "panel",
                   "children": [
                     {
-                      "type": "text",
-                      "id": "n1",
-                      "role": "body",
-                      "text": "YOUR FIRST ORDER"
-                    },
-                    {
-                      "type": "text",
-                      "id": "n2",
-                      "role": "body",
-                      "text": "%b",
+                      "type": "eyebrow",
+                      "id": "n10",
+                      "role": "eyebrow",
+                      "text": "WELCOME",
                       "tokens": {
-                        "text-size": "5rem",
-                        "leading": ".95",
-                        "font": "\"Bebas Neue\", Impact, sans-serif"
-                      },
-                      "emphasis": "10%",
-                      "narrow": {
-                        "text-size": "4.5rem"
+                        "text-size": "9px",
+                        "tracking": ".08em"
                       }
                     },
                     {
                       "type": "text",
-                      "id": "n3",
+                      "id": "n11",
                       "role": "body",
-                      "text": "LESS"
+                      "text": "%b",
+                      "tokens": {
+                        "font": "\"Bebas Neue\", Impact, sans-serif",
+                        "text-size": "75px",
+                        "leading": ".95",
+                        "tracking": "-.04em"
+                      },
+                      "emphasis": "10% OFF",
+                      "narrow": {
+                        "text-size": "64px"
+                      }
                     },
                     {
                       "type": "code",
@@ -83,29 +80,39 @@
                       "role": "code_value",
                       "text": "WELCOME10",
                       "copy": false
+                    },
+                    {
+                      "type": "eyebrow",
+                      "id": "n12",
+                      "role": "eyebrow",
+                      "text": "YOUR FIRST ORDER",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".08em"
+                      }
                     }
                   ],
                   "tokens": {
-                    "pad": "2rem",
-                    "gap": ".9rem",
-                    "bg": "accent",
-                    "fg": "accent-fg",
-                    "muted": "accent-fg",
+                    "pad": "40px 24px",
+                    "gap": "24px",
+                    "radius": "20px",
                     "align": "center",
-                    "radius": "50%"
+                    "bg": "input-bg",
+                    "fg": "border",
+                    "muted": "border"
                   },
                   "narrow": {
-                    "pad": "1.4rem"
+                    "pad": "42px 22px 24px"
                   }
                 }
               ],
               "tokens": {
-                "pad": "1.5rem",
-                "gap": ".9rem",
-                "bg": "input-bg"
+                "pad": "25px",
+                "gap": "16px",
+                "radius": "0"
               },
               "narrow": {
-                "pad": "1.4rem"
+                "pad": "24px"
               }
             }
           ],
@@ -119,8 +126,8 @@
                   "role": "eyebrow",
                   "text": "FIRST-ORDER COUPON",
                   "tokens": {
-                    "text-size": ".625rem",
-                    "tracking": ".12em"
+                    "text-size": "9px",
+                    "tracking": ".1em"
                   }
                 },
                 {
@@ -129,7 +136,10 @@
                   "role": "headline",
                   "text": "FIRST ORDER.\n10% OFF.",
                   "narrow": {
-                    "heading-size": "2.65rem"
+                    "heading-size": "47px"
+                  },
+                  "tokens": {
+                    "heading-size": "53px"
                   }
                 },
                 {
@@ -144,7 +154,11 @@
                   "role": "cta_label",
                   "label": "Use my welcome offer",
                   "action": "link",
-                  "icon": "arrow"
+                  "icon": "arrow",
+                  "tokens": {
+                    "text-size": "14px",
+                    "radius": "0px"
+                  }
                 },
                 {
                   "type": "text",
@@ -152,19 +166,23 @@
                   "role": "fine_print",
                   "text": "New customers. Selected items; one use per customer.",
                   "tokens": {
-                    "text-size": ".875rem"
+                    "text-size": "14px"
                   }
                 }
               ],
               "tokens": {
-                "pad": "2rem",
-                "gap": ".9rem"
+                "pad": "56px 32px 28px 32px",
+                "gap": "16px",
+                "radius": "0"
               },
               "narrow": {
-                "pad": "1.4rem"
+                "pad": "56px 23px 25px 23px"
               }
             }
           ],
+          "ratio": 0.5,
+          "basis": "15rem",
+          "narrow_layout": "stack",
           "tokens": {
             "gap": "0"
           }

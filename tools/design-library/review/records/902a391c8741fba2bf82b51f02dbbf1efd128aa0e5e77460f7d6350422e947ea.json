@@ -1,0 +1,47 @@
+{
+  "id": "campaign-streetwear-poster",
+  "revision": "b3d254215c160cf6c6cb902e3829317aa4235bfdd2061de6d0c2d38372545943",
+  "base_id": "cf0e1f89eb6151468b798fc53f0b3e90dc3da2189167723165d6996ed12241a6",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **31 · Streetwear Poster (Black Friday):** Restored the black/lime streetwear poster, oversized condensed masthead and product/offer split; the image retains a useful phone crop.",
+  "at": "2026-10-24T13:09:55.644Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-streetwear-poster-320.png",
+          "sha256": "337283d610ccbbfc40edf5b6bdf1dec913231af7a9ed4498c7e2ca0bfa01caca"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-streetwear-poster-1440.png",
+          "sha256": "410e770bf63afbadea6b88b95981bc8e10599d147fbc27f9dd8f2ba277f3fe59"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "902a391c8741fba2bf82b51f02dbbf1efd128aa0e5e77460f7d6350422e947ea"
+}

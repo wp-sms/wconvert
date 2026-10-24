@@ -4,26 +4,26 @@
   "display_type": "popup",
   "tier": "free",
   "tokens": {
-    "bg": "#f2a46b",
-    "fg": "#2e3831",
-    "muted": "#2e3831",
-    "accent": "#2e3831",
-    "accent-fg": "#f3f5df",
+    "bg": "#252b26",
+    "fg": "#faf4df",
+    "muted": "#faf4df",
+    "accent": "#d8ef89",
+    "accent-fg": "#25352d",
     "border": "#2e3831",
     "input-bg": "#f2a46b",
     "placeholder": "fg",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Bebas Neue\", Impact, sans-serif",
-    "heading-size": "3.6rem",
+    "heading-size": "67px",
     "heading-weight": "400",
-    "heading-leading": ".95",
-    "text-size": "1rem",
+    "heading-leading": ".96",
+    "text-size": "14px",
     "leading": "1.5",
     "tracking": "0",
-    "pad": "2.75rem 0 0",
+    "pad": "0",
     "gap": "0",
-    "radius": ".25rem",
-    "width": "45rem",
+    "radius": "0",
+    "width": "720px",
     "motion": "0ms",
     "close-bg": "#171a1d",
     "close-fg": "#ffffff",
@@ -41,8 +41,6 @@
         "kind": "content",
         "content": {
           "type": "split",
-          "ratio": 0.5,
-          "basis": "16rem",
           "start": [
             {
               "type": "panel",
@@ -55,18 +53,19 @@
                   "fit": "cover",
                   "shape": "rect",
                   "tokens": {
-                    "image-height": "27rem",
+                    "image-height": "420px",
                     "image-position": "center",
                     "radius": "0"
                   },
                   "narrow": {
-                    "image-height": "16rem"
+                    "image-height": "240px"
                   }
                 }
               ],
               "tokens": {
                 "pad": "0",
-                "gap": "0"
+                "gap": "0",
+                "radius": "0"
               },
               "narrow": {
                 "pad": "0"
@@ -83,17 +82,41 @@
                   "role": "eyebrow",
                   "text": "BLACK FRIDAY / FOOTWEAR SALE",
                   "tokens": {
-                    "text-size": ".625rem",
-                    "tracking": ".12em"
+                    "text-size": "9px",
+                    "tracking": ".1em"
                   }
                 },
                 {
-                  "type": "heading",
-                  "id": "n5",
-                  "role": "headline",
-                  "text": "NICE PAIR.\n40% LESS.",
-                  "narrow": {
-                    "heading-size": "2.65rem"
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "id": "n5",
+                      "role": "headline",
+                      "text": "NICE PAIR.",
+                      "narrow": {
+                        "heading-size": "58px"
+                      },
+                      "tokens": {
+                        "heading-size": "67px"
+                      }
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n9",
+                      "role": "headline",
+                      "text": "40% LESS.",
+                      "narrow": {
+                        "heading-size": "58px"
+                      },
+                      "tokens": {
+                        "heading-size": "67px",
+                        "fg": "accent"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "0"
                   }
                 },
                 {
@@ -103,41 +126,16 @@
                   "text": "Save 40% on selected sneakers this Black Friday."
                 },
                 {
-                  "type": "row",
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "n2",
-                      "role": "body",
-                      "text": "%b",
-                      "tokens": {
-                        "text-size": "5rem",
-                        "leading": ".95",
-                        "font": "\"Bebas Neue\", Impact, sans-serif"
-                      },
-                      "emphasis": "40%",
-                      "narrow": {
-                        "text-size": "4.5rem"
-                      }
-                    },
-                    {
-                      "type": "text",
-                      "id": "n3",
-                      "role": "body",
-                      "text": "OFF SELECTED\nSNEAKERS"
-                    }
-                  ],
-                  "tokens": {
-                    "gap": "1rem"
-                  }
-                },
-                {
                   "type": "button",
                   "id": "n7",
                   "role": "cta_label",
-                  "label": "Shop sneakers",
+                  "label": "Shop the sneaker sale",
                   "action": "link",
-                  "icon": "arrow"
+                  "icon": "arrow",
+                  "tokens": {
+                    "text-size": "14px",
+                    "radius": "0px"
+                  }
                 },
                 {
                   "type": "text",
@@ -145,19 +143,23 @@
                   "role": "fine_print",
                   "text": "November 27–30. Selected styles and sizes.",
                   "tokens": {
-                    "text-size": ".875rem"
+                    "text-size": "14px"
                   }
                 }
               ],
               "tokens": {
-                "pad": "2rem",
-                "gap": ".9rem"
+                "pad": "56px 32px 28px 32px",
+                "gap": "16px",
+                "radius": "0"
               },
               "narrow": {
-                "pad": "1.4rem"
+                "pad": "56px 23px 25px 23px"
               }
             }
           ],
+          "ratio": 0.5,
+          "basis": "15rem",
+          "narrow_layout": "stack",
           "tokens": {
             "gap": "0"
           }

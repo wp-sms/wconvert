@@ -7,23 +7,23 @@
     "bg": "#101211",
     "fg": "#f4f4eb",
     "muted": "#f4f4eb",
-    "accent": "#d9f86b",
-    "accent-fg": "#181a12",
+    "accent": "#e4f67f",
+    "accent-fg": "#14180b",
     "border": "#f4f4eb",
     "input-bg": "#101211",
     "placeholder": "fg",
     "font": "\"DM Sans\", Arial, sans-serif",
-    "heading-font": "\"Bebas Neue\", Impact, sans-serif",
-    "heading-size": "2.7rem",
-    "heading-weight": "400",
-    "heading-leading": ".95",
-    "text-size": "1rem",
+    "heading-font": "\"DM Sans\", Arial, sans-serif",
+    "heading-size": "39px",
+    "heading-weight": "900",
+    "heading-leading": ".96",
+    "text-size": "14px",
     "leading": "1.5",
     "tracking": "0",
-    "pad": "2.75rem 0 0",
+    "pad": "0",
     "gap": "0",
-    "radius": ".25rem",
-    "width": "24rem",
+    "radius": "0",
+    "width": "365px",
     "motion": "0ms",
     "close-bg": "#171a1d",
     "close-fg": "#ffffff",
@@ -44,46 +44,105 @@
           "children": [
             {
               "type": "eyebrow",
-              "id": "n1",
-              "role": "eyebrow",
-              "text": "BLACK FRIDAY / SALE LAUNCH NOTIFICATION",
-              "tokens": {
-                "text-size": ".625rem",
-                "tracking": ".12em"
-              }
-            },
-            {
-              "type": "text",
-              "id": "n2",
-              "role": "body",
-              "text": "%b",
-              "tokens": {
-                "text-size": "7rem",
-                "leading": ".95",
-                "font": "\"Bebas Neue\", Impact, sans-serif"
-              },
-              "emphasis": "40%",
-              "narrow": {
-                "text-size": "4.5rem"
-              }
-            },
-            {
-              "type": "eyebrow",
               "id": "n3",
               "role": "eyebrow",
-              "text": "UP TO / OFF SELECTED ITEMS",
+              "text": "BLACK FRIDAY",
               "tokens": {
-                "text-size": ".625rem",
-                "tracking": ".12em"
+                "text-size": "9px",
+                "tracking": ".1em"
               }
             },
             {
-              "type": "heading",
-              "id": "n4",
-              "role": "headline",
-              "text": "GET THE\nDROP ALERT.",
-              "narrow": {
-                "heading-size": "2.65rem"
+              "type": "row",
+              "children": [
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "n13",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "text-size": "103px",
+                        "leading": ".95",
+                        "tracking": "-.04em",
+                        "fg": "accent"
+                      },
+                      "emphasis": "40",
+                      "narrow": {
+                        "text-size": "85px"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n17",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "text-size": "39px",
+                        "leading": ".95",
+                        "tracking": "-.04em",
+                        "fg": "accent"
+                      },
+                      "emphasis": "%",
+                      "narrow": {
+                        "text-size": "39px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "2px"
+                  }
+                },
+                {
+                  "type": "eyebrow",
+                  "id": "n16",
+                  "role": "eyebrow",
+                  "text": "UP TO / OFF",
+                  "tokens": {
+                    "text-size": "9px",
+                    "tracking": ".08em"
+                  }
+                }
+              ],
+              "tokens": {
+                "gap": "12px"
+              }
+            },
+            {
+              "type": "stack",
+              "children": [
+                {
+                  "type": "heading",
+                  "id": "n4",
+                  "role": "headline",
+                  "text": "GET THE",
+                  "narrow": {
+                    "heading-size": "34px"
+                  },
+                  "tokens": {
+                    "heading-size": "39px"
+                  }
+                },
+                {
+                  "type": "heading",
+                  "id": "n15",
+                  "role": "headline",
+                  "text": "DROP ALERT.",
+                  "narrow": {
+                    "heading-size": "34px"
+                  },
+                  "tokens": {
+                    "heading-size": "39px",
+                    "fg": "accent"
+                  }
+                }
+              ],
+              "tokens": {
+                "gap": "0"
               }
             },
             {
@@ -101,7 +160,10 @@
                   "name": "email",
                   "label": "Email address",
                   "placeholder": "you@example.com",
-                  "required": true
+                  "required": true,
+                  "tokens": {
+                    "text-size": "16px"
+                  }
                 },
                 {
                   "type": "consent",
@@ -114,14 +176,18 @@
                   "type": "button",
                   "id": "n8",
                   "role": "cta_label",
-                  "label": "Get the drop alert",
+                  "label": "Get on the early list",
                   "icon": "arrow",
                   "action": "submit",
-                  "submission": "email-preview"
+                  "submission": "email-preview",
+                  "tokens": {
+                    "text-size": "14px",
+                    "radius": "0px"
+                  }
                 }
               ],
               "tokens": {
-                "gap": ".85rem"
+                "gap": "12px"
               }
             },
             {
@@ -130,16 +196,17 @@
               "role": "fine_print",
               "text": "Preview opens November 26. Up to 40% off selected items.",
               "tokens": {
-                "text-size": ".875rem"
+                "text-size": "14px"
               }
             }
           ],
           "tokens": {
-            "pad": "1.75rem",
-            "gap": ".9rem"
+            "pad": "56px 25px 28px 25px",
+            "gap": "20px",
+            "radius": "0"
           },
           "narrow": {
-            "pad": "1.4rem"
+            "pad": "56px 22px 24px 22px"
           }
         }
       },
@@ -154,7 +221,13 @@
               "type": "heading",
               "id": "n10",
               "role": "success_headline",
-              "text": "Request received"
+              "text": "Request received",
+              "tokens": {
+                "heading-size": "39px"
+              },
+              "narrow": {
+                "heading-size": "34px"
+              }
             },
             {
               "type": "text",
@@ -166,15 +239,18 @@
               "type": "text",
               "id": "n12",
               "role": "fine_print",
-              "text": "You can close this window and continue browsing."
+              "text": "You can close this window and continue browsing.",
+              "tokens": {
+                "text-size": "12px"
+              }
             }
           ],
           "tokens": {
-            "pad": "2rem",
+            "pad": "60px 30px 30px",
             "gap": ".9rem"
           },
           "narrow": {
-            "pad": "1.4rem"
+            "pad": "60px 24px 24px"
           }
         }
       }

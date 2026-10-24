@@ -373,7 +373,9 @@ export interface CountdownNode extends HideableNode {
    */
   readonly layout?: 'line' | 'boxes';
   /** Authored by the design, not another editor sizing control. */
-  readonly density?: 'regular' | 'compact';
+  readonly density?: 'regular' | 'compact' | 'stacked';
+  /** Smallest displayed unit; the deadline and expiry still use the exact instant. */
+  readonly precision?: 'seconds' | 'minutes';
   /** The words under the boxes. A Playbook translates them; English otherwise. */
   readonly days_label?: string;
   readonly hours_label?: string;
@@ -622,6 +624,8 @@ export interface RowNode {
  * (ADR 0010).
  */
 export interface SplitNode {
+  /** Explicit compact stacking below 40rem, independent of desktop pane proportions. */
+  readonly narrow_layout?: 'wrap' | 'stack' | 'reverse';
   readonly type: 'split';
   readonly start?: readonly TemplateNode[];
   readonly end?: readonly TemplateNode[];
@@ -671,6 +675,8 @@ export interface SplitNode {
  * is what a benefit list has.
  */
 export interface GridNode {
+  /** A separate minimum track width below the design's narrow breakpoint. */
+  readonly narrow_basis?: string;
   readonly type: 'grid';
   /** Minimum column width; columns wrap when their content needs more room. */
   readonly basis?: string;

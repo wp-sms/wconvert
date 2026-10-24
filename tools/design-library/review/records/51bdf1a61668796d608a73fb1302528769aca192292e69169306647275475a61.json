@@ -1,0 +1,47 @@
+{
+  "id": "weekend-observations",
+  "revision": "d0e2309be2e3d5267e648cb587f5cfc10ab8c68e9b9a73992fbb3537cea44429",
+  "base_id": "0a227cd21cb18dd68612e9d30280895073f31ddee583846d79185db89a421866",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at d7688edf, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T12:58:11Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-export-spacing-2026-10-23/README.md",
+          "sha256": "6f30791df1d1fd3e8bfb43f3feb5df6e414501265efbecf5e1300e8f8328a072"
+        },
+        {
+          "path": "docs/reviews/winter-export-spacing-2026-10-23/weekend-320.png",
+          "sha256": "924d0be74c817dcde8b3e9e92e15b826edcf28e83ac10c4ea379f33391d30aec"
+        },
+        {
+          "path": "docs/reviews/winter-export-spacing-2026-10-23/weekend-1440.png",
+          "sha256": "3d3543d430393bb6dc0263a3948383be3700e3c5aa22fe551b4c4d963e3cc2fb"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-export-spacing-2026-10-23/results.json",
+          "sha256": "14319df56111ae91619204ff79add1dc8ef792577c3f70a17060eece1d1dcafc"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-export-spacing-2026-10-23/results.json",
+          "sha256": "14319df56111ae91619204ff79add1dc8ef792577c3f70a17060eece1d1dcafc"
+        }
+      ]
+    }
+  },
+  "record_id": "51bdf1a61668796d608a73fb1302528769aca192292e69169306647275475a61"
+}

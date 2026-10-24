@@ -1,0 +1,47 @@
+{
+  "id": "campaign-golden-weekend-ticket",
+  "revision": "b7cec404d2c5f59c6acf9613985528d6cf1e389934e5d8a4179208077709aaaf",
+  "base_id": "2f9b574049ec2b49f3f1443325655cc35e95f9c91039ddbc93d5f23d866b9bcb",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **37 · Golden Weekend Ticket (Black Friday):** Restored dark/gold ticket and dark shopping action. Native side cutouts and code border replace the prototype perforated seam.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-golden-weekend-ticket-320.png",
+          "sha256": "df9ea8ba4543d1386526e27475d8cb01ab3d049ba44cd8146ae45e94eb06cdd6"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-golden-weekend-ticket-1440.png",
+          "sha256": "219b9c3b45343d17934eb841b040e18c84b79e9b5af9b5d6504cc853324cfb54"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "c88e8e49967f695a83550865e67613a43dace12f29713bcc7d726a47bb144ab1"
+}

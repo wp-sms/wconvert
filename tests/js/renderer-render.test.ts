@@ -266,6 +266,28 @@ describe('the leaf vocabulary', () => {
 });
 
 describe('the layout vocabulary', () => {
+  it('keeps explicit phone ordering separate from desktop proportions and nested defaults', () => {
+    const tree = oneStep({ type: 'split', ratio: .2, basis: '0px', narrow_layout: 'reverse',
+      start: [{ type: 'heading', text: 'Offer' }],
+      end: [{ type: 'split', start: [], end: [] }],
+    });
+    const [outer, nested] = [...render(tree, TOKENS).querySelectorAll<HTMLElement>('.wc-split')];
+    expect(outer.dataset.narrowLayout).toBe('reverse');
+    expect(outer.style.getPropertyValue('--wc-ratio')).toBe('0.2');
+    expect(nested.dataset.narrowLayout).toBeUndefined();
+    expect((nested.firstElementChild as HTMLElement).style.flexBasis).toBe('12rem');
+  });
+
+  it('does not inherit an outer grid’s phone track width', () => {
+    const tree = oneStep({ type: 'grid', basis: '16rem', narrow_basis: '4rem', children: [
+      { type: 'grid', basis: '12rem', children: [] },
+    ] });
+    const [outer, inner] = [...render(tree, TOKENS).querySelectorAll<HTMLElement>('.wc-grid')];
+    expect(outer.style.getPropertyValue('--wc-narrow_basis')).toBe('4rem');
+    expect(inner.style.getPropertyValue('--wc-narrow_basis')).toBe('');
+    expect(SHADOW_CSS).toContain('.wc-grid{--wc-narrow_basis:initial;');
+  });
+
   it('lets a split stack before its form becomes cramped, without changing nested defaults', () => {
     const tree = oneStep({
       type: 'split',

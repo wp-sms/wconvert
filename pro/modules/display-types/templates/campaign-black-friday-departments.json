@@ -4,26 +4,26 @@
   "display_type": "fullscreen",
   "tier": "pro",
   "tokens": {
-    "bg": "#162d29",
-    "fg": "#f9edc9",
-    "muted": "#f9edc9",
-    "accent": "#e8ed89",
-    "accent-fg": "#24342c",
+    "bg": "#eee7d8",
+    "fg": "#263d36",
+    "muted": "#263d36",
+    "accent": "#263d36",
+    "accent-fg": "#fff4de",
     "border": "#f9edc9",
     "input-bg": "#162d29",
     "placeholder": "fg",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Bebas Neue\", Impact, sans-serif",
-    "heading-size": "3.6rem",
+    "heading-size": "60px",
     "heading-weight": "400",
-    "heading-leading": ".95",
-    "text-size": "1rem",
+    "heading-leading": ".96",
+    "text-size": "14px",
     "leading": "1.5",
     "tracking": "0",
-    "pad": "2.75rem 0 0",
+    "pad": "0",
     "gap": "0",
-    "radius": ".25rem",
-    "width": "60rem",
+    "radius": "0",
+    "width": "930px",
     "motion": "0ms",
     "close-bg": "#171a1d",
     "close-fg": "#ffffff",
@@ -52,10 +52,10 @@
                       "type": "eyebrow",
                       "id": "n1",
                       "role": "eyebrow",
-                      "text": "BLACK FRIDAY / STOREWIDE SELECTED COLLECTIONS",
+                      "text": "BLACK FRIDAY / THE DEPARTMENT EDIT",
                       "tokens": {
-                        "text-size": ".625rem",
-                        "tracking": ".12em"
+                        "text-size": "9px",
+                        "tracking": ".1em"
                       }
                     },
                     {
@@ -64,7 +64,10 @@
                       "role": "headline",
                       "text": "YOUR FRIDAY FINDS.\nUP TO 50% OFF.",
                       "narrow": {
-                        "heading-size": "2.65rem"
+                        "heading-size": "49px"
+                      },
+                      "tokens": {
+                        "heading-size": "60px"
                       }
                     }
                   ],
@@ -76,9 +79,13 @@
                   "type": "button",
                   "id": "n3",
                   "role": "cta_label",
-                  "label": "Shop all departments",
+                  "label": "Shop the Black Friday event",
                   "action": "link",
-                  "icon": "arrow"
+                  "icon": "arrow",
+                  "tokens": {
+                    "text-size": "14px",
+                    "radius": "0px"
+                  }
                 }
               ],
               "tokens": {
@@ -87,7 +94,7 @@
             },
             {
               "type": "grid",
-              "basis": "8rem",
+              "basis": "7rem",
               "children": [
                 {
                   "type": "stack",
@@ -100,12 +107,12 @@
                       "fit": "cover",
                       "shape": "rect",
                       "tokens": {
-                        "image-height": "13rem",
+                        "image-height": "250px",
                         "image-position": "center",
                         "radius": "0"
                       },
                       "narrow": {
-                        "image-height": "13rem"
+                        "image-height": "140px"
                       }
                     },
                     {
@@ -114,8 +121,8 @@
                       "role": "eyebrow",
                       "text": "01 / FOOTWEAR",
                       "tokens": {
-                        "text-size": ".625rem",
-                        "tracking": ".12em"
+                        "text-size": "9px",
+                        "tracking": ".1em"
                       }
                     }
                   ],
@@ -134,12 +141,12 @@
                       "fit": "cover",
                       "shape": "rect",
                       "tokens": {
-                        "image-height": "13rem",
+                        "image-height": "250px",
                         "image-position": "center",
                         "radius": "0"
                       },
                       "narrow": {
-                        "image-height": "13rem"
+                        "image-height": "140px"
                       }
                     },
                     {
@@ -148,8 +155,8 @@
                       "role": "eyebrow",
                       "text": "02 / EVERYDAY TECH",
                       "tokens": {
-                        "text-size": ".625rem",
-                        "tracking": ".12em"
+                        "text-size": "9px",
+                        "tracking": ".1em"
                       }
                     }
                   ],
@@ -168,12 +175,12 @@
                       "fit": "cover",
                       "shape": "rect",
                       "tokens": {
-                        "image-height": "13rem",
+                        "image-height": "250px",
                         "image-position": "center",
                         "radius": "0"
                       },
                       "narrow": {
-                        "image-height": "13rem"
+                        "image-height": "140px"
                       }
                     },
                     {
@@ -182,8 +189,8 @@
                       "role": "eyebrow",
                       "text": "03 / AUDIO",
                       "tokens": {
-                        "text-size": ".625rem",
-                        "tracking": ".12em"
+                        "text-size": "9px",
+                        "tracking": ".1em"
                       }
                     }
                   ],
@@ -208,12 +215,12 @@
               "role": "fine_print",
               "text": "November 27–30. Selected collections. Exclusions apply.",
               "tokens": {
-                "text-size": ".875rem"
+                "text-size": "14px"
               }
             }
           ],
           "tokens": {
-            "pad": "2rem",
+            "pad": "48px 40px 30px",
             "gap": ".9rem",
             "radius": ".5rem"
           },

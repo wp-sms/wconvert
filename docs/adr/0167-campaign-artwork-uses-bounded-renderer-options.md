@@ -42,7 +42,7 @@ the existing placement fallback; no provenance metadata is stored in a draft.
 
 The dependency-free additions measured 18,250 B Free / 31,593 B Pro gzip before
 final minification checks, about 0.8 KiB above the previous ceilings. Allocate
-1,024 B per loader: 18,480 / 31,744 B. Phone, analytics and commerce caps stay
+1,024 B per loader: 18,480 / 31,744 B. **Amended by [0168](0168-approved-compositions-survive-native-rendering.md):** opt-in compact layouts and countdown presentation add 128 B to the Pro ceiling (31,872 B); the Free ceiling stays 18,480 B. Phone, analytics and commerce caps stay
 separate. The hard gates remain; no runtime library is added.
 
 Verification lives in `docs/reviews/black-friday-2026-10-24/`: native schema,

@@ -1,0 +1,47 @@
+{
+  "id": "campaign-welcome-label",
+  "revision": "99fa86d45476f98c1866b13fc41d34315cb623b404c89959e0636cc7aea48169",
+  "base_id": "6034d37dfea7adc9ea8c5ea609a1c33ea785b5e857df296de571d748fcf7755a",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **27 · Welcome Label (General):** Restored pale-green rounded coupon label and purple copy; code wording follows the configurable coupon.",
+  "at": "2026-10-24T13:09:55.646Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-welcome-label-320.png",
+          "sha256": "3645e1fe9602d9e8593d9b98d16972988f4b448e36b5e2a2bddb48cc07464a36"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-welcome-label-1440.png",
+          "sha256": "59d3ebf9d45d2ffd007cc19c1024afe41d9dc4af8c80c0abe7c06d3e94cab35f"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "b4699b073c91dc0d7a128da49bd41e173bc8245d0368b10d58a32daea40d1b5d"
+}

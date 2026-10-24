@@ -321,6 +321,7 @@ function layout(
     notch_position?: 'top' | 'sides';
     decorations?: import('./types').Decorations;
     basis?: string;
+    narrow_basis?: string;
   },
   scoped: Tokens,
   at: string | null,
@@ -328,7 +329,10 @@ function layout(
   const element = document.createElement('div');
 
   element.className = `wc-${node.type}`;
-  if (node.type === 'grid') element.style.setProperty(TOKEN_PREFIX + 'basis', node.basis ?? '8rem');
+  if (node.type === 'grid') {
+    element.style.setProperty(TOKEN_PREFIX + 'basis', node.basis ?? '8rem');
+    if (node.narrow_basis) element.style.setProperty(TOKEN_PREFIX + 'narrow_basis', node.narrow_basis);
+  }
 
   /*
    * **The floor under a box that draws a picture**, and it is declared by the
@@ -480,6 +484,7 @@ function split(node: SplitNode, scoped: Tokens, at: string | null): HTMLElement 
   const element = document.createElement('div');
 
   element.className = 'wc-split';
+  if (node.narrow_layout && node.narrow_layout !== 'wrap') element.dataset.narrowLayout = node.narrow_layout;
 
   scope(element, node.tokens);
 
@@ -711,8 +716,9 @@ function countdown(node: CountdownNode): HTMLElement {
 
   if (node.layout === 'boxes') {
     element.classList.add('wc-boxes');
-    if (node.density === 'compact') element.classList.add('wc-compact');
+    if (node.density && node.density !== 'regular') element.classList.add('wc-compact', 'wc-' + node.density);
     for (const [unit, label] of [['d', node.days_label || pageLabel(3, 'Days')], ['h', node.hours_label || pageLabel(4, 'Hours')], ['m', node.minutes_label || pageLabel(5, 'Mins')], ['s', node.seconds_label || pageLabel(6, 'Secs')]]) {
+      if (unit === 's' && node.precision === 'minutes') continue;
       const word = document.createElement('small');
 
       word.textContent = label;

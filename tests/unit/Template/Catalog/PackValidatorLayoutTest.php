@@ -26,7 +26,7 @@ final class PackValidatorLayoutTest extends TestCase
     {
         $reader = new PackValidator(TemplateManifest::load(), TemplateVocabulary::fromManifest());
         $cases = array_map(static fn ($ratio): array => ['split', 'ratio', $ratio], [0, .08, .1, .3, .36, 1, '0.35', '0.5']);
-        array_push($cases, ['split', 'basis', '6rem'], ['split', 'basis', '24rem'], ['grid', 'basis', '10rem'],
+        array_push($cases, ['split', 'narrow_layout', 'reverse'], ['grid', 'narrow_basis', '3.5rem'], ['split', 'basis', '6rem'], ['split', 'basis', '24rem'], ['grid', 'basis', '10rem'],
             ['media', 'min', '380px'], ['panel', 'min', '18.5em'], ['panel', 'min', 0], ['media', 'min', '0']);
         foreach ($cases as [$type, $param, $value]) {
             $pack = $this->pack($type, $param, $value);
@@ -34,6 +34,22 @@ final class PackValidatorLayoutTest extends TestCase
             self::assertSame($value, $installed['templates'][0]['tree']['steps'][0]['content'][$param]);
             $transferred = $reader->portable($pack['templates'][0]);
             self::assertSame($value, $transferred['tree']['steps'][0]['content'][$param]);
+        }
+    }
+
+    public function testCountdownPresentationSurvivesTheCatalogueBoundary(): void
+    {
+        $reader = new PackValidator(TemplateManifest::load(), TemplateVocabulary::fromManifest());
+        foreach (['regular', 'compact', 'stacked'] as $density) foreach (['seconds', 'minutes'] as $precision) {
+            $pack = $this->pack('panel', 'min', '0');
+            $clock = ['type' => 'countdown', 'id' => 'review-clock', 'layout' => 'boxes', 'density' => $density, 'precision' => $precision];
+            $pack['templates'][0]['tree']['steps'][0]['content']['children'][] = $clock;
+            $installed = $reader->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+            $portable = $reader->portable($pack['templates'][0]);
+            foreach ([$installed['templates'][0], $portable] as $design) {
+                self::assertSame($density, $design['tree']['steps'][0]['content']['children'][1]['density']);
+                self::assertSame($precision, $design['tree']['steps'][0]['content']['children'][1]['precision']);
+            }
         }
     }
 
@@ -61,7 +77,7 @@ final class PackValidatorLayoutTest extends TestCase
     {
         $reader = new PackValidator(TemplateManifest::load(), TemplateVocabulary::fromManifest());
         $cases = [
-            ['split', 'ratio', -.1], ['split', 'ratio', 1.1], ['split', 'ratio', true], ['split', 'ratio', 'NaN'],
+            ['split', 'narrow_layout', 'unknown'], ['grid', 'narrow_basis', 'calc(100% - 2px)'], ['split', 'ratio', -.1], ['split', 'ratio', 1.1], ['split', 'ratio', true], ['split', 'ratio', 'NaN'],
             ['split', 'ratio', '0.5;display:none'], ['split', 'basis', '-6rem'], ['grid', 'basis', '10001px'],
             ['media', 'min', '380'], ['panel', 'min', 'url(https://example.com/pixel)'],
             ['media', 'min', '380px;position:fixed'], ['panel', 'min', ['380px']], ['panel', 'edges', 'unknown'],

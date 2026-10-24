@@ -4,26 +4,26 @@
   "display_type": "popup",
   "tier": "free",
   "tokens": {
-    "bg": "#172c29",
-    "fg": "#d5ff82",
-    "muted": "#d5ff82",
-    "accent": "#d5ff82",
-    "accent-fg": "#172c29",
-    "border": "#d5ff82",
-    "input-bg": "#172c29",
+    "bg": "#9a7ad2",
+    "fg": "#211e32",
+    "muted": "#211e32",
+    "accent": "#edb779",
+    "accent-fg": "#242d29",
+    "border": "#bce6b9",
+    "input-bg": "#263e35",
     "placeholder": "fg",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Bebas Neue\", Impact, sans-serif",
-    "heading-size": "3.6rem",
+    "heading-size": "62px",
     "heading-weight": "400",
-    "heading-leading": ".95",
-    "text-size": "1rem",
+    "heading-leading": ".96",
+    "text-size": "14px",
     "leading": "1.5",
     "tracking": "0",
-    "pad": "2.75rem 0 0",
+    "pad": "0",
     "gap": "0",
-    "radius": ".25rem",
-    "width": "45rem",
+    "radius": "0",
+    "width": "600px",
     "motion": "0ms",
     "close-bg": "#171a1d",
     "close-fg": "#ffffff",
@@ -48,8 +48,8 @@
               "role": "eyebrow",
               "text": "BLACK FRIDAY / GAMING ACCESSORIES COUPON",
               "tokens": {
-                "text-size": ".625rem",
-                "tracking": ".12em"
+                "text-size": "9px",
+                "tracking": ".1em"
               }
             },
             {
@@ -76,18 +76,43 @@
                         "x": 50,
                         "y": 50,
                         "size": 130,
-                        "color": "accent"
+                        "color": "fg"
                       }
                     ]
                   }
                 },
                 {
-                  "type": "heading",
-                  "id": "n2",
-                  "role": "headline",
-                  "text": "MORE PLAY.\n30% LESS.",
-                  "narrow": {
-                    "heading-size": "2.65rem"
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "id": "n2",
+                      "role": "headline",
+                      "text": "MORE PLAY.",
+                      "narrow": {
+                        "heading-size": "51px"
+                      },
+                      "tokens": {
+                        "heading-size": "62px",
+                        "fg": "border"
+                      }
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n7",
+                      "role": "headline",
+                      "text": "30% LESS.",
+                      "narrow": {
+                        "heading-size": "51px"
+                      },
+                      "tokens": {
+                        "heading-size": "62px",
+                        "fg": "accent"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "0"
                   }
                 },
                 {
@@ -105,10 +130,13 @@
                 }
               ],
               "tokens": {
-                "pad": "1.25rem",
+                "pad": "28px",
                 "gap": ".9rem",
-                "border": "accent",
-                "radius": ".25rem"
+                "radius": ".25rem",
+                "bg": "input-bg",
+                "fg": "border",
+                "muted": "border",
+                "align": "center"
               },
               "narrow": {
                 "pad": "1.4rem"
@@ -121,7 +149,11 @@
               "role": "cta_label",
               "label": "Shop with my code",
               "action": "link",
-              "icon": "arrow"
+              "icon": "arrow",
+              "tokens": {
+                "text-size": "14px",
+                "radius": "8px"
+              }
             },
             {
               "type": "text",
@@ -129,20 +161,18 @@
               "role": "fine_print",
               "text": "November 27–30. Selected gaming accessories.",
               "tokens": {
-                "text-size": ".875rem"
+                "text-size": "14px"
               }
             }
           ],
           "tokens": {
-            "pad": "1rem",
+            "pad": "56px 20px 20px 20px",
             "gap": ".9rem",
-            "radius": "1rem",
-            "border": "accent"
+            "radius": "1rem"
           },
           "narrow": {
-            "pad": "1.4rem"
-          },
-          "edges": "all"
+            "pad": "56px 1.4rem 1.4rem 1.4rem"
+          }
         }
       }
     ],

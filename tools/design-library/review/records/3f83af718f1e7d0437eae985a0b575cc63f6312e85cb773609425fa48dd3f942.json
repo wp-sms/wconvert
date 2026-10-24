@@ -1,0 +1,47 @@
+{
+  "id": "campaign-free-delivery-label",
+  "revision": "8b1a4e35ff749047af95c287a815e402371395f3afb848c8bafd2fc77417079d",
+  "base_id": "e462deda9dc5b8803f02089c2a43790b9903215bf364992635028a0236724a3d",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **47 · Free-Delivery Label (Black Friday):** Restored pale shipping label, barcode and periwinkle zero-delivery offer. Corrected padding and bounded barcode width prevent overflow.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-free-delivery-label-320.png",
+          "sha256": "f48e14578d3a1e94a869e7815d081ce4eb94959ac9489ea60ddbf179af80345f"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-free-delivery-label-1440.png",
+          "sha256": "61103bd7cda648e310f6129f2dad1e7cfd32600cb6f785557a0645995d41cc59"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "3f83af718f1e7d0437eae985a0b575cc63f6312e85cb773609425fa48dd3f942"
+}

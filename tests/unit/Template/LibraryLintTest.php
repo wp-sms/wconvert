@@ -161,6 +161,14 @@ final class LibraryLintTest extends TestCase
                         . '/image-' . substr(hash('sha256', (string) $node['src']), 0, 24) . '.webp';
                 }
 
+                foreach (['tokens', 'narrow'] as $bag) {
+                    $image = $node[$bag]['bg-image'] ?? null;
+                    if (is_string($image) && preg_match('/^url\([\x22\x27]?(data:[^\x22\x27)]+)[\x22\x27]?\)$/', $image, $match)) {
+                        $node[$bag]['bg-image'] = 'url("https://example.test/wp-content/uploads/wconvert/catalog/'
+                            . hash('sha256', $match[1]) . '/image-' . substr(hash('sha256', $match[1]), 0, 24) . '.webp")';
+                    }
+                }
+
                 return array_map(fn (mixed $child): mixed => $this->installed($child), $node);
             }
         };

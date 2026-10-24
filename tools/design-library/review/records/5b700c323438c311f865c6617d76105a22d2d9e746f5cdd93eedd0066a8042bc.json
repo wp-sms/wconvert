@@ -1,0 +1,55 @@
+{
+  "id": "everyday-an-occasion-worth-keeping",
+  "revision": "ee501903bc985baa22bc73c2de6b3493f6bac7f1e686832116b2afbd1b38626d",
+  "base_id": "73123117022a2cbecad3ed109d94ba401bccb4e092c0908ec0a529c52fbd59d1",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at d7688edf, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T12:58:11Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/review.md",
+          "sha256": "f6b502dde0c4c73b459faf3f1a57081ad88a66a77bc19b5a5095f11c7f8a8573"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-an-occasion-worth-keeping-320.png",
+          "sha256": "c4da037e0fd08bbc378d1721bec2a06ad27ebf0f89e2f4f9b74352083d6504ff"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-an-occasion-worth-keeping-1440.png",
+          "sha256": "afe7307133cbcf43150b44370eae5eb626d7dc255b5172a8da42f2ab230ad2a8"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/fidelity.json",
+          "sha256": "358e4290ffc8f1760ac04e1994edfb346f4ef8391aee56aa07bf2c3c173f96c1"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/layout.json",
+          "sha256": "d7b61c2cf2f4caab48c27de857e575e2d6f6629973bf2defca7e3a5589679645"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    }
+  },
+  "record_id": "5b700c323438c311f865c6617d76105a22d2d9e746f5cdd93eedd0066a8042bc"
+}

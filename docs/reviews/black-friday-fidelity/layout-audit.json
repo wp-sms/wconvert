@@ -1,0 +1,43 @@
+{
+  "widths": [
+    320,
+    390,
+    520,
+    640,
+    768,
+    960,
+    1280,
+    1440
+  ],
+  "directions": [
+    "ltr",
+    "rtl"
+  ],
+  "all_screens": true,
+  "reports": [
+    {
+      "copy": "ordinary",
+      "kind": "designs",
+      "cases": 912,
+      "failures": []
+    },
+    {
+      "copy": "ordinary",
+      "kind": "campaigns",
+      "cases": 912,
+      "failures": []
+    },
+    {
+      "copy": "long-copy",
+      "kind": "designs",
+      "cases": 912,
+      "failures": []
+    },
+    {
+      "copy": "long-copy",
+      "kind": "campaigns",
+      "cases": 912,
+      "failures": []
+    }
+  ]
+}

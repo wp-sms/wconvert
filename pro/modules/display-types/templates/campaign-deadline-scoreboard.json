@@ -8,22 +8,22 @@
     "fg": "#f4f4eb",
     "muted": "#f4f4eb",
     "accent": "#ff9a6a",
-    "accent-fg": "#181a12",
+    "accent-fg": "#14180b",
     "border": "#f4f4eb",
     "input-bg": "#101211",
     "placeholder": "fg",
     "font": "\"DM Sans\", Arial, sans-serif",
-    "heading-font": "\"Bebas Neue\", Impact, sans-serif",
-    "heading-size": "2rem",
-    "heading-weight": "400",
-    "heading-leading": ".95",
-    "text-size": "1rem",
+    "heading-font": "\"DM Sans\", Arial, sans-serif",
+    "heading-size": "34px",
+    "heading-weight": "900",
+    "heading-leading": ".96",
+    "text-size": "14px",
     "leading": "1.5",
     "tracking": "0",
-    "pad": "2.75rem 0 0",
+    "pad": "0",
     "gap": "0",
-    "radius": ".25rem",
-    "width": "100%",
+    "radius": "0",
+    "width": "930px",
     "motion": "0ms",
     "close-bg": "#171a1d",
     "close-fg": "#ffffff",
@@ -52,10 +52,10 @@
                       "type": "eyebrow",
                       "id": "n1",
                       "role": "eyebrow",
-                      "text": "BLACK FRIDAY / SALE DEADLINE REMINDER",
+                      "text": "BLACK FRIDAY / NOV 27—30",
                       "tokens": {
-                        "text-size": ".625rem",
-                        "tracking": ".12em"
+                        "text-size": "9px",
+                        "tracking": ".1em"
                       }
                     },
                     {
@@ -64,105 +64,139 @@
                       "role": "headline",
                       "text": "UP TO 40% OFF.",
                       "tokens": {
-                        "heading-size": "2.5rem"
+                        "heading-size": "34px",
+                        "heading-font": "\"DM Sans\", Arial, sans-serif",
+                        "heading-weight": "900",
+                        "tracking": "-.04em"
                       },
                       "narrow": {
-                        "heading-size": "2.65rem"
+                        "heading-size": "28px"
+                      }
+                    },
+                    {
+                      "type": "eyebrow",
+                      "id": "n8",
+                      "role": "eyebrow",
+                      "text": "THE CLOCK IS ON.",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".08em"
                       }
                     }
                   ],
                   "tokens": {
-                    "gap": "1rem"
+                    "gap": "25px",
+                    "align": "space-between"
+                  },
+                  "narrow": {
+                    "gap": "16px"
                   }
                 }
               ],
               "tokens": {
-                "pad": "1rem 2rem",
-                "gap": ".9rem",
+                "pad": "22px 60px 19px",
+                "gap": "16px",
+                "radius": "0",
                 "bg": "accent",
                 "fg": "accent-fg",
-                "muted": "accent-fg",
-                "radius": "0"
+                "muted": "accent-fg"
               },
               "narrow": {
-                "pad": "1.4rem"
+                "pad": "30px 50px 24px"
               }
             },
             {
               "type": "panel",
               "children": [
                 {
-                  "type": "row",
-                  "children": [
+                  "type": "split",
+                  "start": [
                     {
-                      "type": "countdown",
-                      "id": "n3",
-                      "role": "countdown_units",
-                      "layout": "boxes",
-                      "days_label": "Days",
-                      "hours_label": "Hours",
-                      "minutes_label": "Minutes",
-                      "seconds_label": "Seconds"
-                    },
-                    {
-                      "type": "stack",
-                      "children": [
+                      "type": "split",
+                      "start": [
                         {
-                          "type": "eyebrow",
-                          "id": "n4",
-                          "role": "eyebrow",
-                          "text": "ENDS NOVEMBER 30",
+                          "type": "countdown",
+                          "id": "n3",
+                          "role": "countdown_units",
+                          "layout": "boxes",
+                          "days_label": "DAYS",
+                          "hours_label": "HRS",
+                          "minutes_label": "MIN",
+                          "seconds_label": "Seconds",
+                          "density": "compact",
+                          "precision": "minutes",
                           "tokens": {
-                            "text-size": ".625rem",
-                            "tracking": ".12em"
+                            "fg": "accent",
+                            "border": "bg",
+                            "input-bg": "bg",
+                            "radius": "0",
+                            "countdown-size": "31px",
+                            "heading-weight": "900"
+                          },
+                          "narrow": {
+                            "countdown-size": "31px"
                           }
-                        },
-                        {
-                          "type": "text",
-                          "id": "n5",
-                          "role": "body",
-                          "text": "23:59 UTC"
                         }
                       ],
+                      "end": [
+                        {
+                          "type": "text",
+                          "id": "n10",
+                          "role": "body",
+                          "text": "ENDS NOVEMBER 30\n23:59 UTC",
+                          "tokens": {
+                            "text-size": "14px"
+                          }
+                        }
+                      ],
+                      "ratio": 0.5,
+                      "basis": "0px",
+                      "narrow_layout": "stack",
                       "tokens": {
-                        "gap": ".85rem"
+                        "gap": "27px"
                       }
-                    },
+                    }
+                  ],
+                  "end": [
                     {
                       "type": "button",
                       "id": "n6",
                       "role": "cta_label",
-                      "label": "Shop before it ends",
+                      "label": "Shop the event",
                       "action": "link",
-                      "icon": "arrow"
+                      "icon": "arrow",
+                      "tokens": {
+                        "text-size": "14px",
+                        "radius": "0px"
+                      },
+                      "narrow": {
+                        "width": "100%"
+                      }
                     }
                   ],
+                  "ratio": 0.7,
+                  "basis": "0px",
+                  "narrow_layout": "stack",
                   "tokens": {
-                    "gap": "1rem"
-                  }
-                },
-                {
-                  "type": "text",
-                  "id": "n7",
-                  "role": "fine_print",
-                  "text": "November 27–30. Selected items. Exclusions apply.",
-                  "tokens": {
-                    "text-size": ".875rem"
+                    "gap": "30px"
+                  },
+                  "narrow": {
+                    "gap": "22px"
                   }
                 }
               ],
               "tokens": {
-                "pad": "1.25rem 2rem",
-                "gap": ".9rem",
+                "pad": "19px 28px",
+                "gap": "16px",
                 "radius": "0"
               },
               "narrow": {
-                "pad": "1.4rem"
+                "pad": "24px"
               }
             }
           ],
           "tokens": {
-            "gap": ".85rem"
+            "gap": "0"
           }
         }
       }

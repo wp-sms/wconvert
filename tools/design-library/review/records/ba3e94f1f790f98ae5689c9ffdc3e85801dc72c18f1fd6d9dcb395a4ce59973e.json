@@ -1,0 +1,47 @@
+{
+  "id": "campaign-twelve-month-deal",
+  "revision": "2e4da0c45407378cd076a6905ddef961facc749ffad718bdc30eb21bc5cc60da",
+  "base_id": "512bbdbe85f7472b4bafe74f57769419856059e66950cebb2fa25a3a70c7137d",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **43 · Twelve-Month Deal (Black Friday):** Restored the twelve-month grid, lavender emphasis and annual-price row; renewal terms remain visible.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-twelve-month-deal-320.png",
+          "sha256": "0f330b388afccf88d9bf31d93d8b02db62155675f20d57f857b2456b5cace902"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-twelve-month-deal-1440.png",
+          "sha256": "37afb85298e69e01d4a86aba577f21b185ceefdfa2183cf47c16abf554c585df"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "ba3e94f1f790f98ae5689c9ffdc3e85801dc72c18f1fd6d9dcb395a4ce59973e"
+}

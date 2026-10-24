@@ -4,26 +4,26 @@
   "display_type": "floating_bar",
   "tier": "pro",
   "tokens": {
-    "bg": "#2146c7",
-    "fg": "#fff2d2",
-    "muted": "#fff2d2",
-    "accent": "#fff2d2",
-    "accent-fg": "#2146c7",
+    "bg": "#243fbd",
+    "fg": "#fff5d8",
+    "muted": "#fff5d8",
+    "accent": "#f9b575",
+    "accent-fg": "#283355",
     "border": "#fff2d2",
     "input-bg": "#2146c7",
     "placeholder": "fg",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Bebas Neue\", Impact, sans-serif",
-    "heading-size": "2rem",
+    "heading-size": "34px",
     "heading-weight": "400",
-    "heading-leading": ".95",
-    "text-size": "1rem",
+    "heading-leading": ".96",
+    "text-size": "14px",
     "leading": "1.5",
     "tracking": "0",
-    "pad": "2.75rem 0 0",
+    "pad": "0",
     "gap": "0",
-    "radius": ".25rem",
-    "width": "100%",
+    "radius": "0",
+    "width": "930px",
     "motion": "0ms",
     "close-bg": "#171a1d",
     "close-fg": "#ffffff",
@@ -43,8 +43,8 @@
           "type": "panel",
           "children": [
             {
-              "type": "row",
-              "children": [
+              "type": "split",
+              "start": [
                 {
                   "type": "stack",
                   "children": [
@@ -52,10 +52,10 @@
                       "type": "eyebrow",
                       "id": "n1",
                       "role": "eyebrow",
-                      "text": "BLACK FRIDAY / SCHEDULED SALE DEADLINE",
+                      "text": "BLACK FRIDAY / SELECTED ITEMS",
                       "tokens": {
-                        "text-size": ".625rem",
-                        "tracking": ".12em"
+                        "text-size": "9px",
+                        "tracking": ".1em"
                       }
                     },
                     {
@@ -64,54 +64,78 @@
                       "role": "headline",
                       "text": "40% OFF.\nENDS NOV 30.",
                       "narrow": {
-                        "heading-size": "2.65rem"
+                        "heading-size": "38px"
+                      },
+                      "tokens": {
+                        "heading-size": "34px"
                       }
                     }
                   ],
                   "tokens": {
-                    "gap": ".85rem"
+                    "gap": "12px"
                   }
-                },
-                {
-                  "type": "countdown",
-                  "id": "n3",
-                  "role": "countdown_units",
-                  "layout": "boxes",
-                  "days_label": "Days",
-                  "hours_label": "Hours",
-                  "minutes_label": "Minutes",
-                  "seconds_label": "Seconds"
-                },
-                {
-                  "type": "button",
-                  "id": "n4",
-                  "role": "cta_label",
-                  "label": "Shop Black Friday",
-                  "action": "link",
-                  "icon": "arrow"
                 }
               ],
+              "end": [
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "countdown",
+                      "id": "n3",
+                      "role": "countdown_units",
+                      "layout": "boxes",
+                      "days_label": "DAYS",
+                      "hours_label": "HRS",
+                      "minutes_label": "MIN",
+                      "seconds_label": "Seconds",
+                      "density": "compact",
+                      "precision": "minutes",
+                      "tokens": {
+                        "border": "bg",
+                        "input-bg": "bg",
+                        "radius": "0",
+                        "countdown-size": "30px",
+                        "heading-weight": "900"
+                      },
+                      "narrow": {
+                        "countdown-size": "30px"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "id": "n4",
+                      "role": "cta_label",
+                      "label": "Shop before the close",
+                      "action": "link",
+                      "icon": "arrow",
+                      "tokens": {
+                        "text-size": "14px",
+                        "radius": "5px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "20px",
+                    "align": "space-between"
+                  }
+                }
+              ],
+              "ratio": 0.45,
+              "basis": "22rem",
+              "narrow_layout": "stack",
               "tokens": {
-                "gap": "1rem"
-              }
-            },
-            {
-              "type": "text",
-              "id": "n5",
-              "role": "fine_print",
-              "text": "November 27–30. Selected items. Ends at 23:59 UTC.",
-              "tokens": {
-                "text-size": ".875rem"
+                "gap": "24px"
               }
             }
           ],
           "tokens": {
-            "pad": "1.5rem 2rem",
-            "gap": ".9rem",
+            "pad": "28px 60px 28px",
+            "gap": "16px",
             "radius": "0"
           },
           "narrow": {
-            "pad": "1.4rem"
+            "pad": "56px 24px 25px"
           }
         }
       }

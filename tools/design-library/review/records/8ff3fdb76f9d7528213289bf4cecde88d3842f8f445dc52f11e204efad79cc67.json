@@ -1,0 +1,47 @@
+{
+  "id": "campaign-first-dibs-signup",
+  "revision": "1bd6ab668aea265f979e77a45d3fe5d4a89d99a004ee67873ec5a0d2e0177e77",
+  "base_id": "7ad5455ab2dbcc99303519858be4bc4e28054dcf218a4a6717d16467a5aa8cb0",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **46 · First-Dibs Signup (Black Friday):** Restored lime date stub, compact headline and intentionally vertical form. Phone stacking keeps the date, offer and form together.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-first-dibs-signup-320.png",
+          "sha256": "260de91d0f3e5607973da33010291753774b00eb5de8d28dce592b7fff1c064a"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-first-dibs-signup-1440.png",
+          "sha256": "8af96e1c925346d2bdeb916153e41bb05fa84006308ea8dddcc54d8fddd9c91b"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "8ff3fdb76f9d7528213289bf4cecde88d3842f8f445dc52f11e204efad79cc67"
+}

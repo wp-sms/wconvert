@@ -1,0 +1,47 @@
+{
+  "id": "campaign-friday-email-alert",
+  "revision": "00f9e4759a5d6cf09a662b7a0b0d7540693da7253371f3f41ca432d5cf7bdabb",
+  "base_id": "436245b24c1fa4a5de7a167404ddfa3ba5565f3b8a8b3fd9981003eae765d97c",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **24 · Friday Email Alert (Black Friday):** Restored the yellow/plum preview bar. A shorter “Get access” label and wider action allocation keep the ordinary CTA on one line.",
+  "at": "2026-10-24T13:09:55.646Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-friday-email-alert-320.png",
+          "sha256": "8abd8634577f005b794a021f138fd89c97df0d95307f6c00c761f1509210402e"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-friday-email-alert-1440.png",
+          "sha256": "aa4a1c8ac0f81eb63d8d81483abca240ea78ade5614680dba38b31b5671d9a18"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "8ac9febc6ce63f04a8aff89773c7abc4998118d82b6429080335d2a52f4238b5"
+}

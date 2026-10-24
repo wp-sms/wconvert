@@ -1,0 +1,47 @@
+{
+  "id": "campaign-black-friday-plus-one",
+  "revision": "fda3ec65f238490b18dd19ce5eca6fc9a67a6235ada099ef4ab3a23500423264",
+  "base_id": "aa49f2ecb367a06d5a05c8bc4687ecd0f3afe027bd9ff9622eabecd6a7d809c9",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **41 · Black Friday Plus One (Black Friday):** Restored product close-up, large plus sign and salmon action; gift threshold and one-per-order terms remain explicit.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-black-friday-plus-one-320.png",
+          "sha256": "a52f1dc038dcc84d72b1c5133e31b343e18f79ee356c82603b1632e9f016f43a"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-black-friday-plus-one-1440.png",
+          "sha256": "916f078a4b150281606c34ef00437a10dd53be94f76dbe823baeac2c5ed67054"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "fff8e462f8b65b8fc959f447f4ddc5460db1cfd4beb84c61e32d598cb0722fb7"
+}

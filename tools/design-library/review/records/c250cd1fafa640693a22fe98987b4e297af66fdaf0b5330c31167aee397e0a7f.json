@@ -1,0 +1,47 @@
+{
+  "id": "campaign-welcome-buddy",
+  "revision": "33a14397d22f7fea7caabed678a5a3d0038d8d1c81860dd2e85fe2c4cc175774",
+  "base_id": "6768c6a51224fe4847ceaf28f44328043bb8d7b8851cb1cb0f29644211ce9a7c",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **01 · Welcome Buddy (General):** Matched lavender/mint palette, bold display face, mascot crop and rounded action; image stacks above the offer.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-welcome-buddy-320.png",
+          "sha256": "0cf024bb80107387c9028fa34c74efe96fd96e2e573e3eeedf38ff64ce511798"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-welcome-buddy-1440.png",
+          "sha256": "a2e61959f713dd9e18858d8c26a4325fbb25d46dca8e3a1355fa685a50d4e855"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "c250cd1fafa640693a22fe98987b4e297af66fdaf0b5330c31167aee397e0a7f"
+}

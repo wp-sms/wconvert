@@ -122,7 +122,7 @@ export const SHADOW_CSS = [
    * It is the only route to a three-up: `split` is hard-coded to exactly two
    * panes, and a benefit list has three benefits.
    */
-  `.wc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--wc-basis,8rem)),1fr));gap:var(--wc-gap,.75rem)}`,
+  `.wc-grid{--wc-narrow_basis:initial;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--wc-basis,8rem)),1fr));gap:var(--wc-gap,.75rem)}`,
 
   /*
    * ==========================================================================
@@ -415,6 +415,9 @@ export const SHADOW_CSS = [
   `.wc-unit[hidden]{display:none}`,
   `.wc-boxes:has(>.wc-unit[hidden])>.wc-unit{flex-basis:calc(33.33% - .34rem)}`,
   `.wc-boxes.wc-compact{gap:.375rem;flex-wrap:nowrap}`,
+  `.wc-boxes.wc-stacked{flex-direction:column;align-items:center}`,
+  `@container (max-width:40rem){.wc-split[data-narrow-layout]{display:grid}.wc-split[data-narrow-layout=reverse]>.wc-pane:last-child{order:-1}.wc-split[data-narrow-layout]>.wc-pane>.wc-media{block-size:auto}}`,
+  `@container (max-width:${A_NARROW_DESIGN}){.wc-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--wc-narrow_basis,var(--wc-basis,8rem))),1fr))}.wc-boxes.wc-stacked{flex-direction:row;justify-content:center}}`,
   `.wc-compact>.wc-unit{flex:0 0 auto!important;inline-size:max(2.1875rem,calc(var(--wc-countdown-size,2.166667rem)*1.5));max-inline-size:none;padding:.3rem .15rem;min-inline-size:0}`,
   `.wc-compact>.wc-unit>.wc-count{font-size:var(--wc-countdown-size,1.35rem);line-height:1.15;letter-spacing:normal}`,
   `.wc-compact>.wc-unit>small{font-size:.75rem;max-inline-size:100%;overflow-wrap:anywhere;text-align:center}`,

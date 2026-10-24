@@ -7,23 +7,23 @@
     "bg": "#101211",
     "fg": "#f4f4eb",
     "muted": "#f4f4eb",
-    "accent": "#d9f86b",
-    "accent-fg": "#181a12",
+    "accent": "#dcff49",
+    "accent-fg": "#14180b",
     "border": "#f4f4eb",
     "input-bg": "#101211",
     "placeholder": "fg",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Bebas Neue\", Impact, sans-serif",
-    "heading-size": "3.6rem",
+    "heading-size": "102px",
     "heading-weight": "400",
-    "heading-leading": ".95",
-    "text-size": "1rem",
+    "heading-leading": ".96",
+    "text-size": "14px",
     "leading": "1.5",
     "tracking": "0",
-    "pad": "2.75rem 0 0",
+    "pad": "0",
     "gap": "0",
-    "radius": ".25rem",
-    "width": "45rem",
+    "radius": "0",
+    "width": "650px",
     "motion": "0ms",
     "close-bg": "#171a1d",
     "close-fg": "#ffffff",
@@ -49,10 +49,10 @@
                   "type": "eyebrow",
                   "id": "n1",
                   "role": "eyebrow",
-                  "text": "BLACK FRIDAY / APPAREL DROP",
+                  "text": "EVERYDAY / DROP 027 · 27—30 NOVEMBER",
                   "tokens": {
-                    "text-size": ".625rem",
-                    "tracking": ".12em"
+                    "text-size": "9px",
+                    "tracking": ".1em"
                   }
                 },
                 {
@@ -61,25 +61,24 @@
                   "role": "headline",
                   "text": "BLACK FRIDAY",
                   "tokens": {
-                    "heading-size": "5.8rem"
+                    "heading-size": "102px"
                   },
                   "narrow": {
-                    "heading-size": "2.65rem"
+                    "heading-size": "49px"
                   }
                 }
               ],
               "tokens": {
-                "pad": "1.5rem 2rem .5rem",
-                "gap": ".9rem"
+                "pad": "56px 48px 15px 25px",
+                "gap": "12px",
+                "radius": "0"
               },
               "narrow": {
-                "pad": "1.4rem"
+                "pad": "56px 20px 15px 20px"
               }
             },
             {
               "type": "split",
-              "ratio": 0.65,
-              "basis": "16rem",
               "start": [
                 {
                   "type": "panel",
@@ -92,22 +91,24 @@
                       "fit": "cover",
                       "shape": "rect",
                       "tokens": {
-                        "image-height": "23rem",
-                        "image-position": "center",
+                        "image-height": "290px",
+                        "image-position": "center 10%",
                         "radius": "0"
                       },
                       "narrow": {
-                        "image-height": "16rem"
+                        "image-height": "240px",
+                        "image-position": "center 12%"
                       },
                       "motion": "arrive"
                     }
                   ],
                   "tokens": {
                     "pad": "0",
-                    "gap": ".9rem"
+                    "gap": "0",
+                    "radius": "0"
                   },
                   "narrow": {
-                    "pad": "1.4rem"
+                    "pad": "0"
                   }
                 }
               ],
@@ -117,81 +118,123 @@
                   "children": [
                     {
                       "type": "eyebrow",
-                      "id": "n4",
+                      "id": "n9",
                       "role": "eyebrow",
                       "text": "THE BIG FIT EVENT",
                       "tokens": {
-                        "text-size": ".625rem",
-                        "tracking": ".12em"
+                        "text-size": "9px",
+                        "tracking": ".08em"
+                      }
+                    },
+                    {
+                      "type": "row",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "n10",
+                          "role": "body",
+                          "text": "%b",
+                          "tokens": {
+                            "font": "\"DM Sans\", Arial, sans-serif",
+                            "text-size": "102px",
+                            "leading": ".95",
+                            "tracking": "-.04em",
+                            "fg": "accent"
+                          },
+                          "emphasis": "40",
+                          "narrow": {
+                            "text-size": "58px"
+                          }
+                        },
+                        {
+                          "type": "text",
+                          "id": "n14",
+                          "role": "body",
+                          "text": "%b",
+                          "tokens": {
+                            "font": "\"DM Sans\", Arial, sans-serif",
+                            "text-size": "39px",
+                            "leading": ".95",
+                            "tracking": "-.04em",
+                            "fg": "accent"
+                          },
+                          "emphasis": "%",
+                          "narrow": {
+                            "text-size": "39px"
+                          }
+                        }
+                      ],
+                      "tokens": {
+                        "gap": "2px"
+                      }
+                    },
+                    {
+                      "type": "eyebrow",
+                      "id": "n11",
+                      "role": "eyebrow",
+                      "text": "UP TO / OFF",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".08em"
                       }
                     },
                     {
                       "type": "text",
-                      "id": "n5",
+                      "id": "n12",
                       "role": "body",
                       "text": "%b",
                       "tokens": {
-                        "text-size": "4.8rem",
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "text-size": "19px",
                         "leading": ".95",
-                        "font": "\"Bebas Neue\", Impact, sans-serif"
+                        "tracking": "-.04em"
                       },
-                      "emphasis": "UP TO\n40% OFF",
+                      "emphasis": "GOOD FITS.\nBETTER PRICES.",
                       "narrow": {
-                        "text-size": "2.8rem"
+                        "text-size": "19px"
                       }
                     },
                     {
                       "type": "text",
-                      "id": "n6",
+                      "id": "n13",
                       "role": "body",
-                      "text": "Selected fleeces, layers and everyday favourites."
+                      "text": "Selected fleeces, layers\nand everyday favorites.",
+                      "tokens": {
+                        "text-size": "14px"
+                      }
                     }
                   ],
                   "tokens": {
-                    "pad": "2rem",
-                    "gap": ".9rem"
+                    "pad": "22px 25px",
+                    "gap": "18px",
+                    "radius": "0"
                   },
                   "narrow": {
-                    "pad": "1.4rem"
+                    "pad": "18px 12px"
                   }
                 }
               ],
+              "ratio": 0.525,
+              "basis": "8rem",
               "tokens": {
                 "gap": "0"
               }
             },
             {
-              "type": "panel",
-              "children": [
-                {
-                  "type": "button",
-                  "id": "n7",
-                  "role": "cta_label",
-                  "label": "Shop the drop",
-                  "action": "link",
-                  "icon": "arrow"
-                },
-                {
-                  "type": "text",
-                  "id": "n8",
-                  "role": "fine_print",
-                  "text": "November 27–30. Selected items. Exclusions apply.",
-                  "tokens": {
-                    "text-size": ".875rem"
-                  }
-                }
-              ],
+              "type": "button",
+              "id": "n7",
+              "role": "cta_label",
+              "label": "Shop the Black Friday drop",
+              "action": "link",
+              "icon": "arrow",
               "tokens": {
-                "pad": "1.25rem 2rem",
-                "gap": ".9rem"
-              },
-              "narrow": {
-                "pad": "1.4rem"
+                "text-size": "14px",
+                "radius": "0px"
               }
             }
           ],
           "tokens": {
-            "gap": ".85rem"
+            "gap": "0"
           }
         }
       }

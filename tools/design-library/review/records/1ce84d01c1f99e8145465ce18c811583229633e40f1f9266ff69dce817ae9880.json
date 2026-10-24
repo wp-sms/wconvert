@@ -1,0 +1,99 @@
+{
+  "id": "event-calendar",
+  "revision": "357b89eb6e8ddea77dc4cb374ecdc18d75916b9cfbb647f8903ac15defd914f5",
+  "base_id": "957af4ce7dbe303f325c3d507d042498890f79a31df0cd8c997db71b42ec877a",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at d7688edf, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T12:58:11Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+          "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+          "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+          "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+          "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+          "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+          "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+          "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+          "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+          "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+          "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+          "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+          "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+          "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+          "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+          "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+          "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+          "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+          "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+        }
+      ]
+    }
+  },
+  "record_id": "1ce84d01c1f99e8145465ce18c811583229633e40f1f9266ff69dce817ae9880"
+}

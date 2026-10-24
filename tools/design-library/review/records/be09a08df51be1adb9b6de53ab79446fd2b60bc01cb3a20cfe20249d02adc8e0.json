@@ -1,0 +1,47 @@
+{
+  "id": "campaign-friday-pass",
+  "revision": "ff20cba8e892dd9a3fe9aec13e7c1f1dd0bcbfdd61766bb24eb72e16f61c2da8",
+  "base_id": "859b945736d39bc9bcaa50570c585cd4c6b5e0c833f73c77b5ce023f3db887aa",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **15 · Friday Pass (Black Friday):** Restored passport green, globe artwork and italic offer. Native framed offer panel replaces the prototype thin oval stamp.",
+  "at": "2026-10-24T13:09:55.646Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-friday-pass-320.png",
+          "sha256": "34efd70ceee4b8a51cda383c25c77ebf61a95eefcf1e848fa93fa8cfdca93c2d"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-friday-pass-1440.png",
+          "sha256": "f256ce93455a9fcd5f767663a7f489311b0ad3e3788723c1575b8d0f4bf478e0"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "be09a08df51be1adb9b6de53ab79446fd2b60bc01cb3a20cfe20249d02adc8e0"
+}

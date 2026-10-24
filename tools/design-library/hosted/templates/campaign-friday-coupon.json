@@ -9,21 +9,21 @@
     "muted": "#fff3d7",
     "accent": "#ffe5a3",
     "accent-fg": "#7b2926",
-    "border": "#194437",
-    "input-bg": "#bfe9c1",
+    "border": "#154b3c",
+    "input-bg": "#c2e9c0",
     "placeholder": "fg",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Bebas Neue\", Impact, sans-serif",
-    "heading-size": "3.6rem",
+    "heading-size": "58px",
     "heading-weight": "400",
-    "heading-leading": ".95",
-    "text-size": "1rem",
+    "heading-leading": ".96",
+    "text-size": "14px",
     "leading": "1.5",
     "tracking": "0",
-    "pad": "2.75rem 0 0",
+    "pad": "0",
     "gap": "0",
-    "radius": ".25rem",
-    "width": "45rem",
+    "radius": "0",
+    "width": "720px",
     "motion": "0ms",
     "close-bg": "#171a1d",
     "close-fg": "#ffffff",
@@ -41,8 +41,6 @@
         "kind": "content",
         "content": {
           "type": "split",
-          "ratio": 0.65,
-          "basis": "16rem",
           "start": [
             {
               "type": "panel",
@@ -53,8 +51,8 @@
                   "role": "eyebrow",
                   "text": "BLACK FRIDAY / PUBLIC DISCOUNT CODE",
                   "tokens": {
-                    "text-size": ".625rem",
-                    "tracking": ".12em"
+                    "text-size": "9px",
+                    "tracking": ".1em"
                   }
                 },
                 {
@@ -63,7 +61,10 @@
                   "role": "headline",
                   "text": "BLACK FRIDAY.\n40% OFF.",
                   "narrow": {
-                    "heading-size": "2.65rem"
+                    "heading-size": "50px"
+                  },
+                  "tokens": {
+                    "heading-size": "58px"
                   }
                 },
                 {
@@ -78,7 +79,11 @@
                   "role": "cta_label",
                   "label": "Shop with 40% off",
                   "action": "link",
-                  "icon": "arrow"
+                  "icon": "arrow",
+                  "tokens": {
+                    "text-size": "14px",
+                    "radius": "0px"
+                  }
                 },
                 {
                   "type": "text",
@@ -86,16 +91,17 @@
                   "role": "fine_print",
                   "text": "November 27–30. Selected items. Exclusions apply.",
                   "tokens": {
-                    "text-size": ".875rem"
+                    "text-size": "14px"
                   }
                 }
               ],
               "tokens": {
-                "pad": "2rem",
-                "gap": ".9rem"
+                "pad": "56px 32px 28px 32px",
+                "gap": "16px",
+                "radius": "0"
               },
               "narrow": {
-                "pad": "1.4rem"
+                "pad": "56px 23px 25px 23px"
               }
             }
           ],
@@ -108,37 +114,36 @@
                   "children": [
                     {
                       "type": "eyebrow",
-                      "id": "n6",
+                      "id": "n10",
                       "role": "eyebrow",
                       "text": "YOUR BLACK FRIDAY CODE",
                       "tokens": {
-                        "text-size": ".625rem",
-                        "tracking": ".12em"
+                        "text-size": "9px",
+                        "tracking": ".08em"
                       }
                     },
                     {
                       "type": "text",
-                      "id": "n7",
+                      "id": "n11",
                       "role": "body",
                       "text": "%b",
                       "tokens": {
-                        "text-size": "6rem",
+                        "font": "\"Bebas Neue\", Impact, sans-serif",
+                        "text-size": "96px",
                         "leading": ".95",
-                        "font": "\"Bebas Neue\", Impact, sans-serif"
+                        "tracking": "-.04em",
+                        "fg": "border"
                       },
                       "emphasis": "40%",
                       "narrow": {
-                        "text-size": "4.5rem"
+                        "text-size": "64px"
                       }
                     },
                     {
                       "type": "text",
-                      "id": "n8",
+                      "id": "n12",
                       "role": "body",
-                      "text": "OFF SELECTED ITEMS",
-                      "tokens": {
-                        "text-size": ".875rem"
-                      }
+                      "text": "OFF SELECTED ITEMS"
                     },
                     {
                       "type": "code",
@@ -150,55 +155,56 @@
                     {
                       "type": "panel",
                       "children": [],
+                      "min": "30px",
                       "tokens": {
                         "pad": "0",
-                        "gap": "0"
+                        "radius": "0"
                       },
-                      "narrow": {
-                        "pad": "0"
-                      },
-                      "min": "2.5rem",
                       "decorations": {
                         "label": "Decorative barcode",
                         "hidden": false,
                         "items": [
                           {
                             "kind": "barcode",
-                            "motion": "none",
                             "x": 50,
                             "y": 50,
-                            "size": 130,
-                            "color": "fg"
+                            "size": 160,
+                            "color": "fg",
+                            "motion": "none"
                           }
                         ]
                       }
                     }
                   ],
                   "tokens": {
-                    "pad": "2rem 1.25rem",
-                    "gap": ".9rem",
+                    "pad": "44px 20px 26px",
+                    "gap": "22px",
+                    "radius": "0",
                     "bg": "input-bg",
                     "fg": "border",
                     "muted": "border",
-                    "radius": ".15rem",
                     "align": "center"
                   },
                   "narrow": {
-                    "pad": "1.4rem"
+                    "pad": "42px 22px 24px"
                   },
                   "notch": true,
                   "notch_position": "sides"
                 }
               ],
               "tokens": {
-                "pad": "1.75rem 1.25rem",
-                "gap": "0"
+                "pad": "20px",
+                "gap": "0",
+                "radius": "0"
               },
               "narrow": {
-                "pad": "1.4rem"
+                "pad": "24px"
               }
             }
           ],
+          "ratio": 0.58,
+          "basis": "15rem",
+          "narrow_layout": "stack",
           "tokens": {
             "gap": "0"
           }

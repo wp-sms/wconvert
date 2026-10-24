@@ -4,26 +4,26 @@
   "display_type": "popup",
   "tier": "free",
   "tokens": {
-    "bg": "#eee0bc",
-    "fg": "#244b3e",
-    "muted": "#244b3e",
-    "accent": "#244b3e",
-    "accent-fg": "#fff4d9",
-    "border": "#244b3e",
+    "bg": "#efe3bd",
+    "fg": "#183e36",
+    "muted": "#183e36",
+    "accent": "#183e36",
+    "accent-fg": "#fff6df",
+    "border": "#c16c35",
     "input-bg": "#eee0bc",
     "placeholder": "fg",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Bebas Neue\", Impact, sans-serif",
-    "heading-size": "3.6rem",
+    "heading-size": "58px",
     "heading-weight": "400",
-    "heading-leading": ".95",
-    "text-size": "1rem",
+    "heading-leading": ".96",
+    "text-size": "14px",
     "leading": "1.5",
     "tracking": "0",
-    "pad": "2.75rem 0 0",
+    "pad": "0",
     "gap": "0",
-    "radius": ".25rem",
-    "width": "45rem",
+    "radius": "0",
+    "width": "720px",
     "motion": "0ms",
     "close-bg": "#171a1d",
     "close-fg": "#ffffff",
@@ -41,8 +41,6 @@
         "kind": "content",
         "content": {
           "type": "split",
-          "ratio": 0.5,
-          "basis": "16rem",
           "start": [
             {
               "type": "panel",
@@ -55,27 +53,22 @@
                   "fit": "contain",
                   "shape": "rect",
                   "tokens": {
-                    "image-height": "25rem",
+                    "image-height": "400px",
                     "image-position": "center",
                     "radius": "0"
                   },
                   "narrow": {
-                    "image-height": "16rem"
+                    "image-height": "240px"
                   }
-                },
-                {
-                  "type": "badge",
-                  "id": "n2",
-                  "role": "badge",
-                  "text": "MORE OUTSIDE"
                 }
               ],
               "tokens": {
                 "pad": "0",
-                "gap": "0"
+                "gap": "0",
+                "radius": "0"
               },
               "narrow": {
-                "pad": "1.4rem"
+                "pad": "0"
               }
             }
           ],
@@ -89,17 +82,41 @@
                   "role": "eyebrow",
                   "text": "OUTDOOR SEASONAL SALE",
                   "tokens": {
-                    "text-size": ".625rem",
-                    "tracking": ".12em"
+                    "text-size": "9px",
+                    "tracking": ".1em"
                   }
                 },
                 {
-                  "type": "heading",
-                  "id": "n4",
-                  "role": "headline",
-                  "text": "MORE OUTSIDE.\n30% LESS.",
-                  "narrow": {
-                    "heading-size": "2.65rem"
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "id": "n4",
+                      "role": "headline",
+                      "text": "MORE OUTSIDE.",
+                      "narrow": {
+                        "heading-size": "48px"
+                      },
+                      "tokens": {
+                        "heading-size": "58px"
+                      }
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n8",
+                      "role": "headline",
+                      "text": "30% LESS.",
+                      "narrow": {
+                        "heading-size": "48px"
+                      },
+                      "tokens": {
+                        "heading-size": "58px",
+                        "fg": "border"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "0"
                   }
                 },
                 {
@@ -112,9 +129,13 @@
                   "type": "button",
                   "id": "n6",
                   "role": "cta_label",
-                  "label": "Shop outdoor",
+                  "label": "Shop the outdoor sale",
                   "action": "link",
-                  "icon": "arrow"
+                  "icon": "arrow",
+                  "tokens": {
+                    "text-size": "14px",
+                    "radius": "0px"
+                  }
                 },
                 {
                   "type": "text",
@@ -122,19 +143,23 @@
                   "role": "fine_print",
                   "text": "Selected outdoor gear. Exclusions apply.",
                   "tokens": {
-                    "text-size": ".875rem"
+                    "text-size": "14px"
                   }
                 }
               ],
               "tokens": {
-                "pad": "2rem",
-                "gap": ".9rem"
+                "pad": "56px 32px 28px 32px",
+                "gap": "16px",
+                "radius": "0"
               },
               "narrow": {
-                "pad": "1.4rem"
+                "pad": "56px 23px 25px 23px"
               }
             }
           ],
+          "ratio": 0.5,
+          "basis": "15rem",
+          "narrow_layout": "stack",
           "tokens": {
             "gap": "0"
           }

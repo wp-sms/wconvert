@@ -1,0 +1,47 @@
+{
+  "id": "campaign-layer-edit",
+  "revision": "19b7afca94c5d4b66ddd44c1fbafc2a5f18312e22cd178f1f3d9e7c15c28cbf6",
+  "base_id": "0353584b3a8e5f16ea51b7b8c8cef9efdb86efb6458f2f60de436abc44505784",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **40 · Layer Edit (Black Friday):** Restored compact apparel/photo split and lime footer action. Additional close clearance and readable offer text are intentional.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-layer-edit-320.png",
+          "sha256": "22be63312ce5a6d6a75166b27c53537471a4e69ae260b17d66b47814e889aae3"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-layer-edit-1440.png",
+          "sha256": "050136ad335db8af5c79193ba533ad900b0c2568c18749cf1d605257ebfa0a73"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "c55c4190a56cd75a97aebcfe97c99ae77b08282fd4a2e37a5aaffbf831263135"
+}

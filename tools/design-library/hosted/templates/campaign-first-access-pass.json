@@ -8,22 +8,22 @@
     "fg": "#f4f4eb",
     "muted": "#f4f4eb",
     "accent": "#d9f86b",
-    "accent-fg": "#181a12",
+    "accent-fg": "#14180b",
     "border": "#f4f4eb",
-    "input-bg": "#101211",
+    "input-bg": "#2a3022",
     "placeholder": "fg",
     "font": "\"DM Sans\", Arial, sans-serif",
-    "heading-font": "\"Bebas Neue\", Impact, sans-serif",
-    "heading-size": "3.6rem",
-    "heading-weight": "400",
-    "heading-leading": ".95",
-    "text-size": "1rem",
+    "heading-font": "\"DM Sans\", Arial, sans-serif",
+    "heading-size": "44px",
+    "heading-weight": "900",
+    "heading-leading": ".96",
+    "text-size": "14px",
     "leading": "1.5",
     "tracking": "0",
-    "pad": "2.75rem 0 0",
+    "pad": "0",
     "gap": "0",
-    "radius": ".25rem",
-    "width": "45rem",
+    "radius": "0",
+    "width": "690px",
     "motion": "0ms",
     "close-bg": "#171a1d",
     "close-fg": "#ffffff",
@@ -41,80 +41,83 @@
         "kind": "input",
         "content": {
           "type": "split",
-          "ratio": 0.35,
-          "basis": "16rem",
           "start": [
             {
-              "type": "panel",
+              "type": "media",
               "children": [
                 {
-                  "type": "eyebrow",
-                  "id": "n1",
-                  "role": "eyebrow",
-                  "text": "BLACK FRIDAY",
-                  "tokens": {
-                    "text-size": ".625rem",
-                    "tracking": ".12em"
-                  }
-                },
-                {
-                  "type": "text",
-                  "id": "n2",
-                  "role": "body",
-                  "text": "%b",
-                  "tokens": {
-                    "text-size": "6rem",
-                    "leading": ".95",
-                    "font": "\"Bebas Neue\", Impact, sans-serif"
-                  },
-                  "emphasis": "26",
-                  "narrow": {
-                    "text-size": "4.5rem"
-                  }
-                },
-                {
-                  "type": "text",
-                  "id": "n3",
-                  "role": "body",
-                  "text": "NOVEMBER\nONE DAY EARLY"
-                },
-                {
-                  "type": "panel",
-                  "children": [],
-                  "tokens": {
-                    "pad": "0",
-                    "gap": "0"
-                  },
-                  "narrow": {
-                    "pad": "0"
-                  },
-                  "min": "2.5rem",
-                  "decorations": {
-                    "label": "Decorative barcode",
-                    "hidden": false,
-                    "items": [
-                      {
-                        "kind": "barcode",
-                        "motion": "none",
-                        "x": 50,
-                        "y": 50,
-                        "size": 130,
-                        "color": "fg"
+                  "type": "grid",
+                  "basis": "10rem",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n14",
+                      "role": "eyebrow",
+                      "text": "BLACK FRIDAY",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".08em"
                       }
-                    ]
-                  }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n15",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "text-size": "92px",
+                        "leading": ".95",
+                        "tracking": "-.04em"
+                      },
+                      "emphasis": "26",
+                      "narrow": {
+                        "text-size": "40px"
+                      }
+                    },
+                    {
+                      "type": "eyebrow",
+                      "id": "n16",
+                      "role": "eyebrow",
+                      "text": "NOV",
+                      "tokens": {
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "text-size": "23px",
+                        "leading": ".95",
+                        "tracking": "-.04em"
+                      },
+                      "narrow": {
+                        "text-size": "23px"
+                      }
+                    },
+                    {
+                      "type": "eyebrow",
+                      "id": "n17",
+                      "role": "eyebrow",
+                      "text": "ONE DAY\nEARLY",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".08em"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "12px"
+                  },
+                  "narrow_basis": "3.5rem"
                 }
               ],
               "tokens": {
-                "pad": "2rem 1.5rem",
-                "gap": ".9rem",
+                "pad": "56px 19px 25px",
+                "gap": "24px",
+                "radius": "0",
                 "bg": "accent",
                 "fg": "accent-fg",
                 "muted": "accent-fg",
                 "align": "center"
               },
               "narrow": {
-                "pad": "1.4rem"
+                "pad": "56px 22px 20px"
               }
             }
           ],
@@ -123,10 +126,30 @@
               "type": "panel",
               "children": [
                 {
-                  "type": "badge",
-                  "id": "n4",
-                  "role": "badge",
-                  "text": "UP TO 40% OFF"
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n18",
+                      "role": "eyebrow",
+                      "text": "UP TO 40% OFF / EARLY ACCESS",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".08em"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "9px 12px",
+                    "gap": "16px",
+                    "radius": "0",
+                    "bg": "input-bg",
+                    "fg": "accent",
+                    "muted": "accent"
+                  },
+                  "narrow": {
+                    "pad": "24px"
+                  }
                 },
                 {
                   "type": "heading",
@@ -134,7 +157,10 @@
                   "role": "headline",
                   "text": "YOUR PASS\nTO FIRST PICK.",
                   "narrow": {
-                    "heading-size": "2.65rem"
+                    "heading-size": "32px"
+                  },
+                  "tokens": {
+                    "heading-size": "44px"
                   }
                 },
                 {
@@ -152,7 +178,10 @@
                       "name": "email",
                       "label": "Email address",
                       "placeholder": "you@example.com",
-                      "required": true
+                      "required": true,
+                      "tokens": {
+                        "text-size": "16px"
+                      }
                     },
                     {
                       "type": "consent",
@@ -168,11 +197,15 @@
                       "label": "Get early access",
                       "icon": "arrow",
                       "action": "submit",
-                      "submission": "email-preview"
+                      "submission": "email-preview",
+                      "tokens": {
+                        "text-size": "14px",
+                        "radius": "0px"
+                      }
                     }
                   ],
                   "tokens": {
-                    "gap": ".85rem"
+                    "gap": "12px"
                   }
                 },
                 {
@@ -181,33 +214,23 @@
                   "role": "fine_print",
                   "text": "Preview opens November 26. Selected offers.",
                   "tokens": {
-                    "text-size": ".875rem"
+                    "text-size": "14px"
                   }
                 }
               ],
               "tokens": {
-                "pad": "2rem",
-                "gap": ".9rem"
+                "pad": "45px 30px 30px",
+                "gap": "20px",
+                "radius": "0"
               },
               "narrow": {
-                "pad": "1.4rem"
-              },
-              "decorations": {
-                "label": "Decorative halo",
-                "hidden": false,
-                "items": [
-                  {
-                    "kind": "halo",
-                    "motion": "pulse",
-                    "x": 90,
-                    "y": 7,
-                    "size": 60,
-                    "color": "accent"
-                  }
-                ]
+                "pad": "42px 22px 24px"
               }
             }
           ],
+          "ratio": 0.24,
+          "basis": "0px",
+          "narrow_layout": "stack",
           "tokens": {
             "gap": "0"
           }
@@ -224,7 +247,13 @@
               "type": "heading",
               "id": "n11",
               "role": "success_headline",
-              "text": "Request received"
+              "text": "Request received",
+              "tokens": {
+                "heading-size": "44px"
+              },
+              "narrow": {
+                "heading-size": "32px"
+              }
             },
             {
               "type": "text",
@@ -236,15 +265,18 @@
               "type": "text",
               "id": "n13",
               "role": "fine_print",
-              "text": "You can close this window and continue browsing."
+              "text": "You can close this window and continue browsing.",
+              "tokens": {
+                "text-size": "12px"
+              }
             }
           ],
           "tokens": {
-            "pad": "2rem",
+            "pad": "60px 30px 30px",
             "gap": ".9rem"
           },
           "narrow": {
-            "pad": "1.4rem"
+            "pad": "60px 24px 24px"
           }
         }
       }

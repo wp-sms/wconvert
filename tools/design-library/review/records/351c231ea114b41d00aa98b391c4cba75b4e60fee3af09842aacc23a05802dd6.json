@@ -1,0 +1,47 @@
+{
+  "id": "campaign-black-friday-departments",
+  "revision": "b3a10b61fc49d40332d5b2baa5d87a3163d2bfc18494850dcc24f4644cb2603d",
+  "base_id": "6b4c6e16857b4c0f62966c5ffa2738d938af3746557ee135c5db082bda2ce632",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **29 · Black Friday Departments (Black Friday):** Restored three product departments and green offer typography. Phone layout retains all departments instead of dropping the last image.",
+  "at": "2026-10-24T13:09:55.646Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-black-friday-departments-320.png",
+          "sha256": "ae41381ae138492610061d81c7ec05fa32a948246dd04f2c27c88606d9762bb4"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-black-friday-departments-1440.png",
+          "sha256": "4c0e7bb4beb1741712a2284799d813375e9dff7cb8e3726ab0c56ea51694b557"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "351c231ea114b41d00aa98b391c4cba75b4e60fee3af09842aacc23a05802dd6"
+}

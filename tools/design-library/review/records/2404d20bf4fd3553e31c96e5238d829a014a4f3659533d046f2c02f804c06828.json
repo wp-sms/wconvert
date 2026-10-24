@@ -1,0 +1,47 @@
+{
+  "id": "campaign-breakfast-edit",
+  "revision": "de5f7a9cf911e14de3476e426bda1b853c82737f69fe86aeea4beee1cfd1c72b",
+  "base_id": "b3c7007de73bc3fc0ee2cc6f28aeaee10132fff238999ba2f0e1a1777bfba0c0",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **26 · Breakfast Edit (General):** Restored the toaster photo, sky-blue background and orange action; the specific kitchen offer stays general.",
+  "at": "2026-10-24T13:09:55.646Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-breakfast-edit-320.png",
+          "sha256": "0e0ad191b06459d0b0a640f940d6b91401ac5a01f3a9e37d168e6bf4f2b5291e"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-breakfast-edit-1440.png",
+          "sha256": "70cd64e37ca6a6a80014bc604dde494d4593a8b666babf6741ef67c7280bb115"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "2404d20bf4fd3553e31c96e5238d829a014a4f3659533d046f2c02f804c06828"
+}

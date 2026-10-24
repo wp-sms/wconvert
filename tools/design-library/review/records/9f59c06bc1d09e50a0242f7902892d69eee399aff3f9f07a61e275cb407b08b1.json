@@ -1,0 +1,47 @@
+{
+  "id": "campaign-sound-circle",
+  "revision": "17e7c7bcc139420f0034d23c7815defc981c93893fe9ecb5a12b462f017f9e95",
+  "base_id": "5e5893046f09badb99ccf0ad940a7e254b18399bf7b55888b53ec2421fc248ca",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **39 · Sound Circle (Black Friday):** Restored circular headphones photograph, blue reward and three-part desktop layout. Phone offer remains with the image column.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-sound-circle-320.png",
+          "sha256": "78f2b18bc46f4486428eb50970996e3fc1065e98d32b3c6d4376ddfa80476f7d"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-sound-circle-1440.png",
+          "sha256": "c11e5f21c7c9b210f6fb53a8c08a56802992c6ba74a7a9892c672a18d094c858"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "9f59c06bc1d09e50a0242f7902892d69eee399aff3f9f07a61e275cb407b08b1"
+}

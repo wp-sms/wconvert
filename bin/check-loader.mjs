@@ -12,7 +12,7 @@
 //
 // Two assertions, and neither is optional:
 //
-//   1. THE BYTE BUDGET, HARD. gzip -9 on Node 22: Free 18480 B; Pro 31744 B
+//   1. THE BYTE BUDGET, HARD. gzip -9 on Node 22: Free 18480 B; Pro 31872 B
 //      (ADR 0139, amended; ADR 0146; ADR 0152; ADR 0155; ADR 0158; ADR 0159), per build. It blocks rather than warns,
 //      and there is no second warn band nobody would read.
 //
@@ -106,7 +106,8 @@ const FREE_BYTE_BUDGET = 18480;
 // ADR 0158 (approved by the user, PR #314): +288 B for the close reserve on bars
 // and slide-ins, measured on Node 22; main left 48 B, the reserve needs ~245 B.
 // ADR 0159 (approved by the user): +2560 B headroom, as Free; this PR used 496 B (28,656 B).
-const PRO_BYTE_BUDGET = 31744;
+// ADR 0168: +128 B for opt-in compact composition and minute/vertical countdowns.
+const PRO_BYTE_BUDGET = 31872;
 
 const MANIFEST = 'resources/rules/manifest.json';
 
