@@ -1,4 +1,4 @@
-WConvert - Popups and Inline Forms for Lead Capture
+WConvert - Popup Builder, Email Optin Forms & Lead Capture
 
 Copyright (C) VeronaLabs
 
