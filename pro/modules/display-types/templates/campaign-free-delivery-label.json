@@ -1,0 +1,206 @@
+{
+  "id": "campaign-free-delivery-label",
+  "name": "Free-Delivery Label",
+  "display_type": "floating_bar",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#101211",
+    "fg": "#f4f4eb",
+    "muted": "#f4f4eb",
+    "accent": "#b2c8ff",
+    "accent-fg": "#181a12",
+    "border": "#18201e",
+    "input-bg": "#f5efe4",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Bebas Neue\", Impact, sans-serif",
+    "heading-size": "2rem",
+    "heading-weight": "400",
+    "heading-leading": ".95",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "2.75rem 0 0",
+    "gap": "0",
+    "radius": ".25rem",
+    "width": "100%",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n1",
+                      "role": "eyebrow",
+                      "text": "BLACK FRIDAY / FREE SHIPPING WEEKEND",
+                      "tokens": {
+                        "text-size": ".625rem",
+                        "tracking": ".12em"
+                      }
+                    },
+                    {
+                      "type": "panel",
+                      "children": [],
+                      "tokens": {
+                        "pad": "0",
+                        "gap": "0"
+                      },
+                      "narrow": {
+                        "pad": "0"
+                      },
+                      "min": "2.5rem",
+                      "decorations": {
+                        "label": "Decorative barcode",
+                        "hidden": false,
+                        "items": [
+                          {
+                            "kind": "barcode",
+                            "motion": "none",
+                            "x": 50,
+                            "y": 50,
+                            "size": 130,
+                            "color": "fg"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "eyebrow",
+                      "id": "n2",
+                      "role": "eyebrow",
+                      "text": "STANDARD / NOVEMBER 27–30",
+                      "tokens": {
+                        "text-size": ".625rem",
+                        "tracking": ".12em"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "1rem",
+                    "gap": ".9rem",
+                    "bg": "input-bg",
+                    "fg": "border",
+                    "muted": "border"
+                  },
+                  "narrow": {
+                    "pad": "1.4rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "role": "body",
+                  "text": "%b",
+                  "tokens": {
+                    "text-size": "5rem",
+                    "leading": ".95",
+                    "font": "\"Bebas Neue\", Impact, sans-serif"
+                  },
+                  "emphasis": "$0",
+                  "narrow": {
+                    "text-size": "4.5rem"
+                  }
+                },
+                {
+                  "type": "heading",
+                  "id": "n4",
+                  "role": "headline",
+                  "text": "DELIVERY\nON ORDERS $100+",
+                  "tokens": {
+                    "heading-font": "\"DM Sans\", Arial, sans-serif",
+                    "heading-size": "1rem",
+                    "heading-leading": "1.5"
+                  },
+                  "narrow": {
+                    "heading-size": "1rem"
+                  }
+                },
+                {
+                  "type": "button",
+                  "id": "n5",
+                  "role": "cta_label",
+                  "label": "Shop with free delivery",
+                  "action": "link",
+                  "icon": "arrow"
+                }
+              ],
+              "tokens": {
+                "gap": "1rem"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n6",
+              "role": "fine_print",
+              "text": "Free standard shipping on orders $100+. Nov 27–30.",
+              "tokens": {
+                "text-size": ".875rem"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "1.5rem",
+            "gap": ".9rem"
+          },
+          "narrow": {
+            "pad": "1.4rem"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

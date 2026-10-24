@@ -4368,6 +4368,606 @@
           "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
         }
       ]
+    },
+    {
+      "id": "campaign-anniversary-event",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "62a383eb9c44f0c33c9485b672f508ea690b1ca66aafe69b7b9a3328f7739c34",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-black-friday-department",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "0b9375512a2bb6c8d698b5e9ff41d875da5636ed6d4b74374751e85b87599160",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-black-friday-departments",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "351fac77dd0d8738289c0c67070a80a0b27d8a0daec568e44d5ff2edf3991ba2",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-black-friday-fast-lane",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "3a3a5c618eb044c7e227a3e846238c829adb57d495cf55452e74467550653509",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-breakfast-edit",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "e014d178c208289d8f7864af6b1fed77573575f14162dda0bafd971bc6cfc88e",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-deadline-scoreboard",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "456426f4e8ed1f63c60b3fbbd9dc968183a4ff28aed9486f2801361368e29048",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-drop-alert",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "c8c461cf53141111c746eeb72a4428f60027967feddb7f29113e569faef2f3b5",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-extra-ten-coupon",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "7bcc16529e314e54847cd32c2692d9278e03a1c7117e709aa7d58a7a641f26c6",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-first-dibs-signup",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "237288e9b85776e7a6d39a3dd738968bd495291ac8120611bc9ee4450c7dcda0",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-free-delivery-label",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "a9dbdb48dc5d9ee5186d659a135ef060938c510b832087e36db67d7f21c58428",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-friday-email-alert",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "38f9e5621e8e28a990eebfc8ff7fcb854bd3a8a999ebd6fd32899816894c90a0",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-layer-edit",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "33ed4e589d1eb8ae9b659cb25654fa4cfa543dc11fb7326d09d8d44019d74d89",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-packing-perk",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "9baf1cc0e411cd8e6e26439e8d8e93f85030369fee4e7f9d7b3580f1633db77c",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-savings-receipt",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "82f7652861b32b41bcc87941e9e8a19680c02b650568be2f707c4aa106ab71bb",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-sweet-edit",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "6f582d028199f8e5d92716422bed44e6edb2827e44e575f3f2e558a7221fa794",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-your-welcome-pal",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "d671ef1f5dbb5330fe6a0051bc69b00dd0ee9a33d15ba0bcd73c0430dd56d274",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-black-friday-archive",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "80d52557afa34bebd10759868f93c074a4a45efa89e92839b39f46c73c8bf165",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-black-friday-coffee-menu",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "069fd793c343613475a039b045fe9ec5610924f4bb238ac737185b9741ca8f8c",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-black-friday-plus-one",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "6d961bd15cf2bfbea9bea72ba5533c653ed3c8e1f1c8abbdf51b0c479a105537",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-delivery-buddy",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "c7902969a74f9f6b7be5b9e2799c2fedba885dab998975526cbe9cbd6b15cd8a",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-extra-gift",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "3fb4af2c8524a7eceead8e8ff5106a78efe320d168329e23a9a109226ede273e",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-fifty-fifty-poster",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "3d39903cafa5eec80b25cad94b928034fc0b9d7f901bd32b75ef4d7f01064757",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-finish-line-countdown",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "5ec74390a1a123db6fc3c650a9db3812e5fd884176f3c76fdbd08818d6eb7866",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-first-access-pass",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "96761f6e00754e1a9b1d8b7165d198ece7c89c3187ce17d465ece221f64d2c36",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-fragrance-booth",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "dbbb1dfb5e1c58f9e99461a0db01c9ad18a31617d01b7ab583f82a03262a62eb",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-friday-comic",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "f9e0212d5adccdf9427381c03e708506008aa133b4f2d641949dfe7ef9b0015c",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-friday-coupon",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "2484f51ea8c7453e8071aef94fc86caebd6b1ad12346e27f98bee7fb31f51822",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-friday-game-code",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "887fd26f09f667481dc8af47dc248d8ecb24a76d4f55d1427732c5b8058ff576",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-friday-pass",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "4426d1082a7e2635f6ba5b7c0fb8a99ec8e4503952c82c3ea188973a0385eb75",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-garden-edit",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "ebc63b721b9a5790d47969dd47a8957bc0d3b1712d94072bfa158a91d083b185",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-golden-weekend-ticket",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "dff6ef30cf33e0089224566ec9a433827aec5c83751cd2ed64e8ed109636778d",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-home-edit",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "68aa3540dc17fcd961d7a995c7ea3640b9c7c130f6103ec05aaba412144f89c4",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-midnight-fragrance-edit",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "8d31c80b0b6d657bf3ec75b269e5f997e767dc8568349758257787413656931f",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-outdoor-edit",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "fdc8cdc59754eb7d38508f8f74defbaf30c6c3a29588c0815362d1b204abb8a1",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-pixel-play-sale",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "6dd6af150d1c16fe8d8d30dd4aecc02c7df3bf8356a2470909af3b67614ddbb2",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-price-elevator",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "fa66f75624f730d96d6385ef3dfc165dbe75cc679ebc7cfc59af09d3e0eea3c3",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-private-preview",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "43c208bea1d6a4676efeb059c157afffdc2a978dd07e66aba28519db51c65fc4",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-restock-mosaic",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "9cd30d0579aa91f8c5fa4b677f7876127ccb1b7cee9b48de06de6926719d5ac3",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-savings-staircase",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "973ffe43dc5d8df94045aa7f7d0778ee790464c10219709daaf8ced6659d0d96",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-sneaker-edit",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "5788138a4c64f99e012b3ecf762adc55f7a11bac3d7d6b0b452262fee2337511",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-sound-circle",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "cf6c20ea1c9d55f2ebfc6c04a19efbb2bf9e47bf049cddb291458aef9290c971",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-streetwear-poster",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "44d829432b1387b811134a6c6884ed1cd2ecd2ce091450f2c68c0bb8a33e1898",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-tech-price-sheet",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "d1a2977f551fc7792714359010428ed94ec0396a0b425b789d78b335e955a424",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-turn-it-up",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "273cd9df02035ac2ca2185b1439ea7a025c6dc83563a39e9e8041cbb03462cce",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-twelve-month-deal",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "13fc1a078c55fedb5c68c970babc04986c7c090f9823aa33e54002a5ae0279fb",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-welcome-buddy",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "0a4f7b5a55f4873e480b34e34848040648ca8179e70571697011cd55cfeb609f",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-welcome-label",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "ce5fae166d66a8b096159c2a8a0b65285df6eb01679e4eb48f05955c174ed983",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-welcome-perk",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "5ca39af2ee26f0e2b5c8de23539c0b97900cfd56ed1364a4e795cdfcb1af1ebf",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-welcome-shortcut",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "b01e64200d19de3daa1408c77c8de75b00f3c002c86fad39ef6867fa1fc0d590",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
+    },
+    {
+      "id": "campaign-wishlist-alert",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "d45ad0e1e95c420ed5d0e5833ac825b9778c5641ea35c800e8a77df857380d5a",
+          "note": "Native implementation of approved campaign prototype, preserving original artwork and editable offer content."
+        }
+      ]
     }
   ]
 }

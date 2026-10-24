@@ -1,0 +1,243 @@
+{
+  "id": "campaign-friday-coupon",
+  "name": "Friday Coupon",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#ba3430",
+    "fg": "#fff3d7",
+    "muted": "#fff3d7",
+    "accent": "#ffe5a3",
+    "accent-fg": "#7b2926",
+    "border": "#194437",
+    "input-bg": "#bfe9c1",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Bebas Neue\", Impact, sans-serif",
+    "heading-size": "3.6rem",
+    "heading-weight": "400",
+    "heading-leading": ".95",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "2.75rem 0 0",
+    "gap": "0",
+    "radius": ".25rem",
+    "width": "45rem",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "split",
+          "ratio": 0.65,
+          "basis": "16rem",
+          "start": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "role": "eyebrow",
+                  "text": "BLACK FRIDAY / PUBLIC DISCOUNT CODE",
+                  "tokens": {
+                    "text-size": ".625rem",
+                    "tracking": ".12em"
+                  }
+                },
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "role": "headline",
+                  "text": "BLACK FRIDAY.\n40% OFF.",
+                  "narrow": {
+                    "heading-size": "2.65rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "role": "body",
+                  "text": "Your code is ready. Save on selected favorites during the Black Friday event."
+                },
+                {
+                  "type": "button",
+                  "id": "n4",
+                  "role": "cta_label",
+                  "label": "Shop with 40% off",
+                  "action": "link",
+                  "icon": "arrow"
+                },
+                {
+                  "type": "text",
+                  "id": "n5",
+                  "role": "fine_print",
+                  "text": "November 27–30. Selected items. Exclusions apply.",
+                  "tokens": {
+                    "text-size": ".875rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "2rem",
+                "gap": ".9rem"
+              },
+              "narrow": {
+                "pad": "1.4rem"
+              }
+            }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n6",
+                      "role": "eyebrow",
+                      "text": "YOUR BLACK FRIDAY CODE",
+                      "tokens": {
+                        "text-size": ".625rem",
+                        "tracking": ".12em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n7",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "text-size": "6rem",
+                        "leading": ".95",
+                        "font": "\"Bebas Neue\", Impact, sans-serif"
+                      },
+                      "emphasis": "40%",
+                      "narrow": {
+                        "text-size": "4.5rem"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n8",
+                      "role": "body",
+                      "text": "OFF SELECTED ITEMS",
+                      "tokens": {
+                        "text-size": ".875rem"
+                      }
+                    },
+                    {
+                      "type": "code",
+                      "id": "n9",
+                      "role": "code_value",
+                      "text": "FRIDAY40",
+                      "copy": false
+                    },
+                    {
+                      "type": "panel",
+                      "children": [],
+                      "tokens": {
+                        "pad": "0",
+                        "gap": "0"
+                      },
+                      "narrow": {
+                        "pad": "0"
+                      },
+                      "min": "2.5rem",
+                      "decorations": {
+                        "label": "Decorative barcode",
+                        "hidden": false,
+                        "items": [
+                          {
+                            "kind": "barcode",
+                            "motion": "none",
+                            "x": 50,
+                            "y": 50,
+                            "size": 130,
+                            "color": "fg"
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "2rem 1.25rem",
+                    "gap": ".9rem",
+                    "bg": "input-bg",
+                    "fg": "border",
+                    "muted": "border",
+                    "radius": ".15rem",
+                    "align": "center"
+                  },
+                  "narrow": {
+                    "pad": "1.4rem"
+                  },
+                  "notch": true,
+                  "notch_position": "sides"
+                }
+              ],
+              "tokens": {
+                "pad": "1.75rem 1.25rem",
+                "gap": "0"
+              },
+              "narrow": {
+                "pad": "1.4rem"
+              }
+            }
+          ],
+          "tokens": {
+            "gap": "0"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -65,3 +65,7 @@ keep the control inside its painted surface.
   with text. A catalogue design cannot ship that way.
 - An X outside the card, a larger or custom glyph and hover colours remain out
   of scope.
+
+**Budget amended by [ADR 0167](0167-campaign-artwork-uses-bounded-renderer-options.md):**
+The campaign artwork extension adds 1,024 B to each loader ceiling, now
+18,480 B Free and 31,744 B Pro; the preceding measurements remain historical.

@@ -330,6 +330,7 @@ final class TemplateLabels
             'panel.decorations' => __('Decorations', 'wconvert'),
             'panel.min' => __('Minimum height', 'wconvert'),
             /* translators: whether two circles are punched out of the box's top corners, like a torn ticket, so the page shows through. */
+            'panel.notch_position' => __('Cutout position', 'wconvert'),
             'panel.notch' => __('Punched corners', 'wconvert'),
             /* translators: the colours, spacing and type this box sets for itself and everything inside it. */
             'media.tokens' => __('Style for this box', 'wconvert'),
@@ -448,6 +449,8 @@ final class TemplateLabels
              * can see in the preview.
              */
             /* translators: the coloured box has ordinary square corners. */
+            'panel.notch_position.top' => __('Top corners', 'wconvert'),
+            'panel.notch_position.sides' => __('Side centres', 'wconvert'),
             'panel.notch.false' => _x('Square', 'corners of a box', 'wconvert'),
             /* translators: two circles are punched out of the box's top corners, like a torn ticket, so the page shows through. */
             'panel.notch.true' => __('Punched, like a ticket', 'wconvert'),
@@ -503,6 +506,8 @@ final class TemplateLabels
              * a small `h2` and a large `h3`, which is the pair no token reaches.
              */
             /* translators: a heading's rank inside the Optin — whether it is the main heading or one under it. This is the document outline, not how big it is drawn. */
+            'button.icon' => __('Button icon', 'wconvert'),
+            'image.motion' => __('Picture motion', 'wconvert'),
             'button.action' => __('Button action', 'wconvert'),
             'heading.level' => __('Heading level', 'wconvert'),
             /* translators: how big this heading is drawn, as a step up or down from the design's own heading size. */
@@ -553,6 +558,12 @@ final class TemplateLabels
     {
         return [
             /* translators: a heading rank. This heading is the Optin's own main heading. */
+            'button.icon.none' => __('None', 'wconvert'),
+            'button.icon.arrow' => __('Arrow', 'wconvert'),
+            'image.motion.none' => __('None', 'wconvert'),
+            'image.motion.arrive' => __('Appear once', 'wconvert'),
+            'image.motion.breathe' => __('Gentle scale', 'wconvert'),
+            'image.motion.drift' => __('Gentle drift', 'wconvert'),
             'button.action.submit' => __('Submit', 'wconvert'),
             'button.action.next' => __('Next', 'wconvert'),
             'button.action.back' => __('Back', 'wconvert'),

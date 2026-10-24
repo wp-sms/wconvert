@@ -1,0 +1,159 @@
+{
+  "id": "campaign-sweet-edit",
+  "name": "Sweet Edit",
+  "display_type": "floating_bar",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#c8efdc",
+    "fg": "#672d4d",
+    "muted": "#672d4d",
+    "accent": "#672d4d",
+    "accent-fg": "#fff5df",
+    "border": "#672d4d",
+    "input-bg": "#c8efdc",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Bebas Neue\", Impact, sans-serif",
+    "heading-size": "2rem",
+    "heading-weight": "400",
+    "heading-leading": ".95",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "2.75rem 0 0",
+    "gap": "0",
+    "radius": ".25rem",
+    "width": "100%",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "n1",
+                  "role": "body",
+                  "text": "%b",
+                  "tokens": {
+                    "text-size": "4rem",
+                    "leading": ".95",
+                    "font": "\"Bebas Neue\", Impact, sans-serif"
+                  },
+                  "emphasis": "25%",
+                  "narrow": {
+                    "text-size": "4rem"
+                  }
+                },
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n2",
+                      "role": "eyebrow",
+                      "text": "CONFECTIONERY PROMOTION",
+                      "tokens": {
+                        "text-size": ".625rem",
+                        "tracking": ".12em"
+                      }
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n3",
+                      "role": "headline",
+                      "text": "SWEET PICKS.\n25% OFF.",
+                      "narrow": {
+                        "heading-size": "2.65rem"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": ".85rem"
+                  }
+                },
+                {
+                  "type": "button",
+                  "id": "n4",
+                  "role": "cta_label",
+                  "label": "Shop the sweet edit",
+                  "action": "link",
+                  "icon": "arrow"
+                }
+              ],
+              "tokens": {
+                "gap": "1rem"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n5",
+              "role": "fine_print",
+              "text": "Selected treats and gift boxes. Exclusions apply.",
+              "tokens": {
+                "text-size": ".875rem"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "1.5rem 2rem",
+            "gap": ".9rem",
+            "radius": "3rem"
+          },
+          "narrow": {
+            "pad": "1.4rem"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

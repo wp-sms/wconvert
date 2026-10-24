@@ -1,0 +1,51 @@
+{
+  "id": "campaign-black-friday-plus-one",
+  "revision": "cfa920c1f70842617c3a534ce0e5c1d26b51f8858dc7c8c024ea681d714715c3",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "The gift composition visibly separates the product and plus sign; the $75 threshold is explicit.",
+  "at": "2026-10-24T10:40:12.653Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-black-friday-plus-one-320.png",
+          "sha256": "c90e21e923b6773b03e2e59bfabe3cc8eaf34555d434169b58a5c340dc876fb7"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-black-friday-plus-one-1440.png",
+          "sha256": "f929615673c61cb139ae300d76c72089bffeb05965a9015243c54decfcf34d58"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "98aec6a37d7eb2628fbe97d85ec06ac41bf30c0bc72cc33cae964f36a1622b04"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        }
+      ]
+    }
+  },
+  "record_id": "aa49f2ecb367a06d5a05c8bc4687ecd0f3afe027bd9ff9622eabecd6a7d809c9"
+}

@@ -1,0 +1,55 @@
+{
+  "id": "return-policy-guide",
+  "revision": "784528f8c39dfba6dbe48f0daec9aa72f38a183a971810b9d46520044929d8d8",
+  "base_id": "1c9d6897179e94cda853e6a43d504ba73f74f8125e57641b5594a616b65e7b39",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 031e66237b8265ce7bc935d28e5eb45786fc894c, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T10:44:21Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/return-policy-guide-320.png",
+          "sha256": "ca3cae68d9ed4ba3d1394b703938c71d30e75291f4315945012da380c58a7c3a"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/return-policy-guide-1440.png",
+          "sha256": "77bc1fb1ab9e42c589d3163e5e218c4441ae5dad4e1461a890d3fe8aab764976"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/review.md",
+          "sha256": "83d5e893a7999c3cfde4ef3519dc791cdad0ab7005efba425467d5e085687ae0"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json",
+          "sha256": "3722746304da03cb7f7e8ff6c411258f6f132c7f1949503691e30d7344ef0370"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+          "sha256": "bf614c2913787167fbf45e1727ec5715a1ac8e50417c53b4627aa04595f761c9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+          "sha256": "bf614c2913787167fbf45e1727ec5715a1ac8e50417c53b4627aa04595f761c9"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json",
+          "sha256": "3722746304da03cb7f7e8ff6c411258f6f132c7f1949503691e30d7344ef0370"
+        }
+      ]
+    }
+  },
+  "record_id": "f239ddd6f2817c00831c6e24c9e5d60a28e6ec193030d0c842347b210c579b2e"
+}

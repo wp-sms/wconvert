@@ -1,0 +1,51 @@
+{
+  "id": "campaign-friday-email-alert",
+  "revision": "76bdd283debbe9bc856c3ec50dfcad19fe20c9e5407ed4c57f1aa3656961f0e4",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "The yellow preview bar keeps headline and form grouped across wrapping widths, with a short SVG-arrow action.",
+  "at": "2026-10-24T10:40:12.653Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-friday-email-alert-320.png",
+          "sha256": "b384de3edb1ead90da4747df86681c1e07123ed30d5ce2eb662573abc9e2eb5b"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-friday-email-alert-1440.png",
+          "sha256": "0a6d03cf52a663db7d71d2e729f4789226bd65afb2a5239928acc96bcf4ecd50"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "98aec6a37d7eb2628fbe97d85ec06ac41bf30c0bc72cc33cae964f36a1622b04"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        }
+      ]
+    }
+  },
+  "record_id": "436245b24c1fa4a5de7a167404ddfa3ba5565f3b8a8b3fd9981003eae765d97c"
+}

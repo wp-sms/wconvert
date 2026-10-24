@@ -1,0 +1,51 @@
+{
+  "id": "campaign-black-friday-fast-lane",
+  "revision": "7c1496b9562e7570f3ded8cc9ab3fbb504a66f41ca591d23f576a52d69648cf9",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "The deadline bar separates the selected-items offer from a real-end-date countdown.",
+  "at": "2026-10-24T10:40:12.653Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-black-friday-fast-lane-320.png",
+          "sha256": "0bb6a099bc5a4a51391178154bf7bb1ad1b7c433d846303ac331333689f59132"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-black-friday-fast-lane-1440.png",
+          "sha256": "7166d3e983b110ca19d546ed26d68ff1f2b89ba79ea9c22b6ef7cf8c2963cad3"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "98aec6a37d7eb2628fbe97d85ec06ac41bf30c0bc72cc33cae964f36a1622b04"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        }
+      ]
+    }
+  },
+  "record_id": "aee5d3ddcdf1db5e3b11970b6709f1e33f25a6932eec22b96c66e5ed6e6ab320"
+}

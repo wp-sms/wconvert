@@ -1,0 +1,55 @@
+{
+  "id": "collection-black-friday-2026",
+  "revision": "5ff645a9925fe9fc4bb4cd7a65efe0cdac7bdfac3e673bff3a83b779816d1bfb",
+  "base_id": "dea9748502db3b2c01f74876053adeda935a3c09512f0e6c417f4f729deba5f0",
+  "decision": "approved",
+  "reviewer": "Renderer carry (ADR 0156)",
+  "note": "Every setup in it pixel-identical under the new renderer and carried by templates:visual-diff; items, order and words unchanged; only setup revisions moved. Not a new review.",
+  "at": "2026-10-24T10:44:21Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/README.md",
+          "sha256": "8fc43e91e2224ce3ed9c2b9381d11d50ca0095daeb5371659c32011943e76a72"
+        },
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/manifest.json",
+          "sha256": "4c4aeb18167dd8ea7eb63da3f396094cb154ecc802af79e7a907109d2d3cbbfd"
+        },
+        {
+          "path": "docs/reviews/visual-diff-2026-10-24/collections-carry-031e66237b8265ce7bc935d28e5eb45786fc894c.md",
+          "sha256": "e241e1ab27138e90b7291748e2fa876e7c1e4fb8776493a24bc60dac59951e19"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/README.md",
+          "sha256": "8fc43e91e2224ce3ed9c2b9381d11d50ca0095daeb5371659c32011943e76a72"
+        },
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/manifest.json",
+          "sha256": "4c4aeb18167dd8ea7eb63da3f396094cb154ecc802af79e7a907109d2d3cbbfd"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/README.md",
+          "sha256": "8fc43e91e2224ce3ed9c2b9381d11d50ca0095daeb5371659c32011943e76a72"
+        },
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/manifest.json",
+          "sha256": "4c4aeb18167dd8ea7eb63da3f396094cb154ecc802af79e7a907109d2d3cbbfd"
+        }
+      ]
+    }
+  },
+  "record_id": "a1c683b73154363f008407655550040dd2a6fde68b83ad5925d21d7609b52d7c"
+}

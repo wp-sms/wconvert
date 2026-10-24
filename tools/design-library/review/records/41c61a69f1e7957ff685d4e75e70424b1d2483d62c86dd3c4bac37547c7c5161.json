@@ -1,0 +1,55 @@
+{
+  "id": "collection-everyday-extraordinary",
+  "revision": "6310e1adbc20b07b0a552f345918f55a5ab0bb52c9fb2d59a3b2e1c90831a7e8",
+  "base_id": "64a4b4aff166107ea13a175cec39e25361b6541cf5a272055eab49dc9719499d",
+  "decision": "approved",
+  "reviewer": "Renderer carry (ADR 0156)",
+  "note": "Every setup in it pixel-identical under the new renderer and carried by templates:visual-diff; items, order and words unchanged; only setup revisions moved. Not a new review.",
+  "at": "2026-10-24T10:44:21Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/translation-check.md",
+          "sha256": "6a810fb9f790835cf4061568441ea0106f3f61ec427ae3a652a6878a89479e29"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/collection.json",
+          "sha256": "93719f9d62bcbd7a8ba979285b393a09062b47f99ab87ac9aed9cb35f51ad72e"
+        },
+        {
+          "path": "docs/reviews/visual-diff-2026-10-24/collections-carry-031e66237b8265ce7bc935d28e5eb45786fc894c.md",
+          "sha256": "e241e1ab27138e90b7291748e2fa876e7c1e4fb8776493a24bc60dac59951e19"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/translation-check.md",
+          "sha256": "6a810fb9f790835cf4061568441ea0106f3f61ec427ae3a652a6878a89479e29"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "cc7ccb4050bfcf7985d270710cfedd362fc187b7213597526d8fb39c3791ce98"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/translation-check.md",
+          "sha256": "6a810fb9f790835cf4061568441ea0106f3f61ec427ae3a652a6878a89479e29"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "cc7ccb4050bfcf7985d270710cfedd362fc187b7213597526d8fb39c3791ce98"
+        }
+      ]
+    }
+  },
+  "record_id": "41c61a69f1e7957ff685d4e75e70424b1d2483d62c86dd3c4bac37547c7c5161"
+}

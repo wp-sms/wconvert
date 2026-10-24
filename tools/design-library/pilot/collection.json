@@ -7104,6 +7104,1322 @@
         ],
         "reason": "A future-facing editorial poster with an original geometric image and a dedicated invitation panel. All headline lettering stays live."
       }
+    },
+    {
+      "id": "campaign-streetwear-poster",
+      "audience": "stores",
+      "family": "Streetwear Poster",
+      "visitor_need": "Selected fleeces, layers\nand everyday favorites.",
+      "difference": "A full-width condensed masthead sits above a fashion photograph and a narrow offer column. The lime footer reads like a drop announcement.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "A full-width condensed masthead sits above a fashion photograph and a narrow offer column. The lime footer reads like a drop announcement."
+      }
+    },
+    {
+      "id": "campaign-tech-price-sheet",
+      "audience": "stores",
+      "family": "Tech Price Sheet",
+      "visitor_need": "Example item: $120 → $84. Nov 27–30.",
+      "difference": "A broad product photograph is captioned by a compact price ledger. The offer feels like a product launch sheet, with the saving in its own bold block.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "A broad product photograph is captioned by a compact price ledger. The offer feels like a product launch sheet, with the saving in its own bold block."
+      }
+    },
+    {
+      "id": "campaign-fifty-fifty-poster",
+      "audience": "stores",
+      "family": "Fifty-Fifty Poster",
+      "visitor_need": "Selected collections.\nFour days. One annual event.",
+      "difference": "The discount is the composition: a giant 50 above a compact contrasting Black Friday strip and a tightly grouped action.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "The discount is the composition: a giant 50 above a compact contrasting Black Friday strip and a tightly grouped action."
+      }
+    },
+    {
+      "id": "campaign-black-friday-coffee-menu",
+      "audience": "stores",
+      "family": "Black Friday Coffee Menu",
+      "visitor_need": "Your daily ritual.\nAt a once-a-year price.",
+      "difference": "A narrow café-menu composition pairs a framed coffee photograph with a menu-style offer line, generous spacing and a full-width order button.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "A narrow café-menu composition pairs a framed coffee photograph with a menu-style offer line, generous spacing and a full-width order button."
+      }
+    },
+    {
+      "id": "campaign-first-access-pass",
+      "audience": "stores",
+      "family": "First-Access Pass",
+      "visitor_need": "Request entry to selected Black Friday offers before the public opening.",
+      "difference": "A horizontal access pass puts the opening date on a slim ticket stub and the signup in a wide dark panel, with the saving in a small top band.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Accepted preview requests.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "A horizontal access pass puts the opening date on a slim ticket stub and the signup in a wide dark panel, with the saving in a small top band."
+      }
+    },
+    {
+      "id": "campaign-restock-mosaic",
+      "audience": "stores",
+      "family": "Restock Mosaic",
+      "visitor_need": "The everyday essentials you’ll be glad you stocked up on.",
+      "difference": "Three sharply cropped product windows form a retail shelf. A full-width headline and oversized saving sit beneath, instead of a conventional photo/text split.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Three sharply cropped product windows form a retail shelf. A full-width headline and oversized saving sit beneath, instead of a conventional photo/text split."
+      }
+    },
+    {
+      "id": "campaign-golden-weekend-ticket",
+      "audience": "stores",
+      "family": "Golden Weekend Ticket",
+      "visitor_need": "Selected favorites.\nNovember 27–30.",
+      "difference": "A horizontal ticket gives the oversized saving its own black panel and the public code a gold redemption stub. A restrained perforation makes the offer tangible.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "A horizontal ticket gives the oversized saving its own black panel and the public code a gold redemption stub. A restrained perforation makes the offer tangible."
+      }
+    },
+    {
+      "id": "campaign-finish-line-countdown",
+      "audience": "stores",
+      "family": "Finish-Line Countdown",
+      "visitor_need": "Up to 40% off selected training gear.",
+      "difference": "A wide sports photograph and a compact headline occupy the main pane while a tall countdown rail turns the deadline into the composition.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.",
+        "Set a real campaign end date for the countdown."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.",
+        "Set a real campaign end date for the countdown."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "A wide sports photograph and a compact headline occupy the main pane while a tall countdown rail turns the deadline into the composition."
+      }
+    },
+    {
+      "id": "campaign-sound-circle",
+      "audience": "stores",
+      "family": "Sound Circle",
+      "visitor_need": "Better sound.\nA better Black Friday price.",
+      "difference": "A circular audio photograph is framed by short headline blocks and a slim offer footer. The product silhouette becomes the central visual anchor.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "A circular audio photograph is framed by short headline blocks and a slim offer footer. The product silhouette becomes the central visual anchor."
+      }
+    },
+    {
+      "id": "campaign-layer-edit",
+      "audience": "stores",
+      "family": "Layer Edit",
+      "visitor_need": "Selected layers.\nNovember 27–30.",
+      "difference": "A portrait strip beside a small offer creates a horizontal slide-in rather than another tall photo card. The action spans the entire bottom edge.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "A portrait strip beside a small offer creates a horizontal slide-in rather than another tall photo card. The action spans the entire bottom edge."
+      }
+    },
+    {
+      "id": "campaign-black-friday-plus-one",
+      "audience": "stores",
+      "family": "Black Friday Plus One",
+      "visitor_need": "One gift per order. Selected products; subject to availability.",
+      "difference": "A full-width headline leads to a framed product image and a large plus sign beside the gift threshold. The arrangement reads as an offer equation.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "A full-width headline leads to a framed product image and a large plus sign beside the gift threshold. The arrangement reads as an offer equation."
+      }
+    },
+    {
+      "id": "campaign-savings-staircase",
+      "audience": "stores",
+      "family": "Savings Staircase",
+      "visitor_need": "OFF YOUR ORDER\nHighest eligible tier applies. Selected items.",
+      "difference": "Three rising panels turn spend-and-save thresholds into a literal staircase. Product thumbnails give each tier a tactile retail context.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Three rising panels turn spend-and-save thresholds into a literal staircase. Product thumbnails give each tier a tactile retail context."
+      }
+    },
+    {
+      "id": "campaign-twelve-month-deal",
+      "audience": "stores",
+      "family": "Twelve-Month Deal",
+      "visitor_need": "New annual plans. Renews at $240/year unless cancelled.",
+      "difference": "Twelve compact month tiles make the annual plan tangible. A large headline and full-width price dock replace the familiar two-panel pricing card.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.",
+        "Place the campaign with its block or shortcode."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.",
+        "Place the campaign with its block or shortcode."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Twelve compact month tiles make the annual plan tangible. A large headline and full-width price dock replace the familiar two-panel pricing card."
+      }
+    },
+    {
+      "id": "campaign-drop-alert",
+      "audience": "stores",
+      "family": "Drop Alert",
+      "visitor_need": "Request access before the public sale opens.",
+      "difference": "A compact signup starts with an enormous outlined saving and a small date label, then shifts to a straightforward form. No photo block or split layout.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Accepted preview requests.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "A compact signup starts with an enormous outlined saving and a small date label, then shifts to a straightforward form. No photo block or split layout."
+      }
+    },
+    {
+      "id": "campaign-deadline-scoreboard",
+      "audience": "stores",
+      "family": "Deadline Scoreboard",
+      "visitor_need": "ENDS NOVEMBER 30\n23:59 UTC",
+      "difference": "A narrow event strip stacks an oversized sale message over a scoreboard-style deadline row. The timer and action remain grouped.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.",
+        "Set a real campaign end date for the countdown."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.",
+        "Set a real campaign end date for the countdown."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "A narrow event strip stacks an oversized sale message over a scoreboard-style deadline row. The timer and action remain grouped."
+      }
+    },
+    {
+      "id": "campaign-first-dibs-signup",
+      "audience": "stores",
+      "family": "First-Dibs Signup",
+      "visitor_need": "Request the November 26 preview of selected Black Friday offers.",
+      "difference": "An acid-lime date block anchors a compact dark signup strip. Offer copy, email, consent and action stay in a clear horizontal rhythm.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Accepted preview requests.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "An acid-lime date block anchors a compact dark signup strip. Offer copy, email, consent and action stay in a clear horizontal rhythm."
+      }
+    },
+    {
+      "id": "campaign-free-delivery-label",
+      "audience": "stores",
+      "family": "Free-Delivery Label",
+      "visitor_need": "Free shipping weekend",
+      "difference": "A shipping-label composition uses a white barcode panel, a large zero-delivery charge and a clear threshold. Black framing keeps it firmly in the event.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "A shipping-label composition uses a white barcode panel, a large zero-delivery charge and a clear threshold. Black framing keeps it firmly in the event."
+      }
+    },
+    {
+      "id": "campaign-extra-ten-coupon",
+      "audience": "stores",
+      "family": "Extra-Ten Coupon",
+      "visitor_need": "Selected sale styles. Nov 27–30. Exclusions apply.",
+      "difference": "A compact shoe photo leads straight into a giant extra-saving numeral, followed by a narrow contrasting code stub. This is a coupon, not a generic reminder card.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "A compact shoe photo leads straight into a giant extra-saving numeral, followed by a narrow contrasting code stub. This is a coupon, not a generic reminder card."
+      }
+    },
+    {
+      "id": "campaign-home-edit",
+      "audience": "stores",
+      "family": "Home Edit",
+      "visitor_need": "A favorite corner. A better everyday. A Black Friday price.",
+      "difference": "A wide home campaign combines a tall furniture photograph, a compact numbered editorial column and a separate bold saving panel. Three different rhythms in one inline design.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.",
+        "Place the campaign with its block or shortcode."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.",
+        "Place the campaign with its block or shortcode."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "A wide home campaign combines a tall furniture photograph, a compact numbered editorial column and a separate bold saving panel. Three different rhythms in one inline design."
+      }
+    },
+    {
+      "id": "campaign-black-friday-department",
+      "audience": "stores",
+      "family": "Black Friday Department",
+      "visitor_need": "Four days. Selected collections. Exclusions apply.",
+      "difference": "A full-width masthead tops three product departments, followed by one oversized offer and a direct action. A storewide takeover with a genuinely different silhouette.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "A full-width masthead tops three product departments, followed by one oversized offer and a direct action. A storewide takeover with a genuinely different silhouette."
+      }
+    },
+    {
+      "id": "campaign-welcome-buddy",
+      "audience": "stores",
+      "family": "Welcome Buddy",
+      "visitor_need": "New here? Save 15% on your first order of selected everyday favorites.",
+      "difference": "First-order offer. split(image, panel).",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "First-order offer. split(image, panel)."
+      }
+    },
+    {
+      "id": "campaign-welcome-perk",
+      "audience": "stores",
+      "family": "Welcome Perk",
+      "visitor_need": "A small welcome for your first order. Enter the code below at checkout.",
+      "difference": "Welcome coupon. split(panel, media), code and link button. Dispenser is one static image.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Welcome coupon. split(panel, media), code and link button. Dispenser is one static image."
+      }
+    },
+    {
+      "id": "campaign-friday-coupon",
+      "audience": "stores",
+      "family": "Friday Coupon",
+      "visitor_need": "Your code is ready. Save on selected favorites during the Black Friday event.",
+      "difference": "Public discount code. split of panels.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Public discount code. split of panels."
+      }
+    },
+    {
+      "id": "campaign-turn-it-up",
+      "audience": "stores",
+      "family": "Turn It Up",
+      "visitor_need": "Save 35% on selected headphones this Black Friday.",
+      "difference": "Audio sale. media background plus panel.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Audio sale. media background plus panel."
+      }
+    },
+    {
+      "id": "campaign-friday-comic",
+      "audience": "stores",
+      "family": "Friday Comic",
+      "visitor_need": "Your wishlist meets Black Friday. Save 30% on selected favorites.",
+      "difference": "Selected-items sale. stack with split panels and a footer row. Face is an image.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Selected-items sale. stack with split panels and a footer row. Face is an image."
+      }
+    },
+    {
+      "id": "campaign-price-elevator",
+      "audience": "stores",
+      "family": "Price Elevator",
+      "visitor_need": "Selected favorites are 40% off. A $100 item becomes $60.",
+      "difference": "Price markdown. split of panels.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Price markdown. split of panels."
+      }
+    },
+    {
+      "id": "campaign-private-preview",
+      "audience": "stores",
+      "family": "Private Preview",
+      "visitor_need": "Request access to selected Black Friday offers on November 26, one day before the public sale.",
+      "difference": "Early-access signup. split(image, panel).",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Accepted preview requests.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Early-access signup. split(image, panel)."
+      }
+    },
+    {
+      "id": "campaign-outdoor-edit",
+      "audience": "stores",
+      "family": "Outdoor Edit",
+      "visitor_need": "Save 30% on selected camping and outdoor essentials.",
+      "difference": "Outdoor seasonal sale. split(image, panel).",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Outdoor seasonal sale. split(image, panel)."
+      }
+    },
+    {
+      "id": "campaign-savings-receipt",
+      "audience": "stores",
+      "family": "Savings Receipt",
+      "visitor_need": "Take 30% off selected clearance favorites.",
+      "difference": "Clearance sale. stack with rows, dividers, heading, text and button. Receipt tear edge and eyes are optional artwork..",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Clearance sale. stack with rows, dividers, heading, text and button. Receipt tear edge and eyes are optional artwork.."
+      }
+    },
+    {
+      "id": "campaign-welcome-shortcut",
+      "audience": "stores",
+      "family": "Welcome Shortcut",
+      "visitor_need": "Start with a little saving. Enter the code below on your first order.",
+      "difference": "First-order coupon. split(panel, panel), code and button. Portal rings simplify to nested panels or one image. Hidden door/reveal interaction removed..",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "First-order coupon. split(panel, panel), code and button. Portal rings simplify to nested panels or one image. Hidden door/reveal interaction removed.."
+      }
+    },
+    {
+      "id": "campaign-sneaker-edit",
+      "audience": "stores",
+      "family": "Sneaker Edit",
+      "visitor_need": "Save 40% on selected sneakers this Black Friday.",
+      "difference": "Footwear sale. split(image, panel).",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Footwear sale. split(image, panel)."
+      }
+    },
+    {
+      "id": "campaign-midnight-fragrance-edit",
+      "audience": "stores",
+      "family": "Midnight Fragrance Edit",
+      "visitor_need": "Selected fragrances, with a Black Friday price.",
+      "difference": "Fragrance sale. split plus footer row.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Fragrance sale. split plus footer row."
+      }
+    },
+    {
+      "id": "campaign-wishlist-alert",
+      "audience": "stores",
+      "family": "Wishlist Alert",
+      "visitor_need": "Request the November 26 preview of selected Black Friday offers.",
+      "difference": "Early-access email signup. stack of panels and form.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Accepted preview requests.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Early-access email signup. stack of panels and form."
+      }
+    },
+    {
+      "id": "campaign-garden-edit",
+      "audience": "stores",
+      "family": "Garden Edit",
+      "visitor_need": "Save on selected planters, tools and garden accessories.",
+      "difference": "Garden seasonal sale. split(image, panel), heading, text and button. Flowers are one decorative SVG image.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.",
+        "Place the campaign with its block or shortcode."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.",
+        "Place the campaign with its block or shortcode."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Garden seasonal sale. split(image, panel), heading, text and button. Flowers are one decorative SVG image."
+      }
+    },
+    {
+      "id": "campaign-friday-pass",
+      "audience": "stores",
+      "family": "Friday Pass",
+      "visitor_need": "Request access to selected Black Friday offers before the public opening.",
+      "difference": "Early-access email signup. split of panels.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Accepted preview requests.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Early-access email signup. split of panels."
+      }
+    },
+    {
+      "id": "campaign-delivery-buddy",
+      "audience": "stores",
+      "family": "Delivery Buddy",
+      "visitor_need": "Get free standard shipping when your order reaches $75.",
+      "difference": "Shipping threshold. media background with wash, panel, heading, text, button. Robot art is one image.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Shipping threshold. media background with wash, panel, heading, text, button. Robot art is one image."
+      }
+    },
+    {
+      "id": "campaign-black-friday-archive",
+      "audience": "stores",
+      "family": "Black Friday Archive",
+      "visitor_need": "Past-season favorites return at Black Friday prices.",
+      "difference": "Archive clearance. stack and split of panels.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Archive clearance. stack and split of panels."
+      }
+    },
+    {
+      "id": "campaign-extra-gift",
+      "audience": "stores",
+      "family": "Extra Gift",
+      "visitor_need": "Receive a travel-size moisturizer with orders of $75 or more.",
+      "difference": "Gift with purchase. split(image, panel), heading, text and button. Gift image and threshold replace a custom unboxing/reveal interaction..",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Gift with purchase. split(image, panel), heading, text and button. Gift image and threshold replace a custom unboxing/reveal interaction.."
+      }
+    },
+    {
+      "id": "campaign-friday-game-code",
+      "audience": "stores",
+      "family": "Friday Game Code",
+      "visitor_need": "Use the code below on selected gaming accessories.",
+      "difference": "Gaming accessories coupon. panel and stack.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Gaming accessories coupon. panel and stack."
+      }
+    },
+    {
+      "id": "campaign-fragrance-booth",
+      "audience": "stores",
+      "family": "Fragrance Booth",
+      "visitor_need": "Selected fragrances. A Black Friday price worth a closer look.",
+      "difference": "Fragrance sale. split(grid of images, panel).",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Fragrance sale. split(grid of images, panel)."
+      }
+    },
+    {
+      "id": "campaign-sweet-edit",
+      "audience": "stores",
+      "family": "Sweet Edit",
+      "visitor_need": "Save on selected treats and gift boxes.",
+      "difference": "Confectionery promotion. floating_bar wrapping row.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Confectionery promotion. floating_bar wrapping row."
+      }
+    },
+    {
+      "id": "campaign-black-friday-fast-lane",
+      "audience": "stores",
+      "family": "Black Friday Fast Lane",
+      "visitor_need": "Selected styles. A fixed Black Friday deadline.",
+      "difference": "Scheduled sale deadline. floating_bar wrapping row.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.",
+        "Set a real campaign end date for the countdown."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.",
+        "Set a real campaign end date for the countdown."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Scheduled sale deadline. floating_bar wrapping row."
+      }
+    },
+    {
+      "id": "campaign-packing-perk",
+      "audience": "stores",
+      "family": "Packing Perk",
+      "visitor_need": "Save on selected boxes, wrap and packing supplies.",
+      "difference": "Packaging supplies sale. floating_bar wrapping row.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Packaging supplies sale. floating_bar wrapping row."
+      }
+    },
+    {
+      "id": "campaign-friday-email-alert",
+      "audience": "stores",
+      "family": "Friday Email Alert",
+      "visitor_need": "Request the Black Friday preview by email. Opens November 26.",
+      "difference": "Early-access email signup. floating_bar with offer above a field/action row at medium widths. Email, consent, submit and acknowledgement. No phone capture or live hotline implied..",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Accepted preview requests.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Early-access email signup. floating_bar with offer above a field/action row at medium widths. Email, consent, submit and acknowledgement. No phone capture or live hotline implied.."
+      }
+    },
+    {
+      "id": "campaign-your-welcome-pal",
+      "audience": "stores",
+      "family": "Your Welcome Pal",
+      "visitor_need": "A little welcome for your first order of selected favorites.",
+      "difference": "Welcome offer. slide_in stack with image, heading, text, button. Rounded-top photo is a radius token.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Welcome offer. slide_in stack with image, heading, text, button. Rounded-top photo is a radius token."
+      }
+    },
+    {
+      "id": "campaign-breakfast-edit",
+      "audience": "stores",
+      "family": "Breakfast Edit",
+      "visitor_need": "Save on selected kitchen and breakfast essentials.",
+      "difference": "Kitchen seasonal sale. slide_in stack with image, heading, text and button. Breakfast art is one replaceable image..",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Kitchen seasonal sale. slide_in stack with image, heading, text and button. Breakfast art is one replaceable image.."
+      }
+    },
+    {
+      "id": "campaign-welcome-label",
+      "audience": "stores",
+      "family": "Welcome Label",
+      "visitor_need": "A simple welcome. Enter the code below at checkout.",
+      "difference": "First-order coupon. inline split of panels with heading, text, code and button. Public code is immediately visible.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.",
+        "Place the campaign with its block or shortcode."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.",
+        "Place the campaign with its block or shortcode."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "First-order coupon. inline split of panels with heading, text, code and button. Public code is immediately visible."
+      }
+    },
+    {
+      "id": "campaign-pixel-play-sale",
+      "audience": "stores",
+      "family": "Pixel Play Sale",
+      "visitor_need": "Save on selected gaming and desk accessories.",
+      "difference": "Gaming accessories sale. inline stack and row.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.",
+        "Place the campaign with its block or shortcode."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.",
+        "Place the campaign with its block or shortcode."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Gaming accessories sale. inline stack and row."
+      }
+    },
+    {
+      "id": "campaign-black-friday-departments",
+      "audience": "stores",
+      "family": "Black Friday Departments",
+      "visitor_need": "Footwear, everyday tech and audio. One Black Friday event.",
+      "difference": "Storewide selected collections. fullscreen stack with heading, image grid and one button. All departments are product images.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Storewide selected collections. fullscreen stack with heading, image grid and one button. All departments are product images."
+      }
+    },
+    {
+      "id": "campaign-anniversary-event",
+      "audience": "stores",
+      "family": "Anniversary Event",
+      "visitor_need": "Celebrate with 20% off selected favorites.",
+      "difference": "Anniversary promotion. fullscreen media and panel.",
+      "requirements": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "status": "review",
+      "source": "User-approved 50-campaign prototype, revision 7.1, 24 October 2026.",
+      "suggested_setup": [
+        "Set the shop link and review the offer, eligible items and terms.",
+        "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+      ],
+      "measure": "Offer link clicks.",
+      "batch": "black-friday-and-everyday",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Anniversary promotion. fullscreen media and panel."
+      }
     }
   ],
   "batches": [
@@ -7190,6 +8506,10 @@
     {
       "id": "everyday-extraordinary",
       "name": "Everyday, extraordinary"
+    },
+    {
+      "id": "black-friday-and-everyday",
+      "name": "Black Friday and everyday offers"
     }
   ]
 }

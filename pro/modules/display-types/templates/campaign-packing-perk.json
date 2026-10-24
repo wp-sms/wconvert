@@ -1,0 +1,169 @@
+{
+  "id": "campaign-packing-perk",
+  "name": "Packing Perk",
+  "display_type": "floating_bar",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#d8f0e2",
+    "fg": "#2c5644",
+    "muted": "#2c5644",
+    "accent": "#2c5644",
+    "accent-fg": "#fff6de",
+    "border": "#2c5644",
+    "input-bg": "#d8f0e2",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Bebas Neue\", Impact, sans-serif",
+    "heading-size": "2rem",
+    "heading-weight": "400",
+    "heading-leading": ".95",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "2.75rem 0 0",
+    "gap": "0",
+    "radius": ".25rem",
+    "width": "100%",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "panel",
+                  "children": [],
+                  "tokens": {
+                    "pad": "0",
+                    "gap": "0"
+                  },
+                  "narrow": {
+                    "pad": "0"
+                  },
+                  "min": "4rem",
+                  "decorations": {
+                    "label": "Decorative bubbles",
+                    "hidden": false,
+                    "items": [
+                      {
+                        "kind": "bubbles",
+                        "motion": "pulse",
+                        "x": 50,
+                        "y": 50,
+                        "size": 130,
+                        "color": "accent"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n1",
+                      "role": "eyebrow",
+                      "text": "PACKAGING SUPPLIES SALE",
+                      "tokens": {
+                        "text-size": ".625rem",
+                        "tracking": ".12em"
+                      }
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n2",
+                      "role": "headline",
+                      "text": "PACK MORE.\nPAY 25% LESS.",
+                      "narrow": {
+                        "heading-size": "2.65rem"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": ".85rem"
+                  }
+                },
+                {
+                  "type": "button",
+                  "id": "n3",
+                  "role": "cta_label",
+                  "label": "Shop the packing perk",
+                  "action": "link",
+                  "icon": "arrow"
+                }
+              ],
+              "tokens": {
+                "gap": "1rem"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n4",
+              "role": "fine_print",
+              "text": "25% off selected packing supplies. Exclusions apply.",
+              "tokens": {
+                "text-size": ".875rem"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "1.5rem 2rem",
+            "gap": ".9rem"
+          },
+          "narrow": {
+            "pad": "1.4rem"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

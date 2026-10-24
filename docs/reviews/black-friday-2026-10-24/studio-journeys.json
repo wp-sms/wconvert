@@ -1,0 +1,409 @@
+[
+  {
+    "id": "campaign-streetwear-poster",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-tech-price-sheet",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-fifty-fifty-poster",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-black-friday-coffee-menu",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-first-access-pass",
+    "visited": [
+      "offer",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "campaign-restock-mosaic",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-golden-weekend-ticket",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-finish-line-countdown",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-sound-circle",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-layer-edit",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-black-friday-plus-one",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-savings-staircase",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-twelve-month-deal",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-drop-alert",
+    "visited": [
+      "offer",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "campaign-deadline-scoreboard",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-first-dibs-signup",
+    "visited": [
+      "offer",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "campaign-free-delivery-label",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-extra-ten-coupon",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-home-edit",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-black-friday-department",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-welcome-buddy",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-welcome-perk",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-friday-coupon",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-turn-it-up",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-friday-comic",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-price-elevator",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-private-preview",
+    "visited": [
+      "offer",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "campaign-outdoor-edit",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-savings-receipt",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-welcome-shortcut",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-sneaker-edit",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-midnight-fragrance-edit",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-wishlist-alert",
+    "visited": [
+      "offer",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "campaign-garden-edit",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-friday-pass",
+    "visited": [
+      "offer",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "campaign-delivery-buddy",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-black-friday-archive",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-extra-gift",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-friday-game-code",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-fragrance-booth",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-sweet-edit",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-black-friday-fast-lane",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-packing-perk",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-friday-email-alert",
+    "visited": [
+      "offer",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "campaign-your-welcome-pal",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-breakfast-edit",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-welcome-label",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-pixel-play-sale",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-black-friday-departments",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "campaign-anniversary-event",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  }
+]

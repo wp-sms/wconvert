@@ -653,6 +653,8 @@ export const SHADOW_CSS = [
    * `opacity` and not `background`, so a design whose accent is a gradient or a
    * `var()` still animates.
    */
+  `.wc-button-arrow{display:inline-flex;align-items:center;justify-content:space-between;gap:1rem;text-align:start}.wc-button-arrow>span{min-inline-size:0}.wc-action-icon{display:block;inline-size:1.25rem;block-size:1.25rem;flex:none;pointer-events:none}.wc-action-icon:dir(rtl){transform:scaleX(-1)}`,
+  `.wc-panel[data-notch=true][data-notch-position=sides]{-webkit-mask-image:radial-gradient(circle 12px at 0 50%,#0000 12px,#000 12.5px),radial-gradient(circle 12px at 100% 50%,#0000 12px,#000 12.5px);mask-image:radial-gradient(circle 12px at 0 50%,#0000 12px,#000 12.5px),radial-gradient(circle 12px at 100% 50%,#0000 12px,#000 12.5px)}`,
   `.wc-button:hover{opacity:.88}`,
   `.wc-button[aria-busy=true]{position:relative;cursor:wait;opacity:.7}`,
   `.wc-button[aria-busy=true]::after{content:"";position:absolute;inset-inline-end:.25em;inset-block-start:calc(50% - .375em);inline-size:.75em;block-size:.75em;border:2px solid currentColor;border-inline-end-color:transparent;border-radius:50%;animation:wc-sending .8s linear infinite}`,

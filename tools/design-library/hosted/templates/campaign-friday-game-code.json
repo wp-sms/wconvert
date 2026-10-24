@@ -1,0 +1,184 @@
+{
+  "id": "campaign-friday-game-code",
+  "name": "Friday Game Code",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#172c29",
+    "fg": "#d5ff82",
+    "muted": "#d5ff82",
+    "accent": "#d5ff82",
+    "accent-fg": "#172c29",
+    "border": "#d5ff82",
+    "input-bg": "#172c29",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Bebas Neue\", Impact, sans-serif",
+    "heading-size": "3.6rem",
+    "heading-weight": "400",
+    "heading-leading": ".95",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "2.75rem 0 0",
+    "gap": "0",
+    "radius": ".25rem",
+    "width": "45rem",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n1",
+              "role": "eyebrow",
+              "text": "BLACK FRIDAY / GAMING ACCESSORIES COUPON",
+              "tokens": {
+                "text-size": ".625rem",
+                "tracking": ".12em"
+              }
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "panel",
+                  "children": [],
+                  "tokens": {
+                    "pad": "0",
+                    "gap": "0"
+                  },
+                  "narrow": {
+                    "pad": "0"
+                  },
+                  "min": "5rem",
+                  "decorations": {
+                    "label": "Decorative pixel",
+                    "hidden": false,
+                    "items": [
+                      {
+                        "kind": "pixel",
+                        "motion": "drift",
+                        "x": 50,
+                        "y": 50,
+                        "size": 130,
+                        "color": "accent"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "role": "headline",
+                  "text": "MORE PLAY.\n30% LESS.",
+                  "narrow": {
+                    "heading-size": "2.65rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "role": "body",
+                  "text": "Use the code below on selected gaming accessories."
+                },
+                {
+                  "type": "code",
+                  "id": "n4",
+                  "role": "code_value",
+                  "text": "FRIDAY30",
+                  "copy": false
+                }
+              ],
+              "tokens": {
+                "pad": "1.25rem",
+                "gap": ".9rem",
+                "border": "accent",
+                "radius": ".25rem"
+              },
+              "narrow": {
+                "pad": "1.4rem"
+              },
+              "edges": "all"
+            },
+            {
+              "type": "button",
+              "id": "n5",
+              "role": "cta_label",
+              "label": "Shop with my code",
+              "action": "link",
+              "icon": "arrow"
+            },
+            {
+              "type": "text",
+              "id": "n6",
+              "role": "fine_print",
+              "text": "November 27–30. Selected gaming accessories.",
+              "tokens": {
+                "text-size": ".875rem"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "1rem",
+            "gap": ".9rem",
+            "radius": "1rem",
+            "border": "accent"
+          },
+          "narrow": {
+            "pad": "1.4rem"
+          },
+          "edges": "all"
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

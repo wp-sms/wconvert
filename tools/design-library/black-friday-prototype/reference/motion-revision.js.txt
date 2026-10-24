@@ -1,0 +1,22 @@
+/* Optional authored decoration; never required to see or claim an offer. */
+const motionNotes={
+'04':'Audio equalizer — slow decorative levels',
+'07':'Door glow — soft ambient light',
+'09':'Receipt eyes — occasional blink',
+'10':'Welcome rings — gentle breathing',
+'13':'Conversation — one-time staggered arrival',
+'14':'Garden illustration — gentle vertical drift',
+'16':'Cosmic sparkle — soft breathing',
+'19':'Pixel mascot — gentle vertical hop',
+'23':'Bubble wrap — soft decorative highlights',
+'28':'Pixel parade — small staggered hops',
+'30':'Anniversary balloons — slow vertical float',
+'31':'Streetwear photo — subtle one-time arrival',
+'35':'Access band — soft outline pulse',
+'36':'Product windows — staggered arrival',
+'37':'Ticket barcode — soft ink pulse',
+'39':'Audio spotlight — gentle breathing',
+'43':'Month tiles — one-time staggered arrival',
+'50':'Department photographs — staggered arrival'
+};
+for(const d of D){d.motion=motionNotes[d.id]||'None — static design';d.motionKind=motionNotes[d.id]?'Authored decoration':'Static';if(motionNotes[d.id])d.fit+=' Optional prototype decoration: '+motionNotes[d.id]+'. Main offer, controls and arrows stay still. Custom motion is not part of the native draft.';}

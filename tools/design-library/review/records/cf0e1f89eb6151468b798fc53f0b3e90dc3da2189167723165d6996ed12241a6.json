@@ -1,0 +1,51 @@
+{
+  "id": "campaign-streetwear-poster",
+  "revision": "97f2bed923ba5c6ea03b06d059bf476d1933d540a4c0a2aebfdce1078250df86",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "The black streetwear poster keeps its oversized masthead, apparel photograph and lime shopping action.",
+  "at": "2026-10-24T10:40:12.652Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-streetwear-poster-320.png",
+          "sha256": "9e27f5f9f3b7f907c53f1906428734040cceee52c9b2fff19d63b63f50a07d57"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-streetwear-poster-1440.png",
+          "sha256": "68e454677d198056c412a8412089b74f63baec0bd4948d2a8174693173697648"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "98aec6a37d7eb2628fbe97d85ec06ac41bf30c0bc72cc33cae964f36a1622b04"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        }
+      ]
+    }
+  },
+  "record_id": "cf0e1f89eb6151468b798fc53f0b3e90dc3da2189167723165d6996ed12241a6"
+}

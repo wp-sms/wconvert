@@ -1,0 +1,51 @@
+{
+  "id": "campaign-outdoor-edit",
+  "revision": "0203c78de92366f1184fc432556ffcb23f63ed53d7a7729b55f014a0e7971ae8",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Landscape artwork leads the outdoor offer; the category-specific copy stays evergreen.",
+  "at": "2026-10-24T10:40:12.653Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-outdoor-edit-320.png",
+          "sha256": "3b9c60d11336fba767cacb83630c6445e3cbc19acae09b33cc5d30fc17e9f0ab"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-outdoor-edit-1440.png",
+          "sha256": "8997e733519b7e9931738555e71f50d22ec98d3cbbf848af81fb67ff90c65352"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "98aec6a37d7eb2628fbe97d85ec06ac41bf30c0bc72cc33cae964f36a1622b04"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        }
+      ]
+    }
+  },
+  "record_id": "337ba9afe7e9d7e2ee3c51e86fcacb4f6f41082ee5b35c6e1ac8b4021076f46d"
+}

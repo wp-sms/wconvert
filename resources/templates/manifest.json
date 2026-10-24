@@ -82,7 +82,8 @@
         "notch",
         "tokens",
         "narrow",
-        "decorations"
+        "decorations",
+        "notch_position"
       ],
       "choices": {
         "edges": [
@@ -99,12 +100,17 @@
         "notch": [
           "false",
           "true"
+        ],
+        "notch_position": [
+          "top",
+          "sides"
         ]
       },
       "defaults": {
         "edges": "none",
         "min": "0",
-        "notch": "false"
+        "notch": "false",
+        "notch_position": "top"
       },
       "style_tokens": [
         "gap",
@@ -348,7 +354,8 @@
         "shape",
         "hidden",
         "tokens",
-        "narrow"
+        "narrow",
+        "motion"
       ],
       "roles": [],
       "choices": {
@@ -359,11 +366,18 @@
         "shape": [
           "rect",
           "circle"
+        ],
+        "motion": [
+          "none",
+          "arrive",
+          "breathe",
+          "drift"
         ]
       },
       "defaults": {
         "fit": "cover",
-        "shape": "rect"
+        "shape": "rect",
+        "motion": "none"
       },
       "style_tokens": [
         "radius",
@@ -607,7 +621,8 @@
         "action",
         "tokens",
         "narrow",
-        "submission"
+        "submission",
+        "icon"
       ],
       "roles": [
         "cta_label",
@@ -632,10 +647,15 @@
           "skip",
           "close",
           "link"
+        ],
+        "icon": [
+          "none",
+          "arrow"
         ]
       },
       "defaults": {
-        "action": "next"
+        "action": "next",
+        "icon": "none"
       }
     },
     "consent": {
@@ -1018,13 +1038,24 @@
     "kinds": [
       "bat",
       "eyes",
-      "sparkle"
+      "sparkle",
+      "equalizer",
+      "rings",
+      "pixel",
+      "bubbles",
+      "balloon",
+      "barcode",
+      "halo"
     ],
     "motions": [
       "none",
       "float",
       "flap",
-      "blink"
+      "blink",
+      "drift",
+      "pulse",
+      "levels",
+      "arrive"
     ],
     "colors": [
       "fg",

@@ -17,6 +17,10 @@ use WConvert\Template\TemplateVocabulary;
 
 require dirname(__DIR__) . '/tests/bootstrap.php';
 
+// This CLI-only check loads the entire catalogue's conversion matrix at once.
+// Keep its memory budget independent of a site's PHP request limit.
+ini_set('memory_limit', '512M');
+
 $file = $argv[1] ?? '';
 $entries = is_file($file) ? json_decode((string) file_get_contents($file), true) : null;
 if (!is_array($entries) || $entries === []) { fwrite(STDERR, "No conversions in {$file}.\n"); exit(2); }

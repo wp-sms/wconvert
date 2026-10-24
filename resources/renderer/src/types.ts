@@ -460,6 +460,7 @@ export interface IconNode extends HideableNode {
 
 export interface ImageNode extends HideableNode {
   readonly type: 'image';
+  readonly motion?: 'none' | 'arrive' | 'breathe' | 'drift';
   readonly src?: string;
   readonly alt?: string;
   readonly fit?: 'cover' | 'contain';
@@ -508,6 +509,7 @@ export interface ProductsNode extends BaseNode { readonly type: 'products'; read
 
 export interface ButtonNode extends BaseNode {
   readonly type: 'button';
+  readonly icon?: 'none' | 'arrow';
   readonly label?: string;
   /**
    * The converting act. One Optin has exactly one, and a Template offering
@@ -766,6 +768,7 @@ export interface PanelNode {
    * to declared.
    */
   readonly notch?: boolean;
+  readonly notch_position?: 'top' | 'sides';
 }
 
 /**
@@ -859,8 +862,8 @@ export interface GoogleFont {
 }
 export interface DecorationPlacement { readonly x: number; readonly y: number; readonly size: number; }
 export interface Decoration extends DecorationPlacement {
-  readonly kind: 'bat' | 'eyes' | 'sparkle';
-  readonly motion?: 'none' | 'float' | 'flap' | 'blink';
+  readonly kind: 'bat' | 'eyes' | 'sparkle' | 'equalizer' | 'rings' | 'pixel' | 'bubbles' | 'balloon' | 'barcode' | 'halo';
+  readonly motion?: 'none' | 'float' | 'flap' | 'blink' | 'drift' | 'pulse' | 'levels' | 'arrive';
   readonly color?: 'fg' | 'accent' | 'muted' | 'accent-fg';
   readonly narrow?: DecorationPlacement;
 }

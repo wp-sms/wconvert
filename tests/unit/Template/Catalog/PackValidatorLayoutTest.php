@@ -37,6 +37,26 @@ final class PackValidatorLayoutTest extends TestCase
         }
     }
 
+    public function testEveryDeclaredDecorationSurvivesCatalogueAndMerchantTransfer(): void
+    {
+        $manifest = TemplateManifest::load();
+        $reader = new PackValidator($manifest, TemplateVocabulary::fromManifest());
+        foreach ($manifest['decorations']['kinds'] as $kind) foreach ($manifest['decorations']['motions'] as $motion) {
+            $group = ['label' => 'Campaign artwork', 'hidden' => false, 'items' => [
+                ['kind' => $kind, 'x' => 50, 'y' => 50, 'size' => 130, 'motion' => $motion, 'color' => 'accent'],
+            ]];
+            $pack = $this->pack('panel', 'decorations', $group);
+            $pack['templates'][0]['tree']['steps'][0]['content']['notch'] = true;
+            $pack['templates'][0]['tree']['steps'][0]['content']['notch_position'] = 'sides';
+            $decoded = $reader->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+            $portable = $reader->portable($pack['templates'][0]);
+            foreach ([$decoded['templates'][0], $portable] as $design) {
+                self::assertSame($group, $design['tree']['steps'][0]['content']['decorations']);
+                self::assertSame('sides', $design['tree']['steps'][0]['content']['notch_position']);
+            }
+        }
+    }
+
     public function testLayoutExceptionsDoNotAdmitUnsafeSizesOrUnknownEnums(): void
     {
         $reader = new PackValidator(TemplateManifest::load(), TemplateVocabulary::fromManifest());

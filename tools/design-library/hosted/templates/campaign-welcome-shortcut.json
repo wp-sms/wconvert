@@ -1,0 +1,222 @@
+{
+  "id": "campaign-welcome-shortcut",
+  "name": "Welcome Shortcut",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#e6c3da",
+    "fg": "#42324a",
+    "muted": "#42324a",
+    "accent": "#42324a",
+    "accent-fg": "#fff5df",
+    "border": "#42324a",
+    "input-bg": "#e6c3da",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Bebas Neue\", Impact, sans-serif",
+    "heading-size": "3.6rem",
+    "heading-weight": "400",
+    "heading-leading": ".95",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "2.75rem 0 0",
+    "gap": "0",
+    "radius": ".25rem",
+    "width": "45rem",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "split",
+          "ratio": 0.5,
+          "basis": "16rem",
+          "start": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "panel",
+                  "children": [],
+                  "tokens": {
+                    "pad": "0",
+                    "gap": "0"
+                  },
+                  "narrow": {
+                    "pad": "0"
+                  },
+                  "min": "9rem",
+                  "decorations": {
+                    "label": "Decorative rings",
+                    "hidden": false,
+                    "items": [
+                      {
+                        "kind": "rings",
+                        "motion": "pulse",
+                        "x": 50,
+                        "y": 50,
+                        "size": 130,
+                        "color": "accent"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "n1",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "text-size": "5rem",
+                        "leading": ".95",
+                        "font": "\"Bebas Neue\", Impact, sans-serif"
+                      },
+                      "emphasis": "15%",
+                      "narrow": {
+                        "text-size": "4.5rem"
+                      }
+                    },
+                    {
+                      "type": "code",
+                      "id": "n2",
+                      "role": "code_value",
+                      "text": "WELCOME15",
+                      "copy": false
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "2rem",
+                    "gap": ".9rem",
+                    "bg": "accent",
+                    "fg": "accent-fg",
+                    "muted": "accent-fg",
+                    "align": "center",
+                    "radius": "6rem 6rem 1rem 1rem"
+                  },
+                  "narrow": {
+                    "pad": "1.4rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "1.5rem",
+                "gap": ".5rem"
+              },
+              "narrow": {
+                "pad": "1.4rem"
+              }
+            }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n3",
+                  "role": "eyebrow",
+                  "text": "FIRST-ORDER COUPON",
+                  "tokens": {
+                    "text-size": ".625rem",
+                    "tracking": ".12em"
+                  }
+                },
+                {
+                  "type": "heading",
+                  "id": "n4",
+                  "role": "headline",
+                  "text": "YOUR SHORTCUT\nTO 15% OFF.",
+                  "narrow": {
+                    "heading-size": "2.65rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n5",
+                  "role": "body",
+                  "text": "Start with a little saving. Enter the code below on your first order."
+                },
+                {
+                  "type": "button",
+                  "id": "n6",
+                  "role": "cta_label",
+                  "label": "Use my welcome offer",
+                  "action": "link",
+                  "icon": "arrow"
+                },
+                {
+                  "type": "text",
+                  "id": "n7",
+                  "role": "fine_print",
+                  "text": "First order only. Selected items. Exclusions apply.",
+                  "tokens": {
+                    "text-size": ".875rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "2rem",
+                "gap": ".9rem"
+              },
+              "narrow": {
+                "pad": "1.4rem"
+              }
+            }
+          ],
+          "tokens": {
+            "gap": "0"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

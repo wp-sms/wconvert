@@ -1,0 +1,1605 @@
+{
+  "schema": 2,
+  "reviews": [
+    {
+      "id": "campaign-streetwear-poster",
+      "revision": "97f2bed923ba5c6ea03b06d059bf476d1933d540a4c0a2aebfdce1078250df86",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The black streetwear poster keeps its oversized masthead, apparel photograph and lime shopping action.",
+      "at": "2026-10-24T10:40:12.652Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-streetwear-poster-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-streetwear-poster-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-tech-price-sheet",
+      "revision": "19b3ec2b2df812ce2bb0374665c05c4a2f01bbeb03b93b80fd4c18eabf853594",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The tech sheet separates the sample $120/$84 price comparison from the action and selected-item terms.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-tech-price-sheet-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-tech-price-sheet-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-fifty-fifty-poster",
+      "revision": "46682351ceb8f0aeb76992ccb7618e77ea8126f3eb49978a3d117a0277977005",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The large 50% number is the dominant poster element; a narrow ribbon ties it explicitly to Black Friday.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-fifty-fifty-poster-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-fifty-fifty-poster-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-black-friday-coffee-menu",
+      "revision": "a75d20d96008b13b790218b3dd9a72cb1132d805ba6ff9bbf4ecec58627f4c74",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The coffee image and menu-like discount row keep the category unmistakable.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-black-friday-coffee-menu-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-black-friday-coffee-menu-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-first-access-pass",
+      "revision": "a47246845f020368e6c0aea7e858f50933d3d3757637aa50c17c3c6d447fcff0",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The date pass states November 26 as early access; signup and acknowledgement remain separate screens.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-first-access-pass-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-first-access-pass-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-restock-mosaic",
+      "revision": "2c5036a6448ec38202a285138bd3a597feb349108ec8dee6f8fafad09e66e82e",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The three care-product windows remain a compact row on phones instead of three tall stacked photos.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-restock-mosaic-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-restock-mosaic-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-golden-weekend-ticket",
+      "revision": "ea5e1dcf3f3fd9375258ec2fa6b2908d64a9eab86d5caff7604b1fd6917df879",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The gold ticket exposes its dark backdrop through cutouts and holds the coupon beside the shopping action.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-golden-weekend-ticket-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-golden-weekend-ticket-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-finish-line-countdown",
+      "revision": "f6070c9dfd12b19f6d652bc4ade5cf4dc2305cbdd065674d66e0386cab3f0e2c",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The sportswear picture and deadline occupy separate columns that stack in reading order on a phone.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-finish-line-countdown-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-finish-line-countdown-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-sound-circle",
+      "revision": "f36091fbe47bfc01f78a571ac79c0abb8331ad25baf3b46115243dc43176bd17",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The headphones use a large rounded product window, independent of the small-avatar image preset.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-sound-circle-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-sound-circle-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-layer-edit",
+      "revision": "07b7db7f0ae3b7ea7b4cf71aafb25e80b03abb5c6fe24c3f734e2ce9c8c471fa",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The compact apparel slide-in keeps the photo next to its short heading at narrow widths.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-layer-edit-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-layer-edit-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-black-friday-plus-one",
+      "revision": "cfa920c1f70842617c3a534ce0e5c1d26b51f8858dc7c8c024ea681d714715c3",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The gift composition visibly separates the product and plus sign; the $75 threshold is explicit.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-black-friday-plus-one-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-black-friday-plus-one-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-savings-staircase",
+      "revision": "30bcc7af701b278e74445abb817822a80dc77371fe1b96e22fc20c257f94bb46",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Three spend tiers use distinct product images and increasing rewards; terms disallow combining tiers.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-savings-staircase-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-savings-staircase-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-twelve-month-deal",
+      "revision": "55c9fc78947898ad63ce18e8baf5d379caa8fe5d12ad697e1d094519729f5632",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The twelve-month grid supports the annual-plan offer; first-year and renewal prices are both stated.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-twelve-month-deal-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-twelve-month-deal-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-drop-alert",
+      "revision": "c65d5373f09e202085b800eb0618cec0ab4899910c11d06fdcd9a1e207081454",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The drop-alert signup leads with 40%, then explains the preview request; its acknowledgement claims receipt.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-drop-alert-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-drop-alert-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-deadline-scoreboard",
+      "revision": "3147fc25bbff86714c2920dd8491010e8dc1858cb3149e85ccb26bd2164d8a23",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The deadline scoreboard keeps the offer ribbon and timer/action row distinct and uses the configured end date.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-deadline-scoreboard-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-deadline-scoreboard-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-first-dibs-signup",
+      "revision": "752eb7aa775dbd7731ccd77e64060db625873b8c880ceb7291250947de0acc51",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The date block and first-dibs form remain grouped; the bar fills its actual viewport.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-first-dibs-signup-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-first-dibs-signup-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-free-delivery-label",
+      "revision": "d871153d7bc55fbbaa29b4201603f00c7ca57c5c3bdb1180113d16968841802d",
+      "base_id": "11ec48e04a54dde5ce6786ed55640ea8a2f888ec6a6fc8c0cdafe5a7e8a5bc02",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The delivery label groups the barcode with the shipping dates and states the $100 threshold. Final heading semantics, copy and appearance reviewed after correction.",
+      "at": "2026-10-24T10:48:07.324Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-free-delivery-label-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-free-delivery-label-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-extra-ten-coupon",
+      "revision": "14ba23dca6340f46df02ff44124a2b20aea7e399ff60d471282e6fce6473eac1",
+      "base_id": "8c324fe78801d1ee005b8b4c7944cb1966838ff6331cd8883c54c3f3ae179e37",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The sneaker coupon separates product, extra discount and configurable code without rotating any element. Final heading semantics, copy and appearance reviewed after correction.",
+      "at": "2026-10-24T10:48:07.324Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-extra-ten-coupon-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-extra-ten-coupon-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-home-edit",
+      "revision": "577ee3232877a7a7e4cd0a0616cd6d5a1c48bb073991c1c10ceff93b43241c7e",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The home triptych groups image, editorial copy and reward; each pane stacks cleanly on a phone.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-home-edit-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-home-edit-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-black-friday-department",
+      "revision": "cb80c23c998c6a41e517af05a68d707254a105bb2bf4462f4c227a218af725c2",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The department launch uses streetwear, tech and care imagery with one storewide Black Friday action.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-black-friday-department-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-black-friday-department-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-welcome-buddy",
+      "revision": "c76cc9c0869a7d1ad678c176b85f978bb7b86c112fe9de11b0cd18387161e66b",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Mascot and first-order reward remain separate, editable regions; the phone stacks the image above the offer.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-welcome-buddy-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-welcome-buddy-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-welcome-perk",
+      "revision": "b4a8234e8c409584a7418234b93d5fadc064b651980303cec83b7a845449d7d3",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The dispenser remains product artwork beside a native coupon; the body refers to the configurable code below.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-welcome-perk-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-welcome-perk-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-friday-coupon",
+      "revision": "9f312370c177581a7f4c1d800427d046931f9559c4fdbc77ea4159b8e08586da",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The mint ticket exposes the actual red backdrop through side cutouts; percentage, code and barcode remain distinct.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-friday-coupon-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-friday-coupon-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-turn-it-up",
+      "revision": "5654271c18d4189163a8a84b64634ad2cdf73efe1352f4e03837736b252f7dda",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Headphones balance the short offer; equalizer motion is decorative and does not move the text.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-turn-it-up-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-turn-it-up-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-friday-comic",
+      "revision": "00501c04caed22890c95b799a9012c84e7b510263fa526c352345f1dbc8f07c4",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The comic keeps its three-part reading order; original face artwork has a defined ink colour.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-friday-comic-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-friday-comic-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-price-elevator",
+      "revision": "9f0e1ae0a6f17005b30dfe7fdf2b1c85185a37f529862e3c0060287350951476",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The price panel clearly labels the $100 to $60 example and separates it from the shopping action.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-price-elevator-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-price-elevator-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-private-preview",
+      "revision": "01c1acfa7c56ebf7cd4ca550557704c311ddcda3e0d2928309876df0852180fb",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The doorway introduces a preview request; the acknowledgement confirms receipt only.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-private-preview-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-private-preview-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-outdoor-edit",
+      "revision": "0203c78de92366f1184fc432556ffcb23f63ed53d7a7729b55f014a0e7971ae8",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Landscape artwork leads the outdoor offer; the category-specific copy stays evergreen.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-outdoor-edit-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-outdoor-edit-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-savings-receipt",
+      "revision": "93f8cb4e040181d63756b63a8da894e54f925ffd9cf658850aacf11639edda6c",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The receipt orders original price, discount and saving before one action; blinking eyes stay decorative.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-savings-receipt-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-savings-receipt-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-welcome-shortcut",
+      "revision": "ec48fcdea2cef8e4a4fe77d1b266d55a0a2ec7aa478ad3113a120cebd904cada",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Concentric rings frame the welcome coupon; restored form toggles keep the code in that frame.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-welcome-shortcut-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-welcome-shortcut-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-sneaker-edit",
+      "revision": "c5022f92cde615e8807836f7249e368cb0cff0826f48d7b1e65025133beeeba0",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The trainer photograph carries the category; the 40% reward is legible beside it and below it on phones.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-sneaker-edit-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-sneaker-edit-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-midnight-fragrance-edit",
+      "revision": "acf26a4dc84dcd1de2742eebd1fd4e6e856803dc1c3d68a3fcbfdee64dfa48d4",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Serif fragrance copy and the product image lead to the same 30% reward in the footer.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-midnight-fragrance-edit-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-midnight-fragrance-edit-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-wishlist-alert",
+      "revision": "8266e983b07edc13a32ac64a154094249fa0ef1f910a6b9b8d1aa3b0f69133f3",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Chat bubbles explain the preview before the form; request acknowledgement avoids claiming delivery.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-wishlist-alert-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-wishlist-alert-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-garden-edit",
+      "revision": "be0ebc34705679192a9334a26319b78bba53d0336cc133f66dd5b00a9e903202",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The flower drifts independently of the copy; the garden offer is explicitly evergreen.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-garden-edit-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-garden-edit-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-friday-pass",
+      "revision": "3fba844c0c16e3f29d0d97ae94955a2c8c41b3f0e7613dd9c827102db5f37fea",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The early-access pass groups the date and 30% offer; the form remains a separate editable column.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-friday-pass-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-friday-pass-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-delivery-buddy",
+      "revision": "d619129ad276d9089742307aced4801c13ee2acdfa4bde39303086ab49c448c5",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The robot illustrates a shipping benefit with the $75 threshold stated in terms.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-delivery-buddy-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-delivery-buddy-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-black-friday-archive",
+      "revision": "a567aa429f3f25852b23283d07ecdfeb7928c75e1aacb237331f52604e2e4eb8",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The archive label holds one selected-stock offer and a native barcode decoration.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-black-friday-archive-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-black-friday-archive-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-extra-gift",
+      "revision": "0dd247c551ba65bfe61ec0a446eee790ced418b8e9d75e077f9472c4bee79b69",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The care-product image supports a gift threshold; the terms describe availability without invented scarcity.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-extra-gift-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-extra-gift-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-friday-game-code",
+      "revision": "e5117d82f2108d63d4aaa162877f63e4d5bba6dbe97e1d91a118d0a0482325fb",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The game code remains inside its bordered panel after form conversion; the pixel decoration has clear cutout eyes.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-friday-game-code-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-friday-game-code-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-fragrance-booth",
+      "revision": "3197478c6faa7661c94f9562e126c060f1e42120dcd537282e65a6b3a888132c",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The three-window fragrance strip uses one consistent 30% discount in headline and display offer.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-fragrance-booth-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-fragrance-booth-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-sweet-edit",
+      "revision": "dd72f9fd919693f5d3e028d2f06b13f7d0cfcfdbe5979d5ab1e7c4b57b5f8eb1",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The rounded sweet-edit bar has a concise single-line action at ordinary copy lengths.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-sweet-edit-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-sweet-edit-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-black-friday-fast-lane",
+      "revision": "7c1496b9562e7570f3ded8cc9ab3fbb504a66f41ca591d23f576a52d69648cf9",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The deadline bar separates the selected-items offer from a real-end-date countdown.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-black-friday-fast-lane-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-black-friday-fast-lane-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-packing-perk",
+      "revision": "a1020faa73a326b980f1fbaecf6c18b4dd01463d2868daeb15c61a8f43787b25",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The packing offer remains a general campaign; its accent shapes do not interrupt reading order.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-packing-perk-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-packing-perk-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-friday-email-alert",
+      "revision": "76bdd283debbe9bc856c3ec50dfcad19fe20c9e5407ed4c57f1aa3656961f0e4",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The yellow preview bar keeps headline and form grouped across wrapping widths, with a short SVG-arrow action.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-friday-email-alert-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-friday-email-alert-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-your-welcome-pal",
+      "revision": "c8b5654222dda3fc4c433259a6844d23704fc0d3940a13ea9bc7b945c933d22e",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The welcome slide-in retains the character image and one first-order action.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-your-welcome-pal-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-your-welcome-pal-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-breakfast-edit",
+      "revision": "99e908c3030914166596f729dc87707e720f8a300280cfa18bc51a308e437d4e",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The breakfast photograph leads a specific evergreen seasonal offer.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-breakfast-edit-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-breakfast-edit-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-welcome-label",
+      "revision": "6879515e7e6238f3fde915af3ee7152cb29dca4b14182ab730e6cbac1c3042ea",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The round welcome label contains the configurable coupon and survives capture conversion intact.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-welcome-label-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-welcome-label-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-pixel-play-sale",
+      "revision": "d97fad4ef3110eabd73394714caf996ee80301b3d18a900fd6d0735b45de4cf0",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The pixel trio establishes a gaming theme while the native offer and shopping action remain editable.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-pixel-play-sale-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-pixel-play-sale-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-black-friday-departments",
+      "revision": "84be2e68906d9c328f8b905778ae23dd0cf3c9836e5a1e29dbd179215e319785",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The full-screen department layout groups three product categories under one Black Friday ask.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-black-friday-departments-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-black-friday-departments-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-anniversary-event",
+      "revision": "0b3978b887b0bd1a8f8a768d7332f4f6f346a92183663823e6dace1dac25ea00",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "The anniversary layout uses two non-rotating balloon outlines and a consistent 20% reward.",
+      "at": "2026-10-24T10:40:12.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/campaign-anniversary-event-320.png",
+            "docs/reviews/black-friday-2026-10-24/campaign-anniversary-event-1440.png",
+            "docs/reviews/black-friday-2026-10-24/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json",
+            "docs/reviews/black-friday-2026-10-24/studio-journeys.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/black-friday-2026-10-24/results.json"
+          ]
+        }
+      }
+    }
+  ]
+}

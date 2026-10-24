@@ -1,0 +1,47 @@
+{
+  "id": "winter-tied-with-joy",
+  "revision": "1d06dc62edb7f392afad65a9406e3007cee7c7a88d05b5a26c81de119f686999",
+  "base_id": "0ec630c3e86ddc85fc8e43ac8a7007ff235a594c64f0359cc025ba19d5766ba1",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 031e66237b8265ce7bc935d28e5eb45786fc894c, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T10:44:21Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-9.jpg",
+          "sha256": "d22e0be5d733704db93faaec5cbbbbb5d8e8274559f2588384cc39376ddab7e6"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-9.jpg",
+          "sha256": "08b54d23fa3d2619e6127ac38f581fc5e5e4e393615b187b0373d86476704a88"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "2dd57f5915a3902d88a460c12e51588a149e0f897ac6ce9f4c752e3ae543f9c1"
+}

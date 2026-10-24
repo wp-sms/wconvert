@@ -82,6 +82,7 @@
         "panel.edges": "Border",
         "panel.decorations": "Decorations",
         "panel.min": "Minimum height",
+        "panel.notch_position": "Cutout position",
         "panel.notch": "Punched corners",
         "media.tokens": "Style for this box",
         "media.decorations": "Decorations",
@@ -111,6 +112,8 @@
         "panel.min.10rem": "Short",
         "panel.min.16rem": "Medium",
         "panel.min.24rem": "Tall",
+        "panel.notch_position.top": "Top corners",
+        "panel.notch_position.sides": "Side centres",
         "panel.notch.false": "Square",
         "panel.notch.true": "Punched, like a ticket",
         "media.min.0": "As tall as its contents",
@@ -119,6 +122,8 @@
         "media.min.24rem": "Tall"
     },
     "nodeParams": {
+        "button.icon": "Button icon",
+        "image.motion": "Picture motion",
         "button.action": "Button action",
         "heading.level": "Heading level",
         "heading.size": "Size",
@@ -140,6 +145,12 @@
         "badge.place": "Badge position"
     },
     "nodeParamValues": {
+        "button.icon.none": "None",
+        "button.icon.arrow": "Arrow",
+        "image.motion.none": "None",
+        "image.motion.arrive": "Appear once",
+        "image.motion.breathe": "Gentle scale",
+        "image.motion.drift": "Gentle drift",
         "button.action.submit": "Submit",
         "button.action.next": "Next",
         "button.action.back": "Back",

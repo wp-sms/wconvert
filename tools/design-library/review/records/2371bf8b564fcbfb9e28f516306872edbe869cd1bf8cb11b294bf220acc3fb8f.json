@@ -1,0 +1,47 @@
+{
+  "id": "halloween-sale-countdown",
+  "revision": "b555199ab7678249bf95e53a18685132dc31dc60ce603b5bc281bb030b7fba12",
+  "base_id": "82c30de09bd5a50ed5d0f21d66b3e75c27da8ce15160faa516d5391972fa268b",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 031e66237b8265ce7bc935d28e5eb45786fc894c, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T10:44:21Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/halloween-sale-countdown-320.png",
+          "sha256": "5ffff8813bb0c415825d8c60f01c2bbffe28eec0937436cc873bd5eae5dc3a52"
+        },
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/halloween-sale-countdown-1440.png",
+          "sha256": "ad6e730bba3eab08d4e4320980af0ef6e4adb0aeb4603d991e3f25ff57957063"
+        },
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/review.md",
+          "sha256": "ef35ba6c37ecb334228f59a65f5a6cc2b9d0288a28c7be3ebfbbd1b6c712aa4d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/results.json",
+          "sha256": "402c3d44b9b37fac483320a2b09b33b4ddf782431f7e7095c4f478614447b64b"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/results.json",
+          "sha256": "402c3d44b9b37fac483320a2b09b33b4ddf782431f7e7095c4f478614447b64b"
+        }
+      ]
+    }
+  },
+  "record_id": "2371bf8b564fcbfb9e28f516306872edbe869cd1bf8cb11b294bf220acc3fb8f"
+}

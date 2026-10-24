@@ -1,0 +1,51 @@
+{
+  "id": "campaign-midnight-fragrance-edit",
+  "revision": "acf26a4dc84dcd1de2742eebd1fd4e6e856803dc1c3d68a3fcbfdee64dfa48d4",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Serif fragrance copy and the product image lead to the same 30% reward in the footer.",
+  "at": "2026-10-24T10:40:12.653Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-midnight-fragrance-edit-320.png",
+          "sha256": "26678fbb5e41023554eb945e0c83bb6ac2420f7bcdeb25a269a4ab433419063e"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-midnight-fragrance-edit-1440.png",
+          "sha256": "d649935f271de86c0aef51eb0747c13fba5486cf52be53e7cee44e9fe207a00a"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "98aec6a37d7eb2628fbe97d85ec06ac41bf30c0bc72cc33cae964f36a1622b04"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        }
+      ]
+    }
+  },
+  "record_id": "26b2330e858af721e9a5c93b6d2260797001e78c2127aca0849e3236f50397ad"
+}

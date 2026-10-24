@@ -1,0 +1,1088 @@
+[
+  {
+    "id": "31",
+    "native_id": "campaign-streetwear-poster",
+    "name": "Streetwear Poster",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "A full-width condensed masthead sits above a fashion photograph and a narrow offer column. The lime footer reads like a drop announcement.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "32",
+    "native_id": "campaign-tech-price-sheet",
+    "name": "Tech Price Sheet",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "A broad product photograph is captioned by a compact price ledger. The offer feels like a product launch sheet, with the saving in its own bold block.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "33",
+    "native_id": "campaign-fifty-fifty-poster",
+    "name": "Fifty-Fifty Poster",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "The discount is the composition: a giant 50 above a compact contrasting Black Friday strip and a tightly grouped action.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "34",
+    "native_id": "campaign-black-friday-coffee-menu",
+    "name": "Black Friday Coffee Menu",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "A narrow café-menu composition pairs a framed coffee photograph with a menu-style offer line, generous spacing and a full-width order button.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "35",
+    "native_id": "campaign-first-access-pass",
+    "name": "First-Access Pass",
+    "tier": "free",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "A horizontal access pass puts the opening date on a slim ticket stub and the signup in a wide dark panel, with the saving in a small top band.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      },
+      {
+        "id": "received",
+        "name": "Request received"
+      }
+    ]
+  },
+  {
+    "id": "36",
+    "native_id": "campaign-restock-mosaic",
+    "name": "Restock Mosaic",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Three sharply cropped product windows form a retail shelf. A full-width headline and oversized saving sit beneath, instead of a conventional photo/text split.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "37",
+    "native_id": "campaign-golden-weekend-ticket",
+    "name": "Golden Weekend Ticket",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "A horizontal ticket gives the oversized saving its own black panel and the public code a gold redemption stub. A restrained perforation makes the offer tangible.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "38",
+    "native_id": "campaign-finish-line-countdown",
+    "name": "Finish-Line Countdown",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.",
+      "Set a real campaign end date for the countdown."
+    ],
+    "idea": "A wide sports photograph and a compact headline occupy the main pane while a tall countdown rail turns the deadline into the composition.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "39",
+    "native_id": "campaign-sound-circle",
+    "name": "Sound Circle",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "A circular audio photograph is framed by short headline blocks and a slim offer footer. The product silhouette becomes the central visual anchor.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "40",
+    "native_id": "campaign-layer-edit",
+    "name": "Layer Edit",
+    "tier": "pro",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "A portrait strip beside a small offer creates a horizontal slide-in rather than another tall photo card. The action spans the entire bottom edge.",
+    "directory": "pro/modules/display-types",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "41",
+    "native_id": "campaign-black-friday-plus-one",
+    "name": "Black Friday Plus One",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "A full-width headline leads to a framed product image and a large plus sign beside the gift threshold. The arrangement reads as an offer equation.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "42",
+    "native_id": "campaign-savings-staircase",
+    "name": "Savings Staircase",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Three rising panels turn spend-and-save thresholds into a literal staircase. Product thumbnails give each tier a tactile retail context.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "43",
+    "native_id": "campaign-twelve-month-deal",
+    "name": "Twelve-Month Deal",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.",
+      "Place the campaign with its block or shortcode."
+    ],
+    "idea": "Twelve compact month tiles make the annual plan tangible. A large headline and full-width price dock replace the familiar two-panel pricing card.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "44",
+    "native_id": "campaign-drop-alert",
+    "name": "Drop Alert",
+    "tier": "pro",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "A compact signup starts with an enormous outlined saving and a small date label, then shifts to a straightforward form. No photo block or split layout.",
+    "directory": "pro/modules/display-types",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      },
+      {
+        "id": "received",
+        "name": "Request received"
+      }
+    ]
+  },
+  {
+    "id": "45",
+    "native_id": "campaign-deadline-scoreboard",
+    "name": "Deadline Scoreboard",
+    "tier": "pro",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.",
+      "Set a real campaign end date for the countdown."
+    ],
+    "idea": "A narrow event strip stacks an oversized sale message over a scoreboard-style deadline row. The timer and action remain grouped.",
+    "directory": "pro/modules/display-types",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "46",
+    "native_id": "campaign-first-dibs-signup",
+    "name": "First-Dibs Signup",
+    "tier": "pro",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "An acid-lime date block anchors a compact dark signup strip. Offer copy, email, consent and action stay in a clear horizontal rhythm.",
+    "directory": "pro/modules/display-types",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      },
+      {
+        "id": "received",
+        "name": "Request received"
+      }
+    ]
+  },
+  {
+    "id": "47",
+    "native_id": "campaign-free-delivery-label",
+    "name": "Free-Delivery Label",
+    "tier": "pro",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "A shipping-label composition uses a white barcode panel, a large zero-delivery charge and a clear threshold. Black framing keeps it firmly in the event.",
+    "directory": "pro/modules/display-types",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "48",
+    "native_id": "campaign-extra-ten-coupon",
+    "name": "Extra-Ten Coupon",
+    "tier": "pro",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "A compact shoe photo leads straight into a giant extra-saving numeral, followed by a narrow contrasting code stub. This is a coupon, not a generic reminder card.",
+    "directory": "pro/modules/display-types",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "49",
+    "native_id": "campaign-home-edit",
+    "name": "Home Edit",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.",
+      "Place the campaign with its block or shortcode."
+    ],
+    "idea": "A wide home campaign combines a tall furniture photograph, a compact numbered editorial column and a separate bold saving panel. Three different rhythms in one inline design.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "50",
+    "native_id": "campaign-black-friday-department",
+    "name": "Black Friday Department",
+    "tier": "pro",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "A full-width masthead tops three product departments, followed by one oversized offer and a direct action. A storewide takeover with a genuinely different silhouette.",
+    "directory": "pro/modules/display-types",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "01",
+    "native_id": "campaign-welcome-buddy",
+    "name": "Welcome Buddy",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "First-order offer. split(image, panel).",
+    "directory": "tools/design-library/hosted",
+    "occasion": "General",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "02",
+    "native_id": "campaign-welcome-perk",
+    "name": "Welcome Perk",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Welcome coupon. split(panel, media), code and link button. Dispenser is one static image.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "General",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "03",
+    "native_id": "campaign-friday-coupon",
+    "name": "Friday Coupon",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Public discount code. split of panels.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "04",
+    "native_id": "campaign-turn-it-up",
+    "name": "Turn It Up",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Audio sale. media background plus panel.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "05",
+    "native_id": "campaign-friday-comic",
+    "name": "Friday Comic",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Selected-items sale. stack with split panels and a footer row. Face is an image.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "06",
+    "native_id": "campaign-price-elevator",
+    "name": "Price Elevator",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Price markdown. split of panels.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "07",
+    "native_id": "campaign-private-preview",
+    "name": "Private Preview",
+    "tier": "free",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Early-access signup. split(image, panel).",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      },
+      {
+        "id": "received",
+        "name": "Request received"
+      }
+    ]
+  },
+  {
+    "id": "08",
+    "native_id": "campaign-outdoor-edit",
+    "name": "Outdoor Edit",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Outdoor seasonal sale. split(image, panel).",
+    "directory": "tools/design-library/hosted",
+    "occasion": "General",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "09",
+    "native_id": "campaign-savings-receipt",
+    "name": "Savings Receipt",
+    "tier": "pro",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Clearance sale. stack with rows, dividers, heading, text and button. Receipt tear edge and eyes are optional artwork..",
+    "directory": "pro/modules/display-types",
+    "occasion": "General",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "10",
+    "native_id": "campaign-welcome-shortcut",
+    "name": "Welcome Shortcut",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "First-order coupon. split(panel, panel), code and button. Portal rings simplify to nested panels or one image. Hidden door/reveal interaction removed..",
+    "directory": "tools/design-library/hosted",
+    "occasion": "General",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "11",
+    "native_id": "campaign-sneaker-edit",
+    "name": "Sneaker Edit",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Footwear sale. split(image, panel).",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "12",
+    "native_id": "campaign-midnight-fragrance-edit",
+    "name": "Midnight Fragrance Edit",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Fragrance sale. split plus footer row.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "13",
+    "native_id": "campaign-wishlist-alert",
+    "name": "Wishlist Alert",
+    "tier": "free",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Early-access email signup. stack of panels and form.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      },
+      {
+        "id": "received",
+        "name": "Request received"
+      }
+    ]
+  },
+  {
+    "id": "14",
+    "native_id": "campaign-garden-edit",
+    "name": "Garden Edit",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.",
+      "Place the campaign with its block or shortcode."
+    ],
+    "idea": "Garden seasonal sale. split(image, panel), heading, text and button. Flowers are one decorative SVG image.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "General",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "15",
+    "native_id": "campaign-friday-pass",
+    "name": "Friday Pass",
+    "tier": "free",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Early-access email signup. split of panels.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      },
+      {
+        "id": "received",
+        "name": "Request received"
+      }
+    ]
+  },
+  {
+    "id": "16",
+    "native_id": "campaign-delivery-buddy",
+    "name": "Delivery Buddy",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Shipping threshold. media background with wash, panel, heading, text, button. Robot art is one image.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "General",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "17",
+    "native_id": "campaign-black-friday-archive",
+    "name": "Black Friday Archive",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Archive clearance. stack and split of panels.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "18",
+    "native_id": "campaign-extra-gift",
+    "name": "Extra Gift",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Gift with purchase. split(image, panel), heading, text and button. Gift image and threshold replace a custom unboxing/reveal interaction..",
+    "directory": "tools/design-library/hosted",
+    "occasion": "General",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "19",
+    "native_id": "campaign-friday-game-code",
+    "name": "Friday Game Code",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Gaming accessories coupon. panel and stack.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "20",
+    "native_id": "campaign-fragrance-booth",
+    "name": "Fragrance Booth",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Fragrance sale. split(grid of images, panel).",
+    "directory": "tools/design-library/hosted",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "21",
+    "native_id": "campaign-sweet-edit",
+    "name": "Sweet Edit",
+    "tier": "pro",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Confectionery promotion. floating_bar wrapping row.",
+    "directory": "pro/modules/display-types",
+    "occasion": "General",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "22",
+    "native_id": "campaign-black-friday-fast-lane",
+    "name": "Black Friday Fast Lane",
+    "tier": "pro",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.",
+      "Set a real campaign end date for the countdown."
+    ],
+    "idea": "Scheduled sale deadline. floating_bar wrapping row.",
+    "directory": "pro/modules/display-types",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "23",
+    "native_id": "campaign-packing-perk",
+    "name": "Packing Perk",
+    "tier": "pro",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Packaging supplies sale. floating_bar wrapping row.",
+    "directory": "pro/modules/display-types",
+    "occasion": "General",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "24",
+    "native_id": "campaign-friday-email-alert",
+    "name": "Friday Email Alert",
+    "tier": "pro",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Early-access email signup. floating_bar with offer above a field/action row at medium widths. Email, consent, submit and acknowledgement. No phone capture or live hotline implied..",
+    "directory": "pro/modules/display-types",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      },
+      {
+        "id": "received",
+        "name": "Request received"
+      }
+    ]
+  },
+  {
+    "id": "25",
+    "native_id": "campaign-your-welcome-pal",
+    "name": "Your Welcome Pal",
+    "tier": "pro",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Welcome offer. slide_in stack with image, heading, text, button. Rounded-top photo is a radius token.",
+    "directory": "pro/modules/display-types",
+    "occasion": "General",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "26",
+    "native_id": "campaign-breakfast-edit",
+    "name": "Breakfast Edit",
+    "tier": "pro",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Kitchen seasonal sale. slide_in stack with image, heading, text and button. Breakfast art is one replaceable image..",
+    "directory": "pro/modules/display-types",
+    "occasion": "General",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "27",
+    "native_id": "campaign-welcome-label",
+    "name": "Welcome Label",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.",
+      "Place the campaign with its block or shortcode."
+    ],
+    "idea": "First-order coupon. inline split of panels with heading, text, code and button. Public code is immediately visible.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "General",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "28",
+    "native_id": "campaign-pixel-play-sale",
+    "name": "Pixel Play Sale",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.",
+      "Place the campaign with its block or shortcode."
+    ],
+    "idea": "Gaming accessories sale. inline stack and row.",
+    "directory": "tools/design-library/hosted",
+    "occasion": "General",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "29",
+    "native_id": "campaign-black-friday-departments",
+    "name": "Black Friday Departments",
+    "tier": "pro",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Storewide selected collections. fullscreen stack with heading, image grid and one button. All departments are product images.",
+    "directory": "pro/modules/display-types",
+    "occasion": "Black Friday",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "30",
+    "native_id": "campaign-anniversary-event",
+    "name": "Anniversary Event",
+    "tier": "pro",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the shop link and review the offer, eligible items and terms.",
+      "Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule."
+    ],
+    "idea": "Anniversary promotion. fullscreen media and panel.",
+    "directory": "pro/modules/display-types",
+    "occasion": "General",
+    "screens": [
+      {
+        "id": "offer",
+        "name": "Offer"
+      }
+    ]
+  }
+]

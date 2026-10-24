@@ -1,0 +1,55 @@
+{
+  "id": "everyday-first-light-journal",
+  "revision": "d9b831cef7e0f32266ad9b9247961ea62592eec207d8b0edf17723ba4b0214f9",
+  "base_id": "2342d1a78080f8aa89897561c8a9d5d0915abffbf94bd46e74ae05a3e2aaa46b",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 031e66237b8265ce7bc935d28e5eb45786fc894c, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T10:44:21Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/review.md",
+          "sha256": "f6b502dde0c4c73b459faf3f1a57081ad88a66a77bc19b5a5095f11c7f8a8573"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-first-light-journal-320.png",
+          "sha256": "4958506e0f292a94bedb7fe0ed76a7aed83694ab77d885bdb5f8538ad8954023"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-first-light-journal-1440.png",
+          "sha256": "4c56811b7c023bee9b88827529736134efd245b728f7a7f9d577b8a91eda5c92"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/fidelity.json",
+          "sha256": "358e4290ffc8f1760ac04e1994edfb346f4ef8391aee56aa07bf2c3c173f96c1"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/layout.json",
+          "sha256": "d7b61c2cf2f4caab48c27de857e575e2d6f6629973bf2defca7e3a5589679645"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    }
+  },
+  "record_id": "875523971c23a86083eb00fb2e69df679e4330809e97d0e2192b2cb4848429ae"
+}

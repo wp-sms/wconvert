@@ -1,0 +1,51 @@
+{
+  "id": "campaign-your-welcome-pal",
+  "revision": "c8b5654222dda3fc4c433259a6844d23704fc0d3940a13ea9bc7b945c933d22e",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "The welcome slide-in retains the character image and one first-order action.",
+  "at": "2026-10-24T10:40:12.653Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-your-welcome-pal-320.png",
+          "sha256": "8b47b988e5ef5c997c63e7572abbfe72eb31b15db39ca0908665ab7f3e185acf"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-your-welcome-pal-1440.png",
+          "sha256": "e8fa4520490145ec896f7b478e45d30eadf29190599f2bc462795c08cc53f8e4"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "98aec6a37d7eb2628fbe97d85ec06ac41bf30c0bc72cc33cae964f36a1622b04"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        }
+      ]
+    }
+  },
+  "record_id": "023b5317fd50f7ae14ed3fe95c05253dc3703fa4218e63bc9de7a8f242cf1058"
+}

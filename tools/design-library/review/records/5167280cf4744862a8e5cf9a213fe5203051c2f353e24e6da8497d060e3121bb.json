@@ -1,0 +1,47 @@
+{
+  "id": "service-open-day",
+  "revision": "b4b28d09335e57f6af030827b8dcaf149171e03eb50aef8f6c662b109df1ef6a",
+  "base_id": "339f2cf8ba9dd9b185a1b0f12e1251fa669b050f0f0e77dd1c920d49f83a5262",
+  "decision": "revise",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 031e66237b8265ce7bc935d28e5eb45786fc894c, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T10:44:21Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/service-open-day-320.png",
+          "sha256": "d2b084570aae631dea7ca8ea9330316d396771db7205a825f7e94df36cfa2752"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/service-open-day-1440.png",
+          "sha256": "70af98361952cd225d8e5ba5c8e5366fd1d4e0ab5352c28416cf479e2587b579"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "5167280cf4744862a8e5cf9a213fe5203051c2f353e24e6da8497d060e3121bb"
+}

@@ -1,0 +1,51 @@
+{
+  "id": "campaign-deadline-scoreboard",
+  "revision": "3147fc25bbff86714c2920dd8491010e8dc1858cb3149e85ccb26bd2164d8a23",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "The deadline scoreboard keeps the offer ribbon and timer/action row distinct and uses the configured end date.",
+  "at": "2026-10-24T10:40:12.653Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-deadline-scoreboard-320.png",
+          "sha256": "4ee173788ed1be66322b283a2b54e0cb0b0676c02923d740fe7e5b1c910201f0"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-deadline-scoreboard-1440.png",
+          "sha256": "1fd3c3c108ebdfb4841125abb5e4d8b4b9ecee3202fe7ede3d6882ea57cb2554"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "98aec6a37d7eb2628fbe97d85ec06ac41bf30c0bc72cc33cae964f36a1622b04"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        }
+      ]
+    }
+  },
+  "record_id": "cae93b5fbd7a8114e8550085a1682594ee5014cd129f78b14e8c36f9b565e46f"
+}

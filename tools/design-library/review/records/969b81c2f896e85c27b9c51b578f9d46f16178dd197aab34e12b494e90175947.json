@@ -1,0 +1,51 @@
+{
+  "id": "campaign-first-access-pass",
+  "revision": "a47246845f020368e6c0aea7e858f50933d3d3757637aa50c17c3c6d447fcff0",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "The date pass states November 26 as early access; signup and acknowledgement remain separate screens.",
+  "at": "2026-10-24T10:40:12.653Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-first-access-pass-320.png",
+          "sha256": "a2e599cbdc23e17e6543b14d341ec203ba8cbb78d007a05e05db46d58c5657ee"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-first-access-pass-1440.png",
+          "sha256": "40094cf444d02bbe815b4eca2984b167f3acfe85b1ef07e256adf8bb6137a2ec"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "98aec6a37d7eb2628fbe97d85ec06ac41bf30c0bc72cc33cae964f36a1622b04"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        }
+      ]
+    }
+  },
+  "record_id": "969b81c2f896e85c27b9c51b578f9d46f16178dd197aab34e12b494e90175947"
+}

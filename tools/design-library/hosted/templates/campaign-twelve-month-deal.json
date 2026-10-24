@@ -1,0 +1,665 @@
+{
+  "id": "campaign-twelve-month-deal",
+  "name": "Twelve-Month Deal",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#101211",
+    "fg": "#f4f4eb",
+    "muted": "#f4f4eb",
+    "accent": "#bfa5ff",
+    "accent-fg": "#181a12",
+    "border": "#f4f4eb",
+    "input-bg": "#282330",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Bebas Neue\", Impact, sans-serif",
+    "heading-size": "3.6rem",
+    "heading-weight": "400",
+    "heading-leading": ".95",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "2.75rem 0 0",
+    "gap": "0",
+    "radius": ".25rem",
+    "width": "45rem",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n1",
+              "role": "eyebrow",
+              "text": "BLACK FRIDAY / ANNUAL PLAN PROMOTION",
+              "tokens": {
+                "text-size": ".625rem",
+                "tracking": ".12em"
+              }
+            },
+            {
+              "type": "heading",
+              "id": "n2",
+              "role": "headline",
+              "text": "12 MONTHS.\nHALF THE PRICE.",
+              "narrow": {
+                "heading-size": "2.65rem"
+              }
+            },
+            {
+              "type": "grid",
+              "basis": "5rem",
+              "children": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n3",
+                      "role": "eyebrow",
+                      "text": "MO",
+                      "tokens": {
+                        "text-size": ".625rem",
+                        "tracking": ".12em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n4",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "text-size": "2.1rem",
+                        "leading": ".95",
+                        "font": "\"Bebas Neue\", Impact, sans-serif"
+                      },
+                      "emphasis": "01",
+                      "narrow": {
+                        "text-size": "2.1rem"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": ".6rem",
+                    "gap": ".2rem",
+                    "bg": "input-bg",
+                    "align": "center"
+                  },
+                  "narrow": {
+                    "pad": "1.4rem"
+                  }
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n5",
+                      "role": "eyebrow",
+                      "text": "MO",
+                      "tokens": {
+                        "text-size": ".625rem",
+                        "tracking": ".12em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n6",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "text-size": "2.1rem",
+                        "leading": ".95",
+                        "font": "\"Bebas Neue\", Impact, sans-serif"
+                      },
+                      "emphasis": "02",
+                      "narrow": {
+                        "text-size": "2.1rem"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": ".6rem",
+                    "gap": ".2rem",
+                    "bg": "input-bg",
+                    "align": "center"
+                  },
+                  "narrow": {
+                    "pad": "1.4rem"
+                  }
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n7",
+                      "role": "eyebrow",
+                      "text": "MO",
+                      "tokens": {
+                        "text-size": ".625rem",
+                        "tracking": ".12em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n8",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "text-size": "2.1rem",
+                        "leading": ".95",
+                        "font": "\"Bebas Neue\", Impact, sans-serif"
+                      },
+                      "emphasis": "03",
+                      "narrow": {
+                        "text-size": "2.1rem"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": ".6rem",
+                    "gap": ".2rem",
+                    "bg": "input-bg",
+                    "align": "center"
+                  },
+                  "narrow": {
+                    "pad": "1.4rem"
+                  }
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n9",
+                      "role": "eyebrow",
+                      "text": "MO",
+                      "tokens": {
+                        "text-size": ".625rem",
+                        "tracking": ".12em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n10",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "text-size": "2.1rem",
+                        "leading": ".95",
+                        "font": "\"Bebas Neue\", Impact, sans-serif"
+                      },
+                      "emphasis": "04",
+                      "narrow": {
+                        "text-size": "2.1rem"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": ".6rem",
+                    "gap": ".2rem",
+                    "bg": "input-bg",
+                    "align": "center"
+                  },
+                  "narrow": {
+                    "pad": "1.4rem"
+                  }
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n11",
+                      "role": "eyebrow",
+                      "text": "MO",
+                      "tokens": {
+                        "text-size": ".625rem",
+                        "tracking": ".12em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n12",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "text-size": "2.1rem",
+                        "leading": ".95",
+                        "font": "\"Bebas Neue\", Impact, sans-serif"
+                      },
+                      "emphasis": "05",
+                      "narrow": {
+                        "text-size": "2.1rem"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": ".6rem",
+                    "gap": ".2rem",
+                    "bg": "input-bg",
+                    "align": "center"
+                  },
+                  "narrow": {
+                    "pad": "1.4rem"
+                  }
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n13",
+                      "role": "eyebrow",
+                      "text": "MO",
+                      "tokens": {
+                        "text-size": ".625rem",
+                        "tracking": ".12em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n14",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "text-size": "2.1rem",
+                        "leading": ".95",
+                        "font": "\"Bebas Neue\", Impact, sans-serif"
+                      },
+                      "emphasis": "06",
+                      "narrow": {
+                        "text-size": "2.1rem"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": ".6rem",
+                    "gap": ".2rem",
+                    "bg": "input-bg",
+                    "align": "center"
+                  },
+                  "narrow": {
+                    "pad": "1.4rem"
+                  }
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n15",
+                      "role": "eyebrow",
+                      "text": "MO",
+                      "tokens": {
+                        "text-size": ".625rem",
+                        "tracking": ".12em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n16",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "text-size": "2.1rem",
+                        "leading": ".95",
+                        "font": "\"Bebas Neue\", Impact, sans-serif"
+                      },
+                      "emphasis": "07",
+                      "narrow": {
+                        "text-size": "2.1rem"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": ".6rem",
+                    "gap": ".2rem",
+                    "bg": "input-bg",
+                    "align": "center"
+                  },
+                  "narrow": {
+                    "pad": "1.4rem"
+                  }
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n17",
+                      "role": "eyebrow",
+                      "text": "MO",
+                      "tokens": {
+                        "text-size": ".625rem",
+                        "tracking": ".12em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n18",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "text-size": "2.1rem",
+                        "leading": ".95",
+                        "font": "\"Bebas Neue\", Impact, sans-serif"
+                      },
+                      "emphasis": "08",
+                      "narrow": {
+                        "text-size": "2.1rem"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": ".6rem",
+                    "gap": ".2rem",
+                    "bg": "input-bg",
+                    "align": "center"
+                  },
+                  "narrow": {
+                    "pad": "1.4rem"
+                  }
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n19",
+                      "role": "eyebrow",
+                      "text": "MO",
+                      "tokens": {
+                        "text-size": ".625rem",
+                        "tracking": ".12em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n20",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "text-size": "2.1rem",
+                        "leading": ".95",
+                        "font": "\"Bebas Neue\", Impact, sans-serif"
+                      },
+                      "emphasis": "09",
+                      "narrow": {
+                        "text-size": "2.1rem"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": ".6rem",
+                    "gap": ".2rem",
+                    "bg": "input-bg",
+                    "align": "center"
+                  },
+                  "narrow": {
+                    "pad": "1.4rem"
+                  }
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n21",
+                      "role": "eyebrow",
+                      "text": "MO",
+                      "tokens": {
+                        "text-size": ".625rem",
+                        "tracking": ".12em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n22",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "text-size": "2.1rem",
+                        "leading": ".95",
+                        "font": "\"Bebas Neue\", Impact, sans-serif"
+                      },
+                      "emphasis": "10",
+                      "narrow": {
+                        "text-size": "2.1rem"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": ".6rem",
+                    "gap": ".2rem",
+                    "bg": "input-bg",
+                    "align": "center"
+                  },
+                  "narrow": {
+                    "pad": "1.4rem"
+                  }
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n23",
+                      "role": "eyebrow",
+                      "text": "MO",
+                      "tokens": {
+                        "text-size": ".625rem",
+                        "tracking": ".12em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n24",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "text-size": "2.1rem",
+                        "leading": ".95",
+                        "font": "\"Bebas Neue\", Impact, sans-serif"
+                      },
+                      "emphasis": "11",
+                      "narrow": {
+                        "text-size": "2.1rem"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": ".6rem",
+                    "gap": ".2rem",
+                    "bg": "input-bg",
+                    "align": "center"
+                  },
+                  "narrow": {
+                    "pad": "1.4rem"
+                  }
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n25",
+                      "role": "eyebrow",
+                      "text": "MO",
+                      "tokens": {
+                        "text-size": ".625rem",
+                        "tracking": ".12em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n26",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "text-size": "2.1rem",
+                        "leading": ".95",
+                        "font": "\"Bebas Neue\", Impact, sans-serif"
+                      },
+                      "emphasis": "12",
+                      "narrow": {
+                        "text-size": "2.1rem"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": ".6rem",
+                    "gap": ".2rem",
+                    "bg": "input-bg",
+                    "align": "center"
+                  },
+                  "narrow": {
+                    "pad": "1.4rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "gap": ".65rem"
+              }
+            },
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "n27",
+                      "role": "body",
+                      "text": "WAS $240"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n28",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "text-size": "4rem",
+                        "leading": ".95",
+                        "font": "\"Bebas Neue\", Impact, sans-serif"
+                      },
+                      "emphasis": "$120",
+                      "narrow": {
+                        "text-size": "4rem"
+                      }
+                    },
+                    {
+                      "type": "eyebrow",
+                      "id": "n29",
+                      "role": "eyebrow",
+                      "text": "YOUR FIRST YEAR",
+                      "tokens": {
+                        "text-size": ".625rem",
+                        "tracking": ".12em"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": ".85rem"
+                  }
+                },
+                {
+                  "type": "button",
+                  "id": "n30",
+                  "role": "cta_label",
+                  "label": "Choose annual",
+                  "action": "link",
+                  "icon": "arrow"
+                }
+              ],
+              "tokens": {
+                "gap": "1rem"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n31",
+              "role": "fine_print",
+              "text": "New annual plans. First year $120. Renews at $240/year unless cancelled.",
+              "tokens": {
+                "text-size": ".875rem"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "2rem",
+            "gap": ".9rem"
+          },
+          "narrow": {
+            "pad": "1.4rem"
+          },
+          "decorations": {
+            "label": "Decorative sparkle",
+            "hidden": false,
+            "items": [
+              {
+                "kind": "sparkle",
+                "motion": "arrive",
+                "x": 94,
+                "y": 5,
+                "size": 30,
+                "color": "accent"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

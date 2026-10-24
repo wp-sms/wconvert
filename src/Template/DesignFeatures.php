@@ -34,11 +34,11 @@ final class DesignFeatures
         if (!is_array($value) || !is_string($value['label'] ?? null) || trim($value['label']) === '') return null;
         $items = [];
         foreach (is_array($value['items'] ?? null) ? array_slice($value['items'], 0, 8) : [] as $item) {
-            if (!is_array($item) || !in_array($item['kind'] ?? null, ['bat', 'eyes', 'sparkle'], true)) continue;
+            if (!is_array($item) || !in_array($item['kind'] ?? null, ['bat', 'eyes', 'sparkle', 'equalizer', 'rings', 'pixel', 'bubbles', 'balloon', 'barcode', 'halo'], true)) continue;
             $placement = self::placement($item);
             if ($placement === null) continue;
             $entry = ['kind' => $item['kind']] + $placement;
-            if (in_array($item['motion'] ?? null, ['none', 'float', 'flap', 'blink'], true)) $entry['motion'] = $item['motion'];
+            if (in_array($item['motion'] ?? null, ['none', 'float', 'flap', 'blink', 'drift', 'pulse', 'levels', 'arrive'], true)) $entry['motion'] = $item['motion'];
             if (in_array($item['color'] ?? null, ['fg', 'accent', 'muted', 'accent-fg'], true)) $entry['color'] = $item['color'];
             $narrow = self::placement($item['narrow'] ?? null);
             if ($narrow !== null) $entry['narrow'] = $narrow;

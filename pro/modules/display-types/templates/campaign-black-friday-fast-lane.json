@@ -1,0 +1,154 @@
+{
+  "id": "campaign-black-friday-fast-lane",
+  "name": "Black Friday Fast Lane",
+  "display_type": "floating_bar",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#2146c7",
+    "fg": "#fff2d2",
+    "muted": "#fff2d2",
+    "accent": "#fff2d2",
+    "accent-fg": "#2146c7",
+    "border": "#fff2d2",
+    "input-bg": "#2146c7",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Bebas Neue\", Impact, sans-serif",
+    "heading-size": "2rem",
+    "heading-weight": "400",
+    "heading-leading": ".95",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "2.75rem 0 0",
+    "gap": "0",
+    "radius": ".25rem",
+    "width": "100%",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n1",
+                      "role": "eyebrow",
+                      "text": "BLACK FRIDAY / SCHEDULED SALE DEADLINE",
+                      "tokens": {
+                        "text-size": ".625rem",
+                        "tracking": ".12em"
+                      }
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n2",
+                      "role": "headline",
+                      "text": "40% OFF.\nENDS NOV 30.",
+                      "narrow": {
+                        "heading-size": "2.65rem"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": ".85rem"
+                  }
+                },
+                {
+                  "type": "countdown",
+                  "id": "n3",
+                  "role": "countdown_units",
+                  "layout": "boxes",
+                  "days_label": "Days",
+                  "hours_label": "Hours",
+                  "minutes_label": "Minutes",
+                  "seconds_label": "Seconds"
+                },
+                {
+                  "type": "button",
+                  "id": "n4",
+                  "role": "cta_label",
+                  "label": "Shop Black Friday",
+                  "action": "link",
+                  "icon": "arrow"
+                }
+              ],
+              "tokens": {
+                "gap": "1rem"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n5",
+              "role": "fine_print",
+              "text": "November 27–30. Selected items. Ends at 23:59 UTC.",
+              "tokens": {
+                "text-size": ".875rem"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "1.5rem 2rem",
+            "gap": ".9rem",
+            "radius": "0"
+          },
+          "narrow": {
+            "pad": "1.4rem"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

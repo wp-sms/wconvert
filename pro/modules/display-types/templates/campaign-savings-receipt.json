@@ -1,0 +1,232 @@
+{
+  "id": "campaign-savings-receipt",
+  "name": "Savings Receipt",
+  "display_type": "slide_in",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#f7e9bd",
+    "fg": "#344435",
+    "muted": "#344435",
+    "accent": "#344435",
+    "accent-fg": "#fff4d9",
+    "border": "#344435",
+    "input-bg": "#f7e9bd",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Bebas Neue\", Impact, sans-serif",
+    "heading-size": "2.7rem",
+    "heading-weight": "400",
+    "heading-leading": ".95",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "2.75rem 0 0",
+    "gap": "0",
+    "radius": ".25rem",
+    "width": "24rem",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "panel",
+              "children": [],
+              "tokens": {
+                "pad": "0",
+                "gap": "0"
+              },
+              "narrow": {
+                "pad": "0"
+              },
+              "min": "2.8rem",
+              "decorations": {
+                "label": "Decorative eyes",
+                "hidden": false,
+                "items": [
+                  {
+                    "kind": "eyes",
+                    "motion": "blink",
+                    "x": 50,
+                    "y": 50,
+                    "size": 130,
+                    "color": "fg"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "eyebrow",
+              "id": "n1",
+              "role": "eyebrow",
+              "text": "CLEARANCE SALE",
+              "tokens": {
+                "text-size": ".625rem",
+                "tracking": ".12em"
+              }
+            },
+            {
+              "type": "heading",
+              "id": "n2",
+              "role": "headline",
+              "text": "LESS TO PAY.\nMORE TO KEEP.",
+              "narrow": {
+                "heading-size": "2.65rem"
+              }
+            },
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "role": "body",
+                  "text": "ORIGINAL PRICE"
+                },
+                {
+                  "type": "text",
+                  "id": "n4",
+                  "role": "body",
+                  "text": "100%"
+                }
+              ],
+              "tokens": {
+                "gap": "1rem"
+              }
+            },
+            {
+              "type": "divider",
+              "id": "n5"
+            },
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "n6",
+                  "role": "body",
+                  "text": "YOUR DISCOUNT"
+                },
+                {
+                  "type": "text",
+                  "id": "n7",
+                  "role": "body",
+                  "text": "−30%"
+                }
+              ],
+              "tokens": {
+                "gap": "1rem"
+              }
+            },
+            {
+              "type": "divider",
+              "id": "n8"
+            },
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "n9",
+                  "role": "body",
+                  "text": "YOU SAVE"
+                },
+                {
+                  "type": "text",
+                  "id": "n10",
+                  "role": "body",
+                  "text": "%b",
+                  "tokens": {
+                    "text-size": "4rem",
+                    "leading": ".95",
+                    "font": "\"Bebas Neue\", Impact, sans-serif"
+                  },
+                  "emphasis": "30%",
+                  "narrow": {
+                    "text-size": "4rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "gap": "1rem"
+              }
+            },
+            {
+              "type": "button",
+              "id": "n11",
+              "role": "cta_label",
+              "label": "Shop with 30% off",
+              "action": "link",
+              "icon": "arrow"
+            },
+            {
+              "type": "text",
+              "id": "n12",
+              "role": "fine_print",
+              "text": "Selected clearance items. Exclusions apply.",
+              "tokens": {
+                "text-size": ".875rem"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "2.5rem 1.75rem",
+            "gap": ".9rem",
+            "align": "center",
+            "radius": "0"
+          },
+          "narrow": {
+            "pad": "1.4rem"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

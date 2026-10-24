@@ -99,3 +99,34 @@ it('requires a separate acknowledgment before enabling Google, and can disable w
   await user.click(toggle); await user.click(screen.getByRole('button', { name: 'Save Google Fonts' }));
   await waitFor(() => expect(request).toHaveBeenCalledWith(expect.objectContaining({ method: 'POST', data: { enabled: false, acknowledged: false } })));
 });
+
+it('keeps fixed SVG action arrows accessible by their editable label', () => {
+  const tree = treeFixture({ steps: [{ type: 'stack', children: [
+    { type: 'button', action: 'link', label: 'Shop Black Friday', href: 'https://example.test/shop', icon: 'arrow' },
+    { type: 'button', action: 'submit', label: 'Get early access', icon: 'arrow' },
+  ] }] });
+  const root = render(tree, {});
+  expect(root.querySelectorAll('.wc-action-icon')).toHaveLength(2);
+  for (const svg of root.querySelectorAll('.wc-action-icon')) {
+    expect(svg.getAttribute('aria-hidden')).toBe('true');
+    expect(svg.querySelector('path')).not.toBeNull();
+  }
+  expect(root.querySelector('a')?.textContent).toBe('Shop Black Friday');
+  expect(root.querySelector('button')?.textContent).toBe('Get early access');
+});
+
+it('preserves ticket sides and stops standalone image motion on close', () => {
+  const template: Template = { tokens: { bg: '#ba3430' }, tree: treeFixture({ steps: [{
+    type: 'panel', notch: true, notch_position: 'sides', children: [
+      { type: 'image', src: 'https://example.test/product.webp', alt: 'Product', motion: 'drift', shape: 'circle' },
+    ],
+  }] }) };
+  const mounted = mount({ displayType: 'popup', template });
+  expect(mounted.root?.querySelector('[data-notch-position="sides"]')).not.toBeNull();
+  expect(mounted.root?.querySelector('.wc-artwork-motion')?.getAttribute('data-artwork-motion')).toBe('drift');
+  expect(mounted.root?.dataset.motion).toBe('paused');
+  mounted.show();
+  expect(mounted.root?.dataset.motion).toBe('running');
+  mounted.close();
+  expect(mounted.root?.dataset.motion).toBe('paused');
+});

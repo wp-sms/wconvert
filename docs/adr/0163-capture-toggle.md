@@ -116,3 +116,9 @@ and creates a new unpublished draft with the converted design, named with
   (`PublishedProjection`, `PayloadTag`). That is unchanged here and tracked as its
   own issue.
 - No storage is added.
+
+**Amended by [ADR 0167](0167-campaign-artwork-uses-bounded-renderer-options.md):**
+When acknowledgement pruning leaves a coupon as the only content of its styled
+panel, removing the form restores the code to the unique matching non-root
+layout shell instead of moving that whole panel beside the CTA. Decorative
+empty panels survive acknowledgement pruning as artwork and sibling anchors.

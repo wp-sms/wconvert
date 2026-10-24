@@ -1,0 +1,59 @@
+{
+  "id": "bf-blackout-strip",
+  "revision": "0e95feeb3d8d1814a65c88fa9fc6afce6d8a41aa03575378728bec0b23f59052",
+  "base_id": "88fdde74a470d8943572dbf93d53db8f252acb7ca429846cbe20670816af0e67",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 031e66237b8265ce7bc935d28e5eb45786fc894c, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T10:44:21Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/bf-blackout-strip-320.png",
+          "sha256": "49a08880d90fef32d7151322f4efb43efcc99d013dcc3a3c8da4b783aedcca82"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/bf-blackout-strip-1440.png",
+          "sha256": "dc546024c97752aa9d978676c738bedd2453c856e9ca5dc9db7277352adcc3e1"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+          "sha256": "0e0ff47c3ce6f5b09674b3490ad24474dbb06db35ea5932f7ccce5f1d1c0b718"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+          "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+          "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+          "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+          "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+          "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+        }
+      ]
+    }
+  },
+  "record_id": "c84e4e5868a63071c36f20cd703edfc82df882a779a839da312fe40a6b59fa77"
+}

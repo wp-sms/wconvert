@@ -8,6 +8,12 @@ add_filter('wp_theme_json_data_theme', static function ($theme) {
             ['fontFamily' => 'DM Sans', 'fontWeight' => '400', 'fontStyle' => 'normal', 'src' => [$base . 'dm-sans-400.ttf']],
             ['fontFamily' => 'DM Sans', 'fontWeight' => '700', 'fontStyle' => 'normal', 'src' => [$base . 'dm-sans-700.ttf']],
         ]],
+        ['name' => 'Bebas Neue', 'slug' => 'review-bebas-neue', 'fontFamily' => '"Bebas Neue", Impact, sans-serif', 'fontFace' => [
+            ['fontFamily' => 'Bebas Neue', 'fontWeight' => '400', 'fontStyle' => 'normal', 'src' => [$base . 'bebas-neue-400.woff2']],
+        ]],
+        ['name' => 'Cormorant Garamond', 'slug' => 'review-cormorant', 'fontFamily' => '"Cormorant Garamond", Georgia, serif', 'fontFace' => [
+            ['fontFamily' => 'Cormorant Garamond', 'fontWeight' => '400', 'fontStyle' => 'normal', 'src' => [$base . 'cormorant-garamond.woff2']],
+        ]],
         ['name' => 'Instrument Serif', 'slug' => 'review-instrument-serif', 'fontFamily' => '"Instrument Serif", Georgia, serif', 'fontFace' => [
             ['fontFamily' => 'Instrument Serif', 'fontWeight' => '400', 'fontStyle' => 'normal', 'src' => [$base . 'instrument-serif-400.ttf']],
         ]],

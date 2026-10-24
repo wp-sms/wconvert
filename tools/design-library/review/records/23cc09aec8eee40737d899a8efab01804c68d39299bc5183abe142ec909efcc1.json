@@ -1,0 +1,55 @@
+{
+  "id": "early-access-launch",
+  "revision": "a484f2234be6ad2291fc5a4a3306c8056b610814531c9a93b26fc4abee4b9773",
+  "base_id": "05483fc4aa6592e19536eb5cb0997969ed877e97364430daabb57d5a6990dd12",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 031e66237b8265ce7bc935d28e5eb45786fc894c, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T10:44:21Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/early-access-launch-320.png",
+          "sha256": "afd40bdbe08cf505deec4c44eb09c8c6626034b4182ac4a48134a97d682746bc"
+        },
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/early-access-launch-1440.png",
+          "sha256": "d5cd094f5fa3afc0514d245ca7f17c30b2c909b46b9537c85e6548d0103a5cb9"
+        },
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/review.md",
+          "sha256": "e7c08ae50a19a4e33968879273468ff16ee71a16b3945ae3cffbfa1bbcb1135b"
+        },
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/designs/results.json",
+          "sha256": "c56e8792fa0161e92bb86016923dfeff54e672e577b24e98ee52560d4e84576d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/results.json",
+          "sha256": "b6bd565e28976921f8f73e46ecab6e7f021bda9c004fc0d7fea33edf35743771"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/results.json",
+          "sha256": "b6bd565e28976921f8f73e46ecab6e7f021bda9c004fc0d7fea33edf35743771"
+        },
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/designs/results.json",
+          "sha256": "c56e8792fa0161e92bb86016923dfeff54e672e577b24e98ee52560d4e84576d"
+        }
+      ]
+    }
+  },
+  "record_id": "23cc09aec8eee40737d899a8efab01804c68d39299bc5183abe142ec909efcc1"
+}

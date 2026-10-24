@@ -180,7 +180,7 @@ function addForm(tree: TemplateTree, channel: ContactChannel, consentShown: bool
           || (at > 0 && at < list.length - 1 && list[at - 1].type !== 'divider'));
       }
       // A layout painted with its own picture is artwork, even with nothing in it.
-      const pictured = (child: TemplateNode) => isLayout(child) && !['', 'none'].includes(String(((child as unknown as Node).tokens as Record<string, unknown> | undefined)?.['bg-image'] ?? '').trim());
+      const pictured = (child: TemplateNode) => isLayout(child) && (!!(child as unknown as Node).decorations || !['', 'none'].includes(String(((child as unknown as Node).tokens as Record<string, unknown> | undefined)?.['bg-image'] ?? '').trim()));
       const says = walkNodes(kept as unknown as TemplateNode).some(child => pictured(child) || (!isLayout(child) && !['divider', 'icon'].includes(child.type)));
       return says ? [kept as unknown as TemplateNode] : [];
     }
@@ -242,8 +242,17 @@ function removeForm(tree: TemplateTree, link: OfferLink | undefined): Converted 
   const screen = tree.steps[first];
   const thanks = tree.steps.find(step => step.kind === 'acknowledgement');
   const followup = thanks ? walkNodes(thanks.content, false).find(node => node.type === 'followup') : undefined;
-  const group = thanks ? codeGroupOf(thanks.content) : null;
+  let group = thanks ? codeGroupOf(thanks.content) : null;
   const code = group ? walkNodes(group).find(node => node.type === 'code') : undefined;
+  // Acknowledgement copy can leave a styled parent holding only a code. That
+  // does not turn the original offer's whole panel into a movable reward.
+  // Match the painted container, independently of its edited/pruned words.
+  const shell = (node: TemplateNode) => JSON.stringify(Object.fromEntries(Object.entries(node)
+    .filter(([key]) => key !== 'id' && !childKeysOf(node.type).includes(key))));
+  const sourceParent = code && thanks ? walkNodes(thanks.content).find(node => isLayout(node) && listsOf(node).some(list => list.includes(code))) : undefined;
+  const matching = sourceParent && sourceParent !== thanks?.content ? walkNodes(screen.content).filter(node => isLayout(node) && shell(node) === shell(sourceParent)) : [];
+  const rewardParent = matching.length === 1 ? matching[0] : undefined;
+  if (rewardParent && code) group = code;
   const submitted = walkNodes(tree.steps[at].content).find(node => isButton(node, 'submit'));
   if (!submitted) return null;
   // The button's place on the kept screen: its submit, or the Continue that led to it.
@@ -265,16 +274,33 @@ function removeForm(tree: TemplateTree, link: OfferLink | undefined): Converted 
     || walkNodes(screen.content).some(node => node !== submit && !formOwned(node) && anchor(node)));
 
   // A row holds a button beside a field; the code goes above the row instead.
-  const unplaced = moving && !anchored;
+  const unplaced = moving && !anchored && !rewardParent;
   const strip = (node: TemplateNode): TemplateNode => mapLists(node, (child, parent) => {
     if (child === submit) return [...(unplaced && parent.type !== 'row' ? [moving] : []), ...(button ? [button as unknown as TemplateNode] : [])];
     if (formOwned(child)) return [];
     const rebuilt = strip(child);
     const lead = unplaced && child.type === 'row' && walkNodes(child).includes(submit as TemplateNode) ? [moving] : [];
-    return isLayout(child) && !emptyLayout(child) && emptyLayout(rebuilt) ? lead : [...lead, rebuilt];
+    return isLayout(child) && child !== rewardParent && !emptyLayout(child) && emptyLayout(rebuilt) ? lead : [...lead, rebuilt];
   });
   let content = strip(screen.content);
-  if (moving && anchored) {
+  if (moving && rewardParent) {
+    let restored = false;
+    const restore = (node: TemplateNode): TemplateNode => {
+      if (!restored && isLayout(node) && shell(node) === shell(rewardParent)) {
+        restored = true;
+        let inserted = false;
+        const placed = mapLists(node, child => {
+          if (!inserted && anchor(child)) { inserted = true; return [moving, child]; }
+          return [child];
+        });
+        if (inserted) return placed;
+        const key = childKeysOf(node.type).find(key => Array.isArray((node as unknown as Node)[key]));
+        if (key) return { ...node, [key]: [...((node as unknown as Node)[key] as TemplateNode[]), moving] } as unknown as TemplateNode;
+      }
+      return mapLists(node, child => [restore(child)]);
+    };
+    content = restore(content);
+  } else if (moving && anchored) {
     let placed = false;
     const place = (node: TemplateNode): TemplateNode => mapLists(node, child => {
       if (!placed && anchor(child)) { placed = true; return [moving, child]; }

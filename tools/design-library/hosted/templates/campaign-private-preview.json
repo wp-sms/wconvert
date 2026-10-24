@@ -1,0 +1,257 @@
+{
+  "id": "campaign-private-preview",
+  "name": "Private Preview",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#322332",
+    "fg": "#f3e1bd",
+    "muted": "#f3e1bd",
+    "accent": "#ddc18a",
+    "accent-fg": "#342335",
+    "border": "#f3e1bd",
+    "input-bg": "#322332",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Cormorant Garamond\", Georgia, serif",
+    "heading-size": "3.6rem",
+    "heading-weight": "400",
+    "heading-leading": ".95",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "2.75rem 0 0",
+    "gap": "0",
+    "radius": ".25rem",
+    "width": "45rem",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "input",
+        "content": {
+          "type": "split",
+          "ratio": 0.5,
+          "basis": "16rem",
+          "start": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "image",
+                  "id": "n1",
+                  "src": "data:image/webp;base64,UklGRv4HAABXRUJQVlA4IPIHAABwdgCdASohAlgCPjEYi0QiIaEQeNRkIAMEtLdwu6cAe3HDbOtbfm7dt6AyF701vS13zXm8W6/gvc9RNHGLmrTXgeWmvA8tNeB5aa8Dy014HlprwPLTXgeWmvA8tNeBt8liBNHGLmrTXgeWmvA8tL+wIpgcTSH3Nq7nTugpqx/dMD3eNoWOXBpc9dYHweomjjFzVprwPCIhPbXveH1z956JpAZDqfKWeahkgDeaOMXNWmvA8s7O3D6LcMU4Xihc1cp557NJ8kdhJe99eB5aa8DRgWIdZYRwUHBHv9sbn91WMD1CE9AurW7OqJO2f1D3Or9HTGjdzTwi35QPUTRxi5qmUhTMMhlk1Ya3+6FizHDEmSBpSpmBzp43+PfIT0HgUemYjjFzVprv24JyI+NRpAoKDrU1yUB6gS7t6NWJIkQV3XNWlRxi5q0137oLTCd140gFzDZS4vfXgeUyQiOtHytAXenKT0LmrTXfshuSOiLuDCpkqvLTXgeVDIdrnNNME2+6oDr68Dy0wO5AZ2RBZwZKNzVprwPKZEdrlusqmPV9Ro4xc1Z4cOqHPMoY08UcYuatNdYzht02c6VAJpKA9RNG7A04R73DRRdFHGLmrTXanZpx5TERlgaqxNHGLmhzYfL4gjjFzVprv4b+wPje+vA8qFO35pETRxi5q1fb+wPje+vA8qFO35pETRxi5q1fb+wPje+vA8qFO35pETRxi5q1fb+wPje+vA8qFO35pETRxi5q1fb+wPje+vA8qFO35pETRxi5q1fb+wPje+vA8qFO35pETRxi5q1fb+wPje+vA8qFO35pETRxi5q1fb+wPje+vA8qFO35pETRxi5q1fb+wPje+vA8qFO35pETRxi5IClkRKkDgNn37RoykFA8tNeB4ObENm014HlpfB83ZZoJDQ/739GUgoHlprwPBzYhs2mvA8tNd/Df2B8b314HlQp2/NIiaOMXNWeigc0iJo4xc0ObENm014Hlprwdigc0iJo4xc0ObENm014Hlprwdigc0iJo4xc0ObENm014Hlprwdigc0iJo4xc0ObENm014Hlprwdigc0iJo4xc0ObENm014Hlprwdigc0iJo4xc0ObENm014Hlprwdigc0iJo4xc0ObENm014Hlprwdigc0iJo4xc0ObENm014Hlprwdigc0iJo4xc0FTC2t6xyVpANWBTxaEaq4EOWdCHLOgmYb5G9gbegCSUDy014HmR7DAeWmvA8tNpBbgeomjjFzVprwPLTXgeWmvA8tL4AD+/mAr7bLRKB/BltsEAAAADiiVVpfiSPwDOpRgQkvs1IxrAfZ+8hQwBsjUCPRjXIYaOPVuwUBuxELWhAzXcxbsgh7Pr3qMTlyhMI+gC5I9wnH5769wvidLj/bm3tTv5jmaAdprlTOv0imVOMjpZVO5Fa2SKHRHPYHbDh4+QIlghK3D3eU+BVVRqLJGo86DFcL9aiDqieAAK8C/huN6h7s9aRZc/LQLuCJwZ5TRG6rAL49wPf00o1zHl8A5mWA34BAlF+gLujQ2c56C6AIXEnglQ+7b9j4ReMxG9+hVSSbFKRaqiCOY2nevAiVTml0PjHjBYSrt9kGENRf/FhAB2jMrH7CQDmlzb/W2Pm45whggGp/XEyV4OHAYU6RChtlVdgVgPxWeZyJzAAA3Fp4GTeKOA7PAmyKgvSUpb3AGmYdIaSEzsFNZotgBbDXT5IlGuX9FRpzDIajmXjMR0HKB8qM7V6yotH+0+an6kw3jsBiFSQ52fcp6hC/b/GbYLFQJfV/RHj+8bNQzQ9/xSKJyx2pq9un5R41COK0tF+tCwz+9RIrmyvedKE1NRPPOsyVw3rXWAUJB387yzH2h37QyC9PtalrtYa7lLyK6TPXZ28/1gEcDStf41klgc7Ow0KJqHP0JisRAKgd8cv7WQHtJUAZOxSVBkUmDnx63Div4L2h4CIkMYr5nHXo4PztVCV3clrhk5EbvAsf3YatfI3liLqlcx3EeKYY3IKYl1hgx63D9HH7gQ1lZa6LMFRwAEvoMT53A1NLjtUwRhaVK2X/YZVPqEoLDwAOPfq2GZ+eJitUp2dDAnYYEV80bcz2QUV6t372SUklHGIWfsiuPJgndd4puVUEIXEnI2R/8mVZRg+9QSzidfX4wmJj7gqPfr1uzrUYxNM9ONLsEogEH5o0bdGzFYgQA+rGS0B63R/JD304pSE/883a4qGRoX2L75jzDNoZhyTmUomcYSJLQKZgm4IPJzYVslEmOTPFEDLJ02mHggyCAD+PWHjGKgSMQKoCFSrARYEAAglAIVKsBFgQACCUAhUqwFoFCmbxQ2O/9JUR7158fxT8dRT7vLJmHu2kfbReSN6G9f1D/F/usodVwG736crEH+P+PvxHN39JVn/N+3+B5FOPC75M9hKuNZuDUY9XUYF1cT089ff/6rJe4+NFv5/6Sh104vvtDpjo71q2fs//OX9gh9W4h0ZPhapNW4YkGkf1Z972ClfzIQdFmESzb/if0/eNdnFq+1Z5Ubp/qLP18Lte6UJACxyH4jwYcKXtEZiWcrEkPjJTozyL/FjVNv/TWCb+f0pMUZqTU4dlldheEILz5xK4XnDmjzgJwQ0+cP/SSAgmgIVKsAglgRYE/hAe7GMyDsYggc2vLqSrBVi5GYnUXQkQPtsfbY+2x9tj7bH223dfogppji0yocIAAAAAAAAA=",
+                  "alt": "",
+                  "fit": "contain",
+                  "shape": "rect",
+                  "tokens": {
+                    "image-height": "26rem",
+                    "image-position": "center",
+                    "radius": "0"
+                  },
+                  "narrow": {
+                    "image-height": "16rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "0",
+                "gap": "0"
+              },
+              "narrow": {
+                "pad": "1.4rem"
+              },
+              "decorations": {
+                "label": "Decorative halo",
+                "hidden": false,
+                "items": [
+                  {
+                    "kind": "halo",
+                    "motion": "pulse",
+                    "x": 50,
+                    "y": 30,
+                    "size": 160,
+                    "color": "accent"
+                  }
+                ]
+              }
+            }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n2",
+                  "role": "eyebrow",
+                  "text": "BLACK FRIDAY / EARLY-ACCESS SIGNUP",
+                  "tokens": {
+                    "text-size": ".625rem",
+                    "tracking": ".12em"
+                  }
+                },
+                {
+                  "type": "heading",
+                  "id": "n3",
+                  "role": "headline",
+                  "text": "FIRST ACCESS.\nUP TO 30% OFF.",
+                  "narrow": {
+                    "heading-size": "2.65rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n4",
+                  "role": "body",
+                  "text": "Request access to selected Black Friday offers on November 26, one day before the public sale."
+                },
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "field",
+                      "id": "n5",
+                      "name": "email",
+                      "label": "Email address",
+                      "placeholder": "you@example.com",
+                      "required": true
+                    },
+                    {
+                      "type": "consent",
+                      "id": "n6",
+                      "role": "consent_text",
+                      "text": "Email me Black Friday offers. I can unsubscribe anytime.",
+                      "hidden": true
+                    },
+                    {
+                      "type": "button",
+                      "id": "n7",
+                      "role": "cta_label",
+                      "label": "Request access",
+                      "icon": "arrow",
+                      "action": "submit",
+                      "submission": "email-preview"
+                    }
+                  ],
+                  "tokens": {
+                    "gap": ".85rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n8",
+                  "role": "fine_print",
+                  "text": "Access opens November 26. Selected items. No purchase required.",
+                  "tokens": {
+                    "text-size": ".875rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "2rem",
+                "gap": ".9rem"
+              },
+              "narrow": {
+                "pad": "1.4rem"
+              }
+            }
+          ],
+          "tokens": {
+            "gap": "0"
+          }
+        }
+      },
+      {
+        "id": "received",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n9",
+              "role": "success_headline",
+              "text": "Request received"
+            },
+            {
+              "type": "text",
+              "id": "n10",
+              "role": "success_body",
+              "text": "Thanks for requesting the Black Friday preview."
+            },
+            {
+              "type": "text",
+              "id": "n11",
+              "role": "fine_print",
+              "text": "You can close this window and continue browsing."
+            }
+          ],
+          "tokens": {
+            "pad": "2rem",
+            "gap": ".9rem"
+          },
+          "narrow": {
+            "pad": "1.4rem"
+          }
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "email-preview",
+        "required": true,
+        "fields": [
+          "n5"
+        ],
+        "consents": [
+          "n6"
+        ]
+      }
+    ],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

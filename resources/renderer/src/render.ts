@@ -318,6 +318,7 @@ function layout(
     edges?: string;
     min?: string | number;
     notch?: boolean;
+    notch_position?: 'top' | 'sides';
     decorations?: import('./types').Decorations;
     basis?: string;
   },
@@ -381,6 +382,7 @@ function layout(
     // byte-identically to one that spells the default.
     if (node.notch === true) {
       element.dataset.notch = 'true';
+      if (node.notch_position === 'sides') element.dataset.notchPosition = 'sides';
     }
   }
 
@@ -920,6 +922,10 @@ function image(node: ImageNode): HTMLElement | null {
   // the filename of.
   element.alt = node.alt ?? '';
   element.loading = 'lazy';
+  if (node.motion && ['arrive', 'breathe', 'drift'].includes(node.motion)) {
+    element.classList.add('wc-artwork-motion');
+    element.dataset.artworkMotion = node.motion;
+  }
 
   if (node.fit === 'contain') {
     element.style.setProperty('object-fit', 'contain');
@@ -929,7 +935,7 @@ function image(node: ImageNode): HTMLElement | null {
   // rounding the panel, the button and every input to match. `rect` adds
   // nothing, so a design without the param is unchanged.
   if (node.shape === 'circle') {
-    element.className = 'wc-image wc-image-circle';
+    element.classList.add('wc-image-circle');
   }
 
   return element;
@@ -1076,6 +1082,15 @@ function code(node: CodeNode, at: string | null): HTMLElement {
  * exactly one converting act — a Template offering both is rejected when it is
  * registered rather than disambiguated here (CONTEXT.md, Conversion).
  */
+function buttonLabel(element: HTMLElement, node: ButtonNode | FollowupNode, label: string): void {
+  element.textContent = label;
+  if (node.type !== 'button' || node.icon !== 'arrow') return;
+  const text = document.createElement('span');
+  text.textContent = label;
+  element.classList.add('wc-button-arrow');
+  element.replaceChildren(text, strokeIcon('M4 12h16m-6-6 6 6-6 6', 'wc-action-icon'));
+}
+
 function button(node: ButtonNode | FollowupNode): HTMLElement {
   const label = node.label ?? '';
 
@@ -1084,7 +1099,7 @@ function button(node: ButtonNode | FollowupNode): HTMLElement {
     const href = safeHref(node.href);
 
     anchor.className = 'wc-button';
-    anchor.textContent = label;
+    buttonLabel(anchor, node, label);
     anchor.rel = 'noopener';
     if (node.type === 'button') anchor.dataset.convert = '';
 
@@ -1102,7 +1117,7 @@ function button(node: ButtonNode | FollowupNode): HTMLElement {
   element.type = action === 'submit' || action === 'next' ? 'submit' : 'button';
   element.dataset.action = action;
   if (node.submission) element.dataset.submission = node.submission;
-  element.textContent = label;
+  buttonLabel(element, node, label);
 
   return element;
 }

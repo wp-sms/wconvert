@@ -1,0 +1,205 @@
+{
+  "id": "campaign-deadline-scoreboard",
+  "name": "Deadline Scoreboard",
+  "display_type": "floating_bar",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#101211",
+    "fg": "#f4f4eb",
+    "muted": "#f4f4eb",
+    "accent": "#ff9a6a",
+    "accent-fg": "#181a12",
+    "border": "#f4f4eb",
+    "input-bg": "#101211",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Bebas Neue\", Impact, sans-serif",
+    "heading-size": "2rem",
+    "heading-weight": "400",
+    "heading-leading": ".95",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "2.75rem 0 0",
+    "gap": "0",
+    "radius": ".25rem",
+    "width": "100%",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n1",
+                      "role": "eyebrow",
+                      "text": "BLACK FRIDAY / SALE DEADLINE REMINDER",
+                      "tokens": {
+                        "text-size": ".625rem",
+                        "tracking": ".12em"
+                      }
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n2",
+                      "role": "headline",
+                      "text": "UP TO 40% OFF.",
+                      "tokens": {
+                        "heading-size": "2.5rem"
+                      },
+                      "narrow": {
+                        "heading-size": "2.65rem"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "1rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "1rem 2rem",
+                "gap": ".9rem",
+                "bg": "accent",
+                "fg": "accent-fg",
+                "muted": "accent-fg",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "1.4rem"
+              }
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "countdown",
+                      "id": "n3",
+                      "role": "countdown_units",
+                      "layout": "boxes",
+                      "days_label": "Days",
+                      "hours_label": "Hours",
+                      "minutes_label": "Minutes",
+                      "seconds_label": "Seconds"
+                    },
+                    {
+                      "type": "stack",
+                      "children": [
+                        {
+                          "type": "eyebrow",
+                          "id": "n4",
+                          "role": "eyebrow",
+                          "text": "ENDS NOVEMBER 30",
+                          "tokens": {
+                            "text-size": ".625rem",
+                            "tracking": ".12em"
+                          }
+                        },
+                        {
+                          "type": "text",
+                          "id": "n5",
+                          "role": "body",
+                          "text": "23:59 UTC"
+                        }
+                      ],
+                      "tokens": {
+                        "gap": ".85rem"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "id": "n6",
+                      "role": "cta_label",
+                      "label": "Shop before it ends",
+                      "action": "link",
+                      "icon": "arrow"
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "1rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n7",
+                  "role": "fine_print",
+                  "text": "November 27–30. Selected items. Exclusions apply.",
+                  "tokens": {
+                    "text-size": ".875rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "1.25rem 2rem",
+                "gap": ".9rem",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "1.4rem"
+              }
+            }
+          ],
+          "tokens": {
+            "gap": ".85rem"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

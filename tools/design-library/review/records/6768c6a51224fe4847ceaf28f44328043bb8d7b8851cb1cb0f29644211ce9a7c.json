@@ -1,0 +1,51 @@
+{
+  "id": "campaign-welcome-buddy",
+  "revision": "c76cc9c0869a7d1ad678c176b85f978bb7b86c112fe9de11b0cd18387161e66b",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Mascot and first-order reward remain separate, editable regions; the phone stacks the image above the offer.",
+  "at": "2026-10-24T10:40:12.653Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-welcome-buddy-320.png",
+          "sha256": "0740de84d1c994c37bd7df02d12d651ca8008fb8fd22f6cb2f11b70aee40a78b"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-welcome-buddy-1440.png",
+          "sha256": "68bc70d42c49825bae1f946d64fbb898478619ad55813b5dbf08b460cb978e14"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "98aec6a37d7eb2628fbe97d85ec06ac41bf30c0bc72cc33cae964f36a1622b04"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        }
+      ]
+    }
+  },
+  "record_id": "6768c6a51224fe4847ceaf28f44328043bb8d7b8851cb1cb0f29644211ce9a7c"
+}

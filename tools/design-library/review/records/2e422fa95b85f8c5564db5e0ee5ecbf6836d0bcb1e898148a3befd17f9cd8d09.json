@@ -1,0 +1,51 @@
+{
+  "id": "campaign-turn-it-up",
+  "revision": "5654271c18d4189163a8a84b64634ad2cdf73efe1352f4e03837736b252f7dda",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Headphones balance the short offer; equalizer motion is decorative and does not move the text.",
+  "at": "2026-10-24T10:40:12.653Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-turn-it-up-320.png",
+          "sha256": "1d30f4e334c215a3566e812837b4911c146eb5a3eb248f22c08a5feca8891b03"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-turn-it-up-1440.png",
+          "sha256": "8448d4453f7bb67378a648d1ecde41388067c4c2b959114dd8b3f5fbd39fe37a"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "98aec6a37d7eb2628fbe97d85ec06ac41bf30c0bc72cc33cae964f36a1622b04"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        }
+      ]
+    }
+  },
+  "record_id": "2e422fa95b85f8c5564db5e0ee5ecbf6836d0bcb1e898148a3befd17f9cd8d09"
+}

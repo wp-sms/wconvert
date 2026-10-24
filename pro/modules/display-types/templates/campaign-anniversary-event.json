@@ -1,0 +1,211 @@
+{
+  "id": "campaign-anniversary-event",
+  "name": "Anniversary Event",
+  "display_type": "fullscreen",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#fff0b6",
+    "fg": "#4a3350",
+    "muted": "#4a3350",
+    "accent": "#4a3350",
+    "accent-fg": "#fff7de",
+    "border": "#4a3350",
+    "input-bg": "#fff0b6",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Bebas Neue\", Impact, sans-serif",
+    "heading-size": "3.6rem",
+    "heading-weight": "400",
+    "heading-leading": ".95",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "2.75rem 0 0",
+    "gap": "0",
+    "radius": ".25rem",
+    "width": "60rem",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "grid",
+              "basis": "5rem",
+              "children": [
+                {
+                  "type": "panel",
+                  "children": [],
+                  "tokens": {
+                    "pad": "0",
+                    "gap": "0"
+                  },
+                  "narrow": {
+                    "pad": "0"
+                  },
+                  "min": "5rem",
+                  "decorations": {
+                    "label": "Decorative balloon",
+                    "hidden": false,
+                    "items": [
+                      {
+                        "kind": "balloon",
+                        "motion": "drift",
+                        "x": 50,
+                        "y": 50,
+                        "size": 130,
+                        "color": "accent"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "panel",
+                  "children": [],
+                  "tokens": {
+                    "pad": "0",
+                    "gap": "0"
+                  },
+                  "narrow": {
+                    "pad": "0"
+                  },
+                  "min": "5rem",
+                  "decorations": {
+                    "label": "Decorative balloon",
+                    "hidden": false,
+                    "items": [
+                      {
+                        "kind": "balloon",
+                        "motion": "drift",
+                        "x": 50,
+                        "y": 50,
+                        "size": 130,
+                        "color": "accent"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "tokens": {
+                "gap": ".65rem"
+              }
+            },
+            {
+              "type": "eyebrow",
+              "id": "n1",
+              "role": "eyebrow",
+              "text": "ANNIVERSARY PROMOTION",
+              "tokens": {
+                "text-size": ".625rem",
+                "tracking": ".12em"
+              }
+            },
+            {
+              "type": "heading",
+              "id": "n2",
+              "role": "headline",
+              "text": "OUR BIRTHDAY.\nYOUR 20% OFF.",
+              "narrow": {
+                "heading-size": "2.65rem"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n3",
+              "role": "body",
+              "text": "%b",
+              "tokens": {
+                "text-size": "6rem",
+                "leading": ".95",
+                "font": "\"Bebas Neue\", Impact, sans-serif"
+              },
+              "emphasis": "20% OFF",
+              "narrow": {
+                "text-size": "4.5rem"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n4",
+              "role": "body",
+              "text": "Celebrate with 20% off selected favorites."
+            },
+            {
+              "type": "button",
+              "id": "n5",
+              "role": "cta_label",
+              "label": "Shop the event",
+              "action": "link",
+              "icon": "arrow"
+            },
+            {
+              "type": "text",
+              "id": "n6",
+              "role": "fine_print",
+              "text": "Selected items. Anniversary promotion; exclusions apply.",
+              "tokens": {
+                "text-size": ".875rem"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "2rem",
+            "gap": ".9rem",
+            "align": "center",
+            "radius": "1.5rem"
+          },
+          "narrow": {
+            "pad": "1.4rem"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

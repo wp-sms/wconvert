@@ -1,0 +1,246 @@
+{
+  "id": "campaign-pixel-play-sale",
+  "name": "Pixel Play Sale",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#eed1b3",
+    "fg": "#47345f",
+    "muted": "#47345f",
+    "accent": "#47345f",
+    "accent-fg": "#fff5df",
+    "border": "#47345f",
+    "input-bg": "#eed1b3",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Bebas Neue\", Impact, sans-serif",
+    "heading-size": "3.6rem",
+    "heading-weight": "400",
+    "heading-leading": ".95",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "2.75rem 0 0",
+    "gap": "0",
+    "radius": ".25rem",
+    "width": "45rem",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n1",
+              "role": "eyebrow",
+              "text": "GAMING ACCESSORIES SALE",
+              "tokens": {
+                "text-size": ".625rem",
+                "tracking": ".12em"
+              }
+            },
+            {
+              "type": "heading",
+              "id": "n2",
+              "role": "headline",
+              "text": "LEVEL UP.\nSPEND 30% LESS.",
+              "narrow": {
+                "heading-size": "2.65rem"
+              }
+            },
+            {
+              "type": "grid",
+              "basis": "8rem",
+              "children": [
+                {
+                  "type": "panel",
+                  "children": [],
+                  "tokens": {
+                    "pad": "0",
+                    "gap": "0"
+                  },
+                  "narrow": {
+                    "pad": "0"
+                  },
+                  "min": "6rem",
+                  "decorations": {
+                    "label": "Decorative pixel",
+                    "hidden": false,
+                    "items": [
+                      {
+                        "kind": "pixel",
+                        "motion": "drift",
+                        "x": 50,
+                        "y": 50,
+                        "size": 130,
+                        "color": "accent"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "panel",
+                  "children": [],
+                  "tokens": {
+                    "pad": "0",
+                    "gap": "0"
+                  },
+                  "narrow": {
+                    "pad": "0"
+                  },
+                  "min": "6rem",
+                  "decorations": {
+                    "label": "Decorative pixel",
+                    "hidden": false,
+                    "items": [
+                      {
+                        "kind": "pixel",
+                        "motion": "drift",
+                        "x": 50,
+                        "y": 50,
+                        "size": 130,
+                        "color": "accent"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "panel",
+                  "children": [],
+                  "tokens": {
+                    "pad": "0",
+                    "gap": "0"
+                  },
+                  "narrow": {
+                    "pad": "0"
+                  },
+                  "min": "6rem",
+                  "decorations": {
+                    "label": "Decorative pixel",
+                    "hidden": false,
+                    "items": [
+                      {
+                        "kind": "pixel",
+                        "motion": "drift",
+                        "x": 50,
+                        "y": 50,
+                        "size": 130,
+                        "color": "accent"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "tokens": {
+                "gap": ".65rem"
+              }
+            },
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "role": "body",
+                  "text": "%b",
+                  "tokens": {
+                    "text-size": "4rem",
+                    "leading": ".95",
+                    "font": "\"Bebas Neue\", Impact, sans-serif"
+                  },
+                  "emphasis": "30%",
+                  "narrow": {
+                    "text-size": "4rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n4",
+                  "role": "body",
+                  "text": "Save on selected gaming and desk accessories."
+                },
+                {
+                  "type": "button",
+                  "id": "n5",
+                  "role": "cta_label",
+                  "label": "Shop the sale",
+                  "action": "link",
+                  "icon": "arrow"
+                }
+              ],
+              "tokens": {
+                "gap": "1rem"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n6",
+              "role": "fine_print",
+              "text": "30% off selected accessories. Exclusions apply.",
+              "tokens": {
+                "text-size": ".875rem"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "2rem",
+            "gap": ".9rem",
+            "border": "fg",
+            "radius": ".5rem"
+          },
+          "narrow": {
+            "pad": "1.4rem"
+          },
+          "edges": "all"
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

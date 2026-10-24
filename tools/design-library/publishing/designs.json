@@ -4078,6 +4078,756 @@
       "colour": [
         "cool"
       ]
+    },
+    "campaign-streetwear-poster": {
+      "description": "A full-width condensed masthead sits above a fashion photograph and a narrow offer column. The lime footer reads like a drop announcement.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "campaign-tech-price-sheet": {
+      "description": "A broad product photograph is captioned by a compact price ledger. The offer feels like a product launch sheet, with the saving in its own bold block.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "campaign-fifty-fifty-poster": {
+      "description": "The discount is the composition: a giant 50 above a compact contrasting Black Friday strip and a tightly grouped action.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "campaign-black-friday-coffee-menu": {
+      "description": "A narrow café-menu composition pairs a framed coffee photograph with a menu-style offer line, generous spacing and a full-width order button.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "campaign-first-access-pass": {
+      "description": "A horizontal access pass puts the opening date on a slim ticket stub and the signup in a wide dark panel, with the saving in a small top band.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "campaign-restock-mosaic": {
+      "description": "Three sharply cropped product windows form a retail shelf. A full-width headline and oversized saving sit beneath, instead of a conventional photo/text split.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "campaign-golden-weekend-ticket": {
+      "description": "A horizontal ticket gives the oversized saving its own black panel and the public code a gold redemption stub. A restrained perforation makes the offer tangible.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "campaign-finish-line-countdown": {
+      "description": "A wide sports photograph and a compact headline occupy the main pane while a tall countdown rail turns the deadline into the composition.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "campaign-sound-circle": {
+      "description": "A circular audio photograph is framed by short headline blocks and a slim offer footer. The product silhouette becomes the central visual anchor.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "campaign-layer-edit": {
+      "description": "A portrait strip beside a small offer creates a horizontal slide-in rather than another tall photo card. The action spans the entire bottom edge.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "campaign-black-friday-plus-one": {
+      "description": "A full-width headline leads to a framed product image and a large plus sign beside the gift threshold. The arrangement reads as an offer equation.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "campaign-savings-staircase": {
+      "description": "Three rising panels turn spend-and-save thresholds into a literal staircase. Product thumbnails give each tier a tactile retail context.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "campaign-twelve-month-deal": {
+      "description": "Twelve compact month tiles make the annual plan tangible. A large headline and full-width price dock replace the familiar two-panel pricing card.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "campaign-drop-alert": {
+      "description": "A compact signup starts with an enormous outlined saving and a small date label, then shifts to a straightforward form. No photo block or split layout.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "campaign-deadline-scoreboard": {
+      "description": "A narrow event strip stacks an oversized sale message over a scoreboard-style deadline row. The timer and action remain grouped.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "campaign-first-dibs-signup": {
+      "description": "An acid-lime date block anchors a compact dark signup strip. Offer copy, email, consent and action stay in a clear horizontal rhythm.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "campaign-free-delivery-label": {
+      "description": "A shipping-label composition uses a white barcode panel, a large zero-delivery charge and a clear threshold. Black framing keeps it firmly in the event.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "campaign-extra-ten-coupon": {
+      "description": "A compact shoe photo leads straight into a giant extra-saving numeral, followed by a narrow contrasting code stub. This is a coupon, not a generic reminder card.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "campaign-home-edit": {
+      "description": "A wide home campaign combines a tall furniture photograph, a compact numbered editorial column and a separate bold saving panel. Three different rhythms in one inline design.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "campaign-black-friday-department": {
+      "description": "A full-width masthead tops three product departments, followed by one oversized offer and a direct action. A storewide takeover with a genuinely different silhouette.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "campaign-welcome-buddy": {
+      "description": "First-order offer. split(image, panel).",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-welcome-perk": {
+      "description": "Welcome coupon. split(panel, media), code and link button. Dispenser is one static image.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-friday-coupon": {
+      "description": "Public discount code. split of panels.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-turn-it-up": {
+      "description": "Audio sale. media background plus panel.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-friday-comic": {
+      "description": "Selected-items sale. stack with split panels and a footer row. Face is an image.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-price-elevator": {
+      "description": "Price markdown. split of panels.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-private-preview": {
+      "description": "Early-access signup. split(image, panel).",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-outdoor-edit": {
+      "description": "Outdoor seasonal sale. split(image, panel).",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-savings-receipt": {
+      "description": "Clearance sale. stack with rows, dividers, heading, text and button. Receipt tear edge and eyes are optional artwork..",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-welcome-shortcut": {
+      "description": "First-order coupon. split(panel, panel), code and button. Portal rings simplify to nested panels or one image. Hidden door/reveal interaction removed..",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-sneaker-edit": {
+      "description": "Footwear sale. split(image, panel).",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-midnight-fragrance-edit": {
+      "description": "Fragrance sale. split plus footer row.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-wishlist-alert": {
+      "description": "Early-access email signup. stack of panels and form.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-garden-edit": {
+      "description": "Garden seasonal sale. split(image, panel), heading, text and button. Flowers are one decorative SVG image.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-friday-pass": {
+      "description": "Early-access email signup. split of panels.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-delivery-buddy": {
+      "description": "Shipping threshold. media background with wash, panel, heading, text, button. Robot art is one image.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-black-friday-archive": {
+      "description": "Archive clearance. stack and split of panels.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-extra-gift": {
+      "description": "Gift with purchase. split(image, panel), heading, text and button. Gift image and threshold replace a custom unboxing/reveal interaction..",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-friday-game-code": {
+      "description": "Gaming accessories coupon. panel and stack.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-fragrance-booth": {
+      "description": "Fragrance sale. split(grid of images, panel).",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-sweet-edit": {
+      "description": "Confectionery promotion. floating_bar wrapping row.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-black-friday-fast-lane": {
+      "description": "Scheduled sale deadline. floating_bar wrapping row.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-packing-perk": {
+      "description": "Packaging supplies sale. floating_bar wrapping row.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-friday-email-alert": {
+      "description": "Early-access email signup. floating_bar with offer above a field/action row at medium widths. Email, consent, submit and acknowledgement. No phone capture or live hotline implied..",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-your-welcome-pal": {
+      "description": "Welcome offer. slide_in stack with image, heading, text, button. Rounded-top photo is a radius token.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-breakfast-edit": {
+      "description": "Kitchen seasonal sale. slide_in stack with image, heading, text and button. Breakfast art is one replaceable image..",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-welcome-label": {
+      "description": "First-order coupon. inline split of panels with heading, text, code and button. Public code is immediately visible.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-pixel-play-sale": {
+      "description": "Gaming accessories sale. inline stack and row.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-black-friday-departments": {
+      "description": "Storewide selected collections. fullscreen stack with heading, image grid and one button. All departments are product images.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "campaign-anniversary-event": {
+      "description": "Anniversary promotion. fullscreen media and panel.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
     }
   }
 }

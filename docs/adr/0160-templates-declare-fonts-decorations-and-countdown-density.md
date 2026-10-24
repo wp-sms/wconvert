@@ -132,3 +132,9 @@ shows an error with Retry and never substitutes samples. Stale responses cannot
 restore an earlier date. Preview & test waits for resolution before exposing
 editable inputs, so a late response cannot erase typing, and renders loading
 and Retry inside its modal. Each mount still owns and cleans up its one timer.
+
+**Amended by [ADR 0167](0167-campaign-artwork-uses-bounded-renderer-options.md):**
+The closed artwork vocabulary now includes the additional campaign shapes,
+non-rotating motion and ordinary-image motion listed there. The initial loader
+budget statement above describes this ADR's original change; ADR 0167 records
+the additional 1,024 B per loader for campaign features.

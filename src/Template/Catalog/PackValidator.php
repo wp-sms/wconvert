@@ -86,9 +86,9 @@ final class PackValidator
         foreach ($items as $item) {
             self::check(is_array($item), $error);
             $this->keys($item, ['kind', 'x', 'y', 'size', 'motion', 'color', 'narrow']);
-            self::check(in_array($item['kind'] ?? null, ['bat', 'eyes', 'sparkle'], true), $error);
+            self::check(in_array($item['kind'] ?? null, $this->manifest['decorations']['kinds'] ?? [], true), $error);
             $this->placement($item, $error);
-            if (array_key_exists('motion', $item)) self::check(in_array($item['motion'], ['none', 'float', 'flap', 'blink'], true), $error);
+            if (array_key_exists('motion', $item)) self::check(in_array($item['motion'], $this->manifest['decorations']['motions'] ?? [], true), $error);
             if (array_key_exists('color', $item)) self::check(in_array($item['color'], ['fg', 'accent', 'muted', 'accent-fg'], true), $error);
             if (array_key_exists('narrow', $item)) {
                 self::check(is_array($item['narrow']), $error);

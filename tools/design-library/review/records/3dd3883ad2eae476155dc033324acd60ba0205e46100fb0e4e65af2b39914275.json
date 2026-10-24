@@ -1,0 +1,51 @@
+{
+  "id": "campaign-savings-receipt",
+  "revision": "93f8cb4e040181d63756b63a8da894e54f925ffd9cf658850aacf11639edda6c",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "The receipt orders original price, discount and saving before one action; blinking eyes stay decorative.",
+  "at": "2026-10-24T10:40:12.653Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-savings-receipt-320.png",
+          "sha256": "256d683e306f25ea5af79296b9317691960d7322be9f6c180a0b33a203d41a07"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-savings-receipt-1440.png",
+          "sha256": "724ea74804031101effe6a5197740f771c0ae90eee86dffb7dd3d457a263df8b"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "98aec6a37d7eb2628fbe97d85ec06ac41bf30c0bc72cc33cae964f36a1622b04"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        }
+      ]
+    }
+  },
+  "record_id": "3dd3883ad2eae476155dc033324acd60ba0205e46100fb0e4e65af2b39914275"
+}
