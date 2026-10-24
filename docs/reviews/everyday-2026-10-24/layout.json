@@ -1,0 +1,43 @@
+{
+  "widths": [
+    320,
+    390,
+    520,
+    640,
+    768,
+    960,
+    1280,
+    1440
+  ],
+  "directions": [
+    "ltr",
+    "rtl"
+  ],
+  "reports": [
+    {
+      "copy": "normal",
+      "kind": "designs",
+      "cases": 1408,
+      "failures": []
+    },
+    {
+      "copy": "normal",
+      "kind": "campaigns",
+      "cases": 1408,
+      "failures": []
+    },
+    {
+      "copy": "long",
+      "kind": "designs",
+      "cases": 1408,
+      "failures": []
+    },
+    {
+      "copy": "long",
+      "kind": "campaigns",
+      "cases": 1408,
+      "failures": []
+    }
+  ],
+  "totalCases": 5632
+}

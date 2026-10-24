@@ -1,0 +1,306 @@
+{
+  "checked": "2026-10-24T06:30:33.658Z",
+  "scope": "All layout nodes, dimensions, wide/narrow styling, copy, roles, image identities, screen order and tier. Production-only font declaration, configuration URLs, consent visibility and submission metadata are excluded.",
+  "designs": [
+    {
+      "id": "everyday-sunday-crumb",
+      "prototype": "01",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-the-object-room",
+      "prototype": "02",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-listening-party",
+      "prototype": "03",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-almost-somewhere",
+      "prototype": "04",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-bloom-notes",
+      "prototype": "05",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-good-dog-society",
+      "prototype": "06",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-the-lemon-hour",
+      "prototype": "07",
+      "matched": true,
+      "screens": 1
+    },
+    {
+      "id": "everyday-school-of-small-things",
+      "prototype": "08",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-soft-science",
+      "prototype": "09",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-frame-by-frame",
+      "prototype": "10",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-the-daily-ritual",
+      "prototype": "11",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-permission-to-pause",
+      "prototype": "12",
+      "matched": true,
+      "screens": 1
+    },
+    {
+      "id": "everyday-open-atelier",
+      "prototype": "13",
+      "matched": true,
+      "screens": 1
+    },
+    {
+      "id": "everyday-the-reading-shelf",
+      "prototype": "14",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-the-small-start-studio",
+      "prototype": "15",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-out-of-office",
+      "prototype": "16",
+      "matched": true,
+      "screens": 1
+    },
+    {
+      "id": "everyday-the-long-weekend-pass",
+      "prototype": "17",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-small-batch-bulletin",
+      "prototype": "18",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-better-together",
+      "prototype": "19",
+      "matched": true,
+      "screens": 1
+    },
+    {
+      "id": "everyday-make-it-yours",
+      "prototype": "20",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-one-good-idea",
+      "prototype": "21",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-the-next-chapter",
+      "prototype": "22",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-listen-closer",
+      "prototype": "23",
+      "matched": true,
+      "screens": 1
+    },
+    {
+      "id": "everyday-a-note-from-the-maker",
+      "prototype": "24",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-the-useful-checklist",
+      "prototype": "25",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-build-something-good",
+      "prototype": "26",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-room-in-your-inbox",
+      "prototype": "27",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-the-listening-room",
+      "prototype": "28",
+      "matched": true,
+      "screens": 1
+    },
+    {
+      "id": "everyday-a-date-with-making",
+      "prototype": "29",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-start-a-conversation",
+      "prototype": "30",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-a-desk-away",
+      "prototype": "31",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-fix-it-friday",
+      "prototype": "32",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-your-kind-of-weekend",
+      "prototype": "33",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-an-occasion-worth-keeping",
+      "prototype": "34",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-from-the-ground-up",
+      "prototype": "35",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-a-fresh-start",
+      "prototype": "36",
+      "matched": true,
+      "screens": 1
+    },
+    {
+      "id": "everyday-the-comfort-zone",
+      "prototype": "37",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-an-evening-worth-making",
+      "prototype": "38",
+      "matched": true,
+      "screens": 1
+    },
+    {
+      "id": "everyday-slow-sunday-notes",
+      "prototype": "39",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-the-little-things-shop",
+      "prototype": "40",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-a-curious-future",
+      "prototype": "41",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-the-weekend-court",
+      "prototype": "42",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-another-good-round",
+      "prototype": "43",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-before-the-drop",
+      "prototype": "44",
+      "matched": true,
+      "screens": 1
+    },
+    {
+      "id": "everyday-the-curious-corner",
+      "prototype": "45",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-the-scenic-route",
+      "prototype": "46",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-first-light-journal",
+      "prototype": "47",
+      "matched": true,
+      "screens": 2
+    },
+    {
+      "id": "everyday-the-useful-sale",
+      "prototype": "48",
+      "matched": true,
+      "screens": 1
+    },
+    {
+      "id": "everyday-a-little-thank-you",
+      "prototype": "49",
+      "matched": true,
+      "screens": 1
+    },
+    {
+      "id": "everyday-the-future-is-friendly",
+      "prototype": "50",
+      "matched": true,
+      "screens": 2
+    }
+  ]
+}

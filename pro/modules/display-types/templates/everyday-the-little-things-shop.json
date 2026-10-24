@@ -1,0 +1,338 @@
+{
+  "id": "everyday-the-little-things-shop",
+  "name": "The little-things shop",
+  "display_type": "popup",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#f16b37",
+    "fg": "#272b25",
+    "muted": "#272b25",
+    "accent": "#272b25",
+    "accent-fg": "#fff1d3",
+    "border": "#272b25",
+    "input-bg": "transparent",
+    "placeholder": "#272b25",
+    "close-bg": "#f16b37",
+    "close-fg": "#272b25",
+    "close-border": "#272b25",
+    "font": "'DM Sans', Arial, sans-serif",
+    "heading-font": "'Instrument Serif', Georgia, serif",
+    "heading-weight": "400",
+    "heading-leading": "0.98",
+    "tracking": "-.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "30rem",
+    "shadow": "0 24px 65px -30px rgba(24,30,30,.35)",
+    "close-inset": ".7rem"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "2rem",
+            "radius": "0",
+            "gap": "1.1rem"
+          },
+          "narrow": {
+            "pad": "4rem 1.5rem 1.5rem",
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "eyebrow",
+              "role": "eyebrow",
+              "text": "The little-things shop",
+              "tokens": {
+                "text-size": ".88rem",
+                "tracking": ".1em"
+              },
+              "id": "n1"
+            },
+            {
+              "type": "heading",
+              "role": "headline",
+              "text": "Little things.\nBig joy.",
+              "tokens": {
+                "heading-size": "4.2rem",
+                "heading-font": "'DM Sans', Arial, sans-serif",
+                "heading-weight": "700"
+              },
+              "narrow": {
+                "heading-size": "2.65rem"
+              },
+              "id": "n2"
+            },
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "1.3rem",
+                "radius": "0",
+                "gap": "1.1rem",
+                "muted": "#293128",
+                "bg": "#fff0d3",
+                "fg": "#293128",
+                "align": "center"
+              },
+              "narrow": {
+                "pad": "1.3rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "heading",
+                  "role": "headline",
+                  "text": "10% off",
+                  "tokens": {
+                    "heading-size": "3rem"
+                  },
+                  "narrow": {
+                    "heading-size": "3rem"
+                  },
+                  "id": "n3"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "Your first order of everyday good things.",
+                  "id": "n4"
+                }
+              ]
+            },
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": ".9rem"
+              },
+              "children": [
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".7rem"
+                  },
+                  "children": [
+                    {
+                      "type": "field",
+                      "name": "email",
+                      "label": "Email address",
+                      "placeholder": "you@example.com",
+                      "required": true,
+                      "tokens": {
+                        "radius": ".2rem"
+                      },
+                      "id": "n5"
+                    },
+                    {
+                      "type": "button",
+                      "role": "cta_label",
+                      "label": "Reveal my little welcome",
+                      "action": "submit",
+                      "submission": "primary",
+                      "tokens": {
+                        "radius": ".2rem"
+                      },
+                      "id": "n6"
+                    }
+                  ]
+                },
+                {
+                  "type": "consent",
+                  "role": "consent_text",
+                  "text": "I agree to receive marketing emails. Unsubscribe anytime.",
+                  "hidden": true,
+                  "id": "n7"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "role": "fine_print",
+              "text": "First orders only. Excludes gift cards.",
+              "tokens": {
+                "text-size": ".8rem",
+                "leading": "1.5"
+              },
+              "id": "n8"
+            }
+          ]
+        }
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "2rem",
+            "radius": "0",
+            "gap": "1.1rem"
+          },
+          "narrow": {
+            "pad": "4rem 1.5rem 1.5rem",
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "eyebrow",
+              "role": "eyebrow",
+              "text": "The little-things shop",
+              "tokens": {
+                "text-size": ".88rem",
+                "tracking": ".1em"
+              },
+              "id": "n9"
+            },
+            {
+              "type": "heading",
+              "role": "success_headline",
+              "text": "A little welcome, just here.",
+              "tokens": {
+                "heading-size": "2.7rem",
+                "heading-font": "'DM Sans', Arial, sans-serif",
+                "heading-weight": "700"
+              },
+              "narrow": {
+                "heading-size": "2.2rem"
+              },
+              "id": "n10"
+            },
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "1.3rem",
+                "radius": "0",
+                "gap": "1.1rem",
+                "muted": "#293128",
+                "bg": "#fff0d3",
+                "fg": "#293128",
+                "align": "center"
+              },
+              "narrow": {
+                "pad": "1.3rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "heading",
+                  "role": "headline",
+                  "text": "10% off",
+                  "tokens": {
+                    "heading-size": "3rem"
+                  },
+                  "narrow": {
+                    "heading-size": "3rem"
+                  },
+                  "id": "n11"
+                },
+                {
+                  "type": "text",
+                  "role": "success_body",
+                  "text": "Your request is received. Here is your first-order code.",
+                  "id": "n12"
+                }
+              ]
+            },
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": ".9rem"
+              },
+              "children": [
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".7rem"
+                  },
+                  "children": [
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": "1rem"
+                      },
+                      "children": [
+                        {
+                          "type": "code",
+                          "role": "code_value",
+                          "text": "LITTLE10",
+                          "copy": true,
+                          "layout": "stack",
+                          "id": "n13"
+                        },
+                        {
+                          "type": "button",
+                          "role": "close_label",
+                          "label": "Continue browsing",
+                          "action": "close",
+                          "tokens": {
+                            "radius": ".2rem"
+                          },
+                          "id": "n14"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "role": "fine_print",
+              "text": "First orders only. Excludes gift cards.",
+              "tokens": {
+                "text-size": ".8rem",
+                "leading": "1.5"
+              },
+              "id": "n15"
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n5"
+        ],
+        "consents": [
+          "n7"
+        ]
+      }
+    ],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

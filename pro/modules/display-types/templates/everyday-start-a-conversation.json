@@ -1,0 +1,291 @@
+{
+  "id": "everyday-start-a-conversation",
+  "name": "Start a conversation",
+  "display_type": "popup",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#f3efe6",
+    "fg": "#2e2d29",
+    "muted": "#2e2d29",
+    "accent": "#2e2d29",
+    "accent-fg": "#fffaf0",
+    "border": "#2e2d29",
+    "input-bg": "transparent",
+    "placeholder": "#2e2d29",
+    "close-bg": "#f3efe6",
+    "close-fg": "#2e2d29",
+    "close-border": "#2e2d29",
+    "font": "'DM Sans', Arial, sans-serif",
+    "heading-font": "'Instrument Serif', Georgia, serif",
+    "heading-weight": "400",
+    "heading-leading": "0.98",
+    "tracking": "-.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "0",
+    "radius": ".7rem",
+    "width": "33rem",
+    "shadow": "0 24px 65px -30px rgba(24,30,30,.35)",
+    "close-inset": ".7rem"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "4rem 2.6rem 2.6rem",
+            "radius": "0",
+            "gap": "1.1rem"
+          },
+          "narrow": {
+            "pad": "4rem 1.5rem 1.5rem",
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "eyebrow",
+              "role": "eyebrow",
+              "text": "Goodwork / independent design studio",
+              "tokens": {
+                "text-size": ".88rem",
+                "tracking": ".1em"
+              },
+              "id": "n1"
+            },
+            {
+              "type": "heading",
+              "role": "headline",
+              "text": "Tell us what\nyou have in mind.",
+              "tokens": {
+                "heading-size": "3.3rem"
+              },
+              "narrow": {
+                "heading-size": "2.65rem"
+              },
+              "id": "n2"
+            },
+            {
+              "type": "text",
+              "role": "body",
+              "text": "A new website? A better identity? A small idea you want to explore? Start with the kind of help you need.",
+              "id": "n3"
+            },
+            {
+              "type": "field",
+              "name": "interest",
+              "label": "What would you like help with?",
+              "placeholder": "Choose an option",
+              "required": false,
+              "options": [
+                {
+                  "value": "website",
+                  "label": "A website"
+                },
+                {
+                  "value": "identity",
+                  "label": "A visual identity"
+                },
+                {
+                  "value": "exploring",
+                  "label": "I’m still exploring"
+                }
+              ],
+              "id": "n4"
+            },
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": ".9rem"
+              },
+              "children": [
+                {
+                  "type": "field",
+                  "name": "name",
+                  "label": "Your name",
+                  "placeholder": "Your name",
+                  "required": true,
+                  "tokens": {
+                    "radius": ".2rem"
+                  },
+                  "id": "n5"
+                },
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".7rem"
+                  },
+                  "children": [
+                    {
+                      "type": "field",
+                      "name": "email",
+                      "label": "Email address",
+                      "placeholder": "you@example.com",
+                      "required": true,
+                      "tokens": {
+                        "radius": ".2rem"
+                      },
+                      "id": "n6"
+                    },
+                    {
+                      "type": "button",
+                      "role": "cta_label",
+                      "label": "Start the conversation",
+                      "action": "submit",
+                      "submission": "primary",
+                      "tokens": {
+                        "radius": ".2rem"
+                      },
+                      "id": "n7"
+                    },
+                    {
+                      "type": "consent",
+                      "id": "n13",
+                      "role": "consent_text",
+                      "text": "I agree to receive marketing emails. Unsubscribe anytime.",
+                      "hidden": true
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "role": "fine_print",
+                  "text": "We use these details to respond to your request.",
+                  "tokens": {
+                    "text-size": ".8rem",
+                    "leading": "1.5"
+                  },
+                  "id": "n8"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "4rem 2.6rem 2.6rem",
+            "radius": "0",
+            "gap": "1.1rem"
+          },
+          "narrow": {
+            "pad": "4rem 1.5rem 1.5rem",
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "eyebrow",
+              "role": "eyebrow",
+              "text": "Goodwork / independent design studio",
+              "tokens": {
+                "text-size": ".88rem",
+                "tracking": ".1em"
+              },
+              "id": "n9"
+            },
+            {
+              "type": "heading",
+              "role": "success_headline",
+              "text": "A good conversation starts here.",
+              "tokens": {
+                "heading-size": "2.7rem"
+              },
+              "narrow": {
+                "heading-size": "2.2rem"
+              },
+              "id": "n10"
+            },
+            {
+              "type": "text",
+              "role": "success_body",
+              "text": "Your enquiry is received. The studio has your details and area of interest.",
+              "id": "n11"
+            },
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": ".9rem"
+              },
+              "children": [
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".7rem"
+                  },
+                  "children": [
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": "1rem"
+                      },
+                      "children": [
+                        {
+                          "type": "button",
+                          "role": "close_label",
+                          "label": "Continue browsing",
+                          "action": "close",
+                          "tokens": {
+                            "radius": ".2rem"
+                          },
+                          "id": "n12"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n4",
+          "n5",
+          "n6"
+        ],
+        "consents": [
+          "n13"
+        ]
+      }
+    ],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

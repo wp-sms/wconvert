@@ -1,0 +1,217 @@
+{
+  "id": "everyday-the-useful-sale",
+  "name": "The useful sale",
+  "display_type": "popup",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#f3efe6",
+    "fg": "#2e2d29",
+    "muted": "#2e2d29",
+    "accent": "#252a26",
+    "accent-fg": "#fff5e0",
+    "border": "#2e2d29",
+    "input-bg": "transparent",
+    "placeholder": "#2e2d29",
+    "close-bg": "#f3efe6",
+    "close-fg": "#2e2d29",
+    "close-border": "#2e2d29",
+    "font": "'DM Sans', Arial, sans-serif",
+    "heading-font": "'Instrument Serif', Georgia, serif",
+    "heading-weight": "400",
+    "heading-leading": "0.98",
+    "tracking": "-.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "43rem",
+    "shadow": "0 24px 65px -30px rgba(24,30,30,.35)",
+    "close-inset": ".7rem"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "split",
+          "ratio": 0.46,
+          "basis": "18rem",
+          "tokens": {
+            "gap": "0"
+          },
+          "start": [
+            {
+              "type": "media",
+              "tokens": {
+                "pad": "2rem",
+                "radius": "0",
+                "gap": "1.1rem",
+                "muted": "#fff5e0",
+                "bg": "#252a26",
+                "fg": "#fff5e0"
+              },
+              "narrow": {
+                "pad": "4rem 1.5rem 1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "The useful sale",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n1"
+                },
+                {
+                  "type": "heading",
+                  "role": "headline",
+                  "text": "25%",
+                  "tokens": {
+                    "heading-size": "6.5rem",
+                    "heading-font": "'DM Sans', Arial, sans-serif",
+                    "heading-weight": "700"
+                  },
+                  "narrow": {
+                    "heading-size": "2.65rem"
+                  },
+                  "id": "n2"
+                },
+                {
+                  "type": "heading",
+                  "role": "headline",
+                  "text": "Less to spend.\nMore to use.",
+                  "tokens": {
+                    "heading-size": "2.1rem"
+                  },
+                  "narrow": {
+                    "heading-size": "2.1rem"
+                  },
+                  "id": "n3"
+                },
+                {
+                  "type": "text",
+                  "role": "fine_print",
+                  "text": "Selected everyday essentials.",
+                  "tokens": {
+                    "text-size": ".8rem",
+                    "leading": "1.5"
+                  },
+                  "id": "n4"
+                }
+              ]
+            }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2rem",
+                "radius": "0",
+                "gap": "1.1rem"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "This week only",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n5"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "Thoughtfully chosen things for your everyday. Shop selected pieces for less.",
+                  "id": "n6"
+                },
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": "1rem",
+                    "align": "center"
+                  },
+                  "children": [
+                    {
+                      "type": "countdown",
+                      "role": "countdown_units",
+                      "layout": "boxes",
+                      "days_label": "Days",
+                      "hours_label": "Hrs",
+                      "minutes_label": "Mins",
+                      "seconds_label": "Secs",
+                      "tokens": {
+                        "countdown-size": "1.7rem"
+                      },
+                      "narrow": {
+                        "countdown-size": "1.35rem"
+                      },
+                      "id": "n7"
+                    }
+                  ]
+                },
+                {
+                  "type": "button",
+                  "role": "cta_label",
+                  "label": "Shop the useful sale",
+                  "action": "link",
+                  "tokens": {
+                    "radius": ".2rem"
+                  },
+                  "id": "n8"
+                },
+                {
+                  "type": "text",
+                  "role": "fine_print",
+                  "text": "Offer ends 31 October 2026. Exclusions apply.",
+                  "tokens": {
+                    "text-size": ".8rem",
+                    "leading": "1.5"
+                  },
+                  "id": "n9"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

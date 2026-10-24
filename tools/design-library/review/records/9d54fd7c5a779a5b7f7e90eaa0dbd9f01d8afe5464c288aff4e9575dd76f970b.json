@@ -1,0 +1,55 @@
+{
+  "id": "everyday-the-curious-corner",
+  "revision": "67a62344f59dc863f45de402230db5e8ab08bfb126d9dc8b0a37884d6ed499cc",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex · native WordPress and visual review",
+  "note": "The red issue header gives the slide-in a distinct identity. Its newsletter action and consent remain comfortably spaced.",
+  "at": "2026-10-24T06:21:47.182Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/review.md",
+          "sha256": "f6b502dde0c4c73b459faf3f1a57081ad88a66a77bc19b5a5095f11c7f8a8573"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-the-curious-corner-320.png",
+          "sha256": "67af2369971bdae62b383485c5de830080af3ca3fd2468afa67d2774b2cea4ef"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-the-curious-corner-1440.png",
+          "sha256": "b36b2ced4c01b1f96f2a5eb827818f7d8702c79ce76a569906cd7bb22e25e16b"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/fidelity.json",
+          "sha256": "358e4290ffc8f1760ac04e1994edfb346f4ef8391aee56aa07bf2c3c173f96c1"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/layout.json",
+          "sha256": "d7b61c2cf2f4caab48c27de857e575e2d6f6629973bf2defca7e3a5589679645"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    }
+  },
+  "record_id": "9d54fd7c5a779a5b7f7e90eaa0dbd9f01d8afe5464c288aff4e9575dd76f970b"
+}

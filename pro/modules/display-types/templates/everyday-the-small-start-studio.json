@@ -1,0 +1,558 @@
+{
+  "id": "everyday-the-small-start-studio",
+  "name": "The small-start studio",
+  "display_type": "popup",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#e2edf1",
+    "fg": "#203a44",
+    "muted": "#203a44",
+    "accent": "#203a44",
+    "accent-fg": "#f7faf8",
+    "border": "#203a44",
+    "input-bg": "transparent",
+    "placeholder": "#203a44",
+    "close-bg": "#e2edf1",
+    "close-fg": "#203a44",
+    "close-border": "#203a44",
+    "font": "'DM Sans', Arial, sans-serif",
+    "heading-font": "'Instrument Serif', Georgia, serif",
+    "heading-weight": "400",
+    "heading-leading": "0.98",
+    "tracking": "-.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "44rem",
+    "shadow": "0 24px 65px -30px rgba(24,30,30,.35)",
+    "close-inset": ".7rem"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "tokens": {
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2.5rem",
+                "radius": "0",
+                "gap": "1.1rem"
+              },
+              "narrow": {
+                "pad": "4rem 1.5rem 1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "A practical creative course",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n1"
+                },
+                {
+                  "type": "heading",
+                  "role": "headline",
+                  "text": "You don’t need\na big beginning.",
+                  "tokens": {
+                    "heading-size": "3.4rem"
+                  },
+                  "narrow": {
+                    "heading-size": "2.65rem"
+                  },
+                  "id": "n2"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "Start with a 15-minute project. Get a free lesson and see how our workshop works.",
+                  "id": "n3"
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "basis": "12rem",
+              "tokens": {
+                "gap": "0"
+              },
+              "children": [
+                {
+                  "type": "panel",
+                  "tokens": {
+                    "pad": "1.25rem",
+                    "radius": "0",
+                    "gap": ".3rem",
+                    "muted": "#223f48",
+                    "bg": "#cadadd",
+                    "fg": "#223f48"
+                  },
+                  "narrow": {
+                    "pad": "1.25rem",
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "heading",
+                      "role": "headline",
+                      "text": "01",
+                      "tokens": {
+                        "heading-size": "2.5rem",
+                        "heading-font": "'DM Sans', Arial, sans-serif",
+                        "heading-weight": "700"
+                      },
+                      "narrow": {
+                        "heading-size": "2.5rem"
+                      },
+                      "id": "n4"
+                    },
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "Choose one small idea",
+                      "tokens": {
+                        "text-size": ".9rem"
+                      },
+                      "id": "n5"
+                    }
+                  ]
+                },
+                {
+                  "type": "panel",
+                  "tokens": {
+                    "pad": "1.25rem",
+                    "radius": "0",
+                    "gap": ".3rem",
+                    "muted": "#223f48",
+                    "bg": "#a9c5c9",
+                    "fg": "#223f48"
+                  },
+                  "narrow": {
+                    "pad": "1.25rem",
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "heading",
+                      "role": "headline",
+                      "text": "02",
+                      "tokens": {
+                        "heading-size": "2.5rem",
+                        "heading-font": "'DM Sans', Arial, sans-serif",
+                        "heading-weight": "700"
+                      },
+                      "narrow": {
+                        "heading-size": "2.5rem"
+                      },
+                      "id": "n6"
+                    },
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "Make a first attempt",
+                      "tokens": {
+                        "text-size": ".9rem"
+                      },
+                      "id": "n7"
+                    }
+                  ]
+                },
+                {
+                  "type": "panel",
+                  "tokens": {
+                    "pad": "1.25rem",
+                    "radius": "0",
+                    "gap": ".3rem",
+                    "muted": "#fffaf0",
+                    "bg": "#31565d",
+                    "fg": "#fffaf0"
+                  },
+                  "narrow": {
+                    "pad": "1.25rem",
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "heading",
+                      "role": "headline",
+                      "text": "03",
+                      "tokens": {
+                        "heading-size": "2.5rem",
+                        "heading-font": "'DM Sans', Arial, sans-serif",
+                        "heading-weight": "700"
+                      },
+                      "narrow": {
+                        "heading-size": "2.5rem"
+                      },
+                      "id": "n8"
+                    },
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "See where it leads",
+                      "tokens": {
+                        "text-size": ".9rem"
+                      },
+                      "id": "n9"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "1.7rem 2.5rem",
+                "radius": "0",
+                "gap": "1.1rem"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".9rem"
+                  },
+                  "children": [
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": ".7rem"
+                      },
+                      "children": [
+                        {
+                          "type": "field",
+                          "name": "email",
+                          "label": "Email address",
+                          "placeholder": "you@example.com",
+                          "required": true,
+                          "tokens": {
+                            "radius": ".2rem"
+                          },
+                          "id": "n10"
+                        },
+                        {
+                          "type": "button",
+                          "role": "cta_label",
+                          "label": "Get the starter lesson",
+                          "action": "submit",
+                          "submission": "primary",
+                          "tokens": {
+                            "radius": ".2rem"
+                          },
+                          "id": "n11"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "consent",
+                      "role": "consent_text",
+                      "text": "I agree to receive marketing emails. Unsubscribe anytime.",
+                      "hidden": true,
+                      "id": "n12"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "tokens": {
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2.5rem",
+                "radius": "0",
+                "gap": "1.1rem"
+              },
+              "narrow": {
+                "pad": "4rem 1.5rem 1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "A practical creative course",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n13"
+                },
+                {
+                  "type": "heading",
+                  "role": "success_headline",
+                  "text": "A small beginning.",
+                  "tokens": {
+                    "heading-size": "2.7rem"
+                  },
+                  "narrow": {
+                    "heading-size": "2.2rem"
+                  },
+                  "id": "n14"
+                },
+                {
+                  "type": "text",
+                  "role": "success_body",
+                  "text": "Your lesson request is received. Open the sample starter lesson below.",
+                  "id": "n15"
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "basis": "12rem",
+              "tokens": {
+                "gap": "0"
+              },
+              "children": [
+                {
+                  "type": "panel",
+                  "tokens": {
+                    "pad": "1.25rem",
+                    "radius": "0",
+                    "gap": ".3rem",
+                    "muted": "#223f48",
+                    "bg": "#cadadd",
+                    "fg": "#223f48"
+                  },
+                  "narrow": {
+                    "pad": "1.25rem",
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "heading",
+                      "role": "headline",
+                      "text": "01",
+                      "tokens": {
+                        "heading-size": "2.5rem",
+                        "heading-font": "'DM Sans', Arial, sans-serif",
+                        "heading-weight": "700"
+                      },
+                      "narrow": {
+                        "heading-size": "2.5rem"
+                      },
+                      "id": "n16"
+                    },
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "Choose one small idea",
+                      "tokens": {
+                        "text-size": ".9rem"
+                      },
+                      "id": "n17"
+                    }
+                  ]
+                },
+                {
+                  "type": "panel",
+                  "tokens": {
+                    "pad": "1.25rem",
+                    "radius": "0",
+                    "gap": ".3rem",
+                    "muted": "#223f48",
+                    "bg": "#a9c5c9",
+                    "fg": "#223f48"
+                  },
+                  "narrow": {
+                    "pad": "1.25rem",
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "heading",
+                      "role": "headline",
+                      "text": "02",
+                      "tokens": {
+                        "heading-size": "2.5rem",
+                        "heading-font": "'DM Sans', Arial, sans-serif",
+                        "heading-weight": "700"
+                      },
+                      "narrow": {
+                        "heading-size": "2.5rem"
+                      },
+                      "id": "n18"
+                    },
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "Make a first attempt",
+                      "tokens": {
+                        "text-size": ".9rem"
+                      },
+                      "id": "n19"
+                    }
+                  ]
+                },
+                {
+                  "type": "panel",
+                  "tokens": {
+                    "pad": "1.25rem",
+                    "radius": "0",
+                    "gap": ".3rem",
+                    "muted": "#fffaf0",
+                    "bg": "#31565d",
+                    "fg": "#fffaf0"
+                  },
+                  "narrow": {
+                    "pad": "1.25rem",
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "heading",
+                      "role": "headline",
+                      "text": "03",
+                      "tokens": {
+                        "heading-size": "2.5rem",
+                        "heading-font": "'DM Sans', Arial, sans-serif",
+                        "heading-weight": "700"
+                      },
+                      "narrow": {
+                        "heading-size": "2.5rem"
+                      },
+                      "id": "n20"
+                    },
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "See where it leads",
+                      "tokens": {
+                        "text-size": ".9rem"
+                      },
+                      "id": "n21"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "1.7rem 2.5rem",
+                "radius": "0",
+                "gap": "1.1rem"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".9rem"
+                  },
+                  "children": [
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": ".7rem"
+                      },
+                      "children": [
+                        {
+                          "type": "stack",
+                          "tokens": {
+                            "gap": "1rem"
+                          },
+                          "children": [
+                            {
+                              "type": "followup",
+                              "role": "success_action",
+                              "label": "Open the resource",
+                              "tokens": {
+                                "radius": ".2rem"
+                              },
+                              "id": "n22",
+                              "hidden": true
+                            },
+                            {
+                              "type": "button",
+                              "role": "close_label",
+                              "label": "Continue browsing",
+                              "action": "close",
+                              "tokens": {
+                                "radius": ".2rem"
+                              },
+                              "id": "n23"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n10"
+        ],
+        "consents": [
+          "n12"
+        ]
+      }
+    ],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

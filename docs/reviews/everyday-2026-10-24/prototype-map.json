@@ -1,0 +1,1142 @@
+[
+  {
+    "id": "01",
+    "native_id": "everyday-sunday-crumb",
+    "name": "Sunday crumb",
+    "tier": "free",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Create a valid coupon and match its value, saving and terms."
+    ],
+    "idea": "A food-magazine cover meets the back of a paper bag. Warm serif copy balances a deliberately oversized still life.",
+    "directory": "tools/design-library/hosted",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "02",
+    "native_id": "everyday-the-object-room",
+    "name": "The object room",
+    "tier": "pro",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording."
+    ],
+    "idea": "A furniture catalogue spread: architectural blue type, a full-height product photograph, and a grounded form.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "03",
+    "native_id": "everyday-listening-party",
+    "name": "Listening party",
+    "tier": "pro",
+    "goal": "grow_email_list",
+    "audience": "publishers",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+    ],
+    "idea": "An album sleeve above a separate concert-yellow signup strip. The countdown is part of the invitation, not a floating badge.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "04",
+    "native_id": "everyday-almost-somewhere",
+    "name": "Almost somewhere",
+    "tier": "pro",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording."
+    ],
+    "idea": "Panoramic travel editorial with a real image break between the headline and the signup. The form reads like a postcard subscription.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "05",
+    "native_id": "everyday-bloom-notes",
+    "name": "Bloom notes",
+    "tier": "free",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Place the campaign using its block or shortcode."
+    ],
+    "idea": "A narrow herbarium panel beside a generous journal-like form. Colour comes from the replaceable flower, not decorative UI.",
+    "directory": "tools/design-library/hosted",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "06",
+    "native_id": "everyday-good-dog-society",
+    "name": "Good dog society",
+    "tier": "pro",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Create a valid coupon and match its value, saving and terms."
+    ],
+    "idea": "A friendly character peeks over the top of a practical corner signup. One expressive image, no decorative clutter.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "07",
+    "native_id": "everyday-the-lemon-hour",
+    "name": "The lemon hour",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the action link and review the offer wording."
+    ],
+    "idea": "A citrus poster with oversized serif lettering and a compact code area. A direct offer with no invented signup requirement.",
+    "directory": "tools/design-library/hosted",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "08",
+    "native_id": "everyday-school-of-small-things",
+    "name": "School of small things",
+    "tier": "pro",
+    "goal": "grow_email_list",
+    "audience": "publishers",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Add the promised resource URL and show its acknowledgement button before publishing.",
+      "Place the campaign using its block or shortcode."
+    ],
+    "idea": "An illustrated learning invitation with a useful resource and a grown-up typographic voice.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "09",
+    "native_id": "everyday-soft-science",
+    "name": "Soft science",
+    "tier": "pro",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording."
+    ],
+    "idea": "Beauty editorial with a broad masthead and an inset two-column product/specimen layout. No medical claims or unverified badges.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "10",
+    "native_id": "everyday-frame-by-frame",
+    "name": "Frame by frame",
+    "tier": "free",
+    "goal": "grow_email_list",
+    "audience": "publishers",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Place the campaign using its block or shortcode."
+    ],
+    "idea": "A red photographic contact sheet with a heavy sans-serif masthead, horizontal rule and clear subscription rhythm.",
+    "directory": "tools/design-library/hosted",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "11",
+    "native_id": "everyday-the-daily-ritual",
+    "name": "The daily ritual",
+    "tier": "pro",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Add the promised resource URL and show its acknowledgement button before publishing."
+    ],
+    "idea": "A coffee-bag silhouette with an asymmetric lower corner and a compact, useful guide signup.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "12",
+    "native_id": "everyday-permission-to-pause",
+    "name": "Permission to pause",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the action link and review the offer wording."
+    ],
+    "idea": "An arched resting-place card with one calm character. A gentle click-through offer, not artificial urgency.",
+    "directory": "tools/design-library/hosted",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "13",
+    "native_id": "everyday-open-atelier",
+    "name": "Open atelier",
+    "tier": "pro",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the action link and review the offer wording.",
+      "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+    ],
+    "idea": "An exhibition poster with a huge typographic headline and a split dark voucher footer. The clock lives in its own useful region.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "14",
+    "native_id": "everyday-the-reading-shelf",
+    "name": "The reading shelf",
+    "tier": "free",
+    "goal": "grow_email_list",
+    "audience": "publishers",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Place the campaign using its block or shortcode."
+    ],
+    "idea": "Three editable book-spine panels lead into a low editorial signup. No baked-in cover typography.",
+    "directory": "tools/design-library/hosted",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "15",
+    "native_id": "everyday-the-small-start-studio",
+    "name": "The small-start studio",
+    "tier": "pro",
+    "goal": "grow_email_list",
+    "audience": "publishers",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Add the promised resource URL and show its acknowledgement button before publishing."
+    ],
+    "idea": "A small instructional triptych gives the invitation a visual rhythm. The stages explain the lesson instead of pretending to be interactive.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "16",
+    "native_id": "everyday-out-of-office",
+    "name": "Out of office",
+    "tier": "pro",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the action link and review the offer wording.",
+      "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+    ],
+    "idea": "A travel departure strip: message on the left, a clear deadline/action group on the right. Phone layout preserves those groups.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "17",
+    "native_id": "everyday-the-long-weekend-pass",
+    "name": "The long weekend pass",
+    "tier": "pro",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Add the promised resource URL and show its acknowledgement button before publishing."
+    ],
+    "idea": "A real ticket-style tear line separates an editorial travel cover from the practical form. Native notch geometry, editable copy.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "18",
+    "native_id": "everyday-small-batch-bulletin",
+    "name": "Small batch bulletin",
+    "tier": "free",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Place the campaign using its block or shortcode."
+    ],
+    "idea": "A maker’s product bulletin with an actual material/finish ledger. Information creates the structure, without fake stock counters.",
+    "directory": "tools/design-library/hosted",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "19",
+    "native_id": "everyday-better-together",
+    "name": "Better together",
+    "tier": "pro",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the action link and review the offer wording."
+    ],
+    "idea": "An asymmetric deal poster with the offer as the artwork. No decorative assets to maintain and no coupon to mistype.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "20",
+    "native_id": "everyday-make-it-yours",
+    "name": "Make it yours",
+    "tier": "pro",
+    "goal": "collect_enquiries",
+    "audience": "services",
+    "requirements": [
+      "Choose where requests are collected and how your team will reply.",
+      "Place the campaign using its block or shortcode."
+    ],
+    "idea": "A live typographic monogram becomes the image. The enquiry stays honest: asking about a service, not pretending to configure an order.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "21",
+    "native_id": "everyday-one-good-idea",
+    "name": "One good idea",
+    "tier": "free",
+    "goal": "grow_email_list",
+    "audience": "publishers",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording."
+    ],
+    "idea": "A plainspoken typographic manifesto. Oversized sans-serif type does all the visual work; no generic icon or stock image.",
+    "directory": "tools/design-library/hosted",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "22",
+    "native_id": "everyday-the-next-chapter",
+    "name": "The next chapter",
+    "tier": "pro",
+    "goal": "grow_email_list",
+    "audience": "publishers",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Add the promised resource URL and show its acknowledgement button before publishing."
+    ],
+    "idea": "A full-bleed book jacket and chapter-opening spread. A huge editable chapter number provides scale without inaccessible image lettering.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "23",
+    "native_id": "everyday-listen-closer",
+    "name": "Listen closer",
+    "tier": "pro",
+    "goal": "promote_offer",
+    "audience": "publishers",
+    "requirements": [
+      "Set the action link and review the offer wording."
+    ],
+    "idea": "A podcast programme strip with an episode tile and one honest listening link. No fake player or decorative progress bar.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "24",
+    "native_id": "everyday-a-note-from-the-maker",
+    "name": "A note from the maker",
+    "tier": "pro",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording."
+    ],
+    "idea": "A founder’s note with a live serif sign-off. Intimate copy and editorial spacing replace the usual discount-led corner card.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "25",
+    "native_id": "everyday-the-useful-checklist",
+    "name": "The useful checklist",
+    "tier": "free",
+    "goal": "grow_email_list",
+    "audience": "services",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Add the promised resource URL and show its acknowledgement button before publishing.",
+      "Place the campaign using its block or shortcode."
+    ],
+    "idea": "A useful document preview, with real section labels and an adjacent resource request. Clearly a checklist, not another newsletter card.",
+    "directory": "tools/design-library/hosted",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "26",
+    "native_id": "everyday-build-something-good",
+    "name": "Build something good",
+    "tier": "pro",
+    "goal": "grow_email_list",
+    "audience": "services",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+    ],
+    "idea": "A terminal-inspired workshop invitation with a bright deadline inset. Technical without fake command lines or unexplained codes.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "27",
+    "native_id": "everyday-room-in-your-inbox",
+    "name": "Room in your inbox",
+    "tier": "pro",
+    "goal": "grow_email_list",
+    "audience": "publishers",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording."
+    ],
+    "idea": "A deliberately quiet newsletter bar with a compact form group. The message never sits beside a button stranded under its field.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "28",
+    "native_id": "everyday-the-listening-room",
+    "name": "The listening room",
+    "tier": "pro",
+    "goal": "promote_offer",
+    "audience": "publishers",
+    "requirements": [
+      "Set the action link and review the offer wording.",
+      "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+    ],
+    "idea": "A record sleeve opened into two halves: a replaceable geometric record image and the event invitation. No playback controls implied.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "29",
+    "native_id": "everyday-a-date-with-making",
+    "name": "A date with making",
+    "tier": "free",
+    "goal": "collect_enquiries",
+    "audience": "services",
+    "requirements": [
+      "Choose where requests are collected and how your team will reply.",
+      "Place the campaign using its block or shortcode."
+    ],
+    "idea": "A large calendar date and a practical workshop enquiry. The form does not claim to reserve or sell a seat.",
+    "directory": "tools/design-library/hosted",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "30",
+    "native_id": "everyday-start-a-conversation",
+    "name": "Start a conversation",
+    "tier": "pro",
+    "goal": "collect_enquiries",
+    "audience": "services",
+    "requirements": [
+      "Choose where requests are collected and how your team will reply."
+    ],
+    "idea": "A clean studio brief with a single useful choice, followed by minimal contact details. No quiz UI or pretend instant recommendation.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "31",
+    "native_id": "everyday-a-desk-away",
+    "name": "A desk away",
+    "tier": "pro",
+    "goal": "collect_enquiries",
+    "audience": "services",
+    "requirements": [
+      "Choose where requests are collected and how your team will reply.",
+      "Place the campaign using its block or shortcode."
+    ],
+    "idea": "A workspace editorial strip with a full-width headline, then a short image and enquiry. Different hierarchy from a standard photo split.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "32",
+    "native_id": "everyday-fix-it-friday",
+    "name": "Fix-it Friday",
+    "tier": "pro",
+    "goal": "collect_enquiries",
+    "audience": "services",
+    "requirements": [
+      "Choose where requests are collected and how your team will reply."
+    ],
+    "idea": "A yellow repair docket with a strong ruled hierarchy. Useful local-service copy, no guaranteed repair or instant quote.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "33",
+    "native_id": "everyday-your-kind-of-weekend",
+    "name": "Your kind of weekend",
+    "tier": "pro",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording."
+    ],
+    "idea": "Three coloured editorial tabs establish the local guide’s scope. Big type gives it personality without a crowded collage.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "34",
+    "native_id": "everyday-an-occasion-worth-keeping",
+    "name": "An occasion worth keeping",
+    "tier": "free",
+    "goal": "collect_enquiries",
+    "audience": "services",
+    "requirements": [
+      "Choose where requests are collected and how your team will reply.",
+      "Place the campaign using its block or shortcode."
+    ],
+    "idea": "A slim botanical invitation with airy serif text. The image supports an enquiry rather than claiming a booking.",
+    "directory": "tools/design-library/hosted",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "35",
+    "native_id": "everyday-from-the-ground-up",
+    "name": "From the ground up",
+    "tier": "pro",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Add the promised resource URL and show its acknowledgement button before publishing."
+    ],
+    "idea": "A garden campaign with bold manifesto typography and a clean plant diagram as a replaceable image. Beginner value is explicit.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "36",
+    "native_id": "everyday-a-fresh-start",
+    "name": "A fresh start",
+    "tier": "pro",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the action link and review the offer wording.",
+      "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+    ],
+    "idea": "A large offer number anchors a compact retail bar. The deadline and action have enough space to regroup on phones.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "37",
+    "native_id": "everyday-the-comfort-zone",
+    "name": "The comfort zone",
+    "tier": "free",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Create a valid coupon and match its value, saving and terms."
+    ],
+    "idea": "A gentle image break inside a centred welcome card. A welcoming everyday alternative to a high-pressure sale popup.",
+    "directory": "tools/design-library/hosted",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "38",
+    "native_id": "everyday-an-evening-worth-making",
+    "name": "An evening worth making",
+    "tier": "pro",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the action link and review the offer wording.",
+      "Set a real campaign end date and match every written deadline. The countdown uses that saved date.",
+      "Place the campaign using its block or shortcode."
+    ],
+    "idea": "A supper-club menu spread with a separate bill-like deadline panel. The call to action leads to real booking, rather than simulating it.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "39",
+    "native_id": "everyday-slow-sunday-notes",
+    "name": "Slow Sunday notes",
+    "tier": "pro",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording."
+    ],
+    "idea": "A tiny Sunday supplement with a shallow photographic strip. Quiet enough for a slide-in, with clear cadence.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "40",
+    "native_id": "everyday-the-little-things-shop",
+    "name": "The little-things shop",
+    "tier": "pro",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Create a valid coupon and match its value, saving and terms."
+    ],
+    "idea": "A typographic toy-box with a pale inset offer. Warm, playful and practical without adding a mascot to every surface.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "41",
+    "native_id": "everyday-a-curious-future",
+    "name": "A curious future",
+    "tier": "pro",
+    "goal": "grow_email_list",
+    "audience": "publishers",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Add the promised resource URL and show its acknowledgement button before publishing."
+    ],
+    "idea": "A bold educational campaign with an oversized question and an expressive character. A resource-led invitation with no achievement promises.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "42",
+    "native_id": "everyday-the-weekend-court",
+    "name": "The weekend court",
+    "tier": "free",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Add the promised resource URL and show its acknowledgement button before publishing.",
+      "Place the campaign using its block or shortcode."
+    ],
+    "idea": "A sporting diagram and a reassuring beginner’s guide. Fresh green without clichéd performance statistics.",
+    "directory": "tools/design-library/hosted",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "43",
+    "native_id": "everyday-another-good-round",
+    "name": "Another good round",
+    "tier": "pro",
+    "goal": "collect_enquiries",
+    "audience": "services",
+    "requirements": [
+      "Choose where requests are collected and how your team will reply."
+    ],
+    "idea": "A care-label form with a tear-line division. Clear repair intent and one relevant choice; no invented environmental impact claims.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "44",
+    "native_id": "everyday-before-the-drop",
+    "name": "Before the drop",
+    "tier": "pro",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the action link and review the offer wording.",
+      "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+    ],
+    "idea": "A launch strip with a boxed clock, restrained colour and one preview action. No secret-code styling or fabricated scarcity.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "45",
+    "native_id": "everyday-the-curious-corner",
+    "name": "The curious corner",
+    "tier": "pro",
+    "goal": "grow_email_list",
+    "audience": "publishers",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording."
+    ],
+    "idea": "A miniature periodical with a red masthead and a substantial rule. Its personality comes from type, not an illustration repeated from another design.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "46",
+    "native_id": "everyday-the-scenic-route",
+    "name": "The scenic route",
+    "tier": "pro",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Add the promised resource URL and show its acknowledgement button before publishing."
+    ],
+    "idea": "A compact field-note cover with a shallow destination photograph at the foot. Different from a travel postcard or full-image popup.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "47",
+    "native_id": "everyday-first-light-journal",
+    "name": "First light journal",
+    "tier": "free",
+    "goal": "grow_email_list",
+    "audience": "stores",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Place the campaign using its block or shortcode."
+    ],
+    "idea": "A calm sunrise diagram beside a useful writing invitation. No wellness outcome claims, only clear content and cadence.",
+    "directory": "tools/design-library/hosted",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  },
+  {
+    "id": "48",
+    "native_id": "everyday-the-useful-sale",
+    "name": "The useful sale",
+    "tier": "pro",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the action link and review the offer wording.",
+      "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+    ],
+    "idea": "A strong black voucher panel paired with a compact offer summary. Clear discount, end date and action.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "49",
+    "native_id": "everyday-a-little-thank-you",
+    "name": "A little thank-you",
+    "tier": "free",
+    "goal": "promote_offer",
+    "audience": "stores",
+    "requirements": [
+      "Set the action link and review the offer wording.",
+      "Place the campaign using its block or shortcode."
+    ],
+    "idea": "A simple thank-you note with an adjacent code slip. Designed for an inline position after useful page content.",
+    "directory": "tools/design-library/hosted",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Offer"
+      }
+    ]
+  },
+  {
+    "id": "50",
+    "native_id": "everyday-the-future-is-friendly",
+    "name": "The future is friendly",
+    "tier": "pro",
+    "goal": "grow_email_list",
+    "audience": "services",
+    "requirements": [
+      "Choose an email destination or Collect only, and review the signup wording.",
+      "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+    ],
+    "idea": "A future-facing editorial poster with an original geometric image and a dedicated invitation panel. All headline lettering stays live.",
+    "directory": "pro/modules/display-types",
+    "screens": [
+      {
+        "id": "s1",
+        "name": "Details"
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement"
+      }
+    ]
+  }
+]

@@ -1,0 +1,404 @@
+{
+  "id": "everyday-the-next-chapter",
+  "name": "The next chapter",
+  "display_type": "fullscreen",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#8d242d",
+    "fg": "#fff3e0",
+    "muted": "#fff3e0",
+    "accent": "#fff3e0",
+    "accent-fg": "#8d242d",
+    "border": "#fff3e0",
+    "input-bg": "transparent",
+    "placeholder": "#fff3e0",
+    "close-bg": "#8d242d",
+    "close-fg": "#fff3e0",
+    "close-border": "#fff3e0",
+    "font": "'DM Sans', Arial, sans-serif",
+    "heading-font": "'Instrument Serif', Georgia, serif",
+    "heading-weight": "400",
+    "heading-leading": "0.98",
+    "tracking": "-.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "65rem",
+    "shadow": "0 24px 65px -30px rgba(24,30,30,.35)",
+    "close-inset": ".7rem"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "split",
+          "ratio": 0.55,
+          "basis": "24rem",
+          "tokens": {
+            "gap": "0"
+          },
+          "start": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "3rem",
+                "radius": "0",
+                "gap": "1.1rem"
+              },
+              "narrow": {
+                "pad": "4rem 1.5rem 1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "The next chapter / author’s notebook",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n1"
+                },
+                {
+                  "type": "heading",
+                  "role": "headline",
+                  "text": "A story\nis a door.",
+                  "tokens": {
+                    "heading-size": "clamp(3rem,8cqi,6.5rem)"
+                  },
+                  "narrow": {
+                    "heading-size": "clamp(3rem,8cqi,6.5rem)"
+                  },
+                  "id": "n2"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "Come inside the writing process. Read a free opening chapter and occasional notes from the author.",
+                  "id": "n3"
+                },
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".9rem"
+                  },
+                  "children": [
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": ".7rem"
+                      },
+                      "children": [
+                        {
+                          "type": "field",
+                          "name": "email",
+                          "label": "Email address",
+                          "placeholder": "you@example.com",
+                          "required": true,
+                          "tokens": {
+                            "radius": ".2rem"
+                          },
+                          "id": "n4"
+                        },
+                        {
+                          "type": "button",
+                          "role": "cta_label",
+                          "label": "Open the first chapter",
+                          "action": "submit",
+                          "submission": "primary",
+                          "tokens": {
+                            "radius": ".2rem"
+                          },
+                          "id": "n5"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "consent",
+                      "role": "consent_text",
+                      "text": "I agree to receive marketing emails. Unsubscribe anytime.",
+                      "hidden": true,
+                      "id": "n6"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "3rem",
+                "radius": "0",
+                "gap": "1.1rem",
+                "muted": "#75212b",
+                "bg": "#eddac0",
+                "fg": "#75212b",
+                "align": "center"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "A new novel",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n7"
+                },
+                {
+                  "type": "heading",
+                  "role": "headline",
+                  "text": "01",
+                  "tokens": {
+                    "heading-size": "clamp(6rem,20cqi,13rem)",
+                    "heading-font": "'Instrument Serif', Georgia, serif"
+                  },
+                  "narrow": {
+                    "heading-size": "clamp(6rem,20cqi,13rem)"
+                  },
+                  "id": "n8"
+                },
+                {
+                  "type": "divider",
+                  "id": "n9"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "Every beginning\nholds a possibility.",
+                  "tokens": {
+                    "text-size": "1.7rem"
+                  },
+                  "id": "n10"
+                },
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "The opening chapter",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n11"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "split",
+          "ratio": 0.55,
+          "basis": "24rem",
+          "tokens": {
+            "gap": "0"
+          },
+          "start": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "3rem",
+                "radius": "0",
+                "gap": "1.1rem"
+              },
+              "narrow": {
+                "pad": "4rem 1.5rem 1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "The next chapter / author’s notebook",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n12"
+                },
+                {
+                  "type": "heading",
+                  "role": "success_headline",
+                  "text": "The door is open.",
+                  "tokens": {
+                    "heading-size": "2.7rem"
+                  },
+                  "narrow": {
+                    "heading-size": "2.2rem"
+                  },
+                  "id": "n13"
+                },
+                {
+                  "type": "text",
+                  "role": "success_body",
+                  "text": "Your chapter request is received. Read the sample opening below.",
+                  "id": "n14"
+                },
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".9rem"
+                  },
+                  "children": [
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": ".7rem"
+                      },
+                      "children": [
+                        {
+                          "type": "stack",
+                          "tokens": {
+                            "gap": "1rem"
+                          },
+                          "children": [
+                            {
+                              "type": "followup",
+                              "role": "success_action",
+                              "label": "Open the resource",
+                              "tokens": {
+                                "radius": ".2rem"
+                              },
+                              "id": "n15",
+                              "hidden": true
+                            },
+                            {
+                              "type": "button",
+                              "role": "close_label",
+                              "label": "Continue browsing",
+                              "action": "close",
+                              "tokens": {
+                                "radius": ".2rem"
+                              },
+                              "id": "n16"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "3rem",
+                "radius": "0",
+                "gap": "1.1rem",
+                "muted": "#75212b",
+                "bg": "#eddac0",
+                "fg": "#75212b",
+                "align": "center"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "A new novel",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n17"
+                },
+                {
+                  "type": "heading",
+                  "role": "headline",
+                  "text": "01",
+                  "tokens": {
+                    "heading-size": "clamp(6rem,20cqi,13rem)",
+                    "heading-font": "'Instrument Serif', Georgia, serif"
+                  },
+                  "narrow": {
+                    "heading-size": "clamp(6rem,20cqi,13rem)"
+                  },
+                  "id": "n18"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "Every beginning\nholds a possibility.",
+                  "tokens": {
+                    "text-size": "1.7rem"
+                  },
+                  "id": "n19"
+                },
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "The opening chapter",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n20"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n4"
+        ],
+        "consents": [
+          "n6"
+        ]
+      }
+    ],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,416 @@
+[
+  {
+    "id": "03",
+    "frames": [
+      {
+        "side": "desktop",
+        "clock": [
+          "00",
+          "00",
+          "00",
+          "00"
+        ],
+        "actions": [
+          {
+            "disabled": true,
+            "text": ""
+          },
+          {
+            "disabled": true,
+            "text": "Put me on the list"
+          },
+          {
+            "disabled": true,
+            "text": ""
+          }
+        ],
+        "closeEnabled": true
+      },
+      {
+        "side": "mobile",
+        "clock": [
+          "00",
+          "00",
+          "00",
+          "00"
+        ],
+        "actions": [
+          {
+            "disabled": true,
+            "text": ""
+          },
+          {
+            "disabled": true,
+            "text": "Put me on the list"
+          },
+          {
+            "disabled": true,
+            "text": ""
+          }
+        ],
+        "closeEnabled": true
+      }
+    ],
+    "close_expected": true,
+    "passed": true
+  },
+  {
+    "id": "13",
+    "frames": [
+      {
+        "side": "desktop",
+        "clock": [
+          "00",
+          "00",
+          "00",
+          "00"
+        ],
+        "actions": [
+          {
+            "disabled": true,
+            "text": "Step inside the sale"
+          }
+        ],
+        "closeEnabled": true
+      },
+      {
+        "side": "mobile",
+        "clock": [
+          "00",
+          "00",
+          "00",
+          "00"
+        ],
+        "actions": [
+          {
+            "disabled": true,
+            "text": "Step inside the sale"
+          }
+        ],
+        "closeEnabled": true
+      }
+    ],
+    "close_expected": true,
+    "passed": true
+  },
+  {
+    "id": "16",
+    "frames": [
+      {
+        "side": "desktop",
+        "clock": [
+          "0d 00:00:00"
+        ],
+        "actions": [
+          {
+            "disabled": true,
+            "text": "Find my escape"
+          }
+        ],
+        "closeEnabled": true
+      },
+      {
+        "side": "mobile",
+        "clock": [
+          "0d 00:00:00"
+        ],
+        "actions": [
+          {
+            "disabled": true,
+            "text": "Find my escape"
+          }
+        ],
+        "closeEnabled": true
+      }
+    ],
+    "close_expected": true,
+    "passed": true
+  },
+  {
+    "id": "26",
+    "frames": [
+      {
+        "side": "desktop",
+        "clock": [
+          "0d 00:00:00"
+        ],
+        "actions": [
+          {
+            "disabled": true,
+            "text": ""
+          },
+          {
+            "disabled": true,
+            "text": "Request early access"
+          },
+          {
+            "disabled": true,
+            "text": ""
+          }
+        ],
+        "closeEnabled": true
+      },
+      {
+        "side": "mobile",
+        "clock": [
+          "0d 00:00:00"
+        ],
+        "actions": [
+          {
+            "disabled": true,
+            "text": ""
+          },
+          {
+            "disabled": true,
+            "text": "Request early access"
+          },
+          {
+            "disabled": true,
+            "text": ""
+          }
+        ],
+        "closeEnabled": true
+      }
+    ],
+    "close_expected": true,
+    "passed": true
+  },
+  {
+    "id": "28",
+    "frames": [
+      {
+        "side": "desktop",
+        "clock": [
+          "00",
+          "00",
+          "00",
+          "00"
+        ],
+        "actions": [
+          {
+            "disabled": true,
+            "text": "See the listening programme"
+          }
+        ],
+        "closeEnabled": true
+      },
+      {
+        "side": "mobile",
+        "clock": [
+          "00",
+          "00",
+          "00",
+          "00"
+        ],
+        "actions": [
+          {
+            "disabled": true,
+            "text": "See the listening programme"
+          }
+        ],
+        "closeEnabled": true
+      }
+    ],
+    "close_expected": true,
+    "passed": true
+  },
+  {
+    "id": "36",
+    "frames": [
+      {
+        "side": "desktop",
+        "clock": [
+          "0d 00:00:00"
+        ],
+        "actions": [
+          {
+            "disabled": true,
+            "text": "Shop the fresh-start edit"
+          }
+        ],
+        "closeEnabled": true
+      },
+      {
+        "side": "mobile",
+        "clock": [
+          "0d 00:00:00"
+        ],
+        "actions": [
+          {
+            "disabled": true,
+            "text": "Shop the fresh-start edit"
+          }
+        ],
+        "closeEnabled": true
+      }
+    ],
+    "close_expected": true,
+    "passed": true
+  },
+  {
+    "id": "38",
+    "frames": [
+      {
+        "side": "desktop",
+        "clock": [
+          "0d 00:00:00"
+        ],
+        "actions": [
+          {
+            "disabled": true,
+            "text": "See the supper menu"
+          }
+        ],
+        "closeEnabled": false
+      },
+      {
+        "side": "mobile",
+        "clock": [
+          "0d 00:00:00"
+        ],
+        "actions": [
+          {
+            "disabled": true,
+            "text": "See the supper menu"
+          }
+        ],
+        "closeEnabled": false
+      }
+    ],
+    "close_expected": false,
+    "passed": true
+  },
+  {
+    "id": "44",
+    "frames": [
+      {
+        "side": "desktop",
+        "clock": [
+          "00",
+          "00",
+          "00",
+          "00"
+        ],
+        "actions": [
+          {
+            "disabled": true,
+            "text": "Explore the next release"
+          }
+        ],
+        "closeEnabled": true
+      },
+      {
+        "side": "mobile",
+        "clock": [
+          "00",
+          "00",
+          "00",
+          "00"
+        ],
+        "actions": [
+          {
+            "disabled": true,
+            "text": "Explore the next release"
+          }
+        ],
+        "closeEnabled": true
+      }
+    ],
+    "close_expected": true,
+    "passed": true
+  },
+  {
+    "id": "48",
+    "frames": [
+      {
+        "side": "desktop",
+        "clock": [
+          "00",
+          "00",
+          "00",
+          "00"
+        ],
+        "actions": [
+          {
+            "disabled": true,
+            "text": "Shop the useful sale"
+          }
+        ],
+        "closeEnabled": true
+      },
+      {
+        "side": "mobile",
+        "clock": [
+          "00",
+          "00",
+          "00",
+          "00"
+        ],
+        "actions": [
+          {
+            "disabled": true,
+            "text": "Shop the useful sale"
+          }
+        ],
+        "closeEnabled": true
+      }
+    ],
+    "close_expected": true,
+    "passed": true
+  },
+  {
+    "id": "50",
+    "frames": [
+      {
+        "side": "desktop",
+        "clock": [
+          "00",
+          "00",
+          "00",
+          "00"
+        ],
+        "actions": [
+          {
+            "disabled": true,
+            "text": ""
+          },
+          {
+            "disabled": true,
+            "text": "Request a first look"
+          },
+          {
+            "disabled": true,
+            "text": ""
+          }
+        ],
+        "closeEnabled": true
+      },
+      {
+        "side": "mobile",
+        "clock": [
+          "00",
+          "00",
+          "00",
+          "00"
+        ],
+        "actions": [
+          {
+            "disabled": true,
+            "text": ""
+          },
+          {
+            "disabled": true,
+            "text": "Request a first look"
+          },
+          {
+            "disabled": true,
+            "text": ""
+          }
+        ],
+        "closeEnabled": true
+      }
+    ],
+    "close_expected": true,
+    "passed": true
+  }
+]

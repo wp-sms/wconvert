@@ -1,0 +1,270 @@
+{
+  "id": "everyday-a-note-from-the-maker",
+  "name": "A note from the maker",
+  "display_type": "slide_in",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#fff5df",
+    "fg": "#26352c",
+    "muted": "#26352c",
+    "accent": "#273d2d",
+    "accent-fg": "#fff5df",
+    "border": "#26352c",
+    "input-bg": "transparent",
+    "placeholder": "#26352c",
+    "close-bg": "#fff5df",
+    "close-fg": "#26352c",
+    "close-border": "#26352c",
+    "font": "'DM Sans', Arial, sans-serif",
+    "heading-font": "'Instrument Serif', Georgia, serif",
+    "heading-weight": "400",
+    "heading-leading": "0.98",
+    "tracking": "-.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "25rem",
+    "shadow": "0 24px 65px -30px rgba(24,30,30,.35)",
+    "close-inset": ".7rem"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "1.7rem",
+            "radius": "0",
+            "gap": "1.1rem"
+          },
+          "narrow": {
+            "pad": "4rem 1.5rem 1.5rem",
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "eyebrow",
+              "role": "eyebrow",
+              "text": "A note from the maker",
+              "tokens": {
+                "text-size": ".88rem",
+                "tracking": ".1em"
+              },
+              "id": "n1"
+            },
+            {
+              "type": "divider",
+              "id": "n2"
+            },
+            {
+              "type": "heading",
+              "role": "headline",
+              "text": "Come behind\nthe scenes.",
+              "tokens": {
+                "heading-size": "2.8rem"
+              },
+              "narrow": {
+                "heading-size": "2.8rem"
+              },
+              "id": "n3"
+            },
+            {
+              "type": "text",
+              "role": "body",
+              "text": "I share what I’m making, what I’m learning and the pieces about to leave the studio. If that sounds like your kind of email, I’d love to write to you.",
+              "id": "n4"
+            },
+            {
+              "type": "text",
+              "role": "body",
+              "text": "Alex, founder",
+              "tokens": {
+                "font": "'Instrument Serif', Georgia, serif",
+                "text-size": "1.5rem"
+              },
+              "id": "n5"
+            },
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": ".9rem"
+              },
+              "children": [
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".7rem"
+                  },
+                  "children": [
+                    {
+                      "type": "field",
+                      "name": "email",
+                      "label": "Email address",
+                      "placeholder": "you@example.com",
+                      "required": true,
+                      "tokens": {
+                        "radius": ".2rem"
+                      },
+                      "id": "n6"
+                    },
+                    {
+                      "type": "button",
+                      "role": "cta_label",
+                      "label": "Send me the studio notes",
+                      "action": "submit",
+                      "submission": "primary",
+                      "tokens": {
+                        "radius": ".2rem"
+                      },
+                      "id": "n7"
+                    }
+                  ]
+                },
+                {
+                  "type": "consent",
+                  "role": "consent_text",
+                  "text": "I agree to receive marketing emails. Unsubscribe anytime.",
+                  "hidden": true,
+                  "id": "n8"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "1.7rem",
+            "radius": "0",
+            "gap": "1.1rem"
+          },
+          "narrow": {
+            "pad": "4rem 1.5rem 1.5rem",
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "eyebrow",
+              "role": "eyebrow",
+              "text": "A note from the maker",
+              "tokens": {
+                "text-size": ".88rem",
+                "tracking": ".1em"
+              },
+              "id": "n9"
+            },
+            {
+              "type": "heading",
+              "role": "success_headline",
+              "text": "Thank you for stopping by.",
+              "tokens": {
+                "heading-size": "2.7rem"
+              },
+              "narrow": {
+                "heading-size": "2.2rem"
+              },
+              "id": "n10"
+            },
+            {
+              "type": "text",
+              "role": "success_body",
+              "text": "Your request for studio notes is received. It’s good to have your interest.",
+              "id": "n11"
+            },
+            {
+              "type": "text",
+              "role": "body",
+              "text": "Alex, founder",
+              "tokens": {
+                "font": "'Instrument Serif', Georgia, serif",
+                "text-size": "1.5rem"
+              },
+              "id": "n12"
+            },
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": ".9rem"
+              },
+              "children": [
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".7rem"
+                  },
+                  "children": [
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": "1rem"
+                      },
+                      "children": [
+                        {
+                          "type": "button",
+                          "role": "close_label",
+                          "label": "Continue browsing",
+                          "action": "close",
+                          "tokens": {
+                            "radius": ".2rem"
+                          },
+                          "id": "n13"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n6"
+        ],
+        "consents": [
+          "n8"
+        ]
+      }
+    ],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

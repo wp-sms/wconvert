@@ -1,0 +1,55 @@
+{
+  "id": "everyday-the-weekend-court",
+  "revision": "3e50bf1ee90a879b4c076680622119255c262b435bc8bcdaca2d649b9345e128",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex · native WordPress and visual review",
+  "note": "The tennis illustration fills its coloured panel without requiring individual icon editing. The beginner guide remains a configured resource.",
+  "at": "2026-10-24T06:21:47.182Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/review.md",
+          "sha256": "f6b502dde0c4c73b459faf3f1a57081ad88a66a77bc19b5a5095f11c7f8a8573"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-the-weekend-court-320.png",
+          "sha256": "9d39c85dba18053ed3260467662a82ac96962d929738579aec7d054c5ff8026a"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-the-weekend-court-1440.png",
+          "sha256": "4a96a6982a0e07e0f290c549c9bc3b9d960f552e2ff9bdc0e1db83375b6d8899"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/fidelity.json",
+          "sha256": "358e4290ffc8f1760ac04e1994edfb346f4ef8391aee56aa07bf2c3c173f96c1"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/layout.json",
+          "sha256": "d7b61c2cf2f4caab48c27de857e575e2d6f6629973bf2defca7e3a5589679645"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    }
+  },
+  "record_id": "fa3d98d4d6c759d7ff41af3ab2a9cb34905fd54abd6558033171c0ea2b8987f7"
+}

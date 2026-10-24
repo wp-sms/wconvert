@@ -1,0 +1,55 @@
+{
+  "id": "everyday-frame-by-frame",
+  "revision": "f5d00a79d2a5d825473bef7f48b011b105148448660233813550a48883aa0134",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex · native WordPress and visual review",
+  "note": "The camera panel reaches the bottom edge. The short desktop field/action row stacks comfortably on phones.",
+  "at": "2026-10-24T06:21:47.182Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/review.md",
+          "sha256": "f6b502dde0c4c73b459faf3f1a57081ad88a66a77bc19b5a5095f11c7f8a8573"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-frame-by-frame-320.png",
+          "sha256": "083cd90c77951fb16e0091c3e0be98c941ea872006eb68fa22c71e0a4192bf33"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-frame-by-frame-1440.png",
+          "sha256": "46ab791f060ac282b6d3b34ac50e2faf444f1d31ed03007b2d7b0585d2c7fc16"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/fidelity.json",
+          "sha256": "358e4290ffc8f1760ac04e1994edfb346f4ef8391aee56aa07bf2c3c173f96c1"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/layout.json",
+          "sha256": "d7b61c2cf2f4caab48c27de857e575e2d6f6629973bf2defca7e3a5589679645"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    }
+  },
+  "record_id": "6953d7d286cbfdd82cb1319163e92e84b214dfb28413ab2d003f20acc93e5d65"
+}

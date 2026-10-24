@@ -1,0 +1,47 @@
+{
+  "id": "everyday-the-useful-checklist",
+  "revision": "ad243013565e15e15eb9c9da57008bd1af6ee65be3576c0b6f4f4ad9d96eadd8",
+  "base_id": "9f3c539debd211b3dbf1870407499d48218ff074999399138e58a468b4b87638",
+  "decision": "approved",
+  "reviewer": "Codex · final source review",
+  "note": "The four checklist rows now use single spaces. Reviewed native layout is retained; both WordPress journeys pass on the revised source.",
+  "at": "2026-10-24T06:25:16.235Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/review.md",
+          "sha256": "2140efcabc4dee5cc2d05ce1fb7f20b46657d2e4ae6100cf69c6be21ef3e5563"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-the-useful-checklist-320.png",
+          "sha256": "1be745e986384c88006cdd799657b3150132dc5edccb5f82f57f99f92eda6e25"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-the-useful-checklist-1440.png",
+          "sha256": "5799cd5d39bb9e43196b245fcc197471fcfc35586e50b70dc65abb32c910f52f"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "cc7ccb4050bfcf7985d270710cfedd362fc187b7213597526d8fb39c3791ce98"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "cc7ccb4050bfcf7985d270710cfedd362fc187b7213597526d8fb39c3791ce98"
+        }
+      ]
+    }
+  },
+  "record_id": "6018ba29c6d00b984d64eceaab22c574e088bb754643d8651dc9e3afc43eff10"
+}

@@ -1,0 +1,199 @@
+{
+  "id": "everyday-better-together",
+  "name": "Better together",
+  "display_type": "popup",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#fbd7cb",
+    "fg": "#772b2a",
+    "muted": "#772b2a",
+    "accent": "#772b2a",
+    "accent-fg": "#fff5e7",
+    "border": "#772b2a",
+    "input-bg": "transparent",
+    "placeholder": "#772b2a",
+    "close-bg": "#fbd7cb",
+    "close-fg": "#772b2a",
+    "close-border": "#772b2a",
+    "font": "'DM Sans', Arial, sans-serif",
+    "heading-font": "'Instrument Serif', Georgia, serif",
+    "heading-weight": "400",
+    "heading-leading": "0.98",
+    "tracking": "-.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "44rem",
+    "shadow": "0 24px 65px -30px rgba(24,30,30,.35)",
+    "close-inset": ".7rem"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "split",
+          "ratio": 0.64,
+          "basis": "18rem",
+          "tokens": {
+            "gap": "0"
+          },
+          "start": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2.3rem",
+                "radius": "0",
+                "gap": "1.1rem"
+              },
+              "narrow": {
+                "pad": "4rem 1.5rem 1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "The good pair edit",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n1"
+                },
+                {
+                  "type": "heading",
+                  "role": "headline",
+                  "text": "Some things\nare better\ntogether.",
+                  "tokens": {
+                    "heading-size": "3.6rem"
+                  },
+                  "narrow": {
+                    "heading-size": "2.65rem"
+                  },
+                  "id": "n2"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "Choose any two everyday socks for £20. A little comfort, doubled.",
+                  "id": "n3"
+                },
+                {
+                  "type": "button",
+                  "role": "cta_label",
+                  "label": "Find my good pair",
+                  "action": "link",
+                  "tokens": {
+                    "radius": ".2rem"
+                  },
+                  "id": "n4"
+                },
+                {
+                  "type": "text",
+                  "role": "fine_print",
+                  "text": "Selected socks. Pair offer applied at checkout.",
+                  "tokens": {
+                    "text-size": ".8rem",
+                    "leading": "1.5"
+                  },
+                  "id": "n5"
+                }
+              ]
+            }
+          ],
+          "end": [
+            {
+              "type": "media",
+              "tokens": {
+                "pad": "5rem 2rem 2rem",
+                "radius": "0",
+                "gap": "1.1rem",
+                "muted": "#fff0d7",
+                "bg": "#a73340",
+                "fg": "#fff0d7",
+                "align": "center"
+              },
+              "narrow": {
+                "pad": "5rem 1.5rem 1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "heading",
+                  "role": "headline",
+                  "text": "2",
+                  "tokens": {
+                    "heading-size": "8rem",
+                    "heading-font": "'DM Sans', Arial, sans-serif",
+                    "heading-weight": "700"
+                  },
+                  "narrow": {
+                    "heading-size": "2.65rem"
+                  },
+                  "id": "n6"
+                },
+                {
+                  "type": "divider",
+                  "id": "n7"
+                },
+                {
+                  "type": "heading",
+                  "role": "headline",
+                  "text": "for £20",
+                  "tokens": {
+                    "heading-size": "2.8rem"
+                  },
+                  "narrow": {
+                    "heading-size": "2.8rem"
+                  },
+                  "id": "n8"
+                },
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "Two good reasons",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n9"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

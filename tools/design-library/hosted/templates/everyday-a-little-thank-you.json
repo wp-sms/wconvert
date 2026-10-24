@@ -1,0 +1,166 @@
+{
+  "id": "everyday-a-little-thank-you",
+  "name": "A little thank-you",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#fbd7cb",
+    "fg": "#772b2a",
+    "muted": "#772b2a",
+    "accent": "#772b2a",
+    "accent-fg": "#fff5e7",
+    "border": "#772b2a",
+    "input-bg": "transparent",
+    "placeholder": "#772b2a",
+    "close-bg": "#fbd7cb",
+    "close-fg": "#772b2a",
+    "close-border": "#772b2a",
+    "font": "'DM Sans', Arial, sans-serif",
+    "heading-font": "'Instrument Serif', Georgia, serif",
+    "heading-weight": "400",
+    "heading-leading": "0.98",
+    "tracking": "-.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "58rem",
+    "shadow": "0 24px 65px -30px rgba(24,30,30,.35)",
+    "close-inset": ".7rem"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "2rem 2.5rem",
+            "radius": "0",
+            "gap": "1.1rem"
+          },
+          "narrow": {
+            "pad": "1.5rem",
+            "gap": "1rem"
+          },
+          "edges": "all",
+          "children": [
+            {
+              "type": "split",
+              "ratio": 0.6,
+              "basis": "19rem",
+              "tokens": {
+                "gap": "0"
+              },
+              "start": [
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "role": "eyebrow",
+                      "text": "A little thank-you from us",
+                      "tokens": {
+                        "text-size": ".88rem",
+                        "tracking": ".1em"
+                      },
+                      "id": "n1"
+                    },
+                    {
+                      "type": "heading",
+                      "role": "headline",
+                      "text": "Small shop.\nBig appreciation.",
+                      "tokens": {
+                        "heading-size": "3rem"
+                      },
+                      "narrow": {
+                        "heading-size": "3rem"
+                      },
+                      "id": "n2"
+                    },
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "Take 10% off your next order. Thank you for choosing independent.",
+                      "id": "n3"
+                    }
+                  ]
+                }
+              ],
+              "end": [
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "code",
+                      "role": "code_value",
+                      "text": "THANKYOU10",
+                      "copy": true,
+                      "layout": "stack",
+                      "id": "n4"
+                    },
+                    {
+                      "type": "button",
+                      "role": "cta_label",
+                      "label": "Find something lovely",
+                      "action": "link",
+                      "tokens": {
+                        "radius": ".2rem"
+                      },
+                      "id": "n5"
+                    },
+                    {
+                      "type": "text",
+                      "role": "fine_print",
+                      "text": "One use per customer. Excludes gift cards.",
+                      "tokens": {
+                        "text-size": ".8rem",
+                        "leading": "1.5"
+                      },
+                      "id": "n6"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

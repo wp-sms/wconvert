@@ -1,0 +1,47 @@
+{
+  "id": "collection-everyday-extraordinary",
+  "revision": "ea741418b6b308f48d01a34448e297f2167157810eec62e9307b60f272d6e90a",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex · collection and member review",
+  "note": "All 50 distinct native designs have current desktop/mobile journey and visual evidence. The catalogue-only list retains 15 individually hosted Free and 35 Pro members; it uses the existing pre-install discovery path.",
+  "at": "2026-10-24T06:22:14.994Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/review.md",
+          "sha256": "f6b502dde0c4c73b459faf3f1a57081ad88a66a77bc19b5a5095f11c7f8a8573"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/collection.json",
+          "sha256": "93719f9d62bcbd7a8ba979285b393a09062b47f99ab87ac9aed9cb35f51ad72e"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/collection.json",
+          "sha256": "93719f9d62bcbd7a8ba979285b393a09062b47f99ab87ac9aed9cb35f51ad72e"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    }
+  },
+  "record_id": "2a7b1d2eee8c77ffab1b31b3f3889798d3316d8150bc8aed52ea2ad44c03d5c0"
+}

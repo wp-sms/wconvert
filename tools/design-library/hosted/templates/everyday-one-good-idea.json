@@ -1,0 +1,274 @@
+{
+  "id": "everyday-one-good-idea",
+  "name": "One good idea",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#f3efe6",
+    "fg": "#2e2d29",
+    "muted": "#2e2d29",
+    "accent": "#2e2d29",
+    "accent-fg": "#fffaf0",
+    "border": "#2e2d29",
+    "input-bg": "transparent",
+    "placeholder": "#2e2d29",
+    "close-bg": "#f3efe6",
+    "close-fg": "#2e2d29",
+    "close-border": "#2e2d29",
+    "font": "'DM Sans', Arial, sans-serif",
+    "heading-font": "'Instrument Serif', Georgia, serif",
+    "heading-weight": "400",
+    "heading-leading": "0.98",
+    "tracking": "-.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "30rem",
+    "shadow": "0 24px 65px -30px rgba(24,30,30,.35)",
+    "close-inset": ".7rem"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "2.7rem",
+            "radius": "0",
+            "gap": "1.1rem"
+          },
+          "narrow": {
+            "pad": "4rem 1.5rem 1.5rem",
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "eyebrow",
+              "role": "eyebrow",
+              "text": "The Friday idea",
+              "tokens": {
+                "text-size": ".88rem",
+                "tracking": ".1em"
+              },
+              "id": "n1"
+            },
+            {
+              "type": "divider",
+              "id": "n2"
+            },
+            {
+              "type": "heading",
+              "role": "headline",
+              "text": "One idea.\nEvery Friday.",
+              "tokens": {
+                "heading-size": "4.4rem",
+                "heading-font": "'DM Sans', Arial, sans-serif",
+                "heading-weight": "700"
+              },
+              "narrow": {
+                "heading-size": "2.65rem"
+              },
+              "id": "n3"
+            },
+            {
+              "type": "text",
+              "role": "body",
+              "text": "A useful thought for people who make things. Short enough to read with your coffee.",
+              "id": "n4"
+            },
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": ".9rem"
+              },
+              "children": [
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".7rem"
+                  },
+                  "children": [
+                    {
+                      "type": "field",
+                      "name": "email",
+                      "label": "Email address",
+                      "placeholder": "you@example.com",
+                      "required": true,
+                      "tokens": {
+                        "radius": ".2rem"
+                      },
+                      "id": "n5"
+                    },
+                    {
+                      "type": "button",
+                      "role": "cta_label",
+                      "label": "Make room for one idea",
+                      "action": "submit",
+                      "submission": "primary",
+                      "tokens": {
+                        "radius": ".2rem"
+                      },
+                      "id": "n6"
+                    }
+                  ]
+                },
+                {
+                  "type": "consent",
+                  "role": "consent_text",
+                  "text": "I agree to receive marketing emails. Unsubscribe anytime.",
+                  "hidden": true,
+                  "id": "n7"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "role": "fine_print",
+              "text": "No daily noise. Just the weekly letter.",
+              "tokens": {
+                "text-size": ".8rem",
+                "leading": "1.5"
+              },
+              "id": "n8"
+            }
+          ]
+        }
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "2.7rem",
+            "radius": "0",
+            "gap": "1.1rem"
+          },
+          "narrow": {
+            "pad": "4rem 1.5rem 1.5rem",
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "eyebrow",
+              "role": "eyebrow",
+              "text": "The Friday idea",
+              "tokens": {
+                "text-size": ".88rem",
+                "tracking": ".1em"
+              },
+              "id": "n9"
+            },
+            {
+              "type": "heading",
+              "role": "success_headline",
+              "text": "An idea worth making room for.",
+              "tokens": {
+                "heading-size": "2.7rem",
+                "heading-font": "'DM Sans', Arial, sans-serif",
+                "heading-weight": "700"
+              },
+              "narrow": {
+                "heading-size": "2.2rem"
+              },
+              "id": "n10"
+            },
+            {
+              "type": "text",
+              "role": "success_body",
+              "text": "Your request for The Friday idea is received. Thanks for your curiosity.",
+              "id": "n11"
+            },
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": ".9rem"
+              },
+              "children": [
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".7rem"
+                  },
+                  "children": [
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": "1rem"
+                      },
+                      "children": [
+                        {
+                          "type": "button",
+                          "role": "close_label",
+                          "label": "Continue browsing",
+                          "action": "close",
+                          "tokens": {
+                            "radius": ".2rem"
+                          },
+                          "id": "n12"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "role": "fine_print",
+              "text": "No daily noise. Just the weekly letter.",
+              "tokens": {
+                "text-size": ".8rem",
+                "leading": "1.5"
+              },
+              "id": "n13"
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n5"
+        ],
+        "consents": [
+          "n7"
+        ]
+      }
+    ],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

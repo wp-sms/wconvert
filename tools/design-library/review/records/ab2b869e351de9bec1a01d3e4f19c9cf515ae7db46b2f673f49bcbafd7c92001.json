@@ -1,0 +1,55 @@
+{
+  "id": "everyday-the-little-things-shop",
+  "revision": "a4976479071ff986279f9f77bf120543dc77b0bd1054da1853ac38be306228f2",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex · native WordPress and visual review",
+  "note": "The orange welcome offer is typographic and fully editable. The code is separate from the persistent ten-percent panel.",
+  "at": "2026-10-24T06:21:47.182Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/review.md",
+          "sha256": "f6b502dde0c4c73b459faf3f1a57081ad88a66a77bc19b5a5095f11c7f8a8573"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-the-little-things-shop-320.png",
+          "sha256": "d32dc8a7bbc70214d4b43778373455da5511e5d501a8b7fc45bf947b4459885a"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-the-little-things-shop-1440.png",
+          "sha256": "c3399dc186caf478c3409c499c6b9cf5023fdd5ab0d64728a44a5cfbc6334f21"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/fidelity.json",
+          "sha256": "358e4290ffc8f1760ac04e1994edfb346f4ef8391aee56aa07bf2c3c173f96c1"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/layout.json",
+          "sha256": "d7b61c2cf2f4caab48c27de857e575e2d6f6629973bf2defca7e3a5589679645"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    }
+  },
+  "record_id": "ab2b869e351de9bec1a01d3e4f19c9cf515ae7db46b2f673f49bcbafd7c92001"
+}

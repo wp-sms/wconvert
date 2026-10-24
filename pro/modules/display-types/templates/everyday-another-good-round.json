@@ -1,0 +1,341 @@
+{
+  "id": "everyday-another-good-round",
+  "name": "Another good round",
+  "display_type": "popup",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#f3efe6",
+    "fg": "#2e2d29",
+    "muted": "#2e2d29",
+    "accent": "#2e2d29",
+    "accent-fg": "#fffaf0",
+    "border": "#2e2d29",
+    "input-bg": "transparent",
+    "placeholder": "#2e2d29",
+    "close-bg": "#f3efe6",
+    "close-fg": "#2e2d29",
+    "close-border": "#2e2d29",
+    "font": "'DM Sans', Arial, sans-serif",
+    "heading-font": "'Instrument Serif', Georgia, serif",
+    "heading-weight": "400",
+    "heading-leading": "0.98",
+    "tracking": "-.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "32rem",
+    "shadow": "0 24px 65px -30px rgba(24,30,30,.35)",
+    "close-inset": ".7rem"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "tokens": {
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2.4rem",
+                "radius": "0",
+                "gap": "1.1rem",
+                "bg": "#c4cbb3"
+              },
+              "narrow": {
+                "pad": "4rem 1.5rem 1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "Again / repair & reuse",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n1"
+                },
+                {
+                  "type": "heading",
+                  "role": "headline",
+                  "text": "Good things\ndeserve\nanother round.",
+                  "tokens": {
+                    "heading-size": "3.5rem"
+                  },
+                  "narrow": {
+                    "heading-size": "2.65rem"
+                  },
+                  "id": "n2"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "Ask us about restoring your favourite bag. A small repair can make a familiar piece feel ready again.",
+                  "id": "n3"
+                }
+              ]
+            },
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "1.8rem 2.4rem",
+                "radius": "0",
+                "gap": "1.1rem"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "edges": "block-start",
+              "notch": true,
+              "children": [
+                {
+                  "type": "field",
+                  "name": "interest",
+                  "label": "What needs attention?",
+                  "placeholder": "Choose an option",
+                  "required": false,
+                  "options": [
+                    {
+                      "value": "strap",
+                      "label": "Strap or handle"
+                    },
+                    {
+                      "value": "zip",
+                      "label": "Zip or fastening"
+                    },
+                    {
+                      "value": "other",
+                      "label": "Something else"
+                    }
+                  ],
+                  "id": "n4"
+                },
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".9rem"
+                  },
+                  "children": [
+                    {
+                      "type": "field",
+                      "name": "name",
+                      "label": "Your name",
+                      "placeholder": "Your name",
+                      "required": true,
+                      "tokens": {
+                        "radius": ".2rem"
+                      },
+                      "id": "n5"
+                    },
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": ".7rem"
+                      },
+                      "children": [
+                        {
+                          "type": "field",
+                          "name": "email",
+                          "label": "Email address",
+                          "placeholder": "you@example.com",
+                          "required": true,
+                          "tokens": {
+                            "radius": ".2rem"
+                          },
+                          "id": "n6"
+                        },
+                        {
+                          "type": "button",
+                          "role": "cta_label",
+                          "label": "Ask about restoration",
+                          "action": "submit",
+                          "submission": "primary",
+                          "tokens": {
+                            "radius": ".2rem"
+                          },
+                          "id": "n7"
+                        },
+                        {
+                          "type": "consent",
+                          "id": "n13",
+                          "role": "consent_text",
+                          "text": "I agree to receive marketing emails. Unsubscribe anytime.",
+                          "hidden": true
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "role": "fine_print",
+                      "text": "We use these details to respond to your request.",
+                      "tokens": {
+                        "text-size": ".8rem",
+                        "leading": "1.5"
+                      },
+                      "id": "n8"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "tokens": {
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2.4rem",
+                "radius": "0",
+                "gap": "1.1rem",
+                "bg": "#c4cbb3"
+              },
+              "narrow": {
+                "pad": "4rem 1.5rem 1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "Again / repair & reuse",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n9"
+                },
+                {
+                  "type": "heading",
+                  "role": "success_headline",
+                  "text": "Your restoration enquiry is received.",
+                  "tokens": {
+                    "heading-size": "2.7rem"
+                  },
+                  "narrow": {
+                    "heading-size": "2.2rem"
+                  },
+                  "id": "n10"
+                },
+                {
+                  "type": "text",
+                  "role": "success_body",
+                  "text": "Thank you for giving a familiar piece another chance. Assessment is arranged separately.",
+                  "id": "n11"
+                }
+              ]
+            },
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "1.8rem 2.4rem",
+                "radius": "0",
+                "gap": "1.1rem"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "edges": "block-start",
+              "notch": true,
+              "children": [
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".9rem"
+                  },
+                  "children": [
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": ".7rem"
+                      },
+                      "children": [
+                        {
+                          "type": "stack",
+                          "tokens": {
+                            "gap": "1rem"
+                          },
+                          "children": [
+                            {
+                              "type": "button",
+                              "role": "close_label",
+                              "label": "Continue browsing",
+                              "action": "close",
+                              "tokens": {
+                                "radius": ".2rem"
+                              },
+                              "id": "n12"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n4",
+          "n5",
+          "n6"
+        ],
+        "consents": [
+          "n13"
+        ]
+      }
+    ],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

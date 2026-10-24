@@ -1,0 +1,230 @@
+{
+  "id": "everyday-an-evening-worth-making",
+  "name": "An evening worth making",
+  "display_type": "inline",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#8d242d",
+    "fg": "#fff3e0",
+    "muted": "#fff3e0",
+    "accent": "#fff3e0",
+    "accent-fg": "#8d242d",
+    "border": "#fff3e0",
+    "input-bg": "transparent",
+    "placeholder": "#fff3e0",
+    "close-bg": "#8d242d",
+    "close-fg": "#fff3e0",
+    "close-border": "#fff3e0",
+    "font": "'DM Sans', Arial, sans-serif",
+    "heading-font": "'Instrument Serif', Georgia, serif",
+    "heading-weight": "400",
+    "heading-leading": "0.98",
+    "tracking": "-.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "58rem",
+    "shadow": "0 24px 65px -30px rgba(24,30,30,.35)",
+    "close-inset": ".7rem"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "split",
+          "ratio": 0.6,
+          "basis": "19rem",
+          "tokens": {
+            "gap": "0"
+          },
+          "start": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2.5rem",
+                "radius": "0",
+                "gap": "1.1rem"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "The neighbourhood table",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n1"
+                },
+                {
+                  "type": "heading",
+                  "role": "headline",
+                  "text": "Good food.\nBetter company.",
+                  "tokens": {
+                    "heading-size": "3.8rem"
+                  },
+                  "narrow": {
+                    "heading-size": "2.65rem"
+                  },
+                  "id": "n2"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "Join us for our seasonal supper. Explore the menu, dates and booking details.",
+                  "id": "n3"
+                },
+                {
+                  "type": "button",
+                  "role": "cta_label",
+                  "label": "See the supper menu",
+                  "action": "link",
+                  "tokens": {
+                    "radius": ".2rem"
+                  },
+                  "id": "n4"
+                }
+              ]
+            }
+          ],
+          "end": [
+            {
+              "type": "media",
+              "tokens": {
+                "pad": "2rem",
+                "radius": "0",
+                "gap": "1.1rem",
+                "muted": "#772c31",
+                "bg": "#eddfc7",
+                "fg": "#772c31",
+                "align": "center"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "At the table",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n5"
+                },
+                {
+                  "type": "divider",
+                  "id": "n6"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "Seasonal plates",
+                  "id": "n7"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "A shared main",
+                  "id": "n8"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "Something sweet",
+                  "id": "n9"
+                },
+                {
+                  "type": "divider",
+                  "id": "n10"
+                },
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "Booking closes in",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n11"
+                },
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": "1rem",
+                    "align": "center"
+                  },
+                  "children": [
+                    {
+                      "type": "countdown",
+                      "role": "countdown_units",
+                      "layout": "line",
+                      "days_label": "Days",
+                      "hours_label": "Hrs",
+                      "minutes_label": "Mins",
+                      "seconds_label": "Secs",
+                      "tokens": {
+                        "countdown-size": "1.7rem"
+                      },
+                      "narrow": {
+                        "countdown-size": "1.35rem"
+                      },
+                      "id": "n12"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "role": "fine_print",
+                  "text": "Reserve and pay on the booking page.",
+                  "tokens": {
+                    "text-size": ".8rem",
+                    "leading": "1.5"
+                  },
+                  "id": "n13"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}
