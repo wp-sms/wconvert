@@ -1,0 +1,39 @@
+{
+  "scope": "Read-only actual wconvert.local saved Optin snapshots, current registered setup identities, and git source history; no Lead or submission data read.",
+  "saved_campaign_count_including_deleted": 129,
+  "matching_saved_draft": {
+    "id": "01M5Q4YJPWAT57QQ9AMMHDAGHS",
+    "name": "Closing time",
+    "created_at_from_ulid_utc": "2026-10-24T14:27:32.700+00:00",
+    "deleted_at_utc": "2026-10-24 14:30:28",
+    "goal": "grow_email_list",
+    "template_id": "bf-closing-time",
+    "playbook_id": "bf-closing-time",
+    "display_type": "slide_in",
+    "image_nodes": 0,
+    "background": "#f5e9a7",
+    "heading_size": "2.7rem",
+    "conclusion": "Does not contain the sneaker artwork or black/orange layout from the reported screenshot."
+  },
+  "historical_sources": {
+    "commits": [
+      "d7688edf",
+      "dc915bdc",
+      "HEAD"
+    ],
+    "bf-closing-time": "Correct Closing time copy, pale-yellow palette, no pictures in all three versions.",
+    "campaign-extra-ten-coupon": "Correct own10% copy and same sneaker asset in all three versions; before fix its amount used headline role, now offer_amount.",
+    "cross_wired_template_or_playbook_found": false
+  },
+  "fresh_flow_checks": {
+    "Prefill::fromScratch": "No template or Playbook and no default Closing time copy.",
+    "PlaybookController::previews": "Each requested ID resolves its own Playbook; prepared tree derives from Prefill::fromPlaybook of that ID.",
+    "useSetupPreviews": "Returned entries keyed by exact entry ID and checked against current revision.",
+    "GoalScreen::start": "Exact selected Playbook passed to Prefill; no fallback to first recommended setup."
+  },
+  "limits": "A temporary setup-modal state is not persisted in saved campaign configs. Historical assets/configs and current code cannot establish the exact original UI sequence. This audit found no proof that the user switched designs, nor any saved snapshot matching the mixed screenshot.",
+  "raw_readonly_reports": [
+    "/tmp/wconvert-copy-forensic-readonly.json",
+    "/tmp/wconvert-copy-forensic-art.json"
+  ]
+}

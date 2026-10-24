@@ -59,6 +59,17 @@ a usable Optin must not require rebuilding its layout.
    Announcement bars must not leave a heading beside a form whose button
    has dropped below its field. Run `npm run templates:check-announcements` against
    the rebuilt local studio when changing Bar with a field or its filled setups.
+   Finish from the **real plugin's new-campaign picker**, not just a directly
+   mounted tree: choose the setup, create an unpublished draft, save and reload
+   it. Check that the selected setup's name, copy, offer amount and images survive
+   together; inspect desktop and phone views and the added-form variant where
+   supported. Compare these views with the approved reference, recording any
+   intentional editor limitation rather than silently substituting a different
+   design. Keep the screenshots and source revision with the existing review;
+   a later template or renderer edit needs this final check again. Clean up only
+   the drafts created for that review. Start prototypes in the Design Bench
+   whenever possible so the review uses the shipping blocks and fonts from the
+   beginning.
 6. **Judge it** against `tools/design-library/GUIDELINES.md` §1, the
    conversion heuristics. Walk all eleven.
 7. **Write its catalogue words** in `tools/design-library/publishing/designs.json`

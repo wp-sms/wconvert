@@ -6,6 +6,10 @@ import { act, fireEvent, render, screen, waitFor, within } from '@testing-librar
 import userEvent from '@testing-library/user-event';
 import { DOCUMENT_STYLE_ID } from '@renderer/mount';
 import { ruleTypes } from './support/rule-types';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import type { Template } from '@renderer/types';
+import type { PlaybookEntry } from '../../resources/admin/src/goals/api';
 
 /**
  * The goal-first creation flow, and the decisions in it that are not layout.
@@ -152,6 +156,55 @@ const unloadPrevented = () => {
   window.dispatchEvent(event);
   return event.defaultPrevented;
 };
+
+it('creates only the freshly selected setup after an inspected alternative preview arrives late', async () => {
+  // Keep cards outside the viewport: inspection itself requests each preview,
+  // so the two preview responses can arrive in the opposite order.
+  vi.stubGlobal('IntersectionObserver', class {
+    observe() {}
+    disconnect() {}
+  });
+  onTestFinished(() => { vi.unstubAllGlobals(); });
+  const load = (id: string): Template => {
+    const source = JSON.parse(readFileSync(resolve(import.meta.dirname, `../../pro/modules/display-types/templates/${id}.json`), 'utf8')) as Template;
+    return { tree: source.tree, tokens: source.tokens };
+  };
+  const closing = { ...PLAYBOOK, id: 'bf-closing-time', name: 'Closing time', goal: 'promote_offer', template_id: 'bf-closing-time',
+    display_type: 'slide_in', setup: { ...PLAYBOOK.setup, display_type: 'slide_in' },
+    revision: 'closing-r', availability: 'ready', template: undefined } as PlaybookEntry;
+  const coupon = { ...closing, id: 'campaign-extra-ten-coupon', name: 'Extra-Ten Coupon', template_id: 'campaign-extra-ten-coupon', revision: 'coupon-r' };
+  const closingPreview = { ...closing, prepared_revision: 'closing-prepared', template: load(closing.id) };
+  const couponPreview = { ...coupon, prepared_revision: 'coupon-prepared', template: load(coupon.id) };
+  const draft = { name: coupon.name, goal: coupon.goal, config: { playbook_id: coupon.id, template_id: coupon.template_id, display_type: 'slide_in', template: couponPreview.template } };
+  const pending = new Map<string, (response: { entries: PlaybookEntry[] }) => void>();
+  goals.listGoals.mockResolvedValue([{ ...GOALS[1], availability: 'ready' }]);
+  goals.listPlaybooks.mockResolvedValue([closing, coupon]);
+  goals.previewPlaybooks.mockImplementation((_goal: string, ids: string[]) => new Promise(resolve => pending.set(ids[0], resolve)));
+  goals.prefill.mockImplementation((_goal: string, id: string) => {
+    if (id !== coupon.id) throw new Error('The unchosen setup must never be prefilled');
+    return Promise.resolve(draft);
+  });
+  const created = vi.fn();
+  render(<GoalScreen onCreated={created} />);
+  await pickGoal();
+  await userEvent.click(await screen.findByRole('button', { name: 'Setup details for Closing time' }));
+  await waitFor(() => expect(pending.has(closing.id)).toBe(true));
+  expect(screen.getByRole('button', { name: 'Use this setup' })).toBeDisabled();
+  await userEvent.click(screen.getByRole('button', { name: 'Back to setups' }));
+  await userEvent.click(await screen.findByRole('button', { name: 'Setup details for Extra-Ten Coupon' }));
+  await waitFor(() => expect(pending.has(coupon.id)).toBe(true));
+  await act(async () => pending.get(coupon.id)!({ entries: [couponPreview] }));
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Use this setup' })).toBeEnabled());
+  await act(async () => pending.get(closing.id)!({ entries: [closingPreview] }));
+  expect(screen.getByRole('dialog')).toHaveAccessibleName('Extra-Ten Coupon');
+  expect(goals.prefill).not.toHaveBeenCalled();
+  expect(optins.createOptin).not.toHaveBeenCalled();
+  await userEvent.click(screen.getByRole('button', { name: 'Use this setup' }));
+  await waitFor(() => expect(created).toHaveBeenCalledOnce());
+  expect(goals.prefill).toHaveBeenCalledExactlyOnceWith('promote_offer', coupon.id, 'coupon-r', 'coupon-prepared');
+  expect(optins.createOptin).toHaveBeenCalledExactlyOnceWith(draft.name, draft.goal, draft.config);
+  expect(JSON.stringify(optins.createOptin.mock.calls[0][2])).not.toContain('Goodbyes can');
+});
 
 describe('a goal then a draft', () => {
   it('preserves ready, locked and unavailable Goal semantics on a paid install', async () => {
