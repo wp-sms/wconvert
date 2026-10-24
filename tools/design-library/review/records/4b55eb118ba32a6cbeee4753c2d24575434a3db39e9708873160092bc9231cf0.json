@@ -1,0 +1,51 @@
+{
+  "id": "campaign-tech-price-sheet",
+  "revision": "19b3ec2b2df812ce2bb0374665c05c4a2f01bbeb03b93b80fd4c18eabf853594",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "The tech sheet separates the sample $120/$84 price comparison from the action and selected-item terms.",
+  "at": "2026-10-24T10:40:12.653Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-tech-price-sheet-320.png",
+          "sha256": "2c509e9e8ee8c78bf6e36371938e2d998cc9877895a30c6e4455952dd2760607"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-tech-price-sheet-1440.png",
+          "sha256": "f86b72d0f4bb33ea21709e5ff0059f1ee4522b64d7722a9591dc6cc8046259c2"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "98aec6a37d7eb2628fbe97d85ec06ac41bf30c0bc72cc33cae964f36a1622b04"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        }
+      ]
+    }
+  },
+  "record_id": "4b55eb118ba32a6cbeee4753c2d24575434a3db39e9708873160092bc9231cf0"
+}

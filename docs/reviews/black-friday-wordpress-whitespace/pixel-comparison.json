@@ -1,0 +1,54 @@
+[
+  {
+    "kind": "black-friday-wordpress",
+    "width": 1440,
+    "before": [
+      720,
+      414
+    ],
+    "after": [
+      720,
+      414
+    ],
+    "pixel_identical": true
+  },
+  {
+    "kind": "black-friday-wordpress",
+    "width": 390,
+    "before": [
+      358,
+      594
+    ],
+    "after": [
+      358,
+      594
+    ],
+    "pixel_identical": true
+  },
+  {
+    "kind": "black-friday-wordpress-forms",
+    "width": 1440,
+    "before": [
+      720,
+      558
+    ],
+    "after": [
+      720,
+      558
+    ],
+    "pixel_identical": true
+  },
+  {
+    "kind": "black-friday-wordpress-forms",
+    "width": 390,
+    "before": [
+      358,
+      738
+    ],
+    "after": [
+      358,
+      738
+    ],
+    "pixel_identical": true
+  }
+]

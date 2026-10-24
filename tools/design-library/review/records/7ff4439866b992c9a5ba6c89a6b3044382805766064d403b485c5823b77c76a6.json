@@ -1,0 +1,47 @@
+{
+  "id": "campaign-black-friday-coffee-menu",
+  "revision": "431f6755329c816ac615c2d589ae3e14d7af4479a1a6b7d17c40fcf2bdf197a3",
+  "base_id": "65f6e7e422917cb2f83f99dcb309dcc78bff1a028dece6111c299edeecfeef9f",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **34 · Black Friday Coffee Menu (Black Friday):** Restored dark coffee menu, warm image and inline discount. Terms use readable native text.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-black-friday-coffee-menu-320.png",
+          "sha256": "158a99ad9cb6a92a0cb3ba045225df0f71a4216b0fb92526eecbe80eb0c7b2db"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-black-friday-coffee-menu-1440.png",
+          "sha256": "115708d82d0f376dd5ef8215588c323d9bc30a785445c859831fc2bd815a137f"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "7ff4439866b992c9a5ba6c89a6b3044382805766064d403b485c5823b77c76a6"
+}

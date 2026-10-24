@@ -1,0 +1,55 @@
+{
+  "id": "campaign-sneaker-edit",
+  "revision": "ef7c8f91eecebf5e53ce8f807487690cf08c4ebafbbdfee3ec2e4c0d39d8790f",
+  "base_id": "d8eae597268833ff7045d7d8b93cc27807993a222873fa3c1d0748824dcb39fc",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **11 · Sneaker Edit** — Product photo, bold type, lime action and dark palette retained. Caption is a live full-width band below the photo instead of a small overlapping tag; caption and email field contrast corrected. Palette references were rechecked against pre-refactor actual WordPress captures: normal and email desktop/phone views are pixel-identical.",
+  "at": "2026-10-24T16:24:10.644Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/11-1440-wordpress.png",
+          "sha256": "011b24741db942da91190d806424b4a1e750303a5304d6a4714c89597af42aa7"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/11-390-wordpress.png",
+          "sha256": "63b0f60ffb69ce6d70228119ed6c4240508333ebc1ed663225c89a3de6f55384"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "9e3ee8a59134d7cdda74319ad40454f9634ceb6e09ef0f70d3630a78f66de3b0"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "64658b330127835eb1a32c711c654a42558785445782307da4ec83bf04975457"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "612280bf7c05641759430a7fdea0aea3853f9dd4b8fd033dc1bac8c372cc6d39"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "612280bf7c05641759430a7fdea0aea3853f9dd4b8fd033dc1bac8c372cc6d39"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "9e3ee8a59134d7cdda74319ad40454f9634ceb6e09ef0f70d3630a78f66de3b0"
+        }
+      ]
+    }
+  },
+  "record_id": "fead21976b12295809626a7cf9e02151ec9ddfb7cd17e46ce2bbbefc15bd7c6f"
+}

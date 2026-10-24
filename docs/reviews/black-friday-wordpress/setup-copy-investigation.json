@@ -1,0 +1,69 @@
+{
+  "checks": [
+    {
+      "scenario": "Fresh Promote offer \u2192 Extra-Ten Coupon \u2192 Use this setup",
+      "site": "http://127.0.0.1:9462",
+      "request": "POST /wp-json/wconvert/v1/optins",
+      "status": 201,
+      "template_id": "campaign-extra-ten-coupon",
+      "playbook_id": "campaign-extra-ten-coupon",
+      "copy": [
+        {
+          "id": "n2",
+          "role": "eyebrow",
+          "text": "BLACK FRIDAY / ONE MORE REASON"
+        },
+        {
+          "id": "n7",
+          "role": "eyebrow",
+          "text": "AN EXTRA"
+        },
+        {
+          "id": "n3",
+          "role": "offer_amount",
+          "text": "10%"
+        },
+        {
+          "id": "n8",
+          "role": "eyebrow",
+          "text": "OFF"
+        }
+      ],
+      "result": "Selected setup preserved; no Closing time copy appeared."
+    },
+    {
+      "scenario": "Fresh Promote offer \u2192 inspect Closing time \u2192 Back to setups \u2192 inspect Extra-Ten Coupon \u2192 Use this setup",
+      "site": "http://127.0.0.1:9462",
+      "request": "POST /wp-json/wconvert/v1/optins",
+      "status": 201,
+      "template_id": "campaign-extra-ten-coupon",
+      "playbook_id": "campaign-extra-ten-coupon",
+      "copy": [
+        {
+          "id": "n2",
+          "role": "eyebrow",
+          "text": "BLACK FRIDAY / ONE MORE REASON"
+        },
+        {
+          "id": "n7",
+          "role": "eyebrow",
+          "text": "AN EXTRA"
+        },
+        {
+          "id": "n3",
+          "role": "offer_amount",
+          "text": "10%"
+        },
+        {
+          "id": "n8",
+          "role": "eyebrow",
+          "text": "OFF"
+        }
+      ],
+      "result": "Selected setup preserved; no Closing time copy appeared."
+    }
+  ],
+  "regression": "tests/js/setup-preview-isolation.test.tsx completes Extra-Ten response before Closing time; each result remains keyed to its own ID and revision.",
+  "proven_defect": "A design swap used headline for both sentence copy and an oversized discount figure. offer_amount now separates those meanings.",
+  "limitation": "Original new-setup screenshot path is not reproduced; original browser request history is unavailable."
+}

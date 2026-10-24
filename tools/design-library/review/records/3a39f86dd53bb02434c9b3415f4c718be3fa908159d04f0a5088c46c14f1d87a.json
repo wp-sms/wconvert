@@ -1,0 +1,47 @@
+{
+  "id": "campaign-home-edit",
+  "revision": "d7d5ee3a15bbfed9a7230dc0c9abd5a36139d9fe9056350aef41f56e531ec036",
+  "base_id": "4ccb9268609c105268fe97a1855e763dab8c8a9d298d63d6266c2c4fbc3fb5c7",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **49 · Home Edit (Black Friday):** Restored three-column home layout, warm chair photograph and independent offer panel. Shortened the button to “Shop home”.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-home-edit-320.png",
+          "sha256": "b67d6a6faa23cb7d4da001f1613ca9f52ee1d605b0840cfc57f9bd2388af0078"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-home-edit-1440.png",
+          "sha256": "62a2f4df0b2737966eb7a913d991d98c84401bd5d92b93514d7cdb09f9e26d48"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "3a39f86dd53bb02434c9b3415f4c718be3fa908159d04f0a5088c46c14f1d87a"
+}

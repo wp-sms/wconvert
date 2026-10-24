@@ -116,3 +116,16 @@ and creates a new unpublished draft with the converted design, named with
   (`PublishedProjection`, `PayloadTag`). That is unchanged here and tracked as its
   own issue.
 - No storage is added.
+
+**Amended by [ADR 0167](0167-campaign-artwork-uses-bounded-renderer-options.md):**
+When acknowledgement pruning leaves a coupon as the only content of its styled
+panel, removing the form restores the code to the unique matching non-root
+layout shell instead of moving that whole panel beside the CTA. Decorative
+empty panels survive acknowledgement pruning as artwork and sibling anchors.
+
+**Corrected by [ADR 0168](0168-approved-compositions-survive-native-rendering.md):**
+A code-only panel keeps its empty shell when capture is added, so removing
+capture can restore the code to that panel. Eyebrow labels immediately around a
+standalone code survive acknowledgement pruning as context and sibling anchors.
+This prevents Welcome Perk's code moving columns and Welcome Label's code moving
+past its caption during an email/phone round trip; no saved metadata is added.

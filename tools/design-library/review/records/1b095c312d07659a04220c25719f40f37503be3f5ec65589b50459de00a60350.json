@@ -1,0 +1,47 @@
+{
+  "id": "campaign-first-access-pass",
+  "revision": "1df89a6424a1542be7a0ff02a281037136f7d81ea0dfbbbab2de99ace1c36025",
+  "base_id": "969b81c2f896e85c27b9c51b578f9d46f16178dd197aab34e12b494e90175947",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **35 · First-Access Pass (Black Friday):** Restored the lime date stub and black form. Explicit compact stacking removes blank bands; the date becomes a small phone grid.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-first-access-pass-320.png",
+          "sha256": "2412f722b1f03e3cd7e05c6673ff65e71b800695bcbe821fc29d89735908186a"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-first-access-pass-1440.png",
+          "sha256": "7b4a592cd25fdbd1bbf5ac4c28e76cdda8833d3048134f513b42804983ed245c"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "1b095c312d07659a04220c25719f40f37503be3f5ec65589b50459de00a60350"
+}

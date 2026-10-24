@@ -1,0 +1,51 @@
+{
+  "id": "campaign-welcome-perk",
+  "revision": "b4a8234e8c409584a7418234b93d5fadc064b651980303cec83b7a845449d7d3",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "The dispenser remains product artwork beside a native coupon; the body refers to the configurable code below.",
+  "at": "2026-10-24T10:40:12.653Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-welcome-perk-320.png",
+          "sha256": "adcbb13f8437e33b13029d1324fd11940cc5f3f4328411ceac5211709fbe1ac3"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-welcome-perk-1440.png",
+          "sha256": "c08ad25ba1150dbf601fc2a98891e43c403ede9247ab1a0aa9974c749aecc9f2"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "98aec6a37d7eb2628fbe97d85ec06ac41bf30c0bc72cc33cae964f36a1622b04"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        }
+      ]
+    }
+  },
+  "record_id": "8cd18f8f1ec40d61407ae58a8758791a75ddaa3ea0e5580cdc997ac53e1991a8"
+}

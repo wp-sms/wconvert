@@ -1,0 +1,55 @@
+{
+  "id": "campaign-savings-staircase",
+  "revision": "9a3ac403eaa1b80ad2866e46ee973ec6fc0a0205c92b2418fc654821d6a19937",
+  "base_id": "5cad0a2c92a94259abac94de3f6eb4fd754fd2377528bd9777d092ece22613f3",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **42 · Savings Staircase** — Ascending desktop tiers and stacked phone rows remain distinct. Discount figures are bold and readable; explicit eligibility terms replace terse prototype microcopy.",
+  "at": "2026-10-24T15:58:06.154Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/42-1440-wordpress.png",
+          "sha256": "284069b4506d5287551e796e7714c727ab82f4a853eaeafd11239ee04558e1b7"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/42-390-wordpress.png",
+          "sha256": "91c940ee72cc6ed9dbd0dc5d9bb21bab7a323c1f3a98cd69372967279dcc0114"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "5c66afca2e3c4fe57aa514460f2bc1f74794c45e9fa196deaf268b07533a19c9"
+}

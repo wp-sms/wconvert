@@ -1,0 +1,51 @@
+{
+  "id": "campaign-free-delivery-label",
+  "revision": "d871153d7bc55fbbaa29b4201603f00c7ca57c5c3bdb1180113d16968841802d",
+  "base_id": "11ec48e04a54dde5ce6786ed55640ea8a2f888ec6a6fc8c0cdafe5a7e8a5bc02",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "The delivery label groups the barcode with the shipping dates and states the $100 threshold. Final heading semantics, copy and appearance reviewed after correction.",
+  "at": "2026-10-24T10:48:07.324Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-free-delivery-label-320.png",
+          "sha256": "018e3b04fc1e3ec7c81c32da15e3ed00fcf287671e393e260db3cb7ec3e01a39"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-free-delivery-label-1440.png",
+          "sha256": "e39cb9313a9523c4d0088d3ddf139667c121831f55b94d123fed7578023b0071"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "abc4a7205bed97e75275c549f6012781c47dc106247067f2224d28c101037f13"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "57aed746578b554506515035ac45e1118d39989308b5fc83e974282f6bec884f"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "57aed746578b554506515035ac45e1118d39989308b5fc83e974282f6bec884f"
+        }
+      ]
+    }
+  },
+  "record_id": "e462deda9dc5b8803f02089c2a43790b9903215bf364992635028a0236724a3d"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "new-batch-first-look",
+  "revision": "3a6a851e393ae874f9bbe1cce4bd7e9a9cdb5a3ffe50a40db670c0805343f2dd",
+  "base_id": "80a1f1c55d9c46eb38d6b4806d11ee7fa2e68b8e519d219003079515b586194b",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at d7688edf, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T12:58:11Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/new-batch-first-look-320.png",
+          "sha256": "02fb9fe83c34846afc1e19111abc1145c9bc120b3ab32a3045b3f2d41e53f41f"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/new-batch-first-look-1440.png",
+          "sha256": "aff35b5c203e284ea98e4a7bcf5165101a008f19c164c993727fec931a5028ce"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/review.md",
+          "sha256": "de10b9e52b18a25d1a2a2141034132a8661bb20452e5b49ab2b99129c08792ed"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/results.json",
+          "sha256": "a7427fb3737d6699cfc42b06595915a3e9ba372ae13085006fd7b3779788327e"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/results.json",
+          "sha256": "a7427fb3737d6699cfc42b06595915a3e9ba372ae13085006fd7b3779788327e"
+        }
+      ]
+    }
+  },
+  "record_id": "d019b23c0af50a60b084aa5d12bc5893e48d0d96f3c58b3afbd46ddadd858222"
+}

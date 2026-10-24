@@ -374,7 +374,10 @@ function blankLayout(type: string): TemplateNode {
 export function freeRoleFor(tree: TemplateTree, type: string): string | null {
   const declared = (LEAVES[type]?.roles ?? [])
     .filter((role) => ROLES.includes(role))
-    .filter((role) => !AUTHORED_ROLES.includes(role));
+    .filter((role) => !AUTHORED_ROLES.includes(role))
+    // A generic heading is prose. Only an explicitly chosen offer figure may
+    // bind to the numeric discount slot when designs are switched.
+    .filter((role) => role !== 'offer_amount');
   const taken = rolesTaken(tree);
 
   return declared.find((role) => !taken.includes(role)) ?? declared[0] ?? null;

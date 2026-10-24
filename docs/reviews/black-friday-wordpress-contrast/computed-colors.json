@@ -1,0 +1,24 @@
+[
+  {
+    "id": "campaign-private-preview",
+    "colors": [
+      {
+        "text": "VIP",
+        "foreground": "rgb(231, 189, 121)",
+        "background": "rgb(55, 28, 56)",
+        "ratio": 8.63
+      }
+    ]
+  },
+  {
+    "id": "campaign-wishlist-alert",
+    "colors": [
+      {
+        "text": "What is the offer?",
+        "foreground": "rgb(119, 51, 72)",
+        "background": "rgb(207, 176, 231)",
+        "ratio": 4.69
+      }
+    ]
+  }
+]

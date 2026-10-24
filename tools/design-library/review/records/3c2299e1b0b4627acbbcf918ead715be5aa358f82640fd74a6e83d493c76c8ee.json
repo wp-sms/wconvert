@@ -1,0 +1,47 @@
+{
+  "id": "campaign-your-welcome-pal",
+  "revision": "e896c11687b90ee1932382d275f3cda4163bacac16b51cafe58f21882588288f",
+  "base_id": "023b5317fd50f7ae14ed3fe95c05253dc3703fa4218e63bc9de7a8f242cf1058",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **25 · Your Welcome Pal (General):** Restored arched mascot image and lavender slide-in. The outer card keeps a modest radius so it cannot clip the close control.",
+  "at": "2026-10-24T13:09:55.646Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-your-welcome-pal-320.png",
+          "sha256": "0e88515b7cc9a3546c6c5e260e8da1bb7087bcb7979518d3df0ab8cf5d039f1c"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-your-welcome-pal-1440.png",
+          "sha256": "87d7f57cc5b6287d0afa8fad30dde706a7a36ca5a83e1e3d9e80add95b741aae"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "3c2299e1b0b4627acbbcf918ead715be5aa358f82640fd74a6e83d493c76c8ee"
+}

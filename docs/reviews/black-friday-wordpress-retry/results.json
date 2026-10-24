@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "at": "2026-10-24T15:57:43.849Z",
+  "site": "disposable local WordPress",
+  "checks": [
+    "journey",
+    "wordpress"
+  ],
+  "setups": [
+    {
+      "id": "campaign-deadline-scoreboard",
+      "revision": "c855c5d25ab5e8d23939f1a70a8377de2bcf87eb3053a57c7ef6d38ff265e59b",
+      "width": 320,
+      "passed": true,
+      "screens": 1,
+      "validation": false,
+      "consentChecked": false,
+      "backChecked": false,
+      "simulatedFailureRetry": false,
+      "localLeadSaved": false,
+      "configuredResource": 200,
+      "actualCtaOpened": true,
+      "couponChecked": false,
+      "copiedCode": false,
+      "localResourceEmail": false
+    },
+    {
+      "id": "campaign-deadline-scoreboard",
+      "revision": "c855c5d25ab5e8d23939f1a70a8377de2bcf87eb3053a57c7ef6d38ff265e59b",
+      "width": 1280,
+      "passed": true,
+      "screens": 1,
+      "validation": false,
+      "consentChecked": false,
+      "backChecked": false,
+      "simulatedFailureRetry": false,
+      "localLeadSaved": false,
+      "configuredResource": 200,
+      "actualCtaOpened": true,
+      "couponChecked": false,
+      "copiedCode": false,
+      "localResourceEmail": false
+    }
+  ]
+}

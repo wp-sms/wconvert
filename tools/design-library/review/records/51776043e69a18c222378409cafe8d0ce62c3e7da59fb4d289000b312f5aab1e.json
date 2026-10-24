@@ -1,0 +1,55 @@
+{
+  "id": "seasonal-service-link",
+  "revision": "80005ef517939b2afa30be71925a35b729eb824f2e6ef51952a03f19818a6bbf",
+  "base_id": "505f2be12c7754f7cf3c11cb32d8d7eeea23ba1ed4323c27c04dd15c05883c09",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at d7688edf, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T12:58:11Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/seasonal-service-link-320.png",
+          "sha256": "c092a39a7ca7616dc415db70ebd6449711328a49d9d4483779195fbd148ba1fd"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/seasonal-service-link-1440.png",
+          "sha256": "1eaeef3e74b2d6048274531bec0230e99d759401a28f5ac592f01924f465a8d6"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/review.md",
+          "sha256": "83d5e893a7999c3cfde4ef3519dc791cdad0ab7005efba425467d5e085687ae0"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json",
+          "sha256": "3722746304da03cb7f7e8ff6c411258f6f132c7f1949503691e30d7344ef0370"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+          "sha256": "bf614c2913787167fbf45e1727ec5715a1ac8e50417c53b4627aa04595f761c9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+          "sha256": "bf614c2913787167fbf45e1727ec5715a1ac8e50417c53b4627aa04595f761c9"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json",
+          "sha256": "3722746304da03cb7f7e8ff6c411258f6f132c7f1949503691e30d7344ef0370"
+        }
+      ]
+    }
+  },
+  "record_id": "51776043e69a18c222378409cafe8d0ce62c3e7da59fb4d289000b312f5aab1e"
+}

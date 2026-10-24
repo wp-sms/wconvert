@@ -1,0 +1,285 @@
+{
+  "id": "campaign-fifty-fifty-poster",
+  "name": "Fifty-Fifty Poster",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#101211",
+    "fg": "#f4f4eb",
+    "muted": "#f4f4eb",
+    "accent": "#e1fd56",
+    "accent-fg": "#14180b",
+    "border": "#f4f4eb",
+    "input-bg": "#101211",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"DM Sans\", Arial, sans-serif",
+    "heading-size": "27px",
+    "heading-weight": "900",
+    "heading-leading": ".96",
+    "text-size": "14px",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "610px",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n4",
+                  "role": "eyebrow",
+                  "text": "BLACK FRIDAY / SELECTED FAVOURITES",
+                  "tokens": {
+                    "text-size": "9px",
+                    "tracking": ".1em"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "0 32px 0 0",
+                "gap": "0",
+                "radius": "0"
+              }
+            },
+            {
+              "type": "eyebrow",
+              "id": "n8",
+              "role": "eyebrow",
+              "text": "UP TO",
+              "tokens": {
+                "text-size": "9px",
+                "tracking": ".08em"
+              }
+            },
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "n9",
+                  "role": "body",
+                  "text": "%b",
+                  "tokens": {
+                    "font": "\"DM Sans\", Arial, sans-serif",
+                    "text-size": "245px",
+                    "leading": ".78",
+                    "tracking": "-.04em",
+                    "fg": "accent",
+                    "text-weight": "950"
+                  },
+                  "emphasis": "50",
+                  "narrow": {
+                    "text-size": "150px"
+                  }
+                },
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "n13",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "text-size": "72px",
+                        "leading": ".95",
+                        "tracking": "-.04em",
+                        "fg": "fg",
+                        "text-weight": "950"
+                      },
+                      "emphasis": "%",
+                      "narrow": {
+                        "text-size": "64px"
+                      }
+                    },
+                    {
+                      "type": "eyebrow",
+                      "id": "n14",
+                      "role": "eyebrow",
+                      "text": "OFF",
+                      "tokens": {
+                        "text-size": "14px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "0"
+                  }
+                }
+              ],
+              "tokens": {
+                "gap": "2px",
+                "align": "center"
+              }
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n10",
+                  "role": "eyebrow",
+                  "text": "BLACK FRIDAY / BIGGER SAVINGS",
+                  "tokens": {
+                    "text-size": "9px",
+                    "tracking": ".08em"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "12px",
+                "gap": "16px",
+                "radius": "0",
+                "bg": "accent",
+                "fg": "accent-fg",
+                "align": "center",
+                "muted": "accent-fg"
+              },
+              "narrow": {
+                "pad": "12px"
+              }
+            },
+            {
+              "type": "split",
+              "start": [
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "stack",
+                      "children": [
+                        {
+                          "type": "heading",
+                          "id": "n5",
+                          "role": "headline",
+                          "text": "THE PRICE",
+                          "narrow": {
+                            "heading-size": "27px"
+                          },
+                          "tokens": {
+                            "heading-size": "27px"
+                          }
+                        },
+                        {
+                          "type": "heading",
+                          "id": "n12",
+                          "role": "headline",
+                          "text": "IS THE POINT.",
+                          "narrow": {
+                            "heading-size": "27px"
+                          },
+                          "tokens": {
+                            "heading-size": "27px",
+                            "fg": "accent"
+                          }
+                        }
+                      ],
+                      "tokens": {
+                        "gap": "0"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n11",
+                      "role": "body",
+                      "text": "Selected collections.\nFour days. One annual event.",
+                      "tokens": {
+                        "text-size": "14px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "16px"
+                  }
+                }
+              ],
+              "end": [
+                {
+                  "type": "button",
+                  "id": "n6",
+                  "role": "cta_label",
+                  "label": "Find your Friday deal",
+                  "action": "link",
+                  "icon": "arrow",
+                  "tokens": {
+                    "text-size": "14px",
+                    "radius": "0px"
+                  }
+                }
+              ],
+              "ratio": 0.5,
+              "basis": "14rem",
+              "tokens": {
+                "gap": "22px"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "28px 28px 26px",
+            "gap": "22px",
+            "radius": "0"
+          },
+          "narrow": {
+            "pad": "28px 24px 24px"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

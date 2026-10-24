@@ -1,0 +1,47 @@
+{
+  "id": "space-fit-finder",
+  "revision": "469bfdbd8c2dea4288d04e614825931cba9c4c797de29ef2fdd5ac972a47d347",
+  "base_id": "f781a3349730c908ee13302787046f78ab7d6d4729aa16ed7ed73e68dfe136de",
+  "decision": "revise",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/space-fit-finder-320.png",
+          "sha256": "d3d285fa0cda1b6cc270f4fb77e20e1da183087a7535dae2094825adb4abb1af"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/space-fit-finder-1440.png",
+          "sha256": "8edf7bb5645bd0e0f7c18ba8ae0486a2da81423ee4d1449f251107cb9b50d95d"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "63e192826cca63b50ee0fc74d387f3b4b06010912120782af1a272f6e881a3c6"
+}

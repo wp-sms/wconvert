@@ -1,0 +1,47 @@
+{
+  "id": "winter-before-the-bow",
+  "revision": "6f0bf9e746d5353f2fb20c2b9b66e13eb668189671e305dc93d117df3ada2b58",
+  "base_id": "d172fdfcc8b2e5e2878c088d58fa8fed83c480922bc75dc41c873069b01b614f",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at d7688edf, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T12:58:11Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-5.jpg",
+          "sha256": "3621ff35397561d97168cea076c1239921258e29aa473e01c5dfd1ae83603ae4"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-5.jpg",
+          "sha256": "28e6c8ee0da96b5b0cdaf6d2cceb4ca87ca6babb20c82108a4648648f06fcc1d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "21fc4dec4545245be44eba6b93b1cce6d94d4d44e058718e8a24a7993485b8fd"
+}

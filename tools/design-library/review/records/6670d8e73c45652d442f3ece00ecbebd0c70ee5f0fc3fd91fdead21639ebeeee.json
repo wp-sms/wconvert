@@ -1,0 +1,51 @@
+{
+  "id": "campaign-extra-ten-coupon",
+  "revision": "14ba23dca6340f46df02ff44124a2b20aea7e399ff60d471282e6fce6473eac1",
+  "base_id": "8c324fe78801d1ee005b8b4c7944cb1966838ff6331cd8883c54c3f3ae179e37",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "The sneaker coupon separates product, extra discount and configurable code without rotating any element. Final heading semantics, copy and appearance reviewed after correction.",
+  "at": "2026-10-24T10:48:07.324Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-extra-ten-coupon-320.png",
+          "sha256": "f7b780729a485e02e773c660ba2b5cbfac94a9016b2dcfc71f5e9756f9e7ef27"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-extra-ten-coupon-1440.png",
+          "sha256": "08296d91206a1ce659a0500600c5c7b1839161e59328a0199f7915fadf785314"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "abc4a7205bed97e75275c549f6012781c47dc106247067f2224d28c101037f13"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "57aed746578b554506515035ac45e1118d39989308b5fc83e974282f6bec884f"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "57aed746578b554506515035ac45e1118d39989308b5fc83e974282f6bec884f"
+        }
+      ]
+    }
+  },
+  "record_id": "6670d8e73c45652d442f3ece00ecbebd0c70ee5f0fc3fd91fdead21639ebeeee"
+}

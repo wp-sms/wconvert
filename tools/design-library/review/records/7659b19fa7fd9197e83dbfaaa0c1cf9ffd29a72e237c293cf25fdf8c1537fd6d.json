@@ -1,0 +1,55 @@
+{
+  "id": "campaign-midnight-fragrance-edit",
+  "revision": "662912e9ef30af0dab53ee15f55890fc0ba79b864557a2ffcfcff8a649dee240",
+  "base_id": "a356483e06dcbff043ac0c34c8099006e59cd29541b95ec83934338a47512c3a",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **12 · Midnight Fragrance Edit** — Times serif/italic, framed arch photo, divider and offer footer restored. Photo crop differs; the small picture caption is absent and the percentage/footer typography is native editable text rather than individually positioned glyphs.",
+  "at": "2026-10-24T15:58:06.155Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/12-1440-wordpress.png",
+          "sha256": "dc5015b4aecbcf7ce598eb3a06ef641d3968bc4d777c2a15f70c34bc699ff4f8"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/12-390-wordpress.png",
+          "sha256": "862d94ed45c6631278801ca35ef5c9ee0413abb7cbe982f6f7283204861436c7"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "7659b19fa7fd9197e83dbfaaa0c1cf9ffd29a72e237c293cf25fdf8c1537fd6d"
+}

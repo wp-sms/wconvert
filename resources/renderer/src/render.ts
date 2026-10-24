@@ -7,6 +7,7 @@ import type {
   CodeNode,
   ConsentNode,
   CountdownNode,
+  DividerNode,
   EyebrowNode,
   FieldNode,
   FollowupNode,
@@ -285,7 +286,7 @@ function elementFor(node: TemplateNode, scoped: Tokens, at: string | null): HTML
     case 'badge':
       return badge(node as BadgeNode);
     case 'divider':
-      return divider();
+      return divider(node as DividerNode);
     case 'countdown':
       return countdown(node as CountdownNode);
     case 'code':
@@ -318,8 +319,10 @@ function layout(
     edges?: string;
     min?: string | number;
     notch?: boolean;
+    notch_position?: 'top' | 'sides';
     decorations?: import('./types').Decorations;
     basis?: string;
+    narrow_basis?: string;
   },
   scoped: Tokens,
   at: string | null,
@@ -327,7 +330,10 @@ function layout(
   const element = document.createElement('div');
 
   element.className = `wc-${node.type}`;
-  if (node.type === 'grid') element.style.setProperty(TOKEN_PREFIX + 'basis', node.basis ?? '8rem');
+  if (node.type === 'grid') {
+    element.style.setProperty(TOKEN_PREFIX + 'basis', node.basis ?? '8rem');
+    if (node.narrow_basis) element.style.setProperty(TOKEN_PREFIX + 'narrow_basis', node.narrow_basis);
+  }
 
   /*
    * **The floor under a box that draws a picture**, and it is declared by the
@@ -381,6 +387,7 @@ function layout(
     // byte-identically to one that spells the default.
     if (node.notch === true) {
       element.dataset.notch = 'true';
+      if (node.notch_position === 'sides') element.dataset.notchPosition = 'sides';
     }
   }
 
@@ -478,6 +485,7 @@ function split(node: SplitNode, scoped: Tokens, at: string | null): HTMLElement 
   const element = document.createElement('div');
 
   element.className = 'wc-split';
+  if (node.narrow_layout && node.narrow_layout !== 'wrap') element.dataset.narrowLayout = node.narrow_layout;
 
   scope(element, node.tokens);
 
@@ -654,8 +662,10 @@ function rating(node: RatingNode): HTMLElement {
  * without this vocabulary having to invent a role for it — and it is the one
  * leaf here with no words at all, so semantics is the only thing it has.
  */
-function divider(): HTMLElement {
-  return words('hr', 'wc-divider', '');
+function divider(node: DividerNode): HTMLElement {
+  const element = words('hr', 'wc-divider', '');
+  if (node.pattern === 'dashed') element.dataset.pattern = 'dashed';
+  return element;
 }
 
 /**
@@ -709,8 +719,9 @@ function countdown(node: CountdownNode): HTMLElement {
 
   if (node.layout === 'boxes') {
     element.classList.add('wc-boxes');
-    if (node.density === 'compact') element.classList.add('wc-compact');
+    if (node.density && node.density !== 'regular') element.classList.add('wc-compact', 'wc-' + node.density);
     for (const [unit, label] of [['d', node.days_label || pageLabel(3, 'Days')], ['h', node.hours_label || pageLabel(4, 'Hours')], ['m', node.minutes_label || pageLabel(5, 'Mins')], ['s', node.seconds_label || pageLabel(6, 'Secs')]]) {
+      if (unit === 's' && node.precision === 'minutes') continue;
       const word = document.createElement('small');
 
       word.textContent = label;
@@ -920,6 +931,10 @@ function image(node: ImageNode): HTMLElement | null {
   // the filename of.
   element.alt = node.alt ?? '';
   element.loading = 'lazy';
+  if (node.motion && ['arrive', 'breathe', 'drift'].includes(node.motion)) {
+    element.classList.add('wc-artwork-motion');
+    element.dataset.artworkMotion = node.motion;
+  }
 
   if (node.fit === 'contain') {
     element.style.setProperty('object-fit', 'contain');
@@ -929,7 +944,7 @@ function image(node: ImageNode): HTMLElement | null {
   // rounding the panel, the button and every input to match. `rect` adds
   // nothing, so a design without the param is unchanged.
   if (node.shape === 'circle') {
-    element.className = 'wc-image wc-image-circle';
+    element.classList.add('wc-image-circle');
   }
 
   return element;
@@ -1038,9 +1053,11 @@ function field(node: FieldNode): HTMLElement | null {
  */
 function code(node: CodeNode, at: string | null): HTMLElement {
   const value = words('span', 'wc-code', node.text);
+  if (node.appearance === 'plain') value.dataset.appearance = 'plain';
   const href = safeHref(node.apply_href);
   if (!node.copy && href === null) return value;
   const wrapper = wrap('div', node.layout === 'inline' ? 'wc-code-inline' : 'wc-stack', value);
+  if (node.appearance === 'plain') wrapper.dataset.appearance = 'plain';
   if (node.copy) {
     const copy = words('button', 'wc-button', node.copy_label || pageLabel(12, 'Copy code')) as HTMLButtonElement;
     copy.type = 'button';
@@ -1076,6 +1093,15 @@ function code(node: CodeNode, at: string | null): HTMLElement {
  * exactly one converting act — a Template offering both is rejected when it is
  * registered rather than disambiguated here (CONTEXT.md, Conversion).
  */
+function buttonLabel(element: HTMLElement, node: ButtonNode | FollowupNode, label: string): void {
+  element.textContent = label;
+  if (node.type !== 'button' || node.icon !== 'arrow') return;
+  const text = document.createElement('span');
+  text.textContent = label;
+  element.classList.add('wc-button-arrow');
+  element.replaceChildren(text, strokeIcon('M4 12h16m-6-6 6 6-6 6', 'wc-action-icon'));
+}
+
 function button(node: ButtonNode | FollowupNode): HTMLElement {
   const label = node.label ?? '';
 
@@ -1084,7 +1110,7 @@ function button(node: ButtonNode | FollowupNode): HTMLElement {
     const href = safeHref(node.href);
 
     anchor.className = 'wc-button';
-    anchor.textContent = label;
+    buttonLabel(anchor, node, label);
     anchor.rel = 'noopener';
     if (node.type === 'button') anchor.dataset.convert = '';
 
@@ -1102,7 +1128,7 @@ function button(node: ButtonNode | FollowupNode): HTMLElement {
   element.type = action === 'submit' || action === 'next' ? 'submit' : 'button';
   element.dataset.action = action;
   if (node.submission) element.dataset.submission = node.submission;
-  element.textContent = label;
+  buttonLabel(element, node, label);
 
   return element;
 }

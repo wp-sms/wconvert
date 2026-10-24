@@ -1,0 +1,51 @@
+{
+  "id": "campaign-pixel-play-sale",
+  "revision": "d97fad4ef3110eabd73394714caf996ee80301b3d18a900fd6d0735b45de4cf0",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "The pixel trio establishes a gaming theme while the native offer and shopping action remain editable.",
+  "at": "2026-10-24T10:40:12.653Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-pixel-play-sale-320.png",
+          "sha256": "8d81622e0561fedfa75b2695792c40bcd6782f4a5e3e24c77b10fd264e193917"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-pixel-play-sale-1440.png",
+          "sha256": "196fc591188612eb080ced6125ebf60a03d5d3865f70dd4457e66ee59ae9331a"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "98aec6a37d7eb2628fbe97d85ec06ac41bf30c0bc72cc33cae964f36a1622b04"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        }
+      ]
+    }
+  },
+  "record_id": "18fa78f91accc8de2adcce4fbc80994312ca7a7ef19eb788720d1f6a9d1e4942"
+}

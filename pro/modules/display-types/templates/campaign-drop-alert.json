@@ -1,0 +1,316 @@
+{
+  "id": "campaign-drop-alert",
+  "name": "Drop Alert",
+  "display_type": "slide_in",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#101211",
+    "fg": "#f4f4eb",
+    "muted": "#f4f4eb",
+    "accent": "#e4f67f",
+    "accent-fg": "#14180b",
+    "border": "#f4f4eb",
+    "input-bg": "#101211",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"DM Sans\", Arial, sans-serif",
+    "heading-size": "39px",
+    "heading-weight": "900",
+    "heading-leading": ".96",
+    "text-size": "14px",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "365px",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "input",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n3",
+                  "role": "eyebrow",
+                  "text": "BLACK FRIDAY",
+                  "tokens": {
+                    "text-size": "9px",
+                    "tracking": ".1em"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "0 32px 0 0",
+                "gap": "0",
+                "radius": "0"
+              }
+            },
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "n13",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "text-size": "103px",
+                        "leading": ".95",
+                        "tracking": "-.04em",
+                        "fg": "accent",
+                        "text-weight": "950"
+                      },
+                      "emphasis": "40",
+                      "narrow": {
+                        "text-size": "103px"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n17",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "text-size": "39px",
+                        "leading": ".95",
+                        "tracking": "-.04em",
+                        "fg": "accent",
+                        "text-weight": "950"
+                      },
+                      "emphasis": "%",
+                      "narrow": {
+                        "text-size": "39px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "2px"
+                  }
+                },
+                {
+                  "type": "eyebrow",
+                  "id": "n16",
+                  "role": "eyebrow",
+                  "text": "UP TO / OFF",
+                  "tokens": {
+                    "text-size": "9px",
+                    "tracking": ".08em"
+                  }
+                }
+              ],
+              "tokens": {
+                "gap": "12px"
+              }
+            },
+            {
+              "type": "stack",
+              "children": [
+                {
+                  "type": "heading",
+                  "id": "n4",
+                  "role": "headline",
+                  "text": "GET THE",
+                  "narrow": {
+                    "heading-size": "34px"
+                  },
+                  "tokens": {
+                    "heading-size": "39px"
+                  }
+                },
+                {
+                  "type": "heading",
+                  "id": "n15",
+                  "role": "headline",
+                  "text": "DROP ALERT.",
+                  "narrow": {
+                    "heading-size": "34px"
+                  },
+                  "tokens": {
+                    "heading-size": "39px",
+                    "fg": "accent"
+                  }
+                }
+              ],
+              "tokens": {
+                "gap": "0"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n5",
+              "role": "body",
+              "text": "Request access before the public sale opens."
+            },
+            {
+              "type": "stack",
+              "children": [
+                {
+                  "type": "field",
+                  "id": "n6",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true,
+                  "tokens": {
+                    "text-size": "16px"
+                  }
+                },
+                {
+                  "type": "consent",
+                  "id": "n7",
+                  "role": "consent_text",
+                  "text": "Email me Black Friday offers. I can unsubscribe anytime.",
+                  "hidden": true
+                },
+                {
+                  "type": "button",
+                  "id": "n8",
+                  "role": "cta_label",
+                  "label": "Get on the early list",
+                  "icon": "arrow",
+                  "action": "submit",
+                  "submission": "email-preview",
+                  "tokens": {
+                    "text-size": "14px",
+                    "radius": "0px"
+                  }
+                }
+              ],
+              "tokens": {
+                "gap": "12px"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n9",
+              "role": "fine_print",
+              "text": "Preview opens November 26. Up to 40% off selected items.",
+              "tokens": {
+                "text-size": "14px"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "28px 28px 26px",
+            "gap": "20px",
+            "radius": "0"
+          },
+          "narrow": {
+            "pad": "28px 24px 24px"
+          }
+        }
+      },
+      {
+        "id": "received",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n10",
+              "role": "success_headline",
+              "text": "Request received",
+              "tokens": {
+                "heading-size": "39px"
+              },
+              "narrow": {
+                "heading-size": "34px"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n11",
+              "role": "success_body",
+              "text": "Thanks for requesting the Black Friday preview."
+            },
+            {
+              "type": "text",
+              "id": "n12",
+              "role": "fine_print",
+              "text": "You can close this window and continue browsing.",
+              "tokens": {
+                "text-size": "12px"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "60px 30px 30px",
+            "gap": ".9rem"
+          },
+          "narrow": {
+            "pad": "60px 24px 24px"
+          }
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "email-preview",
+        "required": true,
+        "fields": [
+          "n6"
+        ],
+        "consents": [
+          "n7"
+        ]
+      }
+    ],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

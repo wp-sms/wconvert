@@ -1,0 +1,78 @@
+[
+  {
+    "id": "09",
+    "name": "Savings Receipt",
+    "width": 1440,
+    "reference": {
+      "width": 365,
+      "height": 593,
+      "background": "rgb(255, 246, 216)",
+      "palette": {
+        "--bg": "#fff6d8",
+        "--fg": "#263e31",
+        "--accent": "#263e31",
+        "--button-ink": "#fff6df",
+        "--em": ""
+      },
+      "buttonRadius": "0px",
+      "heading": {
+        "text": "LESS TO PAY.MORE TO KEEP.",
+        "font": "Display, Impact, sans-serif",
+        "size": "48px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 365,
+      "height": 591,
+      "heading": {
+        "text": "LESS TO PAY.MORE TO KEEP.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "47px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "09-1440-prototype.png",
+    "file": "09-1440-receipt-artwork.png"
+  },
+  {
+    "id": "09",
+    "name": "Savings Receipt",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 575,
+      "background": "rgb(255, 246, 216)",
+      "palette": {
+        "--bg": "#fff6d8",
+        "--fg": "#263e31",
+        "--accent": "#263e31",
+        "--button-ink": "#fff6df",
+        "--em": ""
+      },
+      "buttonRadius": "0px",
+      "heading": {
+        "text": "LESS TO PAY.MORE TO KEEP.",
+        "font": "Display, Impact, sans-serif",
+        "size": "43px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 591,
+      "heading": {
+        "text": "LESS TO PAY.MORE TO KEEP.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "47px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "09-390-prototype.png",
+    "file": "09-390-receipt-artwork.png"
+  }
+]

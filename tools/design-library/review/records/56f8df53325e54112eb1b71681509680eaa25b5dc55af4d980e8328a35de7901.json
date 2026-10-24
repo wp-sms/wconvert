@@ -1,0 +1,43 @@
+{
+  "id": "collection-discovery",
+  "revision": "5853582bafddeefffa0de4e4dae57b21717732343fcfa2ff04f03c8bbcdac0c4",
+  "base_id": "9e2fbd2397785aa629dd1141533b7c00ee254aa61f2a0405b2b8a9139e4afd21",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/shared-renderer-1.jpg",
+          "sha256": "fe7347742350c8cac8df4775df73667a7c74aed1118ba27d7f02580b02a6372d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "56f8df53325e54112eb1b71681509680eaa25b5dc55af4d980e8328a35de7901"
+}

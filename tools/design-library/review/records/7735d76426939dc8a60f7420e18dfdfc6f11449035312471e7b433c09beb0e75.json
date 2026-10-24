@@ -1,0 +1,55 @@
+{
+  "id": "campaign-pixel-play-sale",
+  "revision": "b673a8bf9e79fe0460afb17057c93938a308d60ec9a037c70b7347c392ec59b7",
+  "base_id": "e8230116e20ce79a706e37272a70b780e26eb599d2eb1fd2e1360a2f2efc3817",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **28 · Pixel Play Sale** — Pixel characters, large headline and offer remain distinct. Phone retains all four characters rather than clipping one. The action has a native group so the optional email form stays together; larger text and terms add height.",
+  "at": "2026-10-24T15:58:06.156Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/28-1440-wordpress.png",
+          "sha256": "0ec41e76387b558ea034f5e7a496386c2fa5e89b14213a8ac83a71d908ba7327"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/28-390-wordpress.png",
+          "sha256": "216b80e9dba663512a3a176edbbca6ce8946d3e8bacc361f896980d0ce17fcfc"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "7735d76426939dc8a60f7420e18dfdfc6f11449035312471e7b433c09beb0e75"
+}

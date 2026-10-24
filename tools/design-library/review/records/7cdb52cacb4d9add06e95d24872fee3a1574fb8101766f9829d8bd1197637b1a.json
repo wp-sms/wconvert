@@ -1,0 +1,47 @@
+{
+  "id": "bakery-first-loaf",
+  "revision": "40e2cab24c5e45b6d56c3810da5e3bc0194848e804d77a9501c2b2a0f1fc6adf",
+  "base_id": "8a80c4fa925178baaad34f68a6e676294b2115efaeb58a90842c27a9810cf5cb",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/bakery-first-loaf-320.png",
+          "sha256": "e18d53207810948b2784751cd85e5b4d371f34cc7ed30923a3c4cc56f315e1f3"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/bakery-first-loaf-1440.png",
+          "sha256": "176a655ad23cbd61d7e3e3d92e779af49605b75fc070eff679312a759591a9f7"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/review.md",
+          "sha256": "de10b9e52b18a25d1a2a2141034132a8661bb20452e5b49ab2b99129c08792ed"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/results.json",
+          "sha256": "a7427fb3737d6699cfc42b06595915a3e9ba372ae13085006fd7b3779788327e"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/results.json",
+          "sha256": "a7427fb3737d6699cfc42b06595915a3e9ba372ae13085006fd7b3779788327e"
+        }
+      ]
+    }
+  },
+  "record_id": "7cdb52cacb4d9add06e95d24872fee3a1574fb8101766f9829d8bd1197637b1a"
+}

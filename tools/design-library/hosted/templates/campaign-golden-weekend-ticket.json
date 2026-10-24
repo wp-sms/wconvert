@@ -1,0 +1,292 @@
+{
+  "id": "campaign-golden-weekend-ticket",
+  "name": "Golden Weekend Ticket",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#101211",
+    "fg": "#f4f4eb",
+    "muted": "#f4f4eb",
+    "accent": "#e8bb60",
+    "accent-fg": "#14180b",
+    "border": "#181a12",
+    "input-bg": "#e8bb60",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"DM Sans\", Arial, sans-serif",
+    "heading-size": "41px",
+    "heading-weight": "900",
+    "heading-leading": ".96",
+    "text-size": "14px",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "700px",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "split",
+          "start": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n1",
+                      "role": "eyebrow",
+                      "text": "BLACK FRIDAY / PUBLIC COUPON OFFER",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".1em"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "0 32px 0 0",
+                    "gap": "0",
+                    "radius": "0"
+                  }
+                },
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "id": "n2",
+                      "role": "headline",
+                      "text": "ADMIT ONE.",
+                      "narrow": {
+                        "heading-size": "31px"
+                      },
+                      "tokens": {
+                        "heading-size": "41px"
+                      }
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n10",
+                      "role": "headline",
+                      "text": "SAVE BIG.",
+                      "narrow": {
+                        "heading-size": "31px"
+                      },
+                      "tokens": {
+                        "heading-size": "41px",
+                        "fg": "accent"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "0"
+                  }
+                },
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "n7",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "text-size": "124px",
+                        "leading": ".95",
+                        "tracking": "-.04em",
+                        "fg": "input-bg",
+                        "text-weight": "950"
+                      },
+                      "emphasis": "35",
+                      "narrow": {
+                        "text-size": "88px"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n11",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "text-size": "47px",
+                        "leading": ".95",
+                        "tracking": "-.04em",
+                        "fg": "input-bg",
+                        "text-weight": "950"
+                      },
+                      "emphasis": "%",
+                      "narrow": {
+                        "text-size": "47px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "2px"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n4",
+                  "role": "fine_print",
+                  "text": "November 27–30. Selected items. Exclusions apply.",
+                  "tokens": {
+                    "text-size": "14px"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "36px 32px 28px",
+                "gap": "24px",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "32px 24px"
+              }
+            }
+          ],
+          "end": [
+            {
+              "type": "media",
+              "children": [
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n8",
+                      "role": "eyebrow",
+                      "text": "YOUR WEEKEND CODE",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".08em"
+                      }
+                    },
+                    {
+                      "type": "code",
+                      "id": "n5",
+                      "role": "code_value",
+                      "text": "FRIDAY35",
+                      "copy": false,
+                      "appearance": "plain",
+                      "tokens": {
+                        "align": "start"
+                      }
+                    },
+                    {
+                      "type": "panel",
+                      "children": [],
+                      "min": "23px",
+                      "tokens": {
+                        "pad": "0",
+                        "radius": "0",
+                        "bg-image": "repeating-linear-gradient(90deg,currentColor 0 2px,transparent 2px 5px,currentColor 5px 6px,transparent 6px 9px,currentColor 9px 13px,transparent 13px 15px)"
+                      },
+                      "narrow": {
+                        "pad": "0"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "id": "n6",
+                      "role": "cta_label",
+                      "label": "Shop with this code",
+                      "action": "link",
+                      "icon": "arrow",
+                      "tokens": {
+                        "text-size": "14px",
+                        "radius": "0px",
+                        "accent": "border",
+                        "accent-fg": "input-bg"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n9",
+                      "role": "body",
+                      "text": "Enter at checkout.\nSelected items only.",
+                      "tokens": {
+                        "text-size": "14px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "26px"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "50px 26px 30px",
+                "gap": "26px",
+                "radius": "0",
+                "bg": "input-bg",
+                "fg": "border",
+                "muted": "border"
+              },
+              "narrow": {
+                "pad": "28px 24px"
+              }
+            }
+          ],
+          "ratio": 0.58,
+          "basis": "16rem",
+          "narrow_layout": "stack",
+          "tokens": {
+            "gap": "0"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

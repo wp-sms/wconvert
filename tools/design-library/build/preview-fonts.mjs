@@ -6,8 +6,10 @@ const faces = [
   ['DM Sans', 400, 'dm-sans-400.ttf'],
   ['DM Sans', 700, 'dm-sans-700.ttf'],
   ['Instrument Serif', 400, 'instrument-serif-400.ttf'],
+  ['Bebas Neue', 400, 'bebas-neue-400.woff2'],
+  ['Cormorant Garamond', 400, 'cormorant-garamond.woff2'],
 ].map(([family, weight, file]) => ({ family, weight,
-  css: `@font-face{font-family:"${family}";font-style:normal;font-weight:${weight};src:url(data:font/ttf;base64,${readFileSync(new URL(`../assets/fonts/${file}`, import.meta.url)).toString('base64')}) format("truetype");font-display:block}`,
+  css: `@font-face{font-family:"${family}";font-style:normal;font-weight:${weight};src:url(data:font/${file.endsWith('.woff2') ? 'woff2' : 'ttf'};base64,${readFileSync(new URL(`../assets/fonts/${file}`, import.meta.url)).toString('base64')}) format("${file.endsWith('.woff2') ? 'woff2' : 'truetype'}");font-display:block}`,
 }));
 
 export function previewFonts(designs) {

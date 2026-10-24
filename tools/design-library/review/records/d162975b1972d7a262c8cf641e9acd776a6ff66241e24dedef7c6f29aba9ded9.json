@@ -1,0 +1,55 @@
+{
+  "id": "campaign-drop-alert",
+  "revision": "ad6a41e6a66cabd9464f44dd13cd06c02a3fba431292d5412c9b74c51afdcc32",
+  "base_id": "05a9bfc1c6c92be177093cfdcdefb248678393fcf08a661fa41653193551860c",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **44 · Drop Alert** — Lime figure and large headline retained. Native form adds preview/eligibility terms absent from the prototype. Correct template identity verified; consent/input contrast is readable.",
+  "at": "2026-10-24T15:58:06.154Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/44-1440-wordpress.png",
+          "sha256": "774afdbf475e8eff326b39d250539626a9c6b7390be61233a048e03786b7b9a9"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/44-390-wordpress.png",
+          "sha256": "51b239c8c5db566050aa7fa174dcb4e98bdc3effad9381d4474796b15f2d4726"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "d162975b1972d7a262c8cf641e9acd776a6ff66241e24dedef7c6f29aba9ded9"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "campaign-friday-coupon",
+  "revision": "886a558975ac7c605b7e22ed59bd613cdc630da23f9551915ba70b66e54283e5",
+  "base_id": "823cd825f16fe2ab7daeeeb2fc3183b610eda12b69e0d12b0fe22309eb1a4851",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **03 · Friday Coupon (Black Friday):** Restored mint ticket and deep-green ink; side cutouts reveal the actual red surface. Code and offer remain editable.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-friday-coupon-320.png",
+          "sha256": "ef30b77e1d9bfb529ab7c3539d91edb06d7937f6e6276f5f8e8ddde181720e7e"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-friday-coupon-1440.png",
+          "sha256": "31145b77f433b26eda8b7fe1b9ae7cab1940e59933f5cce5528515fcb9e876c2"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "875ee91dfba7adc451df836f45c087291e999b5432a7e9142b217769523c0036"
+}

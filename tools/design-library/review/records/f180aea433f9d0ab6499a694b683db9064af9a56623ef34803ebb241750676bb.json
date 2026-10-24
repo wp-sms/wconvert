@@ -1,0 +1,55 @@
+{
+  "id": "listening-night-invitation",
+  "revision": "1aabb7ab43133a130d4002ea1b8a1a56da63e764c7036afc83368b0904e58420",
+  "base_id": "73ef2744f44329131625f06388ce2d4b98da08e40ba5be5caba95b6f075f89cd",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at d7688edf, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T12:58:11Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/listening-night-invitation-320.png",
+          "sha256": "4c676eca0debfefc614eb661bc6b7099eef98ead7aff99c04230ad7806410a0f"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/listening-night-invitation-1440.png",
+          "sha256": "1027239a5b04040ec5285ade3ee54d1af62f4b895ac58a394b57cc7568f8880b"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/review.md",
+          "sha256": "83d5e893a7999c3cfde4ef3519dc791cdad0ab7005efba425467d5e085687ae0"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json",
+          "sha256": "3722746304da03cb7f7e8ff6c411258f6f132c7f1949503691e30d7344ef0370"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+          "sha256": "bf614c2913787167fbf45e1727ec5715a1ac8e50417c53b4627aa04595f761c9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+          "sha256": "bf614c2913787167fbf45e1727ec5715a1ac8e50417c53b4627aa04595f761c9"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json",
+          "sha256": "3722746304da03cb7f7e8ff6c411258f6f132c7f1949503691e30d7344ef0370"
+        }
+      ]
+    }
+  },
+  "record_id": "f180aea433f9d0ab6499a694b683db9064af9a56623ef34803ebb241750676bb"
+}

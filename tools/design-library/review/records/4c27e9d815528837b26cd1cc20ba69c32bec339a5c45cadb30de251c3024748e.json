@@ -1,0 +1,55 @@
+{
+  "id": "campaign-sound-circle",
+  "revision": "74e905628768397b46dfab833978415083755e3f9e069b88bf16988b32fefc5a",
+  "base_id": "9f59c06bc1d09e50a0242f7902892d69eee399aff3f9f07a61e275cb407b08b1",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **39 · Sound Circle** — Native nesting moves the offer below headline/photo on phone. The corrected heading/photo ratio keeps TURN intact on desktop. Fresh actual WordPress desktop/phone announcement and form captures were viewed; no clipping, misplaced offer or unreadable form controls remain.",
+  "at": "2026-10-24T15:58:06.154Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/39-1440-wordpress.png",
+          "sha256": "7ad14c21ee940770cee4cc79c9338ee48aa9b95ad02c4a3946e71fcfc13c4b01"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/39-390-wordpress.png",
+          "sha256": "f6e6a2c1260c603bb17de02feda176663c783b4ee3f8456c00b701fc4bbafff1"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "4c27e9d815528837b26cd1cc20ba69c32bec339a5c45cadb30de251c3024748e"
+}

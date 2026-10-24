@@ -1110,6 +1110,256 @@
       "revision": 2,
       "content": "0c898660a60550918ec99ef7287df875ad2da3a46967a63d1bac2970b2447fb0",
       "added": 430
+    },
+    "campaign-anniversary-event": {
+      "revision": 7,
+      "content": "970f1e8515a941251d247f47f5484e9c4694bc9fa9aa63f81a1e2de00482b3c4",
+      "added": 481
+    },
+    "campaign-black-friday-archive": {
+      "revision": 4,
+      "content": "d83907921cebdf2ce2494e7a5298491f9be29078ecf8996e57ceb59ab3d4930a",
+      "added": 482
+    },
+    "campaign-black-friday-coffee-menu": {
+      "revision": 4,
+      "content": "82512e1442801fb30828d5f9faea2fb511d85630aec3d30c5552c6386761730d",
+      "added": 483
+    },
+    "campaign-black-friday-department": {
+      "revision": 4,
+      "content": "2871bbad12b300f94e2c0ffdb38f983b96059f9095cd9856a46c9f6e922e96a9",
+      "added": 484
+    },
+    "campaign-black-friday-departments": {
+      "revision": 4,
+      "content": "c1b09af657d1893d740266653e4f9d59353be17995cb713d63f8126fbd2841cf",
+      "added": 485
+    },
+    "campaign-black-friday-fast-lane": {
+      "revision": 4,
+      "content": "714f9dc4a02b900ac5afa557ddf49d054e06102e1bcaf38ed82a90e404bd3a38",
+      "added": 486
+    },
+    "campaign-black-friday-plus-one": {
+      "revision": 4,
+      "content": "db1ee64f999d6b914e06b233218ad3e008c8be5c0b93e2e0d81fb321ff3be3aa",
+      "added": 487
+    },
+    "campaign-breakfast-edit": {
+      "revision": 4,
+      "content": "c2ee352ad65ce16e2b89b52862bbcf3d2c301ee90fccdb0fed4d022937a0b9f1",
+      "added": 488
+    },
+    "campaign-deadline-scoreboard": {
+      "revision": 4,
+      "content": "76ce28129b5a74f4d06414e5ae4c997f0b49a5b11732980d5a0a36a9d7a46c72",
+      "added": 489
+    },
+    "campaign-delivery-buddy": {
+      "revision": 5,
+      "content": "83c2d469ab0cdca476cde3012541a73a76d8d390743bfd55674f4bfce322c6a9",
+      "added": 490
+    },
+    "campaign-drop-alert": {
+      "revision": 4,
+      "content": "8f4ddc42d594ffaf9200195b3e5611375bc7890148ff0cda92dad59447a4b56f",
+      "added": 491
+    },
+    "campaign-extra-gift": {
+      "revision": 4,
+      "content": "ccf7d8be9e63a448c81052ddf05c88cdb6b7bae1406b5261e1dcdc01687d4862",
+      "added": 492
+    },
+    "campaign-extra-ten-coupon": {
+      "revision": 6,
+      "content": "9d8250a4d96a7d1c67687c0d7006493862551c3079b246669a99ec60a4b27196",
+      "added": 493
+    },
+    "campaign-fifty-fifty-poster": {
+      "revision": 4,
+      "content": "85f51f4267008a012e1765d0715e5681a08503922cc951deb65e89a4635661b6",
+      "added": 494
+    },
+    "campaign-finish-line-countdown": {
+      "revision": 4,
+      "content": "a1dfa2d8ee721db3eccad8b72cf26df94e3953874aa9b3fdbf71e44a3d803127",
+      "added": 495
+    },
+    "campaign-first-access-pass": {
+      "revision": 6,
+      "content": "8c9fe8fbdb9315add212df4167f866739c862a02cbed06b2ee76648ed01040f0",
+      "added": 496
+    },
+    "campaign-first-dibs-signup": {
+      "revision": 5,
+      "content": "2de0f675cd27e20a6d980846981d8937e27ad931613580e7046975b2f195af32",
+      "added": 497
+    },
+    "campaign-fragrance-booth": {
+      "revision": 4,
+      "content": "2fe6e0b9659d9f901ce52e98e286a9b3e83263431411199a76e8d1226cbfee7d",
+      "added": 498
+    },
+    "campaign-free-delivery-label": {
+      "revision": 7,
+      "content": "25e9e06a7802a84b20d55d1c90465fd2b870cc6653dc297823dca6651eed784a",
+      "added": 499
+    },
+    "campaign-friday-comic": {
+      "revision": 4,
+      "content": "76a3e1b46cdf787f993054e958ad39c8e8e549644dfac5a80f758bf1f7d233b0",
+      "added": 500
+    },
+    "campaign-friday-coupon": {
+      "revision": 5,
+      "content": "5b0d2eb75e79d8f4006740ed0371019e49c57dfe1a3e2c63e4d93ecf3082ce3f",
+      "added": 501
+    },
+    "campaign-friday-email-alert": {
+      "revision": 9,
+      "content": "2d8b119adcfd52b7a8502292f9e4aa3524507ab0c462cefb5ee1c897e0cdc722",
+      "added": 502
+    },
+    "campaign-friday-game-code": {
+      "revision": 6,
+      "content": "c82213bb8827f1221c0a88dd8ece3fbde3621fc36fe230cf55835cd52ea01865",
+      "added": 503
+    },
+    "campaign-friday-pass": {
+      "revision": 4,
+      "content": "a484e38fe7c63e538a06c4042921aedca497ef7ea03da2610cd5d06b1b9359bb",
+      "added": 504
+    },
+    "campaign-garden-edit": {
+      "revision": 4,
+      "content": "fa6944d967960984f42afb973a44ba1dfe2fce367059c85921dafdf62e8f173c",
+      "added": 505
+    },
+    "campaign-golden-weekend-ticket": {
+      "revision": 4,
+      "content": "a181d483ecb6ac421a1f989969749b3cea380164b8cf0563417d70298e95f2a4",
+      "added": 506
+    },
+    "campaign-home-edit": {
+      "revision": 5,
+      "content": "75cb5ebd94f4c6cf2c0a32f4c0e4b06eff72a0b289e02de64cd4ae5b24065bc5",
+      "added": 507
+    },
+    "campaign-layer-edit": {
+      "revision": 4,
+      "content": "e8dd8ce36cfc49ae520b6e28414ab9932569bd7859fc8e10ba2736832cce653a",
+      "added": 508
+    },
+    "campaign-midnight-fragrance-edit": {
+      "revision": 4,
+      "content": "c7797a656b7ff93983288d926248cd26e972f23b2e2fe76fd4710a8f2a6fc3c8",
+      "added": 509
+    },
+    "campaign-outdoor-edit": {
+      "revision": 4,
+      "content": "c15a668a6cdf33693da7232668939bd3bd572bbcbf539881872485b740ca5bc6",
+      "added": 510
+    },
+    "campaign-packing-perk": {
+      "revision": 5,
+      "content": "fb14d17af63d97178f6673cbb16253c240ea42a96da3fdd119415b6f8cbd34a7",
+      "added": 511
+    },
+    "campaign-pixel-play-sale": {
+      "revision": 4,
+      "content": "51036cbb1a19fcd731c5929608bb954d9a3c218ceae68888973c83e11028b168",
+      "added": 512
+    },
+    "campaign-price-elevator": {
+      "revision": 6,
+      "content": "20fa9260250a73c7ebb0a0181fad246726e6c5b7b7bba76560ea32f3c7ab8199",
+      "added": 513
+    },
+    "campaign-private-preview": {
+      "revision": 5,
+      "content": "4c4bb06f00afe60dcb9244357d72903013445a147900a1b173ef68e0990247a1",
+      "added": 514
+    },
+    "campaign-restock-mosaic": {
+      "revision": 4,
+      "content": "4f7134265a4995e9f310f427df949104e840ef73fb6625ca08125fe49f14de3a",
+      "added": 515
+    },
+    "campaign-savings-receipt": {
+      "revision": 4,
+      "content": "0ed51713aad765bdb99614d9fab7324334b98c62df0f06c0f1d83b86b9e2489d",
+      "added": 516
+    },
+    "campaign-savings-staircase": {
+      "revision": 5,
+      "content": "453074997d7faef30e245f362d82af5aabdcc6857833cb88ee2a463a43592dce",
+      "added": 517
+    },
+    "campaign-sneaker-edit": {
+      "revision": 5,
+      "content": "b6027f82c812c6766b2ebfad8a9a611e496429627dc7e3a374526411196062c4",
+      "added": 518
+    },
+    "campaign-sound-circle": {
+      "revision": 4,
+      "content": "d16899c296dab273f60fe2da7bca725aa4263b9268f8e499b2fdadea6a89a9db",
+      "added": 519
+    },
+    "campaign-streetwear-poster": {
+      "revision": 4,
+      "content": "005b43b93edee46913e0870b606f14e078e83eda12447ba9d5cdd3e8ee0646d6",
+      "added": 520
+    },
+    "campaign-sweet-edit": {
+      "revision": 5,
+      "content": "97ec1a16064255373cab007e7bdfd2dd175d9f732803abc188231be9686dfc68",
+      "added": 521
+    },
+    "campaign-tech-price-sheet": {
+      "revision": 4,
+      "content": "118c1b4c0137ec944d6ad18e07b0cb9e35c45bf0efa3e6edf7e6c76ebf0797e3",
+      "added": 522
+    },
+    "campaign-turn-it-up": {
+      "revision": 4,
+      "content": "15a74038292c356e0a3d0e661f82869f7481417c3e951c9237adbc4a7e1afe4f",
+      "added": 523
+    },
+    "campaign-twelve-month-deal": {
+      "revision": 5,
+      "content": "b3edb04e642a76566b38343d0fc5938b602050b6fa2f0de48ba8979d3b1ee137",
+      "added": 524
+    },
+    "campaign-welcome-buddy": {
+      "revision": 3,
+      "content": "7caf6f2d0acf637e44a2656fdd40f6522d65957f4a41c1ec82567ac0197d7522",
+      "added": 525
+    },
+    "campaign-welcome-label": {
+      "revision": 4,
+      "content": "2608132f2fec3dc75d776a754e6c0d9588ab10de2b57030043f627da5ae1624f",
+      "added": 526
+    },
+    "campaign-welcome-perk": {
+      "revision": 4,
+      "content": "c2988fe47e6396687f0d50f46a8653bec5380dd0ce88e3b00fd4804f2d8deb7f",
+      "added": 527
+    },
+    "campaign-welcome-shortcut": {
+      "revision": 5,
+      "content": "cad8501f99e1a6ba05f39f5a429592c1bb5ddb249f68bfd1fe29fe4622bbdde7",
+      "added": 528
+    },
+    "campaign-wishlist-alert": {
+      "revision": 6,
+      "content": "07dab42be4f18bf9ed3800ebeb03845457f9b7b6af15e0bef2b10f1db4a80d6f",
+      "added": 529
+    },
+    "campaign-your-welcome-pal": {
+      "revision": 4,
+      "content": "94b34ed28200d9d0454ffb278f71e5229bb26bd63179802a746aaecad3afa1ce",
+      "added": 530
     }
   },
   "setups": {
@@ -2402,6 +2652,256 @@
       "revision": 2,
       "content": "d92ad40b54da426910781a44d343bde9b0fe329ef7ae41d003c6e5c2b40357bb",
       "added": 480
+    },
+    "campaign-anniversary-event": {
+      "revision": 7,
+      "content": "7b72e375d0f3870915e932a857943b5c2c4f541fce504ffce3cf3ea9cbdb7470",
+      "added": 531
+    },
+    "campaign-black-friday-archive": {
+      "revision": 4,
+      "content": "71243b14c692a029035978290d39418fbb98b6b2d4297ea88e6861e043ba21a4",
+      "added": 532
+    },
+    "campaign-black-friday-coffee-menu": {
+      "revision": 4,
+      "content": "fd8e73841ebff4475b0827b860e24f6ed5bc923b89ef904e84628b0bb07432cd",
+      "added": 533
+    },
+    "campaign-black-friday-department": {
+      "revision": 4,
+      "content": "2f6b0493ceeab82df4ac86e5c75c6609e5a630d14fa624d6e24f005dd1b3637c",
+      "added": 534
+    },
+    "campaign-black-friday-departments": {
+      "revision": 4,
+      "content": "50fa26d7f1987b5b5c1e49e71db3b8aedf664b7ad1647fd341056347dd84148c",
+      "added": 535
+    },
+    "campaign-black-friday-fast-lane": {
+      "revision": 4,
+      "content": "90d7ee538e0a4d4cd641dea5d301404669be517c783d3ced2dc65a040106d429",
+      "added": 536
+    },
+    "campaign-black-friday-plus-one": {
+      "revision": 4,
+      "content": "66de5894d6523e93047645ab798d59b8f1776918a53fbb0bd1e8389f04514d78",
+      "added": 537
+    },
+    "campaign-breakfast-edit": {
+      "revision": 4,
+      "content": "270818ff850271ed2140a6dfc12f127519f364f71d7103976f10cdbafdcda18d",
+      "added": 538
+    },
+    "campaign-deadline-scoreboard": {
+      "revision": 4,
+      "content": "73724d6e9d8136d1853852ab5256c342ef513a7bc399b3a248d978b9e645e1b4",
+      "added": 539
+    },
+    "campaign-delivery-buddy": {
+      "revision": 5,
+      "content": "b13c1a9907dc43a3eb74094d0f87d102f0dc5e8f393aff58c1a4a10f11120cd5",
+      "added": 540
+    },
+    "campaign-drop-alert": {
+      "revision": 4,
+      "content": "6f0df6eff9575b93d91f91b20f4a2ab19af7ccc29169ca7dd42aae48b61200cc",
+      "added": 541
+    },
+    "campaign-extra-gift": {
+      "revision": 4,
+      "content": "fdaaa91155276c4d183ec518912083836ee274fffc224297c72998aa5f9f6fd9",
+      "added": 542
+    },
+    "campaign-extra-ten-coupon": {
+      "revision": 6,
+      "content": "2018cc9f0029c30c1d650e5613c14cc0c14121c4747789bd7fb347a063b408a4",
+      "added": 543
+    },
+    "campaign-fifty-fifty-poster": {
+      "revision": 4,
+      "content": "93efc875bb41a7d0b5e300f13e05295ba1617fbfeb2e9976900cd3b12e498740",
+      "added": 544
+    },
+    "campaign-finish-line-countdown": {
+      "revision": 4,
+      "content": "7301b04ccb07c21802b4065e301f6f24f7198800bd050d8f11fb79cac39a6a81",
+      "added": 545
+    },
+    "campaign-first-access-pass": {
+      "revision": 6,
+      "content": "86343d9f6e9c88dcc606c52ef4925162cbfa9d9e8c41d93067b4e0dfb7ee9d8b",
+      "added": 546
+    },
+    "campaign-first-dibs-signup": {
+      "revision": 5,
+      "content": "8523e10eb192b1096ad3e938517e09f98aefabc1d96e02e89670c32fce89c776",
+      "added": 547
+    },
+    "campaign-fragrance-booth": {
+      "revision": 4,
+      "content": "46a230ceddb6de9fcd572e97bd22561bd846317a9a1c217ee03050a77f07522b",
+      "added": 548
+    },
+    "campaign-free-delivery-label": {
+      "revision": 7,
+      "content": "71e11dec1c07faadfd11e760797e0f06611f248ce3a66ac1372aa1ffa94ac70d",
+      "added": 549
+    },
+    "campaign-friday-comic": {
+      "revision": 4,
+      "content": "070eb5832295631cba0923331da59cf2a6cfc9799e3cd36da97bc594b6eeb35f",
+      "added": 550
+    },
+    "campaign-friday-coupon": {
+      "revision": 5,
+      "content": "74dab8d93cca8fc73e34f7a8a3ada1c0c69e5ca16cada8c35713892bcc54e27e",
+      "added": 551
+    },
+    "campaign-friday-email-alert": {
+      "revision": 9,
+      "content": "cb89fe6792ebbb247f693f93f8e3727a783e2cbee74ee780661a6f3011373853",
+      "added": 552
+    },
+    "campaign-friday-game-code": {
+      "revision": 6,
+      "content": "f9a12d930dd2004a65e38bc17291381ec32ad7cc830c8898b2f1bf60b195a4ac",
+      "added": 553
+    },
+    "campaign-friday-pass": {
+      "revision": 4,
+      "content": "2f81ccff5d551bc112aaa11a6d5ab59ed9cbfb8dfb8f964f1c081662c06aeec5",
+      "added": 554
+    },
+    "campaign-garden-edit": {
+      "revision": 4,
+      "content": "fcba116c4ddba0bf6a2dfac78b03b8e4cc565c7882ddd2fec6dd64849813e424",
+      "added": 555
+    },
+    "campaign-golden-weekend-ticket": {
+      "revision": 4,
+      "content": "1e771566031a5865a6050d99bef122e48abda69e9093e8f1a55287987a5ecc93",
+      "added": 556
+    },
+    "campaign-home-edit": {
+      "revision": 5,
+      "content": "0d04d6384644a4d0e1c65693d129caf1629a89b5ed92721f45a89f0ea14d18f6",
+      "added": 557
+    },
+    "campaign-layer-edit": {
+      "revision": 4,
+      "content": "f47e3b11670ee5b2f6720ecb9fabc3ce0921274d9b376d277ab5e9760b6e31bc",
+      "added": 558
+    },
+    "campaign-midnight-fragrance-edit": {
+      "revision": 4,
+      "content": "3cacbf216321ce4ce2eb3bccb9fed4a7241c86e923a101b67e8602969897d460",
+      "added": 559
+    },
+    "campaign-outdoor-edit": {
+      "revision": 4,
+      "content": "458c75c9061b0cdf32632cf44af744b892f545c96cd6efba8da7e9133776c3bb",
+      "added": 560
+    },
+    "campaign-packing-perk": {
+      "revision": 5,
+      "content": "f95232a5f4a87e09266ff8a1d531ceccfafe87f37c95d4cb1b3c9464ffa0644f",
+      "added": 561
+    },
+    "campaign-pixel-play-sale": {
+      "revision": 4,
+      "content": "880fd56c108a12368073b059328337ae6984bf30ad1fff9cf8225bad13a97a54",
+      "added": 562
+    },
+    "campaign-price-elevator": {
+      "revision": 6,
+      "content": "59ff778bf61ab094855d92027f37ffd529ae57e1d750b8d41edb95fa817a32fd",
+      "added": 563
+    },
+    "campaign-private-preview": {
+      "revision": 5,
+      "content": "8911bbcf3b532ff4314b900b8d243702018604bc3d234637e7d16fba072eb060",
+      "added": 564
+    },
+    "campaign-restock-mosaic": {
+      "revision": 4,
+      "content": "28ded32df1f6dd5158e3c1aa2ca5a0c2e189b2c1a30997af44bbee438620a1c3",
+      "added": 565
+    },
+    "campaign-savings-receipt": {
+      "revision": 4,
+      "content": "9e6ffcc762a08667fd3b9d11cf8df369dad86475630c375182643895043e2566",
+      "added": 566
+    },
+    "campaign-savings-staircase": {
+      "revision": 5,
+      "content": "b5133c1dee5256952a984eb1c6974031947a1f1510a4eeb8e945ee06c6c7107c",
+      "added": 567
+    },
+    "campaign-sneaker-edit": {
+      "revision": 5,
+      "content": "4903de3535661095553b3f9875b10029ab99a4b59bd7f4699e2f3a8e6c530b08",
+      "added": 568
+    },
+    "campaign-sound-circle": {
+      "revision": 4,
+      "content": "df74ad0cb701b52c2619294932f5a01c6e75bb694ecc46aab6b6391e8aeac960",
+      "added": 569
+    },
+    "campaign-streetwear-poster": {
+      "revision": 4,
+      "content": "22ba1c7dba5b36f64f9e7e925bcec8fa79154a7977dc957850bf1541345f13d8",
+      "added": 570
+    },
+    "campaign-sweet-edit": {
+      "revision": 5,
+      "content": "4a3ba2525198117a6893aef6626b7cc88fdcd7cb3b4d5f2c25365552425043d9",
+      "added": 571
+    },
+    "campaign-tech-price-sheet": {
+      "revision": 4,
+      "content": "1af2632d14066b3f1012513dc3006d25cb1bbef8e48c2bae5cd8f93a90349909",
+      "added": 572
+    },
+    "campaign-turn-it-up": {
+      "revision": 4,
+      "content": "881d9c38edd0dd457a4976029925c669fee72f8b0cda1c6ae5cdc27270eaafc7",
+      "added": 573
+    },
+    "campaign-twelve-month-deal": {
+      "revision": 5,
+      "content": "a7f455fd3fab3e4f35b5ec0de03b8d1598c690fc13fe1ec7688ea423322d44a2",
+      "added": 574
+    },
+    "campaign-welcome-buddy": {
+      "revision": 3,
+      "content": "2b3e39723be24c9470ed528232714921b8a55302d810df0e98e3b3563d3ac7ab",
+      "added": 575
+    },
+    "campaign-welcome-label": {
+      "revision": 4,
+      "content": "ecc95ae100dd137d0e3f9b23906a3c8a66d2ac4924d25b0f43d4ce43e018aa2f",
+      "added": 576
+    },
+    "campaign-welcome-perk": {
+      "revision": 4,
+      "content": "02de3cfc8dda72056f5e183c26e5f20bd9e29c4645456d555341d6b7cf971c50",
+      "added": 577
+    },
+    "campaign-welcome-shortcut": {
+      "revision": 5,
+      "content": "51f674495e4488c7e103e2b89cfbcf7ae6382227b7ea6533cfdd4c5f59fb6d44",
+      "added": 578
+    },
+    "campaign-wishlist-alert": {
+      "revision": 6,
+      "content": "1ffd72bc7c55eb52035385652fad857938876ff48344d44f656b09e15a3c985e",
+      "added": 579
+    },
+    "campaign-your-welcome-pal": {
+      "revision": 4,
+      "content": "71b1aec8da05c9d1031ec710fb0f6608f97a77fd3bdf87a0d7d504d223e929e0",
+      "added": 580
     }
   },
   "retired": []

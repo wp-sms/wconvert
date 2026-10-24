@@ -1,0 +1,1502 @@
+[
+  {
+    "id": "47",
+    "native_id": "campaign-free-delivery-label",
+    "name": "Free-Delivery Label",
+    "viewport": 1440,
+    "metrics": {
+      "fields": [
+        {
+          "name": "email",
+          "colour": "rgb(244, 244, 235)",
+          "background": "rgb(16, 18, 17)",
+          "placeholder": "rgb(244, 244, 235)",
+          "textContrast": 17,
+          "placeholderContrast": 17
+        },
+        {
+          "name": "website",
+          "colour": "rgb(0, 0, 0)",
+          "background": "rgb(255, 255, 255)",
+          "placeholder": "rgb(0, 0, 0)",
+          "textContrast": 21,
+          "placeholderContrast": 21
+        }
+      ],
+      "width": 930,
+      "height": 213,
+      "scrollHeight": 213,
+      "fonts": [
+        {
+          "text": "BLACK FRIDAY / DELIVERY",
+          "family": "DM Sans",
+          "size": "10.5px",
+          "weight": "600",
+          "loaded": true
+        },
+        {
+          "text": "27\u201430 NOV / STANDARD",
+          "family": "DM Sans",
+          "size": "10.5px",
+          "weight": "600",
+          "loaded": true
+        },
+        {
+          "text": "$0",
+          "family": "DM Sans",
+          "size": "76px",
+          "weight": "900",
+          "loaded": true
+        },
+        {
+          "text": "DELIVERYON ORDERS $100+",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Email address *",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "500",
+          "loaded": true
+        },
+        {
+          "text": "Sign up",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "700",
+          "loaded": true
+        }
+      ],
+      "faces": [
+        {
+          "family": "DM Sans",
+          "weight": "100 1000",
+          "style": "normal",
+          "status": "loaded"
+        }
+      ],
+      "overflows": [],
+      "alignment": {
+        "adjacent": false,
+        "bottomDifference": 47
+      }
+    },
+    "file": "47-1440-wordpress.png",
+    "errors": []
+  },
+  {
+    "id": "03",
+    "native_id": "campaign-friday-coupon",
+    "name": "Friday Coupon",
+    "viewport": 1440,
+    "metrics": {
+      "fields": [
+        {
+          "name": "email",
+          "colour": "rgb(255, 243, 215)",
+          "background": "rgb(186, 52, 48)",
+          "placeholder": "rgb(255, 243, 215)",
+          "textContrast": 5.26,
+          "placeholderContrast": 5.26
+        },
+        {
+          "name": "website",
+          "colour": "rgb(0, 0, 0)",
+          "background": "rgb(255, 255, 255)",
+          "placeholder": "rgb(0, 0, 0)",
+          "textContrast": 21,
+          "placeholderContrast": 21
+        }
+      ],
+      "width": 720,
+      "height": 550.09375,
+      "scrollHeight": 550,
+      "fonts": [
+        {
+          "text": "BLACK FRIDAY / PUBLIC DISCOUNT CODE",
+          "family": "DM Sans",
+          "size": "10.5px",
+          "weight": "600",
+          "loaded": true
+        },
+        {
+          "text": "BLACK FRIDAY.40% OFF.",
+          "family": "Bebas Neue",
+          "size": "58px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Save 40% on selected favorites during the Black Friday event.",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Email address *",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "500",
+          "loaded": true
+        },
+        {
+          "text": "Get my code",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "700",
+          "loaded": true
+        },
+        {
+          "text": "November 27\u201330. Selected items. Exclusions apply.",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "YOUR BLACK FRIDAY CODE",
+          "family": "DM Sans",
+          "size": "10.5px",
+          "weight": "600",
+          "loaded": true
+        },
+        {
+          "text": "40%",
+          "family": "Bebas Neue",
+          "size": "96px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "OFF SELECTED ITEMS",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        }
+      ],
+      "faces": [
+        {
+          "family": "DM Sans",
+          "weight": "100 1000",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Bebas Neue",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        }
+      ],
+      "overflows": [],
+      "alignment": {
+        "adjacent": false,
+        "bottomDifference": 63
+      }
+    },
+    "file": "03-1440-wordpress.png",
+    "errors": []
+  },
+  {
+    "id": "06",
+    "native_id": "campaign-price-elevator",
+    "name": "Price Elevator",
+    "viewport": 1440,
+    "metrics": {
+      "fields": [
+        {
+          "name": "email",
+          "colour": "rgb(54, 44, 86)",
+          "background": "rgb(221, 216, 242)",
+          "placeholder": "rgb(54, 44, 86)",
+          "textContrast": 9.19,
+          "placeholderContrast": 9.19
+        },
+        {
+          "name": "website",
+          "colour": "rgb(0, 0, 0)",
+          "background": "rgb(255, 255, 255)",
+          "placeholder": "rgb(0, 0, 0)",
+          "textContrast": 21,
+          "placeholderContrast": 21
+        }
+      ],
+      "width": 720,
+      "height": 557.78125,
+      "scrollHeight": 558,
+      "fonts": [
+        {
+          "text": "EXAMPLE PRICE / 40% OFF",
+          "family": "DM Sans",
+          "size": "10.5px",
+          "weight": "600",
+          "loaded": true
+        },
+        {
+          "text": "WAS $100",
+          "family": "Bebas Neue",
+          "size": "40px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "\u2193",
+          "family": "DM Sans",
+          "size": "10.5px",
+          "weight": "600",
+          "loaded": true
+        },
+        {
+          "text": "$60",
+          "family": "Bebas Neue",
+          "size": "96px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "\u25cf  \u25cf  \u25cf",
+          "family": "DM Sans",
+          "size": "10.5px",
+          "weight": "600",
+          "loaded": true
+        },
+        {
+          "text": "BLACK FRIDAY / PRICE MARKDOWN",
+          "family": "DM Sans",
+          "size": "10.5px",
+          "weight": "600",
+          "loaded": true
+        },
+        {
+          "text": "BLACK FRIDAY.",
+          "family": "Bebas Neue",
+          "size": "62px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "PRICE DROP.",
+          "family": "Bebas Neue",
+          "size": "62px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Selected favorites are 40% off. A $100 item becomes $60.",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Email address *",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "500",
+          "loaded": true
+        },
+        {
+          "text": "Sign up",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "700",
+          "loaded": true
+        },
+        {
+          "text": "Illustrative pricing. November 27\u201330. Selected items.",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        }
+      ],
+      "faces": [
+        {
+          "family": "DM Sans",
+          "weight": "100 1000",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Bebas Neue",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        }
+      ],
+      "overflows": [],
+      "alignment": {
+        "adjacent": false,
+        "bottomDifference": 63
+      }
+    },
+    "file": "06-1440-wordpress.png",
+    "errors": []
+  },
+  {
+    "id": "10",
+    "native_id": "campaign-welcome-shortcut",
+    "name": "Welcome Shortcut",
+    "viewport": 1440,
+    "metrics": {
+      "fields": [
+        {
+          "name": "email",
+          "colour": "rgb(87, 48, 68)",
+          "background": "rgb(255, 200, 150)",
+          "placeholder": "rgb(87, 48, 68)",
+          "textContrast": 7.3,
+          "placeholderContrast": 7.3
+        },
+        {
+          "name": "website",
+          "colour": "rgb(0, 0, 0)",
+          "background": "rgb(255, 255, 255)",
+          "placeholder": "rgb(0, 0, 0)",
+          "textContrast": 21,
+          "placeholderContrast": 21
+        }
+      ],
+      "width": 720,
+      "height": 536.65625,
+      "scrollHeight": 537,
+      "fonts": [
+        {
+          "text": "15%",
+          "family": "Bebas Neue",
+          "size": "63px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "FIRST-ORDER COUPON",
+          "family": "DM Sans",
+          "size": "10.5px",
+          "weight": "600",
+          "loaded": true
+        },
+        {
+          "text": "YOUR SHORTCUTTO 15% OFF.",
+          "family": "Bebas Neue",
+          "size": "51px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Enjoy 15% off selected everyday favorites on your first order.",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Email address *",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "500",
+          "loaded": true
+        },
+        {
+          "text": "Get my code",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "700",
+          "loaded": true
+        },
+        {
+          "text": "First order only. Selected items. Exclusions apply.",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        }
+      ],
+      "faces": [
+        {
+          "family": "DM Sans",
+          "weight": "100 1000",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Bebas Neue",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        }
+      ],
+      "overflows": [],
+      "alignment": {
+        "adjacent": false,
+        "bottomDifference": 63
+      }
+    },
+    "file": "10-1440-wordpress.png",
+    "errors": []
+  },
+  {
+    "id": "11",
+    "native_id": "campaign-sneaker-edit",
+    "name": "Sneaker Edit",
+    "viewport": 1440,
+    "metrics": {
+      "fields": [
+        {
+          "name": "email",
+          "colour": "rgb(250, 244, 223)",
+          "background": "rgb(37, 43, 38)",
+          "placeholder": "rgb(250, 244, 223)",
+          "textContrast": 13.13,
+          "placeholderContrast": 13.13
+        },
+        {
+          "name": "website",
+          "colour": "rgb(0, 0, 0)",
+          "background": "rgb(255, 255, 255)",
+          "placeholder": "rgb(0, 0, 0)",
+          "textContrast": 21,
+          "placeholderContrast": 21
+        }
+      ],
+      "width": 720,
+      "height": 546.375,
+      "scrollHeight": 546,
+      "fonts": [
+        {
+          "text": "BLACK FRIDAY / SELECTED SNEAKERS",
+          "family": "monospace",
+          "size": "10.5px",
+          "weight": "600",
+          "loaded": true
+        },
+        {
+          "text": "BLACK FRIDAY / FOOTWEAR SALE",
+          "family": "DM Sans",
+          "size": "10.5px",
+          "weight": "600",
+          "loaded": true
+        },
+        {
+          "text": "NICE PAIR.",
+          "family": "Bebas Neue",
+          "size": "67px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "40% LESS.",
+          "family": "Bebas Neue",
+          "size": "67px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Save 40% on selected sneakers this Black Friday.",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Email address *",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "500",
+          "loaded": true
+        },
+        {
+          "text": "Sign up",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "700",
+          "loaded": true
+        },
+        {
+          "text": "November 27\u201330. Selected styles and sizes.",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        }
+      ],
+      "faces": [
+        {
+          "family": "DM Sans",
+          "weight": "100 1000",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Bebas Neue",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        }
+      ],
+      "overflows": [],
+      "alignment": {
+        "adjacent": false,
+        "bottomDifference": 63
+      }
+    },
+    "file": "11-1440-wordpress.png",
+    "errors": []
+  },
+  {
+    "id": "16",
+    "native_id": "campaign-delivery-buddy",
+    "name": "Delivery Buddy",
+    "viewport": 1440,
+    "metrics": {
+      "fields": [
+        {
+          "name": "email",
+          "colour": "rgb(255, 240, 206)",
+          "background": "rgb(37, 27, 61)",
+          "placeholder": "rgb(255, 240, 206)",
+          "textContrast": 14.28,
+          "placeholderContrast": 14.28
+        },
+        {
+          "name": "website",
+          "colour": "rgb(0, 0, 0)",
+          "background": "rgb(255, 255, 255)",
+          "placeholder": "rgb(0, 0, 0)",
+          "textContrast": 21,
+          "placeholderContrast": 21
+        }
+      ],
+      "width": 720,
+      "height": 559.78125,
+      "scrollHeight": 560,
+      "fonts": [
+        {
+          "text": "SHIPPING THRESHOLD",
+          "family": "DM Sans",
+          "size": "10.5px",
+          "weight": "600",
+          "loaded": true
+        },
+        {
+          "text": "GOOD NEWS.",
+          "family": "Bebas Neue",
+          "size": "62px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "FREE DELIVERY.",
+          "family": "Bebas Neue",
+          "size": "62px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Get free standard shipping when your order reaches $75.",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Email address *",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "500",
+          "loaded": true
+        },
+        {
+          "text": "Sign up",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "700",
+          "loaded": true
+        },
+        {
+          "text": "Orders $75+. Standard shipping to eligible destinations.",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        }
+      ],
+      "faces": [
+        {
+          "family": "DM Sans",
+          "weight": "100 1000",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Bebas Neue",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        }
+      ],
+      "overflows": [],
+      "alignment": {
+        "adjacent": false,
+        "bottomDifference": 63
+      }
+    },
+    "file": "16-1440-wordpress.png",
+    "errors": []
+  },
+  {
+    "id": "19",
+    "native_id": "campaign-friday-game-code",
+    "name": "Friday Game Code",
+    "viewport": 1440,
+    "metrics": {
+      "fields": [
+        {
+          "name": "email",
+          "colour": "rgb(33, 30, 50)",
+          "background": "rgb(255, 246, 215)",
+          "placeholder": "rgb(33, 30, 50)",
+          "textContrast": 14.98,
+          "placeholderContrast": 14.98
+        },
+        {
+          "name": "website",
+          "colour": "rgb(0, 0, 0)",
+          "background": "rgb(255, 255, 255)",
+          "placeholder": "rgb(0, 0, 0)",
+          "textContrast": 21,
+          "placeholderContrast": 21
+        }
+      ],
+      "width": 600,
+      "height": 631.8125,
+      "scrollHeight": 632,
+      "fonts": [
+        {
+          "text": "BLACK FRIDAY",
+          "family": "Bebas Neue",
+          "size": "20px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "MORE PLAY.",
+          "family": "Bebas Neue",
+          "size": "62px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "30% LESS.",
+          "family": "Bebas Neue",
+          "size": "62px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Black Friday savings on selected gaming accessories.",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Email address *",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "500",
+          "loaded": true
+        },
+        {
+          "text": "Get my code",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "700",
+          "loaded": true
+        },
+        {
+          "text": "November 27\u201330. Selected gaming accessories.",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        }
+      ],
+      "faces": [
+        {
+          "family": "DM Sans",
+          "weight": "100 1000",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Bebas Neue",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        }
+      ],
+      "overflows": [],
+      "alignment": {
+        "adjacent": false,
+        "bottomDifference": 65
+      }
+    },
+    "file": "19-1440-wordpress.png",
+    "errors": []
+  },
+  {
+    "id": "47",
+    "native_id": "campaign-free-delivery-label",
+    "name": "Free-Delivery Label",
+    "viewport": 390,
+    "metrics": {
+      "fields": [
+        {
+          "name": "email",
+          "colour": "rgb(244, 244, 235)",
+          "background": "rgb(16, 18, 17)",
+          "placeholder": "rgb(244, 244, 235)",
+          "textContrast": 17,
+          "placeholderContrast": 17
+        },
+        {
+          "name": "website",
+          "colour": "rgb(0, 0, 0)",
+          "background": "rgb(255, 255, 255)",
+          "placeholder": "rgb(0, 0, 0)",
+          "textContrast": 21,
+          "placeholderContrast": 21
+        }
+      ],
+      "width": 390,
+      "height": 448.453125,
+      "scrollHeight": 448,
+      "fonts": [
+        {
+          "text": "BLACK FRIDAY / DELIVERY",
+          "family": "DM Sans",
+          "size": "10.5px",
+          "weight": "600",
+          "loaded": true
+        },
+        {
+          "text": "27\u201430 NOV / STANDARD",
+          "family": "DM Sans",
+          "size": "10.5px",
+          "weight": "600",
+          "loaded": true
+        },
+        {
+          "text": "$0",
+          "family": "DM Sans",
+          "size": "76px",
+          "weight": "900",
+          "loaded": true
+        },
+        {
+          "text": "DELIVERYON ORDERS $100+",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Email address *",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "500",
+          "loaded": true
+        },
+        {
+          "text": "Sign up",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "700",
+          "loaded": true
+        }
+      ],
+      "faces": [
+        {
+          "family": "DM Sans",
+          "weight": "100 1000",
+          "style": "normal",
+          "status": "loaded"
+        }
+      ],
+      "overflows": [],
+      "alignment": {
+        "adjacent": false,
+        "bottomDifference": 47
+      }
+    },
+    "file": "47-390-wordpress.png",
+    "errors": []
+  },
+  {
+    "id": "03",
+    "native_id": "campaign-friday-coupon",
+    "name": "Friday Coupon",
+    "viewport": 390,
+    "metrics": {
+      "fields": [
+        {
+          "name": "email",
+          "colour": "rgb(255, 243, 215)",
+          "background": "rgb(186, 52, 48)",
+          "placeholder": "rgb(255, 243, 215)",
+          "textContrast": 5.26,
+          "placeholderContrast": 5.26
+        },
+        {
+          "name": "website",
+          "colour": "rgb(0, 0, 0)",
+          "background": "rgb(255, 255, 255)",
+          "placeholder": "rgb(0, 0, 0)",
+          "textContrast": 21,
+          "placeholderContrast": 21
+        }
+      ],
+      "width": 358,
+      "height": 839.296875,
+      "scrollHeight": 839,
+      "fonts": [
+        {
+          "text": "BLACK FRIDAY / PUBLIC DISCOUNT CODE",
+          "family": "DM Sans",
+          "size": "10.5px",
+          "weight": "600",
+          "loaded": true
+        },
+        {
+          "text": "BLACK FRIDAY.40% OFF.",
+          "family": "Bebas Neue",
+          "size": "50px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Save 40% on selected favorites during the Black Friday event.",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Email address *",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "500",
+          "loaded": true
+        },
+        {
+          "text": "Get my code",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "700",
+          "loaded": true
+        },
+        {
+          "text": "November 27\u201330. Selected items. Exclusions apply.",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "YOUR BLACK FRIDAY CODE",
+          "family": "DM Sans",
+          "size": "10.5px",
+          "weight": "600",
+          "loaded": true
+        },
+        {
+          "text": "40%",
+          "family": "Bebas Neue",
+          "size": "64px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "OFF SELECTED ITEMS",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        }
+      ],
+      "faces": [
+        {
+          "family": "DM Sans",
+          "weight": "100 1000",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Bebas Neue",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        }
+      ],
+      "overflows": [],
+      "alignment": {
+        "adjacent": false,
+        "bottomDifference": 63
+      }
+    },
+    "file": "03-390-wordpress.png",
+    "errors": []
+  },
+  {
+    "id": "06",
+    "native_id": "campaign-price-elevator",
+    "name": "Price Elevator",
+    "viewport": 390,
+    "metrics": {
+      "fields": [
+        {
+          "name": "email",
+          "colour": "rgb(54, 44, 86)",
+          "background": "rgb(221, 216, 242)",
+          "placeholder": "rgb(54, 44, 86)",
+          "textContrast": 9.19,
+          "placeholderContrast": 9.19
+        },
+        {
+          "name": "website",
+          "colour": "rgb(0, 0, 0)",
+          "background": "rgb(255, 255, 255)",
+          "placeholder": "rgb(0, 0, 0)",
+          "textContrast": 21,
+          "placeholderContrast": 21
+        }
+      ],
+      "width": 358,
+      "height": 737.859375,
+      "scrollHeight": 738,
+      "fonts": [
+        {
+          "text": "EXAMPLE PRICE / 40% OFF",
+          "family": "DM Sans",
+          "size": "10.5px",
+          "weight": "600",
+          "loaded": true
+        },
+        {
+          "text": "WAS $100",
+          "family": "Bebas Neue",
+          "size": "28px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "\u2193",
+          "family": "DM Sans",
+          "size": "10.5px",
+          "weight": "600",
+          "loaded": true
+        },
+        {
+          "text": "$60",
+          "family": "Bebas Neue",
+          "size": "52px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "\u25cf  \u25cf  \u25cf",
+          "family": "DM Sans",
+          "size": "10.5px",
+          "weight": "600",
+          "loaded": true
+        },
+        {
+          "text": "BLACK FRIDAY / PRICE MARKDOWN",
+          "family": "DM Sans",
+          "size": "10.5px",
+          "weight": "600",
+          "loaded": true
+        },
+        {
+          "text": "BLACK FRIDAY.",
+          "family": "Bebas Neue",
+          "size": "44px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "PRICE DROP.",
+          "family": "Bebas Neue",
+          "size": "44px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Selected favorites are 40% off. A $100 item becomes $60.",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Email address *",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "500",
+          "loaded": true
+        },
+        {
+          "text": "Sign up",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "700",
+          "loaded": true
+        },
+        {
+          "text": "Illustrative pricing. November 27\u201330. Selected items.",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        }
+      ],
+      "faces": [
+        {
+          "family": "DM Sans",
+          "weight": "100 1000",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Bebas Neue",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        }
+      ],
+      "overflows": [],
+      "alignment": {
+        "adjacent": false,
+        "bottomDifference": 63
+      }
+    },
+    "file": "06-390-wordpress.png",
+    "errors": []
+  },
+  {
+    "id": "10",
+    "native_id": "campaign-welcome-shortcut",
+    "name": "Welcome Shortcut",
+    "viewport": 390,
+    "metrics": {
+      "fields": [
+        {
+          "name": "email",
+          "colour": "rgb(87, 48, 68)",
+          "background": "rgb(255, 200, 150)",
+          "placeholder": "rgb(87, 48, 68)",
+          "textContrast": 7.3,
+          "placeholderContrast": 7.3
+        },
+        {
+          "name": "website",
+          "colour": "rgb(0, 0, 0)",
+          "background": "rgb(255, 255, 255)",
+          "placeholder": "rgb(0, 0, 0)",
+          "textContrast": 21,
+          "placeholderContrast": 21
+        }
+      ],
+      "width": 358,
+      "height": 782.625,
+      "scrollHeight": 783,
+      "fonts": [
+        {
+          "text": "15%",
+          "family": "Bebas Neue",
+          "size": "63px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "FIRST-ORDER COUPON",
+          "family": "DM Sans",
+          "size": "10.5px",
+          "weight": "600",
+          "loaded": true
+        },
+        {
+          "text": "YOUR SHORTCUTTO 15% OFF.",
+          "family": "Bebas Neue",
+          "size": "45px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Enjoy 15% off selected everyday favorites on your first order.",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Email address *",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "500",
+          "loaded": true
+        },
+        {
+          "text": "Get my code",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "700",
+          "loaded": true
+        },
+        {
+          "text": "First order only. Selected items. Exclusions apply.",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        }
+      ],
+      "faces": [
+        {
+          "family": "DM Sans",
+          "weight": "100 1000",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Bebas Neue",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        }
+      ],
+      "overflows": [],
+      "alignment": {
+        "adjacent": false,
+        "bottomDifference": 63
+      }
+    },
+    "file": "10-390-wordpress.png",
+    "errors": []
+  },
+  {
+    "id": "11",
+    "native_id": "campaign-sneaker-edit",
+    "name": "Sneaker Edit",
+    "viewport": 390,
+    "metrics": {
+      "fields": [
+        {
+          "name": "email",
+          "colour": "rgb(250, 244, 223)",
+          "background": "rgb(37, 43, 38)",
+          "placeholder": "rgb(250, 244, 223)",
+          "textContrast": 13.13,
+          "placeholderContrast": 13.13
+        },
+        {
+          "name": "website",
+          "colour": "rgb(0, 0, 0)",
+          "background": "rgb(255, 255, 255)",
+          "placeholder": "rgb(0, 0, 0)",
+          "textContrast": 21,
+          "placeholderContrast": 21
+        }
+      ],
+      "width": 358,
+      "height": 738.84375,
+      "scrollHeight": 739,
+      "fonts": [
+        {
+          "text": "BLACK FRIDAY / SELECTED SNEAKERS",
+          "family": "monospace",
+          "size": "10.5px",
+          "weight": "600",
+          "loaded": true
+        },
+        {
+          "text": "BLACK FRIDAY / FOOTWEAR SALE",
+          "family": "DM Sans",
+          "size": "10.5px",
+          "weight": "600",
+          "loaded": true
+        },
+        {
+          "text": "NICE PAIR.",
+          "family": "Bebas Neue",
+          "size": "58px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "40% LESS.",
+          "family": "Bebas Neue",
+          "size": "58px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Save 40% on selected sneakers this Black Friday.",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Email address *",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "500",
+          "loaded": true
+        },
+        {
+          "text": "Sign up",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "700",
+          "loaded": true
+        },
+        {
+          "text": "November 27\u201330. Selected styles and sizes.",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        }
+      ],
+      "faces": [
+        {
+          "family": "DM Sans",
+          "weight": "100 1000",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Bebas Neue",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        }
+      ],
+      "overflows": [],
+      "alignment": {
+        "adjacent": false,
+        "bottomDifference": 63
+      }
+    },
+    "file": "11-390-wordpress.png",
+    "errors": []
+  },
+  {
+    "id": "16",
+    "native_id": "campaign-delivery-buddy",
+    "name": "Delivery Buddy",
+    "viewport": 390,
+    "metrics": {
+      "fields": [
+        {
+          "name": "email",
+          "colour": "rgb(255, 240, 206)",
+          "background": "rgb(37, 27, 61)",
+          "placeholder": "rgb(255, 240, 206)",
+          "textContrast": 14.28,
+          "placeholderContrast": 14.28
+        },
+        {
+          "name": "website",
+          "colour": "rgb(0, 0, 0)",
+          "background": "rgb(255, 255, 255)",
+          "placeholder": "rgb(0, 0, 0)",
+          "textContrast": 21,
+          "placeholderContrast": 21
+        }
+      ],
+      "width": 358,
+      "height": 764.40625,
+      "scrollHeight": 764,
+      "fonts": [
+        {
+          "text": "SHIPPING THRESHOLD",
+          "family": "DM Sans",
+          "size": "10.5px",
+          "weight": "600",
+          "loaded": true
+        },
+        {
+          "text": "GOOD NEWS.",
+          "family": "Bebas Neue",
+          "size": "54px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "FREE DELIVERY.",
+          "family": "Bebas Neue",
+          "size": "54px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Get free standard shipping when your order reaches $75.",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Email address *",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "500",
+          "loaded": true
+        },
+        {
+          "text": "Sign up",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "700",
+          "loaded": true
+        },
+        {
+          "text": "Orders $75+. Standard shipping to eligible destinations.",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        }
+      ],
+      "faces": [
+        {
+          "family": "DM Sans",
+          "weight": "100 1000",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Bebas Neue",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        }
+      ],
+      "overflows": [],
+      "alignment": {
+        "adjacent": false,
+        "bottomDifference": 63
+      }
+    },
+    "file": "16-390-wordpress.png",
+    "errors": []
+  },
+  {
+    "id": "19",
+    "native_id": "campaign-friday-game-code",
+    "name": "Friday Game Code",
+    "viewport": 390,
+    "metrics": {
+      "fields": [
+        {
+          "name": "email",
+          "colour": "rgb(33, 30, 50)",
+          "background": "rgb(255, 246, 215)",
+          "placeholder": "rgb(33, 30, 50)",
+          "textContrast": 14.98,
+          "placeholderContrast": 14.98
+        },
+        {
+          "name": "website",
+          "colour": "rgb(0, 0, 0)",
+          "background": "rgb(255, 255, 255)",
+          "placeholder": "rgb(0, 0, 0)",
+          "textContrast": 21,
+          "placeholderContrast": 21
+        }
+      ],
+      "width": 358,
+      "height": 661.46875,
+      "scrollHeight": 661,
+      "fonts": [
+        {
+          "text": "BLACK FRIDAY",
+          "family": "Bebas Neue",
+          "size": "20px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "MORE PLAY.",
+          "family": "Bebas Neue",
+          "size": "51px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "30% LESS.",
+          "family": "Bebas Neue",
+          "size": "51px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Black Friday savings on selected gaming accessories.",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        },
+        {
+          "text": "Email address *",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "500",
+          "loaded": true
+        },
+        {
+          "text": "Get my code",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "700",
+          "loaded": true
+        },
+        {
+          "text": "November 27\u201330. Selected gaming accessories.",
+          "family": "DM Sans",
+          "size": "14px",
+          "weight": "400",
+          "loaded": true
+        }
+      ],
+      "faces": [
+        {
+          "family": "DM Sans",
+          "weight": "100 1000",
+          "style": "normal",
+          "status": "loaded"
+        },
+        {
+          "family": "Bebas Neue",
+          "weight": "400",
+          "style": "normal",
+          "status": "loaded"
+        }
+      ],
+      "overflows": [],
+      "alignment": {
+        "adjacent": false,
+        "bottomDifference": 65
+      }
+    },
+    "file": "19-390-wordpress.png",
+    "errors": []
+  }
+]

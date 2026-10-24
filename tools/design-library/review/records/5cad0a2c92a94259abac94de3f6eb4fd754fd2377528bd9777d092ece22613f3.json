@@ -1,0 +1,47 @@
+{
+  "id": "campaign-savings-staircase",
+  "revision": "e07b1c40253ad0492bc7da21d632028b3c33673c325e405e470d582b8a216854",
+  "base_id": "be37fa3b0c7fff0159dda9cac65f7535b218523f099f9377e846599a7051eae7",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **42 · Savings Staircase (Black Friday):** Restored three ascending savings cards with individual product crops and rewards. Phone cards flatten into readable product/offer rows.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-savings-staircase-320.png",
+          "sha256": "133b539b969cfd251921abe2a3d40c0e3063b90c7177c2c4c95b103eab811993"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-savings-staircase-1440.png",
+          "sha256": "fd90abc52ed4a2ad0a337c7ebe7a5f46f53b388eafa6d24356e40a8eff7bd4d6"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "5cad0a2c92a94259abac94de3f6eb4fd754fd2377528bd9777d092ece22613f3"
+}

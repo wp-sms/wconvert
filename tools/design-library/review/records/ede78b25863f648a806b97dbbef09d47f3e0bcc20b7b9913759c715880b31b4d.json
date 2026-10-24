@@ -1,0 +1,51 @@
+{
+  "id": "campaign-sneaker-edit",
+  "revision": "c5022f92cde615e8807836f7249e368cb0cff0826f48d7b1e65025133beeeba0",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "The trainer photograph carries the category; the 40% reward is legible beside it and below it on phones.",
+  "at": "2026-10-24T10:40:12.653Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-sneaker-edit-320.png",
+          "sha256": "b8773d0461527f4c92375f63b900ecb560455198e5b43ac6c625210181ce809a"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-sneaker-edit-1440.png",
+          "sha256": "e6c32f2c54d1278f8899ed5a066ba7b92d40e4493f4eb54f71ca3bb55fd21d07"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "98aec6a37d7eb2628fbe97d85ec06ac41bf30c0bc72cc33cae964f36a1622b04"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        }
+      ]
+    }
+  },
+  "record_id": "ede78b25863f648a806b97dbbef09d47f3e0bcc20b7b9913759c715880b31b4d"
+}

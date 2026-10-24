@@ -1,0 +1,2982 @@
+[
+  {
+    "id": "31",
+    "name": "Streetwear Poster",
+    "width": 1440,
+    "reference": {
+      "width": 650,
+      "height": 509,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "BLACK FRIDAY",
+        "font": "Display",
+        "size": "102px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 717,
+      "heading": {
+        "text": "BLACK FRIDAY",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "92.8px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "31-1440-prototype.png",
+    "file": "31-1440-before.png"
+  },
+  {
+    "id": "32",
+    "name": "Tech Price Sheet",
+    "width": 1440,
+    "reference": {
+      "width": 640,
+      "height": 539,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "SMALL UPGRADE.BIG DIFFERENCE.",
+        "font": "DM, Arial, sans-serif",
+        "size": "36px",
+        "weight": "950"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 795,
+      "heading": {
+        "text": "SMALL UPGRADE.BIG DIFFERENCE.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "32-1440-prototype.png",
+    "file": "32-1440-before.png"
+  },
+  {
+    "id": "33",
+    "name": "Fifty-Fifty Poster",
+    "width": 1440,
+    "reference": {
+      "width": 610,
+      "height": 484,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "THE PRICEIS THE POINT.",
+        "font": "DM, Arial, sans-serif",
+        "size": "27px",
+        "weight": "950"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 590,
+      "heading": {
+        "text": "THE PRICEIS THE POINT.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "33-1440-prototype.png",
+    "file": "33-1440-before.png"
+  },
+  {
+    "id": "34",
+    "name": "Black Friday Coffee Menu",
+    "width": 1440,
+    "reference": {
+      "width": 440,
+      "height": 566,
+      "background": "rgb(25, 24, 22)",
+      "heading": {
+        "text": "GOODMORNINGS.",
+        "font": "Display",
+        "size": "65px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 698,
+      "heading": {
+        "text": "GOODMORNINGS.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "34-1440-prototype.png",
+    "file": "34-1440-before.png"
+  },
+  {
+    "id": "35",
+    "name": "First-Access Pass",
+    "width": 1440,
+    "reference": {
+      "width": 690,
+      "height": 489,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "YOUR PASSTO FIRST PICK.",
+        "font": "DM, Arial, sans-serif",
+        "size": "44px",
+        "weight": "950"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 504,
+      "heading": {
+        "text": "YOUR PASSTO FIRST PICK.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "35-1440-prototype.png",
+    "file": "35-1440-before.png"
+  },
+  {
+    "id": "36",
+    "name": "Restock Mosaic",
+    "width": 1440,
+    "reference": {
+      "width": 740,
+      "height": 544,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "RESTOCK.REPEAT.",
+        "font": "DM, Arial, sans-serif",
+        "size": "48px",
+        "weight": "950"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 687,
+      "heading": {
+        "text": "RESTOCK.REPEAT.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "36-1440-prototype.png",
+    "file": "36-1440-before.png"
+  },
+  {
+    "id": "37",
+    "name": "Golden Weekend Ticket",
+    "width": 1440,
+    "reference": {
+      "width": 700,
+      "height": 369,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "ADMIT ONE.SAVE BIG.",
+        "font": "DM, Arial, sans-serif",
+        "size": "41px",
+        "weight": "950"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 397,
+      "heading": {
+        "text": "ADMIT ONE.SAVE BIG.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "37-1440-prototype.png",
+    "file": "37-1440-before.png"
+  },
+  {
+    "id": "38",
+    "name": "Finish-Line Countdown",
+    "width": 1440,
+    "reference": {
+      "width": 740,
+      "height": 483,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "BIG DEALS.UP TO 40% OFF.",
+        "font": "DM, Arial, sans-serif",
+        "size": "35px",
+        "weight": "950"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 652,
+      "heading": {
+        "text": "BIG DEALS.UP TO 40% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "38-1440-prototype.png",
+    "file": "38-1440-before.png"
+  },
+  {
+    "id": "39",
+    "name": "Sound Circle",
+    "width": 1440,
+    "reference": {
+      "width": 740,
+      "height": 549,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "TURNITUP.",
+        "font": "Display",
+        "size": "80px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 452,
+      "heading": {
+        "text": "TURNITUP.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "39-1440-prototype.png",
+    "file": "39-1440-before.png"
+  },
+  {
+    "id": "40",
+    "name": "Layer Edit",
+    "width": 1440,
+    "reference": {
+      "width": 420,
+      "height": 291,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "LAYER UP.SPEND LESS.",
+        "font": "DM, Arial, sans-serif",
+        "size": "28px",
+        "weight": "950"
+      }
+    },
+    "native": {
+      "width": 384,
+      "height": 429,
+      "heading": {
+        "text": "LAYER UP.SPEND LESS.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "40-1440-prototype.png",
+    "file": "40-1440-before.png"
+  },
+  {
+    "id": "41",
+    "name": "Black Friday Plus One",
+    "width": 1440,
+    "reference": {
+      "width": 660,
+      "height": 563,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "YOUR BASKET.PLUS ONE.",
+        "font": "DM, Arial, sans-serif",
+        "size": "47px",
+        "weight": "950"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 658,
+      "heading": {
+        "text": "YOUR BASKET.PLUS ONE.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "41-1440-prototype.png",
+    "file": "41-1440-before.png"
+  },
+  {
+    "id": "42",
+    "name": "Savings Staircase",
+    "width": 1440,
+    "reference": {
+      "width": 740,
+      "height": 529,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "YOUR LIST GOES UP.YOUR TOTAL GOES DOWN.",
+        "font": "DM, Arial, sans-serif",
+        "size": "35px",
+        "weight": "950"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 679,
+      "heading": {
+        "text": "YOUR LIST GOES UP.YOUR TOTAL GOES DOWN.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "42-1440-prototype.png",
+    "file": "42-1440-before.png"
+  },
+  {
+    "id": "43",
+    "name": "Twelve-Month Deal",
+    "width": 1440,
+    "reference": {
+      "width": 780,
+      "height": 534,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "12 MONTHS.HALF THE PRICE.",
+        "font": "DM, Arial, sans-serif",
+        "size": "49px",
+        "weight": "950"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 599,
+      "heading": {
+        "text": "12 MONTHS.HALF THE PRICE.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "43-1440-prototype.png",
+    "file": "43-1440-before.png"
+  },
+  {
+    "id": "44",
+    "name": "Drop Alert",
+    "width": 1440,
+    "reference": {
+      "width": 365,
+      "height": 530,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "GET THEDROP ALERT.",
+        "font": "DM, Arial, sans-serif",
+        "size": "39px",
+        "weight": "950"
+      }
+    },
+    "native": {
+      "width": 384,
+      "height": 563,
+      "heading": {
+        "text": "GET THEDROP ALERT.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "44-1440-prototype.png",
+    "file": "44-1440-before.png"
+  },
+  {
+    "id": "45",
+    "name": "Deadline Scoreboard",
+    "width": 1440,
+    "reference": {
+      "width": 930,
+      "height": 159,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "UP TO 40% OFF.",
+        "font": "DM",
+        "size": "34px",
+        "weight": "900"
+      }
+    },
+    "native": {
+      "width": 1388,
+      "height": 348,
+      "heading": {
+        "text": "UP TO 40% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "40px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "45-1440-prototype.png",
+    "file": "45-1440-before.png"
+  },
+  {
+    "id": "46",
+    "name": "First-Dibs Signup",
+    "width": 1440,
+    "reference": {
+      "width": 930,
+      "height": 208,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "FIRST PICK.UP TO 40% OFF.",
+        "font": "DM, Arial, sans-serif",
+        "size": "25px",
+        "weight": "950"
+      }
+    },
+    "native": {
+      "width": 1388,
+      "height": 293,
+      "heading": {
+        "text": "FIRST PICK.UP TO 40% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "32px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "46-1440-prototype.png",
+    "file": "46-1440-before.png"
+  },
+  {
+    "id": "47",
+    "name": "Free-Delivery Label",
+    "width": 1440,
+    "reference": {
+      "width": 930,
+      "height": 164,
+      "background": "rgb(16, 18, 17)",
+      "heading": null
+    },
+    "native": {
+      "width": 1388,
+      "height": 264,
+      "heading": {
+        "text": "DELIVERYON ORDERS $100+",
+        "font": "\"DM Sans\", Arial, sans-serif",
+        "size": "16px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "47-1440-prototype.png",
+    "file": "47-1440-before.png"
+  },
+  {
+    "id": "48",
+    "name": "Extra-Ten Coupon",
+    "width": 1440,
+    "reference": {
+      "width": 360,
+      "height": 507,
+      "background": "rgb(16, 18, 17)",
+      "heading": null
+    },
+    "native": {
+      "width": 384,
+      "height": 724,
+      "heading": {
+        "text": "EXTRA10% OFF",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "72px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "48-1440-prototype.png",
+    "file": "48-1440-before.png"
+  },
+  {
+    "id": "49",
+    "name": "Home Edit",
+    "width": 1440,
+    "reference": {
+      "width": 800,
+      "height": 365,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "MAKEROOM.",
+        "font": "Display",
+        "size": "76px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 492,
+      "heading": {
+        "text": "MAKEROOM.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "49-1440-prototype.png",
+    "file": "49-1440-before.png"
+  },
+  {
+    "id": "50",
+    "name": "Black Friday Department",
+    "width": 1440,
+    "reference": {
+      "width": 930,
+      "height": 562,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "BLACK FRIDAY. ALL IN.",
+        "font": "Display",
+        "size": "85px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 960,
+      "height": 808,
+      "heading": {
+        "text": "BLACK FRIDAY. ALL IN.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "80px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "50-1440-prototype.png",
+    "file": "50-1440-before.png"
+  },
+  {
+    "id": "01",
+    "name": "Welcome Buddy",
+    "width": 1440,
+    "reference": {
+      "width": 720,
+      "height": 460,
+      "background": "rgb(203, 181, 237)",
+      "heading": {
+        "text": "FIRST ORDER.15% LESS.",
+        "font": "Display, Impact, sans-serif",
+        "size": "53px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 540,
+      "heading": {
+        "text": "FIRST ORDER.15% LESS.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "01-1440-prototype.png",
+    "file": "01-1440-before.png"
+  },
+  {
+    "id": "02",
+    "name": "Welcome Perk",
+    "width": 1440,
+    "reference": {
+      "width": 720,
+      "height": 450,
+      "background": "rgb(255, 223, 197)",
+      "heading": {
+        "text": "YOUR FIRST10% OFF.",
+        "font": "Display, Impact, sans-serif",
+        "size": "66px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 496,
+      "heading": {
+        "text": "YOUR FIRST10% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "02-1440-prototype.png",
+    "file": "02-1440-before.png"
+  },
+  {
+    "id": "03",
+    "name": "Friday Coupon",
+    "width": 1440,
+    "reference": {
+      "width": 720,
+      "height": 399,
+      "background": "rgb(186, 52, 48)",
+      "heading": {
+        "text": "BLACK FRIDAY.40% OFF.",
+        "font": "Display, Impact, sans-serif",
+        "size": "58px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 441,
+      "heading": {
+        "text": "BLACK FRIDAY.40% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "03-1440-prototype.png",
+    "file": "03-1440-before.png"
+  },
+  {
+    "id": "04",
+    "name": "Turn It Up",
+    "width": 1440,
+    "reference": {
+      "width": 720,
+      "height": 460,
+      "background": "rgb(6, 35, 186)",
+      "heading": {
+        "text": "BIG SOUND.35% LESS.",
+        "font": "Display, Impact, sans-serif",
+        "size": "72px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 492,
+      "heading": {
+        "text": "BIG SOUND.35% LESS.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "04-1440-prototype.png",
+    "file": "04-1440-before.png"
+  },
+  {
+    "id": "05",
+    "name": "Friday Comic",
+    "width": 1440,
+    "reference": {
+      "width": 720,
+      "height": 422,
+      "background": "rgb(252, 233, 165)",
+      "heading": {
+        "text": "PLOT TWIST:30% OFF.",
+        "font": "Display, Impact, sans-serif",
+        "size": "68px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 470,
+      "heading": {
+        "text": "PLOT TWIST:30% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "05-1440-prototype.png",
+    "file": "05-1440-before.png"
+  },
+  {
+    "id": "06",
+    "name": "Price Elevator",
+    "width": 1440,
+    "reference": {
+      "width": 720,
+      "height": 420,
+      "background": "rgb(221, 216, 242)",
+      "heading": {
+        "text": "BLACK FRIDAY.PRICE DROP.",
+        "font": "Display, Impact, sans-serif",
+        "size": "62px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 433,
+      "heading": {
+        "text": "BLACK FRIDAY.PRICE DROP.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "06-1440-prototype.png",
+    "file": "06-1440-before.png"
+  },
+  {
+    "id": "07",
+    "name": "Private Preview",
+    "width": 1440,
+    "reference": {
+      "width": 720,
+      "height": 486,
+      "background": "rgb(55, 28, 56)",
+      "heading": {
+        "text": "FIRST ACCESS.UP TO 30% OFF.",
+        "font": "serif",
+        "size": "41px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 653,
+      "heading": {
+        "text": "FIRST ACCESS.UP TO 30% OFF.",
+        "font": "\"Cormorant Garamond\", Georgia, serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "07-1440-prototype.png",
+    "file": "07-1440-before.png"
+  },
+  {
+    "id": "08",
+    "name": "Outdoor Edit",
+    "width": 1440,
+    "reference": {
+      "width": 720,
+      "height": 420,
+      "background": "rgb(239, 227, 189)",
+      "heading": {
+        "text": "MORE OUTSIDE.30% LESS.",
+        "font": "Display, Impact, sans-serif",
+        "size": "58px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 468,
+      "heading": {
+        "text": "MORE OUTSIDE.30% LESS.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "08-1440-prototype.png",
+    "file": "08-1440-before.png"
+  },
+  {
+    "id": "09",
+    "name": "Savings Receipt",
+    "width": 1440,
+    "reference": {
+      "width": 365,
+      "height": 593,
+      "background": "rgb(255, 246, 216)",
+      "heading": {
+        "text": "LESS TO PAY.MORE TO KEEP.",
+        "font": "Display, Impact, sans-serif",
+        "size": "48px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 384,
+      "height": 543,
+      "heading": {
+        "text": "LESS TO PAY.MORE TO KEEP.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "09-1440-prototype.png",
+    "file": "09-1440-before.png"
+  },
+  {
+    "id": "10",
+    "name": "Welcome Shortcut",
+    "width": 1440,
+    "reference": {
+      "width": 720,
+      "height": 390,
+      "background": "rgb(255, 200, 150)",
+      "heading": {
+        "text": "YOUR SHORTCUTTO 15% OFF.",
+        "font": "Display, Impact, sans-serif",
+        "size": "51px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 447,
+      "heading": {
+        "text": "YOUR SHORTCUTTO 15% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "10-1440-prototype.png",
+    "file": "10-1440-before.png"
+  },
+  {
+    "id": "11",
+    "name": "Sneaker Edit",
+    "width": 1440,
+    "reference": {
+      "width": 720,
+      "height": 440,
+      "background": "rgb(37, 43, 38)",
+      "heading": {
+        "text": "NICE PAIR.40% LESS.",
+        "font": "Display, Impact, sans-serif",
+        "size": "67px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 502,
+      "heading": {
+        "text": "NICE PAIR.40% LESS.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "11-1440-prototype.png",
+    "file": "11-1440-before.png"
+  },
+  {
+    "id": "12",
+    "name": "Midnight Fragrance Edit",
+    "width": 1440,
+    "reference": {
+      "width": 720,
+      "height": 469,
+      "background": "rgb(37, 27, 36)",
+      "heading": {
+        "text": "A SIGNATURE SCENT.30% LESS.",
+        "font": "serif",
+        "size": "45px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 618,
+      "heading": {
+        "text": "A SIGNATURE SCENT.30% LESS.",
+        "font": "\"Cormorant Garamond\", Georgia, serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "12-1440-prototype.png",
+    "file": "12-1440-before.png"
+  },
+  {
+    "id": "13",
+    "name": "Wishlist Alert",
+    "width": 1440,
+    "reference": {
+      "width": 520,
+      "height": 662,
+      "background": "rgb(255, 225, 221)",
+      "heading": {
+        "text": "FIRST LOOK.UP TO 30% OFF.",
+        "font": "serif",
+        "size": "42px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 744,
+      "heading": {
+        "text": "FIRST LOOK.UP TO 30% OFF.",
+        "font": "\"Cormorant Garamond\", Georgia, serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "13-1440-prototype.png",
+    "file": "13-1440-before.png"
+  },
+  {
+    "id": "14",
+    "name": "Garden Edit",
+    "width": 1440,
+    "reference": {
+      "width": 800,
+      "height": 368,
+      "background": "rgb(231, 240, 191)",
+      "heading": {
+        "text": "GROW MORE.SPEND 25% LESS.",
+        "font": "Display, Impact, sans-serif",
+        "size": "49px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 488,
+      "heading": {
+        "text": "GROW MORE.SPEND 25% LESS.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "14-1440-prototype.png",
+    "file": "14-1440-before.png"
+  },
+  {
+    "id": "15",
+    "name": "Friday Pass",
+    "width": 1440,
+    "reference": {
+      "width": 720,
+      "height": 464,
+      "background": "rgb(228, 234, 209)",
+      "heading": {
+        "text": "YOUR EARLY PASS.UP TO 30% OFF.",
+        "font": "serif",
+        "size": "40px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 702,
+      "heading": {
+        "text": "YOUR EARLY PASS.UP TO 30% OFF.",
+        "font": "\"Cormorant Garamond\", Georgia, serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "15-1440-prototype.png",
+    "file": "15-1440-before.png"
+  },
+  {
+    "id": "16",
+    "name": "Delivery Buddy",
+    "width": 1440,
+    "reference": {
+      "width": 720,
+      "height": 470,
+      "background": "rgb(33, 21, 57)",
+      "heading": {
+        "text": "GOOD NEWS.FREE DELIVERY.",
+        "font": "Display, Impact, sans-serif",
+        "size": "62px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 476,
+      "heading": {
+        "text": "GOOD NEWS.FREE DELIVERY.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "16-1440-prototype.png",
+    "file": "16-1440-before.png"
+  },
+  {
+    "id": "17",
+    "name": "Black Friday Archive",
+    "width": 1440,
+    "reference": {
+      "width": 720,
+      "height": 431,
+      "background": "rgba(0, 0, 0, 0)",
+      "heading": {
+        "text": "OUT OF THE ARCHIVE.UP TO 60% OFF.",
+        "font": "Display, Impact, sans-serif",
+        "size": "55px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 543,
+      "heading": {
+        "text": "OUT OF THE ARCHIVE.UP TO 60% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "17-1440-prototype.png",
+    "file": "17-1440-before.png"
+  },
+  {
+    "id": "18",
+    "name": "Extra Gift",
+    "width": 1440,
+    "reference": {
+      "width": 720,
+      "height": 410,
+      "background": "rgb(242, 232, 135)",
+      "heading": {
+        "text": "ONE MORE REASON.A GIFT ON US.",
+        "font": "Display, Impact, sans-serif",
+        "size": "56px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 522,
+      "heading": {
+        "text": "ONE MORE REASON.A GIFT ON US.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "18-1440-prototype.png",
+    "file": "18-1440-before.png"
+  },
+  {
+    "id": "19",
+    "name": "Friday Game Code",
+    "width": 1440,
+    "reference": {
+      "width": 600,
+      "height": 585,
+      "background": "rgb(154, 122, 210)",
+      "heading": {
+        "text": "MORE PLAY.30% LESS.",
+        "font": "Display",
+        "size": "62px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 558,
+      "heading": {
+        "text": "MORE PLAY.30% LESS.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "19-1440-prototype.png",
+    "file": "19-1440-before.png"
+  },
+  {
+    "id": "20",
+    "name": "Fragrance Booth",
+    "width": 1440,
+    "reference": {
+      "width": 720,
+      "height": 460,
+      "background": "rgb(244, 172, 154)",
+      "heading": {
+        "text": "YOUR SIGNATURE.30% LESS.",
+        "font": "Display, Impact, sans-serif",
+        "size": "60px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 542,
+      "heading": {
+        "text": "YOUR SIGNATURE.30% LESS.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "20-1440-prototype.png",
+    "file": "20-1440-before.png"
+  },
+  {
+    "id": "21",
+    "name": "Sweet Edit",
+    "width": 1440,
+    "reference": {
+      "width": 930,
+      "height": 147,
+      "background": "rgb(197, 231, 204)",
+      "heading": {
+        "text": "SWEET PICKS.25% OFF.",
+        "font": "Display, Impact, sans-serif",
+        "size": "34px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 1388,
+      "height": 220,
+      "heading": {
+        "text": "SWEET PICKS.25% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "32px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "21-1440-prototype.png",
+    "file": "21-1440-before.png"
+  },
+  {
+    "id": "22",
+    "name": "Black Friday Fast Lane",
+    "width": 1440,
+    "reference": {
+      "width": 930,
+      "height": 137,
+      "background": "rgb(36, 63, 189)",
+      "heading": {
+        "text": "40% OFF.ENDS NOV 30.",
+        "font": "Display, Impact, sans-serif",
+        "size": "34px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 1388,
+      "height": 272,
+      "heading": {
+        "text": "40% OFF.ENDS NOV 30.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "32px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "22-1440-prototype.png",
+    "file": "22-1440-before.png"
+  },
+  {
+    "id": "23",
+    "name": "Packing Perk",
+    "width": 1440,
+    "reference": {
+      "width": 930,
+      "height": 141,
+      "background": "rgb(233, 221, 246)",
+      "heading": {
+        "text": "PACK MORE.PAY 25% LESS.",
+        "font": "Display, Impact, sans-serif",
+        "size": "34px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 1388,
+      "height": 220,
+      "heading": {
+        "text": "PACK MORE.PAY 25% LESS.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "32px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "23-1440-prototype.png",
+    "file": "23-1440-before.png"
+  },
+  {
+    "id": "24",
+    "name": "Friday Email Alert",
+    "width": 1440,
+    "reference": {
+      "width": 930,
+      "height": 205,
+      "background": "rgb(255, 233, 147)",
+      "heading": {
+        "text": "FIRST PICK.UP TO 30% OFF.",
+        "font": "Display, Impact, sans-serif",
+        "size": "32px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 1388,
+      "height": 200,
+      "heading": {
+        "text": "FIRST PICK.UP TO 30% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "32px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "24-1440-prototype.png",
+    "file": "24-1440-before.png"
+  },
+  {
+    "id": "25",
+    "name": "Your Welcome Pal",
+    "width": 1440,
+    "reference": {
+      "width": 365,
+      "height": 564,
+      "background": "rgb(203, 181, 237)",
+      "heading": {
+        "text": "NEW HERE?TAKE 15% OFF.",
+        "font": "Display, Impact, sans-serif",
+        "size": "37px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 384,
+      "height": 694,
+      "heading": {
+        "text": "NEW HERE?TAKE 15% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "25-1440-prototype.png",
+    "file": "25-1440-before.png"
+  },
+  {
+    "id": "26",
+    "name": "Breakfast Edit",
+    "width": 1440,
+    "reference": {
+      "width": 365,
+      "height": 542,
+      "background": "rgb(169, 217, 236)",
+      "heading": {
+        "text": "BRIGHT MORNINGS.25% LESS.",
+        "font": "Display, Impact, sans-serif",
+        "size": "43px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 384,
+      "height": 618,
+      "heading": {
+        "text": "BRIGHT MORNINGS.25% LESS.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "26-1440-prototype.png",
+    "file": "26-1440-before.png"
+  },
+  {
+    "id": "27",
+    "name": "Welcome Label",
+    "width": 1440,
+    "reference": {
+      "width": 800,
+      "height": 348,
+      "background": "rgb(241, 223, 183)",
+      "heading": {
+        "text": "FIRST ORDER.10% OFF.",
+        "font": "Display, Impact, sans-serif",
+        "size": "53px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 433,
+      "heading": {
+        "text": "FIRST ORDER.10% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "27-1440-prototype.png",
+    "file": "27-1440-before.png"
+  },
+  {
+    "id": "28",
+    "name": "Pixel Play Sale",
+    "width": 1440,
+    "reference": {
+      "width": 800,
+      "height": 376,
+      "background": "rgb(189, 222, 240)",
+      "heading": {
+        "text": "LEVEL UP.SPEND 30% LESS.",
+        "font": "Display, Impact, sans-serif",
+        "size": "55px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 720,
+      "height": 473,
+      "heading": {
+        "text": "LEVEL UP.SPEND 30% LESS.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "28-1440-prototype.png",
+    "file": "28-1440-before.png"
+  },
+  {
+    "id": "29",
+    "name": "Black Friday Departments",
+    "width": 1440,
+    "reference": {
+      "width": 930,
+      "height": 553,
+      "background": "rgb(238, 231, 216)",
+      "heading": {
+        "text": "YOUR FRIDAY FINDS.UP TO 50% OFF.",
+        "font": "Display, Impact, sans-serif",
+        "size": "60px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 960,
+      "height": 577,
+      "heading": {
+        "text": "YOUR FRIDAY FINDS.UP TO 50% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "29-1440-prototype.png",
+    "file": "29-1440-before.png"
+  },
+  {
+    "id": "30",
+    "name": "Anniversary Event",
+    "width": 1440,
+    "reference": {
+      "width": 930,
+      "height": 490,
+      "background": "rgb(217, 233, 158)",
+      "heading": {
+        "text": "OUR BIRTHDAY.YOUR 20% OFF.",
+        "font": "Display, Impact, sans-serif",
+        "size": "85px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 960,
+      "height": 588,
+      "heading": {
+        "text": "OUR BIRTHDAY.YOUR 20% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "57.6px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "30-1440-prototype.png",
+    "file": "30-1440-before.png"
+  },
+  {
+    "id": "31",
+    "name": "Streetwear Poster",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 425,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "BLACK FRIDAY",
+        "font": "Display",
+        "size": "49px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 865,
+      "heading": {
+        "text": "BLACK FRIDAY",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "31-390-prototype.png",
+    "file": "31-390-before.png"
+  },
+  {
+    "id": "32",
+    "name": "Tech Price Sheet",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 547,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "SMALL UPGRADE.BIG DIFFERENCE.",
+        "font": "DM, Arial, sans-serif",
+        "size": "29px",
+        "weight": "950"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 764,
+      "heading": {
+        "text": "SMALL UPGRADE.BIG DIFFERENCE.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "32-390-prototype.png",
+    "file": "32-390-before.png"
+  },
+  {
+    "id": "33",
+    "name": "Fifty-Fifty Poster",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 491,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "THE PRICEIS THE POINT.",
+        "font": "DM, Arial, sans-serif",
+        "size": "32px",
+        "weight": "950"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 519,
+      "heading": {
+        "text": "THE PRICEIS THE POINT.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "33-390-prototype.png",
+    "file": "33-390-before.png"
+  },
+  {
+    "id": "34",
+    "name": "Black Friday Coffee Menu",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 631,
+      "background": "rgb(25, 24, 22)",
+      "heading": {
+        "text": "GOODMORNINGS.",
+        "font": "Display",
+        "size": "66px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 663,
+      "heading": {
+        "text": "GOODMORNINGS.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "34-390-prototype.png",
+    "file": "34-390-before.png"
+  },
+  {
+    "id": "35",
+    "name": "First-Access Pass",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 549,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "YOUR PASSTO FIRST PICK.",
+        "font": "DM, Arial, sans-serif",
+        "size": "34px",
+        "weight": "950"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 718,
+      "heading": {
+        "text": "YOUR PASSTO FIRST PICK.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "35-390-prototype.png",
+    "file": "35-390-before.png"
+  },
+  {
+    "id": "36",
+    "name": "Restock Mosaic",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 481,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "RESTOCK.REPEAT.",
+        "font": "DM, Arial, sans-serif",
+        "size": "30px",
+        "weight": "950"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 646,
+      "heading": {
+        "text": "RESTOCK.REPEAT.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "36-390-prototype.png",
+    "file": "36-390-before.png"
+  },
+  {
+    "id": "37",
+    "name": "Golden Weekend Ticket",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 601,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "ADMIT ONE.SAVE BIG.",
+        "font": "DM, Arial, sans-serif",
+        "size": "36px",
+        "weight": "950"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 553,
+      "heading": {
+        "text": "ADMIT ONE.SAVE BIG.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "37-390-prototype.png",
+    "file": "37-390-before.png"
+  },
+  {
+    "id": "38",
+    "name": "Finish-Line Countdown",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 614,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "BIG DEALS.UP TO 40% OFF.",
+        "font": "DM, Arial, sans-serif",
+        "size": "30px",
+        "weight": "950"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 817,
+      "heading": {
+        "text": "BIG DEALS.UP TO 40% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "38-390-prototype.png",
+    "file": "38-390-before.png"
+  },
+  {
+    "id": "39",
+    "name": "Sound Circle",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 553,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "TURNITUP.",
+        "font": "Display",
+        "size": "61px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 882,
+      "heading": {
+        "text": "TURNITUP.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "39-390-prototype.png",
+    "file": "39-390-before.png"
+  },
+  {
+    "id": "40",
+    "name": "Layer Edit",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 278,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "LAYER UP.SPEND LESS.",
+        "font": "DM, Arial, sans-serif",
+        "size": "25px",
+        "weight": "950"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 491,
+      "heading": {
+        "text": "LAYER UP.SPEND LESS.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "40-390-prototype.png",
+    "file": "40-390-before.png"
+  },
+  {
+    "id": "41",
+    "name": "Black Friday Plus One",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 513,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "YOUR BASKET.PLUS ONE.",
+        "font": "DM, Arial, sans-serif",
+        "size": "36px",
+        "weight": "950"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 870,
+      "heading": {
+        "text": "YOUR BASKET.PLUS ONE.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "41-390-prototype.png",
+    "file": "41-390-before.png"
+  },
+  {
+    "id": "42",
+    "name": "Savings Staircase",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 666,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "YOUR LIST GOES UP.YOUR TOTAL GOES DOWN.",
+        "font": "DM, Arial, sans-serif",
+        "size": "27px",
+        "weight": "950"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 1075,
+      "heading": {
+        "text": "YOUR LIST GOES UP.YOUR TOTAL GOES DOWN.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "42-390-prototype.png",
+    "file": "42-390-before.png"
+  },
+  {
+    "id": "43",
+    "name": "Twelve-Month Deal",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 641,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "12 MONTHS.HALF THE PRICE.",
+        "font": "DM, Arial, sans-serif",
+        "size": "35px",
+        "weight": "950"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 840,
+      "heading": {
+        "text": "12 MONTHS.HALF THE PRICE.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "43-390-prototype.png",
+    "file": "43-390-before.png"
+  },
+  {
+    "id": "44",
+    "name": "Drop Alert",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 508,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "GET THEDROP ALERT.",
+        "font": "DM, Arial, sans-serif",
+        "size": "34px",
+        "weight": "950"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 605,
+      "heading": {
+        "text": "GET THEDROP ALERT.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "44-390-prototype.png",
+    "file": "44-390-before.png"
+  },
+  {
+    "id": "45",
+    "name": "Deadline Scoreboard",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 356,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "UP TO 40% OFF.",
+        "font": "DM",
+        "size": "28px",
+        "weight": "900"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 560,
+      "heading": {
+        "text": "UP TO 40% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "45-390-prototype.png",
+    "file": "45-390-before.png"
+  },
+  {
+    "id": "46",
+    "name": "First-Dibs Signup",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 454,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "FIRST PICK.UP TO 40% OFF.",
+        "font": "DM, Arial, sans-serif",
+        "size": "29px",
+        "weight": "950"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 557,
+      "heading": {
+        "text": "FIRST PICK.UP TO 40% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "46-390-prototype.png",
+    "file": "46-390-before.png"
+  },
+  {
+    "id": "47",
+    "name": "Free-Delivery Label",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 357,
+      "background": "rgb(16, 18, 17)",
+      "heading": null
+    },
+    "native": {
+      "width": 358,
+      "height": 463,
+      "heading": {
+        "text": "DELIVERYON ORDERS $100+",
+        "font": "\"DM Sans\", Arial, sans-serif",
+        "size": "16px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "47-390-prototype.png",
+    "file": "47-390-before.png"
+  },
+  {
+    "id": "48",
+    "name": "Extra-Ten Coupon",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 499,
+      "background": "rgb(16, 18, 17)",
+      "heading": null
+    },
+    "native": {
+      "width": 358,
+      "height": 742,
+      "heading": {
+        "text": "EXTRA10% OFF",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "72px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "48-390-prototype.png",
+    "file": "48-390-before.png"
+  },
+  {
+    "id": "49",
+    "name": "Home Edit",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 779,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "MAKEROOM.",
+        "font": "Display",
+        "size": "52px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 896,
+      "heading": {
+        "text": "MAKEROOM.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "49-390-prototype.png",
+    "file": "49-390-before.png"
+  },
+  {
+    "id": "50",
+    "name": "Black Friday Department",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 977,
+      "background": "rgb(16, 18, 17)",
+      "heading": {
+        "text": "BLACK FRIDAY. ALL IN.",
+        "font": "Display",
+        "size": "57px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 1036,
+      "heading": {
+        "text": "BLACK FRIDAY. ALL IN.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "50-390-prototype.png",
+    "file": "50-390-before.png"
+  },
+  {
+    "id": "01",
+    "name": "Welcome Buddy",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 582,
+      "background": "rgb(203, 181, 237)",
+      "heading": {
+        "text": "FIRST ORDER.15% LESS.",
+        "font": "Display, Impact, sans-serif",
+        "size": "45px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 761,
+      "heading": {
+        "text": "FIRST ORDER.15% LESS.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "01-390-prototype.png",
+    "file": "01-390-before.png"
+  },
+  {
+    "id": "02",
+    "name": "Welcome Perk",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 683,
+      "background": "rgb(255, 223, 197)",
+      "heading": {
+        "text": "YOUR FIRST10% OFF.",
+        "font": "Display, Impact, sans-serif",
+        "size": "55px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 781,
+      "heading": {
+        "text": "YOUR FIRST10% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "02-390-prototype.png",
+    "file": "02-390-before.png"
+  },
+  {
+    "id": "03",
+    "name": "Friday Coupon",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 673,
+      "background": "rgb(186, 52, 48)",
+      "heading": {
+        "text": "BLACK FRIDAY.40% OFF.",
+        "font": "Display, Impact, sans-serif",
+        "size": "50px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 728,
+      "heading": {
+        "text": "BLACK FRIDAY.40% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "03-390-prototype.png",
+    "file": "03-390-before.png"
+  },
+  {
+    "id": "04",
+    "name": "Turn It Up",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 613,
+      "background": "rgb(6, 35, 186)",
+      "heading": {
+        "text": "BIG SOUND.35% LESS.",
+        "font": "Display, Impact, sans-serif",
+        "size": "65px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 713,
+      "heading": {
+        "text": "BIG SOUND.35% LESS.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "04-390-prototype.png",
+    "file": "04-390-before.png"
+  },
+  {
+    "id": "05",
+    "name": "Friday Comic",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 540,
+      "background": "rgb(252, 233, 165)",
+      "heading": {
+        "text": "PLOT TWIST:30% OFF.",
+        "font": "Display, Impact, sans-serif",
+        "size": "49px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 692,
+      "heading": {
+        "text": "PLOT TWIST:30% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "05-390-prototype.png",
+    "file": "05-390-before.png"
+  },
+  {
+    "id": "06",
+    "name": "Price Elevator",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 544,
+      "background": "rgb(221, 216, 242)",
+      "heading": {
+        "text": "BLACK FRIDAY.PRICE DROP.",
+        "font": "Display, Impact, sans-serif",
+        "size": "52px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 660,
+      "heading": {
+        "text": "BLACK FRIDAY.PRICE DROP.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "06-390-prototype.png",
+    "file": "06-390-before.png"
+  },
+  {
+    "id": "07",
+    "name": "Private Preview",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 715,
+      "background": "rgb(55, 28, 56)",
+      "heading": {
+        "text": "FIRST ACCESS.UP TO 30% OFF.",
+        "font": "serif",
+        "size": "33px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 796,
+      "heading": {
+        "text": "FIRST ACCESS.UP TO 30% OFF.",
+        "font": "\"Cormorant Garamond\", Georgia, serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "07-390-prototype.png",
+    "file": "07-390-before.png"
+  },
+  {
+    "id": "08",
+    "name": "Outdoor Edit",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 584,
+      "background": "rgb(239, 227, 189)",
+      "heading": {
+        "text": "MORE OUTSIDE.30% LESS.",
+        "font": "Display, Impact, sans-serif",
+        "size": "48px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 688,
+      "heading": {
+        "text": "MORE OUTSIDE.30% LESS.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "08-390-prototype.png",
+    "file": "08-390-before.png"
+  },
+  {
+    "id": "09",
+    "name": "Savings Receipt",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 575,
+      "background": "rgb(255, 246, 216)",
+      "heading": {
+        "text": "LESS TO PAY.MORE TO KEEP.",
+        "font": "Display, Impact, sans-serif",
+        "size": "43px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 543,
+      "heading": {
+        "text": "LESS TO PAY.MORE TO KEEP.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "09-390-prototype.png",
+    "file": "09-390-before.png"
+  },
+  {
+    "id": "10",
+    "name": "Welcome Shortcut",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 589,
+      "background": "rgb(255, 200, 150)",
+      "heading": {
+        "text": "YOUR SHORTCUTTO 15% OFF.",
+        "font": "Display, Impact, sans-serif",
+        "size": "45px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 758,
+      "heading": {
+        "text": "YOUR SHORTCUTTO 15% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "10-390-prototype.png",
+    "file": "10-390-before.png"
+  },
+  {
+    "id": "11",
+    "name": "Sneaker Edit",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 598,
+      "background": "rgb(37, 43, 38)",
+      "heading": {
+        "text": "NICE PAIR.40% LESS.",
+        "font": "Display, Impact, sans-serif",
+        "size": "58px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 703,
+      "heading": {
+        "text": "NICE PAIR.40% LESS.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "11-390-prototype.png",
+    "file": "11-390-before.png"
+  },
+  {
+    "id": "12",
+    "name": "Midnight Fragrance Edit",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 668,
+      "background": "rgb(37, 27, 36)",
+      "heading": {
+        "text": "A SIGNATURE SCENT.30% LESS.",
+        "font": "serif",
+        "size": "35px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 826,
+      "heading": {
+        "text": "A SIGNATURE SCENT.30% LESS.",
+        "font": "\"Cormorant Garamond\", Georgia, serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "12-390-prototype.png",
+    "file": "12-390-before.png"
+  },
+  {
+    "id": "13",
+    "name": "Wishlist Alert",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 679,
+      "background": "rgb(255, 225, 221)",
+      "heading": {
+        "text": "FIRST LOOK.UP TO 30% OFF.",
+        "font": "serif",
+        "size": "35px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 868,
+      "heading": {
+        "text": "FIRST LOOK.UP TO 30% OFF.",
+        "font": "\"Cormorant Garamond\", Georgia, serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "13-390-prototype.png",
+    "file": "13-390-before.png"
+  },
+  {
+    "id": "14",
+    "name": "Garden Edit",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 573,
+      "background": "rgb(231, 240, 191)",
+      "heading": {
+        "text": "GROW MORE.SPEND 25% LESS.",
+        "font": "Display, Impact, sans-serif",
+        "size": "42px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 724,
+      "heading": {
+        "text": "GROW MORE.SPEND 25% LESS.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "14-390-prototype.png",
+    "file": "14-390-before.png"
+  },
+  {
+    "id": "15",
+    "name": "Friday Pass",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 691,
+      "background": "rgb(228, 234, 209)",
+      "heading": {
+        "text": "YOUR EARLY PASS.UP TO 30% OFF.",
+        "font": "serif",
+        "size": "34px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 888,
+      "heading": {
+        "text": "YOUR EARLY PASS.UP TO 30% OFF.",
+        "font": "\"Cormorant Garamond\", Georgia, serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "15-390-prototype.png",
+    "file": "15-390-before.png"
+  },
+  {
+    "id": "16",
+    "name": "Delivery Buddy",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 610,
+      "background": "rgb(33, 21, 57)",
+      "heading": {
+        "text": "GOOD NEWS.FREE DELIVERY.",
+        "font": "Display, Impact, sans-serif",
+        "size": "54px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 686,
+      "heading": {
+        "text": "GOOD NEWS.FREE DELIVERY.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "16-390-prototype.png",
+    "file": "16-390-before.png"
+  },
+  {
+    "id": "17",
+    "name": "Black Friday Archive",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 569,
+      "background": "rgba(0, 0, 0, 0)",
+      "heading": {
+        "text": "OUT OF THE ARCHIVE.UP TO 60% OFF.",
+        "font": "Display, Impact, sans-serif",
+        "size": "44px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 779,
+      "heading": {
+        "text": "OUT OF THE ARCHIVE.UP TO 60% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "17-390-prototype.png",
+    "file": "17-390-before.png"
+  },
+  {
+    "id": "18",
+    "name": "Extra Gift",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 657,
+      "background": "rgb(242, 232, 135)",
+      "heading": {
+        "text": "ONE MORE REASON.A GIFT ON US.",
+        "font": "Display, Impact, sans-serif",
+        "size": "48px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 675,
+      "heading": {
+        "text": "ONE MORE REASON.A GIFT ON US.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "18-390-prototype.png",
+    "file": "18-390-before.png"
+  },
+  {
+    "id": "19",
+    "name": "Friday Game Code",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 555,
+      "background": "rgb(154, 122, 210)",
+      "heading": {
+        "text": "MORE PLAY.30% LESS.",
+        "font": "Display",
+        "size": "51px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 588,
+      "heading": {
+        "text": "MORE PLAY.30% LESS.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "19-390-prototype.png",
+    "file": "19-390-before.png"
+  },
+  {
+    "id": "20",
+    "name": "Fragrance Booth",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 543,
+      "background": "rgb(244, 172, 154)",
+      "heading": {
+        "text": "YOUR SIGNATURE.30% LESS.",
+        "font": "Display, Impact, sans-serif",
+        "size": "51px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 910,
+      "heading": {
+        "text": "YOUR SIGNATURE.30% LESS.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "20-390-prototype.png",
+    "file": "20-390-before.png"
+  },
+  {
+    "id": "21",
+    "name": "Sweet Edit",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 205,
+      "background": "rgb(197, 231, 204)",
+      "heading": {
+        "text": "SWEET PICKS.25% OFF.",
+        "font": "Display, Impact, sans-serif",
+        "size": "33px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 379,
+      "heading": {
+        "text": "SWEET PICKS.25% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "21-390-prototype.png",
+    "file": "21-390-before.png"
+  },
+  {
+    "id": "22",
+    "name": "Black Friday Fast Lane",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 293,
+      "background": "rgb(36, 63, 189)",
+      "heading": {
+        "text": "40% OFF.ENDS NOV 30.",
+        "font": "Display, Impact, sans-serif",
+        "size": "38px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 484,
+      "heading": {
+        "text": "40% OFF.ENDS NOV 30.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "22-390-prototype.png",
+    "file": "22-390-before.png"
+  },
+  {
+    "id": "23",
+    "name": "Packing Perk",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 205,
+      "background": "rgb(233, 221, 246)",
+      "heading": {
+        "text": "PACK MORE.PAY 25% LESS.",
+        "font": "Display, Impact, sans-serif",
+        "size": "33px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 323,
+      "heading": {
+        "text": "PACK MORE.PAY 25% LESS.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "23-390-prototype.png",
+    "file": "23-390-before.png"
+  },
+  {
+    "id": "24",
+    "name": "Friday Email Alert",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 402,
+      "background": "rgb(255, 233, 147)",
+      "heading": {
+        "text": "FIRST PICK.UP TO 30% OFF.",
+        "font": "Display, Impact, sans-serif",
+        "size": "32px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 430,
+      "heading": {
+        "text": "FIRST PICK.UP TO 30% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "24-390-prototype.png",
+    "file": "24-390-before.png"
+  },
+  {
+    "id": "25",
+    "name": "Your Welcome Pal",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 528,
+      "background": "rgb(203, 181, 237)",
+      "heading": {
+        "text": "NEW HERE?TAKE 15% OFF.",
+        "font": "Display, Impact, sans-serif",
+        "size": "35px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 715,
+      "heading": {
+        "text": "NEW HERE?TAKE 15% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "25-390-prototype.png",
+    "file": "25-390-before.png"
+  },
+  {
+    "id": "26",
+    "name": "Breakfast Edit",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 528,
+      "background": "rgb(169, 217, 236)",
+      "heading": {
+        "text": "BRIGHT MORNINGS.25% LESS.",
+        "font": "Display, Impact, sans-serif",
+        "size": "40px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 618,
+      "heading": {
+        "text": "BRIGHT MORNINGS.25% LESS.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "26-390-prototype.png",
+    "file": "26-390-before.png"
+  },
+  {
+    "id": "27",
+    "name": "Welcome Label",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 666,
+      "background": "rgb(241, 223, 183)",
+      "heading": {
+        "text": "FIRST ORDER.10% OFF.",
+        "font": "Display, Impact, sans-serif",
+        "size": "47px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 683,
+      "heading": {
+        "text": "FIRST ORDER.10% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "27-390-prototype.png",
+    "file": "27-390-before.png"
+  },
+  {
+    "id": "28",
+    "name": "Pixel Play Sale",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 437,
+      "background": "rgb(189, 222, 240)",
+      "heading": {
+        "text": "LEVEL UP.SPEND 30% LESS.",
+        "font": "Display, Impact, sans-serif",
+        "size": "43px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 661,
+      "heading": {
+        "text": "LEVEL UP.SPEND 30% LESS.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "28-390-prototype.png",
+    "file": "28-390-before.png"
+  },
+  {
+    "id": "29",
+    "name": "Black Friday Departments",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 511,
+      "background": "rgb(238, 231, 216)",
+      "heading": {
+        "text": "YOUR FRIDAY FINDS.UP TO 50% OFF.",
+        "font": "Display, Impact, sans-serif",
+        "size": "49px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 908,
+      "heading": {
+        "text": "YOUR FRIDAY FINDS.UP TO 50% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "29-390-prototype.png",
+    "file": "29-390-before.png"
+  },
+  {
+    "id": "30",
+    "name": "Anniversary Event",
+    "width": 390,
+    "reference": {
+      "width": 360,
+      "height": 490,
+      "background": "rgb(217, 233, 158)",
+      "heading": {
+        "text": "OUR BIRTHDAY.YOUR 20% OFF.",
+        "font": "Display, Impact, sans-serif",
+        "size": "56px",
+        "weight": "400"
+      }
+    },
+    "native": {
+      "width": 358,
+      "height": 538,
+      "heading": {
+        "text": "OUR BIRTHDAY.YOUR 20% OFF.",
+        "font": "\"Bebas Neue\", Impact, sans-serif",
+        "size": "42.4px",
+        "weight": "400"
+      },
+      "overflow": [],
+      "closeOverlap": []
+    },
+    "ref": "30-390-prototype.png",
+    "file": "30-390-before.png"
+  }
+]

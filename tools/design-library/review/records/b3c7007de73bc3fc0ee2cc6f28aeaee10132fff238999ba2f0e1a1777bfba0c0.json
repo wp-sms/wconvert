@@ -1,0 +1,51 @@
+{
+  "id": "campaign-breakfast-edit",
+  "revision": "99e908c3030914166596f729dc87707e720f8a300280cfa18bc51a308e437d4e",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "The breakfast photograph leads a specific evergreen seasonal offer.",
+  "at": "2026-10-24T10:40:12.653Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-breakfast-edit-320.png",
+          "sha256": "2b0e426eae3c1ef2bc4db2e93b016c137a57127d8fe7a1fbb8cefc105e06f460"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-breakfast-edit-1440.png",
+          "sha256": "c8701e7e810ece7c3da60531a32593c7daa6ff7df644bbc9ed48ac5c0192d089"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "98aec6a37d7eb2628fbe97d85ec06ac41bf30c0bc72cc33cae964f36a1622b04"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        }
+      ]
+    }
+  },
+  "record_id": "b3c7007de73bc3fc0ee2cc6f28aeaee10132fff238999ba2f0e1a1777bfba0c0"
+}

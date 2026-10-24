@@ -1,0 +1,55 @@
+{
+  "id": "campaign-price-elevator",
+  "revision": "674a9d38af126b24e1c42f7489dfdda3eb524a87a866f04d5549390573fbbb39",
+  "base_id": "991346ebd0ac09dbe4aa5897f503cc857bfdc78bf1c85cea73064a25b685647b",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **06 · Price Elevator** — Red framed price card and original/current price hierarchy retained. Uses editable “WAS $100” instead of strike-through; card stays vertically arranged on phone instead of switching its price row orientation. Form field now uses the light base palette for contrast. Palette references were rechecked in actual WordPress: normal desktop/phone and desktop email are pixel-identical; phone email adds 8px between the field and action, keeping both readable. Final decorative-dot whitespace cleanup was rechecked in all four actual WordPress views; all are pixel-identical.",
+  "at": "2026-10-24T16:27:23.261Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/06-1440-wordpress.png",
+          "sha256": "e6b22270b83d70459f08c4f79313de022d7ea34a01490cecb27a9bd880840602"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/06-390-wordpress.png",
+          "sha256": "ca1a7a418debdf3056b9291327a8bbb4c9d43c50be13502443be30a23cdcdc4b"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "40a9a0baab1369514a1a2ba832bd281b8f0b8061ab169f657f1e584ce613a775"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "6cdb386383c8f570a85370ab0dea2eba25173a96099c0f559702273968032d43"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "e2917ee820158f48be32a8f7da55d0230afcb52d827abeaf214e06bbc2e25a57"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "e2917ee820158f48be32a8f7da55d0230afcb52d827abeaf214e06bbc2e25a57"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "40a9a0baab1369514a1a2ba832bd281b8f0b8061ab169f657f1e584ce613a775"
+        }
+      ]
+    }
+  },
+  "record_id": "2e08982727ea5fc3cae656919fc2e27a31b7172f8e16b4285a1c3ae101dcb982"
+}

@@ -1,0 +1,63 @@
+{
+  "id": "collection-everyday-extraordinary",
+  "revision": "234343c31409f35b1f30c62f68405ab269d8c275b5cf7ee3393adb2abf089e05",
+  "base_id": "21e4d4776cff2901753beeb1e33bd2b5a2f88c40b871167b693ce00cc2da7736",
+  "decision": "approved",
+  "reviewer": "Renderer carry (ADR 0156)",
+  "note": "Every setup in it pixel-identical under the new renderer and carried by templates:visual-diff; items, order and words unchanged; only setup revisions moved. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/translation-check.md",
+          "sha256": "6a810fb9f790835cf4061568441ea0106f3f61ec427ae3a652a6878a89479e29"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/collection.json",
+          "sha256": "93719f9d62bcbd7a8ba979285b393a09062b47f99ab87ac9aed9cb35f51ad72e"
+        },
+        {
+          "path": "docs/reviews/visual-diff-2026-10-24/collections-carry-031e66237b8265ce7bc935d28e5eb45786fc894c.md",
+          "sha256": "e241e1ab27138e90b7291748e2fa876e7c1e4fb8776493a24bc60dac59951e19"
+        },
+        {
+          "path": "docs/reviews/visual-diff-2026-10-24/collections-carry-d7688edf.md",
+          "sha256": "38ade91c10201b60b4309c8376b30c292ac272397f33071d839ee9ac86cc681d"
+        },
+        {
+          "path": "docs/reviews/visual-diff-2026-10-24/collections-carry-dc915bdc.md",
+          "sha256": "8a39fd64cf89b9af6826a794b4a4b162218fa9717eb334158c22e15411775608"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/translation-check.md",
+          "sha256": "6a810fb9f790835cf4061568441ea0106f3f61ec427ae3a652a6878a89479e29"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "cc7ccb4050bfcf7985d270710cfedd362fc187b7213597526d8fb39c3791ce98"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/translation-check.md",
+          "sha256": "6a810fb9f790835cf4061568441ea0106f3f61ec427ae3a652a6878a89479e29"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "cc7ccb4050bfcf7985d270710cfedd362fc187b7213597526d8fb39c3791ce98"
+        }
+      ]
+    }
+  },
+  "record_id": "066a55736e635f357088a4fd2191cf660f8830755b1539cb5882aca30bb62fa5"
+}

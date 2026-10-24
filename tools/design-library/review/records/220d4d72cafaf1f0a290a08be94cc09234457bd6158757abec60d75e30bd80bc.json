@@ -1,0 +1,55 @@
+{
+  "id": "campaign-your-welcome-pal",
+  "revision": "836c58b530d6a1073bf9e57f7654d04ea32abc2e306dc96527754c65324cb27a",
+  "base_id": "3c2299e1b0b4627acbbcf918ead715be5aa358f82640fd74a6e83d493c76c8ee",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **25 · Your Welcome Pal** — Original monster image keeps an arch inside a rounded native card, leaving a safe visible close button. The outer silhouette is rounded rather than fully arched. Offer, form and action remain readable.",
+  "at": "2026-10-24T15:58:06.156Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/25-1440-wordpress.png",
+          "sha256": "2abe3eb5b19f0de08636faab44a6f65f91c1211577eb4795e8e50e11e983a778"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/25-390-wordpress.png",
+          "sha256": "335aa6e7a2c515d5428c9bd8c9f6205e3ce94d6455a9b5333707b18d6d3f3292"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "220d4d72cafaf1f0a290a08be94cc09234457bd6158757abec60d75e30bd80bc"
+}

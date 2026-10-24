@@ -1,0 +1,47 @@
+{
+  "id": "campaign-finish-line-countdown",
+  "revision": "155e2c984f56e565cd99898f9c7b0e71a49ed1d256a84cc17814af258c865ad2",
+  "base_id": "022bbcd7945c3ba440667c68025a04413d6b4ec0fa5eb08684834c1dad1acc1b",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **38 · Finish-Line Countdown (Black Friday):** Restored vertical three-unit countdown rail on desktop and horizontal units on phones; date precision does not alter expiry behaviour.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-finish-line-countdown-320.png",
+          "sha256": "2964bb624e2f5ad3dd8c2bfedd5459fcd46250f9b51ca0c8ef153fa847010023"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-finish-line-countdown-1440.png",
+          "sha256": "bbc929727c3c7c4c2259aea8c4b8d735431b6937c3f845562e3bef1527d6e2ee"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "736df5726f8fe82ac3eaec2b687ea37ae8a99f356a3b46361a35f5a94bf18500"
+}

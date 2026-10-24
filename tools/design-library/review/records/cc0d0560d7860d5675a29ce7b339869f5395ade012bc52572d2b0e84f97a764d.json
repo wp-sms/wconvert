@@ -1,0 +1,47 @@
+{
+  "id": "winter-first-light-access",
+  "revision": "e67c1c236a9ecd316a0ed0bc7135bb7fe0cdff1e1c4abd54cdb3b963241b5f8d",
+  "base_id": "569fb89e2b8bf4ace50f0ae2a7ebe76c53061e0f2af68d1983ec33597a12f241",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-4.jpg",
+          "sha256": "bbce5ed08da7233fb00323f481ed067fc9763d139a420dad9046808fe4778d89"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-4.jpg",
+          "sha256": "a89d727c168a10755fc48526e07138c06731b0a4b97079f560cdd4080d38d246"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "cc0d0560d7860d5675a29ce7b339869f5395ade012bc52572d2b0e84f97a764d"
+}

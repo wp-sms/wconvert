@@ -1,0 +1,47 @@
+{
+  "id": "campaign-wishlist-alert",
+  "revision": "8f100eae83fc92f517f4e2f34a4dfa0646fe9c7f6c037551edf338d00ef8b778",
+  "base_id": "4b790930d000d9b9c97402703171b59473a9a56b8aa410ab4ae48fca49e5e5cd",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **13 · Wishlist Alert (Black Friday):** Restored chat context, pink palette and serif preview request. Messages use native panels; the form and honest request acknowledgement follow them.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-wishlist-alert-320.png",
+          "sha256": "81686a719f4af183354b7339c19a7902593e3421c36162c05aeb6682573cd918"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-wishlist-alert-1440.png",
+          "sha256": "6592ac3b7182ab7c6620b274db850fc4e4c0312a86464a4779a5c0abde8980c4"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "d300536ff1d3f859159beb811c98fab8a7b27d63d77f62e0620ec1bf407ed80b"
+}

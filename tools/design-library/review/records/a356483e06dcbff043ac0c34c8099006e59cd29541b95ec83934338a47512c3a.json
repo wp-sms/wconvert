@@ -1,0 +1,47 @@
+{
+  "id": "campaign-midnight-fragrance-edit",
+  "revision": "a41a3eb6f412343b403d0c39ff7f6e092bb17fe1db0fdfa98eb05ad99baab038",
+  "base_id": "26b2330e858af721e9a5c93b6d2260797001e78c2127aca0849e3236f50397ad",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **12 · Midnight Fragrance Edit (Black Friday):** Restored serif/italic headline, arched fragrance photograph and separate offer footer; editable native copy replaces decorative photo labels.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-midnight-fragrance-edit-320.png",
+          "sha256": "984cca2dafa00563a98196f8d41ca5e05555577550b9635523180c268db3a091"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-midnight-fragrance-edit-1440.png",
+          "sha256": "91d695552b64734bca430aed7b56871b17181d0bb8c43599fff28b501a241924"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "a356483e06dcbff043ac0c34c8099006e59cd29541b95ec83934338a47512c3a"
+}

@@ -1,0 +1,55 @@
+{
+  "id": "campaign-extra-gift",
+  "revision": "baa7e603439e81b4862cad599fa933870321fac7c570a1fcbf704fef1200e2d9",
+  "base_id": "019e4fc6f3d3de77c3e7442fddf717232d4a5278edb34a5bc5ba32b15a3e4e6b",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **18 · Extra Gift** — Product photo fills its native media column and the gift caption stays below it. Phone stacks the photograph above the offer. Adding a form increases height; the caption remains at the bottom of the image pane.",
+  "at": "2026-10-24T15:58:06.155Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/18-1440-wordpress.png",
+          "sha256": "ddae81d4b697d1fb4cc4288dfe5191fef38070b76fab7e2a1b37c7ef2873712e"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/18-390-wordpress.png",
+          "sha256": "b5d17755537d71f682504e6040d2d053a4225b29ab5329ff75983314be79007d"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "7ce12df2045709431c9ed9f8e24d2fb870add8adb91ae06b5e81200dad0fb3be"
+}

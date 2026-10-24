@@ -1,0 +1,47 @@
+{
+  "id": "campaign-friday-game-code",
+  "revision": "73368882998b591f0c33930e338c1928bdd2fa421e310c0710dd2b7cd33160bb",
+  "base_id": "4a531cfe68a78dc39a718aaedbacb9cd80feb568db3d8c89ecfe340a6c7d73de",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **19 · Friday Game Code (Black Friday):** Restored mint headline/pixel versus orange reward inside the dark game screen. Coupon and shopping action remain separate.",
+  "at": "2026-10-24T13:09:55.646Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-friday-game-code-320.png",
+          "sha256": "0ec6a5cb2cc568b794a8ccbfcceee9f9cd7af9c97a3a7414b088279290c4b81c"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-friday-game-code-1440.png",
+          "sha256": "fce0cc55cd3c38c1d6345e883c128c52be50941a37474fe718b70eac901628a8"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "34109b232a7233a211a5e2287f42909150495baa581f15824aa77741a72e579f"
+}

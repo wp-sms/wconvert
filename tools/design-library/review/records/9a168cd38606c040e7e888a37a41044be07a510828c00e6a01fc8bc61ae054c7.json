@@ -1,0 +1,55 @@
+{
+  "id": "campaign-twelve-month-deal",
+  "revision": "bc59113b7331175c7ce77d62954174ae57a446446c3afdc75fbf111bfab059ee",
+  "base_id": "ba3e94f1f790f98ae5689c9ffdc3e85801dc72c18f1fd6d9dcb395a4ce59973e",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **43 · Twelve-Month Deal** — Real inline width 390px exposed the existing 24rem narrow-token threshold. Authored fluid typography and a font-relative grid basis now provide four columns/two headline lines on phone and six columns on desktop. Updated actual normal and form images viewed, without overflow. Renewal terms remain visible.",
+  "at": "2026-10-24T15:58:06.154Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/43-1440-wordpress.png",
+          "sha256": "7dece0bc42ce9e6ffa53d07314fd46925bdcd847e600d1555d14c1f1369570c6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/43-390-wordpress.png",
+          "sha256": "fab351cfc99ee2b8e4a5904769fc18520568345eafafb7628f962e76e647a6ba"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "9a168cd38606c040e7e888a37a41044be07a510828c00e6a01fc8bc61ae054c7"
+}

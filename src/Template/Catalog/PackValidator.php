@@ -86,9 +86,9 @@ final class PackValidator
         foreach ($items as $item) {
             self::check(is_array($item), $error);
             $this->keys($item, ['kind', 'x', 'y', 'size', 'motion', 'color', 'narrow']);
-            self::check(in_array($item['kind'] ?? null, ['bat', 'eyes', 'sparkle'], true), $error);
+            self::check(in_array($item['kind'] ?? null, $this->manifest['decorations']['kinds'] ?? [], true), $error);
             $this->placement($item, $error);
-            if (array_key_exists('motion', $item)) self::check(in_array($item['motion'], ['none', 'float', 'flap', 'blink'], true), $error);
+            if (array_key_exists('motion', $item)) self::check(in_array($item['motion'], $this->manifest['decorations']['motions'] ?? [], true), $error);
             if (array_key_exists('color', $item)) self::check(in_array($item['color'], ['fg', 'accent', 'muted', 'accent-fg'], true), $error);
             if (array_key_exists('narrow', $item)) {
                 self::check(is_array($item['narrow']), $error);
@@ -328,7 +328,9 @@ final class PackValidator
             } elseif ($key === 'decorations') {
                 $this->decorations($value);
             } elseif ($type === 'countdown' && $key === 'density') {
-                self::check(in_array($value, ['regular', 'compact'], true), __('This design has an invalid countdown size.', 'wconvert'));
+                self::check(in_array($value, ['regular', 'compact', 'stacked'], true), __('This design has an invalid countdown size.', 'wconvert'));
+            } elseif ($type === 'countdown' && $key === 'precision') {
+                self::check(in_array($value, ['seconds', 'minutes'], true), __('This design has an invalid countdown precision.', 'wconvert'));
             } elseif ($key === 'link') {
                 self::check(is_array($value), __('This design has an invalid link label.', 'wconvert'));
                 $this->keys($value, $this->portable ? ['label', 'href'] : ['label']);
@@ -352,7 +354,7 @@ final class PackValidator
                 self::check((is_int($value) || is_float($value) || is_string($value)) && is_numeric($value)
                     && is_finite((float) $value) && (float) $value >= 0 && (float) $value <= 1,
                     __('This design has an invalid column ratio.', 'wconvert'));
-            } elseif ((in_array($type, ['split', 'grid'], true) && $key === 'basis')
+            } elseif ((in_array($type, ['split', 'grid'], true) && in_array($key, ['basis', 'narrow_basis'], true))
                 || (in_array($type, ['panel', 'media'], true) && $key === 'min')) {
                 self::check(self::layoutLength($value), __('This design has an invalid layout size.', 'wconvert'));
             } elseif (isset($definition['choices'][$key])) {

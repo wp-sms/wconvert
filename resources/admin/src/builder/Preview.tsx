@@ -178,7 +178,7 @@ export function Preview({ template, displayType = 'inline', step = 0, selected =
     if (!fontPreview || fontRequest === '[]') return;
     let active = true;
     getThemeTokens().then(site => {
-      if (active) loadFontFaces(JSON.parse(fontRequest) as import('@renderer/types').GoogleFont[], site.google_fonts_enabled === true, (site.fonts ?? []).map(font => firstFamily(font.stack)));
+      if (active) loadFontFaces(JSON.parse(fontRequest) as import('@renderer/types').GoogleFont[], site.google_fonts_enabled === true, [...(site.fonts ?? []).map(font => firstFamily(font.stack)), ...(site.bundled_fonts ?? []).map(font => font.toLowerCase())]);
     }).catch(() => {});
     return () => { active = false; };
   }, [fontRequest, fontPreview]);
@@ -299,6 +299,14 @@ export function Preview({ template, displayType = 'inline', step = 0, selected =
     // Read AFTER the swap: `root` is a getter over whichever step is currently
     // rendered, because `showStep` replaces the element rather than editing it.
     if (mounted.root) mounted.root.style.maxBlockSize = 'none';
+    // Coupon codes are merchant-authored. Show their space in admin without
+    // inserting a pretend working code into the saved tree or visitor output.
+    mounted.root?.querySelectorAll<HTMLElement>('.wc-code').forEach(code => {
+      if (code.textContent?.trim()) return;
+      code.textContent = __('YOUR CODE', 'wconvert');
+      code.dataset.previewPlaceholder = 'code';
+      code.title = __('Add your store’s coupon code in the editor.', 'wconvert');
+    });
     if (mounted.root) previewSurfaces[displayType]?.(mounted.root, drawn.tokens.width, '32rem');
     setRoot(mounted.root);
 

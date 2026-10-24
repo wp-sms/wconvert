@@ -1,0 +1,47 @@
+{
+  "id": "fitness-introduction",
+  "revision": "407bc365aeb99ca64a0feb537fcaa631593cd7f82a72ce7894cc0c29877d0af1",
+  "base_id": "b26cacf1c285acf706a56f0065cedcd98c35c075d2fae972325250637cd4e7f3",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/fitness-introduction-320.png",
+          "sha256": "18978a7368585a0a1c4e36974cf95e6e9beb997e8a9663250e5d1093e46658ff"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/fitness-introduction-1440.png",
+          "sha256": "811c41fe502b793e5ed30d7b05a26478e52d47daf5b147b8c01012b87148dbd3"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "fae68d6cd8b02916da503bf7cae9455f48ff11d70c0a3164f6544e90bd5e40c6"
+}

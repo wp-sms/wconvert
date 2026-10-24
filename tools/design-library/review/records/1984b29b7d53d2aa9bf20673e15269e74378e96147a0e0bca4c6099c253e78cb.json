@@ -1,0 +1,47 @@
+{
+  "id": "campaign-outdoor-edit",
+  "revision": "30f3e48b865cf2ecb5543ca2a5c221f0fd00e41fec7cb57ee3d679608a8274d0",
+  "base_id": "337ba9afe7e9d7e2ee3c51e86fcacb4f6f41082ee5b35c6e1ac8b4021076f46d",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **08 · Outdoor Edit (General):** Matched landscape, forest palette and orange reward. Outdoor wording stays general; the small image badge is omitted.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-outdoor-edit-320.png",
+          "sha256": "7140b4bb2216fa8f238a556f65db0b1b1394fc74cf115eb44a6f7fd3b92d115e"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-outdoor-edit-1440.png",
+          "sha256": "8f86b17e27c129eb1bffe2bd650c9df07fbb29e4eda8ef8dd8ef0213a38e1e3b"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "1984b29b7d53d2aa9bf20673e15269e74378e96147a0e0bca4c6099c253e78cb"
+}

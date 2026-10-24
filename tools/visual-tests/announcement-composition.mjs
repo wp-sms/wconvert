@@ -6,7 +6,7 @@ const base = process.env.WCONVERT_STUDIO_URL || 'http://127.0.0.1:9452';
 if (!['127.0.0.1', 'localhost'].includes(new URL(base).hostname)) throw Error('Local studio required');
 const output = process.env.WCONVERT_COMPOSITION_EVIDENCE || '/tmp/wconvert-announcement-composition';
 fs.mkdirSync(output, { recursive: true });
-const entries = JSON.parse(fs.readFileSync('tools/design-library/out/pilot.json')).filter(e => e.template_id === 'bar-email-capture');
+const entries = JSON.parse(fs.readFileSync('tools/design-library/out/pilot.json')).filter(e => process.env.WCONVERT_REVIEW_IDS ? process.env.WCONVERT_REVIEW_IDS.split(',').includes(e.id) : e.template_id === 'bar-email-capture');
 if (!entries.length) throw Error('Rebuild the pilot: announcement setups are missing');
 const browser = await chromium.launch();
 try {
@@ -32,13 +32,20 @@ try {
    const h = heading.getBoundingClientRect(), f = field.getBoundingClientRect(), b = button.getBoundingClientRect();
    const beside = (rtl ? h.left >= f.right - 1 : h.right <= f.left + 1) && h.bottom > f.top && h.top < b.bottom;
    const splitForm = b.top >= f.bottom - 1;
+   const wrappedRow = splitForm && field.closest('.wc-row') && field.closest('.wc-row') === button.closest('.wc-row');
    const actualWidth = root.getBoundingClientRect().width;
-   const wrongWidth = Math.abs(actualWidth - width) > 1;
-   const unevenControls = !splitForm && Math.abs(f.height - b.height) > 2;
+   const authored = entry.tokens.width || '100%';
+   const expectedWidth = /rem$/.test(authored) ? Math.min(width, parseFloat(authored) * 16) : /px$/.test(authored) ? Math.min(width, parseFloat(authored)) : width;
+   const wrongWidth = Math.abs(actualWidth - expectedWidth) > 1;
+   // Default labels should align. Deliberately lengthened merchant labels may
+   // grow vertically; the stress case still checks wrapping, overlap and overflow.
+   const unevenControls = !stress && !splitForm && Math.abs(f.height - b.height) > 2;
+   const adjacentControls = (f.right <= b.left + 1 || b.right <= f.left + 1) && f.bottom > b.top && b.bottom > f.top;
+   const misalignedControls = adjacentControls && Math.abs(f.bottom - b.bottom) > 2;
    const overflow = root.scrollWidth > root.clientWidth + 1;
    const c = close.getBoundingClientRect();
    const closeOverlap = [heading, field, button, root.querySelector('.wc-consent')].filter(Boolean).some(el => { const r=el.getBoundingClientRect(); return r.left<c.right && r.right>c.left && r.top<c.bottom && r.bottom>c.top; });
-   const result = { id: entry.id, width, actualWidth, rtl, stress, beside, splitForm, closeOverlap, wrongWidth, unevenControls, overflow, passed: !(beside && splitForm) && !closeOverlap && !wrongWidth && !unevenControls && !overflow };
+   const result = { id: entry.id, width, actualWidth, rtl, stress, beside, splitForm, closeOverlap, wrongWidth, unevenControls, misalignedControls, overflow, passed: !(beside && wrappedRow) && !closeOverlap && !wrongWidth && !unevenControls && !misalignedControls && !overflow };
    cases.push(result); if (!result.passed) failures.push(result);
    root.remove();
   }

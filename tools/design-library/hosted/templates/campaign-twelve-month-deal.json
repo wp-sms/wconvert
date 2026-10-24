@@ -1,0 +1,755 @@
+{
+  "id": "campaign-twelve-month-deal",
+  "name": "Twelve-Month Deal",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#101211",
+    "fg": "#f4f4eb",
+    "muted": "#f4f4eb",
+    "accent": "#bfa5ff",
+    "accent-fg": "#14180b",
+    "border": "#f4f4eb",
+    "input-bg": "#282330",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"DM Sans\", Arial, sans-serif",
+    "heading-size": "49px",
+    "heading-weight": "900",
+    "heading-leading": ".96",
+    "text-size": "14px",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "780px",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "role": "eyebrow",
+                  "text": "BLACK FRIDAY / ANNUAL PLAN PROMOTION",
+                  "tokens": {
+                    "text-size": "9px",
+                    "tracking": ".1em"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "0 32px 0 0",
+                "gap": "0",
+                "radius": "0"
+              }
+            },
+            {
+              "type": "stack",
+              "children": [
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "role": "headline",
+                  "text": "12 MONTHS.",
+                  "narrow": {
+                    "heading-size": "34px"
+                  },
+                  "tokens": {
+                    "heading-size": "clamp(34px, 6.3cqw, 49px)"
+                  }
+                },
+                {
+                  "type": "heading",
+                  "id": "n59",
+                  "role": "headline",
+                  "text": "HALF THE PRICE.",
+                  "narrow": {
+                    "heading-size": "34px"
+                  },
+                  "tokens": {
+                    "heading-size": "clamp(34px, 6.3cqw, 49px)",
+                    "fg": "accent"
+                  }
+                }
+              ],
+              "tokens": {
+                "gap": "0"
+              }
+            },
+            {
+              "type": "grid",
+              "basis": "7em",
+              "children": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n32",
+                      "role": "eyebrow",
+                      "text": "MONTH",
+                      "tokens": {
+                        "text-size": "8px",
+                        "tracking": ".08em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n33",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "text-size": "28px",
+                        "leading": ".95",
+                        "tracking": "-.04em",
+                        "text-weight": "950"
+                      },
+                      "emphasis": "01",
+                      "narrow": {
+                        "text-size": "28px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "11px 13px",
+                    "gap": "6px",
+                    "radius": "0",
+                    "bg": "input-bg",
+                    "border": "accent"
+                  },
+                  "narrow": {
+                    "pad": "8px"
+                  },
+                  "edges": "all"
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n34",
+                      "role": "eyebrow",
+                      "text": "MONTH",
+                      "tokens": {
+                        "text-size": "8px",
+                        "tracking": ".08em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n35",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "text-size": "28px",
+                        "leading": ".95",
+                        "tracking": "-.04em",
+                        "text-weight": "950"
+                      },
+                      "emphasis": "02",
+                      "narrow": {
+                        "text-size": "28px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "11px 13px",
+                    "gap": "6px",
+                    "radius": "0",
+                    "bg": "input-bg",
+                    "border": "accent"
+                  },
+                  "narrow": {
+                    "pad": "8px"
+                  },
+                  "edges": "all"
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n36",
+                      "role": "eyebrow",
+                      "text": "MONTH",
+                      "tokens": {
+                        "text-size": "8px",
+                        "tracking": ".08em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n37",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "text-size": "28px",
+                        "leading": ".95",
+                        "tracking": "-.04em",
+                        "text-weight": "950"
+                      },
+                      "emphasis": "03",
+                      "narrow": {
+                        "text-size": "28px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "11px 13px",
+                    "gap": "6px",
+                    "radius": "0",
+                    "bg": "input-bg",
+                    "border": "accent"
+                  },
+                  "narrow": {
+                    "pad": "8px"
+                  },
+                  "edges": "all"
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n38",
+                      "role": "eyebrow",
+                      "text": "MONTH",
+                      "tokens": {
+                        "text-size": "8px",
+                        "tracking": ".08em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n39",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "text-size": "28px",
+                        "leading": ".95",
+                        "tracking": "-.04em",
+                        "text-weight": "950"
+                      },
+                      "emphasis": "04",
+                      "narrow": {
+                        "text-size": "28px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "11px 13px",
+                    "gap": "6px",
+                    "radius": "0",
+                    "bg": "input-bg",
+                    "border": "accent"
+                  },
+                  "narrow": {
+                    "pad": "8px"
+                  },
+                  "edges": "all"
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n40",
+                      "role": "eyebrow",
+                      "text": "MONTH",
+                      "tokens": {
+                        "text-size": "8px",
+                        "tracking": ".08em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n41",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "text-size": "28px",
+                        "leading": ".95",
+                        "tracking": "-.04em",
+                        "text-weight": "950"
+                      },
+                      "emphasis": "05",
+                      "narrow": {
+                        "text-size": "28px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "11px 13px",
+                    "gap": "6px",
+                    "radius": "0",
+                    "bg": "input-bg",
+                    "border": "accent"
+                  },
+                  "narrow": {
+                    "pad": "8px"
+                  },
+                  "edges": "all"
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n42",
+                      "role": "eyebrow",
+                      "text": "MONTH",
+                      "tokens": {
+                        "text-size": "8px",
+                        "tracking": ".08em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n43",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "text-size": "28px",
+                        "leading": ".95",
+                        "tracking": "-.04em",
+                        "text-weight": "950"
+                      },
+                      "emphasis": "06",
+                      "narrow": {
+                        "text-size": "28px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "11px 13px",
+                    "gap": "6px",
+                    "radius": "0",
+                    "bg": "input-bg",
+                    "border": "accent"
+                  },
+                  "narrow": {
+                    "pad": "8px"
+                  },
+                  "edges": "all"
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n44",
+                      "role": "eyebrow",
+                      "text": "MONTH",
+                      "tokens": {
+                        "text-size": "8px",
+                        "tracking": ".08em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n45",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "text-size": "28px",
+                        "leading": ".95",
+                        "tracking": "-.04em",
+                        "text-weight": "950"
+                      },
+                      "emphasis": "07",
+                      "narrow": {
+                        "text-size": "28px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "11px 13px",
+                    "gap": "6px",
+                    "radius": "0",
+                    "bg": "input-bg",
+                    "border": "accent"
+                  },
+                  "narrow": {
+                    "pad": "8px"
+                  },
+                  "edges": "all"
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n46",
+                      "role": "eyebrow",
+                      "text": "MONTH",
+                      "tokens": {
+                        "text-size": "8px",
+                        "tracking": ".08em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n47",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "text-size": "28px",
+                        "leading": ".95",
+                        "tracking": "-.04em",
+                        "text-weight": "950"
+                      },
+                      "emphasis": "08",
+                      "narrow": {
+                        "text-size": "28px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "11px 13px",
+                    "gap": "6px",
+                    "radius": "0",
+                    "bg": "input-bg",
+                    "border": "accent"
+                  },
+                  "narrow": {
+                    "pad": "8px"
+                  },
+                  "edges": "all"
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n48",
+                      "role": "eyebrow",
+                      "text": "MONTH",
+                      "tokens": {
+                        "text-size": "8px",
+                        "tracking": ".08em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n49",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "text-size": "28px",
+                        "leading": ".95",
+                        "tracking": "-.04em",
+                        "text-weight": "950"
+                      },
+                      "emphasis": "09",
+                      "narrow": {
+                        "text-size": "28px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "11px 13px",
+                    "gap": "6px",
+                    "radius": "0",
+                    "bg": "input-bg",
+                    "border": "accent"
+                  },
+                  "narrow": {
+                    "pad": "8px"
+                  },
+                  "edges": "all"
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n50",
+                      "role": "eyebrow",
+                      "text": "MONTH",
+                      "tokens": {
+                        "text-size": "8px",
+                        "tracking": ".08em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n51",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "text-size": "28px",
+                        "leading": ".95",
+                        "tracking": "-.04em",
+                        "text-weight": "950"
+                      },
+                      "emphasis": "10",
+                      "narrow": {
+                        "text-size": "28px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "11px 13px",
+                    "gap": "6px",
+                    "radius": "0",
+                    "bg": "input-bg",
+                    "border": "accent"
+                  },
+                  "narrow": {
+                    "pad": "8px"
+                  },
+                  "edges": "all"
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n52",
+                      "role": "eyebrow",
+                      "text": "MONTH",
+                      "tokens": {
+                        "text-size": "8px",
+                        "tracking": ".08em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n53",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "text-size": "28px",
+                        "leading": ".95",
+                        "tracking": "-.04em",
+                        "text-weight": "950"
+                      },
+                      "emphasis": "11",
+                      "narrow": {
+                        "text-size": "28px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "11px 13px",
+                    "gap": "6px",
+                    "radius": "0",
+                    "bg": "input-bg",
+                    "border": "accent"
+                  },
+                  "narrow": {
+                    "pad": "8px"
+                  },
+                  "edges": "all"
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n54",
+                      "role": "eyebrow",
+                      "text": "MONTH",
+                      "tokens": {
+                        "text-size": "8px",
+                        "tracking": ".08em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n55",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "text-size": "28px",
+                        "leading": ".95",
+                        "tracking": "-.04em",
+                        "text-weight": "950"
+                      },
+                      "emphasis": "12",
+                      "narrow": {
+                        "text-size": "28px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "11px 13px",
+                    "gap": "6px",
+                    "radius": "0",
+                    "bg": "input-bg",
+                    "border": "accent"
+                  },
+                  "narrow": {
+                    "pad": "8px"
+                  },
+                  "edges": "all"
+                }
+              ],
+              "tokens": {
+                "gap": "7px",
+                "text-size": "clamp(10px, 1.8cqw, 14px)"
+              },
+              "narrow_basis": "4rem"
+            },
+            {
+              "type": "split",
+              "start": [
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "row",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "n56",
+                          "role": "body",
+                          "text": "WAS $240"
+                        },
+                        {
+                          "type": "text",
+                          "id": "n57",
+                          "role": "body",
+                          "text": "%b",
+                          "tokens": {
+                            "font": "\"DM Sans\", Arial, sans-serif",
+                            "text-size": "51px",
+                            "leading": ".95",
+                            "tracking": "-.04em",
+                            "text-weight": "950"
+                          },
+                          "emphasis": "$120",
+                          "narrow": {
+                            "text-size": "51px"
+                          }
+                        }
+                      ],
+                      "tokens": {
+                        "gap": "20px"
+                      }
+                    },
+                    {
+                      "type": "eyebrow",
+                      "id": "n58",
+                      "role": "eyebrow",
+                      "text": "YOUR FIRST YEAR",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".08em"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "9px"
+                  }
+                }
+              ],
+              "end": [
+                {
+                  "type": "button",
+                  "id": "n30",
+                  "role": "cta_label",
+                  "label": "Get the annual offer",
+                  "action": "link",
+                  "icon": "arrow",
+                  "tokens": {
+                    "text-size": "14px",
+                    "radius": "0px"
+                  }
+                }
+              ],
+              "ratio": 0.5,
+              "basis": "13rem",
+              "narrow_layout": "stack",
+              "tokens": {
+                "gap": "25px"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n31",
+              "role": "fine_print",
+              "text": "New annual plans. First year $120. Renews at $240/year unless cancelled.",
+              "tokens": {
+                "text-size": "14px"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "28px 28px 26px",
+            "gap": "24px",
+            "radius": "0"
+          },
+          "narrow": {
+            "pad": "28px 24px 24px"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

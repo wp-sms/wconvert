@@ -1,0 +1,55 @@
+{
+  "id": "campaign-friday-comic",
+  "revision": "eaf262bd2c995d23e776343af60a8de8ce8acc1f1c8d78f49bbedaa076b4b153",
+  "base_id": "7dbe8d9fd6e60a52f14db687f042afb890dbecf0d86cc2bb30310b26557bee58",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **05 · Friday Comic** — Two framed panes, original smiley, live speech bubble and bold headline restored; inherited min-height no longer creates a giant blank bubble. Phone keeps the two panes side by side instead of the prototype's stacked panels. Texture, border weight and bubble placement differ.",
+  "at": "2026-10-24T15:58:06.154Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/05-1440-wordpress.png",
+          "sha256": "552453ccd5ffa27ae0ca2673a83e9549c6d3fd5a94a0d9f5fe26b75208c8d461"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/05-390-wordpress.png",
+          "sha256": "dc8c5165bbb9ec37eeca7a22fb10efa207b933383bf3833fa2200a78e5d49e14"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "39f8b6d69869909027d3d3049ceb5bce8413284dc8c191d152d6985d186458ce"
+}

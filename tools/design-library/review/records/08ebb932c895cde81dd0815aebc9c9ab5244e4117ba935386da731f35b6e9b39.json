@@ -1,0 +1,59 @@
+{
+  "id": "cm-system-upgrade",
+  "revision": "86709b25324b012863459a4bfef3dac4694acbffa99fe7e86d5deeeb23bd04ba",
+  "base_id": "606b5739c3ada27ba6e9de9a15b7fae21c578d36ffda8c5865f4968b473916e0",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/cm-system-upgrade-320.png",
+          "sha256": "4e76039fc0a8f905e2d5b91cd68f7dafd66c4a84335b865ed6b1ae39f7e7946b"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/cm-system-upgrade-1440.png",
+          "sha256": "0461a5f630ccc3f487a7b9623ce3090a4c83b8ebd4633b6e822c018db9c10713"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+          "sha256": "370f1d05a62db6399b17baa10a575f846744e0d0fb4ad4f8b670172ebc984447"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+          "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+          "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/shopping-weekend-alignment-2026-10-22/results.json",
+          "sha256": "7b0a67e151e8ca0b13fb2b0b4e11d41f649abbb1638aedf0111f66434fb7eaf8"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+          "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/shopping-weekend-alignment-2026-10-22/results.json",
+          "sha256": "7b0a67e151e8ca0b13fb2b0b4e11d41f649abbb1638aedf0111f66434fb7eaf8"
+        }
+      ]
+    }
+  },
+  "record_id": "08ebb932c895cde81dd0815aebc9c9ab5244e4117ba935386da731f35b6e9b39"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "campaign-fifty-fifty-poster",
+  "revision": "2ba62bb9d37fbc9b31bcdf7af18d13bac782a63e4830e85a0f941cfb7bbdd17d",
+  "base_id": "01cbaf187617a8b38be5b282cf7f0f6ff384a01a807ec91c5a19f3d0209fc330",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **33 · Fifty-Fifty Poster (Black Friday):** Restored black/lime oversized percentage hierarchy and Black Friday ribbon. Number and percent sign are separate editable text blocks.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-fifty-fifty-poster-320.png",
+          "sha256": "0e15c2e451e5b9ac65937a3221de1bf19db6e58c3c38f25e37a811f3ca53a303"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-fifty-fifty-poster-1440.png",
+          "sha256": "49856f20441c216dabb856575e530c8a07df00b4a8de17cb5f3dd0bead9d388d"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "379df93f7b7482f83e0b5c5d428e1642d2c1293366e4d87c072268d9bfbbcb43"
+}

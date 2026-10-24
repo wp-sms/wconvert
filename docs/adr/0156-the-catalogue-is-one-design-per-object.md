@@ -179,6 +179,13 @@ these only refuse what is objectively wrong or make review cheaper:
   hashes the whole stylesheet, so a CSS edit that draws nothing differently
   stales every approval. `templates:releasable` fails the pull request until
   `templates:visual-diff -- --apply` has carried them.
+  *Amended by [0168](0168-approved-compositions-survive-native-rendering.md):*
+  comparison embeds the exact currently bundled local font files in both
+  renderer outputs, with network blocked. This checks layouts under the intended
+  faces; it does not claim that historical delivery already loaded those faces.
+  The report and carried records state this distinction, record font digests,
+  and can exclude a batch being reviewed separately. Restoring local font
+  delivery is verified on actual WordPress, outside the renderer comparison.
 - **Two of the three checks are run by a machine.** `setup-checks.mjs` walks
   every setup to review as a visitor on a disposable WordPress and writes
   `results.json` (`journey`, `wordpress`); the reviewer judges contact sheets

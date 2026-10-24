@@ -1,0 +1,51 @@
+{
+  "id": "campaign-packing-perk",
+  "revision": "a1020faa73a326b980f1fbaecf6c18b4dd01463d2868daeb15c61a8f43787b25",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "The packing offer remains a general campaign; its accent shapes do not interrupt reading order.",
+  "at": "2026-10-24T10:40:12.653Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-packing-perk-320.png",
+          "sha256": "1ddfd218bdc7a8dfd4c01fc68e4d8341240c1defc84763b082fff3158284ba61"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-packing-perk-1440.png",
+          "sha256": "f5f09f6e297640dc2a9b89e6f5ddfd9adeb1678f0794a7385ae93077b4f6c5c1"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "98aec6a37d7eb2628fbe97d85ec06ac41bf30c0bc72cc33cae964f36a1622b04"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        }
+      ]
+    }
+  },
+  "record_id": "0f8358543de00a03316f7303b8ebf0f4285f0e8a9ee77f5378ec5a404d8fcaf1"
+}

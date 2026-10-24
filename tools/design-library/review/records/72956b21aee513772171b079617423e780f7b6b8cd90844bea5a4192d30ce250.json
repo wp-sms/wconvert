@@ -1,0 +1,55 @@
+{
+  "id": "campaign-home-edit",
+  "revision": "4d5a8a24041c69063f095fe5adc4263542aea27aacedfd14fc9869c7ea6f530b",
+  "base_id": "3a39f86dd53bb02434c9b3415f4c718be3fa908159d04f0a5088c46c14f1d87a",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **49 · Home Edit** — Fluid image/heading values fix the 390px inline failure: the updated normal image is 200px high and heading 52px. Actual normal/form views checked. The desktop converted form adds height below the fixed photo, leaving visible dark space; this remains an adaptation, not pixel identity. Terms and form are readable.",
+  "at": "2026-10-24T15:58:06.154Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/49-1440-wordpress.png",
+          "sha256": "b92a28c6d8c4e91d2600dd57266f938c63bbce3d5599240e85982e494b24d006"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/49-390-wordpress.png",
+          "sha256": "f92576825462bca12b5664138c6aaae4c944fbe4ea9beff9c085932fbd8dc837"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "72956b21aee513772171b079617423e780f7b6b8cd90844bea5a4192d30ce250"
+}

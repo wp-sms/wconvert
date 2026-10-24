@@ -1,0 +1,47 @@
+{
+  "id": "campaign-black-friday-department",
+  "revision": "01a085907f3b21a782ef59b9bb5c25c71bada6cdeb08f73e5588b2aae4e95f58",
+  "base_id": "e346bc081d49c930c1d5e5cd400cbdf867fbe593b4bd6fbd0e62d1e950d3615a",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **50 · Black Friday Department (Black Friday):** Restored condensed black/lime masthead, three product windows and closing reward/action row. Native emphasis wraps at phrase boundaries.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-black-friday-department-320.png",
+          "sha256": "24b1b4365066ad057d5623cd47025bb11ffc6ac4c0ec7bf7b90d5f8d4f28560e"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-black-friday-department-1440.png",
+          "sha256": "5c69cec42c8e24e0233ce92ad66c19f26f82aa52d9b435f4a48d5c552adae8d4"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "37c80f1faae89bfbe403ae49bdc772532797646d16c381a8654b4aea793b2e6f"
+}

@@ -1,0 +1,239 @@
+{
+  "id": "campaign-welcome-shortcut",
+  "name": "Welcome Shortcut",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#ffc896",
+    "fg": "#573044",
+    "muted": "#e9efbc",
+    "accent": "#573044",
+    "accent-fg": "#fff6df",
+    "border": "#be92d3",
+    "input-bg": "#e9867b",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Bebas Neue\", Impact, sans-serif",
+    "heading-size": "51px",
+    "heading-weight": "400",
+    "heading-leading": ".96",
+    "text-size": "14px",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "0",
+    "gap": "0",
+    "radius": "12px",
+    "width": "720px",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "split",
+          "start": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "panel",
+                      "children": [
+                        {
+                          "type": "panel",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "n8",
+                              "role": "body",
+                              "text": "%b",
+                              "tokens": {
+                                "font": "\"Bebas Neue\", Impact, sans-serif",
+                                "text-size": "63px"
+                              },
+                              "emphasis": "15%",
+                              "narrow": {
+                                "text-size": "63px"
+                              }
+                            },
+                            {
+                              "type": "code",
+                              "id": "n2",
+                              "role": "code_value",
+                              "text": "WELCOME15",
+                              "copy": false,
+                              "tokens": {
+                                "font": "monospace",
+                                "text-size": "12px",
+                                "tracking": "0"
+                              }
+                            }
+                          ],
+                          "tokens": {
+                            "pad": "68px 10px 30px",
+                            "gap": "24px",
+                            "radius": "150px 150px 12px 12px",
+                            "bg": "muted",
+                            "fg": "accent",
+                            "align": "center"
+                          },
+                          "narrow": {
+                            "pad": "45px 5px 25px"
+                          }
+                        }
+                      ],
+                      "tokens": {
+                        "pad": "18px",
+                        "gap": "16px",
+                        "radius": "170px 170px 12px 12px",
+                        "bg": "border"
+                      },
+                      "narrow": {
+                        "pad": "12px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "18px",
+                    "gap": "16px",
+                    "radius": "190px 190px 12px 12px",
+                    "bg": "input-bg"
+                  },
+                  "narrow": {
+                    "pad": "12px"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "22px",
+                "gap": "16px",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "24px"
+              }
+            }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n3",
+                  "role": "eyebrow",
+                  "text": "FIRST-ORDER COUPON",
+                  "tokens": {
+                    "text-size": "9px",
+                    "tracking": ".1em"
+                  }
+                },
+                {
+                  "type": "heading",
+                  "id": "n4",
+                  "role": "headline",
+                  "text": "YOUR SHORTCUT\nTO 15% OFF.",
+                  "narrow": {
+                    "heading-size": "45px"
+                  },
+                  "tokens": {
+                    "heading-size": "51px"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n5",
+                  "role": "body",
+                  "text": "Enjoy 15% off selected everyday favorites on your first order."
+                },
+                {
+                  "type": "button",
+                  "id": "n6",
+                  "role": "cta_label",
+                  "label": "Use my welcome offer",
+                  "action": "link",
+                  "icon": "arrow",
+                  "tokens": {
+                    "text-size": "14px",
+                    "radius": "0px"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n7",
+                  "role": "fine_print",
+                  "text": "First order only. Selected items. Exclusions apply.",
+                  "tokens": {
+                    "text-size": "14px"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "56px 32px 28px 32px",
+                "gap": "16px",
+                "radius": "0",
+                "muted": "fg",
+                "input-bg": "bg"
+              },
+              "narrow": {
+                "pad": "56px 23px 25px 23px"
+              }
+            }
+          ],
+          "ratio": 0.5,
+          "basis": "19rem",
+          "narrow_layout": "stack",
+          "tokens": {
+            "gap": "0"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

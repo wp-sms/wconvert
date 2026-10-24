@@ -1,0 +1,55 @@
+{
+  "id": "campaign-black-friday-plus-one",
+  "revision": "c273bdc65634a0b2f81967c81f6fcaa8a5ad2d4726cee5ca6968f4e4b678ee19",
+  "base_id": "fff8e462f8b65b8fc959f447f4ddc5460db1cfd4beb84c61e32d598cb0722fb7",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **41 · Black Friday Plus One** — Gift frame, plus figure and threshold retained. Mobile crop shows more of the neighbouring bottle than the prototype. Explicit $75+ terms clarify eligibility; form contrast is sound.",
+  "at": "2026-10-24T15:58:06.154Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/41-1440-wordpress.png",
+          "sha256": "4812e2ba5fce2179c06e8235894a577cd29b667020fe1f54b50994a5f4f0dbe5"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/41-390-wordpress.png",
+          "sha256": "6e5e3620e974824b68d7e1942fb00d43bb9ceb0f2a8052f4162741171289c174"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "cba4bbc345082b79aafcaff8c8ab5bdb62d8982602ea5e0b3839bc2ad588b838"
+}

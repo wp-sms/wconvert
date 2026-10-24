@@ -1,0 +1,47 @@
+{
+  "id": "contributor-pitch-checklist",
+  "revision": "6e1af68813537d77c81b74f25dbcfb2b109e4f386b559b5a1723b4cd0ba3fbb8",
+  "base_id": "b7ae75c6078d42485de35939556458af74cec50cf8e3517ad84826ebc4d70a51",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/contributor-pitch-checklist-320.png",
+          "sha256": "1f5c884bf4b2c03856b4082f47826faf77b51bed1311174d662c698b4cdf8bab"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/contributor-pitch-checklist-1440.png",
+          "sha256": "592cdf1f13840bb7c17fcfbf1061beccba539c3ee5ea1197d3eba80b799ed9d5"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "f6b4fb3b161fbfaa42ce1caf3a22aef890b82642b39b4f260dd9b7b4fba9420b"
+}

@@ -1,0 +1,212 @@
+{
+  "id": "campaign-free-delivery-label",
+  "name": "Free-Delivery Label",
+  "display_type": "floating_bar",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#101211",
+    "fg": "#f4f4eb",
+    "muted": "#f4f4eb",
+    "accent": "#b2c8ff",
+    "accent-fg": "#14180b",
+    "border": "#18201e",
+    "input-bg": "#f5efe4",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"DM Sans\", Arial, sans-serif",
+    "heading-size": "76px",
+    "heading-weight": "900",
+    "heading-leading": ".96",
+    "text-size": "14px",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "930px",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "split",
+              "start": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n2",
+                      "role": "eyebrow",
+                      "text": "BLACK FRIDAY / DELIVERY",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".1em"
+                      }
+                    },
+                    {
+                      "type": "panel",
+                      "children": [],
+                      "min": "23px",
+                      "tokens": {
+                        "pad": "0",
+                        "radius": "0",
+                        "bg-image": "repeating-linear-gradient(90deg,currentColor 0 2px,transparent 2px 5px,currentColor 5px 6px,transparent 6px 9px,currentColor 9px 13px,transparent 13px 15px)"
+                      },
+                      "narrow": {
+                        "pad": "0"
+                      }
+                    },
+                    {
+                      "type": "eyebrow",
+                      "id": "n7",
+                      "role": "eyebrow",
+                      "text": "27—30 NOV / STANDARD",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".08em"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "18px",
+                    "gap": "12px",
+                    "radius": "0",
+                    "bg": "input-bg",
+                    "fg": "border",
+                    "muted": "border"
+                  },
+                  "narrow": {
+                    "pad": "24px"
+                  }
+                }
+              ],
+              "end": [
+                {
+                  "type": "split",
+                  "start": [
+                    {
+                      "type": "row",
+                      "children": [
+                        {
+                          "type": "heading",
+                          "id": "n4",
+                          "role": "headline",
+                          "text": "$0",
+                          "tokens": {
+                            "heading-size": "76px",
+                            "heading-font": "\"DM Sans\", Arial, sans-serif",
+                            "heading-weight": "900",
+                            "fg": "accent"
+                          },
+                          "narrow": {
+                            "heading-size": "70px"
+                          }
+                        },
+                        {
+                          "type": "text",
+                          "id": "n8",
+                          "role": "body",
+                          "text": "DELIVERY\nON ORDERS $100+",
+                          "tokens": {
+                            "text-size": "14px"
+                          }
+                        }
+                      ],
+                      "tokens": {
+                        "gap": "16px"
+                      }
+                    }
+                  ],
+                  "end": [
+                    {
+                      "type": "button",
+                      "id": "n5",
+                      "role": "cta_label",
+                      "label": "Shop with free delivery",
+                      "action": "link",
+                      "icon": "arrow",
+                      "tokens": {
+                        "text-size": "14px",
+                        "radius": "0px"
+                      }
+                    }
+                  ],
+                  "ratio": 0.48,
+                  "basis": "0px",
+                  "narrow_layout": "stack",
+                  "tokens": {
+                    "gap": "20px",
+                    "input-bg": "bg"
+                  }
+                }
+              ],
+              "ratio": 0.25,
+              "basis": "0px",
+              "narrow_layout": "stack",
+              "tokens": {
+                "gap": "28px"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "30px 55px 24px 20px",
+            "gap": "16px",
+            "radius": "0"
+          },
+          "narrow": {
+            "pad": "45px 24px 24px"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

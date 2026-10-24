@@ -1,0 +1,99 @@
+{
+  "id": "studio-conversation",
+  "revision": "4ff1d82c22df78312defa9481c8abfe108dbc8c83a39e4515c8c4d5d718c47a4",
+  "base_id": "546fcb1bc051184d170f60c6940590175d973f891364219aae293b854865542f",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+          "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+          "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+          "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+          "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+          "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+          "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+          "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+          "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+          "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+          "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+          "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+          "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+          "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+          "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+          "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+          "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+          "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+          "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+        }
+      ]
+    }
+  },
+  "record_id": "099720d9601e2ae015e0e7633cd9167b44aa0c5999ae65c402a76405130c65d4"
+}

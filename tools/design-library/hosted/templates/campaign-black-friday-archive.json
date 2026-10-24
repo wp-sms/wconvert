@@ -1,0 +1,302 @@
+{
+  "id": "campaign-black-friday-archive",
+  "name": "Black Friday Archive",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#d4ac78",
+    "fg": "#332f28",
+    "muted": "#332f28",
+    "accent": "#274ccc",
+    "accent-fg": "#fff7dc",
+    "border": "#c99e68",
+    "input-bg": "#fff5d9",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Bebas Neue\", Impact, sans-serif",
+    "heading-size": "55px",
+    "heading-weight": "400",
+    "heading-leading": ".96",
+    "text-size": "14px",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "720px",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "role": "eyebrow",
+                  "text": "BLACK FRIDAY / THE ARCHIVE EVENT",
+                  "tokens": {
+                    "text-size": "9px",
+                    "tracking": ".1em"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "16px 60px",
+                "gap": ".9rem",
+                "bg": "accent",
+                "fg": "accent-fg",
+                "muted": "accent-fg",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "16px 60px"
+              }
+            },
+            {
+              "type": "split",
+              "ratio": 0.65,
+              "basis": "0px",
+              "start": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n2",
+                      "role": "eyebrow",
+                      "text": "BLACK FRIDAY / ARCHIVE CLEARANCE",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".1em"
+                      }
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n3",
+                      "role": "headline",
+                      "text": "OUT OF THE ARCHIVE.\nUP TO 60% OFF.",
+                      "narrow": {
+                        "heading-size": "44px"
+                      },
+                      "tokens": {
+                        "heading-size": "55px"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n4",
+                      "role": "body",
+                      "text": "Past-season favorites return at Black Friday prices."
+                    },
+                    {
+                      "type": "row",
+                      "children": [
+                        {
+                          "type": "button",
+                          "id": "n5",
+                          "role": "cta_label",
+                          "label": "Shop the archive sale",
+                          "action": "link",
+                          "icon": "arrow",
+                          "tokens": {
+                            "text-size": "14px",
+                            "radius": "0px"
+                          }
+                        }
+                      ],
+                      "tokens": {
+                        "gap": "12px"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n6",
+                      "role": "fine_print",
+                      "text": "November 27–30. Selected archive pieces and sizes.",
+                      "tokens": {
+                        "text-size": "14px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "32px",
+                    "gap": "16px",
+                    "radius": "0"
+                  },
+                  "narrow": {
+                    "pad": "28px 24px"
+                  }
+                }
+              ],
+              "end": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "panel",
+                      "children": [
+                        {
+                          "type": "panel",
+                          "children": [
+                            {
+                              "type": "eyebrow",
+                              "id": "n7",
+                              "role": "eyebrow",
+                              "text": "SELECTED ARCHIVE",
+                              "tokens": {
+                                "text-size": "9px",
+                                "tracking": ".1em"
+                              }
+                            },
+                            {
+                              "type": "text",
+                              "id": "n8",
+                              "role": "body",
+                              "text": "%b",
+                              "tokens": {
+                                "text-size": "78px",
+                                "leading": ".95",
+                                "font": "\"Bebas Neue\", Impact, sans-serif"
+                              },
+                              "emphasis": "60%",
+                              "narrow": {
+                                "text-size": "64px"
+                              }
+                            },
+                            {
+                              "type": "text",
+                              "id": "n10",
+                              "role": "body",
+                              "text": "UP TO / OFF",
+                              "tokens": {
+                                "text-size": "10px",
+                                "align": "center"
+                              }
+                            },
+                            {
+                              "type": "panel",
+                              "children": [],
+                              "tokens": {
+                                "pad": "0",
+                                "radius": "0",
+                                "bg-image": "repeating-linear-gradient(90deg,currentColor 0 2px,transparent 2px 5px,currentColor 5px 6px,transparent 6px 9px,currentColor 9px 13px,transparent 13px 15px)"
+                              },
+                              "narrow": {
+                                "pad": "0"
+                              },
+                              "min": "30px"
+                            },
+                            {
+                              "type": "text",
+                              "id": "n9",
+                              "role": "body",
+                              "text": "NOVEMBER 27–30",
+                              "tokens": {
+                                "font": "monospace",
+                                "text-size": "9px",
+                                "align": "center"
+                              }
+                            }
+                          ],
+                          "tokens": {
+                            "pad": "20px 14px",
+                            "gap": "18px",
+                            "bg": "input-bg",
+                            "fg": "fg",
+                            "muted": "fg",
+                            "radius": "0",
+                            "border": "fg"
+                          },
+                          "narrow": {
+                            "pad": "20px 14px"
+                          },
+                          "edges": "all"
+                        }
+                      ],
+                      "tokens": {
+                        "pad": "4px",
+                        "gap": "0",
+                        "radius": "0",
+                        "bg": "input-bg",
+                        "border": "input-bg"
+                      },
+                      "edges": "all"
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "24px 20px 24px 0",
+                    "gap": "0",
+                    "radius": "0"
+                  },
+                  "narrow": {
+                    "pad": "0 24px 28px"
+                  }
+                }
+              ],
+              "tokens": {
+                "gap": "0"
+              },
+              "narrow_layout": "stack"
+            }
+          ],
+          "tokens": {
+            "pad": "0",
+            "gap": "0",
+            "radius": "0",
+            "bg-image": "repeating-linear-gradient(90deg,transparent 0 2px,var(--wc-border) 2px 3px)"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

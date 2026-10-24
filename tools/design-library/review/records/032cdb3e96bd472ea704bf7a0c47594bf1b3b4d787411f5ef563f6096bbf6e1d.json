@@ -1,0 +1,47 @@
+{
+  "id": "campaign-sneaker-edit",
+  "revision": "7c69984da48abcc2a31f4415f1580a5c18dad0789a036606bf5885d936eecbf0",
+  "base_id": "ede78b25863f648a806b97dbbef09d47f3e0bcc20b7b9913759c715880b31b4d",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **11 · Sneaker Edit (Black Friday):** Matched trainer crop, charcoal ground and lime reward. The phone keeps product-first reading order.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-sneaker-edit-320.png",
+          "sha256": "00c55beefa61bfd6bf7ce331e98f356579581a03f1e57325efb15d207c5b6e3a"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-sneaker-edit-1440.png",
+          "sha256": "b1afabe797ad9456f4309dd417b5729f7980d80be7d418d52f88aa9c5b00d9b6"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "032cdb3e96bd472ea704bf7a0c47594bf1b3b4d787411f5ef563f6096bbf6e1d"
+}

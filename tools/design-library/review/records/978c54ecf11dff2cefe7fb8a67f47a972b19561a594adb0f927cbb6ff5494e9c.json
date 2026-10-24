@@ -1,0 +1,55 @@
+{
+  "id": "return-policy-guide",
+  "revision": "55274ef87256d900e5cc50cabb132232dad0e68a6ac6bee334073bcd2d978993",
+  "base_id": "43320171ad59d7f3e1cf65051857ad83df3357effe6c781bdc3952d8a00c9d8a",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/return-policy-guide-320.png",
+          "sha256": "ca3cae68d9ed4ba3d1394b703938c71d30e75291f4315945012da380c58a7c3a"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/return-policy-guide-1440.png",
+          "sha256": "77bc1fb1ab9e42c589d3163e5e218c4441ae5dad4e1461a890d3fe8aab764976"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/review.md",
+          "sha256": "83d5e893a7999c3cfde4ef3519dc791cdad0ab7005efba425467d5e085687ae0"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json",
+          "sha256": "3722746304da03cb7f7e8ff6c411258f6f132c7f1949503691e30d7344ef0370"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+          "sha256": "bf614c2913787167fbf45e1727ec5715a1ac8e50417c53b4627aa04595f761c9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+          "sha256": "bf614c2913787167fbf45e1727ec5715a1ac8e50417c53b4627aa04595f761c9"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json",
+          "sha256": "3722746304da03cb7f7e8ff6c411258f6f132c7f1949503691e30d7344ef0370"
+        }
+      ]
+    }
+  },
+  "record_id": "978c54ecf11dff2cefe7fb8a67f47a972b19561a594adb0f927cbb6ff5494e9c"
+}

@@ -1,0 +1,51 @@
+{
+  "id": "campaign-first-dibs-signup",
+  "revision": "752eb7aa775dbd7731ccd77e64060db625873b8c880ceb7291250947de0acc51",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "The date block and first-dibs form remain grouped; the bar fills its actual viewport.",
+  "at": "2026-10-24T10:40:12.653Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-first-dibs-signup-320.png",
+          "sha256": "a3c06ad272cb3ade84615268d25b0bd796a2a35db655e748c126ea2cb9b2378e"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-first-dibs-signup-1440.png",
+          "sha256": "0cfd59c7a12c82a94da18e793e816cff9cb7a7ea5f0e1437df2f1bdcb84820c8"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "98aec6a37d7eb2628fbe97d85ec06ac41bf30c0bc72cc33cae964f36a1622b04"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        }
+      ]
+    }
+  },
+  "record_id": "7ad5455ab2dbcc99303519858be4bc4e28054dcf218a4a6717d16467a5aa8cb0"
+}

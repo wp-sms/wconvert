@@ -1,0 +1,55 @@
+{
+  "id": "campaign-anniversary-event",
+  "revision": "901719a53a69e00c39b8aa8bfa2a6f791e44598eb2b8d5feca455e9b99d519da",
+  "base_id": "a27a174405eee9f8b489a9fcf7d0c505484553c9f7659eb5609beceb8195cab9",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **30 · Anniversary Event** — Boxed popup, balloon artwork and centered offer/action retained. Balloon artwork scales smaller on phone than the prototype. Optional email capture adds height while retaining a single-line action and readable consent.",
+  "at": "2026-10-24T15:58:06.156Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/30-1440-wordpress.png",
+          "sha256": "de8e83f20bd73c437c1a0b0d87bebaa4a195cee2ebe06131f13a67edff8d6cb1"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/30-390-wordpress.png",
+          "sha256": "2ebd0d6ae0ec6d12341b37d8a66791a0131a9d12ce02ddbaeda22696e42940f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "cc7ead1ac1dbef6734e1adafd1b651262b8dda7bcf864c407d3f220e76d47fa0"
+}

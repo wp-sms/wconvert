@@ -1,0 +1,51 @@
+{
+  "id": "campaign-delivery-buddy",
+  "revision": "d619129ad276d9089742307aced4801c13ee2acdfa4bde39303086ab49c448c5",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "The robot illustrates a shipping benefit with the $75 threshold stated in terms.",
+  "at": "2026-10-24T10:40:12.653Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-delivery-buddy-320.png",
+          "sha256": "91133cf8aaf8d57d59c134a62a14e3af68e618cf4d885f6e1bb9749b142b15ef"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-delivery-buddy-1440.png",
+          "sha256": "44a399f01f1b595db40abfc82be050112df69d25877afca1c705158dd0d2b412"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "98aec6a37d7eb2628fbe97d85ec06ac41bf30c0bc72cc33cae964f36a1622b04"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        }
+      ]
+    }
+  },
+  "record_id": "4000de514ddeae63857706b699a5cd57d0543c281cef753319ed1eea9f185840"
+}

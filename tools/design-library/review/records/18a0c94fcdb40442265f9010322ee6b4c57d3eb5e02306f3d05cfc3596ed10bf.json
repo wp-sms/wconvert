@@ -1,0 +1,47 @@
+{
+  "id": "winter-after-hours-atelier",
+  "revision": "4a1071d17065353871cd0090815d8c69b8a8886416a24c52da6acc44203306f7",
+  "base_id": "56d5774a20aaa02e86a2f3cccd3229511140142a9aecf44686d03ca0a760ad6c",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-4.jpg",
+          "sha256": "bbce5ed08da7233fb00323f481ed067fc9763d139a420dad9046808fe4778d89"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-4.jpg",
+          "sha256": "a89d727c168a10755fc48526e07138c06731b0a4b97079f560cdd4080d38d246"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "18a0c94fcdb40442265f9010322ee6b4c57d3eb5e02306f3d05cfc3596ed10bf"
+}

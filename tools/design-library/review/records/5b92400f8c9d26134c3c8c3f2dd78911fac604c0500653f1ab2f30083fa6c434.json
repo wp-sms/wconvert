@@ -1,0 +1,47 @@
+{
+  "id": "everyday-the-useful-checklist",
+  "revision": "ad9acd898922984a2c412a285616e97553aa67a2f8280479b5704376ea3e0dbd",
+  "base_id": "5b0cf1771d995fcfdc4d6f114c927fbd25af0583918206acbe1dd0b244362ea7",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at d7688edf, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T12:58:11Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/review.md",
+          "sha256": "2140efcabc4dee5cc2d05ce1fb7f20b46657d2e4ae6100cf69c6be21ef3e5563"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-the-useful-checklist-320.png",
+          "sha256": "1be745e986384c88006cdd799657b3150132dc5edccb5f82f57f99f92eda6e25"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-the-useful-checklist-1440.png",
+          "sha256": "5799cd5d39bb9e43196b245fcc197471fcfc35586e50b70dc65abb32c910f52f"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "cc7ccb4050bfcf7985d270710cfedd362fc187b7213597526d8fb39c3791ce98"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "cc7ccb4050bfcf7985d270710cfedd362fc187b7213597526d8fb39c3791ce98"
+        }
+      ]
+    }
+  },
+  "record_id": "5b92400f8c9d26134c3c8c3f2dd78911fac604c0500653f1ab2f30083fa6c434"
+}

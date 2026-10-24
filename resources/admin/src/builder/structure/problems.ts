@@ -148,8 +148,18 @@ export function problemsIn(
     ...whatHasUnfinishedLinks(template),
     ...whatCountsDownToNothing(template, endsAt),
     ...whatLosesWords(template),
+    ...whatNeedsOfferAmount(template),
     ...whatCannotBeRead(template),
   ];
+}
+
+/** A discount figure is never guessed from a carried sentence headline. */
+export function whatNeedsOfferAmount(template: Template): Problem[] {
+  return nodesOf(template.tree).filter(block => !block.hidden).flatMap((block): Problem[] => {
+    const node = nodeAt(template.tree, block.path);
+    if (node?.type !== 'heading' || !('role' in node) || node.role !== 'offer_amount' || ('text' in node && node.text?.trim())) return [];
+    return [{ said: __('Add the offer amount for this design. Your previous headline is not a discount figure.', 'wconvert'), path: block.path, check: 'words' }];
+  });
 }
 
 function whatHasIncompleteFollowups(template: Template): Problem[] {

@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "at": "2026-10-24T16:26:38.886Z",
+  "site": "disposable local WordPress",
+  "checks": [
+    "journey",
+    "wordpress"
+  ],
+  "setups": [
+    {
+      "id": "campaign-price-elevator",
+      "revision": "674a9d38af126b24e1c42f7489dfdda3eb524a87a866f04d5549390573fbbb39",
+      "width": 320,
+      "passed": true,
+      "screens": 2,
+      "validation": true,
+      "consentChecked": true,
+      "backChecked": false,
+      "simulatedFailureRetry": true,
+      "localLeadSaved": true,
+      "configuredResource": 200,
+      "actualCtaOpened": true,
+      "couponChecked": false,
+      "copiedCode": false,
+      "localResourceEmail": false
+    },
+    {
+      "id": "campaign-price-elevator",
+      "revision": "674a9d38af126b24e1c42f7489dfdda3eb524a87a866f04d5549390573fbbb39",
+      "width": 1280,
+      "passed": true,
+      "screens": 2,
+      "validation": true,
+      "consentChecked": true,
+      "backChecked": false,
+      "simulatedFailureRetry": true,
+      "localLeadSaved": true,
+      "configuredResource": 200,
+      "actualCtaOpened": true,
+      "couponChecked": false,
+      "copiedCode": false,
+      "localResourceEmail": false
+    }
+  ]
+}

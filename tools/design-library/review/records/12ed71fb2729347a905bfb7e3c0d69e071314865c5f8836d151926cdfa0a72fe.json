@@ -1,0 +1,55 @@
+{
+  "id": "campaign-delivery-buddy",
+  "revision": "bc4d7c0220d520f277030b159843e5c811a25b29fd5e36d2c9329647d7df3bc0",
+  "base_id": "82a02e7e266c25b9d9ac5afa7eb1846746350cb1106a353a800af43701084704",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **16 · Delivery Buddy** — Source image now occupies a bindable picture slot, with the gradient on a separate native surface. This fixes both the 74 KB embedded-data budget failure and lost artwork. Final actual normal and email desktop/phone captures verified: picture is visible, gradient covers the full surface and copy stays over the dark ground. Normal phone is 620px tall; email variant grows to 764px for functional fields/consent. Crop and robot scale differ slightly from the approved prototype.",
+  "at": "2026-10-24T15:58:06.155Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/16-1440-wordpress.png",
+          "sha256": "f6daa0d9997bdcc36f15d3f42dc519630fb483064735d67cf5b90c09081eac10"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/16-390-wordpress.png",
+          "sha256": "9cd2bf3db703dba969e022798b69c63c45ad1b3496b7bd1a5bdba436224fd5a0"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "12ed71fb2729347a905bfb7e3c0d69e071314865c5f8836d151926cdfa0a72fe"
+}

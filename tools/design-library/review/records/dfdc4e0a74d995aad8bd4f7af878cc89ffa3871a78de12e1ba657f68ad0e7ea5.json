@@ -1,0 +1,55 @@
+{
+  "id": "campaign-wishlist-alert",
+  "revision": "4b3351a313ddf48eea34f6ec850df0d2fa4a0b67b59b1d38ea526da6485751fb",
+  "base_id": "76753c0dbbd39441f614be3a63db84a1d6f1dc956029314be7b0907e69908c7f",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **13 · Wishlist Alert** — Chat bubbles alternate, original face artwork appears in the header, matching serif/italic restored and form remains usable. Face colour/size, bubble radii, field fill and vertical spacing differ from the prototype. Final contrast review: the lavender reply bubble now uses the darker body foreground. Actual desktop/phone views retain the same composition and were checked against the prototype.",
+  "at": "2026-10-24T16:35:57.124Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/13-1440-wordpress.png",
+          "sha256": "17f5225b4e669c8dd489c03fdbbb8f42dac8e40c4dbee55ff2f14b9015aba873"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/13-390-wordpress.png",
+          "sha256": "b94e20830cb89eff918500ff97558b243e14114a705613b2e8bd08790e71f9b6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "a4c4d5319dcf9c89dd221e53d0fb752d92d8cc29794e20a8b51227b8336a0546"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "9fc7b32a864c46fd0049000abe22d772bb19dfb8e2979b35dc79d2c1fe6b65ce"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "6eea349f9df98056f69e276fc584f6967e24cb2093795e1cf2ba81bf5bef3e67"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "6eea349f9df98056f69e276fc584f6967e24cb2093795e1cf2ba81bf5bef3e67"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "a4c4d5319dcf9c89dd221e53d0fb752d92d8cc29794e20a8b51227b8336a0546"
+        }
+      ]
+    }
+  },
+  "record_id": "dfdc4e0a74d995aad8bd4f7af878cc89ffa3871a78de12e1ba657f68ad0e7ea5"
+}

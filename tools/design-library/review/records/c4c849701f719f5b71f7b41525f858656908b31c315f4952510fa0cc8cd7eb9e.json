@@ -1,0 +1,47 @@
+{
+  "id": "campaign-savings-receipt",
+  "revision": "1bfe956b232f96d25396d1ce2af7aa1db9971daeec5179b51b4bc7100814a78d",
+  "base_id": "3dd3883ad2eae476155dc033324acd60ba0205e46100fb0e4e65af2b39914275",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **09 · Savings Receipt (General):** Kept receipt reading order, savings total and barcode. Bounded native eyes and straight paper edges replace custom prototype shapes.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-savings-receipt-320.png",
+          "sha256": "076f4dacc0cd14642eef90f10882ef430a2bd7031dcac0479d597e6cba5d96ef"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-savings-receipt-1440.png",
+          "sha256": "e1601242b1811a998ee42bffc545f41d6c794f0f1e90a0d26bac4d27940c69b2"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "c4c849701f719f5b71f7b41525f858656908b31c315f4952510fa0cc8cd7eb9e"
+}

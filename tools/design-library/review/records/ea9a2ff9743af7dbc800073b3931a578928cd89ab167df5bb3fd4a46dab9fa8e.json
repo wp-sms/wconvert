@@ -1,0 +1,59 @@
+{
+  "id": "collection-help-shoppers-choose",
+  "revision": "44f9cd2da2f567b1cf78691ed1eb7fe7e3f8d4d7e990176d8487c0eea8381742",
+  "base_id": "50b6c3acc1e51a5c1613977ad0ae4275fb36b8b728a3e7466da83cecaa821cf1",
+  "decision": "approved",
+  "reviewer": "Renderer carry (ADR 0156)",
+  "note": "Every setup in it pixel-identical under the new renderer and carried by templates:visual-diff; items, order and words unchanged; only setup revisions moved. Not a new review.",
+  "at": "2026-10-24T12:58:11Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/README.md",
+          "sha256": "8fc43e91e2224ce3ed9c2b9381d11d50ca0095daeb5371659c32011943e76a72"
+        },
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/manifest.json",
+          "sha256": "4c4aeb18167dd8ea7eb63da3f396094cb154ecc802af79e7a907109d2d3cbbfd"
+        },
+        {
+          "path": "docs/reviews/visual-diff-2026-10-24/collections-carry-031e66237b8265ce7bc935d28e5eb45786fc894c.md",
+          "sha256": "e241e1ab27138e90b7291748e2fa876e7c1e4fb8776493a24bc60dac59951e19"
+        },
+        {
+          "path": "docs/reviews/visual-diff-2026-10-24/collections-carry-d7688edf.md",
+          "sha256": "38ade91c10201b60b4309c8376b30c292ac272397f33071d839ee9ac86cc681d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/README.md",
+          "sha256": "8fc43e91e2224ce3ed9c2b9381d11d50ca0095daeb5371659c32011943e76a72"
+        },
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/manifest.json",
+          "sha256": "4c4aeb18167dd8ea7eb63da3f396094cb154ecc802af79e7a907109d2d3cbbfd"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/README.md",
+          "sha256": "8fc43e91e2224ce3ed9c2b9381d11d50ca0095daeb5371659c32011943e76a72"
+        },
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/manifest.json",
+          "sha256": "4c4aeb18167dd8ea7eb63da3f396094cb154ecc802af79e7a907109d2d3cbbfd"
+        }
+      ]
+    }
+  },
+  "record_id": "ea9a2ff9743af7dbc800073b3931a578928cd89ab167df5bb3fd4a46dab9fa8e"
+}

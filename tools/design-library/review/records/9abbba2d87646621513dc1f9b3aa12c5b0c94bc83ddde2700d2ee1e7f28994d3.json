@@ -1,0 +1,47 @@
+{
+  "id": "collection-launch-a-collection",
+  "revision": "de429f010890e02bb9995c13088097f92ff90419472980a5055b0e5b0945076f",
+  "base_id": "184a592f2a7ff8532f9c15ba1c9e3a08ef40f0a5c41fb5fa530c74430cf2bac7",
+  "decision": "approved",
+  "reviewer": "Renderer carry (ADR 0156)",
+  "note": "Every setup in it pixel-identical under the new renderer and carried by templates:visual-diff; items, order and words unchanged; only setup revisions moved. Not a new review.",
+  "at": "2026-10-24T12:58:11Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/visual-diff-2026-10-24/collections-carry-031e66237b8265ce7bc935d28e5eb45786fc894c.md",
+          "sha256": "e241e1ab27138e90b7291748e2fa876e7c1e4fb8776493a24bc60dac59951e19"
+        },
+        {
+          "path": "docs/reviews/visual-diff-2026-10-24/collections-carry-d7688edf.md",
+          "sha256": "38ade91c10201b60b4309c8376b30c292ac272397f33071d839ee9ac86cc681d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "9abbba2d87646621513dc1f9b3aa12c5b0c94bc83ddde2700d2ee1e7f28994d3"
+}

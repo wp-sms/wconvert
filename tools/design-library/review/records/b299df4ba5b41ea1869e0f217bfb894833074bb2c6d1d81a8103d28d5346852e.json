@@ -1,0 +1,47 @@
+{
+  "id": "winter-last-sleigh",
+  "revision": "e9577556a75b7ee60295a8b3625fe261a194a574482bf724a1c49aa0945448c9",
+  "base_id": "628cf8abc5fa7cae46c44066ecd701081bf4a4d735873f9a92ee72ecf7e1d770",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 031e66237b8265ce7bc935d28e5eb45786fc894c, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T10:44:21Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-5.jpg",
+          "sha256": "3621ff35397561d97168cea076c1239921258e29aa473e01c5dfd1ae83603ae4"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-5.jpg",
+          "sha256": "28e6c8ee0da96b5b0cdaf6d2cceb4ca87ca6babb20c82108a4648648f06fcc1d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "b299df4ba5b41ea1869e0f217bfb894833074bb2c6d1d81a8103d28d5346852e"
+}

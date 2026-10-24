@@ -1,0 +1,45 @@
+{
+  "sequence": [
+    {
+      "id": "bf-closing-time",
+      "template_id": "bf-closing-time",
+      "playbook_id": "bf-closing-time",
+      "goal": "grow_email_list",
+      "closingWords": true,
+      "couponWords": false,
+      "numericOffer": false,
+      "forms": true
+    },
+    {
+      "id": "campaign-extra-ten-coupon",
+      "template_id": "campaign-extra-ten-coupon",
+      "playbook_id": "campaign-extra-ten-coupon",
+      "goal": "grow_email_list",
+      "closingWords": false,
+      "couponWords": true,
+      "numericOffer": true,
+      "forms": true
+    },
+    {
+      "id": "bf-closing-time",
+      "template_id": "bf-closing-time",
+      "playbook_id": "bf-closing-time",
+      "goal": "grow_email_list",
+      "closingWords": true,
+      "couponWords": false,
+      "numericOffer": false,
+      "forms": true
+    },
+    {
+      "id": "campaign-extra-ten-coupon",
+      "template_id": "campaign-extra-ten-coupon",
+      "playbook_id": "campaign-extra-ten-coupon",
+      "goal": "grow_email_list",
+      "closingWords": false,
+      "couponWords": true,
+      "numericOffer": true,
+      "forms": true
+    }
+  ],
+  "inputsUnchanged": true
+}

@@ -1,0 +1,135 @@
+{
+  "id": "coffee-taste-finder",
+  "revision": "3505d5813d2fe133d578aaf1501a62704cb92eb7d6c952438a7c2900d8c46690",
+  "base_id": "0cd84a31863d8873f95e98c7942c7d3ed9997bc6c9daec75e36a7a6f399b5ccd",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at d7688edf, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T12:58:11Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/manifest.json",
+          "sha256": "6dd3fba4f860426a7a049450a7e9d857f884309b2e843f6b0b57b5e01f8af228"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/controls.json",
+          "sha256": "36acba6b17c47b9179b415c8c4fbc40d11f983d1a4c2ce9cd4e211b704740047"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/visual/board-02.png",
+          "sha256": "f6e8e1a37571f25eebc43830050a8997c88e083a1401d47ef9cbc1fc001438f1"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-02.png",
+          "sha256": "084d3f4647274e120427e4364fe76ce8801a9d23905dad124e382f4a292ede97"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-02.png",
+          "sha256": "f6e8e1a37571f25eebc43830050a8997c88e083a1401d47ef9cbc1fc001438f1"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/stress/board-02.png",
+          "sha256": "b403b076be62fda3cf3e2badabff35de4e62bf0da72a380bbdae15bedb92ad3a"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/visual/board-03.png",
+          "sha256": "82347aa29517d30b1c2a1d01827f6ef52281943ce332348196ebeb99bf8e904e"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-03.png",
+          "sha256": "470c488ff45a89a43939b4c069328818ece94c7e263ee778bbd52e723ae14a72"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-03.png",
+          "sha256": "82347aa29517d30b1c2a1d01827f6ef52281943ce332348196ebeb99bf8e904e"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/stress/board-03.png",
+          "sha256": "0011211c8ed4bd99eb5de895a5e0bfcf8d07b9a8339c6771bb80d6d9fa675088"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/coffee-taste-finder-1280-bright.png",
+          "sha256": "90f4db380863f7f3ac0ef67f065cab847b9b9313c9121225f09de073d8d039ee"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/coffee-taste-finder-1280-explore.png",
+          "sha256": "3bff72625a1c3d57df355af3087f88359c609217b19e665aff85d9a5c0e561c7"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/coffee-taste-finder-1280-question.png",
+          "sha256": "b3f8d94d0be24160f36e029874ef11aadbd6d45605112d9145ec8bb877040f1b"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/coffee-taste-finder-1280-smooth.png",
+          "sha256": "a1223827e25d3a74f969b302cc9e677d3d8dc41ab45a32ee39b1f75d59765d1a"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/coffee-taste-finder-320-bright.png",
+          "sha256": "e2851280a66db5ed8c6fa545fcee44237014612ba491b0ed01eb38b2d8ddf207"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/coffee-taste-finder-320-explore.png",
+          "sha256": "93d8d14ab6211b9265945a61057f0ff9450e78133bf08a431b50c8adc2b24547"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/coffee-taste-finder-320-question.png",
+          "sha256": "fcdb3abce2bb72261877d3a4be03322b628c4b31698130f065ef29dae6527700"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/coffee-taste-finder-320-smooth.png",
+          "sha256": "1cee47fc8b37c85dfdb1a9563858d748a3c1d7b77df41f1378658eca2fa065d6"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/studio-journeys.json",
+          "sha256": "1a4c5a60530bc2541a495eecc08dfe2d2d1cadc4c053556065876c9aa9058ee3"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/results.json",
+          "sha256": "f3f738860a223a3ad9ff8cb108ebbfcc7eb4dccc8101beb9a196b3e79bfc8e88"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/results.json",
+          "sha256": "9487e0f5236e4aba0b8913e723ddc46d46be07ab8221e4a8d81312d36f0f0e99"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/cart-check.json",
+          "sha256": "a508e656f1d3d009a7c35599ec9b1f17f0e14ae7396e8f2920560c8e254eeced"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/coupon.json",
+          "sha256": "2cf4d1f1d5a6c9a0051a0707585e9e7c4bbd314b48b67a14ffe8ffd22ee66744"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wordpress-summary.json",
+          "sha256": "1db99fe79d1b1cb461faa693c8273ed0a868c4d909173e84c4967e347c6c87e2"
+        }
+      ]
+    }
+  },
+  "record_id": "633c399bbdef2704f064c1cde09ee618f2eb05c0f0e8c2b36b490f5be3d0420d"
+}

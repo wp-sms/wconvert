@@ -1,5 +1,7 @@
 # 0160: Templates declare fonts, decorations and countdown density
 
+**Amended by [ADR 0169](0169-campaign-fonts-are-local-assets.md): DM Sans, Bebas Neue and Cormorant Garamond now ship as licensed local campaign faces. They load at document level without Google permission; other families retain the site/remote policy below.**
+
 Accepted 2026-10-21. Implements the Halloween design exploration without adding
 position or animation controls to the merchant editor. The winter fidelity
 review later added a closed countdown-size appearance token; see the inline
@@ -19,7 +21,7 @@ The font picker retains site/system fonts and adds a local, searchable starter
 selection of Google families. Choosing one writes its stack and requirement in
 one undoable draft edit. Installed site families are offered once. A design
 missing fonts uses its fallback stack and explains how to install the font in
-WordPress or enable Google delivery. The existing Font Library is still the
+WordPress or enable Google delivery. For families beyond those bundled in ADR 0169, the existing Font Library is still the
 local-hosting path; WConvert adds no upload manager or font-file cache.
 
 `wconvert_google_fonts` is a WordPress option, off by default. Enabling requires
@@ -49,6 +51,10 @@ No raw SVG, external artwork, CSS or script is accepted. This first set supports
 our Halloween motion examples; new artwork needs an explicit vocabulary/runtime
 addition rather than an arbitrary uploaded image inheriting unsuitable motion.
 
+**Amended by [ADR 0167](0167-campaign-artwork-uses-bounded-renderer-options.md):**
+The closed artwork vocabulary now includes the additional campaign shapes,
+non-rotating motion and ordinary-image motion listed there.
+
 The Look panel discovers these groups and shows one checkbox per group, using
 its authored label. No declaration means no control. Hiding preserves the
 configuration but renders no decoration DOM. Main artwork remains independently
@@ -65,11 +71,21 @@ existing output. The template chooses it; `choices` deliberately exposes no
 new editor control. Default cell widths (52px wide, 35px in narrow containers)
 and tabular numbers prevent digit changes from resizing the row.
 
+**Amended by [ADR 0168](0168-approved-compositions-survive-native-rendering.md):**
+`density: stacked` also draws a vertical countdown rail and returns to a
+horizontal compact row at narrow widths.
+
 **Amended by the winter fidelity extension of [ADR 0067](0067-the-editor-starts-with-the-preview-and-the-selected-element.md):** the closed `countdown-size` token now controls
 line, boxed and compact clocks. Compact cells grow with the authored number size,
 retaining their previous widths when no size is supplied. Labels wrap
 inside their allotted cells. Unit labels, colors and deadline remain editable.
 The fixed end time, hiding zero days and one silent timer retain ADR 0052/0159.
+
+**Amended by [ADR 0168](0168-approved-compositions-survive-native-rendering.md):** a boxed countdown may declare
+`precision: minutes` to render days, hours and minutes without a seconds cell.
+Omission or `seconds` retains all four cells. This only chooses displayed units;
+the same exact `ends_at` instant still controls expiry and the shared timer.
+The option is authored data and survives editor saves and copy binding.
 
 ## Evidence
 
@@ -80,6 +96,10 @@ closed nested input, snapshot survival, font request timing/deduplication,
 decoration hiding/lifecycle and editor confirmation. Browser review additionally
 checks real WordPress saves, phone dimensions and reduced motion. Existing
 loader budgets remain unchanged; no new runtime dependency was added.
+
+**Amended by [ADR 0167](0167-campaign-artwork-uses-bounded-renderer-options.md):**
+The unchanged loader budgets describe this ADR's original change; ADR 0167
+records the additional 1,024 B per loader for campaign features.
 
 ## Library examples
 

@@ -1,0 +1,47 @@
+{
+  "id": "journey-email-then-sms",
+  "revision": "db029515cf20b1e18cb1553cb7ac5decd3d4233911b357327946ef561756cfc4",
+  "base_id": "16c623cc6d885f41278f36369a030d060b03d25773246a1d5c87b37bf633e9c4",
+  "decision": "revise",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 031e66237b8265ce7bc935d28e5eb45786fc894c, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T10:44:21Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/journey-email-then-sms-320.png",
+          "sha256": "339fc0c71a82a9bb3388471eacfe03e0bed9d6d05dd8dac9808d6204338d3e49"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/journey-email-then-sms-1440.png",
+          "sha256": "9a09d1a65a5935486219f289e5ae07ba021e997e5228a1fee6ee23e64970dc75"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "fa411c962558a8d13bd794fbffa77d1d693e5fe1d64a0f729d4bc7bc7d06c8df"
+}

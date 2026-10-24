@@ -1,0 +1,239 @@
+{
+  "id": "campaign-deadline-scoreboard",
+  "name": "Deadline Scoreboard",
+  "display_type": "floating_bar",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#101211",
+    "fg": "#f4f4eb",
+    "muted": "#f4f4eb",
+    "accent": "#ff9a6a",
+    "accent-fg": "#14180b",
+    "border": "#f4f4eb",
+    "input-bg": "#101211",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"DM Sans\", Arial, sans-serif",
+    "heading-size": "34px",
+    "heading-weight": "900",
+    "heading-leading": ".96",
+    "text-size": "14px",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "930px",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n1",
+                      "role": "eyebrow",
+                      "text": "BLACK FRIDAY / NOV 27—30",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".1em"
+                      }
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n2",
+                      "role": "headline",
+                      "text": "UP TO 40% OFF.",
+                      "tokens": {
+                        "heading-size": "34px",
+                        "heading-font": "\"DM Sans\", Arial, sans-serif",
+                        "heading-weight": "900",
+                        "tracking": "-.04em"
+                      },
+                      "narrow": {
+                        "heading-size": "28px"
+                      }
+                    },
+                    {
+                      "type": "eyebrow",
+                      "id": "n8",
+                      "role": "eyebrow",
+                      "text": "THE CLOCK IS ON.",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".08em"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "25px",
+                    "align": "space-between"
+                  },
+                  "narrow": {
+                    "gap": "16px"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "22px 60px 19px",
+                "gap": "16px",
+                "radius": "0",
+                "bg": "accent",
+                "fg": "accent-fg",
+                "muted": "accent-fg"
+              },
+              "narrow": {
+                "pad": "30px 50px 24px"
+              }
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "split",
+                  "start": [
+                    {
+                      "type": "split",
+                      "start": [
+                        {
+                          "type": "countdown",
+                          "id": "n3",
+                          "role": "countdown_units",
+                          "layout": "boxes",
+                          "days_label": "DAYS",
+                          "hours_label": "HRS",
+                          "minutes_label": "MIN",
+                          "seconds_label": "Seconds",
+                          "density": "compact",
+                          "precision": "minutes",
+                          "tokens": {
+                            "fg": "accent",
+                            "border": "bg",
+                            "input-bg": "bg",
+                            "radius": "0",
+                            "countdown-size": "31px",
+                            "heading-weight": "900"
+                          },
+                          "narrow": {
+                            "countdown-size": "31px"
+                          }
+                        }
+                      ],
+                      "end": [
+                        {
+                          "type": "text",
+                          "id": "n10",
+                          "role": "body",
+                          "text": "ENDS NOVEMBER 30\n23:59 UTC",
+                          "tokens": {
+                            "text-size": "14px"
+                          }
+                        }
+                      ],
+                      "ratio": 0.5,
+                      "basis": "0px",
+                      "narrow_layout": "stack",
+                      "tokens": {
+                        "gap": "27px"
+                      }
+                    }
+                  ],
+                  "end": [
+                    {
+                      "type": "button",
+                      "id": "n6",
+                      "role": "cta_label",
+                      "label": "Shop the event",
+                      "action": "link",
+                      "icon": "arrow",
+                      "tokens": {
+                        "text-size": "14px",
+                        "radius": "0px"
+                      },
+                      "narrow": {
+                        "width": "100%"
+                      }
+                    }
+                  ],
+                  "ratio": 0.7,
+                  "basis": "0px",
+                  "narrow_layout": "stack",
+                  "tokens": {
+                    "gap": "30px"
+                  },
+                  "narrow": {
+                    "gap": "22px"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "19px 28px",
+                "gap": "16px",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "24px"
+              }
+            }
+          ],
+          "tokens": {
+            "gap": "0"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "id": "campaign-pixel-play-sale",
+  "revision": "445c878eaad4496be9bf592d038b45d4a86c7442fe231e24a5294f4631a57654",
+  "base_id": "18fa78f91accc8de2adcce4fbc80994312ca7a7ef19eb788720d1f6a9d1e4942",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **28 · Pixel Play Sale (General):** Restored four original pixel characters and blue gaming palette. All four remain visible on phones instead of hiding one.",
+  "at": "2026-10-24T13:09:55.646Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-pixel-play-sale-320.png",
+          "sha256": "a50e780a39a1ff6f30fb811e66709bd5b08c4e17b20531ac83df37d23649e7b6"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-pixel-play-sale-1440.png",
+          "sha256": "bdf3e121a1379d63b298f9285ad16d5d72bd9e25ad0a049498e7dd9faca16e93"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "e8230116e20ce79a706e37272a70b780e26eb599d2eb1fd2e1360a2f2efc3817"
+}

@@ -537,8 +537,29 @@ final class TemplateVocabulary
                 if ($decoration !== null) $kept[$key] = $decoration;
                 continue;
             }
+            if ($type === 'code' && $key === 'appearance') {
+                if (in_array($node[$key], ['boxed', 'plain'], true)) $kept[$key] = $node[$key];
+                continue;
+            }
+            if ($type === 'divider' && $key === 'pattern') {
+                $choices = ['solid', 'dashed'];
+                if (in_array($node[$key], $choices, true)) $kept[$key] = $node[$key];
+                continue;
+            }
             if ($type === 'countdown' && $key === 'density') {
-                if (in_array($node[$key], ['regular', 'compact'], true)) $kept[$key] = $node[$key];
+                if (in_array($node[$key], ['regular', 'compact', 'stacked'], true)) $kept[$key] = $node[$key];
+                continue;
+            }
+            if ($type === 'split' && $key === 'narrow_layout') {
+                if (in_array($node[$key], ['wrap', 'stack', 'reverse'], true)) $kept[$key] = $node[$key];
+                continue;
+            }
+            if ($type === 'grid' && $key === 'narrow_basis') {
+                if (is_string($node[$key]) && preg_match('/^(?:[0-9]+(?:\.[0-9]+)?)(?:px|rem|em)$/', $node[$key])) $kept[$key] = $node[$key];
+                continue;
+            }
+            if ($type === 'countdown' && $key === 'precision') {
+                if (in_array($node[$key], ['seconds', 'minutes'], true)) $kept[$key] = $node[$key];
                 continue;
             }
             if ($key === 'options') {

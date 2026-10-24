@@ -1,0 +1,47 @@
+{
+  "id": "gift-finder",
+  "revision": "23380a58fee5ebcad64969108439d3dcd97ea8ca025b00bd0b51145af435c567",
+  "base_id": "02b6d77948b4137e670ea8f72b71a4f8b4f2ae3ed5e2d5c8e166d02b1413d668",
+  "decision": "revise",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/gift-finder-320.png",
+          "sha256": "301e48c492aea3e371902953caff933b142489b47698b1d4bcf7e277ace400a9"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/gift-finder-1440.png",
+          "sha256": "6d6f8c0f188e0816fe1735d7ded051f9950e93e8f21b865a6f44b5018b85cc52"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "5a0cd584e8394daf8a2faba74b223967b7aa77b623f26ed1bafef2f458f22cb4"
+}

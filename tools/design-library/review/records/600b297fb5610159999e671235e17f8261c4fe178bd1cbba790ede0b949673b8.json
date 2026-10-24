@@ -1,0 +1,43 @@
+{
+  "id": "halloween-after-dark-offer",
+  "revision": "896b91ac9e8dcf9caa1fe7f2a10e5f9cd6dde30b615b60f1b1d13df740a20086",
+  "base_id": "88d215ebdabadda525cb8b7381bb1a823c120a79f12cc3af01b618ac309f91c2",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at d7688edf, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T12:58:11Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/shared-renderer-3.jpg",
+          "sha256": "aaacebbc8d691f7f5944df3b09518da6095875684c1993c49a9d86ea8fd1d60a"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "600b297fb5610159999e671235e17f8261c4fe178bd1cbba790ede0b949673b8"
+}

@@ -1,0 +1,55 @@
+{
+  "id": "campaign-private-preview",
+  "revision": "28a619242dbf0e1a01b71f0e713fed2fa1a0ba854d45ad0c8a24dfb96dd1c094",
+  "base_id": "550ac893c83e5d88ee9fbc673b6ad71a35647d0021b097f8af72c5823e561b4c",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **07 · Private Preview** — Matching Times serif and italic emphasis restored; door art, live VIP lettering, email and consent remain editable. The door is smaller with a separate date caption, and the email/control spacing is larger than the prototype. Final contrast review: a small dark native pill now sits behind the editable VIP letters, so the gold letters remain readable over the bright doorway. Actual desktop/phone views were checked against the prototype; the pill is an intentional addition.",
+  "at": "2026-10-24T16:35:57.123Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/07-1440-wordpress.png",
+          "sha256": "aecec2edd442c89b513ffa4eb9979cd1e355fb7877d589bfd29f9d004794894d"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/07-390-wordpress.png",
+          "sha256": "29e9b0817e6a4f3abe381577d74cb8a6dfb23a1dcbe4afeb4bf1799ebafedc1d"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "a4c4d5319dcf9c89dd221e53d0fb752d92d8cc29794e20a8b51227b8336a0546"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "9fc7b32a864c46fd0049000abe22d772bb19dfb8e2979b35dc79d2c1fe6b65ce"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "6eea349f9df98056f69e276fc584f6967e24cb2093795e1cf2ba81bf5bef3e67"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "6eea349f9df98056f69e276fc584f6967e24cb2093795e1cf2ba81bf5bef3e67"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "a4c4d5319dcf9c89dd221e53d0fb752d92d8cc29794e20a8b51227b8336a0546"
+        }
+      ]
+    }
+  },
+  "record_id": "f4c81e5305913561d1b35e2b47faba589df68b998afad3a1e250a7dcebbe992d"
+}

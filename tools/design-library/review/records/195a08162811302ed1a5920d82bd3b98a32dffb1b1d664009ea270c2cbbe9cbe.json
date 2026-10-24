@@ -1,0 +1,55 @@
+{
+  "id": "campaign-fifty-fifty-poster",
+  "revision": "e05445efa9585d9feb2741fa0708b619249eff795fc5db8905de69f2a1e1e5c0",
+  "base_id": "379df93f7b7482f83e0b5c5d428e1642d2c1293366e4d87c072268d9bfbbcb43",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **33 · Fifty-Fifty Poster** — Large 50/OFF composition and desktop copy/action columns retained. Phone intentionally stacks copy and action. Native fine print remains larger than the prototype's small text.",
+  "at": "2026-10-24T15:58:06.153Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/33-1440-wordpress.png",
+          "sha256": "fd1031b9c8a50a2b528626f7f4f92ac89fd5906a92529169724ecffb7c51900c"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/33-390-wordpress.png",
+          "sha256": "41f56aafefb58beb30b956497cdfed5b20a3d6e6d8443848ee2fd2511d3a992f"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "195a08162811302ed1a5920d82bd3b98a32dffb1b1d664009ea270c2cbbe9cbe"
+}

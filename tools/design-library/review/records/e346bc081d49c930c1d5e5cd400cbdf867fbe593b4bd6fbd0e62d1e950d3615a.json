@@ -1,0 +1,51 @@
+{
+  "id": "campaign-black-friday-department",
+  "revision": "cb80c23c998c6a41e517af05a68d707254a105bb2bf4462f4c227a218af725c2",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "The department launch uses streetwear, tech and care imagery with one storewide Black Friday action.",
+  "at": "2026-10-24T10:40:12.653Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-black-friday-department-320.png",
+          "sha256": "3bb991774ca11d89c6bcc22ecefb0acf7796e44d5cdee581ef11e60555f4dfb2"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-black-friday-department-1440.png",
+          "sha256": "bdca90e714b23e71dbeb74e2bd044e82376bd780800bce3b5b24677700ca6977"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "98aec6a37d7eb2628fbe97d85ec06ac41bf30c0bc72cc33cae964f36a1622b04"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        }
+      ]
+    }
+  },
+  "record_id": "e346bc081d49c930c1d5e5cd400cbdf867fbe593b4bd6fbd0e62d1e950d3615a"
+}

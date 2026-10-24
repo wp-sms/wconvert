@@ -1,0 +1,51 @@
+{
+  "id": "campaign-wishlist-alert",
+  "revision": "8266e983b07edc13a32ac64a154094249fa0ef1f910a6b9b8d1aa3b0f69133f3",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Chat bubbles explain the preview before the form; request acknowledgement avoids claiming delivery.",
+  "at": "2026-10-24T10:40:12.653Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-wishlist-alert-320.png",
+          "sha256": "6671313ec3d063dcbe6e657e8c67f82493f673b538e9a61750c6dc74830a9360"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-wishlist-alert-1440.png",
+          "sha256": "40a7007e9875c5e030f21c101e4feb3d45c77935c5bf5c543aad1e5ef0cf5e5f"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "98aec6a37d7eb2628fbe97d85ec06ac41bf30c0bc72cc33cae964f36a1622b04"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        }
+      ]
+    }
+  },
+  "record_id": "4b790930d000d9b9c97402703171b59473a9a56b8aa410ab4ae48fca49e5e5cd"
+}

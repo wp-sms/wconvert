@@ -1,0 +1,191 @@
+{
+  "id": "campaign-sweet-edit",
+  "name": "Sweet Edit",
+  "display_type": "floating_bar",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#c5e7cc",
+    "fg": "#793449",
+    "muted": "#793449",
+    "accent": "#793449",
+    "accent-fg": "#fff1d9",
+    "border": "#672d4d",
+    "input-bg": "#edb5cb",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Bebas Neue\", Impact, sans-serif",
+    "heading-size": "34px",
+    "heading-weight": "400",
+    "heading-leading": ".96",
+    "text-size": "14px",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "0",
+    "gap": "0",
+    "radius": "12px",
+    "width": "930px",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "split",
+              "start": [
+                {
+                  "type": "split",
+                  "start": [
+                    {
+                      "type": "panel",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "n6",
+                          "role": "body",
+                          "text": "%b",
+                          "tokens": {
+                            "font": "\"Bebas Neue\", Impact, sans-serif",
+                            "text-size": "clamp(32px, 4.8cqw, 45px)",
+                            "leading": ".95",
+                            "tracking": "-.04em"
+                          },
+                          "emphasis": "25%",
+                          "narrow": {
+                            "text-size": "45px"
+                          }
+                        }
+                      ],
+                      "tokens": {
+                        "pad": "18px 12px",
+                        "gap": "16px",
+                        "radius": "50%",
+                        "bg": "input-bg",
+                        "fg": "accent",
+                        "muted": "accent"
+                      },
+                      "narrow": {
+                        "pad": "18px 12px"
+                      }
+                    }
+                  ],
+                  "end": [
+                    {
+                      "type": "stack",
+                      "children": [
+                        {
+                          "type": "eyebrow",
+                          "id": "n2",
+                          "role": "eyebrow",
+                          "text": "SELECTED TREATS & GIFT BOXES",
+                          "tokens": {
+                            "text-size": "9px",
+                            "tracking": ".1em"
+                          }
+                        },
+                        {
+                          "type": "heading",
+                          "id": "n3",
+                          "role": "headline",
+                          "text": "SWEET PICKS.\n25% OFF.",
+                          "narrow": {
+                            "heading-size": "33px"
+                          },
+                          "tokens": {
+                            "heading-size": "34px"
+                          }
+                        }
+                      ],
+                      "tokens": {
+                        "gap": "12px"
+                      }
+                    }
+                  ],
+                  "ratio": 0.3,
+                  "basis": "0px",
+                  "tokens": {
+                    "gap": "20px"
+                  }
+                }
+              ],
+              "end": [
+                {
+                  "type": "button",
+                  "id": "n4",
+                  "role": "cta_label",
+                  "label": "Shop the sweet edit",
+                  "action": "link",
+                  "icon": "arrow",
+                  "tokens": {
+                    "text-size": "14px",
+                    "radius": "30px"
+                  }
+                }
+              ],
+              "ratio": 0.64,
+              "basis": "0px",
+              "narrow_layout": "stack",
+              "tokens": {
+                "gap": "24px"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "20px 60px 20px 40px",
+            "gap": "16px",
+            "radius": "48px"
+          },
+          "narrow": {
+            "pad": "56px 24px 25px"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

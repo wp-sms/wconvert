@@ -1,0 +1,51 @@
+{
+  "id": "campaign-sweet-edit",
+  "revision": "dd72f9fd919693f5d3e028d2f06b13f7d0cfcfdbe5979d5ab1e7c4b57b5f8eb1",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "The rounded sweet-edit bar has a concise single-line action at ordinary copy lengths.",
+  "at": "2026-10-24T10:40:12.653Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-sweet-edit-320.png",
+          "sha256": "c92280ea40eb36d78c39c50c6ea19a6d42f5dd9677f6a956c053140bd13c3be9"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-sweet-edit-1440.png",
+          "sha256": "93a8dcede75e1f02313f1d9fb9e3d69322d9901cad9ec37f16e44a7b056b24ec"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "98aec6a37d7eb2628fbe97d85ec06ac41bf30c0bc72cc33cae964f36a1622b04"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        }
+      ]
+    }
+  },
+  "record_id": "3d1caad9efb6fa6a71eee89b0f3e0c73184d3680399dfd70fb00b94f20c4a498"
+}

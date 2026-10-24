@@ -1,0 +1,259 @@
+{
+  "id": "campaign-friday-email-alert",
+  "name": "Friday Email Alert",
+  "display_type": "floating_bar",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#ffe993",
+    "fg": "#5c344b",
+    "muted": "#5c344b",
+    "accent": "#5c344b",
+    "accent-fg": "#fff5d7",
+    "border": "#5c344b",
+    "input-bg": "#ffe993",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Bebas Neue\", Impact, sans-serif",
+    "heading-size": "32px",
+    "heading-weight": "400",
+    "heading-leading": ".96",
+    "text-size": "14px",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "0",
+    "gap": "0",
+    "radius": "12px",
+    "width": "930px",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "input",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "split",
+              "ratio": 0.35,
+              "basis": "0px",
+              "start": [
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n1",
+                      "role": "eyebrow",
+                      "text": "BLACK FRIDAY PREVIEW / NOVEMBER 26",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".1em"
+                      }
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n2",
+                      "role": "headline",
+                      "text": "FIRST PICK.\nUP TO 30% OFF.",
+                      "narrow": {
+                        "heading-size": "32px"
+                      },
+                      "tokens": {
+                        "heading-size": "32px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": ".85rem"
+                  }
+                }
+              ],
+              "end": [
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "stack",
+                      "children": [
+                        {
+                          "type": "split",
+                          "tokens": {
+                            "gap": "14px"
+                          },
+                          "start": [
+                            {
+                              "type": "field",
+                              "id": "n3",
+                              "name": "email",
+                              "label": "Email address",
+                              "placeholder": "you@example.com",
+                              "required": true,
+                              "tokens": {
+                                "text-size": "16px"
+                              }
+                            }
+                          ],
+                          "end": [
+                            {
+                              "type": "button",
+                              "id": "n5",
+                              "role": "cta_label",
+                              "label": "Get access",
+                              "icon": "arrow",
+                              "action": "submit",
+                              "submission": "email-preview",
+                              "tokens": {
+                                "text-size": "16px",
+                                "radius": "5px"
+                              }
+                            }
+                          ],
+                          "ratio": 0.52,
+                          "basis": "0px",
+                          "narrow_layout": "stack"
+                        },
+                        {
+                          "type": "consent",
+                          "id": "n4",
+                          "role": "consent_text",
+                          "text": "Email me Black Friday offers. I can unsubscribe anytime.",
+                          "hidden": true
+                        }
+                      ],
+                      "tokens": {
+                        "gap": ".85rem"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n6",
+                      "role": "fine_print",
+                      "text": "Preview opens November 26. Selected offers. No purchase required.",
+                      "tokens": {
+                        "text-size": "14px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": ".85rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "gap": "1rem"
+              },
+              "narrow_layout": "stack"
+            }
+          ],
+          "tokens": {
+            "pad": "32px 60px 28px 30px",
+            "gap": ".9rem",
+            "radius": ".5rem"
+          },
+          "narrow": {
+            "pad": "56px 24px 25px"
+          }
+        }
+      },
+      {
+        "id": "received",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n7",
+              "role": "success_headline",
+              "text": "Request received",
+              "tokens": {
+                "heading-size": "32px"
+              },
+              "narrow": {
+                "heading-size": "32px"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n8",
+              "role": "success_body",
+              "text": "Thanks for requesting the Black Friday preview."
+            },
+            {
+              "type": "text",
+              "id": "n9",
+              "role": "fine_print",
+              "text": "You can close this window and continue browsing.",
+              "tokens": {
+                "text-size": "13px"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "60px 30px 30px",
+            "gap": ".9rem"
+          },
+          "narrow": {
+            "pad": "60px 24px 24px"
+          }
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "email-preview",
+        "required": true,
+        "fields": [
+          "n3"
+        ],
+        "consents": [
+          "n4"
+        ]
+      }
+    ],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

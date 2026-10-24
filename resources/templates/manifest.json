@@ -28,7 +28,8 @@
         "ratio",
         "basis",
         "tokens",
-        "narrow"
+        "narrow",
+        "narrow_layout"
       ],
       "choices": {
         "basis": [
@@ -40,11 +41,17 @@
           "0.35",
           "0.5",
           "0.65"
+        ],
+        "narrow_layout": [
+          "wrap",
+          "stack",
+          "reverse"
         ]
       },
       "defaults": {
         "basis": "12rem",
-        "ratio": "0.5"
+        "ratio": "0.5",
+        "narrow_layout": "wrap"
       },
       "style_tokens": [
         "gap",
@@ -56,7 +63,8 @@
       "params": [
         "tokens",
         "narrow",
-        "basis"
+        "basis",
+        "narrow_basis"
       ],
       "style_tokens": [
         "gap",
@@ -68,10 +76,17 @@
           "12rem",
           "16rem",
           "20rem"
+        ],
+        "narrow_basis": [
+          "4rem",
+          "6rem",
+          "8rem",
+          "12rem"
         ]
       },
       "defaults": {
-        "basis": "8rem"
+        "basis": "8rem",
+        "narrow_basis": "8rem"
       }
     },
     "panel": {
@@ -82,7 +97,8 @@
         "notch",
         "tokens",
         "narrow",
-        "decorations"
+        "decorations",
+        "notch_position"
       ],
       "choices": {
         "edges": [
@@ -99,12 +115,17 @@
         "notch": [
           "false",
           "true"
+        ],
+        "notch_position": [
+          "top",
+          "sides"
         ]
       },
       "defaults": {
         "edges": "none",
         "min": "0",
-        "notch": "false"
+        "notch": "false",
+        "notch_position": "top"
       },
       "style_tokens": [
         "gap",
@@ -170,7 +191,8 @@
       "roles": [
         "headline",
         "success_headline",
-        "wordmark"
+        "wordmark",
+        "offer_amount"
       ],
       "choices": {
         "level": [
@@ -267,7 +289,8 @@
         "leading",
         "fg",
         "muted",
-        "align"
+        "align",
+        "text-weight"
       ]
     },
     "badge": {
@@ -348,7 +371,8 @@
         "shape",
         "hidden",
         "tokens",
-        "narrow"
+        "narrow",
+        "motion"
       ],
       "roles": [],
       "choices": {
@@ -359,11 +383,18 @@
         "shape": [
           "rect",
           "circle"
+        ],
+        "motion": [
+          "none",
+          "arrive",
+          "breathe",
+          "drift"
         ]
       },
       "defaults": {
         "fit": "cover",
-        "shape": "rect"
+        "shape": "rect",
+        "motion": "none"
       },
       "style_tokens": [
         "radius",
@@ -406,12 +437,22 @@
       "params": [
         "hidden",
         "tokens",
-        "narrow"
+        "narrow",
+        "pattern"
       ],
       "roles": [],
       "style_tokens": [
         "border"
-      ]
+      ],
+      "choices": {
+        "pattern": [
+          "solid",
+          "dashed"
+        ]
+      },
+      "defaults": {
+        "pattern": "solid"
+      }
     },
     "countdown": {
       "content": [
@@ -431,7 +472,8 @@
         "hidden",
         "tokens",
         "narrow",
-        "density"
+        "density",
+        "precision"
       ],
       "roles": [
         "countdown_units"
@@ -478,7 +520,8 @@
         "tokens",
         "narrow",
         "copy",
-        "layout"
+        "layout",
+        "appearance"
       ],
       "roles": [
         "code_value"
@@ -490,7 +533,8 @@
         "radius",
         "accent",
         "accent-fg",
-        "gap"
+        "gap",
+        "align"
       ],
       "choices": {
         "copy": [
@@ -500,11 +544,16 @@
         "layout": [
           "stack",
           "inline"
+        ],
+        "appearance": [
+          "boxed",
+          "plain"
         ]
       },
       "defaults": {
         "layout": "stack",
-        "copy": "false"
+        "copy": "false",
+        "appearance": "boxed"
       }
     },
     "field": {
@@ -607,7 +656,8 @@
         "action",
         "tokens",
         "narrow",
-        "submission"
+        "submission",
+        "icon"
       ],
       "roles": [
         "cta_label",
@@ -632,10 +682,15 @@
           "skip",
           "close",
           "link"
+        ],
+        "icon": [
+          "none",
+          "arrow"
         ]
       },
       "defaults": {
-        "action": "next"
+        "action": "next",
+        "icon": "none"
       }
     },
     "consent": {
@@ -770,10 +825,12 @@
     "bg-size": "cover",
     "countdown-size": "1.35rem",
     "close-inset": ".5rem",
-    "placeholder": "#757575"
+    "placeholder": "#757575",
+    "text-weight": "400"
   },
   "roles": [
     "headline",
+    "offer_amount",
     "body",
     "fine_print",
     "eyebrow",
@@ -898,6 +955,13 @@
       "cover",
       "contain",
       "100% auto"
+    ],
+    "text-weight": [
+      "400",
+      "600",
+      "700",
+      "900",
+      "950"
     ]
   },
   "facets": {
@@ -937,7 +1001,8 @@
       "font",
       "text-size",
       "leading",
-      "countdown-size"
+      "countdown-size",
+      "text-weight"
     ],
     "space": [
       "width",
@@ -1018,13 +1083,24 @@
     "kinds": [
       "bat",
       "eyes",
-      "sparkle"
+      "sparkle",
+      "equalizer",
+      "rings",
+      "pixel",
+      "bubbles",
+      "balloon",
+      "barcode",
+      "halo"
     ],
     "motions": [
       "none",
       "float",
       "flap",
-      "blink"
+      "blink",
+      "drift",
+      "pulse",
+      "levels",
+      "arrive"
     ],
     "colors": [
       "fg",

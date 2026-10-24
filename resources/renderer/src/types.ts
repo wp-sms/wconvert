@@ -28,6 +28,7 @@
  */
 export type SlotRole =
   | 'headline'
+  | 'offer_amount'
   | 'body'
   | 'fine_print'
   | 'eyebrow'
@@ -321,6 +322,7 @@ export interface BadgeNode extends HideableNode {
  */
 export interface DividerNode extends HideableNode {
   readonly type: 'divider';
+  readonly pattern?: 'solid' | 'dashed';
 }
 
 /**
@@ -373,7 +375,9 @@ export interface CountdownNode extends HideableNode {
    */
   readonly layout?: 'line' | 'boxes';
   /** Authored by the design, not another editor sizing control. */
-  readonly density?: 'regular' | 'compact';
+  readonly density?: 'regular' | 'compact' | 'stacked';
+  /** Smallest displayed unit; the deadline and expiry still use the exact instant. */
+  readonly precision?: 'seconds' | 'minutes';
   /** The words under the boxes. A Playbook translates them; English otherwise. */
   readonly days_label?: string;
   readonly hours_label?: string;
@@ -425,6 +429,7 @@ export interface CountdownNode extends HideableNode {
  */
 export interface CodeNode extends HideableNode {
   readonly type: 'code';
+  readonly appearance?: 'boxed' | 'plain';
   readonly layout?: 'stack' | 'inline';
   readonly text?: string;
   readonly copy?: boolean;
@@ -460,6 +465,7 @@ export interface IconNode extends HideableNode {
 
 export interface ImageNode extends HideableNode {
   readonly type: 'image';
+  readonly motion?: 'none' | 'arrive' | 'breathe' | 'drift';
   readonly src?: string;
   readonly alt?: string;
   readonly fit?: 'cover' | 'contain';
@@ -508,6 +514,7 @@ export interface ProductsNode extends BaseNode { readonly type: 'products'; read
 
 export interface ButtonNode extends BaseNode {
   readonly type: 'button';
+  readonly icon?: 'none' | 'arrow';
   readonly label?: string;
   /**
    * The converting act. One Optin has exactly one, and a Template offering
@@ -620,6 +627,8 @@ export interface RowNode {
  * (ADR 0010).
  */
 export interface SplitNode {
+  /** Explicit compact stacking below 40rem, independent of desktop pane proportions. */
+  readonly narrow_layout?: 'wrap' | 'stack' | 'reverse';
   readonly type: 'split';
   readonly start?: readonly TemplateNode[];
   readonly end?: readonly TemplateNode[];
@@ -669,6 +678,8 @@ export interface SplitNode {
  * is what a benefit list has.
  */
 export interface GridNode {
+  /** A separate minimum track width below the design's narrow breakpoint. */
+  readonly narrow_basis?: string;
   readonly type: 'grid';
   /** Minimum column width; columns wrap when their content needs more room. */
   readonly basis?: string;
@@ -750,7 +761,7 @@ export interface PanelNode {
    * Two circles punched out of the panel's corners, so the page shows through.
    *
    * ==========================================================================
-   * THE ONE ORNAMENT SCOPING CANNOT REACH, AND THE ONLY `mask` IN THE PRODUCT.
+   * A CUTOUT SCOPING CANNOT REACH, AND THE ONLY `mask` IN THE PRODUCT.
    * ==========================================================================
    * Every other decoration in the reference set is a token in disguise: a
    * photo scrim is `overlay`, a tick bullet is an `icon`, a ring is the data
@@ -766,6 +777,7 @@ export interface PanelNode {
    * to declared.
    */
   readonly notch?: boolean;
+  readonly notch_position?: 'top' | 'sides';
 }
 
 /**
@@ -859,8 +871,8 @@ export interface GoogleFont {
 }
 export interface DecorationPlacement { readonly x: number; readonly y: number; readonly size: number; }
 export interface Decoration extends DecorationPlacement {
-  readonly kind: 'bat' | 'eyes' | 'sparkle';
-  readonly motion?: 'none' | 'float' | 'flap' | 'blink';
+  readonly kind: 'bat' | 'eyes' | 'sparkle' | 'equalizer' | 'rings' | 'pixel' | 'bubbles' | 'balloon' | 'barcode' | 'halo';
+  readonly motion?: 'none' | 'float' | 'flap' | 'blink' | 'drift' | 'pulse' | 'levels' | 'arrive';
   readonly color?: 'fg' | 'accent' | 'muted' | 'accent-fg';
   readonly narrow?: DecorationPlacement;
 }

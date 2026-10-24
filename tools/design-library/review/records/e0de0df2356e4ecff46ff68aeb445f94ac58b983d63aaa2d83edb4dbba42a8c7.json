@@ -1,0 +1,55 @@
+{
+  "id": "campaign-black-friday-department",
+  "revision": "265e51753a7367f909b7ebf7b8207f23286273e90b0517b647284e3610854eed",
+  "base_id": "37c80f1faae89bfbe403ae49bdc772532797646d16c381a8654b4aea793b2e6f",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **50 · Black Friday Department** — Boxed popup default matches the approved composition instead of filling the viewport. Bebas heading, department photos and heavy figure restored. Phone coloured headings use separate native leaves and wrap on word boundaries; converted form remains readable.",
+  "at": "2026-10-24T15:58:06.154Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/50-1440-wordpress.png",
+          "sha256": "eb5fdb8f39742731790b4a467b4de5d5dbeb9c75f74db8792aeb7553a8ceafe8"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/50-390-wordpress.png",
+          "sha256": "949e583b57ede832b26379f3ca5eb0c8e996870be04942b0cb3e3be212564bef"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "e0de0df2356e4ecff46ff68aeb445f94ac58b983d63aaa2d83edb4dbba42a8c7"
+}

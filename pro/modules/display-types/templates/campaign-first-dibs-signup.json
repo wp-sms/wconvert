@@ -1,0 +1,333 @@
+{
+  "id": "campaign-first-dibs-signup",
+  "name": "First-Dibs Signup",
+  "display_type": "floating_bar",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#101211",
+    "fg": "#f4f4eb",
+    "muted": "#f4f4eb",
+    "accent": "#dcf47a",
+    "accent-fg": "#14180b",
+    "border": "#f4f4eb",
+    "input-bg": "#101211",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"DM Sans\", Arial, sans-serif",
+    "heading-size": "25px",
+    "heading-weight": "900",
+    "heading-leading": ".96",
+    "text-size": "14px",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "930px",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "input",
+        "content": {
+          "type": "split",
+          "start": [
+            {
+              "type": "media",
+              "children": [
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "n12",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "text-size": "67px",
+                        "leading": ".95",
+                        "tracking": "-.04em",
+                        "text-weight": "950"
+                      },
+                      "emphasis": "26",
+                      "narrow": {
+                        "text-size": "50px"
+                      }
+                    },
+                    {
+                      "type": "eyebrow",
+                      "id": "n13",
+                      "role": "eyebrow",
+                      "text": "NOV / EARLY ACCESS",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".08em"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "10px",
+                    "align": "center"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "22px 10px",
+                "gap": "16px",
+                "radius": "0",
+                "bg": "accent",
+                "fg": "accent-fg",
+                "align": "center",
+                "muted": "accent-fg"
+              },
+              "narrow": {
+                "pad": "22px 48px 22px 24px"
+              }
+            }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "split",
+                  "start": [
+                    {
+                      "type": "stack",
+                      "children": [
+                        {
+                          "type": "eyebrow",
+                          "id": "n3",
+                          "role": "eyebrow",
+                          "text": "BLACK FRIDAY / FIRST DIBS",
+                          "tokens": {
+                            "text-size": "9px",
+                            "tracking": ".1em"
+                          }
+                        },
+                        {
+                          "type": "stack",
+                          "children": [
+                            {
+                              "type": "heading",
+                              "id": "n4",
+                              "role": "headline",
+                              "text": "FIRST PICK.",
+                              "narrow": {
+                                "heading-size": "29px"
+                              },
+                              "tokens": {
+                                "heading-size": "25px"
+                              }
+                            },
+                            {
+                              "type": "heading",
+                              "id": "n14",
+                              "role": "headline",
+                              "text": "UP TO 40% OFF.",
+                              "narrow": {
+                                "heading-size": "29px"
+                              },
+                              "tokens": {
+                                "heading-size": "25px",
+                                "fg": "accent"
+                              }
+                            }
+                          ],
+                          "tokens": {
+                            "gap": "0"
+                          }
+                        }
+                      ],
+                      "tokens": {
+                        "gap": "11px"
+                      }
+                    }
+                  ],
+                  "end": [
+                    {
+                      "type": "stack",
+                      "children": [
+                        {
+                          "type": "stack",
+                          "children": [
+                            {
+                              "type": "field",
+                              "id": "n5",
+                              "name": "email",
+                              "label": "Email address",
+                              "placeholder": "you@example.com",
+                              "required": true,
+                              "tokens": {
+                                "text-size": "16px"
+                              }
+                            },
+                            {
+                              "type": "button",
+                              "id": "n7",
+                              "role": "cta_label",
+                              "label": "Request access",
+                              "icon": "arrow",
+                              "action": "submit",
+                              "submission": "email-preview",
+                              "tokens": {
+                                "text-size": "14px",
+                                "radius": "0px"
+                              }
+                            }
+                          ],
+                          "tokens": {
+                            "gap": "10px"
+                          }
+                        },
+                        {
+                          "type": "consent",
+                          "id": "n6",
+                          "role": "consent_text",
+                          "text": "Email me Black Friday offers. I can unsubscribe anytime.",
+                          "hidden": true
+                        },
+                        {
+                          "type": "text",
+                          "id": "n8",
+                          "role": "fine_print",
+                          "text": "Preview opens November 26. Up to 40% off selected items.",
+                          "tokens": {
+                            "text-size": "14px"
+                          }
+                        }
+                      ],
+                      "tokens": {
+                        "gap": "10px"
+                      }
+                    }
+                  ],
+                  "ratio": 0.4,
+                  "basis": "12rem",
+                  "narrow_layout": "stack",
+                  "tokens": {
+                    "gap": "27px"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "24px 55px 24px 30px",
+                "gap": "16px",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "24px"
+              }
+            }
+          ],
+          "ratio": 0.14,
+          "basis": "0px",
+          "narrow_layout": "stack",
+          "tokens": {
+            "gap": "0"
+          }
+        }
+      },
+      {
+        "id": "received",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n9",
+              "role": "success_headline",
+              "text": "Request received",
+              "tokens": {
+                "heading-size": "25px"
+              },
+              "narrow": {
+                "heading-size": "29px"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n10",
+              "role": "success_body",
+              "text": "Thanks for requesting the Black Friday preview."
+            },
+            {
+              "type": "text",
+              "id": "n11",
+              "role": "fine_print",
+              "text": "You can close this window and continue browsing.",
+              "tokens": {
+                "text-size": "12px"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "60px 30px 30px",
+            "gap": ".9rem"
+          },
+          "narrow": {
+            "pad": "60px 24px 24px"
+          }
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "email-preview",
+        "required": true,
+        "fields": [
+          "n5"
+        ],
+        "consents": [
+          "n6"
+        ]
+      }
+    ],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

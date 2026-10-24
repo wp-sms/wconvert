@@ -1,0 +1,55 @@
+{
+  "id": "campaign-deadline-scoreboard",
+  "revision": "c855c5d25ab5e8d23939f1a70a8377de2bcf87eb3053a57c7ef6d38ff265e59b",
+  "base_id": "24104c70e81d57ed0e3ed67c5960b3f17cdc4fbb97e712896d4b74d7ae6ab360",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **45 · Deadline Scoreboard** — Orange offer band and dark deadline/action area retained. Countdown uses the configured deadline and the close control follows native floating-bar placement. Converted form expands the bar vertically but remains readable on phone.",
+  "at": "2026-10-24T15:58:06.154Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/45-1440-wordpress.png",
+          "sha256": "19e46faa678ac61a9b5d1d9a9880c8379df823a97cbe4634a75a66195d843209"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/45-390-wordpress.png",
+          "sha256": "bd7a7d14588bf7114d6294fbc28c645c58261a160827b29f13ca48dd2693e81e"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "8e6ac595bd9ad2eae1e6fc685a09d5415b859e7e063a48698cb25ea13acd7db1"
+}

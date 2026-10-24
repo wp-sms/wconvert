@@ -1,0 +1,47 @@
+{
+  "id": "campaign-welcome-shortcut",
+  "revision": "ce175af39c6396377cf1d997a13db1507357a7e1e7811a1f022a6c6ecfdd706d",
+  "base_id": "03fb78f39ecb13fe3c718f0b6c688cb499002c0fbaeee211a0f65a972133f01c",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **10 · Welcome Shortcut (General):** Restored concentric peach/purple arch and coupon placement. Native code border and fewer arch rings are deliberate editor adaptations.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-welcome-shortcut-320.png",
+          "sha256": "f98d5c1c1324a7c6030c89a7ecb6e2d2ed9838b9432099802946bdb5c77d9074"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-welcome-shortcut-1440.png",
+          "sha256": "c9df1c67008fd56ff93c647f8a7a0336d6b162c9a58e28895e91b2476e0fdf3c"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "2334cad29ab83ab1ac3e11ae16287fa84f2364c8564df781a510da080685b217"
+}

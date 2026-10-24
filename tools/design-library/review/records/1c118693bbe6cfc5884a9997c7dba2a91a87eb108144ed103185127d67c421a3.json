@@ -1,0 +1,47 @@
+{
+  "id": "everyday-the-useful-checklist",
+  "revision": "60cd14255544200d2f0f113bce4457e40a508d412196159ebd87e63546d38de6",
+  "base_id": "5b92400f8c9d26134c3c8c3f2dd78911fac604c0500653f1ab2f30083fa6c434",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/review.md",
+          "sha256": "2140efcabc4dee5cc2d05ce1fb7f20b46657d2e4ae6100cf69c6be21ef3e5563"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-the-useful-checklist-320.png",
+          "sha256": "1be745e986384c88006cdd799657b3150132dc5edccb5f82f57f99f92eda6e25"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-the-useful-checklist-1440.png",
+          "sha256": "5799cd5d39bb9e43196b245fcc197471fcfc35586e50b70dc65abb32c910f52f"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "cc7ccb4050bfcf7985d270710cfedd362fc187b7213597526d8fb39c3791ce98"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "cc7ccb4050bfcf7985d270710cfedd362fc187b7213597526d8fb39c3791ce98"
+        }
+      ]
+    }
+  },
+  "record_id": "1c118693bbe6cfc5884a9997c7dba2a91a87eb108144ed103185127d67c421a3"
+}

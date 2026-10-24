@@ -436,6 +436,18 @@ describe('a countdown drawn as boxes', () => {
     expect(at(() => units(boxed({}, NOW + 90_000)))[0]).toEqual(['d', '0', true]);
   });
 
+  it('can show a minute-precision scoreboard without a seconds column', () => {
+    expect(at(() => units(boxed({ precision: 'minutes', density: 'compact' }, NOW + (2 * 86400 + 4 * 3600 + 5 * 60 + 9) * 1000)))).toEqual([
+      ['d', '2', false], ['h', '04', false], ['m', '05', false],
+    ]);
+  });
+
+  it('uses a vertical rail without changing the countdown units', () => {
+    const rail = boxed({ density: 'stacked', precision: 'minutes' });
+    expect(rail.querySelector('.wc-countdown')?.classList.contains('wc-stacked')).toBe(true);
+    expect(units(rail).map(([unit]) => unit)).toEqual(['d', 'h', 'm']);
+  });
+
   it('lets a long sale run to three digits of days', () => {
     expect(at(() => units(boxed({}, NOW + 120 * 86400 * 1000)))[0]).toEqual(['d', '120', false]);
   });

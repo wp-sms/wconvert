@@ -1,0 +1,47 @@
+{
+  "id": "campaign-price-elevator",
+  "revision": "e1eabbc63b559c238e140478fa38c52fd8d35a7bb089ae5dba3292b53770cb68",
+  "base_id": "d1d755bfabe606045c027e4225236b1032000b6f7536bf9c10dc448b374edc2a",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **06 · Price Elevator (Black Friday):** Restored red price panel and purple/red heading. Explicit “WAS $100” replaces decorative strikethrough; the example remains clearly labelled.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-price-elevator-320.png",
+          "sha256": "aa2f7766256683d4fbac740f9935bd1d610fb7ccb552e9c97f976a038a523c81"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-price-elevator-1440.png",
+          "sha256": "4c483345304748ab2f94185dc0a28a17b24e8b2252ae013cf68304738c0486e1"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "fc0585feaf34060497cebdfea1c6f64d30901c7050c885f3c5f2e7e78a2afa32"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "wholesale-enquiry",
+  "revision": "92c930a3ad07d02aa855c4c8494ae05868c3b18aba47082dfeb829a29402f3e9",
+  "base_id": "a0bf0eda65f8c72b14f1548b7c8323c586ab93f36f8bc202d74b8a6c8711b230",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 031e66237b8265ce7bc935d28e5eb45786fc894c, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T10:44:21Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/wholesale-enquiry-320.png",
+          "sha256": "598f28af91c14680bbd16c2d678adf09ceb0742f2f3569caace1aef93c7ef198"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/wholesale-enquiry-1440.png",
+          "sha256": "2ba744b20e58444ff3f042df08c3931c7069d654b8675387b5062d588fce2e68"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "034b2b5669d39ccb9bb3ecca66304ff49fbd12857dd2ef31c16acd1194cce16e"
+}

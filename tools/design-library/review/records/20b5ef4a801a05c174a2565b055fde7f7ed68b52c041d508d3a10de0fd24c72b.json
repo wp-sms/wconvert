@@ -1,0 +1,55 @@
+{
+  "id": "campaign-price-elevator",
+  "revision": "fbc910271e639aa138dcd6c217a3da3c2b096ad21116802a7be230f74c749861",
+  "base_id": "fc0585feaf34060497cebdfea1c6f64d30901c7050c885f3c5f2e7e78a2afa32",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **06 · Price Elevator** — Red framed price card and original/current price hierarchy retained. Uses editable “WAS $100” instead of strike-through; card stays vertically arranged on phone instead of switching its price row orientation. Form field now uses the light base palette for contrast.",
+  "at": "2026-10-24T15:58:06.155Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/06-1440-wordpress.png",
+          "sha256": "e6b22270b83d70459f08c4f79313de022d7ea34a01490cecb27a9bd880840602"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/06-390-wordpress.png",
+          "sha256": "ca1a7a418debdf3056b9291327a8bbb4c9d43c50be13502443be30a23cdcdc4b"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "20b5ef4a801a05c174a2565b055fde7f7ed68b52c041d508d3a10de0fd24c72b"
+}

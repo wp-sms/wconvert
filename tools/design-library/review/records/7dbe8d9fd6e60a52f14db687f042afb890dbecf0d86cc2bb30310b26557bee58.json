@@ -1,0 +1,47 @@
+{
+  "id": "campaign-friday-comic",
+  "revision": "3ef457baf45946d61da493acb7a8be5cb19804c16f6b10d1a074c8cc046880c6",
+  "base_id": "a20845fcc719e440f09a3ac581c248bb990e1114c9e818a49fcd75f1b6e2a7fb",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **05 · Friday Comic (Black Friday):** Restored the original face drawing, mint/pink comic panels and bold offer. The speech callout uses a native badge.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-friday-comic-320.png",
+          "sha256": "ba0c4226376d1c5f0e464665d9986943ad274e554e1aaaa8147f4841c2107adb"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-friday-comic-1440.png",
+          "sha256": "afed6ffb10ce6dae50fc3770114909c325e957bd67a82d907f637ca5ee0cb7ec"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "7dbe8d9fd6e60a52f14db687f042afb890dbecf0d86cc2bb30310b26557bee58"
+}

@@ -1,0 +1,55 @@
+{
+  "id": "everyday-the-lemon-hour",
+  "revision": "f9ff443bf3e70ca067cce43aa929cb48d3d250df6519e21759aeb2d5d4720afc",
+  "base_id": "594b985cd0a2d1dc193a29dcca4e7d2dcddcb09e4ab5c718836a41dbf6cf8bcd",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at d7688edf, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T12:58:11Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/review.md",
+          "sha256": "f6b502dde0c4c73b459faf3f1a57081ad88a66a77bc19b5a5095f11c7f8a8573"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-the-lemon-hour-320.png",
+          "sha256": "563ffc38882d5f2c832528b77d1bd3624bff397c8e53a6ddbde56d17a15d61e6"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-the-lemon-hour-1440.png",
+          "sha256": "efdd6f519fd2557657b1a987aa39ad495763b0c92db56f816f10bb7574c12a29"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/fidelity.json",
+          "sha256": "358e4290ffc8f1760ac04e1994edfb346f4ef8391aee56aa07bf2c3c173f96c1"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/layout.json",
+          "sha256": "d7b61c2cf2f4caab48c27de857e575e2d6f6629973bf2defca7e3a5589679645"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    }
+  },
+  "record_id": "24c03ada938a0f2de41d78c4ffd2279e1dfe356f8a4735fd5b69c28529753837"
+}

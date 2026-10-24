@@ -1,0 +1,55 @@
+{
+  "id": "campaign-black-friday-departments",
+  "revision": "dfff6fc8e16527484e7e5ac284ee3a75a09fa2d40ec3b0f09baaaa07e6e30697",
+  "base_id": "351c231ea114b41d00aa98b391c4cba75b4e60fee3af09842aacc23a05802dd6",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **29 · Black Friday Departments** — Boxed popup replaces the incorrect fullscreen default. Product images and bold offer are retained; phone shows all three products rather than clipping the third. Converted input now uses a light background with readable dark text.",
+  "at": "2026-10-24T15:58:06.156Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/29-1440-wordpress.png",
+          "sha256": "d0adf1dd191db71be3450b524b182194733f2e593f3bac2701c48e540fea74d1"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/29-390-wordpress.png",
+          "sha256": "24cd8e4c205a003c2dbb5eb1bce0ecc302eb0cd1515c13f099cdfced81838f6e"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "985f9a7b4f505c1955e6e6246deabb8d904e9226926598920f57b466b0760d47"
+}

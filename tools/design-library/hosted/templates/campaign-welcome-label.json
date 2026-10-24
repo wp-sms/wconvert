@@ -1,0 +1,228 @@
+{
+  "id": "campaign-welcome-label",
+  "name": "Welcome Label",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#f1dfb7",
+    "fg": "#64353f",
+    "muted": "#64353f",
+    "accent": "#64353f",
+    "accent-fg": "#fff2dc",
+    "border": "#344435",
+    "input-bg": "#deefca",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Bebas Neue\", Impact, sans-serif",
+    "heading-size": "53px",
+    "heading-weight": "400",
+    "heading-leading": ".96",
+    "text-size": "14px",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "0",
+    "gap": "0",
+    "radius": "12px",
+    "width": "800px",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "split",
+          "start": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n10",
+                      "role": "eyebrow",
+                      "text": "WELCOME",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".08em"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n11",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "font": "\"Bebas Neue\", Impact, sans-serif",
+                        "text-size": "75px",
+                        "leading": ".95",
+                        "tracking": "-.04em"
+                      },
+                      "emphasis": "10% OFF",
+                      "narrow": {
+                        "text-size": "64px"
+                      }
+                    },
+                    {
+                      "type": "code",
+                      "id": "n4",
+                      "role": "code_value",
+                      "text": "WELCOME10",
+                      "copy": false,
+                      "appearance": "plain"
+                    },
+                    {
+                      "type": "eyebrow",
+                      "id": "n12",
+                      "role": "eyebrow",
+                      "text": "YOUR FIRST ORDER",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".08em"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "40px 24px",
+                    "gap": "24px",
+                    "radius": "20px",
+                    "align": "center",
+                    "bg": "input-bg",
+                    "fg": "border",
+                    "muted": "border"
+                  },
+                  "narrow": {
+                    "pad": "42px 22px 24px"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "24px",
+                "gap": "16px",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "24px 24px 0"
+              }
+            }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n5",
+                  "role": "eyebrow",
+                  "text": "FIRST-ORDER COUPON",
+                  "tokens": {
+                    "text-size": "9px",
+                    "tracking": ".1em"
+                  }
+                },
+                {
+                  "type": "heading",
+                  "id": "n6",
+                  "role": "headline",
+                  "text": "FIRST ORDER.\n10% OFF.",
+                  "narrow": {
+                    "heading-size": "47px"
+                  },
+                  "tokens": {
+                    "heading-size": "53px"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n7",
+                  "role": "body",
+                  "text": "Save 10% on your first order of selected items."
+                },
+                {
+                  "type": "button",
+                  "id": "n8",
+                  "role": "cta_label",
+                  "label": "Use my welcome offer",
+                  "action": "link",
+                  "icon": "arrow",
+                  "tokens": {
+                    "text-size": "14px",
+                    "radius": "0px"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n9",
+                  "role": "fine_print",
+                  "text": "New customers. Selected items; one use per customer.",
+                  "tokens": {
+                    "text-size": "14px"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "40px 28px 28px 0",
+                "gap": "16px",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "28px 24px"
+              }
+            }
+          ],
+          "ratio": 0.4,
+          "basis": "0px",
+          "narrow_layout": "stack",
+          "tokens": {
+            "gap": "0"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

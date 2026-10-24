@@ -1,0 +1,287 @@
+{
+  "id": "campaign-price-elevator",
+  "name": "Price Elevator",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#ddd8f2",
+    "fg": "#362c56",
+    "muted": "#362c56",
+    "accent": "#362c56",
+    "accent-fg": "#fff6df",
+    "border": "#fff0d6",
+    "input-bg": "#b83b46",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Bebas Neue\", Impact, sans-serif",
+    "heading-size": "62px",
+    "heading-weight": "400",
+    "heading-leading": ".96",
+    "text-size": "14px",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "0",
+    "gap": "0",
+    "radius": "12px",
+    "width": "720px",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "split",
+          "start": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "panel",
+                  "min": "0px",
+                  "children": [
+                    {
+                      "type": "panel",
+                      "children": [
+                        {
+                          "type": "eyebrow",
+                          "id": "n1",
+                          "role": "eyebrow",
+                          "text": "EXAMPLE PRICE / 40% OFF",
+                          "tokens": {
+                            "text-size": "9px",
+                            "tracking": ".1em"
+                          }
+                        },
+                        {
+                          "type": "text",
+                          "id": "n2",
+                          "role": "body",
+                          "text": "WAS $100",
+                          "tokens": {
+                            "text-size": "40px",
+                            "font": "\"Bebas Neue\", Impact, sans-serif"
+                          },
+                          "narrow": {
+                            "text-size": "28px"
+                          }
+                        },
+                        {
+                          "type": "eyebrow",
+                          "id": "n9",
+                          "role": "eyebrow",
+                          "text": "↓",
+                          "tokens": {
+                            "text-size": "24px",
+                            "tracking": ".08em"
+                          }
+                        },
+                        {
+                          "type": "text",
+                          "id": "n3",
+                          "role": "body",
+                          "text": "%b",
+                          "tokens": {
+                            "text-size": "6rem",
+                            "leading": ".95",
+                            "font": "\"Bebas Neue\", Impact, sans-serif"
+                          },
+                          "emphasis": "$60",
+                          "narrow": {
+                            "text-size": "52px"
+                          }
+                        },
+                        {
+                          "type": "eyebrow",
+                          "id": "n11",
+                          "role": "eyebrow",
+                          "text": "● ● ●",
+                          "tokens": {
+                            "text-size": "14px",
+                            "tracking": ".12em"
+                          }
+                        }
+                      ],
+                      "tokens": {
+                        "pad": "26px 18px 38px",
+                        "gap": "17px",
+                        "bg": "input-bg",
+                        "fg": "border",
+                        "muted": "border",
+                        "radius": "12px",
+                        "align": "center"
+                      },
+                      "narrow": {
+                        "pad": "20px 18px",
+                        "gap": "6px"
+                      },
+                      "edges": "all"
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "7px",
+                    "gap": "0",
+                    "radius": "18px",
+                    "bg": "input-bg"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "25px",
+                "gap": "16px",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "24px"
+              }
+            }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n4",
+                  "role": "eyebrow",
+                  "text": "BLACK FRIDAY / PRICE MARKDOWN",
+                  "tokens": {
+                    "text-size": "9px",
+                    "tracking": ".1em"
+                  }
+                },
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "id": "n5",
+                      "role": "headline",
+                      "text": "BLACK FRIDAY.",
+                      "narrow": {
+                        "heading-size": "44px"
+                      },
+                      "tokens": {
+                        "heading-size": "62px"
+                      }
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n10",
+                      "role": "headline",
+                      "text": "PRICE DROP.",
+                      "narrow": {
+                        "heading-size": "44px"
+                      },
+                      "tokens": {
+                        "heading-size": "62px",
+                        "fg": "input-bg"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "0"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n6",
+                  "role": "body",
+                  "text": "Selected favorites are 40% off. A $100 item becomes $60."
+                },
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "button",
+                      "id": "n7",
+                      "role": "cta_label",
+                      "label": "Shop the price drop",
+                      "action": "link",
+                      "icon": "arrow",
+                      "tokens": {
+                        "text-size": "14px",
+                        "radius": "0px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "input-bg": "bg",
+                    "gap": "16px"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n8",
+                  "role": "fine_print",
+                  "text": "Illustrative pricing. November 27–30. Selected items.",
+                  "tokens": {
+                    "text-size": "14px"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "56px 32px 28px 32px",
+                "gap": "16px",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "24px",
+                "gap": "12px"
+              }
+            }
+          ],
+          "ratio": 0.5,
+          "basis": "15rem",
+          "narrow_layout": "stack",
+          "tokens": {
+            "gap": "0"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "id": "maker-notes",
+  "revision": "f24fd0ff4e7cbc4a3d88359c0553ed9ac12f67fd28896d1708cfe177fcbb3461",
+  "base_id": "4fd080e7cecad0c44aeefdf1b5dbfb58467bef66e706f7513886c8356f345c6f",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at d7688edf, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T12:58:11Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/maker-notes-320.png",
+          "sha256": "d10911966f7c2449c215ca7e3f3f0e83446f14c954415efc1cb229d446d02af9"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/maker-notes-1440.png",
+          "sha256": "1fdffc1068544b0c4ca9afb78cc62d4df472319e0dbac038f51a973a848ca60d"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/review.md",
+          "sha256": "83d5e893a7999c3cfde4ef3519dc791cdad0ab7005efba425467d5e085687ae0"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json",
+          "sha256": "3722746304da03cb7f7e8ff6c411258f6f132c7f1949503691e30d7344ef0370"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+          "sha256": "bf614c2913787167fbf45e1727ec5715a1ac8e50417c53b4627aa04595f761c9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+          "sha256": "bf614c2913787167fbf45e1727ec5715a1ac8e50417c53b4627aa04595f761c9"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json",
+          "sha256": "3722746304da03cb7f7e8ff6c411258f6f132c7f1949503691e30d7344ef0370"
+        }
+      ]
+    }
+  },
+  "record_id": "fad6df4d05bb58454b0e3538271f21d09ecb571babc6ef79e088d435c0aa131f"
+}

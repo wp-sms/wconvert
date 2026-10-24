@@ -1,0 +1,47 @@
+{
+  "id": "campaign-tech-price-sheet",
+  "revision": "448be4d02a8d9554393a17499e4cba33b002f80cdad5a1254dadc5483d2685a9",
+  "base_id": "4b55eb118ba32a6cbeee4753c2d24575434a3db39e9708873160092bc9231cf0",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **32 · Tech Price Sheet (Black Friday):** Restored close-up tech photograph, sample old/new price and separate purple markdown panel. “WAS” remains explicit editable text.",
+  "at": "2026-10-24T13:09:55.645Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-tech-price-sheet-320.png",
+          "sha256": "c2915937fd9c1acf23e649df3fd3984491a8f289f17cb79c0a348b60b47180ff"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-tech-price-sheet-1440.png",
+          "sha256": "cfdd6a6861f9dd7797964d886c8923a11a457e7dbb801bb0ffc450481239e710"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "49c2158c08b0237f716015182278360c416737923590ce0193377f2d7d4e751b"
+}

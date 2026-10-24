@@ -1,0 +1,206 @@
+{
+  "id": "campaign-pixel-play-sale",
+  "name": "Pixel Play Sale",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#bddef0",
+    "fg": "#263b65",
+    "muted": "#263b65",
+    "accent": "#263b65",
+    "accent-fg": "#fff4d9",
+    "border": "#47345f",
+    "input-bg": "#eed1b3",
+    "placeholder": "fg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Bebas Neue\", Impact, sans-serif",
+    "heading-size": "55px",
+    "heading-weight": "400",
+    "heading-leading": ".96",
+    "text-size": "14px",
+    "leading": "1.5",
+    "tracking": "0",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "800px",
+    "motion": "0ms",
+    "close-bg": "#171a1d",
+    "close-fg": "#ffffff",
+    "close-border": "#ffffff",
+    "close-inset": ".5rem",
+    "error-fg": "#ffffff",
+    "error-bg": "#8f2020"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "split",
+              "start": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "role": "eyebrow",
+                  "text": "SELECTED GAMING & DESK ACCESSORIES",
+                  "tokens": {
+                    "text-size": "9px",
+                    "tracking": ".1em"
+                  }
+                }
+              ],
+              "end": [
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "role": "headline",
+                  "text": "LEVEL UP.\nSPEND 30% LESS.",
+                  "narrow": {
+                    "heading-size": "43px"
+                  },
+                  "tokens": {
+                    "heading-size": "55px"
+                  }
+                }
+              ],
+              "ratio": 0.5,
+              "basis": "0px",
+              "narrow_layout": "stack",
+              "tokens": {
+                "gap": "0"
+              }
+            },
+            {
+              "type": "image",
+              "id": "n7",
+              "tokens": {
+                "image-height": "130px"
+              },
+              "src": "data:image/png;base64,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",
+              "alt": "",
+              "fit": "contain",
+              "shape": "rect",
+              "narrow": {
+                "image-height": "130px"
+              }
+            },
+            {
+              "type": "divider",
+              "id": "n8"
+            },
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "role": "body",
+                  "text": "%b",
+                  "tokens": {
+                    "text-size": "4rem",
+                    "leading": ".95",
+                    "font": "\"Bebas Neue\", Impact, sans-serif"
+                  },
+                  "emphasis": "30%",
+                  "narrow": {
+                    "text-size": "4rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n4",
+                  "role": "body",
+                  "text": "Save on selected gaming and desk accessories."
+                },
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "button",
+                      "id": "n5",
+                      "role": "cta_label",
+                      "label": "Shop gaming accessories",
+                      "action": "link",
+                      "icon": "arrow",
+                      "tokens": {
+                        "text-size": "14px",
+                        "radius": "0px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "12px"
+                  }
+                }
+              ],
+              "tokens": {
+                "gap": "20px",
+                "align": "space-between"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n6",
+              "role": "fine_print",
+              "text": "30% off selected accessories. Exclusions apply.",
+              "tokens": {
+                "text-size": "14px"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "26px 28px 20px",
+            "gap": "18px",
+            "radius": "5px",
+            "border": "fg"
+          },
+          "narrow": {
+            "pad": "44px 24px 24px"
+          },
+          "edges": "all"
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Bebas Neue",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Cormorant Garamond",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

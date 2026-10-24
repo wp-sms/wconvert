@@ -327,7 +327,7 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
   let motionCleanup: (() => void) | undefined;
   const watchMotion = () => {
     motionCleanup?.();
-    if (!root.querySelector('.wc-decorations')) return;
+    if (!root.querySelector('.wc-decorations,.wc-artwork-motion')) return;
     let visible = true;
     const update = () => { root.dataset.motion = active && visible && !document.hidden ? 'running' : 'paused'; };
     const observer = typeof IntersectionObserver === 'undefined' ? undefined : new IntersectionObserver(entries => {

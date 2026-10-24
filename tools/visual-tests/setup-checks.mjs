@@ -52,7 +52,7 @@ try{
    const fixture=await (await context.request.get(`${base}/?wconvert_commerce_fixture=1&json=1`)).json();
    await page.goto(`${base}/?add-to-cart=${fixture.products[0]}`);
   }
-  await page.goto(`${base}/?wconvert_collection_approval=${id}`);
+  await page.goto(`${base}/?wconvert_collection_approval=${id}${process.env.WCONVERT_FORM_REVIEW==='1'?'&capture=email':''}`);
   await page.waitForFunction(()=>window.reviewRoots.some(r=>r.host.isConnected&&r.querySelector('.wc-root')));
   if(id==='sale-deadline')await page.waitForFunction(()=>window.reviewRoots.some(r=>r.host.isConnected&&/\d/.test(r.querySelector('.wc-countdown')?.textContent||'')));
   endpoint=await page.locator('#wconvert-payload').getAttribute('data-capture');

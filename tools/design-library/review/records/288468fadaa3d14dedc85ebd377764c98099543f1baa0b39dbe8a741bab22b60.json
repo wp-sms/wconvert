@@ -1,0 +1,47 @@
+{
+  "id": "campaign-fragrance-booth",
+  "revision": "125438eb744c413efaaf57d787d3f428a9c8c8e1aad563a8c935869f33989362",
+  "base_id": "80513530e05d6d2aa6dce53c35a34f22ced78a0a441b7cbce4e4c19f45b08df0",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **20 · Fragrance Booth (Black Friday):** Restored three different close crops from the fragrance photograph; the strip becomes a compact horizontal group on phones.",
+  "at": "2026-10-24T13:09:55.646Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-fragrance-booth-320.png",
+          "sha256": "cb54c0a3dd4ee0550cd233d1615f354de4a5eab3525cc0cb3cdf499a4f27f891"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-fragrance-booth-1440.png",
+          "sha256": "8186589193d10b4c5a970407caf4f5f2a8abdd0b651e4061c7971e0e78294616"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "288468fadaa3d14dedc85ebd377764c98099543f1baa0b39dbe8a741bab22b60"
+}

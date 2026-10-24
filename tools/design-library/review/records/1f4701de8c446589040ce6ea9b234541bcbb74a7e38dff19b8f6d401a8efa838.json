@@ -1,0 +1,47 @@
+{
+  "id": "campaign-black-friday-fast-lane",
+  "revision": "58cd5da7ea80a22f73e3b865a13e7e6a0ceeac41bc164f8af3e5a43449792c0e",
+  "base_id": "aee5d3ddcdf1db5e3b11970b6709f1e33f25a6932eec22b96c66e5ed6e6ab320",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **22 · Black Friday Fast Lane (Black Friday):** Restored compact white three-unit clock on blue, with the orange shopping action. Timer still uses the configured real deadline.",
+  "at": "2026-10-24T13:09:55.646Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-black-friday-fast-lane-320.png",
+          "sha256": "738bb11f5b75015d77e0d73c3af0db80d6c6a62c03f91fee4bbd587830e4d5dd"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-black-friday-fast-lane-1440.png",
+          "sha256": "58a247ebbe854ccec1942eb0f3f103d3448900479dc3888cdc53a38eeda39911"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "1f4701de8c446589040ce6ea9b234541bcbb74a7e38dff19b8f6d401a8efa838"
+}

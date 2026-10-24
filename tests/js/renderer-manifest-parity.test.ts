@@ -607,7 +607,7 @@ describe('inline emphasis', () => {
    * colour in the design on the quietest line in it.
    */
   it('is weight, and inherits its color', () => {
-    expect(CSS).toContain('.wc-strong{font-weight:700}');
+    expect(CSS).toContain('.wc-strong{font-weight:max(700,var(--wc-text-weight,700))}');
   });
 });
 

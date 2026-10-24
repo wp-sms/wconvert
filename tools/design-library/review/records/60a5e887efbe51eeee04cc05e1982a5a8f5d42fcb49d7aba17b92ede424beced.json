@@ -1,0 +1,47 @@
+{
+  "id": "returns-deadline-notice",
+  "revision": "b0a30b506ad34b16078e00c151e1a0374325696580d6ae77c0c2fd6be85fe83b",
+  "base_id": "d4da337bc935450005b105afc6ad44971c0ae8b1979eb44e7071349abc99c45e",
+  "decision": "revise",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 031e66237b8265ce7bc935d28e5eb45786fc894c, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T10:44:21Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/returns-deadline-notice-320.png",
+          "sha256": "7f5b1f923055e5838ae44fab6fcbecc756e2f5bd0e358f2b09483af8ff32f9cd"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/returns-deadline-notice-1440.png",
+          "sha256": "4dfec41bdea98259d4a8c4c51962843b344af9c1928d8bdab6fa75f61045bc39"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "60a5e887efbe51eeee04cc05e1982a5a8f5d42fcb49d7aba17b92ede424beced"
+}

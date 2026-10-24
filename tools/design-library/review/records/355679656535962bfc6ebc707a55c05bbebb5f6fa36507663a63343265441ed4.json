@@ -1,0 +1,55 @@
+{
+  "id": "everyday-a-fresh-start",
+  "revision": "acb5b570376f26b93b5c61411d19d2644217253d10dc955e3923dac70725ef69",
+  "base_id": "a88e293281de8e429125e747e169eb673b045b68e6f7d4fc988904b0fd00345f",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at d7688edf, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-24T12:58:11Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/review.md",
+          "sha256": "f6b502dde0c4c73b459faf3f1a57081ad88a66a77bc19b5a5095f11c7f8a8573"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-a-fresh-start-320.png",
+          "sha256": "3836ff3dac242a1d1e0c646cbc412381238d05a491496c40221bffe1175fd005"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-a-fresh-start-1440.png",
+          "sha256": "5c8185ff3b209d12cfe9d58d372b4e0d6b4a9ca0136e6c1af5e90c994865731d"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/fidelity.json",
+          "sha256": "358e4290ffc8f1760ac04e1994edfb346f4ef8391aee56aa07bf2c3c173f96c1"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/layout.json",
+          "sha256": "d7b61c2cf2f4caab48c27de857e575e2d6f6629973bf2defca7e3a5589679645"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    }
+  },
+  "record_id": "355679656535962bfc6ebc707a55c05bbebb5f6fa36507663a63343265441ed4"
+}

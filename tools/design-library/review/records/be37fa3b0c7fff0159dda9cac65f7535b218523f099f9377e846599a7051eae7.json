@@ -1,0 +1,51 @@
+{
+  "id": "campaign-savings-staircase",
+  "revision": "30bcc7af701b278e74445abb817822a80dc77371fe1b96e22fc20c257f94bb46",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Three spend tiers use distinct product images and increasing rewards; terms disallow combining tiers.",
+  "at": "2026-10-24T10:40:12.653Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-savings-staircase-320.png",
+          "sha256": "daeb83907613a024a8df3ef81fe7366e7c17988411aa728a6a161521a84f3ac1"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/campaign-savings-staircase-1440.png",
+          "sha256": "4221d8df681a5ef0cdc49957d7a0fe8c201daa4d00815f37b12bd816a37cd230"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/review.md",
+          "sha256": "98aec6a37d7eb2628fbe97d85ec06ac41bf30c0bc72cc33cae964f36a1622b04"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        },
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/studio-journeys.json",
+          "sha256": "5bb915404e06b300b063b7268c8746ab708fbde3f2c7e32f9e4a528052148346"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-2026-10-24/results.json",
+          "sha256": "f7f4c8cf8a789a7ee2326a30ec9bdd6a1d302e625225bc6072fd45fd00f79745"
+        }
+      ]
+    }
+  },
+  "record_id": "be37fa3b0c7fff0159dda9cac65f7535b218523f099f9377e846599a7051eae7"
+}

@@ -1,0 +1,394 @@
+{
+  "site": "http://127.0.0.1:9462",
+  "injectedFonts": false,
+  "results": [
+    {
+      "id": "campaign-savings-receipt",
+      "faces": [
+        {
+          "family": "DM Sans",
+          "status": "loaded",
+          "weight": "100 1000",
+          "style": "normal"
+        },
+        {
+          "family": "Bebas Neue",
+          "status": "loaded",
+          "weight": "400",
+          "style": "normal"
+        },
+        {
+          "family": "Cormorant Garamond",
+          "status": "unloaded",
+          "weight": "300 700",
+          "style": "normal"
+        },
+        {
+          "family": "Cormorant Garamond",
+          "status": "unloaded",
+          "weight": "300 700",
+          "style": "italic"
+        },
+        {
+          "family": "Manrope",
+          "status": "unloaded",
+          "weight": "200 800",
+          "style": "normal"
+        },
+        {
+          "family": "Fira Code",
+          "status": "unloaded",
+          "weight": "300 700",
+          "style": "normal"
+        }
+      ],
+      "content": [
+        {
+          "text": "CLEARANCE / SELECTED FAVORITES",
+          "family": "\"DM Sans\", Arial, sans-serif",
+          "weight": "600",
+          "style": "normal"
+        },
+        {
+          "text": "LESS TO PAY.MORE TO KEEP.",
+          "family": "\"Bebas Neue\", Impact, sans-serif",
+          "weight": "400",
+          "style": "normal"
+        },
+        {
+          "text": "ORIGINAL PRICE",
+          "family": "monospace",
+          "weight": "400",
+          "style": "normal"
+        },
+        {
+          "text": "100%",
+          "family": "monospace",
+          "weight": "400",
+          "style": "normal"
+        },
+        {
+          "text": "YOUR DISCOUNT",
+          "family": "monospace",
+          "weight": "400",
+          "style": "normal"
+        },
+        {
+          "text": "−30%",
+          "family": "monospace",
+          "weight": "400",
+          "style": "normal"
+        },
+        {
+          "text": "YOU SAVE",
+          "family": "monospace",
+          "weight": "400",
+          "style": "normal"
+        },
+        {
+          "text": "30%",
+          "family": "\"Bebas Neue\", Impact, sans-serif",
+          "weight": "400",
+          "style": "normal"
+        },
+        {
+          "text": "Shop clearance",
+          "family": "\"DM Sans\", Arial, sans-serif",
+          "weight": "700",
+          "style": "normal"
+        },
+        {
+          "text": "Selected clearance items. Exclusions apply.",
+          "family": "\"DM Sans\", Arial, sans-serif",
+          "weight": "400",
+          "style": "normal"
+        }
+      ],
+      "googlePermission": false,
+      "localRules": true,
+      "responses": [
+        {
+          "url": "http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-fonts/dm-sans.woff2",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-fonts/bebas-neue.woff2",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "id": "campaign-deadline-scoreboard",
+      "faces": [
+        {
+          "family": "DM Sans",
+          "status": "loaded",
+          "weight": "100 1000",
+          "style": "normal"
+        },
+        {
+          "family": "Bebas Neue",
+          "status": "unloaded",
+          "weight": "400",
+          "style": "normal"
+        },
+        {
+          "family": "Cormorant Garamond",
+          "status": "unloaded",
+          "weight": "300 700",
+          "style": "normal"
+        },
+        {
+          "family": "Cormorant Garamond",
+          "status": "unloaded",
+          "weight": "300 700",
+          "style": "italic"
+        },
+        {
+          "family": "Manrope",
+          "status": "unloaded",
+          "weight": "200 800",
+          "style": "normal"
+        },
+        {
+          "family": "Fira Code",
+          "status": "unloaded",
+          "weight": "300 700",
+          "style": "normal"
+        }
+      ],
+      "content": [
+        {
+          "text": "BLACK FRIDAY / NOV 27—30",
+          "family": "\"DM Sans\", Arial, sans-serif",
+          "weight": "600",
+          "style": "normal"
+        },
+        {
+          "text": "UP TO 40% OFF.",
+          "family": "\"DM Sans\", Arial, sans-serif",
+          "weight": "900",
+          "style": "normal"
+        },
+        {
+          "text": "THE CLOCK IS ON.",
+          "family": "\"DM Sans\", Arial, sans-serif",
+          "weight": "600",
+          "style": "normal"
+        },
+        {
+          "text": "0DAYS00HRS00MIN",
+          "family": "\"DM Sans\", Arial, sans-serif",
+          "weight": "900",
+          "style": "normal"
+        },
+        {
+          "text": "ENDS NOVEMBER 3023:59 UTC",
+          "family": "\"DM Sans\", Arial, sans-serif",
+          "weight": "400",
+          "style": "normal"
+        },
+        {
+          "text": "Shop the event",
+          "family": "\"DM Sans\", Arial, sans-serif",
+          "weight": "700",
+          "style": "normal"
+        }
+      ],
+      "googlePermission": false,
+      "localRules": true,
+      "responses": [
+        {
+          "url": "http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-fonts/dm-sans.woff2",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "id": "campaign-fragrance-booth",
+      "faces": [
+        {
+          "family": "DM Sans",
+          "status": "loaded",
+          "weight": "100 1000",
+          "style": "normal"
+        },
+        {
+          "family": "Bebas Neue",
+          "status": "loaded",
+          "weight": "400",
+          "style": "normal"
+        },
+        {
+          "family": "Cormorant Garamond",
+          "status": "unloaded",
+          "weight": "300 700",
+          "style": "normal"
+        },
+        {
+          "family": "Cormorant Garamond",
+          "status": "unloaded",
+          "weight": "300 700",
+          "style": "italic"
+        },
+        {
+          "family": "Manrope",
+          "status": "unloaded",
+          "weight": "200 800",
+          "style": "normal"
+        },
+        {
+          "family": "Fira Code",
+          "status": "unloaded",
+          "weight": "300 700",
+          "style": "normal"
+        }
+      ],
+      "content": [
+        {
+          "text": "THE FRAGRANCE EDIT / BLACK FRIDAY",
+          "family": "\"DM Sans\", Arial, sans-serif",
+          "weight": "600",
+          "style": "normal"
+        },
+        {
+          "text": "BLACK FRIDAY / FRAGRANCE SALE",
+          "family": "\"DM Sans\", Arial, sans-serif",
+          "weight": "600",
+          "style": "normal"
+        },
+        {
+          "text": "YOUR SIGNATURE.30% LESS.",
+          "family": "\"Bebas Neue\", Impact, sans-serif",
+          "weight": "400",
+          "style": "normal"
+        },
+        {
+          "text": "Selected fragrances. A Black Friday price worth a closer look.",
+          "family": "\"DM Sans\", Arial, sans-serif",
+          "weight": "400",
+          "style": "normal"
+        },
+        {
+          "text": "Shop the fragrance edit",
+          "family": "\"DM Sans\", Arial, sans-serif",
+          "weight": "700",
+          "style": "normal"
+        },
+        {
+          "text": "November 27–30. Selected fragrances.",
+          "family": "\"DM Sans\", Arial, sans-serif",
+          "weight": "400",
+          "style": "normal"
+        }
+      ],
+      "googlePermission": false,
+      "localRules": true,
+      "responses": [
+        {
+          "url": "http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-fonts/bebas-neue.woff2",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-fonts/dm-sans.woff2",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "id": "campaign-private-preview",
+      "faces": [
+        {
+          "family": "DM Sans",
+          "status": "loaded",
+          "weight": "100 1000",
+          "style": "normal"
+        },
+        {
+          "family": "Bebas Neue",
+          "status": "unloaded",
+          "weight": "400",
+          "style": "normal"
+        },
+        {
+          "family": "Cormorant Garamond",
+          "status": "loaded",
+          "weight": "300 700",
+          "style": "normal"
+        },
+        {
+          "family": "Cormorant Garamond",
+          "status": "loaded",
+          "weight": "300 700",
+          "style": "italic"
+        },
+        {
+          "family": "Manrope",
+          "status": "unloaded",
+          "weight": "200 800",
+          "style": "normal"
+        },
+        {
+          "family": "Fira Code",
+          "status": "unloaded",
+          "weight": "300 700",
+          "style": "normal"
+        }
+      ],
+      "content": [
+        {
+          "text": "BLACK FRIDAY / EARLY-ACCESS SIGNUP",
+          "family": "\"DM Sans\", Arial, sans-serif",
+          "weight": "600",
+          "style": "normal"
+        },
+        {
+          "text": "FIRST ACCESS.",
+          "family": "\"Cormorant Garamond\", Georgia, serif",
+          "weight": "400",
+          "style": "normal"
+        },
+        {
+          "text": "UP TO 30% OFF.",
+          "family": "\"Cormorant Garamond\", Georgia, serif",
+          "weight": "400",
+          "style": "italic"
+        },
+        {
+          "text": "Request access to selected Black Friday offers on November 26, one day before the public sale.",
+          "family": "\"DM Sans\", Arial, sans-serif",
+          "weight": "400",
+          "style": "normal"
+        },
+        {
+          "text": "Request early access",
+          "family": "\"DM Sans\", Arial, sans-serif",
+          "weight": "700",
+          "style": "normal"
+        },
+        {
+          "text": "Access opens November 26. Selected items. No purchase required.",
+          "family": "\"DM Sans\", Arial, sans-serif",
+          "weight": "400",
+          "style": "normal"
+        }
+      ],
+      "googlePermission": false,
+      "localRules": true,
+      "responses": [
+        {
+          "url": "http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-fonts/cormorant-garamond.woff2",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-fonts/dm-sans.woff2",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-fonts/cormorant-garamond-italic.woff2",
+          "status": 200
+        }
+      ]
+    }
+  ]
+}

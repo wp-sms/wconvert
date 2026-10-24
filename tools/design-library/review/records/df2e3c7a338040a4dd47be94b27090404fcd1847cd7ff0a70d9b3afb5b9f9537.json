@@ -1,0 +1,55 @@
+{
+  "id": "campaign-fragrance-booth",
+  "revision": "eb22ecc86b46e452594a55ab3de3410d6dfb4358ae9a4234ac0ca2d434fb6d78",
+  "base_id": "288468fadaa3d14dedc85ebd377764c98099543f1baa0b39dbe8a741bab22b60",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **20 · Fragrance Booth** — Three cropped perfume images, caption and offer retained. Native live caption uses more space; phone shows the image strip above the offer. Form remains readable without detached actions.",
+  "at": "2026-10-24T15:58:06.155Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/20-1440-wordpress.png",
+          "sha256": "b53ce11253e28c790c6e35ec23cdc467875ddb1d0cf5effaf13014a3eb91b2d3"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/20-390-wordpress.png",
+          "sha256": "56df56d6990ce24176dc29b95d4107a3dabef098b4a5789afbd2447de92a27e7"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "df2e3c7a338040a4dd47be94b27090404fcd1847cd7ff0a70d9b3afb5b9f9537"
+}

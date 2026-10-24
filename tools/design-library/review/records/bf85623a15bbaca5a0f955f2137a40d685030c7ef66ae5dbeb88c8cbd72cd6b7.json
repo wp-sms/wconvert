@@ -1,0 +1,47 @@
+{
+  "id": "spare-parts-advice",
+  "revision": "0220a19e634c0329953000c2e5eba84840a213124d3516b769e61823d57421b4",
+  "base_id": "0272fed3051fce487cf71a1c17bd1e7f590823d82f1c627b725427914199784f",
+  "decision": "revise",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/spare-parts-advice-320.png",
+          "sha256": "84332ab30610c3a244b8c433ba8a8c6676cacfbda6c70b01f6368b90aff890ba"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/spare-parts-advice-1440.png",
+          "sha256": "72d055746644c1c6a05f0fb99395f11c91b0167e9d64de5cae2f0b9d3341b300"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "bf85623a15bbaca5a0f955f2137a40d685030c7ef66ae5dbeb88c8cbd72cd6b7"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "halloween-midnight-offer",
+  "revision": "31ec53a2ffdb10fd61a4f215841aea61afe59f58f18c40d7f44b51005c90cb3d",
+  "base_id": "c56024487e486be350f85bc0955e9a4ba4840a3a7e0d453f8ddc9fbbc6ab015d",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/halloween-midnight-offer-320.png",
+          "sha256": "065ee26c7a92a80b046694646c9c8652f121c83772aad278e46c9d91d7607f4e"
+        },
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/halloween-midnight-offer-1440.png",
+          "sha256": "268a3029d5698d207f1c04900c3c350cc5ca675a5f222f5d6afd3202b0c64f5c"
+        },
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/review.md",
+          "sha256": "ef35ba6c37ecb334228f59a65f5a6cc2b9d0288a28c7be3ebfbbd1b6c712aa4d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/results.json",
+          "sha256": "402c3d44b9b37fac483320a2b09b33b4ddf782431f7e7095c4f478614447b64b"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/results.json",
+          "sha256": "402c3d44b9b37fac483320a2b09b33b4ddf782431f7e7095c4f478614447b64b"
+        }
+      ]
+    }
+  },
+  "record_id": "66a83da16fc0131d354a253b45c8eec3cb2b77270531d4ce26b30e3ac3b1493b"
+}

@@ -1,0 +1,55 @@
+{
+  "id": "campaign-layer-edit",
+  "revision": "e54a08ee6364dd419f5d80ef32d2f87be8acdd95d26aa6499b207a118ba41425",
+  "base_id": "c55c4190a56cd75a97aebcfe97c99ae77b08282fd4a2e37a5aaffbf831263135",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **40 · Layer Edit** — Fashion photo fills its column, green action retains the full-width design and heading fits phone. Converted form is readable but flush to the bottom edges; no new conversion/editor feature was added.",
+  "at": "2026-10-24T15:58:06.154Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/40-1440-wordpress.png",
+          "sha256": "1a01a0dd0e6febece58ef60865a09527cdd3587620af6170cbc45884a86996c1"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/40-390-wordpress.png",
+          "sha256": "e7fb82ecf4668566a0d823518191f1ab384371c696ebed04ca1d326fc6273c84"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "d1544b2736422a284f2eaedb5471319ad0a9c0c36cef8ccf7895b7190e84ca6a"
+}

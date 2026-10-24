@@ -1,0 +1,47 @@
+{
+  "id": "campaign-sweet-edit",
+  "revision": "1363f6959191964a0d8549a96dccedb5d5fbadb44fd34d6e9d52c235f3afd306",
+  "base_id": "3d1caad9efb6fa6a71eee89b0f3e0c73184d3680399dfd70fb00b94f20c4a498",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity review",
+  "note": "- **21 · Sweet Edit (General):** Corrected the pink offer circle and condensed type. The ordinary shopping action remains on one line; wrapper decoration is simplified.",
+  "at": "2026-10-24T13:09:55.646Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-sweet-edit-320.png",
+          "sha256": "4732f1042f5d331b2ae1693b48080664abe6236709ce9592d3bcd953d0228c44"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/campaign-sweet-edit-1440.png",
+          "sha256": "4d9bc5cf4b6ed1d5e1188f4b55def276f4b3bdd9df49438ea7c67127d6cc4119"
+        },
+        {
+          "path": "docs/reviews/black-friday-fidelity/review.md",
+          "sha256": "ef85c1bafedc03c2a9240db18b59c632cc9457b3f55556438bddd18cef63d085"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-fidelity/results.json",
+          "sha256": "bd3d7fb2ee19b624fe1dd584fdc4f51b4cbf3bfd513edfd01ac3af80dd2c7163"
+        }
+      ]
+    }
+  },
+  "record_id": "f5e9b82bda48f72998470a014f0c2fdc4f403fbe66c62bf131ffd1cfcdc0594d"
+}

@@ -77,6 +77,7 @@ final class ThemeController implements RestController
         return new WP_REST_Response([
             'tokens' => ThemeTokens::fromSite(),
             'fonts' => ThemeTokens::fontsFromSite(),
+            'bundled_fonts' => \WConvert\Template\BundledFonts::families(),
             'google_fonts_enabled' => GoogleFonts::enabled(),
             'font_library_url' => current_user_can('edit_theme_options') && version_compare(get_bloginfo('version'), '6.5', '>=')
                 ? (version_compare(get_bloginfo('version'), '7.0', '>=')

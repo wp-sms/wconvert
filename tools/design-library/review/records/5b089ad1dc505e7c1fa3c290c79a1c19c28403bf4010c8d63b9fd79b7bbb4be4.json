@@ -1,0 +1,55 @@
+{
+  "id": "campaign-black-friday-coffee-menu",
+  "revision": "fd3c44653e561d2a9b67ecab5dcdede28627c71d9d27736ed7cc53de66d60d35",
+  "base_id": "7ff4439866b992c9a5ba6c89a6b3044382805766064d403b485c5823b77c76a6",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **34 · Black Friday Coffee Menu** — Bebas headline, coffee image frame and warm offer/action restored. Product crop differs slightly; native exclusions add a line. Converted form contrast is sound.",
+  "at": "2026-10-24T15:58:06.153Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/34-1440-wordpress.png",
+          "sha256": "fe523a44d51b4e21e51469ca7bf09a28386e45e16d4d2c89c42ad3d2a13d5e4f"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/34-390-wordpress.png",
+          "sha256": "954854137d970a2a11293374b9a505f449e906d6f45ddff8e77cba264e2f5da3"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "5b089ad1dc505e7c1fa3c290c79a1c19c28403bf4010c8d63b9fd79b7bbb4be4"
+}

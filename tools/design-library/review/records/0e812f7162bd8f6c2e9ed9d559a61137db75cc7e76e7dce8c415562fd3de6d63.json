@@ -1,0 +1,55 @@
+{
+  "id": "campaign-first-access-pass",
+  "revision": "76cde66c5ac8415059d654c91fd457bf478f7fd15149b1f031078b3d0fe53332",
+  "base_id": "1b095c312d07659a04220c25719f40f37503be3f5ec65589b50459de00a60350",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **35 · First-Access Pass** — Date rail on desktop becomes a compact date band on phone. Original signup remains practical; native consent and field labels are readable.",
+  "at": "2026-10-24T15:58:06.153Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/35-1440-wordpress.png",
+          "sha256": "ee5dc8490f64689570397d2411e59df3cbe4c806a1e53c73e40b0fe79aa855ef"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/35-390-wordpress.png",
+          "sha256": "634b0491158363f8e2fc6b410aa3072d8f99c5dcae0f1d09110ed4577103b562"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "0e812f7162bd8f6c2e9ed9d559a61137db75cc7e76e7dce8c415562fd3de6d63"
+}
