@@ -12,7 +12,7 @@ $php = static function (mixed $value, bool $translate = false) use (&$php, $quot
     if (is_array($value)) {
         $list = array_is_list($value);
         $parts = [];
-        foreach ($value as $key => $item) $parts[] = ($list ? '' : $quote((string) $key) . ' => ') . $php($item, $translate && $key !== 'href');
+        foreach ($value as $key => $item) $parts[] = ($list ? '' : $quote((string) $key) . ' => ') . $php($item, $translate && !in_array($key, ['href', 'value'], true));
         return '[' . implode(', ', $parts) . ']';
     }
     if (is_string($value)) return $translate && $value !== '' ? '__(' . $quote($value) . ', ' . $quote($domain) . ')'  : $quote($value);

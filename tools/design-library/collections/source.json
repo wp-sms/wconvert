@@ -1026,7 +1026,7 @@
         {
           "setup_id": "everyday-start-a-conversation",
           "stage": "any",
-          "setup_hash": "c12b21cf1b58b92a5c26109c79b1d56019159979057064267e4b64857da12ca7",
+          "setup_hash": "0a7554aad7189da4129bbe149df2c2a105e4109e8d52bc3da8e7828583d7adc0",
           "design_hash": "ea8f4907d7f0f7cef80bd7b346ec22f68f6c0bd09cd29d11af0e872ff95eba08"
         },
         {
@@ -1104,7 +1104,7 @@
         {
           "setup_id": "everyday-another-good-round",
           "stage": "any",
-          "setup_hash": "228a63faab26554f390cddc4271b0c1db3670041614927018ea3ca01b5dc6d35",
+          "setup_hash": "f578a88bdeda281ba6a55c67f47ea55f8284a04bfaff7ac94bb1634db230e650",
           "design_hash": "8cb3ad8dff08d823a03b3ccc6daf691b3b04b5fd550c1cb63f54464ba8f9f17d"
         },
         {

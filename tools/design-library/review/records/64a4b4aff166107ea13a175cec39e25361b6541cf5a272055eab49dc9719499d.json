@@ -1,0 +1,51 @@
+{
+  "id": "collection-everyday-extraordinary",
+  "revision": "28eaca3cd8a2ae34c0c513efa2ddae0cc619d5ac02c2799e34dd53c2db1c8720",
+  "base_id": "cae02e33c37d9bb312320eff0f67276cc1f67c532d3c89fcac11aac29c2df32d",
+  "decision": "approved",
+  "reviewer": "Codex · final translation review",
+  "note": "Six stable choice values in two Playbooks are now untranslated. English rendered setups and all native templates remain byte-identical; translated labels still work. Same 50 members and 35/15 split.",
+  "at": "2026-10-24T06:48:26.358Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/translation-check.md",
+          "sha256": "6a810fb9f790835cf4061568441ea0106f3f61ec427ae3a652a6878a89479e29"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/collection.json",
+          "sha256": "93719f9d62bcbd7a8ba979285b393a09062b47f99ab87ac9aed9cb35f51ad72e"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/translation-check.md",
+          "sha256": "6a810fb9f790835cf4061568441ea0106f3f61ec427ae3a652a6878a89479e29"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "cc7ccb4050bfcf7985d270710cfedd362fc187b7213597526d8fb39c3791ce98"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/translation-check.md",
+          "sha256": "6a810fb9f790835cf4061568441ea0106f3f61ec427ae3a652a6878a89479e29"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "cc7ccb4050bfcf7985d270710cfedd362fc187b7213597526d8fb39c3791ce98"
+        }
+      ]
+    }
+  },
+  "record_id": "64a4b4aff166107ea13a175cec39e25361b6541cf5a272055eab49dc9719499d"
+}
