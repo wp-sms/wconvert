@@ -1,0 +1,3 @@
+==> verify-templates: /tmp/fresh50-native/templates
+  · 50 design(s) inspected
+verify-templates: every design survives registration intact.

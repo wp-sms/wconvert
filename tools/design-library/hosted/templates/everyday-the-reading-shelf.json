@@ -1,0 +1,582 @@
+{
+  "id": "everyday-the-reading-shelf",
+  "name": "The reading shelf",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#f3efe6",
+    "fg": "#2e2d29",
+    "muted": "#2e2d29",
+    "accent": "#2e2d29",
+    "accent-fg": "#fffaf0",
+    "border": "#2e2d29",
+    "input-bg": "transparent",
+    "placeholder": "#2e2d29",
+    "close-bg": "#f3efe6",
+    "close-fg": "#2e2d29",
+    "close-border": "#2e2d29",
+    "font": "'DM Sans', Arial, sans-serif",
+    "heading-font": "'Instrument Serif', Georgia, serif",
+    "heading-weight": "400",
+    "heading-leading": "0.98",
+    "tracking": "-.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "58rem",
+    "shadow": "0 24px 65px -30px rgba(24,30,30,.35)",
+    "close-inset": ".7rem"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "tokens": {
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "grid",
+              "tokens": {
+                "gap": ".45rem"
+              },
+              "children": [
+                {
+                  "type": "panel",
+                  "tokens": {
+                    "pad": "1rem",
+                    "radius": "0",
+                    "gap": "1.1rem",
+                    "bg": "#e7c4af"
+                  },
+                  "narrow": {
+                    "pad": ".7rem",
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "role": "eyebrow",
+                      "text": "Fiction",
+                      "tokens": {
+                        "text-size": ".88rem",
+                        "tracking": ".1em"
+                      },
+                      "narrow": {
+                        "text-size": ".65rem",
+                        "tracking": ".03em"
+                      },
+                      "id": "n1"
+                    },
+                    {
+                      "type": "heading",
+                      "role": "headline",
+                      "text": "Other\nworlds.",
+                      "tokens": {
+                        "heading-size": "2.2rem"
+                      },
+                      "narrow": {
+                        "heading-size": "1.55rem"
+                      },
+                      "id": "n2"
+                    }
+                  ]
+                },
+                {
+                  "type": "panel",
+                  "tokens": {
+                    "pad": "1rem",
+                    "radius": "0",
+                    "gap": "1.1rem",
+                    "bg": "#d6dbc0"
+                  },
+                  "narrow": {
+                    "pad": ".7rem",
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "role": "eyebrow",
+                      "text": "Essays",
+                      "tokens": {
+                        "text-size": ".88rem",
+                        "tracking": ".1em"
+                      },
+                      "narrow": {
+                        "text-size": ".65rem",
+                        "tracking": ".03em"
+                      },
+                      "id": "n3"
+                    },
+                    {
+                      "type": "heading",
+                      "role": "headline",
+                      "text": "Fresh\nthinking.",
+                      "tokens": {
+                        "heading-size": "2.2rem"
+                      },
+                      "narrow": {
+                        "heading-size": "1.55rem"
+                      },
+                      "id": "n4"
+                    }
+                  ]
+                },
+                {
+                  "type": "panel",
+                  "tokens": {
+                    "pad": "1rem",
+                    "radius": "0",
+                    "gap": "1.1rem",
+                    "bg": "#d6dce9"
+                  },
+                  "narrow": {
+                    "pad": ".7rem",
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "role": "eyebrow",
+                      "text": "Poetry",
+                      "tokens": {
+                        "text-size": ".88rem",
+                        "tracking": ".1em"
+                      },
+                      "narrow": {
+                        "text-size": ".65rem",
+                        "tracking": ".03em"
+                      },
+                      "id": "n5"
+                    },
+                    {
+                      "type": "heading",
+                      "role": "headline",
+                      "text": "Small\nwonders.",
+                      "tokens": {
+                        "heading-size": "2.2rem"
+                      },
+                      "narrow": {
+                        "heading-size": "1.55rem"
+                      },
+                      "id": "n6"
+                    }
+                  ]
+                }
+              ],
+              "basis": "5rem"
+            },
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2rem",
+                "radius": "0",
+                "gap": "1.1rem"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "split",
+                  "ratio": 0.45,
+                  "basis": "22rem",
+                  "tokens": {
+                    "gap": "0"
+                  },
+                  "start": [
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": "1rem"
+                      },
+                      "children": [
+                        {
+                          "type": "eyebrow",
+                          "role": "eyebrow",
+                          "text": "Shelf life / the monthly letter",
+                          "tokens": {
+                            "text-size": ".88rem",
+                            "tracking": ".1em"
+                          },
+                          "id": "n7"
+                        },
+                        {
+                          "type": "heading",
+                          "role": "headline",
+                          "text": "Something\nworth reading.",
+                          "tokens": {
+                            "heading-size": "3rem"
+                          },
+                          "narrow": {
+                            "heading-size": "3rem"
+                          },
+                          "id": "n8"
+                        }
+                      ]
+                    }
+                  ],
+                  "end": [
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": "1rem"
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "role": "body",
+                          "text": "Our booksellers’ favourite reads, new arrivals and stories from the shop.",
+                          "id": "n9"
+                        },
+                        {
+                          "type": "stack",
+                          "tokens": {
+                            "gap": ".9rem"
+                          },
+                          "children": [
+                            {
+                              "type": "row",
+                              "tokens": {
+                                "gap": "1rem"
+                              },
+                              "children": [
+                                {
+                                  "type": "field",
+                                  "name": "email",
+                                  "label": "Email address",
+                                  "placeholder": "you@example.com",
+                                  "required": true,
+                                  "tokens": {
+                                    "radius": ".2rem"
+                                  },
+                                  "id": "n10"
+                                },
+                                {
+                                  "type": "button",
+                                  "role": "cta_label",
+                                  "label": "Find my next read",
+                                  "action": "submit",
+                                  "submission": "primary",
+                                  "tokens": {
+                                    "radius": ".2rem"
+                                  },
+                                  "id": "n11"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "consent",
+                              "role": "consent_text",
+                              "text": "I agree to receive marketing emails. Unsubscribe anytime.",
+                              "hidden": true,
+                              "id": "n12"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "tokens": {
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "grid",
+              "tokens": {
+                "gap": ".45rem"
+              },
+              "children": [
+                {
+                  "type": "panel",
+                  "tokens": {
+                    "pad": "1rem",
+                    "radius": "0",
+                    "gap": "1.1rem",
+                    "bg": "#e7c4af"
+                  },
+                  "narrow": {
+                    "pad": ".7rem",
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "role": "eyebrow",
+                      "text": "Fiction",
+                      "tokens": {
+                        "text-size": ".88rem",
+                        "tracking": ".1em"
+                      },
+                      "narrow": {
+                        "text-size": ".65rem",
+                        "tracking": ".03em"
+                      },
+                      "id": "n13"
+                    },
+                    {
+                      "type": "heading",
+                      "role": "headline",
+                      "text": "Other\nworlds.",
+                      "tokens": {
+                        "heading-size": "2.2rem"
+                      },
+                      "narrow": {
+                        "heading-size": "1.55rem"
+                      },
+                      "id": "n14"
+                    }
+                  ]
+                },
+                {
+                  "type": "panel",
+                  "tokens": {
+                    "pad": "1rem",
+                    "radius": "0",
+                    "gap": "1.1rem",
+                    "bg": "#d6dbc0"
+                  },
+                  "narrow": {
+                    "pad": ".7rem",
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "role": "eyebrow",
+                      "text": "Essays",
+                      "tokens": {
+                        "text-size": ".88rem",
+                        "tracking": ".1em"
+                      },
+                      "narrow": {
+                        "text-size": ".65rem",
+                        "tracking": ".03em"
+                      },
+                      "id": "n15"
+                    },
+                    {
+                      "type": "heading",
+                      "role": "headline",
+                      "text": "Fresh\nthinking.",
+                      "tokens": {
+                        "heading-size": "2.2rem"
+                      },
+                      "narrow": {
+                        "heading-size": "1.55rem"
+                      },
+                      "id": "n16"
+                    }
+                  ]
+                },
+                {
+                  "type": "panel",
+                  "tokens": {
+                    "pad": "1rem",
+                    "radius": "0",
+                    "gap": "1.1rem",
+                    "bg": "#d6dce9"
+                  },
+                  "narrow": {
+                    "pad": ".7rem",
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "role": "eyebrow",
+                      "text": "Poetry",
+                      "tokens": {
+                        "text-size": ".88rem",
+                        "tracking": ".1em"
+                      },
+                      "narrow": {
+                        "text-size": ".65rem",
+                        "tracking": ".03em"
+                      },
+                      "id": "n17"
+                    },
+                    {
+                      "type": "heading",
+                      "role": "headline",
+                      "text": "Small\nwonders.",
+                      "tokens": {
+                        "heading-size": "2.2rem"
+                      },
+                      "narrow": {
+                        "heading-size": "1.55rem"
+                      },
+                      "id": "n18"
+                    }
+                  ]
+                }
+              ],
+              "basis": "5rem"
+            },
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2rem",
+                "radius": "0",
+                "gap": "1.1rem"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "split",
+                  "ratio": 0.45,
+                  "basis": "22rem",
+                  "tokens": {
+                    "gap": "0"
+                  },
+                  "start": [
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": "1rem"
+                      },
+                      "children": [
+                        {
+                          "type": "eyebrow",
+                          "role": "eyebrow",
+                          "text": "Shelf life / the monthly letter",
+                          "tokens": {
+                            "text-size": ".88rem",
+                            "tracking": ".1em"
+                          },
+                          "id": "n19"
+                        },
+                        {
+                          "type": "heading",
+                          "role": "success_headline",
+                          "text": "A place on the shelf.",
+                          "tokens": {
+                            "heading-size": "2.7rem"
+                          },
+                          "narrow": {
+                            "heading-size": "2.2rem"
+                          },
+                          "id": "n20"
+                        }
+                      ]
+                    }
+                  ],
+                  "end": [
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": "1rem"
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "role": "success_body",
+                          "text": "Your request for Shelf life is received. Thank you for supporting independent books.",
+                          "id": "n21"
+                        },
+                        {
+                          "type": "stack",
+                          "tokens": {
+                            "gap": ".9rem"
+                          },
+                          "children": [
+                            {
+                              "type": "row",
+                              "tokens": {
+                                "gap": "1rem"
+                              },
+                              "children": [
+                                {
+                                  "type": "stack",
+                                  "tokens": {
+                                    "gap": "1rem"
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "button",
+                                      "role": "close_label",
+                                      "label": "Continue browsing",
+                                      "action": "close",
+                                      "tokens": {
+                                        "radius": ".2rem"
+                                      },
+                                      "id": "n22"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n10"
+        ],
+        "consents": [
+          "n12"
+        ]
+      }
+    ],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

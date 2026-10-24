@@ -1,0 +1,304 @@
+{
+  "id": "everyday-the-curious-corner",
+  "name": "The curious corner",
+  "display_type": "slide_in",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#f3efe6",
+    "fg": "#2e2d29",
+    "muted": "#2e2d29",
+    "accent": "#2e2d29",
+    "accent-fg": "#fffaf0",
+    "border": "#2e2d29",
+    "input-bg": "transparent",
+    "placeholder": "#2e2d29",
+    "close-bg": "#f3efe6",
+    "close-fg": "#2e2d29",
+    "close-border": "#2e2d29",
+    "font": "'DM Sans', Arial, sans-serif",
+    "heading-font": "'Instrument Serif', Georgia, serif",
+    "heading-weight": "400",
+    "heading-leading": "0.98",
+    "tracking": "-.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "25rem",
+    "shadow": "0 24px 65px -30px rgba(24,30,30,.35)",
+    "close-inset": ".7rem"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "tokens": {
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "1rem 1.5rem",
+                "radius": "0",
+                "gap": "1.1rem",
+                "muted": "#fff6e4",
+                "bg": "#922d31",
+                "fg": "#fff6e4"
+              },
+              "narrow": {
+                "pad": "4rem 1.5rem 1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "The curious corner / issue by issue",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n1"
+                }
+              ]
+            },
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "1.6rem",
+                "radius": "0",
+                "gap": "1.1rem"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "heading",
+                  "role": "headline",
+                  "text": "Not just\nanother email.",
+                  "tokens": {
+                    "heading-size": "2.7rem",
+                    "heading-font": "'DM Sans', Arial, sans-serif",
+                    "heading-weight": "700"
+                  },
+                  "narrow": {
+                    "heading-size": "2.7rem"
+                  },
+                  "id": "n2"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "A monthly mix of curious stories, thoughtful objects and people making something good.",
+                  "id": "n3"
+                },
+                {
+                  "type": "divider",
+                  "id": "n4"
+                },
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".9rem"
+                  },
+                  "children": [
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": ".7rem"
+                      },
+                      "children": [
+                        {
+                          "type": "field",
+                          "name": "email",
+                          "label": "Email address",
+                          "placeholder": "you@example.com",
+                          "required": true,
+                          "tokens": {
+                            "radius": ".2rem"
+                          },
+                          "id": "n5"
+                        },
+                        {
+                          "type": "button",
+                          "role": "cta_label",
+                          "label": "Keep my curiosity fed",
+                          "action": "submit",
+                          "submission": "primary",
+                          "tokens": {
+                            "radius": ".2rem"
+                          },
+                          "id": "n6"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "consent",
+                      "role": "consent_text",
+                      "text": "I agree to receive marketing emails. Unsubscribe anytime.",
+                      "hidden": true,
+                      "id": "n7"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "tokens": {
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "1rem 1.5rem",
+                "radius": "0",
+                "gap": "1.1rem",
+                "muted": "#fff6e4",
+                "bg": "#922d31",
+                "fg": "#fff6e4"
+              },
+              "narrow": {
+                "pad": "4rem 1.5rem 1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "The curious corner / issue by issue",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n8"
+                }
+              ]
+            },
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "1.6rem",
+                "radius": "0",
+                "gap": "1.1rem"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "heading",
+                  "role": "success_headline",
+                  "text": "A little more curiosity.",
+                  "tokens": {
+                    "heading-size": "2.7rem",
+                    "heading-font": "'DM Sans', Arial, sans-serif",
+                    "heading-weight": "700"
+                  },
+                  "narrow": {
+                    "heading-size": "2.2rem"
+                  },
+                  "id": "n9"
+                },
+                {
+                  "type": "text",
+                  "role": "success_body",
+                  "text": "Your request for The curious corner is received.",
+                  "id": "n10"
+                },
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".9rem"
+                  },
+                  "children": [
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": ".7rem"
+                      },
+                      "children": [
+                        {
+                          "type": "stack",
+                          "tokens": {
+                            "gap": "1rem"
+                          },
+                          "children": [
+                            {
+                              "type": "button",
+                              "role": "close_label",
+                              "label": "Continue browsing",
+                              "action": "close",
+                              "tokens": {
+                                "radius": ".2rem"
+                              },
+                              "id": "n11"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n5"
+        ],
+        "consents": [
+          "n7"
+        ]
+      }
+    ],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "id": "collection-everyday-extraordinary",
+  "revision": "d8365d3118f2456fdf53580bc12fb86e1d0777d028516c308517daca0c48db36",
+  "base_id": "2a7b1d2eee8c77ffab1b31b3f3889798d3316d8150bc8aed52ea2ad44c03d5c0",
+  "decision": "approved",
+  "reviewer": "Codex · final source review",
+  "note": "Same 50-member collection and tier split, with the checked checklist copy correction and Pro translation domains included in dependency hashes.",
+  "at": "2026-10-24T06:25:16.236Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/review.md",
+          "sha256": "2140efcabc4dee5cc2d05ce1fb7f20b46657d2e4ae6100cf69c6be21ef3e5563"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/collection.json",
+          "sha256": "93719f9d62bcbd7a8ba979285b393a09062b47f99ab87ac9aed9cb35f51ad72e"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "cc7ccb4050bfcf7985d270710cfedd362fc187b7213597526d8fb39c3791ce98"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "cc7ccb4050bfcf7985d270710cfedd362fc187b7213597526d8fb39c3791ce98"
+        }
+      ]
+    }
+  },
+  "record_id": "cae02e33c37d9bb312320eff0f67276cc1f67c532d3c89fcac11aac29c2df32d"
+}

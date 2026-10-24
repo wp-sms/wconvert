@@ -1,0 +1,212 @@
+{
+  "id": "everyday-extraordinary",
+  "count": 50,
+  "pro": 35,
+  "free": 15,
+  "catalogueOnly": true,
+  "bundledFree": 0,
+  "allReferencesResolve": true,
+  "allMembersPassedWordPress": true,
+  "members": [
+    {
+      "id": "everyday-sunday-crumb",
+      "tier": "free"
+    },
+    {
+      "id": "everyday-the-object-room",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-listening-party",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-almost-somewhere",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-bloom-notes",
+      "tier": "free"
+    },
+    {
+      "id": "everyday-good-dog-society",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-the-lemon-hour",
+      "tier": "free"
+    },
+    {
+      "id": "everyday-school-of-small-things",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-soft-science",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-frame-by-frame",
+      "tier": "free"
+    },
+    {
+      "id": "everyday-the-daily-ritual",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-permission-to-pause",
+      "tier": "free"
+    },
+    {
+      "id": "everyday-open-atelier",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-the-reading-shelf",
+      "tier": "free"
+    },
+    {
+      "id": "everyday-the-small-start-studio",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-out-of-office",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-the-long-weekend-pass",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-small-batch-bulletin",
+      "tier": "free"
+    },
+    {
+      "id": "everyday-better-together",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-make-it-yours",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-one-good-idea",
+      "tier": "free"
+    },
+    {
+      "id": "everyday-the-next-chapter",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-listen-closer",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-a-note-from-the-maker",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-the-useful-checklist",
+      "tier": "free"
+    },
+    {
+      "id": "everyday-build-something-good",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-room-in-your-inbox",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-the-listening-room",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-a-date-with-making",
+      "tier": "free"
+    },
+    {
+      "id": "everyday-start-a-conversation",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-a-desk-away",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-fix-it-friday",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-your-kind-of-weekend",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-an-occasion-worth-keeping",
+      "tier": "free"
+    },
+    {
+      "id": "everyday-from-the-ground-up",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-a-fresh-start",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-the-comfort-zone",
+      "tier": "free"
+    },
+    {
+      "id": "everyday-an-evening-worth-making",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-slow-sunday-notes",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-the-little-things-shop",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-a-curious-future",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-the-weekend-court",
+      "tier": "free"
+    },
+    {
+      "id": "everyday-another-good-round",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-before-the-drop",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-the-curious-corner",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-the-scenic-route",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-first-light-journal",
+      "tier": "free"
+    },
+    {
+      "id": "everyday-the-useful-sale",
+      "tier": "pro"
+    },
+    {
+      "id": "everyday-a-little-thank-you",
+      "tier": "free"
+    },
+    {
+      "id": "everyday-the-future-is-friendly",
+      "tier": "pro"
+    }
+  ]
+}

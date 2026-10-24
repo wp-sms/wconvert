@@ -1,0 +1,412 @@
+{
+  "id": "everyday-small-batch-bulletin",
+  "name": "Small batch bulletin",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#f3efe6",
+    "fg": "#2e2d29",
+    "muted": "#2e2d29",
+    "accent": "#2e2d29",
+    "accent-fg": "#fffaf0",
+    "border": "#2e2d29",
+    "input-bg": "transparent",
+    "placeholder": "#2e2d29",
+    "close-bg": "#f3efe6",
+    "close-fg": "#2e2d29",
+    "close-border": "#2e2d29",
+    "font": "'DM Sans', Arial, sans-serif",
+    "heading-font": "'Instrument Serif', Georgia, serif",
+    "heading-weight": "400",
+    "heading-leading": "0.98",
+    "tracking": "-.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "58rem",
+    "shadow": "0 24px 65px -30px rgba(24,30,30,.35)",
+    "close-inset": ".7rem"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "split",
+          "ratio": 0.53,
+          "basis": "20rem",
+          "tokens": {
+            "gap": "0"
+          },
+          "start": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2.5rem",
+                "radius": "0",
+                "gap": "1.1rem"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "Batch 04",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n1"
+                },
+                {
+                  "type": "heading",
+                  "role": "headline",
+                  "text": "Made slowly.\nArriving soon.",
+                  "tokens": {
+                    "heading-size": "3.4rem"
+                  },
+                  "narrow": {
+                    "heading-size": "2.65rem"
+                  },
+                  "id": "n2"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "Our next run of handmade tableware is nearly ready. Request a preview of the pieces before launch.",
+                  "id": "n3"
+                }
+              ]
+            }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2rem",
+                "radius": "0",
+                "gap": "1.1rem",
+                "bg": "#ded9cc"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "Notes from the workshop",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n4"
+                },
+                {
+                  "type": "divider",
+                  "id": "n5"
+                },
+                {
+                  "type": "row",
+                  "tokens": {
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "Material",
+                      "id": "n6"
+                    },
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "Stoneware",
+                      "id": "n7"
+                    }
+                  ]
+                },
+                {
+                  "type": "divider",
+                  "id": "n8"
+                },
+                {
+                  "type": "row",
+                  "tokens": {
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "Finish",
+                      "id": "n9"
+                    },
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "Glazed by hand",
+                      "id": "n10"
+                    }
+                  ]
+                },
+                {
+                  "type": "divider",
+                  "id": "n11"
+                },
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".9rem"
+                  },
+                  "children": [
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": ".7rem"
+                      },
+                      "children": [
+                        {
+                          "type": "field",
+                          "name": "email",
+                          "label": "Email address",
+                          "placeholder": "you@example.com",
+                          "required": true,
+                          "tokens": {
+                            "radius": ".2rem"
+                          },
+                          "id": "n12"
+                        },
+                        {
+                          "type": "button",
+                          "role": "cta_label",
+                          "label": "Request the preview",
+                          "action": "submit",
+                          "submission": "primary",
+                          "tokens": {
+                            "radius": ".2rem"
+                          },
+                          "id": "n13"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "consent",
+                      "role": "consent_text",
+                      "text": "I agree to receive marketing emails. Unsubscribe anytime.",
+                      "hidden": true,
+                      "id": "n14"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "split",
+          "ratio": 0.53,
+          "basis": "20rem",
+          "tokens": {
+            "gap": "0"
+          },
+          "start": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2.5rem",
+                "radius": "0",
+                "gap": "1.1rem"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "Batch 04",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n15"
+                },
+                {
+                  "type": "heading",
+                  "role": "success_headline",
+                  "text": "A note for the next batch.",
+                  "tokens": {
+                    "heading-size": "2.7rem"
+                  },
+                  "narrow": {
+                    "heading-size": "2.2rem"
+                  },
+                  "id": "n16"
+                },
+                {
+                  "type": "text",
+                  "role": "success_body",
+                  "text": "Your preview request is received. Thank you for your interest in handmade work.",
+                  "id": "n17"
+                }
+              ]
+            }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2rem",
+                "radius": "0",
+                "gap": "1.1rem",
+                "bg": "#ded9cc"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "Notes from the workshop",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n18"
+                },
+                {
+                  "type": "row",
+                  "tokens": {
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "Material",
+                      "id": "n19"
+                    },
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "Stoneware",
+                      "id": "n20"
+                    }
+                  ]
+                },
+                {
+                  "type": "row",
+                  "tokens": {
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "Finish",
+                      "id": "n21"
+                    },
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "Glazed by hand",
+                      "id": "n22"
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".9rem"
+                  },
+                  "children": [
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": ".7rem"
+                      },
+                      "children": [
+                        {
+                          "type": "stack",
+                          "tokens": {
+                            "gap": "1rem"
+                          },
+                          "children": [
+                            {
+                              "type": "button",
+                              "role": "close_label",
+                              "label": "Continue browsing",
+                              "action": "close",
+                              "tokens": {
+                                "radius": ".2rem"
+                              },
+                              "id": "n23"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n12"
+        ],
+        "consents": [
+          "n14"
+        ]
+      }
+    ],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

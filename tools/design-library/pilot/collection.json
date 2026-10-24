@@ -5828,6 +5828,1282 @@
         ],
         "reason": "Seasonal illustrated composition approved in the forty-design winter prototype."
       }
+    },
+    {
+      "id": "everyday-sunday-crumb",
+      "audience": "stores",
+      "family": "Sunday crumb",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A food-magazine cover meets the back of a paper bag. Warm serif copy balances a deliberately oversized still life.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Create a valid coupon and match its value, saving and terms."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Create a valid coupon and match its value, saving and terms."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A food-magazine cover meets the back of a paper bag. Warm serif copy balances a deliberately oversized still life."
+      }
+    },
+    {
+      "id": "everyday-the-object-room",
+      "audience": "stores",
+      "family": "The object room",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A furniture catalogue spread: architectural blue type, a full-height product photograph, and a grounded form.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A furniture catalogue spread: architectural blue type, a full-height product photograph, and a grounded form."
+      }
+    },
+    {
+      "id": "everyday-listening-party",
+      "audience": "publishers",
+      "family": "Listening party",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "An album sleeve above a separate concert-yellow signup strip. The countdown is part of the invitation, not a floating badge.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "An album sleeve above a separate concert-yellow signup strip. The countdown is part of the invitation, not a floating badge."
+      }
+    },
+    {
+      "id": "everyday-almost-somewhere",
+      "audience": "stores",
+      "family": "Almost somewhere",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "Panoramic travel editorial with a real image break between the headline and the signup. The form reads like a postcard subscription.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "Panoramic travel editorial with a real image break between the headline and the signup. The form reads like a postcard subscription."
+      }
+    },
+    {
+      "id": "everyday-bloom-notes",
+      "audience": "stores",
+      "family": "Bloom notes",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A narrow herbarium panel beside a generous journal-like form. Colour comes from the replaceable flower, not decorative UI.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A narrow herbarium panel beside a generous journal-like form. Colour comes from the replaceable flower, not decorative UI."
+      }
+    },
+    {
+      "id": "everyday-good-dog-society",
+      "audience": "stores",
+      "family": "Good dog society",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A friendly character peeks over the top of a practical corner signup. One expressive image, no decorative clutter.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Create a valid coupon and match its value, saving and terms."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Create a valid coupon and match its value, saving and terms."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A friendly character peeks over the top of a practical corner signup. One expressive image, no decorative clutter."
+      }
+    },
+    {
+      "id": "everyday-the-lemon-hour",
+      "audience": "stores",
+      "family": "The lemon hour",
+      "visitor_need": "Set the action link and review the offer wording.",
+      "difference": "A citrus poster with oversized serif lettering and a compact code area. A direct offer with no invented signup requirement.",
+      "requirements": [
+        "Set the action link and review the offer wording."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Set the action link and review the offer wording."
+      ],
+      "measure": "Offer or information link clicks.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A citrus poster with oversized serif lettering and a compact code area. A direct offer with no invented signup requirement."
+      }
+    },
+    {
+      "id": "everyday-school-of-small-things",
+      "audience": "publishers",
+      "family": "School of small things",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "An illustrated learning invitation with a useful resource and a grown-up typographic voice.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Add the promised resource URL and show its acknowledgement button before publishing.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Add the promised resource URL and show its acknowledgement button before publishing.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "An illustrated learning invitation with a useful resource and a grown-up typographic voice."
+      }
+    },
+    {
+      "id": "everyday-soft-science",
+      "audience": "stores",
+      "family": "Soft science",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "Beauty editorial with a broad masthead and an inset two-column product/specimen layout. No medical claims or unverified badges.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "Beauty editorial with a broad masthead and an inset two-column product/specimen layout. No medical claims or unverified badges."
+      }
+    },
+    {
+      "id": "everyday-frame-by-frame",
+      "audience": "publishers",
+      "family": "Frame by frame",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A red photographic contact sheet with a heavy sans-serif masthead, horizontal rule and clear subscription rhythm.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A red photographic contact sheet with a heavy sans-serif masthead, horizontal rule and clear subscription rhythm."
+      }
+    },
+    {
+      "id": "everyday-the-daily-ritual",
+      "audience": "stores",
+      "family": "The daily ritual",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A coffee-bag silhouette with an asymmetric lower corner and a compact, useful guide signup.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Add the promised resource URL and show its acknowledgement button before publishing."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Add the promised resource URL and show its acknowledgement button before publishing."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A coffee-bag silhouette with an asymmetric lower corner and a compact, useful guide signup."
+      }
+    },
+    {
+      "id": "everyday-permission-to-pause",
+      "audience": "stores",
+      "family": "Permission to pause",
+      "visitor_need": "Set the action link and review the offer wording.",
+      "difference": "An arched resting-place card with one calm character. A gentle click-through offer, not artificial urgency.",
+      "requirements": [
+        "Set the action link and review the offer wording."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Set the action link and review the offer wording."
+      ],
+      "measure": "Offer or information link clicks.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "An arched resting-place card with one calm character. A gentle click-through offer, not artificial urgency."
+      }
+    },
+    {
+      "id": "everyday-open-atelier",
+      "audience": "stores",
+      "family": "Open atelier",
+      "visitor_need": "Set the action link and review the offer wording.",
+      "difference": "An exhibition poster with a huge typographic headline and a split dark voucher footer. The clock lives in its own useful region.",
+      "requirements": [
+        "Set the action link and review the offer wording.",
+        "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Set the action link and review the offer wording.",
+        "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+      ],
+      "measure": "Offer or information link clicks.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "An exhibition poster with a huge typographic headline and a split dark voucher footer. The clock lives in its own useful region."
+      }
+    },
+    {
+      "id": "everyday-the-reading-shelf",
+      "audience": "publishers",
+      "family": "The reading shelf",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "Three editable book-spine panels lead into a low editorial signup. No baked-in cover typography.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "Three editable book-spine panels lead into a low editorial signup. No baked-in cover typography."
+      }
+    },
+    {
+      "id": "everyday-the-small-start-studio",
+      "audience": "publishers",
+      "family": "The small-start studio",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A small instructional triptych gives the invitation a visual rhythm. The stages explain the lesson instead of pretending to be interactive.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Add the promised resource URL and show its acknowledgement button before publishing."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Add the promised resource URL and show its acknowledgement button before publishing."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A small instructional triptych gives the invitation a visual rhythm. The stages explain the lesson instead of pretending to be interactive."
+      }
+    },
+    {
+      "id": "everyday-out-of-office",
+      "audience": "stores",
+      "family": "Out of office",
+      "visitor_need": "Set the action link and review the offer wording.",
+      "difference": "A travel departure strip: message on the left, a clear deadline/action group on the right. Phone layout preserves those groups.",
+      "requirements": [
+        "Set the action link and review the offer wording.",
+        "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Set the action link and review the offer wording.",
+        "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+      ],
+      "measure": "Offer or information link clicks.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A travel departure strip: message on the left, a clear deadline/action group on the right. Phone layout preserves those groups."
+      }
+    },
+    {
+      "id": "everyday-the-long-weekend-pass",
+      "audience": "stores",
+      "family": "The long weekend pass",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A real ticket-style tear line separates an editorial travel cover from the practical form. Native notch geometry, editable copy.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Add the promised resource URL and show its acknowledgement button before publishing."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Add the promised resource URL and show its acknowledgement button before publishing."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A real ticket-style tear line separates an editorial travel cover from the practical form. Native notch geometry, editable copy."
+      }
+    },
+    {
+      "id": "everyday-small-batch-bulletin",
+      "audience": "stores",
+      "family": "Small batch bulletin",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A maker’s product bulletin with an actual material/finish ledger. Information creates the structure, without fake stock counters.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A maker’s product bulletin with an actual material/finish ledger. Information creates the structure, without fake stock counters."
+      }
+    },
+    {
+      "id": "everyday-better-together",
+      "audience": "stores",
+      "family": "Better together",
+      "visitor_need": "Set the action link and review the offer wording.",
+      "difference": "An asymmetric deal poster with the offer as the artwork. No decorative assets to maintain and no coupon to mistype.",
+      "requirements": [
+        "Set the action link and review the offer wording."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Set the action link and review the offer wording."
+      ],
+      "measure": "Offer or information link clicks.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "An asymmetric deal poster with the offer as the artwork. No decorative assets to maintain and no coupon to mistype."
+      }
+    },
+    {
+      "id": "everyday-make-it-yours",
+      "audience": "services",
+      "family": "Make it yours",
+      "visitor_need": "Choose where requests are collected and how your team will reply.",
+      "difference": "A live typographic monogram becomes the image. The enquiry stays honest: asking about a service, not pretending to configure an order.",
+      "requirements": [
+        "Choose where requests are collected and how your team will reply.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose where requests are collected and how your team will reply.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A live typographic monogram becomes the image. The enquiry stays honest: asking about a service, not pretending to configure an order."
+      }
+    },
+    {
+      "id": "everyday-one-good-idea",
+      "audience": "publishers",
+      "family": "One good idea",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A plainspoken typographic manifesto. Oversized sans-serif type does all the visual work; no generic icon or stock image.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A plainspoken typographic manifesto. Oversized sans-serif type does all the visual work; no generic icon or stock image."
+      }
+    },
+    {
+      "id": "everyday-the-next-chapter",
+      "audience": "publishers",
+      "family": "The next chapter",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A full-bleed book jacket and chapter-opening spread. A huge editable chapter number provides scale without inaccessible image lettering.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Add the promised resource URL and show its acknowledgement button before publishing."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Add the promised resource URL and show its acknowledgement button before publishing."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A full-bleed book jacket and chapter-opening spread. A huge editable chapter number provides scale without inaccessible image lettering."
+      }
+    },
+    {
+      "id": "everyday-listen-closer",
+      "audience": "publishers",
+      "family": "Listen closer",
+      "visitor_need": "Set the action link and review the offer wording.",
+      "difference": "A podcast programme strip with an episode tile and one honest listening link. No fake player or decorative progress bar.",
+      "requirements": [
+        "Set the action link and review the offer wording."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Set the action link and review the offer wording."
+      ],
+      "measure": "Offer or information link clicks.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A podcast programme strip with an episode tile and one honest listening link. No fake player or decorative progress bar."
+      }
+    },
+    {
+      "id": "everyday-a-note-from-the-maker",
+      "audience": "stores",
+      "family": "A note from the maker",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A founder’s note with a live serif sign-off. Intimate copy and editorial spacing replace the usual discount-led corner card.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A founder’s note with a live serif sign-off. Intimate copy and editorial spacing replace the usual discount-led corner card."
+      }
+    },
+    {
+      "id": "everyday-the-useful-checklist",
+      "audience": "services",
+      "family": "The useful checklist",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A useful document preview, with real section labels and an adjacent resource request. Clearly a checklist, not another newsletter card.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Add the promised resource URL and show its acknowledgement button before publishing.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Add the promised resource URL and show its acknowledgement button before publishing.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A useful document preview, with real section labels and an adjacent resource request. Clearly a checklist, not another newsletter card."
+      }
+    },
+    {
+      "id": "everyday-build-something-good",
+      "audience": "services",
+      "family": "Build something good",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A terminal-inspired workshop invitation with a bright deadline inset. Technical without fake command lines or unexplained codes.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A terminal-inspired workshop invitation with a bright deadline inset. Technical without fake command lines or unexplained codes."
+      }
+    },
+    {
+      "id": "everyday-room-in-your-inbox",
+      "audience": "publishers",
+      "family": "Room in your inbox",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A deliberately quiet newsletter bar with a compact form group. The message never sits beside a button stranded under its field.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A deliberately quiet newsletter bar with a compact form group. The message never sits beside a button stranded under its field."
+      }
+    },
+    {
+      "id": "everyday-the-listening-room",
+      "audience": "publishers",
+      "family": "The listening room",
+      "visitor_need": "Set the action link and review the offer wording.",
+      "difference": "A record sleeve opened into two halves: a replaceable geometric record image and the event invitation. No playback controls implied.",
+      "requirements": [
+        "Set the action link and review the offer wording.",
+        "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Set the action link and review the offer wording.",
+        "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+      ],
+      "measure": "Offer or information link clicks.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A record sleeve opened into two halves: a replaceable geometric record image and the event invitation. No playback controls implied."
+      }
+    },
+    {
+      "id": "everyday-a-date-with-making",
+      "audience": "services",
+      "family": "A date with making",
+      "visitor_need": "Choose where requests are collected and how your team will reply.",
+      "difference": "A large calendar date and a practical workshop enquiry. The form does not claim to reserve or sell a seat.",
+      "requirements": [
+        "Choose where requests are collected and how your team will reply.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose where requests are collected and how your team will reply.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A large calendar date and a practical workshop enquiry. The form does not claim to reserve or sell a seat."
+      }
+    },
+    {
+      "id": "everyday-start-a-conversation",
+      "audience": "services",
+      "family": "Start a conversation",
+      "visitor_need": "Choose where requests are collected and how your team will reply.",
+      "difference": "A clean studio brief with a single useful choice, followed by minimal contact details. No quiz UI or pretend instant recommendation.",
+      "requirements": [
+        "Choose where requests are collected and how your team will reply."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose where requests are collected and how your team will reply."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A clean studio brief with a single useful choice, followed by minimal contact details. No quiz UI or pretend instant recommendation."
+      }
+    },
+    {
+      "id": "everyday-a-desk-away",
+      "audience": "services",
+      "family": "A desk away",
+      "visitor_need": "Choose where requests are collected and how your team will reply.",
+      "difference": "A workspace editorial strip with a full-width headline, then a short image and enquiry. Different hierarchy from a standard photo split.",
+      "requirements": [
+        "Choose where requests are collected and how your team will reply.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose where requests are collected and how your team will reply.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A workspace editorial strip with a full-width headline, then a short image and enquiry. Different hierarchy from a standard photo split."
+      }
+    },
+    {
+      "id": "everyday-fix-it-friday",
+      "audience": "services",
+      "family": "Fix-it Friday",
+      "visitor_need": "Choose where requests are collected and how your team will reply.",
+      "difference": "A yellow repair docket with a strong ruled hierarchy. Useful local-service copy, no guaranteed repair or instant quote.",
+      "requirements": [
+        "Choose where requests are collected and how your team will reply."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose where requests are collected and how your team will reply."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A yellow repair docket with a strong ruled hierarchy. Useful local-service copy, no guaranteed repair or instant quote."
+      }
+    },
+    {
+      "id": "everyday-your-kind-of-weekend",
+      "audience": "stores",
+      "family": "Your kind of weekend",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "Three coloured editorial tabs establish the local guide’s scope. Big type gives it personality without a crowded collage.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "Three coloured editorial tabs establish the local guide’s scope. Big type gives it personality without a crowded collage."
+      }
+    },
+    {
+      "id": "everyday-an-occasion-worth-keeping",
+      "audience": "services",
+      "family": "An occasion worth keeping",
+      "visitor_need": "Choose where requests are collected and how your team will reply.",
+      "difference": "A slim botanical invitation with airy serif text. The image supports an enquiry rather than claiming a booking.",
+      "requirements": [
+        "Choose where requests are collected and how your team will reply.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose where requests are collected and how your team will reply.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A slim botanical invitation with airy serif text. The image supports an enquiry rather than claiming a booking."
+      }
+    },
+    {
+      "id": "everyday-from-the-ground-up",
+      "audience": "stores",
+      "family": "From the ground up",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A garden campaign with bold manifesto typography and a clean plant diagram as a replaceable image. Beginner value is explicit.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Add the promised resource URL and show its acknowledgement button before publishing."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Add the promised resource URL and show its acknowledgement button before publishing."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A garden campaign with bold manifesto typography and a clean plant diagram as a replaceable image. Beginner value is explicit."
+      }
+    },
+    {
+      "id": "everyday-a-fresh-start",
+      "audience": "stores",
+      "family": "A fresh start",
+      "visitor_need": "Set the action link and review the offer wording.",
+      "difference": "A large offer number anchors a compact retail bar. The deadline and action have enough space to regroup on phones.",
+      "requirements": [
+        "Set the action link and review the offer wording.",
+        "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Set the action link and review the offer wording.",
+        "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+      ],
+      "measure": "Offer or information link clicks.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A large offer number anchors a compact retail bar. The deadline and action have enough space to regroup on phones."
+      }
+    },
+    {
+      "id": "everyday-the-comfort-zone",
+      "audience": "stores",
+      "family": "The comfort zone",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A gentle image break inside a centred welcome card. A welcoming everyday alternative to a high-pressure sale popup.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Create a valid coupon and match its value, saving and terms."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Create a valid coupon and match its value, saving and terms."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A gentle image break inside a centred welcome card. A welcoming everyday alternative to a high-pressure sale popup."
+      }
+    },
+    {
+      "id": "everyday-an-evening-worth-making",
+      "audience": "stores",
+      "family": "An evening worth making",
+      "visitor_need": "Set the action link and review the offer wording.",
+      "difference": "A supper-club menu spread with a separate bill-like deadline panel. The call to action leads to real booking, rather than simulating it.",
+      "requirements": [
+        "Set the action link and review the offer wording.",
+        "Set a real campaign end date and match every written deadline. The countdown uses that saved date.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Set the action link and review the offer wording.",
+        "Set a real campaign end date and match every written deadline. The countdown uses that saved date.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "measure": "Offer or information link clicks.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A supper-club menu spread with a separate bill-like deadline panel. The call to action leads to real booking, rather than simulating it."
+      }
+    },
+    {
+      "id": "everyday-slow-sunday-notes",
+      "audience": "stores",
+      "family": "Slow Sunday notes",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A tiny Sunday supplement with a shallow photographic strip. Quiet enough for a slide-in, with clear cadence.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A tiny Sunday supplement with a shallow photographic strip. Quiet enough for a slide-in, with clear cadence."
+      }
+    },
+    {
+      "id": "everyday-the-little-things-shop",
+      "audience": "stores",
+      "family": "The little-things shop",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A typographic toy-box with a pale inset offer. Warm, playful and practical without adding a mascot to every surface.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Create a valid coupon and match its value, saving and terms."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Create a valid coupon and match its value, saving and terms."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A typographic toy-box with a pale inset offer. Warm, playful and practical without adding a mascot to every surface."
+      }
+    },
+    {
+      "id": "everyday-a-curious-future",
+      "audience": "publishers",
+      "family": "A curious future",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A bold educational campaign with an oversized question and an expressive character. A resource-led invitation with no achievement promises.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Add the promised resource URL and show its acknowledgement button before publishing."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Add the promised resource URL and show its acknowledgement button before publishing."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A bold educational campaign with an oversized question and an expressive character. A resource-led invitation with no achievement promises."
+      }
+    },
+    {
+      "id": "everyday-the-weekend-court",
+      "audience": "stores",
+      "family": "The weekend court",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A sporting diagram and a reassuring beginner’s guide. Fresh green without clichéd performance statistics.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Add the promised resource URL and show its acknowledgement button before publishing.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Add the promised resource URL and show its acknowledgement button before publishing.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A sporting diagram and a reassuring beginner’s guide. Fresh green without clichéd performance statistics."
+      }
+    },
+    {
+      "id": "everyday-another-good-round",
+      "audience": "services",
+      "family": "Another good round",
+      "visitor_need": "Choose where requests are collected and how your team will reply.",
+      "difference": "A care-label form with a tear-line division. Clear repair intent and one relevant choice; no invented environmental impact claims.",
+      "requirements": [
+        "Choose where requests are collected and how your team will reply."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose where requests are collected and how your team will reply."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A care-label form with a tear-line division. Clear repair intent and one relevant choice; no invented environmental impact claims."
+      }
+    },
+    {
+      "id": "everyday-before-the-drop",
+      "audience": "stores",
+      "family": "Before the drop",
+      "visitor_need": "Set the action link and review the offer wording.",
+      "difference": "A launch strip with a boxed clock, restrained colour and one preview action. No secret-code styling or fabricated scarcity.",
+      "requirements": [
+        "Set the action link and review the offer wording.",
+        "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Set the action link and review the offer wording.",
+        "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+      ],
+      "measure": "Offer or information link clicks.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A launch strip with a boxed clock, restrained colour and one preview action. No secret-code styling or fabricated scarcity."
+      }
+    },
+    {
+      "id": "everyday-the-curious-corner",
+      "audience": "publishers",
+      "family": "The curious corner",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A miniature periodical with a red masthead and a substantial rule. Its personality comes from type, not an illustration repeated from another design.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A miniature periodical with a red masthead and a substantial rule. Its personality comes from type, not an illustration repeated from another design."
+      }
+    },
+    {
+      "id": "everyday-the-scenic-route",
+      "audience": "stores",
+      "family": "The scenic route",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A compact field-note cover with a shallow destination photograph at the foot. Different from a travel postcard or full-image popup.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Add the promised resource URL and show its acknowledgement button before publishing."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Add the promised resource URL and show its acknowledgement button before publishing."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A compact field-note cover with a shallow destination photograph at the foot. Different from a travel postcard or full-image popup."
+      }
+    },
+    {
+      "id": "everyday-first-light-journal",
+      "audience": "stores",
+      "family": "First light journal",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A calm sunrise diagram beside a useful writing invitation. No wellness outcome claims, only clear content and cadence.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A calm sunrise diagram beside a useful writing invitation. No wellness outcome claims, only clear content and cadence."
+      }
+    },
+    {
+      "id": "everyday-the-useful-sale",
+      "audience": "stores",
+      "family": "The useful sale",
+      "visitor_need": "Set the action link and review the offer wording.",
+      "difference": "A strong black voucher panel paired with a compact offer summary. Clear discount, end date and action.",
+      "requirements": [
+        "Set the action link and review the offer wording.",
+        "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Set the action link and review the offer wording.",
+        "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+      ],
+      "measure": "Offer or information link clicks.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A strong black voucher panel paired with a compact offer summary. Clear discount, end date and action."
+      }
+    },
+    {
+      "id": "everyday-a-little-thank-you",
+      "audience": "stores",
+      "family": "A little thank-you",
+      "visitor_need": "Set the action link and review the offer wording.",
+      "difference": "A simple thank-you note with an adjacent code slip. Designed for an inline position after useful page content.",
+      "requirements": [
+        "Set the action link and review the offer wording.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Set the action link and review the offer wording.",
+        "Place the campaign using its block or shortcode."
+      ],
+      "measure": "Offer or information link clicks.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A simple thank-you note with an adjacent code slip. Designed for an inline position after useful page content."
+      }
+    },
+    {
+      "id": "everyday-the-future-is-friendly",
+      "audience": "services",
+      "family": "The future is friendly",
+      "visitor_need": "Choose an email destination or Collect only, and review the signup wording.",
+      "difference": "A future-facing editorial poster with an original geometric image and a dedicated invitation panel. All headline lettering stays live.",
+      "requirements": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+      ],
+      "status": "review",
+      "source": "User-approved Everyday, extraordinary prototype, 24 October 2026.",
+      "suggested_setup": [
+        "Choose an email destination or Collect only, and review the signup wording.",
+        "Set a real campaign end date and match every written deadline. The countdown uses that saved date."
+      ],
+      "measure": "Accepted requests, not confirmed subscriptions or bookings.",
+      "batch": "everyday-extraordinary",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "winter-paper-pine"
+        ],
+        "reason": "A future-facing editorial poster with an original geometric image and a dedicated invitation panel. All headline lettering stays live."
+      }
     }
   ],
   "batches": [
@@ -5910,6 +7186,10 @@
     {
       "id": "christmas-new-year-2026",
       "name": "Christmas and New Year"
+    },
+    {
+      "id": "everyday-extraordinary",
+      "name": "Everyday, extraordinary"
     }
   ]
 }

@@ -66,7 +66,8 @@
     "build:pot:pro": "php -d error_reporting=E_ERROR -d memory_limit=2G $(which wp) i18n make-pot pro pro/resources/languages/wconvert-pro.pot --slug=wconvert-pro --domain=wconvert-pro --exclude=node_modules,vendor,packages,tests,bin",
     "check:pot": "node bin/pot-coverage.mjs",
     "templates:labels": "node bin/template-labels.mjs",
-    "preflight": "node bin/preflight.mjs"
+    "preflight": "node bin/preflight.mjs",
+    "prototype:fresh50": "vite --config tools/design-library/fresh-50-prototype/vite.config.mjs"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^3.0.0",

@@ -1,0 +1,300 @@
+{
+  "id": "everyday-fix-it-friday",
+  "name": "Fix-it Friday",
+  "display_type": "slide_in",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#fff5df",
+    "fg": "#26352c",
+    "muted": "#26352c",
+    "accent": "#273d2d",
+    "accent-fg": "#fff5df",
+    "border": "#26352c",
+    "input-bg": "transparent",
+    "placeholder": "#26352c",
+    "close-bg": "#fff5df",
+    "close-fg": "#26352c",
+    "close-border": "#26352c",
+    "font": "'DM Sans', Arial, sans-serif",
+    "heading-font": "'Instrument Serif', Georgia, serif",
+    "heading-weight": "400",
+    "heading-leading": "0.98",
+    "tracking": "-.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "25rem",
+    "shadow": "0 24px 65px -30px rgba(24,30,30,.35)",
+    "close-inset": ".7rem"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "1.8rem",
+            "radius": "0",
+            "gap": "1.1rem",
+            "bg": "#efe08d"
+          },
+          "narrow": {
+            "pad": "4rem 1.5rem 1.5rem",
+            "gap": "1rem"
+          },
+          "edges": "all",
+          "children": [
+            {
+              "type": "eyebrow",
+              "role": "eyebrow",
+              "text": "Fix-it Friday / local repair studio",
+              "tokens": {
+                "text-size": ".88rem",
+                "tracking": ".1em"
+              },
+              "id": "n1"
+            },
+            {
+              "type": "heading",
+              "role": "headline",
+              "text": "Still plenty\nof life in it.",
+              "tokens": {
+                "heading-size": "2.7rem",
+                "heading-font": "'DM Sans', Arial, sans-serif",
+                "heading-weight": "700"
+              },
+              "narrow": {
+                "heading-size": "2.7rem"
+              },
+              "id": "n2"
+            },
+            {
+              "type": "divider",
+              "id": "n3"
+            },
+            {
+              "type": "text",
+              "role": "body",
+              "text": "Ask about repairing your favourite piece. Leave your details and we’ll discuss what might be possible.",
+              "id": "n4"
+            },
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": ".9rem"
+              },
+              "children": [
+                {
+                  "type": "field",
+                  "name": "name",
+                  "label": "Your name",
+                  "placeholder": "Your name",
+                  "required": true,
+                  "tokens": {
+                    "radius": ".2rem"
+                  },
+                  "id": "n5"
+                },
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".7rem"
+                  },
+                  "children": [
+                    {
+                      "type": "field",
+                      "name": "email",
+                      "label": "Email address",
+                      "placeholder": "you@example.com",
+                      "required": true,
+                      "tokens": {
+                        "radius": ".2rem"
+                      },
+                      "id": "n6"
+                    },
+                    {
+                      "type": "button",
+                      "role": "cta_label",
+                      "label": "Ask about a repair",
+                      "action": "submit",
+                      "submission": "primary",
+                      "tokens": {
+                        "radius": ".2rem"
+                      },
+                      "id": "n7"
+                    },
+                    {
+                      "type": "consent",
+                      "id": "n15",
+                      "role": "consent_text",
+                      "text": "I agree to receive marketing emails. Unsubscribe anytime.",
+                      "hidden": true
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "role": "fine_print",
+                  "text": "We use these details to respond to your request.",
+                  "tokens": {
+                    "text-size": ".8rem",
+                    "leading": "1.5"
+                  },
+                  "id": "n8"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "role": "fine_print",
+              "text": "Assessment and pricing are arranged separately.",
+              "tokens": {
+                "text-size": ".8rem",
+                "leading": "1.5"
+              },
+              "id": "n9"
+            }
+          ]
+        }
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "1.8rem",
+            "radius": "0",
+            "gap": "1.1rem",
+            "bg": "#efe08d"
+          },
+          "narrow": {
+            "pad": "4rem 1.5rem 1.5rem",
+            "gap": "1rem"
+          },
+          "edges": "all",
+          "children": [
+            {
+              "type": "eyebrow",
+              "role": "eyebrow",
+              "text": "Fix-it Friday / local repair studio",
+              "tokens": {
+                "text-size": ".88rem",
+                "tracking": ".1em"
+              },
+              "id": "n10"
+            },
+            {
+              "type": "heading",
+              "role": "success_headline",
+              "text": "Your repair enquiry is received.",
+              "tokens": {
+                "heading-size": "2.7rem",
+                "heading-font": "'DM Sans', Arial, sans-serif",
+                "heading-weight": "700"
+              },
+              "narrow": {
+                "heading-size": "2.2rem"
+              },
+              "id": "n11"
+            },
+            {
+              "type": "text",
+              "role": "success_body",
+              "text": "The studio has your request. An assessment and price are still to be arranged.",
+              "id": "n12"
+            },
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": ".9rem"
+              },
+              "children": [
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".7rem"
+                  },
+                  "children": [
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": "1rem"
+                      },
+                      "children": [
+                        {
+                          "type": "button",
+                          "role": "close_label",
+                          "label": "Continue browsing",
+                          "action": "close",
+                          "tokens": {
+                            "radius": ".2rem"
+                          },
+                          "id": "n13"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "role": "fine_print",
+              "text": "Assessment and pricing are arranged separately.",
+              "tokens": {
+                "text-size": ".8rem",
+                "leading": "1.5"
+              },
+              "id": "n14"
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n5",
+          "n6"
+        ],
+        "consents": [
+          "n15"
+        ]
+      }
+    ],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

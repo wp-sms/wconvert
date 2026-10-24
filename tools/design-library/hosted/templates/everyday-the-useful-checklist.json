@@ -1,0 +1,398 @@
+{
+  "id": "everyday-the-useful-checklist",
+  "name": "The useful checklist",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#e2edf1",
+    "fg": "#203a44",
+    "muted": "#203a44",
+    "accent": "#203a44",
+    "accent-fg": "#f7faf8",
+    "border": "#203a44",
+    "input-bg": "transparent",
+    "placeholder": "#203a44",
+    "close-bg": "#e2edf1",
+    "close-fg": "#203a44",
+    "close-border": "#203a44",
+    "font": "'DM Sans', Arial, sans-serif",
+    "heading-font": "'Instrument Serif', Georgia, serif",
+    "heading-weight": "400",
+    "heading-leading": "0.98",
+    "tracking": "-.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "58rem",
+    "shadow": "0 24px 65px -30px rgba(24,30,30,.35)",
+    "close-inset": ".7rem"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "split",
+          "ratio": 0.62,
+          "basis": "20rem",
+          "tokens": {
+            "gap": "0"
+          },
+          "start": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2.5rem",
+                "radius": "0",
+                "gap": "1.1rem"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "A useful download",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n1"
+                },
+                {
+                  "type": "heading",
+                  "role": "headline",
+                  "text": "Less guesswork.\nA better launch.",
+                  "tokens": {
+                    "heading-size": "3.2rem"
+                  },
+                  "narrow": {
+                    "heading-size": "2.65rem"
+                  },
+                  "id": "n2"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "Our 12-point website launch checklist helps you review the essentials before you press publish.",
+                  "id": "n3"
+                },
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".9rem"
+                  },
+                  "children": [
+                    {
+                      "type": "row",
+                      "tokens": {
+                        "gap": "1rem"
+                      },
+                      "children": [
+                        {
+                          "type": "field",
+                          "name": "email",
+                          "label": "Email address",
+                          "placeholder": "you@example.com",
+                          "required": true,
+                          "tokens": {
+                            "radius": ".2rem"
+                          },
+                          "id": "n4"
+                        },
+                        {
+                          "type": "button",
+                          "role": "cta_label",
+                          "label": "Open the checklist",
+                          "action": "submit",
+                          "submission": "primary",
+                          "tokens": {
+                            "radius": ".2rem"
+                          },
+                          "id": "n5"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "consent",
+                      "role": "consent_text",
+                      "text": "I agree to receive marketing emails. Unsubscribe anytime.",
+                      "hidden": true,
+                      "id": "n6"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "end": [
+            {
+              "type": "media",
+              "tokens": {
+                "pad": "2rem",
+                "radius": "0",
+                "gap": "1.1rem",
+                "muted": "#f3f6e8",
+                "bg": "#254852",
+                "fg": "#f3f6e8"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "Inside the checklist",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n7"
+                },
+                {
+                  "type": "divider",
+                  "id": "n8"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "01 Content & clarity",
+                  "id": "n9"
+                },
+                {
+                  "type": "divider",
+                  "id": "n10"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "02 Forms & journeys",
+                  "id": "n11"
+                },
+                {
+                  "type": "divider",
+                  "id": "n12"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "03 Mobile & accessibility",
+                  "id": "n13"
+                },
+                {
+                  "type": "divider",
+                  "id": "n14"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "04 The final checks",
+                  "id": "n15"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "split",
+          "ratio": 0.62,
+          "basis": "20rem",
+          "tokens": {
+            "gap": "0"
+          },
+          "start": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2.5rem",
+                "radius": "0",
+                "gap": "1.1rem"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "A useful download",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n16"
+                },
+                {
+                  "type": "heading",
+                  "role": "success_headline",
+                  "text": "Ready for a clearer launch.",
+                  "tokens": {
+                    "heading-size": "2.7rem"
+                  },
+                  "narrow": {
+                    "heading-size": "2.2rem"
+                  },
+                  "id": "n17"
+                },
+                {
+                  "type": "text",
+                  "role": "success_body",
+                  "text": "Your request is received. Open the sample checklist below.",
+                  "id": "n18"
+                },
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".9rem"
+                  },
+                  "children": [
+                    {
+                      "type": "row",
+                      "tokens": {
+                        "gap": "1rem"
+                      },
+                      "children": [
+                        {
+                          "type": "stack",
+                          "tokens": {
+                            "gap": "1rem"
+                          },
+                          "children": [
+                            {
+                              "type": "followup",
+                              "role": "success_action",
+                              "label": "Open the resource",
+                              "tokens": {
+                                "radius": ".2rem"
+                              },
+                              "id": "n19",
+                              "hidden": true
+                            },
+                            {
+                              "type": "button",
+                              "role": "close_label",
+                              "label": "Continue browsing",
+                              "action": "close",
+                              "tokens": {
+                                "radius": ".2rem"
+                              },
+                              "id": "n20"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "end": [
+            {
+              "type": "media",
+              "tokens": {
+                "pad": "2rem",
+                "radius": "0",
+                "gap": "1.1rem",
+                "muted": "#f3f6e8",
+                "bg": "#254852",
+                "fg": "#f3f6e8"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "Inside the checklist",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n21"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "01 Content & clarity",
+                  "id": "n22"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "02 Forms & journeys",
+                  "id": "n23"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "03 Mobile & accessibility",
+                  "id": "n24"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "04 The final checks",
+                  "id": "n25"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n4"
+        ],
+        "consents": [
+          "n6"
+        ]
+      }
+    ],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

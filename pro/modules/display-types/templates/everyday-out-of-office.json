@@ -1,0 +1,179 @@
+{
+  "id": "everyday-out-of-office",
+  "name": "Out of office",
+  "display_type": "floating_bar",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#173fda",
+    "fg": "#fff7e8",
+    "muted": "#fff7e8",
+    "accent": "#fff7e8",
+    "accent-fg": "#173fda",
+    "border": "#fff7e8",
+    "input-bg": "transparent",
+    "placeholder": "#fff7e8",
+    "close-bg": "#173fda",
+    "close-fg": "#fff7e8",
+    "close-border": "#fff7e8",
+    "font": "'DM Sans', Arial, sans-serif",
+    "heading-font": "'Instrument Serif', Georgia, serif",
+    "heading-weight": "400",
+    "heading-leading": "0.98",
+    "tracking": "-.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "70rem",
+    "shadow": "0 24px 65px -30px rgba(24,30,30,.35)",
+    "close-inset": ".7rem"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "1.4rem 3rem",
+            "radius": "0",
+            "gap": ".6rem"
+          },
+          "narrow": {
+            "pad": "4rem 1.5rem 1.5rem",
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "split",
+              "ratio": 0.55,
+              "basis": "24rem",
+              "tokens": {
+                "gap": "0"
+              },
+              "start": [
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "role": "eyebrow",
+                      "text": "Elsewhere / spring escapes",
+                      "tokens": {
+                        "text-size": ".88rem",
+                        "tracking": ".1em"
+                      },
+                      "id": "n1"
+                    },
+                    {
+                      "type": "heading",
+                      "role": "headline",
+                      "text": "Your out-of-office starts here.",
+                      "tokens": {
+                        "heading-size": "1.8rem"
+                      },
+                      "narrow": {
+                        "heading-size": "1.8rem"
+                      },
+                      "id": "n2"
+                    },
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "15% off selected stays booked by 31 October 2026.",
+                      "tokens": {
+                        "text-size": ".85rem"
+                      },
+                      "id": "n3"
+                    }
+                  ]
+                }
+              ],
+              "end": [
+                {
+                  "type": "row",
+                  "tokens": {
+                    "gap": "1rem",
+                    "align": "center"
+                  },
+                  "children": [
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": "1rem",
+                        "align": "center"
+                      },
+                      "children": [
+                        {
+                          "type": "countdown",
+                          "role": "countdown_units",
+                          "layout": "line",
+                          "days_label": "Days",
+                          "hours_label": "Hrs",
+                          "minutes_label": "Mins",
+                          "seconds_label": "Secs",
+                          "tokens": {
+                            "countdown-size": "1.7rem"
+                          },
+                          "narrow": {
+                            "countdown-size": "1.35rem"
+                          },
+                          "id": "n4"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "button",
+                      "role": "cta_label",
+                      "label": "Find my escape",
+                      "action": "link",
+                      "tokens": {
+                        "radius": ".2rem"
+                      },
+                      "id": "n5"
+                    }
+                  ],
+                  "narrow": {
+                    "align": "center"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

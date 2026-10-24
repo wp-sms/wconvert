@@ -71,6 +71,8 @@ add_action('template_redirect', static function (): void {
         $config['template'] = \WConvert\Template\TemplateTree::rewrittenIn(['template' => $config['template']], static function (array $node) use ($url): array {
             if (($node['type'] ?? '') === 'button' && ($node['action'] ?? '') === 'link') $node['href'] = $url;
             if (($node['type'] ?? '') === 'code') $node['text'] = 'REVIEW10';
+            // Exercise the native resource action after the merchant supplies its URL.
+            if (($node['type'] ?? '') === 'followup') { $node['href'] = $url; $node['hidden'] = false; }
             return $node;
         })['template'];
         if (str_contains(wp_json_encode($config['template']), '"type":"countdown"')) $config['ends_at'] = wp_date('Y-m-d\TH:i', time() + 7 * DAY_IN_SECONDS);

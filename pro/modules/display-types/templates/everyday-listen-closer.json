@@ -1,0 +1,164 @@
+{
+  "id": "everyday-listen-closer",
+  "name": "Listen closer",
+  "display_type": "floating_bar",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#30213d",
+    "fg": "#f6eccd",
+    "muted": "#f6eccd",
+    "accent": "#ecdc81",
+    "accent-fg": "#30213d",
+    "border": "#f6eccd",
+    "input-bg": "transparent",
+    "placeholder": "#f6eccd",
+    "close-bg": "#30213d",
+    "close-fg": "#f6eccd",
+    "close-border": "#f6eccd",
+    "font": "'DM Sans', Arial, sans-serif",
+    "heading-font": "'Instrument Serif', Georgia, serif",
+    "heading-weight": "400",
+    "heading-leading": "0.98",
+    "tracking": "-.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "70rem",
+    "shadow": "0 24px 65px -30px rgba(24,30,30,.35)",
+    "close-inset": ".7rem"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "1.4rem 5rem",
+            "radius": "0",
+            "gap": "1.1rem"
+          },
+          "narrow": {
+            "pad": "4rem 1.5rem 1.5rem",
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "row",
+              "tokens": {
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "panel",
+                  "tokens": {
+                    "pad": "1rem",
+                    "radius": "0",
+                    "gap": "1.1rem",
+                    "muted": "#30213d",
+                    "bg": "#e9db8d",
+                    "fg": "#30213d"
+                  },
+                  "narrow": {
+                    "pad": "1rem",
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "role": "eyebrow",
+                      "text": "On the record",
+                      "tokens": {
+                        "text-size": ".88rem",
+                        "tracking": ".1em"
+                      },
+                      "id": "n1"
+                    },
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "Episode 12",
+                      "tokens": {
+                        "text-size": "1.1rem"
+                      },
+                      "id": "n2"
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "heading",
+                      "role": "headline",
+                      "text": "The art of starting again.",
+                      "tokens": {
+                        "heading-size": "1.6rem"
+                      },
+                      "narrow": {
+                        "heading-size": "1.6rem"
+                      },
+                      "id": "n3"
+                    },
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "A conversation about creative second acts.",
+                      "tokens": {
+                        "text-size": ".9rem"
+                      },
+                      "id": "n4"
+                    }
+                  ]
+                },
+                {
+                  "type": "button",
+                  "role": "cta_label",
+                  "label": "Listen to the episode",
+                  "action": "link",
+                  "tokens": {
+                    "radius": ".2rem"
+                  },
+                  "id": "n5"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

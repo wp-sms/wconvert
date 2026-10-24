@@ -3768,6 +3768,606 @@
           "note": "Restore approved winter prototype composition, palette, typography, native controls and responsive spacing; verify paired desktop/phone screens."
         }
       ]
+    },
+    {
+      "id": "everyday-a-curious-future",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "71c290849fbd76953322d99c5f45c7a788fbd2f697a4e6a52dbe0421cf357f03",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-a-desk-away",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "9b1ede1e34583cb256f6ea292c1bd1d321e14656271f127c0c71d3fec97661b1",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-a-fresh-start",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "e72b0e26645834567f5116c706e1548e22df8590bfb97afa99204373fe595eea",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-a-note-from-the-maker",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "0bb23a01b89dd9c3985f81a64cca636e1ff4a3727db12529664605a5d0d2303f",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-almost-somewhere",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "fc508ca83d867ae323bcfc7eb3564e946546d9b4bba2db68f92acd8dd2a12d6e",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-an-evening-worth-making",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "bfae7f71ba61bdf11529d5393a74b6161b6b4314818a40cba2beb13512b2f82e",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-another-good-round",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "e2300d256d5e58857195eeac9330bb0d8ce31983e3a1b5f205734fc68878edfa",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-before-the-drop",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "d57dea9248fe68fcf7fc6e72e3fa27be20e869d90262b811584ba5566954823b",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-better-together",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "9fc0a1db66168dd22f73fa0d6b6b852fcde0601013e55a87813e796e03beaa27",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-build-something-good",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "686caf0deb907e02234a0324af73bcb3433884f72e95503358eed144c935e2a0",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-fix-it-friday",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "f9fc23e7f369e3d4488fac2841dd1d907c54f53567f8e729cc2d07432a81c393",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-from-the-ground-up",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "44134c15723b608de668a15d1e3616cc424b5f28916271c61b186a94aac0adae",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-good-dog-society",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "189fd7280d81347fa55d275ca8f446a76d3f026ad0b2a42f0307f5e246eff7ad",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-listen-closer",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "0fc4b22579297a853e9f15260123a4683e6cea42aa29bce7bf569b3a943ebda7",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-listening-party",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "83eaf1743f20f33a174b79d698c8c32c74c5fb17b9a6d03c41228a1105c8ee1c",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-make-it-yours",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "2141710aa52407f31efeb605dd75069ee9fe3e24f48a3326121b0b23137df984",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-open-atelier",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "2df48ded1407e60bd3a9b4f9be761dc7c0bcc00b3242efd8e69d339f080fb7a4",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-out-of-office",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "db2ec4501f274971b048fc810bc49c6f7a80b8c055787dc8a119be0aec153bc0",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-room-in-your-inbox",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "ef02cf7b1f5b147bdf3adf752fb6d02cf8c8bbb1f5469e9b841b417008afa52d",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-school-of-small-things",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "74acbb4327c8f41422b539b91a018687cf91d3ac2a0c2f824c111a6205a4449d",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-slow-sunday-notes",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "6e28a53bc23e6a5c3212319babb7a548bf541f1929b31b4e9ec628ba6c7bc3c6",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-soft-science",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "c56e73d91ae03e86e7216a5ac16da8d8291fb030e108a432834ea2fbed87c31b",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-start-a-conversation",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "5291b3b63c4639b4411459498adbc0fc4cd604a1ed6785b26b5d365499b915b3",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-the-curious-corner",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "ce64da03261a84e8245a7b3d077bd7ed892a28f1101142d49c9d4112c2c6c0f6",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-the-daily-ritual",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "a890e726c8885e203a6388b7380badf6caed6731b7f734f82e47331cd1c643e2",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-the-future-is-friendly",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "09bdb4b88863c7c7f1a020b6d0a56b7d0417c7e8b97712a2f8c1be2b55247957",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-the-listening-room",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "6779a2e6b608bdcd7970e56c61f7ed6601652ccacfdc00ae28e865a1edd3d08c",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-the-little-things-shop",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "7786464ec870054e465b5f492a2d9cbb672e172fa40dc391d554027a203d0183",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-the-long-weekend-pass",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "27f1e92587421c12eb405b4f0611cf4fad13a78a91299c638747fd7fb77d61ac",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-the-next-chapter",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "d8088f0f524cc499629bd0230ac20a25a59efc86b9c48f011cfa983dd731a127",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-the-object-room",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "217ef4241352ae2fa7cee14d61096e5b1d2ec6e4c15f858270ae99cda98031cf",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-the-scenic-route",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "0d213f68f85f8f6d59db4165b80602070a8b15e47a68251991fdc0c247606283",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-the-small-start-studio",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "e0ecf614db1d243e5f9a9c6fe5fa2c0c7cab54655ce2902567fb9df9626ab1c1",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-the-useful-sale",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "46463386c39984b8f4adfe1fe71a2f162a7090a77c8752851fc562ab32ab3986",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-your-kind-of-weekend",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "22a1c486cb09cc8345d412a92240d5c37dcdff5894e64191d25686b7c49ca70c",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-a-date-with-making",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "ee0986248edb8bc9fb24935f5ac731bf6274e60fb3c54be39e712d0aed5274b5",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-a-little-thank-you",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "ba9117a45c87abffac9071ed5f335ac61160a98d2494d06c0e8737b4441db920",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-an-occasion-worth-keeping",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "8111c41766894b41e653dbf7ac5dbd629cfb0f6d6ccca355009ef2248d88c020",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-bloom-notes",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "a62582d10533be20af1fc045319d09f7ad16fe5e32c1697dd363ab8dd99c8583",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-first-light-journal",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "86c192bd79247d8e96db08ad623f7ca06b41797bfc5b95d49558867435fcef85",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-frame-by-frame",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "07f1ab6b765c72c551b09906586ce85099de1fc3de9365939a8e7e4f36dff923",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-one-good-idea",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "3973fe01472bb681e9ade18d73d4f53feda3612076dae1e8807af48b7db5ae8d",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-permission-to-pause",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "1c5c32a395db75a1308aef6d64bc2db18a9df3b393cb84191c968ebe7b6b692c",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-small-batch-bulletin",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "a3ad508eb72efb4e09b965ea3864f995b3f2c6892d0e00db2382dc8c5a2f3a59",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-sunday-crumb",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "c7ceb2d360ca14346dbeeaab7888f28a6e6a9271744fe0265e274656c619c11d",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-the-comfort-zone",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "942754ab0bd11c6e61d3ce1f87f053aa53a74a09c9f42863c32e763279e997b0",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-the-lemon-hour",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "371c017aaeb26ed41057262e5ca7686fbc7e78a47aba1eecfeddbe495759d2b1",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-the-reading-shelf",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "c8f3aa44717f7461202907045e15daa4cc4721d71d1894c1ed4be323898fd8ee",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-the-useful-checklist",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "97b298cfedf7cdc355a8a6be0cbb23066b9723236d19910215eba1588c07ade5",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
+    },
+    {
+      "id": "everyday-the-weekend-court",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-24",
+          "revision": "d2b1c5fa56a4dc7baaf2ee71f07d79ac14e4dd01c07d6d719841411fda8fca27",
+          "note": "Direct handoff from the user-approved Everyday prototype, including the full-height panels and mobile spacing refinement."
+        }
+      ]
     }
   ]
 }

@@ -3328,6 +3328,756 @@
       "colour": [
         "light"
       ]
+    },
+    "everyday-sunday-crumb": {
+      "description": "Sunday crumb: an email signup in a popup layout.",
+      "industries": [
+        "food-drink"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "everyday-the-object-room": {
+      "description": "The object room: an email signup in a fullscreen layout.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "neutral"
+      ]
+    },
+    "everyday-listening-party": {
+      "description": "Listening party: an email signup in a popup layout.",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "launch"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "everyday-almost-somewhere": {
+      "description": "Almost somewhere: an email signup in a fullscreen layout.",
+      "industries": [
+        "travel-places"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "everyday-bloom-notes": {
+      "description": "Bloom notes: an email signup in a inline layout.",
+      "industries": [
+        "home-garden"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "everyday-good-dog-society": {
+      "description": "Good dog society: an email signup in a slide-in layout.",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "everyday-the-lemon-hour": {
+      "description": "The lemon hour: a focused offer or information link in a popup layout.",
+      "industries": [
+        "food-drink"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "minimal"
+      ],
+      "colour": [
+        "cool"
+      ]
+    },
+    "everyday-school-of-small-things": {
+      "description": "School of small things: an email signup with a useful resource in a inline layout.",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "cool"
+      ]
+    },
+    "everyday-soft-science": {
+      "description": "Soft science: an email signup in a popup layout.",
+      "industries": [
+        "home-garden"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "neutral"
+      ]
+    },
+    "everyday-frame-by-frame": {
+      "description": "Frame by frame: an email signup in a inline layout.",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "everyday-the-daily-ritual": {
+      "description": "The daily ritual: an email signup with a useful resource in a slide-in layout.",
+      "industries": [
+        "food-drink"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "green"
+      ]
+    },
+    "everyday-permission-to-pause": {
+      "description": "Permission to pause: a focused offer or information link in a popup layout.",
+      "industries": [
+        "home-garden"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "everyday-open-atelier": {
+      "description": "Open atelier: a focused offer or information link in a fullscreen layout.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "everyday-the-reading-shelf": {
+      "description": "The reading shelf: an email signup in a inline layout.",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "neutral"
+      ]
+    },
+    "everyday-the-small-start-studio": {
+      "description": "The small-start studio: an email signup with a useful resource in a popup layout.",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "cool"
+      ]
+    },
+    "everyday-out-of-office": {
+      "description": "Out of office: a focused offer or information link in a floating bar layout.",
+      "industries": [
+        "travel-places"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "minimal"
+      ],
+      "colour": [
+        "cool"
+      ]
+    },
+    "everyday-the-long-weekend-pass": {
+      "description": "The long weekend pass: an email signup with a useful resource in a popup layout.",
+      "industries": [
+        "travel-places"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "neutral"
+      ]
+    },
+    "everyday-small-batch-bulletin": {
+      "description": "Small batch bulletin: an email signup in a inline layout.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "neutral"
+      ]
+    },
+    "everyday-better-together": {
+      "description": "Better together: a focused offer or information link in a popup layout.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "everyday-make-it-yours": {
+      "description": "Make it yours: a practical enquiry form in a inline layout.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "neutral"
+      ]
+    },
+    "everyday-one-good-idea": {
+      "description": "One good idea: an email signup in a popup layout.",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "minimal"
+      ],
+      "colour": [
+        "neutral"
+      ]
+    },
+    "everyday-the-next-chapter": {
+      "description": "The next chapter: an email signup with a useful resource in a fullscreen layout.",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "everyday-listen-closer": {
+      "description": "Listen closer: a focused offer or information link in a floating bar layout.",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "everyday-a-note-from-the-maker": {
+      "description": "A note from the maker: an email signup in a slide-in layout.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "everyday-the-useful-checklist": {
+      "description": "The useful checklist: an email signup with a useful resource in a inline layout.",
+      "industries": [
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "cool"
+      ]
+    },
+    "everyday-build-something-good": {
+      "description": "Build something good: an email signup in a popup layout.",
+      "industries": [
+        "professional-services"
+      ],
+      "occasions": [
+        "launch"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "green"
+      ]
+    },
+    "everyday-room-in-your-inbox": {
+      "description": "Room in your inbox: an email signup in a floating bar layout.",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "minimal"
+      ],
+      "colour": [
+        "cool"
+      ]
+    },
+    "everyday-the-listening-room": {
+      "description": "The listening room: a focused offer or information link in a fullscreen layout.",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "neutral"
+      ]
+    },
+    "everyday-a-date-with-making": {
+      "description": "A date with making: a practical enquiry form in a inline layout.",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "everyday-start-a-conversation": {
+      "description": "Start a conversation: a practical enquiry form in a popup layout.",
+      "industries": [
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "neutral"
+      ]
+    },
+    "everyday-a-desk-away": {
+      "description": "A desk away: a practical enquiry form in a inline layout.",
+      "industries": [
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "cool"
+      ]
+    },
+    "everyday-fix-it-friday": {
+      "description": "Fix-it Friday: a practical enquiry form in a slide-in layout.",
+      "industries": [
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "everyday-your-kind-of-weekend": {
+      "description": "Your kind of weekend: an email signup in a popup layout.",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "everyday-an-occasion-worth-keeping": {
+      "description": "An occasion worth keeping: a practical enquiry form in a inline layout.",
+      "industries": [
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "everyday-from-the-ground-up": {
+      "description": "From the ground up: an email signup with a useful resource in a fullscreen layout.",
+      "industries": [
+        "home-garden"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "green"
+      ]
+    },
+    "everyday-a-fresh-start": {
+      "description": "A fresh start: a focused offer or information link in a floating bar layout.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "minimal"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "everyday-the-comfort-zone": {
+      "description": "The comfort zone: an email signup in a popup layout.",
+      "industries": [
+        "home-garden"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "everyday-an-evening-worth-making": {
+      "description": "An evening worth making: a focused offer or information link in a inline layout.",
+      "industries": [
+        "food-drink"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "everyday-slow-sunday-notes": {
+      "description": "Slow Sunday notes: an email signup in a slide-in layout.",
+      "industries": [
+        "food-drink"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "minimal"
+      ],
+      "colour": [
+        "neutral"
+      ]
+    },
+    "everyday-the-little-things-shop": {
+      "description": "The little-things shop: an email signup in a popup layout.",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "everyday-a-curious-future": {
+      "description": "A curious future: an email signup with a useful resource in a fullscreen layout.",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "cool"
+      ]
+    },
+    "everyday-the-weekend-court": {
+      "description": "The weekend court: an email signup with a useful resource in a inline layout.",
+      "industries": [
+        "travel-places"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "green"
+      ]
+    },
+    "everyday-another-good-round": {
+      "description": "Another good round: a practical enquiry form in a popup layout.",
+      "industries": [
+        "home-garden"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "neutral"
+      ]
+    },
+    "everyday-before-the-drop": {
+      "description": "Before the drop: a focused offer or information link in a floating bar layout.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "minimal"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "everyday-the-curious-corner": {
+      "description": "The curious corner: an email signup in a slide-in layout.",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "neutral"
+      ]
+    },
+    "everyday-the-scenic-route": {
+      "description": "The scenic route: an email signup with a useful resource in a popup layout.",
+      "industries": [
+        "travel-places"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "cool"
+      ]
+    },
+    "everyday-first-light-journal": {
+      "description": "First light journal: an email signup in a inline layout.",
+      "industries": [
+        "home-garden"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "everyday-the-useful-sale": {
+      "description": "The useful sale: a focused offer or information link in a popup layout.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "neutral"
+      ]
+    },
+    "everyday-a-little-thank-you": {
+      "description": "A little thank-you: a focused offer or information link in a inline layout.",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "everyday-the-future-is-friendly": {
+      "description": "The future is friendly: an email signup in a fullscreen layout.",
+      "industries": [
+        "professional-services"
+      ],
+      "occasions": [
+        "launch"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "cool"
+      ]
     }
   }
 }

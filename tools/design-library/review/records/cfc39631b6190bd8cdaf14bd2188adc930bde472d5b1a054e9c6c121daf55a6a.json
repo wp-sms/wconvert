@@ -1,0 +1,55 @@
+{
+  "id": "everyday-the-reading-shelf",
+  "revision": "969a0791ea9de6c2e0cc5e1fecec611c16b22a7bf9a8af9aa16205e8223d2914",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex · native WordPress and visual review",
+  "note": "Three editable book-cover panels remain readable across the phone width; the main signup sits clearly below them.",
+  "at": "2026-10-24T06:21:47.182Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/review.md",
+          "sha256": "f6b502dde0c4c73b459faf3f1a57081ad88a66a77bc19b5a5095f11c7f8a8573"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-the-reading-shelf-320.png",
+          "sha256": "e3bb490961b60ad27da4e719be8b3a110a9a15a2e83378ec7a6cd931e2ffcb90"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-the-reading-shelf-1440.png",
+          "sha256": "7ee653a4f84ce4181d872f8e421b32e2c17dba78f2066c40903937390af9b926"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/fidelity.json",
+          "sha256": "358e4290ffc8f1760ac04e1994edfb346f4ef8391aee56aa07bf2c3c173f96c1"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/layout.json",
+          "sha256": "d7b61c2cf2f4caab48c27de857e575e2d6f6629973bf2defca7e3a5589679645"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    }
+  },
+  "record_id": "cfc39631b6190bd8cdaf14bd2188adc930bde472d5b1a054e9c6c121daf55a6a"
+}

@@ -1,0 +1,257 @@
+{
+  "id": "everyday-open-atelier",
+  "name": "Open atelier",
+  "display_type": "fullscreen",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#f16b37",
+    "fg": "#272b25",
+    "muted": "#272b25",
+    "accent": "#272b25",
+    "accent-fg": "#fff1d3",
+    "border": "#272b25",
+    "input-bg": "transparent",
+    "placeholder": "#272b25",
+    "close-bg": "#f16b37",
+    "close-fg": "#272b25",
+    "close-border": "#272b25",
+    "font": "'DM Sans', Arial, sans-serif",
+    "heading-font": "'Instrument Serif', Georgia, serif",
+    "heading-weight": "400",
+    "heading-leading": "0.98",
+    "tracking": "-.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "65rem",
+    "shadow": "0 24px 65px -30px rgba(24,30,30,.35)",
+    "close-inset": ".7rem"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "tokens": {
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "3rem",
+                "radius": "0",
+                "gap": "1.1rem"
+              },
+              "narrow": {
+                "pad": "4rem 1.5rem 1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "row",
+                  "tokens": {
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "role": "eyebrow",
+                      "text": "Open atelier / the annual studio sale",
+                      "tokens": {
+                        "text-size": ".88rem",
+                        "tracking": ".1em"
+                      },
+                      "id": "n1"
+                    },
+                    {
+                      "type": "eyebrow",
+                      "role": "eyebrow",
+                      "text": "Independent design, direct from the makers",
+                      "tokens": {
+                        "text-size": ".88rem",
+                        "tracking": ".1em"
+                      },
+                      "id": "n2"
+                    }
+                  ]
+                },
+                {
+                  "type": "divider",
+                  "id": "n3"
+                },
+                {
+                  "type": "heading",
+                  "role": "headline",
+                  "text": "Made with care.\nYours for less.",
+                  "tokens": {
+                    "heading-size": "clamp(3rem,8cqi,7rem)",
+                    "heading-font": "'DM Sans', Arial, sans-serif",
+                    "heading-weight": "700"
+                  },
+                  "narrow": {
+                    "heading-size": "clamp(3rem,8cqi,7rem)"
+                  },
+                  "id": "n4"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "20% off selected studio pieces. Objects with a story, ready for your everyday.",
+                  "id": "n5"
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "basis": "22rem",
+              "tokens": {
+                "gap": "0"
+              },
+              "children": [
+                {
+                  "type": "panel",
+                  "tokens": {
+                    "pad": "2.5rem",
+                    "radius": "0",
+                    "gap": "1.1rem",
+                    "muted": "#fff2d6",
+                    "bg": "#252b25",
+                    "fg": "#fff2d6",
+                    "align": "center"
+                  },
+                  "narrow": {
+                    "pad": "1.5rem",
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "heading",
+                      "role": "headline",
+                      "text": "20%",
+                      "tokens": {
+                        "heading-size": "5rem",
+                        "heading-font": "'DM Sans', Arial, sans-serif",
+                        "heading-weight": "700"
+                      },
+                      "narrow": {
+                        "heading-size": "2.65rem"
+                      },
+                      "id": "n6"
+                    },
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "Off selected pieces",
+                      "id": "n7"
+                    }
+                  ]
+                },
+                {
+                  "type": "panel",
+                  "tokens": {
+                    "pad": "2rem",
+                    "radius": "0",
+                    "gap": "1.1rem"
+                  },
+                  "narrow": {
+                    "pad": "1.5rem",
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "role": "eyebrow",
+                      "text": "Studio sale closes in",
+                      "tokens": {
+                        "text-size": ".88rem",
+                        "tracking": ".1em"
+                      },
+                      "id": "n8"
+                    },
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": "1rem",
+                        "align": "center"
+                      },
+                      "children": [
+                        {
+                          "type": "countdown",
+                          "role": "countdown_units",
+                          "layout": "boxes",
+                          "days_label": "Days",
+                          "hours_label": "Hrs",
+                          "minutes_label": "Mins",
+                          "seconds_label": "Secs",
+                          "tokens": {
+                            "countdown-size": "1.7rem"
+                          },
+                          "narrow": {
+                            "countdown-size": "1.35rem"
+                          },
+                          "id": "n9"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "button",
+                      "role": "cta_label",
+                      "label": "Step inside the sale",
+                      "action": "link",
+                      "tokens": {
+                        "radius": ".2rem"
+                      },
+                      "id": "n10"
+                    },
+                    {
+                      "type": "text",
+                      "role": "fine_print",
+                      "text": "Selected items. Ends 31 October 2026.",
+                      "tokens": {
+                        "text-size": ".8rem",
+                        "leading": "1.5"
+                      },
+                      "id": "n11"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

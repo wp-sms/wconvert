@@ -834,6 +834,322 @@
         "feature_start": "2026-11-01",
         "feature_end_exclusive": "2027-01-06"
       }
+    },
+    {
+      "id": "everyday-extraordinary",
+      "name": "Everyday, extraordinary",
+      "description": "50 distinctive designs for useful everyday moments: welcome offers, creative newsletters, product previews, practical resources and service enquiries. Explore 15 Free and 35 Pro templates across popups, inline forms, slide-ins, bars and fullscreens.",
+      "cover": "launch",
+      "business_types": [
+        "stores",
+        "services",
+        "publishers"
+      ],
+      "markets": [],
+      "priority": 85,
+      "catalogue_only": true,
+      "items": [
+        {
+          "setup_id": "everyday-sunday-crumb",
+          "stage": "any",
+          "setup_hash": "f5cb54dd5fa2451d3022ece575455754545c1650427cc2053bc6dfbb506625a6",
+          "design_hash": "8b7a0d03d5aa4a4b30c14fdc960cb506c9f5fa4469d0d1879aa595fb65c34c2c"
+        },
+        {
+          "setup_id": "everyday-the-object-room",
+          "stage": "any",
+          "setup_hash": "76172ae01835b2ec86ca29b834897ed3450e10cec8d094edeb2dbed1fe6081f2",
+          "design_hash": "b62fcc6aa3518e220b8e0bc81768ba5955007b034822f7deb1ea384d04aeddf1"
+        },
+        {
+          "setup_id": "everyday-listening-party",
+          "stage": "any",
+          "setup_hash": "a03d18052b4b9e18df2eee38a526994ebac2226f228db55925d0682f43a059f0",
+          "design_hash": "d23133f13b34952e625d7962587aee3e8ef963acfc73e943a92a2970b67b43f4"
+        },
+        {
+          "setup_id": "everyday-almost-somewhere",
+          "stage": "any",
+          "setup_hash": "0e52f2b85ea87593748fa9a37cbd0478cc07217f4e48abd9071aee03dc1c94d5",
+          "design_hash": "a299503636a587caac67d510004319f5a157c6eb98843227923f602f94a909fc"
+        },
+        {
+          "setup_id": "everyday-bloom-notes",
+          "stage": "any",
+          "setup_hash": "3ded04c8d9d7a3433170143a8498c247778ab7a9c4971263a7a75fd915c30dce",
+          "design_hash": "a8804726e34c08088944ffe8d132a37a394c19fd0203bef582b49c7a39a5bd74"
+        },
+        {
+          "setup_id": "everyday-good-dog-society",
+          "stage": "any",
+          "setup_hash": "fbb7ff70570a7ee842e64618753bf2628955a2fddd3b23c6bd0aa7b00ac61643",
+          "design_hash": "a29a3c16400417612a24cec9618b542d51126cd10185ea51426721ce93e4f8fe"
+        },
+        {
+          "setup_id": "everyday-the-lemon-hour",
+          "stage": "any",
+          "setup_hash": "3e47a3ad9fd277ce39e14fdd7082d47300e2b453ba3d0aa27023780be8017c98",
+          "design_hash": "73e90f56bad6ec656e8667eb4788cd1e7de1ca5921269f1991467d57b85a3655"
+        },
+        {
+          "setup_id": "everyday-school-of-small-things",
+          "stage": "any",
+          "setup_hash": "df4dfcf6584e4788d09295ffc33906ea660312b6862f690aca5633d45983ce9f",
+          "design_hash": "dac3eb888148418235320eca028c4a5629c7b4090079575624cf0bc2f9039e8a"
+        },
+        {
+          "setup_id": "everyday-soft-science",
+          "stage": "any",
+          "setup_hash": "33ccd49bf3a9b5dbfa92768124a4458d49bdfdf5af7c419a9abccb7f857a9e80",
+          "design_hash": "cdbcb4e17a885c39a253af3ab75e808180289fb5a316e2b26ae5df2143bbcc3b"
+        },
+        {
+          "setup_id": "everyday-frame-by-frame",
+          "stage": "any",
+          "setup_hash": "b4032b4eb86b758dca7a8aed3ea2200f3cddc44061e0353c830c6ec46667cf83",
+          "design_hash": "e413ebab7d5fc93036ce536ddf87e53cf6bde09abab2677da6219f84b8e7a040"
+        },
+        {
+          "setup_id": "everyday-the-daily-ritual",
+          "stage": "any",
+          "setup_hash": "93e5954d3332451d571f7a2ff1c0383db068b37331bd8a2826122a02294707d0",
+          "design_hash": "bff10c60a0e75052129f9b0d312f5379edd3118fe6501c0c4f94bdb0db33b36c"
+        },
+        {
+          "setup_id": "everyday-permission-to-pause",
+          "stage": "any",
+          "setup_hash": "b429c6e68bef63d0fa1a427326a973bf7b9749a99eba39890a248c7e108ec6c3",
+          "design_hash": "341b93f4f54fc4f0e41131238139ce5dbc96cdd36fcb0fd442e3dd182c5dd5ea"
+        },
+        {
+          "setup_id": "everyday-open-atelier",
+          "stage": "any",
+          "setup_hash": "865604965043c55a1650bfe57752c902cee9698f33724fcbff04b23c9eeafdc5",
+          "design_hash": "bd181cd93b2be2ab7b7702b56371246e0b718cdd2d4506d2053ff1536c943c65"
+        },
+        {
+          "setup_id": "everyday-the-reading-shelf",
+          "stage": "any",
+          "setup_hash": "193c4a68c7af07725a274ec7c14b4fc22159225b4251b7d03f59442756ea79c5",
+          "design_hash": "af63fd6568412227139121e2f4f444f6b6f17192ca246ecf92969239a0842d1f"
+        },
+        {
+          "setup_id": "everyday-the-small-start-studio",
+          "stage": "any",
+          "setup_hash": "bb0e816583b16c353f5f89deafc21e6bfa37f0311d689befa9e0513f651f5fab",
+          "design_hash": "674037669e1468e31373abae86e9be34b81637529366d30c9a513678aa517a1b"
+        },
+        {
+          "setup_id": "everyday-out-of-office",
+          "stage": "any",
+          "setup_hash": "bb3adedb00cd89299944652502db468215f125b2cee50a06c66106f4fa0a8dc4",
+          "design_hash": "c2f0bf9da14c60f401ee02114350af25533e2a98785134e3e05d70cf23170567"
+        },
+        {
+          "setup_id": "everyday-the-long-weekend-pass",
+          "stage": "any",
+          "setup_hash": "9b703f5cf236bd943f41b19949e0421a276b8cc5e98999d60f590f6cc83b2df3",
+          "design_hash": "d00945112729a27991e750858c01701713601fc1778aece9d8a2ce43f97693c0"
+        },
+        {
+          "setup_id": "everyday-small-batch-bulletin",
+          "stage": "any",
+          "setup_hash": "36adc024633be68f78a0ad5cf0bc4410480228d717851ca5dd69e91074ed8cec",
+          "design_hash": "e8e42dc082d3b6f8fc7e3a1fa65ec65e1e134c533094d7a6d0b853b21a0af1e4"
+        },
+        {
+          "setup_id": "everyday-better-together",
+          "stage": "any",
+          "setup_hash": "c70fc737244d72bd82f75f2b942aead736cd5d9f04c61c6a2d21f885df616866",
+          "design_hash": "6be5a06bc52a0cd68a03c59a72e5365a47b0175ce8c246cf6fc710fae583289b"
+        },
+        {
+          "setup_id": "everyday-make-it-yours",
+          "stage": "any",
+          "setup_hash": "1a0e5850613baa81b15ef8c3a2187471834fce2ae2e3409c8527c3c7e2fc2d67",
+          "design_hash": "f3575397498c94f27fdc1f281fe475751124c31a3d20f48ce8cf330d1002bc3e"
+        },
+        {
+          "setup_id": "everyday-one-good-idea",
+          "stage": "any",
+          "setup_hash": "53757529df537dc191d631fc2acfd7d3d89c3a189a4c921915830638197da2af",
+          "design_hash": "26feaad537a698c11d18fa1bc9cc3d5dcc27d741eb80c4ad926fd702c037d45a"
+        },
+        {
+          "setup_id": "everyday-the-next-chapter",
+          "stage": "any",
+          "setup_hash": "dbffcf48ebf0f5926f7ef11789efc3283bbe24efd6c8c223af0e17473255ab66",
+          "design_hash": "eacf0980ea5b792950579517109e7720440b220c5542c684174698c70f12788c"
+        },
+        {
+          "setup_id": "everyday-listen-closer",
+          "stage": "any",
+          "setup_hash": "2fd4dfd40f982e0c2d10b1fe0b5cb7930e34c3b26ec8883197f991d10b4704bb",
+          "design_hash": "8e6c60e4a0f261dbe9f4c356ee0f0b79a1114fbea73363c60a829df3ee56bb3b"
+        },
+        {
+          "setup_id": "everyday-a-note-from-the-maker",
+          "stage": "any",
+          "setup_hash": "b328b299e53f3d4bf2059f5b5c16cd03c9c93a907e056a7cfcbea1065c745b26",
+          "design_hash": "2f8d16a994e41d15d9028c26bddf782431bf3a61bbf1e2fa9c48413bd9b93d85"
+        },
+        {
+          "setup_id": "everyday-the-useful-checklist",
+          "stage": "any",
+          "setup_hash": "5715439ba5a40c0bbc5611f542478bc8004a672591f004cea65f7091eedb2707",
+          "design_hash": "18210d8f8eb134db90a343653ebd709920553313a078bd9e7fff8d9ff52fa74d"
+        },
+        {
+          "setup_id": "everyday-build-something-good",
+          "stage": "any",
+          "setup_hash": "0d0f16c535921439dbd2aa9bdab2a86eeb6950cae060edf8f90eeb924d907d73",
+          "design_hash": "125b07dcd3e18d9d5ac57416ffafb02a9cfb2d1c5ad3548201d09fc1dc490bec"
+        },
+        {
+          "setup_id": "everyday-room-in-your-inbox",
+          "stage": "any",
+          "setup_hash": "3dcd918749775c1985167b43f006a6fade584b1c885db1ff757925fd74beeae2",
+          "design_hash": "539ad169d6e3d89c0def6525096257fc66e9f36db9371f5e22f997c4143a6b66"
+        },
+        {
+          "setup_id": "everyday-the-listening-room",
+          "stage": "any",
+          "setup_hash": "f699ee753779913745a29534c1952040d7cf3cb553df7eba9187d32a7868fd04",
+          "design_hash": "11b6182aa241e6415fde05cc5e2e71378972f09074babcc3de42a545c70f9110"
+        },
+        {
+          "setup_id": "everyday-a-date-with-making",
+          "stage": "any",
+          "setup_hash": "ba763041ab20b62e7ed8ffb1c032ab4689222e4d9938462d7a24d8fe0760ea56",
+          "design_hash": "11a90ccfea5d691c464da786dfd7c63ef7e16ff02d854fe3ac4ca69561107e7c"
+        },
+        {
+          "setup_id": "everyday-start-a-conversation",
+          "stage": "any",
+          "setup_hash": "0a7554aad7189da4129bbe149df2c2a105e4109e8d52bc3da8e7828583d7adc0",
+          "design_hash": "ea8f4907d7f0f7cef80bd7b346ec22f68f6c0bd09cd29d11af0e872ff95eba08"
+        },
+        {
+          "setup_id": "everyday-a-desk-away",
+          "stage": "any",
+          "setup_hash": "eb828b25b9ddad8281c86f1aea51c79387c85f01b2c820c73d6ee72c6b70cd72",
+          "design_hash": "2ea465856db785c7d6a1c6f86dda6a518d7425c2be5e2f7d8ac03953b44e1c3f"
+        },
+        {
+          "setup_id": "everyday-fix-it-friday",
+          "stage": "any",
+          "setup_hash": "f453477a10062259a104ea5d78f85b7eba6a1fa084350dc611862f2a166ff154",
+          "design_hash": "01b3947968bdfc7f28df3db74a23d289c118c0deb1b631eeb217cd557bec3beb"
+        },
+        {
+          "setup_id": "everyday-your-kind-of-weekend",
+          "stage": "any",
+          "setup_hash": "c3b8081d446bc650cee49a7bad713cd5e1f5cf3ada6dd745801045d1d7a47a13",
+          "design_hash": "b0a11a782473d35525ef7daa12cb27ef21b3c26dba7f8a4c3f220064063a4679"
+        },
+        {
+          "setup_id": "everyday-an-occasion-worth-keeping",
+          "stage": "any",
+          "setup_hash": "5d02960ab3c73e6e806e630a67b8666d0de706d722b2fedf384ac70f84cfed70",
+          "design_hash": "116bc9a7bf0fad629db603bfbc35d014f373754dee13d13359da891568f282fa"
+        },
+        {
+          "setup_id": "everyday-from-the-ground-up",
+          "stage": "any",
+          "setup_hash": "a1f78a9042d23b7b73271bea8b6a3b7dc52e01a54c9165d6ddbf6381771d52ce",
+          "design_hash": "ac33819989813ec8f2c266378c5abe6fe2a75def042fc337aaa93ec1c977c732"
+        },
+        {
+          "setup_id": "everyday-a-fresh-start",
+          "stage": "any",
+          "setup_hash": "833b4b2460d09c4dc147ca9c7597fcb5fb59820f5f3e6c84969bdf6b89c3fda4",
+          "design_hash": "d2031f8e5eefdeee084cdf9e0d986a87106f3e777a305dea9dcc96fa63be3d9d"
+        },
+        {
+          "setup_id": "everyday-the-comfort-zone",
+          "stage": "any",
+          "setup_hash": "3537e97d0663212f0fd0aa7bef8151cbfe39d7095471d9505f32fae3e5ce0687",
+          "design_hash": "274dc8d179f6d2493937bb4581d747bc41a9e1bc874fa0e7d9259a99c1b507a8"
+        },
+        {
+          "setup_id": "everyday-an-evening-worth-making",
+          "stage": "any",
+          "setup_hash": "25eb97fd0669acee96a43269e9ff4cd1769a9d8fc9d00d7f3c42168bdab17b6f",
+          "design_hash": "aa1b179973a0d1cfd7fc85d359cb91b9a954bece90b05c173556785eaab1b9da"
+        },
+        {
+          "setup_id": "everyday-slow-sunday-notes",
+          "stage": "any",
+          "setup_hash": "f5c61704b18d38973332340796ea91529546679435aa33e0f94151dd937053d2",
+          "design_hash": "8aa628e277601aa39b73f7109003f6b93b04d3a415ed31741f4f2f8cb9f4483e"
+        },
+        {
+          "setup_id": "everyday-the-little-things-shop",
+          "stage": "any",
+          "setup_hash": "1e40c6521d34d504e2c1c7007d7f28a237f31751a718b2dbeef8e95e0f6409ce",
+          "design_hash": "d07191a19df09f6c0206f6319c1c6746078d3018ca2fffe864ceb7c73231007e"
+        },
+        {
+          "setup_id": "everyday-a-curious-future",
+          "stage": "any",
+          "setup_hash": "02f531afd6c63981b6c39a79eed87f7fb856cd39ea183b7ebabf701f16fbef65",
+          "design_hash": "3c6ac8e5a477dfa75e8af84d4435d3d283993225b247d89da7b13ba51c236d76"
+        },
+        {
+          "setup_id": "everyday-the-weekend-court",
+          "stage": "any",
+          "setup_hash": "66d0e952e3f050333f2c03c7b2fd6086ec92adbdae2a30bfa35942efbb5f7e7a",
+          "design_hash": "ca944015d15e3988b028312690ed00c33d843d259e51b47a3c531561312b601e"
+        },
+        {
+          "setup_id": "everyday-another-good-round",
+          "stage": "any",
+          "setup_hash": "f578a88bdeda281ba6a55c67f47ea55f8284a04bfaff7ac94bb1634db230e650",
+          "design_hash": "8cb3ad8dff08d823a03b3ccc6daf691b3b04b5fd550c1cb63f54464ba8f9f17d"
+        },
+        {
+          "setup_id": "everyday-before-the-drop",
+          "stage": "any",
+          "setup_hash": "64789af945ad823cc16052ff5d3b2682f19210ffbbb5898584704b4b8b1db34b",
+          "design_hash": "6cb19e661f8716dae99975b2bbde8ba7be71b7b523e575d14f36a53d7126c109"
+        },
+        {
+          "setup_id": "everyday-the-curious-corner",
+          "stage": "any",
+          "setup_hash": "f68240f15a282e6090eb1624af29562b1d1890accd5fbe978d48afe69c03cc8e",
+          "design_hash": "11726c891338ff3ead4002abdd20f60231a4d73512f5a9e817a55fc5fec25941"
+        },
+        {
+          "setup_id": "everyday-the-scenic-route",
+          "stage": "any",
+          "setup_hash": "4222e4a099c9f1c43a90cd22729125230aaefcadcbe96b6d50618292b4f4cbed",
+          "design_hash": "b42958af5db7ac15a448e26461da3ba99b5441a80d03f4c5731fc0de2a68ad2e"
+        },
+        {
+          "setup_id": "everyday-first-light-journal",
+          "stage": "any",
+          "setup_hash": "13125d17490b7994878d86f17e0fcd3f32dfc4497e013c6595580a8f392a9cfd",
+          "design_hash": "c2f4dae567f6be909db8b0cc15aaff783f95eca6c3687fdb1d33f5b4f848dd4d"
+        },
+        {
+          "setup_id": "everyday-the-useful-sale",
+          "stage": "any",
+          "setup_hash": "f3c4950f14873e9ed12a83783713f64bfb20df47a4cdc46b0a647bf01367d1f1",
+          "design_hash": "7e2e6c68a6eb92be5a8c51c9677cc3451fb2608aabeb55eaf8bda4092d05870a"
+        },
+        {
+          "setup_id": "everyday-a-little-thank-you",
+          "stage": "any",
+          "setup_hash": "df003072b525fa470084d9d1411e471ef73b4f280d303cbdbff88b56a123ac44",
+          "design_hash": "b0bd8a2baa3f13e87b95100a22007ca291806fa3b0970f1c5812d98757114f10"
+        },
+        {
+          "setup_id": "everyday-the-future-is-friendly",
+          "stage": "any",
+          "setup_hash": "1335d910ee60e692b4efc7b2007ee04e42c08f256ae13335b7d484472143a35a",
+          "design_hash": "14198b95cf0f8b21392fb185f4095dfe9ba3305d9f71f65f40619d9a7d2b861b"
+        }
+      ]
     }
   ]
 }

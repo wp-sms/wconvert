@@ -1,0 +1,384 @@
+{
+  "id": "everyday-the-long-weekend-pass",
+  "name": "The long weekend pass",
+  "display_type": "popup",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#0000",
+    "fg": "#2e2d29",
+    "muted": "#2e2d29",
+    "accent": "#2e2d29",
+    "accent-fg": "#fffaf0",
+    "border": "#2e2d29",
+    "input-bg": "transparent",
+    "placeholder": "#2e2d29",
+    "close-bg": "#f3efe6",
+    "close-fg": "#2e2d29",
+    "close-border": "#2e2d29",
+    "font": "'DM Sans', Arial, sans-serif",
+    "heading-font": "'Instrument Serif', Georgia, serif",
+    "heading-weight": "400",
+    "heading-leading": "0.98",
+    "tracking": "-.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "31rem",
+    "shadow": "0 24px 65px -30px rgba(24,30,30,.35)",
+    "close-inset": ".7rem"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "tokens": {
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2.5rem",
+                "radius": "0",
+                "gap": "1.1rem",
+                "bg": "#d8e7e2"
+              },
+              "narrow": {
+                "pad": "4rem 1.5rem 1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "The long weekend / getaway guide",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n1"
+                },
+                {
+                  "type": "heading",
+                  "role": "headline",
+                  "text": "Three days.\nA different pace.",
+                  "tokens": {
+                    "heading-size": "3.8rem"
+                  },
+                  "narrow": {
+                    "heading-size": "2.65rem"
+                  },
+                  "id": "n2"
+                },
+                {
+                  "type": "row",
+                  "tokens": {
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "City walks",
+                      "id": "n3"
+                    },
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "Quiet corners",
+                      "id": "n4"
+                    },
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "Good food",
+                      "id": "n5"
+                    }
+                  ]
+                },
+                {
+                  "type": "divider",
+                  "id": "n6"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "Our favourite short escapes, gathered in one useful guide. Leave your email to open it.",
+                  "id": "n7"
+                }
+              ]
+            },
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2rem 2.5rem",
+                "radius": "0",
+                "gap": "1.1rem",
+                "bg": "#fff4dc"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "edges": "block-start",
+              "notch": true,
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "A little room for possibility",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n8"
+                },
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".9rem"
+                  },
+                  "children": [
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": ".7rem"
+                      },
+                      "children": [
+                        {
+                          "type": "field",
+                          "name": "email",
+                          "label": "Email address",
+                          "placeholder": "you@example.com",
+                          "required": true,
+                          "tokens": {
+                            "radius": ".2rem"
+                          },
+                          "id": "n9"
+                        },
+                        {
+                          "type": "button",
+                          "role": "cta_label",
+                          "label": "Open my weekend guide",
+                          "action": "submit",
+                          "submission": "primary",
+                          "tokens": {
+                            "radius": ".2rem"
+                          },
+                          "id": "n10"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "consent",
+                      "role": "consent_text",
+                      "text": "I agree to receive marketing emails. Unsubscribe anytime.",
+                      "hidden": true,
+                      "id": "n11"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "tokens": {
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2.5rem",
+                "radius": "0",
+                "gap": "1.1rem",
+                "bg": "#d8e7e2"
+              },
+              "narrow": {
+                "pad": "4rem 1.5rem 1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "The long weekend / getaway guide",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n12"
+                },
+                {
+                  "type": "heading",
+                  "role": "success_headline",
+                  "text": "Here’s to taking the long way.",
+                  "tokens": {
+                    "heading-size": "2.7rem"
+                  },
+                  "narrow": {
+                    "heading-size": "2.2rem"
+                  },
+                  "id": "n13"
+                },
+                {
+                  "type": "row",
+                  "tokens": {
+                    "gap": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "City walks",
+                      "id": "n14"
+                    },
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "Quiet corners",
+                      "id": "n15"
+                    },
+                    {
+                      "type": "text",
+                      "role": "body",
+                      "text": "Good food",
+                      "id": "n16"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "role": "success_body",
+                  "text": "Your request is received. Your sample weekend guide is ready to explore.",
+                  "id": "n17"
+                }
+              ]
+            },
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2rem 2.5rem",
+                "radius": "0",
+                "gap": "1.1rem",
+                "bg": "#fff4dc"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "edges": "block-start",
+              "notch": true,
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "A little room for possibility",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n18"
+                },
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".9rem"
+                  },
+                  "children": [
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": ".7rem"
+                      },
+                      "children": [
+                        {
+                          "type": "stack",
+                          "tokens": {
+                            "gap": "1rem"
+                          },
+                          "children": [
+                            {
+                              "type": "followup",
+                              "role": "success_action",
+                              "label": "Open the resource",
+                              "tokens": {
+                                "radius": ".2rem"
+                              },
+                              "id": "n19",
+                              "hidden": true
+                            },
+                            {
+                              "type": "button",
+                              "role": "close_label",
+                              "label": "Continue browsing",
+                              "action": "close",
+                              "tokens": {
+                                "radius": ".2rem"
+                              },
+                              "id": "n20"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n9"
+        ],
+        "consents": [
+          "n11"
+        ]
+      }
+    ],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

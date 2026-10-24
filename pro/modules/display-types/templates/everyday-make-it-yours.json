@@ -1,0 +1,390 @@
+{
+  "id": "everyday-make-it-yours",
+  "name": "Make it yours",
+  "display_type": "inline",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#f3efe6",
+    "fg": "#2e2d29",
+    "muted": "#2e2d29",
+    "accent": "#2e2d29",
+    "accent-fg": "#fffaf0",
+    "border": "#2e2d29",
+    "input-bg": "transparent",
+    "placeholder": "#2e2d29",
+    "close-bg": "#f3efe6",
+    "close-fg": "#2e2d29",
+    "close-border": "#2e2d29",
+    "font": "'DM Sans', Arial, sans-serif",
+    "heading-font": "'Instrument Serif', Georgia, serif",
+    "heading-weight": "400",
+    "heading-leading": "0.98",
+    "tracking": "-.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "58rem",
+    "shadow": "0 24px 65px -30px rgba(24,30,30,.35)",
+    "close-inset": ".7rem"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "split",
+          "ratio": 0.3,
+          "basis": "19rem",
+          "tokens": {
+            "gap": "0"
+          },
+          "start": [
+            {
+              "type": "media",
+              "tokens": {
+                "pad": "2rem",
+                "radius": "0",
+                "gap": "1.1rem",
+                "muted": "#fff4dc",
+                "bg": "#283d32",
+                "fg": "#fff4dc",
+                "align": "center"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "Monogram studio",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n1"
+                },
+                {
+                  "type": "heading",
+                  "role": "headline",
+                  "text": "Aa",
+                  "tokens": {
+                    "heading-size": "8rem",
+                    "heading-font": "'Instrument Serif', Georgia, serif"
+                  },
+                  "narrow": {
+                    "heading-size": "2.65rem"
+                  },
+                  "id": "n2"
+                },
+                {
+                  "type": "divider",
+                  "id": "n3"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "A personal touch.\nA piece to keep.",
+                  "id": "n4"
+                }
+              ]
+            }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2.5rem",
+                "radius": "0",
+                "gap": "1.1rem"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "Made personal",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n5"
+                },
+                {
+                  "type": "heading",
+                  "role": "headline",
+                  "text": "A little more you.",
+                  "tokens": {
+                    "heading-size": "3.3rem"
+                  },
+                  "narrow": {
+                    "heading-size": "2.65rem"
+                  },
+                  "id": "n6"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "Tell our studio you are interested in personalisation. We’ll use your details to discuss the options.",
+                  "id": "n7"
+                },
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".9rem"
+                  },
+                  "children": [
+                    {
+                      "type": "field",
+                      "name": "name",
+                      "label": "Your name",
+                      "placeholder": "Your name",
+                      "required": true,
+                      "tokens": {
+                        "radius": ".2rem"
+                      },
+                      "id": "n8"
+                    },
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": ".7rem"
+                      },
+                      "children": [
+                        {
+                          "type": "field",
+                          "name": "email",
+                          "label": "Email address",
+                          "placeholder": "you@example.com",
+                          "required": true,
+                          "tokens": {
+                            "radius": ".2rem"
+                          },
+                          "id": "n9"
+                        },
+                        {
+                          "type": "button",
+                          "role": "cta_label",
+                          "label": "Ask about personalisation",
+                          "action": "submit",
+                          "submission": "primary",
+                          "tokens": {
+                            "radius": ".2rem"
+                          },
+                          "id": "n10"
+                        },
+                        {
+                          "type": "consent",
+                          "id": "n19",
+                          "role": "consent_text",
+                          "text": "I agree to receive marketing emails. Unsubscribe anytime.",
+                          "hidden": true
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "role": "fine_print",
+                      "text": "We use these details to respond to your request.",
+                      "tokens": {
+                        "text-size": ".8rem",
+                        "leading": "1.5"
+                      },
+                      "id": "n11"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "split",
+          "ratio": 0.3,
+          "basis": "19rem",
+          "tokens": {
+            "gap": "0"
+          },
+          "start": [
+            {
+              "type": "media",
+              "tokens": {
+                "pad": "2rem",
+                "radius": "0",
+                "gap": "1.1rem",
+                "muted": "#fff4dc",
+                "bg": "#283d32",
+                "fg": "#fff4dc",
+                "align": "center"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "Monogram studio",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n12"
+                },
+                {
+                  "type": "heading",
+                  "role": "headline",
+                  "text": "Aa",
+                  "tokens": {
+                    "heading-size": "8rem",
+                    "heading-font": "'Instrument Serif', Georgia, serif"
+                  },
+                  "narrow": {
+                    "heading-size": "2.65rem"
+                  },
+                  "id": "n13"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "A personal touch.\nA piece to keep.",
+                  "id": "n14"
+                }
+              ]
+            }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2.5rem",
+                "radius": "0",
+                "gap": "1.1rem"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "Made personal",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n15"
+                },
+                {
+                  "type": "heading",
+                  "role": "success_headline",
+                  "text": "Your enquiry is received.",
+                  "tokens": {
+                    "heading-size": "2.7rem"
+                  },
+                  "narrow": {
+                    "heading-size": "2.2rem"
+                  },
+                  "id": "n16"
+                },
+                {
+                  "type": "text",
+                  "role": "success_body",
+                  "text": "Thank you for asking about personalisation. The studio has your request.",
+                  "id": "n17"
+                },
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".9rem"
+                  },
+                  "children": [
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": ".7rem"
+                      },
+                      "children": [
+                        {
+                          "type": "stack",
+                          "tokens": {
+                            "gap": "1rem"
+                          },
+                          "children": [
+                            {
+                              "type": "button",
+                              "role": "close_label",
+                              "label": "Continue browsing",
+                              "action": "close",
+                              "tokens": {
+                                "radius": ".2rem"
+                              },
+                              "id": "n18"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n8",
+          "n9"
+        ],
+        "consents": [
+          "n19"
+        ]
+      }
+    ],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

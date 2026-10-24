@@ -1,0 +1,55 @@
+{
+  "id": "everyday-your-kind-of-weekend",
+  "revision": "0ee8564546056255b91ab2e948d5133414b08ba66b81966db09e4bd2c40f77f2",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex · native WordPress and visual review",
+  "note": "The three short local-interest panels stay horizontal on phones. The newsletter has a specific nearby-events promise.",
+  "at": "2026-10-24T06:21:47.182Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/review.md",
+          "sha256": "f6b502dde0c4c73b459faf3f1a57081ad88a66a77bc19b5a5095f11c7f8a8573"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-your-kind-of-weekend-320.png",
+          "sha256": "9f488720dff5a9c7c660f5193577c9bfb739dd50770a55bafbfe59399fbcf408"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-your-kind-of-weekend-1440.png",
+          "sha256": "1adc83843f243003aee45bc2796b421f50ae4088a34287de8783400866db57d5"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/fidelity.json",
+          "sha256": "358e4290ffc8f1760ac04e1994edfb346f4ef8391aee56aa07bf2c3c173f96c1"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/layout.json",
+          "sha256": "d7b61c2cf2f4caab48c27de857e575e2d6f6629973bf2defca7e3a5589679645"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    }
+  },
+  "record_id": "98c60831ab132a9d176da7db7fb34aa4f5aed8f7d96a1b17113de3ea3be6f86b"
+}

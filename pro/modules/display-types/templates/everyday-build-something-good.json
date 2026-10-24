@@ -1,0 +1,326 @@
+{
+  "id": "everyday-build-something-good",
+  "name": "Build something good",
+  "display_type": "popup",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#183e35",
+    "fg": "#fff7de",
+    "muted": "#fff7de",
+    "accent": "#e4ee87",
+    "accent-fg": "#193d34",
+    "border": "#fff7de",
+    "input-bg": "transparent",
+    "placeholder": "#fff7de",
+    "close-bg": "#183e35",
+    "close-fg": "#fff7de",
+    "close-border": "#fff7de",
+    "font": "'DM Sans', Arial, sans-serif",
+    "heading-font": "'DM Sans', Arial, sans-serif",
+    "heading-weight": "400",
+    "heading-leading": "0.98",
+    "tracking": "-.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "32rem",
+    "shadow": "0 24px 65px -30px rgba(24,30,30,.35)",
+    "close-inset": ".7rem"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "2.2rem",
+            "radius": "0",
+            "gap": "1.1rem"
+          },
+          "narrow": {
+            "pad": "4rem 1.5rem 1.5rem",
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "eyebrow",
+              "role": "eyebrow",
+              "text": "Workbench / early access",
+              "tokens": {
+                "text-size": ".88rem",
+                "tracking": ".1em"
+              },
+              "id": "n1"
+            },
+            {
+              "type": "divider",
+              "id": "n2"
+            },
+            {
+              "type": "heading",
+              "role": "headline",
+              "text": "An idea is\na good start.",
+              "tokens": {
+                "heading-size": "3.7rem",
+                "heading-font": "'DM Sans', Arial, sans-serif",
+                "heading-weight": "700"
+              },
+              "narrow": {
+                "heading-size": "2.65rem"
+              },
+              "id": "n3"
+            },
+            {
+              "type": "text",
+              "role": "body",
+              "text": "A calmer workspace for your next project. Join the early-access list and help shape what comes next.",
+              "id": "n4"
+            },
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "1.2rem",
+                "radius": "0",
+                "gap": "1.1rem",
+                "muted": "#213d32",
+                "bg": "#d9ea9b",
+                "fg": "#213d32"
+              },
+              "narrow": {
+                "pad": "1.2rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "Preview requests close in",
+                  "tokens": {
+                    "text-size": ".88rem",
+                    "tracking": ".1em"
+                  },
+                  "id": "n5"
+                },
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": "1rem",
+                    "align": "center"
+                  },
+                  "children": [
+                    {
+                      "type": "countdown",
+                      "role": "countdown_units",
+                      "layout": "line",
+                      "days_label": "Days",
+                      "hours_label": "Hrs",
+                      "minutes_label": "Mins",
+                      "seconds_label": "Secs",
+                      "tokens": {
+                        "countdown-size": "1.7rem"
+                      },
+                      "narrow": {
+                        "countdown-size": "1.35rem"
+                      },
+                      "id": "n6"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": ".9rem"
+              },
+              "children": [
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".7rem"
+                  },
+                  "children": [
+                    {
+                      "type": "field",
+                      "name": "email",
+                      "label": "Email address",
+                      "placeholder": "you@example.com",
+                      "required": true,
+                      "tokens": {
+                        "radius": ".2rem"
+                      },
+                      "id": "n7"
+                    },
+                    {
+                      "type": "button",
+                      "role": "cta_label",
+                      "label": "Request early access",
+                      "action": "submit",
+                      "submission": "primary",
+                      "tokens": {
+                        "radius": ".2rem"
+                      },
+                      "id": "n8"
+                    }
+                  ]
+                },
+                {
+                  "type": "consent",
+                  "role": "consent_text",
+                  "text": "I agree to receive marketing emails. Unsubscribe anytime.",
+                  "hidden": true,
+                  "id": "n9"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "role": "fine_print",
+              "text": "An invitation request, not a confirmed account.",
+              "tokens": {
+                "text-size": ".8rem",
+                "leading": "1.5"
+              },
+              "id": "n10"
+            }
+          ]
+        }
+      },
+      {
+        "id": "thanks",
+        "name": "Acknowledgement",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "2.2rem",
+            "radius": "0",
+            "gap": "1.1rem"
+          },
+          "narrow": {
+            "pad": "4rem 1.5rem 1.5rem",
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "eyebrow",
+              "role": "eyebrow",
+              "text": "Workbench / early access",
+              "tokens": {
+                "text-size": ".88rem",
+                "tracking": ".1em"
+              },
+              "id": "n11"
+            },
+            {
+              "type": "heading",
+              "role": "success_headline",
+              "text": "A good place to begin.",
+              "tokens": {
+                "heading-size": "2.7rem",
+                "heading-font": "'DM Sans', Arial, sans-serif",
+                "heading-weight": "700"
+              },
+              "narrow": {
+                "heading-size": "2.2rem"
+              },
+              "id": "n12"
+            },
+            {
+              "type": "text",
+              "role": "success_body",
+              "text": "Your early-access request is received. We’ll email you when access opens.",
+              "id": "n13"
+            },
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": ".9rem"
+              },
+              "children": [
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".7rem"
+                  },
+                  "children": [
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": "1rem"
+                      },
+                      "children": [
+                        {
+                          "type": "button",
+                          "role": "close_label",
+                          "label": "Continue browsing",
+                          "action": "close",
+                          "tokens": {
+                            "radius": ".2rem"
+                          },
+                          "id": "n14"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "role": "fine_print",
+              "text": "An invitation request, not a confirmed account.",
+              "tokens": {
+                "text-size": ".8rem",
+                "leading": "1.5"
+              },
+              "id": "n15"
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n7"
+        ],
+        "consents": [
+          "n9"
+        ]
+      }
+    ],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}

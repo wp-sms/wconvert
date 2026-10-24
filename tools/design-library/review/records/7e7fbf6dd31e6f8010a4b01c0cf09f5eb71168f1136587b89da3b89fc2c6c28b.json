@@ -1,0 +1,55 @@
+{
+  "id": "everyday-the-long-weekend-pass",
+  "revision": "3f08b1a70bc1a6a3dfca1c48cb67a94892819bbd3832a58896df977d59ac3061",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex · native WordPress and visual review",
+  "note": "The two-part pass retains its native ticket edge. Its wording promises a guide after a request, not a booking.",
+  "at": "2026-10-24T06:21:47.182Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/review.md",
+          "sha256": "f6b502dde0c4c73b459faf3f1a57081ad88a66a77bc19b5a5095f11c7f8a8573"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-the-long-weekend-pass-320.png",
+          "sha256": "89f48395fe301e45674bd95abdaf26ea61c719c1b191e3c9b79ffbe524bbe1c4"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-the-long-weekend-pass-1440.png",
+          "sha256": "4d58a9b05535f3bd400d6e0ee15939983dfef55f1fee0513b22227a8a10a1dec"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/fidelity.json",
+          "sha256": "358e4290ffc8f1760ac04e1994edfb346f4ef8391aee56aa07bf2c3c173f96c1"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/layout.json",
+          "sha256": "d7b61c2cf2f4caab48c27de857e575e2d6f6629973bf2defca7e3a5589679645"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    }
+  },
+  "record_id": "7e7fbf6dd31e6f8010a4b01c0cf09f5eb71168f1136587b89da3b89fc2c6c28b"
+}
