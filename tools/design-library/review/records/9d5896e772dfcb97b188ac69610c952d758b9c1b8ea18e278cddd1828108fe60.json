@@ -1,0 +1,55 @@
+{
+  "id": "campaign-tech-price-sheet",
+  "revision": "803b919335eef0360a5f573c282284a0fddbebdf4e41aa81cabc13a63e0dee9a",
+  "base_id": "49c2158c08b0237f716015182278360c416737923590ce0193377f2d7d4e751b",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **32 · Tech Price Sheet** — Keyboard crop, split price panel and lavender discount strip retain the reference. The previous price is labelled WAS rather than struck through; native terms are longer. Form fields have readable contrast.",
+  "at": "2026-10-24T15:58:06.153Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/32-1440-wordpress.png",
+          "sha256": "4dde4533abf59b5fe560dee2806c358d327e0efb19a4f52ef3f1313eecf2e464"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/32-390-wordpress.png",
+          "sha256": "42be9d982d9ba126cb549117158fdd2bb4e7125c6527bdb8e78a7d59d1b4ad1f"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "9d5896e772dfcb97b188ac69610c952d758b9c1b8ea18e278cddd1828108fe60"
+}

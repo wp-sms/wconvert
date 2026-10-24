@@ -79,7 +79,8 @@
                       "id": "n4",
                       "role": "code_value",
                       "text": "WELCOME10",
-                      "copy": false
+                      "copy": false,
+                      "appearance": "plain"
                     },
                     {
                       "type": "eyebrow",
@@ -107,12 +108,12 @@
                 }
               ],
               "tokens": {
-                "pad": "25px",
+                "pad": "24px",
                 "gap": "16px",
                 "radius": "0"
               },
               "narrow": {
-                "pad": "24px"
+                "pad": "24px 24px 0"
               }
             }
           ],
@@ -146,7 +147,7 @@
                   "type": "text",
                   "id": "n7",
                   "role": "body",
-                  "text": "A simple welcome. Enter the code below at checkout."
+                  "text": "Save 10% on your first order of selected items."
                 },
                 {
                   "type": "button",
@@ -171,17 +172,17 @@
                 }
               ],
               "tokens": {
-                "pad": "56px 32px 28px 32px",
+                "pad": "40px 28px 28px 0",
                 "gap": "16px",
                 "radius": "0"
               },
               "narrow": {
-                "pad": "56px 23px 25px 23px"
+                "pad": "28px 24px"
               }
             }
           ],
-          "ratio": 0.5,
-          "basis": "15rem",
+          "ratio": 0.4,
+          "basis": "0px",
           "narrow_layout": "stack",
           "tokens": {
             "gap": "0"

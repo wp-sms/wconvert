@@ -8,6 +8,7 @@ import type { Template } from '@renderer/types';
 import { treeFixture } from './support/journey';
 import { DecorationsSettings } from '../../resources/admin/src/builder/DecorationsSettings';
 import { GoogleFontSettings } from '../../resources/admin/src/settings-page/GoogleFontSettings';
+import { FontNotice } from '../../resources/admin/src/builder/FontNotice';
 import { withGoogleFont } from '../../resources/admin/src/builder/googleFonts';
 
 const request = vi.hoisted(() => vi.fn());
@@ -129,4 +130,15 @@ it('preserves ticket sides and stops standalone image motion on close', () => {
   expect(mounted.root?.dataset.motion).toBe('running');
   mounted.close();
   expect(mounted.root?.dataset.motion).toBe('paused');
+});
+
+
+it('does not warn about bundled campaign faces when Google delivery is disabled', async () => {
+  request.mockResolvedValue({ fonts: [], bundled_fonts: ['DM Sans', 'Bebas Neue', 'Cormorant Garamond'], google_fonts_enabled: false });
+  const template = fixture();
+  const view = renderReact(<FontNotice template={{ ...template, tokens: { 'heading-font': "'Bebas Neue', sans-serif" }, tree: { ...template.tree, fonts: [{ family: 'Bebas Neue', faces: [{ weight: 400 }] }] } }} />);
+  await waitFor(() => expect(request).toHaveBeenCalled());
+  expect(screen.queryByText(/A substitute font is shown/)).toBeNull();
+  view.rerender(<FontNotice template={template} />);
+  expect(await screen.findByText(/A substitute font is shown/)).toHaveTextContent('Creepster');
 });

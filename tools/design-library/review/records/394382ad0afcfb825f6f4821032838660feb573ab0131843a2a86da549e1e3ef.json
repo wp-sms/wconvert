@@ -1,0 +1,55 @@
+{
+  "id": "campaign-finish-line-countdown",
+  "revision": "a0cdee3a09e37de425180f0ab085fbdb128909faede382ec449be5e1ea0e3b6e",
+  "base_id": "736df5726f8fe82ac3eaec2b687ea37ae8a99f356a3b46361a35f5a94bf18500",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **38 · Finish-Line Countdown** — Sportswear image and timer rail retain the reference; the rail moves below content on phone. Actual countdown values follow the configured deadline. Form remains readable.",
+  "at": "2026-10-24T15:58:06.153Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/38-1440-wordpress.png",
+          "sha256": "08059b60ed9f167d405c6241a474f0bd77907874c030c9471c16331cfc16aab3"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/38-390-wordpress.png",
+          "sha256": "1bfcf57646c3ced12684d6b1e5c21087709519e18605c0fa099172363775a200"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "394382ad0afcfb825f6f4821032838660feb573ab0131843a2a86da549e1e3ef"
+}

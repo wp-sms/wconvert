@@ -1,0 +1,47 @@
+{
+  "id": "tutoring-introduction",
+  "revision": "9c0552342f9cd0c5f22a2cfa48d5570e38f2c9f595f83a2b3a2dae6bdf78c91d",
+  "base_id": "476942f3f3cff49577ed813e34f3596a696f14af4a5619c9406aec21e0bdaa6b",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/tutoring-introduction-320.png",
+          "sha256": "9e57af66f601c16fde8783fc17776aa2b736b0ef7c5ef18f3cefc7244733237b"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/tutoring-introduction-1440.png",
+          "sha256": "ebeadda84db0ba8cd6e0489a2302aa60491333ed848cc53b2355c800591873fb"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "fe7ca3d4eabb920fbc58274964152a4a658b3c9eb59999a82e63a7f3ee8a53fc"
+}

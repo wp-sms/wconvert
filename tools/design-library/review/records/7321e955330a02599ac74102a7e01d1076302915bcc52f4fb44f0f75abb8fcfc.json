@@ -1,0 +1,55 @@
+{
+  "id": "campaign-sweet-edit",
+  "revision": "00100c96162adfaeb5591aa945df9f7eb8eb971d5e233591cc84a5f0c8d7d984",
+  "base_id": "f5e9b82bda48f72998470a014f0c2fdc4f403fbe66c62bf131ffd1cfcdc0594d",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **21 · Sweet Edit** — Pink percentage badge stays beside the headline on phone, with a fluid font size preventing the percentage from breaking over two lines. Native close placement differs from the prototype; email capture expands the bar vertically.",
+  "at": "2026-10-24T15:58:06.156Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/21-1440-wordpress.png",
+          "sha256": "22b5e799d63ce20364c01328982195f2fb98b1bd86185fe25d3df7de4d427e60"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/21-390-wordpress.png",
+          "sha256": "59d0efa1dddddf2b6daa4a5d9c1ba40b391ebacfb27c3110d192861dda37d77a"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "7321e955330a02599ac74102a7e01d1076302915bcc52f4fb44f0f75abb8fcfc"
+}

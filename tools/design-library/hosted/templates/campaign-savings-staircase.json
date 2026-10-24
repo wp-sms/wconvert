@@ -43,13 +43,23 @@
           "type": "panel",
           "children": [
             {
-              "type": "eyebrow",
-              "id": "n1",
-              "role": "eyebrow",
-              "text": "BLACK FRIDAY / TIERED SPEND AND SAVE",
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "role": "eyebrow",
+                  "text": "BLACK FRIDAY / TIERED SPEND AND SAVE",
+                  "tokens": {
+                    "text-size": "9px",
+                    "tracking": ".1em"
+                  }
+                }
+              ],
               "tokens": {
-                "text-size": "9px",
-                "tracking": ".1em"
+                "pad": "0 32px 0 0",
+                "gap": "0",
+                "radius": "0"
               }
             },
             {
@@ -137,7 +147,8 @@
                                     "font": "\"DM Sans\", Arial, sans-serif",
                                     "text-size": "65px",
                                     "leading": ".95",
-                                    "tracking": "-.04em"
+                                    "tracking": "-.04em",
+                                    "text-weight": "950"
                                   },
                                   "emphasis": "15%",
                                   "narrow": {
@@ -164,7 +175,7 @@
                         "muted": "fg"
                       },
                       "narrow": {
-                        "pad": "24px"
+                        "pad": "10px 10px 18px"
                       }
                     }
                   ],
@@ -225,7 +236,8 @@
                                     "font": "\"DM Sans\", Arial, sans-serif",
                                     "text-size": "65px",
                                     "leading": ".95",
-                                    "tracking": "-.04em"
+                                    "tracking": "-.04em",
+                                    "text-weight": "950"
                                   },
                                   "emphasis": "20%",
                                   "narrow": {
@@ -252,7 +264,7 @@
                         "muted": "fg"
                       },
                       "narrow": {
-                        "pad": "24px"
+                        "pad": "10px 10px 18px"
                       }
                     }
                   ],
@@ -314,7 +326,8 @@
                                     "text-size": "65px",
                                     "leading": ".95",
                                     "tracking": "-.04em",
-                                    "fg": "accent-fg"
+                                    "fg": "accent-fg",
+                                    "text-weight": "950"
                                   },
                                   "emphasis": "25%",
                                   "narrow": {
@@ -342,7 +355,7 @@
                         "muted": "accent-fg"
                       },
                       "narrow": {
-                        "pad": "24px"
+                        "pad": "10px 10px 18px"
                       }
                     }
                   ],
@@ -396,12 +409,12 @@
             }
           ],
           "tokens": {
-            "pad": "56px 30px 27px 30px",
+            "pad": "28px 28px 26px",
             "gap": "22px",
             "radius": "0"
           },
           "narrow": {
-            "pad": "56px 22px 24px 22px"
+            "pad": "28px 24px 24px"
           }
         }
       }

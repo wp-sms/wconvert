@@ -1,0 +1,47 @@
+{
+  "id": "winter-still-time",
+  "revision": "91ee554fbe94a24799f1239bddfc59ab9d84b0274d45b48b080e61e74d7f4146",
+  "base_id": "f2769fa9e1df65698ed69c84774d836d383e0b305e1ccdbeae0c732813942d0c",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-6.jpg",
+          "sha256": "fb4e2a22d042a10b7b0e78f34234df8ab0fe011d4c37628b69d624d8657173bd"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-6.jpg",
+          "sha256": "e2d62cc963c0936df1151861c6375611960cc7548cd0ef97f7a04055b87542d2"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "0838a8aa9e2d8c6de8bba495bd5eb546ff2e96bcf09f5f30622832e50b0c9767"
+}

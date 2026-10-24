@@ -191,7 +191,8 @@
       "roles": [
         "headline",
         "success_headline",
-        "wordmark"
+        "wordmark",
+        "offer_amount"
       ],
       "choices": {
         "level": [
@@ -288,7 +289,8 @@
         "leading",
         "fg",
         "muted",
-        "align"
+        "align",
+        "text-weight"
       ]
     },
     "badge": {
@@ -435,12 +437,22 @@
       "params": [
         "hidden",
         "tokens",
-        "narrow"
+        "narrow",
+        "pattern"
       ],
       "roles": [],
       "style_tokens": [
         "border"
-      ]
+      ],
+      "choices": {
+        "pattern": [
+          "solid",
+          "dashed"
+        ]
+      },
+      "defaults": {
+        "pattern": "solid"
+      }
     },
     "countdown": {
       "content": [
@@ -508,7 +520,8 @@
         "tokens",
         "narrow",
         "copy",
-        "layout"
+        "layout",
+        "appearance"
       ],
       "roles": [
         "code_value"
@@ -520,7 +533,8 @@
         "radius",
         "accent",
         "accent-fg",
-        "gap"
+        "gap",
+        "align"
       ],
       "choices": {
         "copy": [
@@ -530,11 +544,16 @@
         "layout": [
           "stack",
           "inline"
+        ],
+        "appearance": [
+          "boxed",
+          "plain"
         ]
       },
       "defaults": {
         "layout": "stack",
-        "copy": "false"
+        "copy": "false",
+        "appearance": "boxed"
       }
     },
     "field": {
@@ -806,10 +825,12 @@
     "bg-size": "cover",
     "countdown-size": "1.35rem",
     "close-inset": ".5rem",
-    "placeholder": "#757575"
+    "placeholder": "#757575",
+    "text-weight": "400"
   },
   "roles": [
     "headline",
+    "offer_amount",
     "body",
     "fine_print",
     "eyebrow",
@@ -934,6 +955,13 @@
       "cover",
       "contain",
       "100% auto"
+    ],
+    "text-weight": [
+      "400",
+      "600",
+      "700",
+      "900",
+      "950"
     ]
   },
   "facets": {
@@ -973,7 +1001,8 @@
       "font",
       "text-size",
       "leading",
-      "countdown-size"
+      "countdown-size",
+      "text-weight"
     ],
     "space": [
       "width",

@@ -57,10 +57,15 @@ export function decorate(parent: HTMLElement, group?: Decorations): void {
       if (item.kind === 'halo') path.setAttribute('opacity', '.2');
       svg.append(path);
     });
-    if (item.kind === 'eyes') for (const cx of [25, 75]) {
-      const pupil = document.createElementNS(svg.namespaceURI, 'ellipse');
-      pupil.setAttribute('cx', String(cx)); pupil.setAttribute('cy', '30');
-      pupil.setAttribute('rx', '4'); pupil.setAttribute('ry', '10'); pupil.setAttribute('fill', '#111'); svg.append(pupil);
+    if (item.kind === 'eyes') {
+      for (const cx of [25, 75]) {
+        const pupil = document.createElementNS(svg.namespaceURI, 'ellipse');
+        for (const [key, value] of Object.entries({ cx, cy: 30,
+          rx: 4, ry: 10, fill: '#111' })) {
+          pupil.setAttribute(key, String(value));
+        }
+        svg.append(pupil);
+      }
     }
     motion.append(svg); box.append(motion); layer.append(box);
   }

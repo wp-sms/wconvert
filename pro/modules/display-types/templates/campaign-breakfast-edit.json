@@ -125,12 +125,12 @@
                 }
               ],
               "tokens": {
-                "pad": "56px 25px 25px 25px",
+                "pad": "25px",
                 "gap": "16px",
                 "radius": "0"
               },
               "narrow": {
-                "pad": "56px 23px 25px 23px"
+                "pad": "25px"
               }
             }
           ],

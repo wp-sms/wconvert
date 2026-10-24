@@ -46,13 +46,23 @@
               "type": "panel",
               "children": [
                 {
-                  "type": "eyebrow",
-                  "id": "n1",
-                  "role": "eyebrow",
-                  "text": "BLACK FRIDAY / PUBLIC COUPON OFFER",
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n1",
+                      "role": "eyebrow",
+                      "text": "BLACK FRIDAY / PUBLIC COUPON OFFER",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".1em"
+                      }
+                    }
+                  ],
                   "tokens": {
-                    "text-size": "9px",
-                    "tracking": ".1em"
+                    "pad": "0 32px 0 0",
+                    "gap": "0",
+                    "radius": "0"
                   }
                 },
                 {
@@ -101,11 +111,12 @@
                         "text-size": "124px",
                         "leading": ".95",
                         "tracking": "-.04em",
-                        "fg": "input-bg"
+                        "fg": "input-bg",
+                        "text-weight": "950"
                       },
                       "emphasis": "35",
                       "narrow": {
-                        "text-size": "64px"
+                        "text-size": "88px"
                       }
                     },
                     {
@@ -118,7 +129,8 @@
                         "text-size": "47px",
                         "leading": ".95",
                         "tracking": "-.04em",
-                        "fg": "input-bg"
+                        "fg": "input-bg",
+                        "text-weight": "950"
                       },
                       "emphasis": "%",
                       "narrow": {
@@ -141,85 +153,87 @@
                 }
               ],
               "tokens": {
-                "pad": "56px 32px 32px 32px",
+                "pad": "36px 32px 28px",
                 "gap": "24px",
                 "radius": "0"
               },
               "narrow": {
-                "pad": "56px 22px 24px 22px"
+                "pad": "32px 24px"
               }
             }
           ],
           "end": [
             {
-              "type": "panel",
+              "type": "media",
               "children": [
                 {
-                  "type": "eyebrow",
-                  "id": "n8",
-                  "role": "eyebrow",
-                  "text": "YOUR WEEKEND CODE",
-                  "tokens": {
-                    "text-size": "9px",
-                    "tracking": ".08em"
-                  }
-                },
-                {
-                  "type": "code",
-                  "id": "n5",
-                  "role": "code_value",
-                  "text": "FRIDAY35",
-                  "copy": false
-                },
-                {
-                  "type": "panel",
-                  "children": [],
-                  "min": "30px",
-                  "tokens": {
-                    "pad": "0",
-                    "radius": "0"
-                  },
-                  "decorations": {
-                    "label": "Decorative barcode",
-                    "hidden": false,
-                    "items": [
-                      {
-                        "kind": "barcode",
-                        "x": 50,
-                        "y": 50,
-                        "size": 160,
-                        "color": "fg",
-                        "motion": "none"
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n8",
+                      "role": "eyebrow",
+                      "text": "YOUR WEEKEND CODE",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".08em"
                       }
-                    ]
-                  }
-                },
-                {
-                  "type": "button",
-                  "id": "n6",
-                  "role": "cta_label",
-                  "label": "Shop with this code",
-                  "action": "link",
-                  "icon": "arrow",
+                    },
+                    {
+                      "type": "code",
+                      "id": "n5",
+                      "role": "code_value",
+                      "text": "FRIDAY35",
+                      "copy": false,
+                      "appearance": "plain",
+                      "tokens": {
+                        "align": "start"
+                      }
+                    },
+                    {
+                      "type": "panel",
+                      "children": [],
+                      "min": "23px",
+                      "tokens": {
+                        "pad": "0",
+                        "radius": "0",
+                        "bg-image": "repeating-linear-gradient(90deg,currentColor 0 2px,transparent 2px 5px,currentColor 5px 6px,transparent 6px 9px,currentColor 9px 13px,transparent 13px 15px)"
+                      },
+                      "narrow": {
+                        "pad": "0"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "id": "n6",
+                      "role": "cta_label",
+                      "label": "Shop with this code",
+                      "action": "link",
+                      "icon": "arrow",
+                      "tokens": {
+                        "text-size": "14px",
+                        "radius": "0px",
+                        "accent": "border",
+                        "accent-fg": "input-bg"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n9",
+                      "role": "body",
+                      "text": "Enter at checkout.\nSelected items only.",
+                      "tokens": {
+                        "text-size": "14px"
+                      }
+                    }
+                  ],
                   "tokens": {
-                    "text-size": "14px",
-                    "radius": "0px",
-                    "accent": "border",
-                    "accent-fg": "input-bg"
-                  }
-                },
-                {
-                  "type": "text",
-                  "id": "n9",
-                  "role": "body",
-                  "text": "Enter at checkout.\nSelected items only.",
-                  "tokens": {
-                    "text-size": "14px"
+                    "gap": "26px"
                   }
                 }
               ],
               "tokens": {
-                "pad": "50px 26px 32px",
+                "pad": "50px 26px 30px",
                 "gap": "26px",
                 "radius": "0",
                 "bg": "input-bg",
@@ -227,10 +241,8 @@
                 "muted": "border"
               },
               "narrow": {
-                "pad": "42px 22px 24px"
-              },
-              "notch": true,
-              "notch_position": "sides"
+                "pad": "28px 24px"
+              }
             }
           ],
           "ratio": 0.58,

@@ -71,7 +71,7 @@
                 }
               ],
               "ratio": 0.5,
-              "basis": "12rem",
+              "basis": "0px",
               "narrow_layout": "stack",
               "tokens": {
                 "gap": "0"
@@ -120,15 +120,23 @@
                   "text": "Save on selected gaming and desk accessories."
                 },
                 {
-                  "type": "button",
-                  "id": "n5",
-                  "role": "cta_label",
-                  "label": "Shop gaming accessories",
-                  "action": "link",
-                  "icon": "arrow",
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "button",
+                      "id": "n5",
+                      "role": "cta_label",
+                      "label": "Shop gaming accessories",
+                      "action": "link",
+                      "icon": "arrow",
+                      "tokens": {
+                        "text-size": "14px",
+                        "radius": "0px"
+                      }
+                    }
+                  ],
                   "tokens": {
-                    "text-size": "14px",
-                    "radius": "0px"
+                    "gap": "12px"
                   }
                 }
               ],
@@ -148,13 +156,13 @@
             }
           ],
           "tokens": {
-            "pad": "38px 30px 26px",
-            "gap": "22px",
-            "radius": "0",
+            "pad": "26px 28px 20px",
+            "gap": "18px",
+            "radius": "5px",
             "border": "fg"
           },
           "narrow": {
-            "pad": "24px"
+            "pad": "44px 24px 24px"
           },
           "edges": "all"
         }

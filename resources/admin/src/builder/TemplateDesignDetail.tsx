@@ -15,6 +15,7 @@ import { PreviewFrame } from '../discovery/PreviewFrame';
 import { actChangeOf, asConverted, conversionOf, conversionWords, convertedDesign, refusalFor, type Fit } from './Gallery';
 import { CaptureChangeDialog } from './CaptureChangeDialog';
 import { convertCapture, type CaptureTarget } from './structure/captureConversion';
+import { whatNeedsOfferAmount } from './structure/problems';
 import { dropsFieldMappings } from './destinations';
 import type { PreparedTemplate, TemplateIndexEntry, TemplateLabelsWithFacets } from '../templates/api';
 import type { Template } from '@renderer/types';
@@ -213,6 +214,7 @@ export function TemplateDesignDetail({
               </fieldset>
             )}
             <FactList facts={facts} />
+            {mode === 'keep' && template && whatNeedsOfferAmount(template).map(problem => <p key={problem.said} role="status" className="text-note text-warning">{problem.said}</p>)}
             {mode === 'keep' && candidate?.value?.transfer !== undefined && (candidate.value.transfer.unplaced > 0 || candidate.value.transfer.unverified > 0) && (
               <div role="status" className="rounded-md border border-warning p-3 text-note">
                 {candidate.value.transfer.unplaced > 0 && <p className="m-0">{sprintf(/* translators: %d: how many of the campaign's pictures cannot be moved into the new design. */ _n('%d picture has no clear matching place in this design and will not carry over. Check the preview before applying.', '%d pictures have no clear matching place in this design and will not carry over. Check the preview before applying.', candidate.value.transfer.unplaced, 'wconvert'), candidate.value.transfer.unplaced)}</p>}

@@ -23,6 +23,13 @@ const converted = (result: ReturnType<typeof convertCapture>): Conversion => {
 const treeOf = (result: Conversion) => (result.config.template as Template).tree;
 
 describe('adding a form to an offer', () => {
+  it('keeps the coupon amount on the offer and uses readable acknowledgement type', () => {
+    const template = JSON.parse(readFileSync(resolve(import.meta.dirname, '../../pro/modules/display-types/templates/campaign-extra-ten-coupon.json'), 'utf8')) as Template;
+    const result = converted(convertCapture({ config: { template_id: 'campaign-extra-ten-coupon', template }, goal: 'promote_offer' }, { capture: 'email' }, { goals: GOALS }));
+    expect(ofType(treeOf(result), 0, 'heading')).toMatchObject([{ role: 'offer_amount', text: '10%' }]);
+    expect(ofType(treeOf(result), 1, 'heading')).toMatchObject([{ role: 'success_headline', text: 'Here’s your code', tokens: { 'heading-size': '32px' }, narrow: { 'heading-size': '32px' } }]);
+  });
+
   it('turns the offer into the form and moves the code and link to a new thank-you screen (A1)', () => {
     const result = converted(convertCapture({ config: offer('offer-receipt'), goal: 'promote_offer' }, { capture: 'email' }, { goals: GOALS }));
     const tree = treeOf(result);

@@ -30,6 +30,18 @@ add_action('template_redirect', static function (): void {
         }
         $draft = $container->get(\WConvert\Playbook\Prefill::class)->fromPlaybook($id);
         if (!$draft) wp_die('Missing setup.');
+        if (isset($_GET['conversion_source'])) {
+            wp_set_current_user((int) username_exists('admin'));
+            $response = rest_do_request(new WP_REST_Request('GET', '/wconvert/v1/goals'));
+            wp_send_json(['draft' => $draft, 'goals' => $response->get_data()]);
+        }
+        if (isset($_GET['capture']) && $_GET['capture'] === 'email') {
+            $converted = json_decode((string) file_get_contents(WCONVERT_DIR . 'tools/design-library/out/wordpress-form-variants.json'), true);
+            if (!isset($converted[$id]['config'])) wp_die('Missing reviewed form variant.');
+            $draft['config'] = $converted[$id]['config'];
+            $draft['goal'] = $converted[$id]['goal'];
+        }
+
         $resources = [
             'writing-checklist' => ['Your seven-point writing checklist', '<ol><li>State your point in one sentence.</li><li>Give the reader a reason to continue.</li><li>Order the argument.</li><li>Support claims with sources.</li><li>Remove repetition.</li><li>Read aloud.</li><li>End with a useful next action.</li></ol>'],
             'reading-notes-guide' => ['Keep more of what you read', '<ol><li>Choose one question before reading.</li><li>Mark passages that answer it.</li><li>Summarise one idea in your own words.</li><li>Link it to something you know.</li><li>Return to the note next week.</li></ol>'],
@@ -68,9 +80,23 @@ add_action('template_redirect', static function (): void {
             $config['destinations'] = [$destination->id];
             update_option('wconvert_collection_review_outbox', [], false);
         }
-        $config['template'] = \WConvert\Template\TemplateTree::rewrittenIn(['template' => $config['template']], static function (array $node) use ($url): array {
+        // Visual fidelity uses the approved fictional code as explicit local
+        // fixture input; new setups still require the merchant's real code.
+        // Visitor-journey checks retain REVIEW10 and their existing assertions.
+        $visualCodes = [];
+        if (isset($_GET['visual'])) {
+            $sample = $container->get(\WConvert\Template\TemplateLibrary::class)->find($config['template_id'] ?? '');
+            \WConvert\Template\TemplateTree::rewrittenIn(['template' => $sample ?? []], static function (array $node) use (&$visualCodes): array {
+                if (($node['type'] ?? '') === 'code' && is_string($node['text'] ?? null)) $visualCodes[] = $node['text'];
+                return $node;
+            });
+        }
+        $config['template'] = \WConvert\Template\TemplateTree::rewrittenIn(['template' => $config['template']], static function (array $node) use ($url, &$visualCodes): array {
             if (($node['type'] ?? '') === 'button' && ($node['action'] ?? '') === 'link') $node['href'] = $url;
-            if (($node['type'] ?? '') === 'code') $node['text'] = 'REVIEW10';
+            if (($node['type'] ?? '') === 'code') {
+                if (!isset($_GET['visual'])) $node['text'] = 'REVIEW10';
+                elseif ($visualCodes !== []) $node['text'] = array_shift($visualCodes);
+            }
             // Exercise the native resource action after the merchant supplies its URL.
             if (($node['type'] ?? '') === 'followup') { $node['href'] = $url; $node['hidden'] = false; }
             return $node;

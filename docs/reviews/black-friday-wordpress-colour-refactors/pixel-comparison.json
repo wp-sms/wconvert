@@ -1,0 +1,454 @@
+{
+  "reviewed": 28,
+  "pixel_identical": 23,
+  "comparisons": [
+    {
+      "id": "03",
+      "width": 1440,
+      "before": [
+        720,
+        408
+      ],
+      "after": [
+        720,
+        408
+      ],
+      "identical": true,
+      "kind": "black-friday-wordpress",
+      "before_sha256": "c35aaf8e8ed209279b31983a222b862f7d09036941e02ee4881ef26841494d6f",
+      "after_sha256": "c35aaf8e8ed209279b31983a222b862f7d09036941e02ee4881ef26841494d6f"
+    },
+    {
+      "id": "06",
+      "width": 1440,
+      "before": [
+        720,
+        414
+      ],
+      "after": [
+        720,
+        414
+      ],
+      "identical": true,
+      "kind": "black-friday-wordpress",
+      "before_sha256": "e6b22270b83d70459f08c4f79313de022d7ea34a01490cecb27a9bd880840602",
+      "after_sha256": "e6b22270b83d70459f08c4f79313de022d7ea34a01490cecb27a9bd880840602"
+    },
+    {
+      "id": "10",
+      "width": 1440,
+      "before": [
+        720,
+        394
+      ],
+      "after": [
+        720,
+        394
+      ],
+      "identical": true,
+      "kind": "black-friday-wordpress",
+      "before_sha256": "ae5df0bdfaad0e01492ec4f51a3cc04d9f002dcef41e87713403f01cf7556fa7",
+      "after_sha256": "ae5df0bdfaad0e01492ec4f51a3cc04d9f002dcef41e87713403f01cf7556fa7"
+    },
+    {
+      "id": "11",
+      "width": 1440,
+      "before": [
+        720,
+        416
+      ],
+      "after": [
+        720,
+        416
+      ],
+      "identical": true,
+      "kind": "black-friday-wordpress",
+      "before_sha256": "011b24741db942da91190d806424b4a1e750303a5304d6a4714c89597af42aa7",
+      "after_sha256": "011b24741db942da91190d806424b4a1e750303a5304d6a4714c89597af42aa7"
+    },
+    {
+      "id": "16",
+      "width": 1440,
+      "before": [
+        720,
+        470
+      ],
+      "after": [
+        720,
+        470
+      ],
+      "identical": true,
+      "kind": "black-friday-wordpress",
+      "before_sha256": "f6daa0d9997bdcc36f15d3f42dc519630fb483064735d67cf5b90c09081eac10",
+      "after_sha256": "f6daa0d9997bdcc36f15d3f42dc519630fb483064735d67cf5b90c09081eac10"
+    },
+    {
+      "id": "19",
+      "width": 1440,
+      "before": [
+        600,
+        566
+      ],
+      "after": [
+        600,
+        566
+      ],
+      "identical": false,
+      "kind": "black-friday-wordpress",
+      "before_sha256": "ec049af8aade8f76f74558494b6e059689184cb5c719d3a268d8b11b2f33beb8",
+      "after_sha256": "30ff9434de9395c37329afb0656f365422702977b845c076e33ee00784cb31fa"
+    },
+    {
+      "id": "47",
+      "width": 1440,
+      "before": [
+        930,
+        169
+      ],
+      "after": [
+        930,
+        169
+      ],
+      "identical": true,
+      "kind": "black-friday-wordpress",
+      "before_sha256": "fa5fab89b55dd66045cd02f8a486587f7447b185e98fa97b9efedbd78a2babbb",
+      "after_sha256": "fa5fab89b55dd66045cd02f8a486587f7447b185e98fa97b9efedbd78a2babbb"
+    },
+    {
+      "id": "03",
+      "width": 390,
+      "before": [
+        358,
+        764
+      ],
+      "after": [
+        358,
+        764
+      ],
+      "identical": true,
+      "kind": "black-friday-wordpress",
+      "before_sha256": "bf94a1744364ae1c3161aa08cfc10e207a8f427f3398fe281445d7cead32dd14",
+      "after_sha256": "bf94a1744364ae1c3161aa08cfc10e207a8f427f3398fe281445d7cead32dd14"
+    },
+    {
+      "id": "06",
+      "width": 390,
+      "before": [
+        358,
+        594
+      ],
+      "after": [
+        358,
+        594
+      ],
+      "identical": true,
+      "kind": "black-friday-wordpress",
+      "before_sha256": "ca1a7a418debdf3056b9291327a8bbb4c9d43c50be13502443be30a23cdcdc4b",
+      "after_sha256": "ca1a7a418debdf3056b9291327a8bbb4c9d43c50be13502443be30a23cdcdc4b"
+    },
+    {
+      "id": "10",
+      "width": 390,
+      "before": [
+        358,
+        710
+      ],
+      "after": [
+        358,
+        710
+      ],
+      "identical": true,
+      "kind": "black-friday-wordpress",
+      "before_sha256": "6def3710ef45c2a2e872bd04a8fcf0a7f254c42a79a9947a3cfdad33d97b892e",
+      "after_sha256": "6def3710ef45c2a2e872bd04a8fcf0a7f254c42a79a9947a3cfdad33d97b892e"
+    },
+    {
+      "id": "11",
+      "width": 390,
+      "before": [
+        358,
+        596
+      ],
+      "after": [
+        358,
+        596
+      ],
+      "identical": true,
+      "kind": "black-friday-wordpress",
+      "before_sha256": "63b0f60ffb69ce6d70228119ed6c4240508333ebc1ed663225c89a3de6f55384",
+      "after_sha256": "63b0f60ffb69ce6d70228119ed6c4240508333ebc1ed663225c89a3de6f55384"
+    },
+    {
+      "id": "16",
+      "width": 390,
+      "before": [
+        358,
+        622
+      ],
+      "after": [
+        358,
+        622
+      ],
+      "identical": true,
+      "kind": "black-friday-wordpress",
+      "before_sha256": "9cd2bf3db703dba969e022798b69c63c45ad1b3496b7bd1a5bdba436224fd5a0",
+      "after_sha256": "9cd2bf3db703dba969e022798b69c63c45ad1b3496b7bd1a5bdba436224fd5a0"
+    },
+    {
+      "id": "19",
+      "width": 390,
+      "before": [
+        358,
+        574
+      ],
+      "after": [
+        358,
+        574
+      ],
+      "identical": false,
+      "kind": "black-friday-wordpress",
+      "before_sha256": "39d18e0327ca0156137631cbb5182c969aca3ff80464a5544d66896b73fbef2e",
+      "after_sha256": "15f3a13975c199711d26b8ebd87904b0309e207f15d307756c5443539d57c22a"
+    },
+    {
+      "id": "47",
+      "width": 390,
+      "before": [
+        390,
+        337
+      ],
+      "after": [
+        390,
+        337
+      ],
+      "identical": true,
+      "kind": "black-friday-wordpress",
+      "before_sha256": "dea546410b144ffd1dcbbbbf3ebdb6efccb053884959bbbb3f2340767ea9b9ac",
+      "after_sha256": "dea546410b144ffd1dcbbbbf3ebdb6efccb053884959bbbb3f2340767ea9b9ac"
+    },
+    {
+      "id": "03",
+      "width": 1440,
+      "before": [
+        720,
+        552
+      ],
+      "after": [
+        720,
+        552
+      ],
+      "identical": true,
+      "kind": "black-friday-wordpress-forms",
+      "before_sha256": "08a14d0ea73aae3007b8befae25c9654a7ad6f6ab73a881a2edc33f59baa917a",
+      "after_sha256": "08a14d0ea73aae3007b8befae25c9654a7ad6f6ab73a881a2edc33f59baa917a"
+    },
+    {
+      "id": "06",
+      "width": 1440,
+      "before": [
+        720,
+        558
+      ],
+      "after": [
+        720,
+        558
+      ],
+      "identical": true,
+      "kind": "black-friday-wordpress-forms",
+      "before_sha256": "6de4dc9e1a1d7481613b40721b873fee75320a773d05f875dbb97ada07220a20",
+      "after_sha256": "6de4dc9e1a1d7481613b40721b873fee75320a773d05f875dbb97ada07220a20"
+    },
+    {
+      "id": "10",
+      "width": 1440,
+      "before": [
+        720,
+        538
+      ],
+      "after": [
+        720,
+        538
+      ],
+      "identical": true,
+      "kind": "black-friday-wordpress-forms",
+      "before_sha256": "9ef90cbd3a7c2d05654449559444fa5071d9fa81d4c8d0e1cb5a3b3bd215e1a4",
+      "after_sha256": "9ef90cbd3a7c2d05654449559444fa5071d9fa81d4c8d0e1cb5a3b3bd215e1a4"
+    },
+    {
+      "id": "11",
+      "width": 1440,
+      "before": [
+        720,
+        548
+      ],
+      "after": [
+        720,
+        548
+      ],
+      "identical": true,
+      "kind": "black-friday-wordpress-forms",
+      "before_sha256": "0af2202611c8105fc3a34dbf749cd15d82ed4b7fec43af283bc7259cf28693f3",
+      "after_sha256": "0af2202611c8105fc3a34dbf749cd15d82ed4b7fec43af283bc7259cf28693f3"
+    },
+    {
+      "id": "16",
+      "width": 1440,
+      "before": [
+        720,
+        560
+      ],
+      "after": [
+        720,
+        560
+      ],
+      "identical": true,
+      "kind": "black-friday-wordpress-forms",
+      "before_sha256": "f9558c4e9ce13938807c01573ce3639a9fdb3f143b698fcced2bb71f16d4527a",
+      "after_sha256": "f9558c4e9ce13938807c01573ce3639a9fdb3f143b698fcced2bb71f16d4527a"
+    },
+    {
+      "id": "19",
+      "width": 1440,
+      "before": [
+        600,
+        632
+      ],
+      "after": [
+        600,
+        632
+      ],
+      "identical": false,
+      "kind": "black-friday-wordpress-forms",
+      "before_sha256": "5ee45ffa40d527e487b2fd611c8172d73524289e708206df803100f9b5fd694b",
+      "after_sha256": "cea3ec34c417ab2b1c87bc6ff71c7343d49f49d0f8b90cb4d26d3391848a6dcc"
+    },
+    {
+      "id": "47",
+      "width": 1440,
+      "before": [
+        930,
+        213
+      ],
+      "after": [
+        930,
+        213
+      ],
+      "identical": true,
+      "kind": "black-friday-wordpress-forms",
+      "before_sha256": "a49a163f782fb539e6c8e6d5681c448cb18e16f54893029d576a0dae763d7e39",
+      "after_sha256": "a49a163f782fb539e6c8e6d5681c448cb18e16f54893029d576a0dae763d7e39"
+    },
+    {
+      "id": "03",
+      "width": 390,
+      "before": [
+        358,
+        840
+      ],
+      "after": [
+        358,
+        840
+      ],
+      "identical": true,
+      "kind": "black-friday-wordpress-forms",
+      "before_sha256": "c2d30f94eb94ff7978251b5aafa647174dbf7924afc3462c254067f19d4ae252",
+      "after_sha256": "c2d30f94eb94ff7978251b5aafa647174dbf7924afc3462c254067f19d4ae252"
+    },
+    {
+      "id": "06",
+      "width": 390,
+      "before": [
+        358,
+        730
+      ],
+      "after": [
+        358,
+        738
+      ],
+      "identical": false,
+      "kind": "black-friday-wordpress-forms",
+      "before_sha256": "d7be43b4a39abb42ed9ad954c06729aed54a897497e3b0010741c60b4c37826a",
+      "after_sha256": "3251e7a6f7712b767373087ecd43bc743c1426391058ae5ff48318d87013a48a"
+    },
+    {
+      "id": "10",
+      "width": 390,
+      "before": [
+        358,
+        784
+      ],
+      "after": [
+        358,
+        784
+      ],
+      "identical": true,
+      "kind": "black-friday-wordpress-forms",
+      "before_sha256": "b43f6c3a2ac854b99a0d63fd1930a19c87c9a200c2383adff8c1b013c9663f48",
+      "after_sha256": "b43f6c3a2ac854b99a0d63fd1930a19c87c9a200c2383adff8c1b013c9663f48"
+    },
+    {
+      "id": "11",
+      "width": 390,
+      "before": [
+        358,
+        740
+      ],
+      "after": [
+        358,
+        740
+      ],
+      "identical": true,
+      "kind": "black-friday-wordpress-forms",
+      "before_sha256": "35416587ac3e7b1991f7611e9e4bd42094a3500104cc4c5b4dbaaaf1c85e6c5a",
+      "after_sha256": "35416587ac3e7b1991f7611e9e4bd42094a3500104cc4c5b4dbaaaf1c85e6c5a"
+    },
+    {
+      "id": "16",
+      "width": 390,
+      "before": [
+        358,
+        766
+      ],
+      "after": [
+        358,
+        766
+      ],
+      "identical": true,
+      "kind": "black-friday-wordpress-forms",
+      "before_sha256": "10253ab507c73facbb2aa6266d1ba25fa2dfc7e2a2aecd7b77ded92eabda16fb",
+      "after_sha256": "10253ab507c73facbb2aa6266d1ba25fa2dfc7e2a2aecd7b77ded92eabda16fb"
+    },
+    {
+      "id": "19",
+      "width": 390,
+      "before": [
+        358,
+        662
+      ],
+      "after": [
+        358,
+        662
+      ],
+      "identical": false,
+      "kind": "black-friday-wordpress-forms",
+      "before_sha256": "511c6814088af67ce412ee6315b068eaf90f52c770f331afc4bdc67431a6a8f3",
+      "after_sha256": "b9b91b62f4dceb4be09740c994e5054b3bc4d1e54f28170723f9c301d3a9b29b"
+    },
+    {
+      "id": "47",
+      "width": 390,
+      "before": [
+        390,
+        449
+      ],
+      "after": [
+        390,
+        449
+      ],
+      "identical": true,
+      "kind": "black-friday-wordpress-forms",
+      "before_sha256": "366fdfcf798e9203dd786afa16efda397f6e64aeda5758b05c251aeda6230c70",
+      "after_sha256": "366fdfcf798e9203dd786afa16efda397f6e64aeda5758b05c251aeda6230c70"
+    }
+  ]
+}

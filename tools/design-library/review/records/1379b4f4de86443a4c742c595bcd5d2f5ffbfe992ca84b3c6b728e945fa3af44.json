@@ -1,0 +1,55 @@
+{
+  "id": "campaign-first-dibs-signup",
+  "revision": "e05e2795a1a0fbf86ee76bea9cc34c285f3893e2b3bb2798fedccb90fb842db5",
+  "base_id": "8ff3fdb76f9d7528213289bf4cecde88d3842f8f445dc52f11e204efad79cc67",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **46 · First-Dibs Signup** — Date band and form remain readable. Consent/fine print make the bar taller than the prototype, and the date band fills the available height. Close control follows native floating-bar placement.",
+  "at": "2026-10-24T15:58:06.154Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/46-1440-wordpress.png",
+          "sha256": "b028e46cf8f37cb273395c2bf43fcdf5e103fc2086599f27d1427bc3fe21f6ed"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/46-390-wordpress.png",
+          "sha256": "be0c5c1c91fb477f57a4704d9b14f7714c4480da745662da79aacc564d42f792"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "1379b4f4de86443a4c742c595bcd5d2f5ffbfe992ca84b3c6b728e945fa3af44"
+}

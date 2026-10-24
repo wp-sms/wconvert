@@ -43,7 +43,7 @@
           "type": "split",
           "start": [
             {
-              "type": "panel",
+              "type": "media",
               "children": [
                 {
                   "type": "image",
@@ -53,7 +53,7 @@
                   "fit": "cover",
                   "shape": "rect",
                   "tokens": {
-                    "image-height": "365px",
+                    "image-height": "clamp(200px, 48cqw, 376px)",
                     "image-position": "center",
                     "radius": "0"
                   },
@@ -105,10 +105,10 @@
                       "role": "headline",
                       "text": "MAKE\nROOM.",
                       "narrow": {
-                        "heading-size": "62px"
+                        "heading-size": "52px"
                       },
                       "tokens": {
-                        "heading-size": "80px"
+                        "heading-size": "clamp(52px, 9.5cqw, 76px)"
                       }
                     },
                     {
@@ -119,12 +119,13 @@
                     }
                   ],
                   "tokens": {
-                    "pad": "56px 24px 30px 24px",
+                    "pad": "32px 24px",
                     "gap": "24px",
                     "radius": "0"
                   },
                   "narrow": {
-                    "pad": "56px 22px 24px 22px"
+                    "pad": "25px 22px",
+                    "gap": "18px"
                   }
                 }
               ],
@@ -158,7 +159,8 @@
                                 "text-size": "90px",
                                 "leading": ".95",
                                 "tracking": "-.04em",
-                                "fg": "accent"
+                                "fg": "accent",
+                                "text-weight": "950"
                               },
                               "emphasis": "30",
                               "narrow": {
@@ -175,7 +177,8 @@
                                 "text-size": "34px",
                                 "leading": ".95",
                                 "tracking": "-.04em",
-                                "fg": "accent"
+                                "fg": "accent",
+                                "text-weight": "950"
                               },
                               "emphasis": "%",
                               "narrow": {
@@ -221,17 +224,20 @@
                       ],
                       "tokens": {
                         "gap": "24px"
+                      },
+                      "narrow": {
+                        "gap": "18px"
                       }
                     }
                   ],
                   "tokens": {
-                    "pad": "42px 24px 30px",
+                    "pad": "32px 24px",
                     "gap": "24px",
                     "radius": "0",
                     "bg": "input-bg"
                   },
                   "narrow": {
-                    "pad": "42px 22px 24px"
+                    "pad": "23px 22px"
                   }
                 }
               ],

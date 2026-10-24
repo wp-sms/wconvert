@@ -1,7 +1,7 @@
 {
   "id": "campaign-black-friday-department",
   "name": "Black Friday Department",
-  "display_type": "fullscreen",
+  "display_type": "popup",
   "tier": "pro",
   "tokens": {
     "bg": "#101211",
@@ -43,13 +43,23 @@
           "type": "panel",
           "children": [
             {
-              "type": "eyebrow",
-              "id": "n1",
-              "role": "eyebrow",
-              "text": "BLACK FRIDAY / STOREWIDE LAUNCH",
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "role": "eyebrow",
+                  "text": "BLACK FRIDAY / STOREWIDE LAUNCH",
+                  "tokens": {
+                    "text-size": "9px",
+                    "tracking": ".1em"
+                  }
+                }
+              ],
               "tokens": {
-                "text-size": "9px",
-                "tracking": ".1em"
+                "pad": "0 32px 0 0",
+                "gap": "0",
+                "radius": "0"
               }
             },
             {
@@ -61,7 +71,7 @@
                   "role": "headline",
                   "text": "BLACK FRIDAY.",
                   "tokens": {
-                    "heading-size": "92px"
+                    "heading-size": "85px"
                   },
                   "narrow": {
                     "heading-size": "57px"
@@ -73,7 +83,7 @@
                   "role": "headline",
                   "text": "ALL IN.",
                   "tokens": {
-                    "heading-size": "92px",
+                    "heading-size": "85px",
                     "fg": "accent"
                   },
                   "narrow": {
@@ -83,6 +93,9 @@
               ],
               "tokens": {
                 "gap": "15px"
+              },
+              "narrow": {
+                "gap": "0"
               }
             },
             {
@@ -229,7 +242,8 @@
                             "text-size": "75px",
                             "leading": ".95",
                             "tracking": "-.04em",
-                            "fg": "accent"
+                            "fg": "accent",
+                            "text-weight": "950"
                           },
                           "emphasis": "50",
                           "narrow": {
@@ -246,7 +260,8 @@
                             "text-size": "29px",
                             "leading": ".95",
                             "tracking": "-.04em",
-                            "fg": "accent"
+                            "fg": "accent",
+                            "text-weight": "950"
                           },
                           "emphasis": "%",
                           "narrow": {
@@ -306,12 +321,12 @@
             }
           ],
           "tokens": {
-            "pad": "56px 38px 28px 38px",
+            "pad": "28px 28px 26px",
             "gap": "26px",
             "radius": "0"
           },
           "narrow": {
-            "pad": "56px 22px 24px 22px"
+            "pad": "28px 24px 24px"
           }
         }
       }

@@ -136,11 +136,14 @@ final class PayloadTag
         // escaped into two and six bytes per character.
         // Site policy is evaluated at delivery, not frozen in a campaign snapshot.
         $googleFonts = \WConvert\Template\GoogleFonts::enabled();
+        $bundledFamilies = array_map('strtolower', \WConvert\Template\BundledFonts::families());
+        $localFonts = [];
         $siteFamilies = $googleFonts ? \WConvert\Template\GoogleFonts::siteFamilies(\WConvert\Template\ThemeTokens::fontsFromSite()) : [];
         foreach ($entries as &$entry) {
             if (!isset($entry['template']['tree']['fonts'])) continue;
             $fonts = \WConvert\Template\DesignFeatures::fonts($entry['template']['tree']['fonts']);
-            $entry['template']['tree']['fonts'] = $googleFonts ? array_values(array_filter($fonts, static fn (array $font): bool => !in_array(strtolower($font['family']), $siteFamilies, true))) : [];
+            $localFonts = array_merge($localFonts, array_column($fonts, 'family'));
+            $entry['template']['tree']['fonts'] = $googleFonts ? array_values(array_filter($fonts, static fn (array $font): bool => !in_array(strtolower($font['family']), array_merge($siteFamilies, $bundledFamilies), true))) : [];
         }
         unset($entry);
         $entries = apply_filters('wconvert_payload_entries', $entries);
@@ -188,7 +191,7 @@ final class PayloadTag
             }
         }
 
-        return wp_get_inline_script_tag($json, apply_filters('wconvert_payload_attributes', $attributes, $entries));
+        return \WConvert\Template\BundledFonts::styleTag($localFonts) . wp_get_inline_script_tag($json, apply_filters('wconvert_payload_attributes', $attributes, $entries));
     }
 
     /**

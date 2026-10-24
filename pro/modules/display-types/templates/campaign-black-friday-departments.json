@@ -1,7 +1,7 @@
 {
   "id": "campaign-black-friday-departments",
   "name": "Black Friday Departments",
-  "display_type": "fullscreen",
+  "display_type": "popup",
   "tier": "pro",
   "tokens": {
     "bg": "#eee7d8",
@@ -9,8 +9,8 @@
     "muted": "#263d36",
     "accent": "#263d36",
     "accent-fg": "#fff4de",
-    "border": "#f9edc9",
-    "input-bg": "#162d29",
+    "border": "#263d36",
+    "input-bg": "#fff4de",
     "placeholder": "fg",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Bebas Neue\", Impact, sans-serif",
@@ -220,12 +220,12 @@
             }
           ],
           "tokens": {
-            "pad": "48px 40px 30px",
+            "pad": "30px 32px 28px",
             "gap": ".9rem",
             "radius": ".5rem"
           },
           "narrow": {
-            "pad": "1.4rem"
+            "pad": "44px 24px 24px"
           }
         }
       }

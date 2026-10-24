@@ -1,5 +1,7 @@
 # Fidelity validation
 
+This is the earlier renderer review. The later [actual WordPress review](../black-friday-wordpress/review.md) and [verification record](../black-friday-wordpress/validation.md) supersede its completion claims and contain the current fonts, responsive fixes and plugin captures.
+
 - 50 unchanged approved prototype references compared with native first screens at 1440 and 390 viewport widths; all prepared screens captured at 320 and 1440.
 - 3,648 measured cases: design and filled campaign, every screen, eight widths, LTR/RTL, ordinary and lengthened copy. Zero layout, contrast, input-size, touch-target or close-overlap findings (`layout-audit.json`).
 - 800 default CTA checks across the same eight widths and both directions. Zero wrapped labels (`cta-audit.json`). Deliberately lengthened merchant labels may wrap.

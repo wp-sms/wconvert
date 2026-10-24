@@ -43,13 +43,23 @@
           "type": "panel",
           "children": [
             {
-              "type": "eyebrow",
-              "id": "n1",
-              "role": "eyebrow",
-              "text": "BLACK FRIDAY / COFFEE AND KITCHEN SALE",
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "role": "eyebrow",
+                  "text": "BLACK FRIDAY / COFFEE AND KITCHEN SALE",
+                  "tokens": {
+                    "text-size": "9px",
+                    "tracking": ".1em"
+                  }
+                }
+              ],
               "tokens": {
-                "text-size": "9px",
-                "tracking": ".1em"
+                "pad": "0 32px 0 0",
+                "gap": "0",
+                "radius": "0"
               }
             },
             {
@@ -118,7 +128,8 @@
                     "text-size": "23px",
                     "leading": ".95",
                     "tracking": "-.04em",
-                    "fg": "accent"
+                    "fg": "accent",
+                    "text-weight": "950"
                   },
                   "emphasis": "30% OFF",
                   "narrow": {
@@ -135,7 +146,10 @@
               "type": "text",
               "id": "n11",
               "role": "body",
-              "text": "Your daily ritual.\nAt a once-a-year price."
+              "text": "Your daily ritual.\nAt a once-a-year price.",
+              "tokens": {
+                "align": "start"
+              }
             },
             {
               "type": "button",
@@ -160,13 +174,13 @@
             }
           ],
           "tokens": {
-            "pad": "56px 27px 23px 27px",
+            "pad": "28px 28px 26px",
             "gap": "18px",
             "radius": "0",
             "align": "center"
           },
           "narrow": {
-            "pad": "56px 22px 24px 22px"
+            "pad": "28px 24px 24px"
           }
         }
       }

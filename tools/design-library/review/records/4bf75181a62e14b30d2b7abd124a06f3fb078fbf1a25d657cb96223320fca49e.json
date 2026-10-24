@@ -1,0 +1,55 @@
+{
+  "id": "campaign-streetwear-poster",
+  "revision": "6fed8f3e0f5b19564644a11c323e7acfab6a38714a550b6d4400a425e0a7e210",
+  "base_id": "902a391c8741fba2bf82b51f02dbbf1efd128aa0e5e77460f7d6350422e947ea",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **31 · Streetwear Poster** — Bold type, fashion image, lime offer and full-width action retain the reference hierarchy at both widths. Native supporting copy and the consolidated date eyebrow add height. The converted email form is readable but flush to the card edges where the original action was full bleed.",
+  "at": "2026-10-24T15:58:06.152Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/31-1440-wordpress.png",
+          "sha256": "a3f4d963244658c2e0dcf235d2c616e233359edd4c303bc8ac6152058b6400ce"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/31-390-wordpress.png",
+          "sha256": "687436644c0f241cc39998c13cbb247b20d60eaa89e6826bb02e1b22951f594e"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "4bf75181a62e14b30d2b7abd124a06f3fb078fbf1a25d657cb96223320fca49e"
+}

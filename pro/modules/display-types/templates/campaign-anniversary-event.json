@@ -1,7 +1,7 @@
 {
   "id": "campaign-anniversary-event",
   "name": "Anniversary Event",
-  "display_type": "fullscreen",
+  "display_type": "popup",
   "tier": "pro",
   "tokens": {
     "bg": "#d9e99e",
@@ -71,15 +71,24 @@
               "text": "Celebrate with 20% off selected favorites."
             },
             {
-              "type": "button",
-              "id": "n5",
-              "role": "cta_label",
-              "label": "Shop birthday offer",
-              "action": "link",
-              "icon": "arrow",
+              "type": "row",
+              "children": [
+                {
+                  "type": "button",
+                  "id": "n5",
+                  "role": "cta_label",
+                  "label": "Shop birthday offer",
+                  "action": "link",
+                  "icon": "arrow",
+                  "tokens": {
+                    "text-size": "14px",
+                    "radius": "30px"
+                  }
+                }
+              ],
               "tokens": {
-                "text-size": "14px",
-                "radius": "30px"
+                "align": "center",
+                "gap": "0"
               }
             },
             {
@@ -93,7 +102,7 @@
             }
           ],
           "tokens": {
-            "pad": "56px 60px 40px 60px",
+            "pad": "48px 60px 40px",
             "gap": "20px",
             "radius": "0",
             "align": "center",
@@ -102,7 +111,7 @@
             "image-position": "center 28px"
           },
           "narrow": {
-            "pad": "115px 24px 30px 24px",
+            "pad": "115px 24px 30px",
             "bg-size": "auto 135px",
             "image-position": "center 12px"
           }

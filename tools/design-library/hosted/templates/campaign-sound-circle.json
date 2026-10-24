@@ -43,56 +43,66 @@
           "type": "panel",
           "children": [
             {
-              "type": "eyebrow",
-              "id": "n1",
-              "role": "eyebrow",
-              "text": "BLACK FRIDAY / AUDIO MARKDOWN",
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "role": "eyebrow",
+                  "text": "BLACK FRIDAY / AUDIO MARKDOWN",
+                  "tokens": {
+                    "text-size": "9px",
+                    "tracking": ".1em"
+                  }
+                }
+              ],
               "tokens": {
-                "text-size": "9px",
-                "tracking": ".1em"
+                "pad": "0 32px 0 0",
+                "gap": "0",
+                "radius": "0"
               }
             },
             {
               "type": "split",
               "start": [
                 {
-                  "type": "stack",
-                  "children": [
+                  "type": "split",
+                  "start": [
                     {
-                      "type": "heading",
-                      "id": "n2",
-                      "role": "headline",
-                      "text": "TURN\nIT",
-                      "narrow": {
-                        "heading-size": "50px"
-                      },
+                      "type": "stack",
+                      "children": [
+                        {
+                          "type": "heading",
+                          "id": "n2",
+                          "role": "headline",
+                          "text": "TURN\nIT",
+                          "narrow": {
+                            "heading-size": "50px"
+                          },
+                          "tokens": {
+                            "heading-size": "80px"
+                          }
+                        },
+                        {
+                          "type": "heading",
+                          "id": "n11",
+                          "role": "headline",
+                          "text": "UP.",
+                          "narrow": {
+                            "heading-size": "50px"
+                          },
+                          "tokens": {
+                            "heading-size": "80px",
+                            "fg": "accent"
+                          }
+                        }
+                      ],
                       "tokens": {
-                        "heading-size": "80px"
-                      }
-                    },
-                    {
-                      "type": "heading",
-                      "id": "n11",
-                      "role": "headline",
-                      "text": "UP.",
-                      "narrow": {
-                        "heading-size": "50px"
-                      },
-                      "tokens": {
-                        "heading-size": "80px",
-                        "fg": "accent"
+                        "gap": "0"
                       }
                     }
                   ],
-                  "tokens": {
-                    "gap": "0"
-                  }
-                }
-              ],
-              "end": [
-                {
-                  "type": "split",
-                  "start": [
+                  "end": [
                     {
                       "type": "image",
                       "id": "n3",
@@ -110,52 +120,53 @@
                       "motion": "breathe"
                     }
                   ],
-                  "end": [
-                    {
-                      "type": "stack",
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "n8",
-                          "role": "body",
-                          "text": "%b",
-                          "tokens": {
-                            "font": "\"DM Sans\", Arial, sans-serif",
-                            "text-size": "79px",
-                            "leading": ".95",
-                            "tracking": "-.04em",
-                            "fg": "accent"
-                          },
-                          "emphasis": "35",
-                          "narrow": {
-                            "text-size": "64px"
-                          }
-                        },
-                        {
-                          "type": "eyebrow",
-                          "id": "n9",
-                          "role": "eyebrow",
-                          "text": "% OFF",
-                          "tokens": {
-                            "text-size": "9px",
-                            "tracking": ".08em"
-                          }
-                        }
-                      ],
-                      "tokens": {
-                        "gap": "8px"
-                      }
-                    }
-                  ],
-                  "ratio": 0.72,
-                  "basis": "7rem",
+                  "ratio": 0.3,
+                  "basis": "5rem",
                   "tokens": {
                     "gap": "18px"
                   }
                 }
               ],
-              "ratio": 0.24,
-              "basis": "8rem",
+              "end": [
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "n8",
+                      "role": "body",
+                      "text": "%b",
+                      "tokens": {
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "text-size": "79px",
+                        "leading": ".95",
+                        "tracking": "-.04em",
+                        "fg": "accent",
+                        "text-weight": "950"
+                      },
+                      "emphasis": "35",
+                      "narrow": {
+                        "text-size": "64px"
+                      }
+                    },
+                    {
+                      "type": "eyebrow",
+                      "id": "n9",
+                      "role": "eyebrow",
+                      "text": "% OFF",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".08em"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "10px"
+                  }
+                }
+              ],
+              "ratio": 0.98,
+              "basis": "11rem",
               "tokens": {
                 "gap": "18px"
               }
@@ -196,12 +207,12 @@
             }
           ],
           "tokens": {
-            "pad": "56px 29px 26px 29px",
+            "pad": "28px 28px 26px",
             "gap": "26px",
             "radius": "0"
           },
           "narrow": {
-            "pad": "56px 22px 24px 22px"
+            "pad": "28px 24px 24px"
           }
         }
       }

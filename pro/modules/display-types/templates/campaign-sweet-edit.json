@@ -46,8 +46,8 @@
               "type": "split",
               "start": [
                 {
-                  "type": "row",
-                  "children": [
+                  "type": "split",
+                  "start": [
                     {
                       "type": "panel",
                       "children": [
@@ -58,7 +58,7 @@
                           "text": "%b",
                           "tokens": {
                             "font": "\"Bebas Neue\", Impact, sans-serif",
-                            "text-size": "45px",
+                            "text-size": "clamp(32px, 4.8cqw, 45px)",
                             "leading": ".95",
                             "tracking": "-.04em"
                           },
@@ -69,7 +69,7 @@
                         }
                       ],
                       "tokens": {
-                        "pad": "24px 18px",
+                        "pad": "18px 12px",
                         "gap": "16px",
                         "radius": "50%",
                         "bg": "input-bg",
@@ -77,9 +77,11 @@
                         "muted": "accent"
                       },
                       "narrow": {
-                        "pad": "24px"
+                        "pad": "18px 12px"
                       }
-                    },
+                    }
+                  ],
+                  "end": [
                     {
                       "type": "stack",
                       "children": [
@@ -111,6 +113,8 @@
                       }
                     }
                   ],
+                  "ratio": 0.3,
+                  "basis": "0px",
                   "tokens": {
                     "gap": "20px"
                   }
@@ -130,8 +134,8 @@
                   }
                 }
               ],
-              "ratio": 0.72,
-              "basis": "19rem",
+              "ratio": 0.64,
+              "basis": "0px",
               "narrow_layout": "stack",
               "tokens": {
                 "gap": "24px"
@@ -139,7 +143,7 @@
             }
           ],
           "tokens": {
-            "pad": "28px 60px 28px",
+            "pad": "20px 60px 20px 40px",
             "gap": "16px",
             "radius": "48px"
           },

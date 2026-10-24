@@ -1,0 +1,47 @@
+{
+  "id": "edition-sample-signup",
+  "revision": "6abb7ff59266b8fe80f40261f0c90cb4b0ea942aae5c9bb8b43bc0d73aa86e5b",
+  "base_id": "5367cd618fb390361297cac3989d613abae372a19689c5d1bd49bfb09b30abc8",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/edition-sample-signup-320.png",
+          "sha256": "e233f969017025ec5aa0fe1434e845ffc15173bfbbd16f188afb6240b00a850d"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/edition-sample-signup-1440.png",
+          "sha256": "0f4a33a6ad4c31d2769442170ec4b34f427fbf7a14cfa7d0ea8f4717ecdd74b2"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "0e6c60c25337f0d347cef16a7295f0dddbcbe695eda3590ed7704496310cbdcd"
+}

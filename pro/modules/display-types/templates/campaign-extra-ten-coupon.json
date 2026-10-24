@@ -54,11 +54,12 @@
                   "shape": "rect",
                   "tokens": {
                     "image-height": "180px",
-                    "image-position": "center",
+                    "image-position": "center 70%",
                     "radius": "0"
                   },
                   "narrow": {
-                    "image-height": "180px"
+                    "image-height": "180px",
+                    "image-position": "center 70%"
                   }
                 }
               ],
@@ -86,7 +87,7 @@
                 }
               ],
               "tokens": {
-                "pad": "56px 24px 12px 24px",
+                "pad": "12px 24px",
                 "gap": "16px",
                 "radius": "0",
                 "bg": "accent",
@@ -94,7 +95,7 @@
                 "muted": "accent-fg"
               },
               "narrow": {
-                "pad": "56px 24px 12px 24px"
+                "pad": "12px 24px"
               }
             },
             {
@@ -107,7 +108,7 @@
                       "type": "eyebrow",
                       "id": "n7",
                       "role": "eyebrow",
-                      "text": "AN EXTRA",
+                      "text": "AN\nEXTRA",
                       "tokens": {
                         "text-size": "9px",
                         "tracking": ".08em"
@@ -116,16 +117,16 @@
                     {
                       "type": "heading",
                       "id": "n3",
-                      "role": "headline",
+                      "role": "offer_amount",
                       "text": "10%",
                       "tokens": {
                         "fg": "accent",
-                        "heading-size": "85px",
+                        "heading-size": "90px",
                         "heading-weight": "900",
                         "tracking": "-.05em"
                       },
                       "narrow": {
-                        "heading-size": "76px"
+                        "heading-size": "85px"
                       }
                     },
                     {
@@ -150,7 +151,15 @@
                 "radius": "0"
               },
               "narrow": {
-                "pad": "24px"
+                "pad": "24px 26px"
+              }
+            },
+            {
+              "type": "divider",
+              "id": "n9",
+              "pattern": "dashed",
+              "tokens": {
+                "border": "accent"
               }
             },
             {
@@ -161,7 +170,11 @@
                   "id": "n4",
                   "role": "code_value",
                   "text": "EXTRA10",
-                  "copy": false
+                  "copy": false,
+                  "appearance": "plain",
+                  "tokens": {
+                    "align": "start"
+                  }
                 },
                 {
                   "type": "button",
@@ -179,7 +192,7 @@
                   "type": "text",
                   "id": "n6",
                   "role": "fine_print",
-                  "text": "Extra 10% off selected sale styles with the code shown. Nov 27–30.",
+                  "text": "Extra 10% off selected sale styles. Enter your code at checkout. Nov 27–30.",
                   "tokens": {
                     "text-size": "14px"
                   }
@@ -192,9 +205,8 @@
                 "bg": "input-bg"
               },
               "narrow": {
-                "pad": "24px"
-              },
-              "notch": true
+                "pad": "23px 26px"
+              }
             }
           ],
           "tokens": {

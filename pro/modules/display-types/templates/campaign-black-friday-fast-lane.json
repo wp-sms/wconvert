@@ -103,15 +103,23 @@
                       }
                     },
                     {
-                      "type": "button",
-                      "id": "n4",
-                      "role": "cta_label",
-                      "label": "Shop before the close",
-                      "action": "link",
-                      "icon": "arrow",
+                      "type": "stack",
+                      "children": [
+                        {
+                          "type": "button",
+                          "id": "n4",
+                          "role": "cta_label",
+                          "label": "Shop before the close",
+                          "action": "link",
+                          "icon": "arrow",
+                          "tokens": {
+                            "text-size": "14px",
+                            "radius": "5px"
+                          }
+                        }
+                      ],
                       "tokens": {
-                        "text-size": "14px",
-                        "radius": "5px"
+                        "gap": "12px"
                       }
                     }
                   ],
@@ -121,8 +129,8 @@
                   }
                 }
               ],
-              "ratio": 0.45,
-              "basis": "22rem",
+              "ratio": 0.4,
+              "basis": "0px",
               "narrow_layout": "stack",
               "tokens": {
                 "gap": "24px"
@@ -130,9 +138,12 @@
             }
           ],
           "tokens": {
-            "pad": "28px 60px 28px",
+            "pad": "22px 60px 22px 40px",
             "gap": "16px",
-            "radius": "0"
+            "radius": "0",
+            "bg-image": "url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAACKCAIAAAA2UL2dAAAAvElEQVR4nOyVMQrCQBBFJ5JqPYdewlo8n8cR7yEigpeQSZdx41oEcVPIt5C81yzMDq9ZlteuNnurczlsJ27Xu+PH+cJ+AFKk/yBt4n6auK79mULtv/FQSGcrbb/7MwUahRTpGzQKKVIlNAopUiU0CilSJTQKKVIlNAopUiU0CilSJTQKKVIlNAopUiU0CilSJTQKKVIlNAqpmOZ2PUeEe9dHv0wpLPI0T8r163we7p7nadix8c5oz7wbdh4AAAD//0D4N4MAAAAGSURBVAMAXths1rjSJD0AAAAASUVORK5CYII=\")",
+            "bg-size": "24px 100%",
+            "image-position": "left center"
           },
           "narrow": {
             "pad": "56px 24px 25px"

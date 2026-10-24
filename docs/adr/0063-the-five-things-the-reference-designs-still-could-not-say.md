@@ -115,6 +115,10 @@ emphasised run is the sentence around it, said harder.
 
 ## `notch` — the one ornament scoping cannot reach
 
+**Receipt follow-up in [ADR 0168](0168-approved-compositions-survive-native-rendering.md):**
+the receipt silhouette uses an original transparent image footer. It does not
+add another cutout control to the editor.
+
 Of the eighteen pseudo-element uses in the reference set, seventeen are a token
 in disguise. The photo scrims are `overlay` once it is scoped; the tick bullets
 are `icon` nodes we already ship; the rings and frames are the `image` data URI

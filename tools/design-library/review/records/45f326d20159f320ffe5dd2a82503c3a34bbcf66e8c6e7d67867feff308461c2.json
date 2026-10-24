@@ -1,0 +1,47 @@
+{
+  "id": "winter-shop-is-sleeping",
+  "revision": "846138b4fec9f316b734cb07cdead1ff7c15cf39cb4ae420e3e6e0b6ebf3d0c0",
+  "base_id": "63e135adc4963c4fecd9f2d4dd227fba5f212dad23f4eabb11d969af353646a5",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-8.jpg",
+          "sha256": "38da9d3ac2a78456aac97b9066b95563c57f1d56cc6161fa71cc04e01d40d732"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-8.jpg",
+          "sha256": "ac19bed9a382dced9ee763f904f88e8b499ffdb0e15cc05a6aa6b61fd0b18848"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "45f326d20159f320ffe5dd2a82503c3a34bbcf66e8c6e7d67867feff308461c2"
+}

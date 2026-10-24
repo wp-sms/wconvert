@@ -43,13 +43,23 @@
           "type": "panel",
           "children": [
             {
-              "type": "eyebrow",
-              "id": "n1",
-              "role": "eyebrow",
-              "text": "BLACK FRIDAY / GIFT THRESHOLD",
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "role": "eyebrow",
+                  "text": "BLACK FRIDAY / GIFT THRESHOLD",
+                  "tokens": {
+                    "text-size": "9px",
+                    "tracking": ".1em"
+                  }
+                }
+              ],
               "tokens": {
-                "text-size": "9px",
-                "tracking": ".1em"
+                "pad": "0 32px 0 0",
+                "gap": "0",
+                "radius": "0"
               }
             },
             {
@@ -126,7 +136,7 @@
                     "align": "center"
                   },
                   "narrow": {
-                    "pad": "24px"
+                    "pad": "9px"
                   },
                   "edges": "all"
                 }
@@ -145,11 +155,12 @@
                         "text-size": "100px",
                         "leading": ".95",
                         "tracking": "-.04em",
-                        "fg": "accent"
+                        "fg": "accent",
+                        "text-weight": "950"
                       },
                       "emphasis": "+",
                       "narrow": {
-                        "text-size": "64px"
+                        "text-size": "100px"
                       }
                     },
                     {
@@ -161,7 +172,8 @@
                         "font": "\"DM Sans\", Arial, sans-serif",
                         "text-size": "29px",
                         "leading": ".95",
-                        "tracking": "-.04em"
+                        "tracking": "-.04em",
+                        "text-weight": "950"
                       },
                       "emphasis": "ON US.",
                       "narrow": {
@@ -209,12 +221,12 @@
             }
           ],
           "tokens": {
-            "pad": "56px 31px 28px 31px",
+            "pad": "28px 28px 26px",
             "gap": "24px",
             "radius": "0"
           },
           "narrow": {
-            "pad": "56px 22px 24px 22px"
+            "pad": "28px 24px 24px"
           }
         }
       }

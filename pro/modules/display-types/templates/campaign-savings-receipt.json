@@ -4,13 +4,13 @@
   "display_type": "slide_in",
   "tier": "pro",
   "tokens": {
-    "bg": "#fff6d8",
+    "bg": "transparent",
     "fg": "#263e31",
     "muted": "#263e31",
     "accent": "#263e31",
     "accent-fg": "#fff6df",
-    "border": "#344435",
-    "input-bg": "#f7e9bd",
+    "border": "fg",
+    "input-bg": "#fff6d8",
     "placeholder": "fg",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Bebas Neue\", Impact, sans-serif",
@@ -30,7 +30,8 @@
     "close-border": "#ffffff",
     "close-inset": ".5rem",
     "error-fg": "#ffffff",
-    "error-bg": "#8f2020"
+    "error-bg": "#8f2020",
+    "shadow": "none"
   },
   "tree": {
     "v": 2,
@@ -40,188 +41,284 @@
         "name": "Offer",
         "kind": "content",
         "content": {
-          "type": "panel",
+          "type": "stack",
           "children": [
             {
               "type": "panel",
-              "children": [],
-              "tokens": {
-                "pad": "0",
-                "gap": "0"
-              },
-              "narrow": {
-                "pad": "0"
-              },
-              "min": "2.8rem",
-              "decorations": {
-                "label": "Decorative eyes",
-                "hidden": false,
-                "items": [
-                  {
-                    "kind": "eyes",
-                    "motion": "blink",
-                    "x": 50,
-                    "y": 50,
-                    "size": 130,
-                    "color": "fg"
-                  }
-                ]
-              }
-            },
-            {
-              "type": "eyebrow",
-              "id": "n1",
-              "role": "eyebrow",
-              "text": "CLEARANCE / SELECTED FAVORITES",
-              "tokens": {
-                "text-size": "9px",
-                "tracking": ".1em"
-              }
-            },
-            {
-              "type": "heading",
-              "id": "n2",
-              "role": "headline",
-              "text": "LESS TO PAY.\nMORE TO KEEP.",
-              "narrow": {
-                "heading-size": "43px"
-              },
-              "tokens": {
-                "heading-size": "48px"
-              }
-            },
-            {
-              "type": "row",
               "children": [
                 {
-                  "type": "text",
-                  "id": "n3",
-                  "role": "body",
-                  "text": "ORIGINAL PRICE"
-                },
-                {
-                  "type": "text",
-                  "id": "n4",
-                  "role": "body",
-                  "text": "100%"
-                }
-              ],
-              "tokens": {
-                "gap": "20px",
-                "align": "space-between"
-              }
-            },
-            {
-              "type": "divider",
-              "id": "n13"
-            },
-            {
-              "type": "row",
-              "children": [
-                {
-                  "type": "text",
-                  "id": "n6",
-                  "role": "body",
-                  "text": "YOUR DISCOUNT"
-                },
-                {
-                  "type": "text",
-                  "id": "n7",
-                  "role": "body",
-                  "text": "−30%"
-                }
-              ],
-              "tokens": {
-                "gap": "20px",
-                "align": "space-between"
-              }
-            },
-            {
-              "type": "divider",
-              "id": "n14"
-            },
-            {
-              "type": "row",
-              "children": [
-                {
-                  "type": "text",
-                  "id": "n9",
-                  "role": "body",
-                  "text": "YOU SAVE"
-                },
-                {
-                  "type": "text",
-                  "id": "n10",
-                  "role": "body",
-                  "text": "%b",
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "image",
+                      "id": "n15",
+                      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABgCAYAAABYFz0dAAALIklEQVR4nOydD3BURx3Hv/suCaEESBP+BiaE5JyWYEgwtJA2hJQ/1illbDsy2pZxCtaxotM6o451xjrVGWdAUcdqtUUpFGmnVWToMLXVAr0EUoISkgaaUr3EJA0Y2hIiJJCQu1v3HQQIl1zu7u293Xf3+8xADnL37u3vc7+3f97tbgocxMyywqy0lLQyxtgiBtzGgemM8WzOWZb5e/G4Szw+A4ZT4DjCwQ9dGrhU23GoqQuENJLJA4PeMHdFcUmAGavEia4C56VCSlTnzAXixxFhbY+f8T2tnoYGENGStB60TZD8xfOXMQMbxAkugESEpSM8gCdbDtTvAzEqye5BuwQpKC8qhcslhLDliCOi2t/LfPxb3pp33wMRAnm4jDYJ4na7xyAnY4O4sjwuam8DdsAxwJm4Op48/xOv19sPgjzcgBYJkl9ZXM4C7AUh5FNQgGge/5sbfF2L592DSGLIQyguKMa9pOT74GyHkJINRQTfm2PtzbOm9p1tO12DJIQ8DI+6GqS0NNU9zr9VROVhaIQYa9ne3Gs8irq6ASQD5CEsShLEbOfyGeN3izf/HDREtL/fFO3h+xK9X0IeRsf2JpbuUkzEubn5hDELslMzdnZ1dfmRgJCHyLA1QZwgZZBEThLyEDn2DOMNkjP+JSdIGcQ8Vz4j4zdINMhDxNhWg7grSp4WHcGvw2GIG2WfyZo1vb+rrTMhhoDJQ3TYkiD5FcUPiHtOv4VDEXd7l2bmTm/qbu9sgoMhD9ET91Esd+W8mQgYTeKqNR5OhvPzMAKFXk9jBxwIeYiNuPdBeMC1yfFSTEQZgmVxKOQhxrdDHHGXl1TCxd6GBuTmTMOae1dg4bxCzJw6Ofh/Hac/xjv1x/Hy62/hw86PIjoO5/5lzdWN++EgyEPsxDNBjIIlJU2ic3ULFGIYBr754P1YL/64XMN3ufx+P3798i787pXdCAQCox3yhLeqfq74OeoTNYE8WCBunfT8xSVPGIq/vjBtUjY2/+i7uH95RVDQSJi/W1Q8F2Ulc1Fz9Dh6LlwMd9hJmbnTus+2d9bCAZAHa8QlQcwOobhi7RTtxTFQyNPr12LpwtKIn58zZRImZNyEfbV1YZ8nqt07x07N3Hz+5CcXoTHkwTpx6aTr0CF8YEUFPr9sMaLlC5+tDL42LKJs6enpP4fmkAfrSO+D5N9ZmMtcaa3RzlmWybix6di/9RlkTYzts9HVfQ5L1z2B3ot9Iz7HnGPtN5Df6mlohYYkhIf/ncfStY8r9SC9BjFcY9arlGKyZtXdMUsxycqcgNV33xX2OWYZUwJ4BJqSEB7Ea81jhCPeHuQmSCVSRJ30FSjmoZXLYBWzio+ALwfLrBsJ5OHBeyI6Rtw8SE2QAn/JveLHJChk8YJi0cmbDKvcMjtXjNXPCf8kxmZfKbNWJJKHGeJeiUoPcmsQpr7JsbBoDmSxuLR49CdpUOYQyIM0pCXIjNtvzRZDivdAMYX5eZBFJMcyy5xTWar0an095EEu0hJkbPrYr4qzTIViZky1Xq1HdSxR5nS/fw00gTzIRVqCcIbHoAETxt0EWUR6LMNgj0ATyINcpCSI+WU4MZ44CxowIWMcZBHFsYrFXetFUAx5kO9BTg1iiEG2ZCdgqJ/CSh6ke5DUxGLKr56DnOvphSyiO5YOMSAPsmMgI0HEAILclb+tcK73AmQR1bEYSqF2KVfyYCLZg+UEyassMucZKFuu8kZaOk5BFlEea9KVWCiBPFxFqgfLCeLyu7Sp1k0aTnghi8ON0a0NoDIW5OEaMmNhvYnF9OoYVtfJ27jo8LEoF89gCvsA5OEaEj3ISBCtrlzvN7cF/6g4DlMZC/JwFZkeLCWIuZkjOJTsJRGOXXurYJVYjsE5L8qrzEuHzZCHocj0YClBxrhSbrdtF6Io+PPf3g5OtokV87XmMaLFjEWKL9P2Kzl5GIpMD5aCypkrDxpizkDbuGUHYsV8bbhZbOEIMHYrbIY8hCLLg6UEMRgyoSm73qrGzr97EC2v7TsQfG2sqIgJeQhFVkys1SDg06AxTz2zBTVHj0X8/H2H6/C9Xz4Pi9j+YSUPw6I+QURrT2sxPr8P657agOf/9Bou72M/PMEFy3bsxPof/yL42ApqPqzk4UZkebA0j5dB36p9EHOFvk1bX8Grb+zHQytX4I75nx6y5KV5E2rb7jdx6qOPIQOm4MNKHkKR5cHiRHeeqfbrR5Fjrvm6cctLiD9cwYeVPITCNeiDaNw5VIWKmJCHUGTFxOpSKSQmFBUxIQ+hqE8QJ7R97UZFTMhDKEyPUSyCSGws3gdBN4ghqIgJeQhFVkys1iAkJhQVMSEPoahPEMZJzI2ImHTCZshDKLI8WG1i2f5h0B0OZntMyEMosjxYHOZlJCYUBVdz8jAMUjxYHealqv0GVMSEPITCdEgQkJjhoE66HqjvpAeocxiCipiQh1BkxcTahCnOT4AYgoqYkIdQZMXEUoL4UrprOedx3cjdSQRj0dlzCDZDHoYi04OlBGn1tPYxxiKfKpbgmLHwer39sBnyMBSZHix/F4tz1IIIojIW5OEaMmNh/cuKnJOYQVTGgjxcQ2IsLCeI3+UnMVdQGQvycA2ZsZAxT5MVVJR0inbfFCQ3Z7xV9eYkaw41kIfLSPUgYz4IZ2D1SHY4jkBdcgTPgDxAugdJE6ao/atHDMiD7BhISRAeCCS9GB1iQB7kx0DaWjHuipIWMQA9G0mIGFY81lxdPw8aQB7kepA4J51tRpIi7ty+AG0gDzKRliAXDOMPoms0gGRDlLm/v++P0ATyIBdpCXLKU/cJB/8rkgyzzCf/ceIMNIE8yEXusj8c25BsBALPQTfIgzTkLuhaiRR3oORfydJJFIPtbc1V9XnQDfIgDbk1iAc+8fd2JAmM823QEfIgDekrK/oMbOPhNoFIEMwyBvyXNBq9Ggp5kIP0BGn1NLQiOa5e21tqmtqhKeRBDnFZm7evr+/bIrVj395Ud0TZgmXUHPJgnbgkiDncFuD4IRIUs2w6De2OBHmwTjy3JTLcS+a/J37avi1yPBHj7R80VzUUiodOmQNOHiwQz+0PApz7v4EEg/nxGJyTHCbkwQJx3R+kubpxvxhHeRUJghgwedF7sMEDh0EeYifuG+gww/+dhOgoOqRjPhLkITbiniBeT2NHgLGvwfHwR53QMR8J8hAbLtjA2bbO41mzpo8VQwLlcCIcG73VDb+CwyEP0WPn5trmogJ7GGMr4SDEreg3mqvqV0LtfHOZkIcosHMTT97THfii6CzWwSGIcz3ac9a/GomTHCbkIQps3eX2dGNj70DAt8IJckwp4lyXm+eMBIM8RI6dTayr5JYX3ZxmpNSId58DDRmU0n7w2FkkMORhdJTsk24WuG+gv1zcDd0LzRBS9vcP9K9I9OQwIQ+jo6QGuQ6joGL+s4wF74oqR9yA2tRc3fCkeOhHckEeRsCWYd4wcDH0+HpW7rQGzliZyNZMKEBcrT4UUh5uOdDwLBKrQx4p5GEEVCdIkK72zg/SJk75fVo6MsQ/bxNDkHbVbD6h4WcXe43V7bX1TUhyyEMoqptYIRSUF5XClfKcOLEFiCNmB9AHtqat+uj7IEIgD5fRLkEGmX3H/FlGKv+BOMEvidPMgBR4r7hSvej3sZ/+5536NhCjkuwetE2QQSZXFmZM9Kfex5mxVgT2rmir/eC8bAYPONvW0+3/SyLe17CDZPWgfYJcz8yywqy01LRFDKxMnPkCcRXKYYxnc86yzN+Lx13i8RlRqP+KHt4/hZPaS75LhzoONXWBkEYyefg/AAAA//+GeqzrAAAABklEQVQDAF2Og7HIZsIJAAAAAElFTkSuQmCC",
+                      "alt": "",
+                      "fit": "contain",
+                      "shape": "rect",
+                      "motion": "breathe",
+                      "tokens": {
+                        "image-height": "48px",
+                        "radius": "0"
+                      }
+                    }
+                  ],
                   "tokens": {
-                    "text-size": "4rem",
-                    "leading": ".95",
-                    "font": "\"Bebas Neue\", Impact, sans-serif"
-                  },
-                  "emphasis": "30%",
-                  "narrow": {
-                    "text-size": "4rem"
+                    "pad": "0 0 22px",
+                    "gap": "0",
+                    "radius": "0"
+                  }
+                },
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "role": "eyebrow",
+                  "text": "CLEARANCE / SELECTED FAVORITES",
+                  "tokens": {
+                    "text-size": "8px",
+                    "tracking": "1.5px",
+                    "leading": "1.6"
+                  }
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "id": "n2",
+                      "role": "headline",
+                      "text": "LESS TO PAY.\nMORE TO KEEP.",
+                      "narrow": {
+                        "heading-size": "47px"
+                      },
+                      "tokens": {
+                        "heading-size": "48px",
+                        "heading-weight": "400",
+                        "heading-leading": ".91",
+                        "tracking": "-.5px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "16px 0 18px",
+                    "gap": "0",
+                    "radius": "0"
+                  }
+                },
+                {
+                  "type": "divider",
+                  "id": "n13",
+                  "pattern": "dashed"
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "row",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "n3",
+                          "role": "body",
+                          "text": "ORIGINAL PRICE",
+                          "tokens": {
+                            "font": "monospace",
+                            "text-size": "13px",
+                            "leading": "1.2"
+                          }
+                        },
+                        {
+                          "type": "text",
+                          "id": "n4",
+                          "role": "body",
+                          "text": "%b",
+                          "tokens": {
+                            "font": "monospace",
+                            "text-size": "13px",
+                            "leading": "1.2"
+                          },
+                          "emphasis": "100%"
+                        }
+                      ],
+                      "tokens": {
+                        "align": "space-between",
+                        "gap": "12px"
+                      }
+                    },
+                    {
+                      "type": "row",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "n6",
+                          "role": "body",
+                          "text": "YOUR DISCOUNT",
+                          "tokens": {
+                            "font": "monospace",
+                            "text-size": "13px",
+                            "leading": "1.2"
+                          }
+                        },
+                        {
+                          "type": "text",
+                          "id": "n7",
+                          "role": "body",
+                          "text": "%b",
+                          "tokens": {
+                            "font": "monospace",
+                            "text-size": "13px",
+                            "leading": "1.2"
+                          },
+                          "emphasis": "−30%"
+                        }
+                      ],
+                      "tokens": {
+                        "align": "space-between",
+                        "gap": "12px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "17px 0",
+                    "gap": "13px",
+                    "radius": "0"
+                  }
+                },
+                {
+                  "type": "divider",
+                  "id": "n14",
+                  "pattern": "dashed"
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "row",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "n9",
+                          "role": "body",
+                          "text": "YOU SAVE",
+                          "tokens": {
+                            "font": "monospace",
+                            "text-size": "13px",
+                            "leading": "1.2"
+                          }
+                        },
+                        {
+                          "type": "text",
+                          "id": "n10",
+                          "role": "body",
+                          "text": "30%",
+                          "tokens": {
+                            "font": "\"Bebas Neue\", Impact, sans-serif",
+                            "text-size": "55px",
+                            "leading": "1.2"
+                          }
+                        }
+                      ],
+                      "tokens": {
+                        "align": "space-between",
+                        "gap": "12px"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "17px 0",
+                    "gap": "0",
+                    "radius": "0"
+                  }
+                },
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "button",
+                      "id": "n11",
+                      "role": "cta_label",
+                      "label": "Shop clearance",
+                      "action": "link",
+                      "icon": "arrow",
+                      "tokens": {
+                        "text-size": "14px",
+                        "radius": "0px",
+                        "leading": "1.35"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "0"
+                  }
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "panel",
+                      "children": [],
+                      "tokens": {
+                        "pad": "0",
+                        "gap": "0",
+                        "radius": "0",
+                        "bg-image": "repeating-linear-gradient(90deg,currentColor 0 2px,transparent 2px 5px,currentColor 5px 6px,transparent 6px 9px,currentColor 9px 13px,transparent 13px 15px)"
+                      },
+                      "min": "23px"
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "20px 20px 0",
+                    "gap": "0",
+                    "radius": "0"
+                  }
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "n12",
+                      "role": "fine_print",
+                      "text": "Selected clearance items. Exclusions apply.",
+                      "tokens": {
+                        "text-size": "14px",
+                        "leading": "1.5",
+                        "align": "center"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "13px 0 0",
+                    "gap": "0",
+                    "radius": "0"
                   }
                 }
               ],
               "tokens": {
-                "gap": "20px",
-                "align": "space-between"
-              }
-            },
-            {
-              "type": "button",
-              "id": "n11",
-              "role": "cta_label",
-              "label": "Shop clearance",
-              "action": "link",
-              "icon": "arrow",
-              "tokens": {
-                "text-size": "14px",
-                "radius": "0px"
-              }
-            },
-            {
-              "type": "panel",
-              "children": [],
-              "min": "30px",
-              "tokens": {
-                "pad": "0",
-                "radius": "0"
+                "pad": "45px 28px 22px",
+                "gap": "0",
+                "radius": "0",
+                "bg": "input-bg"
               },
-              "decorations": {
-                "label": "Decorative barcode",
-                "hidden": false,
-                "items": [
-                  {
-                    "kind": "barcode",
-                    "x": 50,
-                    "y": 50,
-                    "size": 160,
-                    "color": "fg",
-                    "motion": "none"
-                  }
-                ]
+              "narrow": {
+                "pad": "45px 24px 17px"
               }
             },
             {
-              "type": "text",
-              "id": "n12",
-              "role": "fine_print",
-              "text": "Selected clearance items. Exclusions apply.",
+              "type": "image",
+              "id": "n16",
+              "src": "data:image/png;base64,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",
+              "alt": "",
+              "fit": "cover",
+              "shape": "rect",
               "tokens": {
-                "text-size": "14px"
+                "image-height": "18px",
+                "radius": "0"
               }
             }
           ],
           "tokens": {
-            "pad": "56px 32px 32px 32px",
-            "gap": "18px",
-            "radius": "0"
-          },
-          "narrow": {
-            "pad": "56px 22px 24px 22px"
+            "gap": "0"
           }
         }
       }

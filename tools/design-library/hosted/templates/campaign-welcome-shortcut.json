@@ -156,7 +156,7 @@
                   "type": "text",
                   "id": "n5",
                   "role": "body",
-                  "text": "Start with a little saving. Enter the code below on your first order."
+                  "text": "Enjoy 15% off selected everyday favorites on your first order."
                 },
                 {
                   "type": "button",
@@ -184,7 +184,8 @@
                 "pad": "56px 32px 28px 32px",
                 "gap": "16px",
                 "radius": "0",
-                "muted": "fg"
+                "muted": "fg",
+                "input-bg": "bg"
               },
               "narrow": {
                 "pad": "56px 23px 25px 23px"

@@ -1,0 +1,1567 @@
+{
+    "checked_at": "2026-10-24T16:39:13+00:00",
+    "site": "http://wconvert.local",
+    "checked": 50,
+    "passed": 40,
+    "google_fonts_enabled": false,
+    "font_assets": [
+        {
+            "url": "http://wconvert.local/wp-content/plugins/wconvert/resources/template-fonts/dm-sans.woff2",
+            "file": "/Users/navidkashani/Local Sites/wconvert/app/public/wp-content/plugins/wconvert/resources/template-fonts/dm-sans.woff2",
+            "exists": true,
+            "bytes": 36980
+        },
+        {
+            "url": "http://wconvert.local/wp-content/plugins/wconvert/resources/template-fonts/bebas-neue.woff2",
+            "file": "/Users/navidkashani/Local Sites/wconvert/app/public/wp-content/plugins/wconvert/resources/template-fonts/bebas-neue.woff2",
+            "exists": true,
+            "bytes": 8596
+        },
+        {
+            "url": "http://wconvert.local/wp-content/plugins/wconvert/resources/template-fonts/cormorant-garamond.woff2",
+            "file": "/Users/navidkashani/Local Sites/wconvert/app/public/wp-content/plugins/wconvert/resources/template-fonts/cormorant-garamond.woff2",
+            "exists": true,
+            "bytes": 37776
+        },
+        {
+            "url": "http://wconvert.local/wp-content/plugins/wconvert/resources/template-fonts/cormorant-garamond-italic.woff2",
+            "file": "/Users/navidkashani/Local Sites/wconvert/app/public/wp-content/plugins/wconvert/resources/template-fonts/cormorant-garamond-italic.woff2",
+            "exists": true,
+            "bytes": 39304
+        }
+    ],
+    "failures": [
+        {
+            "id": "40",
+            "name": "Layer Edit",
+            "differences": [
+                {
+                    "path": "/pictures/tree/steps/0/content/children/0/start/0/children/0/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/webp;base64,UklGRq4pAQBXRUJQVlA4IKIpAQDQ0wadASqEA2UEPmEuk0ckJSqmpRNKyVAMCWdtERT\u2026 [sha256:cae646fe59b67a78b49af9c9933e4e92b682783dc6e48562810820462a619f8e]"
+                }
+            ]
+        },
+        {
+            "id": "48",
+            "name": "Extra-Ten Coupon",
+            "differences": [
+                {
+                    "path": "/pictures/tree/steps/0/content/children/0/children/0/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/webp;base64,UklGRsrvAgBXRUJQVlA4IL7vAgDwzgqdASqEA2UEPmEoj0YkIqEnqlkcuPAMCWVuH6B\u2026 [sha256:e66f72bc95db618f78d7a5661a208188a649d449f738dc6b181c63472b35853a]"
+                }
+            ]
+        },
+        {
+            "id": "50",
+            "name": "Black Friday Department",
+            "differences": [
+                {
+                    "path": "/pictures/tree/steps/0/content/children/2/children/0/children/0/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/webp;base64,UklGRq4pAQBXRUJQVlA4IKIpAQDQ0wadASqEA2UEPmEuk0ckJSqmpRNKyVAMCWdtERT\u2026 [sha256:cae646fe59b67a78b49af9c9933e4e92b682783dc6e48562810820462a619f8e]"
+                },
+                {
+                    "path": "/pictures/tree/steps/0/content/children/2/children/1/children/0/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/webp;base64,UklGRkTyAABXRUJQVlA4IDjyAAAwMQSdASqEA4QDPmEsk0ekIiIqopWKWVAMCWdtFZh\u2026 [sha256:a4e173de42b56ecec47b6084d9c4cebacedcf25268d9bb57d6224f2c78963848]"
+                },
+                {
+                    "path": "/pictures/tree/steps/0/content/children/2/children/2/children/0/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/webp;base64,UklGRoquAQBXRUJQVlA4IH6uAQDwdgedASqEA2UEPmEuk0ckIqQmpJKbQNAMCWdsiSf\u2026 [sha256:b93f35378ec463b433dcfc04ea642ebc7c33dd90bbd1355ca6ab04022cf7e98f]"
+                }
+            ]
+        },
+        {
+            "id": "09",
+            "name": "Savings Receipt",
+            "differences": [
+                {
+                    "path": "/pictures/tree/steps/0/content/children/0/children/0/children/0/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABgCAYAAABYFz0dAAALIklEQVR4nOydD3BURx3H\u2026 [sha256:9ef2e42a4dd09a84f6fdb142cc7584201717fa0f1f3816941681da935566d40c]"
+                },
+                {
+                    "path": "/pictures/tree/steps/0/content/children/1/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAAkCAYAAABxCV7jAAAI5klEQVR4nOzdXYhjZx3H\u2026 [sha256:09c8807ddbe5af486a3d4e45a5773918fd7826e7f6113fba911c4156cf2ae547]"
+                }
+            ]
+        },
+        {
+            "id": "22",
+            "name": "Black Friday Fast Lane",
+            "differences": [
+                {
+                    "path": "/pictures/tree/steps/0/content/tokens/bg-image",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAACKCAIAAAA2UL2dAAAAvElEQVR4nOyVMQrCQBBF\u2026 [sha256:75a5f6e88fc5c46f2421cffe6526da15e705ee3a9cd5683d348615b6937b5446]"
+                }
+            ]
+        },
+        {
+            "id": "23",
+            "name": "Packing Perk",
+            "differences": [
+                {
+                    "path": "/pictures/tree/steps/0/content/children/0/start/0/start/0/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAVQAAADcCAYAAAAvBlm0AAAQAElEQVR4nOy9CbQdxXng\u2026 [sha256:bfd8567fdefb1cfc04d16ce1bf566b44449f55e26487fc1e20a1dbff4da19bc0]"
+                }
+            ]
+        },
+        {
+            "id": "25",
+            "name": "Your Welcome Pal",
+            "differences": [
+                {
+                    "path": "/pictures/tree/steps/0/content/children/0/children/0/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/webp;base64,UklGRor8AABXRUJQVlA4IH78AABwkASdASqEA4QDPmEuk0ckIqatpjMqMbAMCWNu8bL\u2026 [sha256:1c17a25a62fff5963850b3728b355af6f7e407e1cf4ff41801fbfe2604829a07]"
+                }
+            ]
+        },
+        {
+            "id": "26",
+            "name": "Breakfast Edit",
+            "differences": [
+                {
+                    "path": "/pictures/tree/steps/0/content/children/0/children/0/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/webp;base64,UklGRsa2AABXRUJQVlA4ILq2AACwQwOdASqEA4QDPmEwlEekIyInI7QZEOAMCWVu1NJ\u2026 [sha256:a3c3b777ec071980718fd3bc4d50fd5645d40fc07c847f3281fda792c8e10f42]"
+                }
+            ]
+        },
+        {
+            "id": "29",
+            "name": "Black Friday Departments",
+            "differences": [
+                {
+                    "path": "/pictures/tree/steps/0/content/children/1/children/0/children/0/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/webp;base64,UklGRqr2AABXRUJQVlA4IJ72AACQEQSdASqEA4QDPmEuk0ekIiispLTpcZAMCWVu1ND\u2026 [sha256:c392083388341b798993ae615e73b986df142f13cdec14b29754a07da4dcc785]"
+                },
+                {
+                    "path": "/pictures/tree/steps/0/content/children/1/children/1/children/0/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/webp;base64,UklGRkTyAABXRUJQVlA4IDjyAAAwMQSdASqEA4QDPmEsk0ekIiIqopWKWVAMCWdtFZh\u2026 [sha256:a4e173de42b56ecec47b6084d9c4cebacedcf25268d9bb57d6224f2c78963848]"
+                },
+                {
+                    "path": "/pictures/tree/steps/0/content/children/1/children/2/children/0/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/webp;base64,UklGRsa3AABXRUJQVlA4ILq3AAAwSwOdASqEA4QDPmEwlEekIqapI1NpkSAMCWVu1Ox\u2026 [sha256:3dc755ecbfff563ebe1686237afd2da521ee44526ad982afe7911aff3384b805]"
+                }
+            ]
+        },
+        {
+            "id": "30",
+            "name": "Anniversary Event",
+            "differences": [
+                {
+                    "path": "/pictures/tree/steps/0/content/tokens/bg-image",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABkAAAAJYCAYAAAA6xipCAAAQAElEQVR4nOzdB5hdV3kv\u2026 [sha256:c3c7a6423e6887b392976ded8808f2390bdbdee399f68e5e425dea58840bf4d0]"
+                }
+            ]
+        }
+    ],
+    "rows": [
+        {
+            "id": "31",
+            "name": "Streetwear Poster",
+            "native_id": "campaign-streetwear-poster",
+            "current_design": "design-4-campaign-streetwear-poster",
+            "current_setup": "setup-4-campaign-streetwear-poster",
+            "revision": 4,
+            "picture_slots": 1,
+            "copy_sha256": "997e45af4d7ae63063f3c676c5ece6a19a5f1c0cb704561dcda633ad272f33be",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/children/1/end/0/children/1/children/0/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/children/1/end/0/children/1/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/children/1/end/0/children/3/tokens/font": "\"DM Sans\", Arial, sans-serif"
+            },
+            "expected_prefill_sha256": "b9b8c5bb021f692977068c7ed9fb953ea6cf8be327da6aa5c82be212451e84a0",
+            "actual_prefill_sha256": "b9b8c5bb021f692977068c7ed9fb953ea6cf8be327da6aa5c82be212451e84a0",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "32",
+            "name": "Tech Price Sheet",
+            "native_id": "campaign-tech-price-sheet",
+            "current_design": "design-4-campaign-tech-price-sheet",
+            "current_setup": "setup-4-campaign-tech-price-sheet",
+            "revision": 4,
+            "picture_slots": 1,
+            "copy_sha256": "88ca9b45fda51d9bf97d94598367fe9386806045193ea8f2524e265c194d2dbe",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/children/2/end/0/children/0/children/0/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/children/2/start/0/children/1/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif"
+            },
+            "expected_prefill_sha256": "8a1f2cebf56f939202f44ed2fb79fb5979d141c0c28f316a404e408e29786ac6",
+            "actual_prefill_sha256": "8a1f2cebf56f939202f44ed2fb79fb5979d141c0c28f316a404e408e29786ac6",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "33",
+            "name": "Fifty-Fifty Poster",
+            "native_id": "campaign-fifty-fifty-poster",
+            "current_design": "design-4-campaign-fifty-fifty-poster",
+            "current_setup": "setup-4-campaign-fifty-fifty-poster",
+            "revision": 4,
+            "picture_slots": 0,
+            "copy_sha256": "f1d3d2b18689c23a2ff3ca58a9a764ffd080f8d0c8798eb6a6e01d9f51c21bcc",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/children/2/children/0/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/children/2/children/1/children/0/tokens/font": "\"DM Sans\", Arial, sans-serif"
+            },
+            "expected_prefill_sha256": "e1c1aa9a396944020a89371aa40df2bdf2eed22b42bdf583a0bde01153ba9b0c",
+            "actual_prefill_sha256": "e1c1aa9a396944020a89371aa40df2bdf2eed22b42bdf583a0bde01153ba9b0c",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "34",
+            "name": "Black Friday Coffee Menu",
+            "native_id": "campaign-black-friday-coffee-menu",
+            "current_design": "design-4-campaign-black-friday-coffee-menu",
+            "current_setup": "setup-4-campaign-black-friday-coffee-menu",
+            "revision": 4,
+            "picture_slots": 1,
+            "copy_sha256": "cc22b33ad73c4b3528839a01c01b755ef12e535f0d3f007e79953c88e76e19e6",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/children/3/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif"
+            },
+            "expected_prefill_sha256": "7115d63c1c91d5de754b34bf53c55bd4d508f35d0a0835506d96f6dc1b99d0fe",
+            "actual_prefill_sha256": "7115d63c1c91d5de754b34bf53c55bd4d508f35d0a0835506d96f6dc1b99d0fe",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "35",
+            "name": "First-Access Pass",
+            "native_id": "campaign-first-access-pass",
+            "current_design": "design-6-campaign-first-access-pass",
+            "current_setup": "setup-6-campaign-first-access-pass",
+            "revision": 6,
+            "picture_slots": 0,
+            "copy_sha256": "14917c9e9ff300642449a8d4b397b13110eff720555fc327401aa0a115424076",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/start/0/children/0/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/start/0/children/0/children/2/tokens/font": "\"DM Sans\", Arial, sans-serif"
+            },
+            "expected_prefill_sha256": "bb5440b89b2329ff82dae2658e4241afa161ea7738bb70e2373034941c306e2b",
+            "actual_prefill_sha256": "bb5440b89b2329ff82dae2658e4241afa161ea7738bb70e2373034941c306e2b",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "36",
+            "name": "Restock Mosaic",
+            "native_id": "campaign-restock-mosaic",
+            "current_design": "design-4-campaign-restock-mosaic",
+            "current_setup": "setup-4-campaign-restock-mosaic",
+            "revision": 4,
+            "picture_slots": 3,
+            "copy_sha256": "dc1cc375ac68a722715b9ca54b71123502965f03ff60d2a2f487c35616d9947e",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/children/2/end/0/children/0/children/0/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/children/2/end/0/children/0/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif"
+            },
+            "expected_prefill_sha256": "c6559dce8a1238cf2428fbc8165a0474bff16e1a5fe349c809167ece01c9c8a7",
+            "actual_prefill_sha256": "c6559dce8a1238cf2428fbc8165a0474bff16e1a5fe349c809167ece01c9c8a7",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "37",
+            "name": "Golden Weekend Ticket",
+            "native_id": "campaign-golden-weekend-ticket",
+            "current_design": "design-4-campaign-golden-weekend-ticket",
+            "current_setup": "setup-4-campaign-golden-weekend-ticket",
+            "revision": 4,
+            "picture_slots": 0,
+            "copy_sha256": "b9aaac48301a94c96029e6c6d372afc476854cf75020b668ce4350f0a9667646",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/start/0/children/2/children/0/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/start/0/children/2/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif"
+            },
+            "expected_prefill_sha256": "ec3f78ff5a3b88d5738b8ff929cfaf0bd83b4b0c3a7d5ec9f8a7a386014cb686",
+            "actual_prefill_sha256": "ec3f78ff5a3b88d5738b8ff929cfaf0bd83b4b0c3a7d5ec9f8a7a386014cb686",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "38",
+            "name": "Finish-Line Countdown",
+            "native_id": "campaign-finish-line-countdown",
+            "current_design": "design-4-campaign-finish-line-countdown",
+            "current_setup": "setup-4-campaign-finish-line-countdown",
+            "revision": 4,
+            "picture_slots": 1,
+            "copy_sha256": "3baf1ffb209a4dd1b3f2878f25382902b13ffcd0d2dff5887de198abab2f28ad",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond"
+            },
+            "expected_prefill_sha256": "1b61a3fc22f1ed77b52174528efb25255c2c9b01fb057a45ff841ad6c9412f0c",
+            "actual_prefill_sha256": "1b61a3fc22f1ed77b52174528efb25255c2c9b01fb057a45ff841ad6c9412f0c",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "39",
+            "name": "Sound Circle",
+            "native_id": "campaign-sound-circle",
+            "current_design": "design-4-campaign-sound-circle",
+            "current_setup": "setup-4-campaign-sound-circle",
+            "revision": 4,
+            "picture_slots": 1,
+            "copy_sha256": "86a1d6356f94d3485cc27b1bfe1dc7dbea8fce424f3013e923ef3562883c7ea3",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/children/1/end/0/children/0/tokens/font": "\"DM Sans\", Arial, sans-serif"
+            },
+            "expected_prefill_sha256": "c046bd79172b076a8e0644a9bb40873d5f90dfe178ea0e638f8168e60214541c",
+            "actual_prefill_sha256": "c046bd79172b076a8e0644a9bb40873d5f90dfe178ea0e638f8168e60214541c",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "40",
+            "name": "Layer Edit",
+            "native_id": "campaign-layer-edit",
+            "current_design": "campaign-layer-edit",
+            "current_setup": "campaign-layer-edit",
+            "revision": 4,
+            "picture_slots": 1,
+            "copy_sha256": "58c78ffbc3abc8ef0cc7cb74ec7f7016ec005b709784660ad846b4e344175fae",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond"
+            },
+            "expected_prefill_sha256": "76e5f9e168280fd1223def92ea4f54418c7c1f6f44be9c26a8ca22c3391557e4",
+            "actual_prefill_sha256": "76e5f9e168280fd1223def92ea4f54418c7c1f6f44be9c26a8ca22c3391557e4",
+            "pass": false,
+            "differences": [
+                {
+                    "path": "/pictures/tree/steps/0/content/children/0/start/0/children/0/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/webp;base64,UklGRq4pAQBXRUJQVlA4IKIpAQDQ0wadASqEA2UEPmEuk0ckJSqmpRNKyVAMCWdtERT\u2026 [sha256:cae646fe59b67a78b49af9c9933e4e92b682783dc6e48562810820462a619f8e]"
+                }
+            ]
+        },
+        {
+            "id": "41",
+            "name": "Black Friday Plus One",
+            "native_id": "campaign-black-friday-plus-one",
+            "current_design": "design-4-campaign-black-friday-plus-one",
+            "current_setup": "setup-4-campaign-black-friday-plus-one",
+            "revision": 4,
+            "picture_slots": 1,
+            "copy_sha256": "d14afdb76b4245e9217e7888922891ef84f3e9a8845f9920bc9e47e644cd6294",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/children/2/end/0/children/0/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/children/2/end/0/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif"
+            },
+            "expected_prefill_sha256": "03f4c21e94584cef4f01320bb8afe25508ed3f0fe2809a92c103290d4a3acf31",
+            "actual_prefill_sha256": "03f4c21e94584cef4f01320bb8afe25508ed3f0fe2809a92c103290d4a3acf31",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "42",
+            "name": "Savings Staircase",
+            "native_id": "campaign-savings-staircase",
+            "current_design": "design-5-campaign-savings-staircase",
+            "current_setup": "setup-5-campaign-savings-staircase",
+            "revision": 5,
+            "picture_slots": 3,
+            "copy_sha256": "9bfc91b375dd92989bcf02355c6a4ac0d4254dbfe1eda94d1c90ed87a4a54118",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/children/2/children/0/children/0/children/0/children/1/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/children/2/children/1/children/0/children/0/children/1/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/children/2/children/2/children/0/children/0/children/1/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif"
+            },
+            "expected_prefill_sha256": "1924bf3873e2e8da36cd648fff4e39b77ec3b976fee0c6b98d1063dde33d279b",
+            "actual_prefill_sha256": "1924bf3873e2e8da36cd648fff4e39b77ec3b976fee0c6b98d1063dde33d279b",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "43",
+            "name": "Twelve-Month Deal",
+            "native_id": "campaign-twelve-month-deal",
+            "current_design": "design-5-campaign-twelve-month-deal",
+            "current_setup": "setup-5-campaign-twelve-month-deal",
+            "revision": 5,
+            "picture_slots": 0,
+            "copy_sha256": "2b58958d49935e49568884a103ab6db880432563711f06b639c09742bfb8de06",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/children/2/children/0/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/children/2/children/1/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/children/2/children/10/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/children/2/children/11/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/children/2/children/2/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/children/2/children/3/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/children/2/children/4/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/children/2/children/5/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/children/2/children/6/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/children/2/children/7/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/children/2/children/8/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/children/2/children/9/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/children/3/start/0/children/0/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif"
+            },
+            "expected_prefill_sha256": "a465515ed6e7a68ec56ba0b706ef6adbfa8126676f2b0554b60fd9018176e323",
+            "actual_prefill_sha256": "a465515ed6e7a68ec56ba0b706ef6adbfa8126676f2b0554b60fd9018176e323",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "44",
+            "name": "Drop Alert",
+            "native_id": "campaign-drop-alert",
+            "current_design": "campaign-drop-alert",
+            "current_setup": "campaign-drop-alert",
+            "revision": 4,
+            "picture_slots": 0,
+            "copy_sha256": "c13a7a1f83a53c8bb616bd8b8a0d8aa23c25c1e2e06ed91688268bcb435213bd",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/children/1/children/0/children/0/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/children/1/children/0/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif"
+            },
+            "expected_prefill_sha256": "30da5f0e8e79db8741521484a1ddb6a47c47fd5da25fba3a28fc8f3b50c102f8",
+            "actual_prefill_sha256": "30da5f0e8e79db8741521484a1ddb6a47c47fd5da25fba3a28fc8f3b50c102f8",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "45",
+            "name": "Deadline Scoreboard",
+            "native_id": "campaign-deadline-scoreboard",
+            "current_design": "campaign-deadline-scoreboard",
+            "current_setup": "campaign-deadline-scoreboard",
+            "revision": 4,
+            "picture_slots": 0,
+            "copy_sha256": "8bdef7763f3328350e255ad9da169a42010311396cb84a184625e2856f084f09",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/children/0/children/0/children/1/tokens/heading-font": "\"DM Sans\", Arial, sans-serif"
+            },
+            "expected_prefill_sha256": "bb8f4a95850fae22d6adbc932d0c10edf26823eda8bff98183ea7c668036726c",
+            "actual_prefill_sha256": "bb8f4a95850fae22d6adbc932d0c10edf26823eda8bff98183ea7c668036726c",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "46",
+            "name": "First-Dibs Signup",
+            "native_id": "campaign-first-dibs-signup",
+            "current_design": "campaign-first-dibs-signup",
+            "current_setup": "campaign-first-dibs-signup",
+            "revision": 5,
+            "picture_slots": 0,
+            "copy_sha256": "3076be4d641c187ee839906504ab760dd948bb99c874b6c39c7fab0f615bd72f",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/start/0/children/0/children/0/tokens/font": "\"DM Sans\", Arial, sans-serif"
+            },
+            "expected_prefill_sha256": "117f32167f367f235f1c47faca91ce8f82fa36b4780d22953af81ea196ec9b61",
+            "actual_prefill_sha256": "117f32167f367f235f1c47faca91ce8f82fa36b4780d22953af81ea196ec9b61",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "47",
+            "name": "Free-Delivery Label",
+            "native_id": "campaign-free-delivery-label",
+            "current_design": "campaign-free-delivery-label",
+            "current_setup": "campaign-free-delivery-label",
+            "revision": 7,
+            "picture_slots": 0,
+            "copy_sha256": "72ddf427363ec6800b1c8ad4ac54aa6a1661b74cb8f2ee2ca4cab258d50b5f21",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/children/0/end/0/start/0/children/0/tokens/heading-font": "\"DM Sans\", Arial, sans-serif"
+            },
+            "expected_prefill_sha256": "7808642e564e6aa83f0192e1b4c4c5c6cac6eeadeadd622b75d146f4ecfe972b",
+            "actual_prefill_sha256": "7808642e564e6aa83f0192e1b4c4c5c6cac6eeadeadd622b75d146f4ecfe972b",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "48",
+            "name": "Extra-Ten Coupon",
+            "native_id": "campaign-extra-ten-coupon",
+            "current_design": "campaign-extra-ten-coupon",
+            "current_setup": "campaign-extra-ten-coupon",
+            "revision": 6,
+            "picture_slots": 1,
+            "copy_sha256": "38eafe49f423b5ff53ad389ec9d5dab9ef372a8159c904776661cda1dcbbd208",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond"
+            },
+            "expected_prefill_sha256": "f1929febf0c5e01a13a768470a219c35097eeaf4114d79d67f95f2be9009715c",
+            "actual_prefill_sha256": "f1929febf0c5e01a13a768470a219c35097eeaf4114d79d67f95f2be9009715c",
+            "pass": false,
+            "differences": [
+                {
+                    "path": "/pictures/tree/steps/0/content/children/0/children/0/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/webp;base64,UklGRsrvAgBXRUJQVlA4IL7vAgDwzgqdASqEA2UEPmEoj0YkIqEnqlkcuPAMCWVuH6B\u2026 [sha256:e66f72bc95db618f78d7a5661a208188a649d449f738dc6b181c63472b35853a]"
+                }
+            ]
+        },
+        {
+            "id": "49",
+            "name": "Home Edit",
+            "native_id": "campaign-home-edit",
+            "current_design": "design-5-campaign-home-edit",
+            "current_setup": "setup-5-campaign-home-edit",
+            "revision": 5,
+            "picture_slots": 1,
+            "copy_sha256": "056be26ec7dc5df19de4ac089b1a9e9f937116d0febd1a7282258ccca1ce0c8f",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/end/0/end/0/children/0/children/1/children/0/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/end/0/end/0/children/0/children/1/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif"
+            },
+            "expected_prefill_sha256": "b69e6cab68c3c0758f35fc94d00de3d308c92b19d18f7941753f694c245a1803",
+            "actual_prefill_sha256": "b69e6cab68c3c0758f35fc94d00de3d308c92b19d18f7941753f694c245a1803",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "50",
+            "name": "Black Friday Department",
+            "native_id": "campaign-black-friday-department",
+            "current_design": "campaign-black-friday-department",
+            "current_setup": "campaign-black-friday-department",
+            "revision": 4,
+            "picture_slots": 3,
+            "copy_sha256": "d1d43b05b21a899fa0da51f3c1838e54d07ed840e8bc718b9edea5dde83eecc4",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/children/3/start/0/children/1/children/0/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tree/steps/0/content/children/3/start/0/children/1/children/1/tokens/font": "\"DM Sans\", Arial, sans-serif"
+            },
+            "expected_prefill_sha256": "cc41804e43ecc535320686f13ad7c3a747208935a9f924dfe39fe6c535276587",
+            "actual_prefill_sha256": "cc41804e43ecc535320686f13ad7c3a747208935a9f924dfe39fe6c535276587",
+            "pass": false,
+            "differences": [
+                {
+                    "path": "/pictures/tree/steps/0/content/children/2/children/0/children/0/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/webp;base64,UklGRq4pAQBXRUJQVlA4IKIpAQDQ0wadASqEA2UEPmEuk0ckJSqmpRNKyVAMCWdtERT\u2026 [sha256:cae646fe59b67a78b49af9c9933e4e92b682783dc6e48562810820462a619f8e]"
+                },
+                {
+                    "path": "/pictures/tree/steps/0/content/children/2/children/1/children/0/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/webp;base64,UklGRkTyAABXRUJQVlA4IDjyAAAwMQSdASqEA4QDPmEsk0ekIiIqopWKWVAMCWdtFZh\u2026 [sha256:a4e173de42b56ecec47b6084d9c4cebacedcf25268d9bb57d6224f2c78963848]"
+                },
+                {
+                    "path": "/pictures/tree/steps/0/content/children/2/children/2/children/0/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/webp;base64,UklGRoquAQBXRUJQVlA4IH6uAQDwdgedASqEA2UEPmEuk0ckIqQmpJKbQNAMCWdsiSf\u2026 [sha256:b93f35378ec463b433dcfc04ea642ebc7c33dd90bbd1355ca6ab04022cf7e98f]"
+                }
+            ]
+        },
+        {
+            "id": "01",
+            "name": "Welcome Buddy",
+            "native_id": "campaign-welcome-buddy",
+            "current_design": "design-3-campaign-welcome-buddy",
+            "current_setup": "setup-3-campaign-welcome-buddy",
+            "revision": 3,
+            "picture_slots": 1,
+            "copy_sha256": "5153bf3b2922e3a5e3d3b30ff47e443b00f670aee5d586a4ac55ec5525318601",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond"
+            },
+            "expected_prefill_sha256": "edda92808651ae0e6c0b1784c76806c4fe521901fa13ec9ed71e90b9e373231b",
+            "actual_prefill_sha256": "edda92808651ae0e6c0b1784c76806c4fe521901fa13ec9ed71e90b9e373231b",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "02",
+            "name": "Welcome Perk",
+            "native_id": "campaign-welcome-perk",
+            "current_design": "design-4-campaign-welcome-perk",
+            "current_setup": "setup-4-campaign-welcome-perk",
+            "revision": 4,
+            "picture_slots": 1,
+            "copy_sha256": "a5385fafb50ca82b88851ac8c3df8af1930ee8c9903880dd4d8aa6b08c91b55a",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond"
+            },
+            "expected_prefill_sha256": "a581bca58834b381c2e08e7182268b97f6fe5c703c4c0ef6abe2d87bcfb8d382",
+            "actual_prefill_sha256": "a581bca58834b381c2e08e7182268b97f6fe5c703c4c0ef6abe2d87bcfb8d382",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "03",
+            "name": "Friday Coupon",
+            "native_id": "campaign-friday-coupon",
+            "current_design": "design-5-campaign-friday-coupon",
+            "current_setup": "setup-5-campaign-friday-coupon",
+            "revision": 5,
+            "picture_slots": 0,
+            "copy_sha256": "49b8561f09ded2096f8140424c9e938c8789e5fb46c00b3db237a628cfbf19af",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/end/0/children/0/children/1/tokens/font": "\"Bebas Neue\", Impact, sans-serif"
+            },
+            "expected_prefill_sha256": "bb953c0f2182dd11daf3626ab4a01071e828fcd71ce26ab3ce99ecf94934c1a6",
+            "actual_prefill_sha256": "bb953c0f2182dd11daf3626ab4a01071e828fcd71ce26ab3ce99ecf94934c1a6",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "04",
+            "name": "Turn It Up",
+            "native_id": "campaign-turn-it-up",
+            "current_design": "design-4-campaign-turn-it-up",
+            "current_setup": "setup-4-campaign-turn-it-up",
+            "revision": 4,
+            "picture_slots": 1,
+            "copy_sha256": "bb77ae32987e10c49c10f9a4dea9f9ff68472b16c1a9c0a6a6f41e4aa1a1ffd3",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond"
+            },
+            "expected_prefill_sha256": "1e9d449ef3eb5e051c02d5035aa2b4a8f186e4c3ef76b41bfe0164f47d109632",
+            "actual_prefill_sha256": "1e9d449ef3eb5e051c02d5035aa2b4a8f186e4c3ef76b41bfe0164f47d109632",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "05",
+            "name": "Friday Comic",
+            "native_id": "campaign-friday-comic",
+            "current_design": "design-4-campaign-friday-comic",
+            "current_setup": "setup-4-campaign-friday-comic",
+            "revision": 4,
+            "picture_slots": 1,
+            "copy_sha256": "b2663ce38b9fa880e9dcfa4976d555a0de58eae435df2fb8059810344341577c",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/children/0/children/0/children/0/tokens/font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/steps/0/content/children/1/end/0/children/0/children/1/children/0/children/0/children/0/tokens/font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/steps/0/content/children/1/start/0/children/0/children/2/tokens/font": "\"Bebas Neue\", Impact, sans-serif"
+            },
+            "expected_prefill_sha256": "60d94db3313db975d5d0b33732d4627c1eff42f8eee827ea86ccfe3a74b8700f",
+            "actual_prefill_sha256": "60d94db3313db975d5d0b33732d4627c1eff42f8eee827ea86ccfe3a74b8700f",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "06",
+            "name": "Price Elevator",
+            "native_id": "campaign-price-elevator",
+            "current_design": "design-6-campaign-price-elevator",
+            "current_setup": "setup-6-campaign-price-elevator",
+            "revision": 6,
+            "picture_slots": 0,
+            "copy_sha256": "cfefa60771dbf92feb83ccb568ebb68999b5a628849c6832fc606f661cf9d235",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/start/0/children/0/children/0/children/1/tokens/font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/steps/0/content/start/0/children/0/children/0/children/3/tokens/font": "\"Bebas Neue\", Impact, sans-serif"
+            },
+            "expected_prefill_sha256": "4ef763c25f7af9b689085fa941e062ecc33c3ea9c6f2afcfd135329320b43638",
+            "actual_prefill_sha256": "4ef763c25f7af9b689085fa941e062ecc33c3ea9c6f2afcfd135329320b43638",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "07",
+            "name": "Private Preview",
+            "native_id": "campaign-private-preview",
+            "current_design": "design-5-campaign-private-preview",
+            "current_setup": "setup-5-campaign-private-preview",
+            "revision": 5,
+            "picture_slots": 1,
+            "copy_sha256": "004d68fc0ece95f7dda1b2dbdc3e4c314bcefe006c9b4c84e2ad2a1c4b111c2d",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Times New Roman\", Times, serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/steps/0/content/start/0/children/0/children/0/children/0/children/0/tokens/font": "\"Times New Roman\", Times, serif"
+            },
+            "expected_prefill_sha256": "121354cb3d13bf81cfb2a9ffe354d3ab117f33a1c9dc869230bb9d5c9eb627b5",
+            "actual_prefill_sha256": "121354cb3d13bf81cfb2a9ffe354d3ab117f33a1c9dc869230bb9d5c9eb627b5",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "08",
+            "name": "Outdoor Edit",
+            "native_id": "campaign-outdoor-edit",
+            "current_design": "design-4-campaign-outdoor-edit",
+            "current_setup": "setup-4-campaign-outdoor-edit",
+            "revision": 4,
+            "picture_slots": 1,
+            "copy_sha256": "4b080acac1427ac4afd9cb0cb787a8b5e9e596d2c1a6726bdab7fec0e2fb9a22",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/start/0/children/1/children/0/children/0/tokens/font": "\"Bebas Neue\", Impact, sans-serif"
+            },
+            "expected_prefill_sha256": "a358ee91a1d928ab1449c101721dd7563e824ebe08d868256909a6b294268951",
+            "actual_prefill_sha256": "a358ee91a1d928ab1449c101721dd7563e824ebe08d868256909a6b294268951",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "09",
+            "name": "Savings Receipt",
+            "native_id": "campaign-savings-receipt",
+            "current_design": "campaign-savings-receipt",
+            "current_setup": "campaign-savings-receipt",
+            "revision": 4,
+            "picture_slots": 2,
+            "copy_sha256": "3a62eef29b28015e9bcf22d6ca4ab9844b3fcd627c343d4996e31aea7360e7b4",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/children/0/children/4/children/0/children/0/tokens/font": "monospace",
+                "/tree/steps/0/content/children/0/children/4/children/0/children/1/tokens/font": "monospace",
+                "/tree/steps/0/content/children/0/children/4/children/1/children/0/tokens/font": "monospace",
+                "/tree/steps/0/content/children/0/children/4/children/1/children/1/tokens/font": "monospace",
+                "/tree/steps/0/content/children/0/children/6/children/0/children/0/tokens/font": "monospace",
+                "/tree/steps/0/content/children/0/children/6/children/0/children/1/tokens/font": "\"Bebas Neue\", Impact, sans-serif"
+            },
+            "expected_prefill_sha256": "02b178ca6297c0d241323338bc52d0b453069a27f48fe0c57228bdac6bc9e194",
+            "actual_prefill_sha256": "02b178ca6297c0d241323338bc52d0b453069a27f48fe0c57228bdac6bc9e194",
+            "pass": false,
+            "differences": [
+                {
+                    "path": "/pictures/tree/steps/0/content/children/0/children/0/children/0/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABgCAYAAABYFz0dAAALIklEQVR4nOydD3BURx3H\u2026 [sha256:9ef2e42a4dd09a84f6fdb142cc7584201717fa0f1f3816941681da935566d40c]"
+                },
+                {
+                    "path": "/pictures/tree/steps/0/content/children/1/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAAkCAYAAABxCV7jAAAI5klEQVR4nOzdXYhjZx3H\u2026 [sha256:09c8807ddbe5af486a3d4e45a5773918fd7826e7f6113fba911c4156cf2ae547]"
+                }
+            ]
+        },
+        {
+            "id": "10",
+            "name": "Welcome Shortcut",
+            "native_id": "campaign-welcome-shortcut",
+            "current_design": "design-5-campaign-welcome-shortcut",
+            "current_setup": "setup-5-campaign-welcome-shortcut",
+            "revision": 5,
+            "picture_slots": 0,
+            "copy_sha256": "19602649be3373ad0f8fb718c0924d6f5ed6587ebb7b580fd86395d205c5deb1",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/start/0/children/0/children/0/children/0/children/0/tokens/font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/steps/0/content/start/0/children/0/children/0/children/0/children/1/tokens/font": "monospace"
+            },
+            "expected_prefill_sha256": "6cab496b1c8f53114f2c114d6f7a10a014c8a04815a1ee73a0d6a3f41fb8ca12",
+            "actual_prefill_sha256": "6cab496b1c8f53114f2c114d6f7a10a014c8a04815a1ee73a0d6a3f41fb8ca12",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "11",
+            "name": "Sneaker Edit",
+            "native_id": "campaign-sneaker-edit",
+            "current_design": "design-5-campaign-sneaker-edit",
+            "current_setup": "setup-5-campaign-sneaker-edit",
+            "revision": 5,
+            "picture_slots": 1,
+            "copy_sha256": "6235534350d5d67e69677067ddf048a398caa2412185d2bac6b7e7ae77d5c4bb",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/start/0/children/1/children/0/tokens/font": "monospace"
+            },
+            "expected_prefill_sha256": "598929912a0ce84badb3883ee382d54b1b8eaf4ae346bdc7c172f991bd43c8e1",
+            "actual_prefill_sha256": "598929912a0ce84badb3883ee382d54b1b8eaf4ae346bdc7c172f991bd43c8e1",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "12",
+            "name": "Midnight Fragrance Edit",
+            "native_id": "campaign-midnight-fragrance-edit",
+            "current_design": "design-4-campaign-midnight-fragrance-edit",
+            "current_setup": "setup-4-campaign-midnight-fragrance-edit",
+            "revision": 4,
+            "picture_slots": 1,
+            "copy_sha256": "1fe84888925db7689ef5cb55d4669a035ec287d88de70c43793605e5bacccce3",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Times New Roman\", Times, serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/steps/0/content/children/1/children/1/children/0/tokens/font": "\"Bebas Neue\", Impact, sans-serif"
+            },
+            "expected_prefill_sha256": "19ec6a2d7dce89234f4a207043edec919c41cec9ca470042c9a3ae25b7068c07",
+            "actual_prefill_sha256": "19ec6a2d7dce89234f4a207043edec919c41cec9ca470042c9a3ae25b7068c07",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "13",
+            "name": "Wishlist Alert",
+            "native_id": "campaign-wishlist-alert",
+            "current_design": "design-6-campaign-wishlist-alert",
+            "current_setup": "setup-6-campaign-wishlist-alert",
+            "revision": 6,
+            "picture_slots": 1,
+            "copy_sha256": "345dee2c85db64adc5c2fe80c2ae9fb9869066a66aadc1467b6b4f1511daa031",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Times New Roman\", Times, serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue"
+            },
+            "expected_prefill_sha256": "f26ccec7a9ba248db171706abeb68f26abe1c292733ee90c8d33bc9d91a6a6ed",
+            "actual_prefill_sha256": "f26ccec7a9ba248db171706abeb68f26abe1c292733ee90c8d33bc9d91a6a6ed",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "14",
+            "name": "Garden Edit",
+            "native_id": "campaign-garden-edit",
+            "current_design": "design-4-campaign-garden-edit",
+            "current_setup": "setup-4-campaign-garden-edit",
+            "revision": 4,
+            "picture_slots": 1,
+            "copy_sha256": "bd12ade1c8f9b939bca8ccdeb541fa9b06a41ff4a11f1c35e4413a439bee839f",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond"
+            },
+            "expected_prefill_sha256": "ccde078cb38e9992ce6643c01f198afe5aff3bb01f0b07fbe299de473c4aa1f9",
+            "actual_prefill_sha256": "ccde078cb38e9992ce6643c01f198afe5aff3bb01f0b07fbe299de473c4aa1f9",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "15",
+            "name": "Friday Pass",
+            "native_id": "campaign-friday-pass",
+            "current_design": "design-4-campaign-friday-pass",
+            "current_setup": "setup-4-campaign-friday-pass",
+            "revision": 4,
+            "picture_slots": 1,
+            "copy_sha256": "af7566817f2b9ee2a0d105b03704219de4579882e6bba5cd28da7e8980a7ff9d",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Times New Roman\", Times, serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/steps/0/content/start/0/children/0/children/0/children/0/tokens/font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/steps/0/content/start/0/children/0/children/0/children/2/children/1/tokens/font": "\"Bebas Neue\", Impact, sans-serif"
+            },
+            "expected_prefill_sha256": "476953b7f945f8a54949a42564e51657b659b9a785f598d81ca27ec92181a1a2",
+            "actual_prefill_sha256": "476953b7f945f8a54949a42564e51657b659b9a785f598d81ca27ec92181a1a2",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "16",
+            "name": "Delivery Buddy",
+            "native_id": "campaign-delivery-buddy",
+            "current_design": "design-5-campaign-delivery-buddy",
+            "current_setup": "setup-5-campaign-delivery-buddy",
+            "revision": 5,
+            "picture_slots": 1,
+            "copy_sha256": "63ce299e8b7235c5fc5ce2306802459e7fb8101a910b20f7d2aa2a67b6e20a37",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond"
+            },
+            "expected_prefill_sha256": "2f0e707fd10e24a0142fec852fa88b423bdcca0f9b545d6aaa6ed93863d1daef",
+            "actual_prefill_sha256": "2f0e707fd10e24a0142fec852fa88b423bdcca0f9b545d6aaa6ed93863d1daef",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "17",
+            "name": "Black Friday Archive",
+            "native_id": "campaign-black-friday-archive",
+            "current_design": "design-4-campaign-black-friday-archive",
+            "current_setup": "setup-4-campaign-black-friday-archive",
+            "revision": 4,
+            "picture_slots": 0,
+            "copy_sha256": "a52e4af14067f1eada791c8cdcd3df6fe3b59735458ea5fcbb6893229a273749",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/children/1/end/0/children/0/children/0/children/1/tokens/font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/steps/0/content/children/1/end/0/children/0/children/0/children/4/tokens/font": "monospace"
+            },
+            "expected_prefill_sha256": "3b11bb30b2846f148120287a2c28537c80d6f89e7b85f2d3dc2f54558ae4d652",
+            "actual_prefill_sha256": "3b11bb30b2846f148120287a2c28537c80d6f89e7b85f2d3dc2f54558ae4d652",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "18",
+            "name": "Extra Gift",
+            "native_id": "campaign-extra-gift",
+            "current_design": "design-4-campaign-extra-gift",
+            "current_setup": "setup-4-campaign-extra-gift",
+            "revision": 4,
+            "picture_slots": 1,
+            "copy_sha256": "8fb46f286353b0499a811b1af814c38a4ab39a21bf98c756c6d55d549e0a855a",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond"
+            },
+            "expected_prefill_sha256": "41f1d1e4b22540f8dde75867b53ac2fd059c2bd437cc97ef120ab9e01e3c07af",
+            "actual_prefill_sha256": "41f1d1e4b22540f8dde75867b53ac2fd059c2bd437cc97ef120ab9e01e3c07af",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "19",
+            "name": "Friday Game Code",
+            "native_id": "campaign-friday-game-code",
+            "current_design": "design-6-campaign-friday-game-code",
+            "current_setup": "setup-6-campaign-friday-game-code",
+            "revision": 6,
+            "picture_slots": 0,
+            "copy_sha256": "5f58e543917e3df795898055fc87a6077a7133655a6f4798809525e2fe377c00",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/children/0/tokens/font": "\"Bebas Neue\", Impact, sans-serif"
+            },
+            "expected_prefill_sha256": "adfde09654de2bef9e0a05192bf3bfa038a21258b87db36a224ba7a272d1c225",
+            "actual_prefill_sha256": "adfde09654de2bef9e0a05192bf3bfa038a21258b87db36a224ba7a272d1c225",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "20",
+            "name": "Fragrance Booth",
+            "native_id": "campaign-fragrance-booth",
+            "current_design": "design-4-campaign-fragrance-booth",
+            "current_setup": "setup-4-campaign-fragrance-booth",
+            "revision": 4,
+            "picture_slots": 3,
+            "copy_sha256": "a3fc87904baa5033980a28038809cd6d7d490839bbdbaa3a7b870bfccca94b13",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond"
+            },
+            "expected_prefill_sha256": "dbb33f593bcc15dcfd1aaa5a8eac41bbfafd208175b90541c847dac7f5930d32",
+            "actual_prefill_sha256": "dbb33f593bcc15dcfd1aaa5a8eac41bbfafd208175b90541c847dac7f5930d32",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "21",
+            "name": "Sweet Edit",
+            "native_id": "campaign-sweet-edit",
+            "current_design": "campaign-sweet-edit",
+            "current_setup": "campaign-sweet-edit",
+            "revision": 5,
+            "picture_slots": 0,
+            "copy_sha256": "5c6ae61dd2ab92004cf8b5c954b13ffe00a2f3ea3e01b9e6e176b68c57b31a4f",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/children/0/start/0/start/0/children/0/tokens/font": "\"Bebas Neue\", Impact, sans-serif"
+            },
+            "expected_prefill_sha256": "aaadfced2994833ebebae28e6ae4d059130d96734d6686864abd00d812049188",
+            "actual_prefill_sha256": "aaadfced2994833ebebae28e6ae4d059130d96734d6686864abd00d812049188",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "22",
+            "name": "Black Friday Fast Lane",
+            "native_id": "campaign-black-friday-fast-lane",
+            "current_design": "campaign-black-friday-fast-lane",
+            "current_setup": "campaign-black-friday-fast-lane",
+            "revision": 4,
+            "picture_slots": 1,
+            "copy_sha256": "00164961ee683ef50eb825575c2ad46b512e1417fc43bb05c0daf2ae0d0805e5",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond"
+            },
+            "expected_prefill_sha256": "f0de1b82370cc76acb9b4cbe9ee8f13edf587fc7949d950d868ee8ac9d032488",
+            "actual_prefill_sha256": "f0de1b82370cc76acb9b4cbe9ee8f13edf587fc7949d950d868ee8ac9d032488",
+            "pass": false,
+            "differences": [
+                {
+                    "path": "/pictures/tree/steps/0/content/tokens/bg-image",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAACKCAIAAAA2UL2dAAAAvElEQVR4nOyVMQrCQBBF\u2026 [sha256:75a5f6e88fc5c46f2421cffe6526da15e705ee3a9cd5683d348615b6937b5446]"
+                }
+            ]
+        },
+        {
+            "id": "23",
+            "name": "Packing Perk",
+            "native_id": "campaign-packing-perk",
+            "current_design": "campaign-packing-perk",
+            "current_setup": "campaign-packing-perk",
+            "revision": 5,
+            "picture_slots": 1,
+            "copy_sha256": "b8a3b8e762f900a4742525ed9692b6878b33d79766e68b74ddb975487082ae3a",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond"
+            },
+            "expected_prefill_sha256": "6bb3a79ff5c749bb999a2d2a4bcbd0bcc27ac9cae346e9c7d0cf740b8ee0be5d",
+            "actual_prefill_sha256": "6bb3a79ff5c749bb999a2d2a4bcbd0bcc27ac9cae346e9c7d0cf740b8ee0be5d",
+            "pass": false,
+            "differences": [
+                {
+                    "path": "/pictures/tree/steps/0/content/children/0/start/0/start/0/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAVQAAADcCAYAAAAvBlm0AAAQAElEQVR4nOy9CbQdxXng\u2026 [sha256:bfd8567fdefb1cfc04d16ce1bf566b44449f55e26487fc1e20a1dbff4da19bc0]"
+                }
+            ]
+        },
+        {
+            "id": "24",
+            "name": "Friday Email Alert",
+            "native_id": "campaign-friday-email-alert",
+            "current_design": "campaign-friday-email-alert",
+            "current_setup": "campaign-friday-email-alert",
+            "revision": 9,
+            "picture_slots": 0,
+            "copy_sha256": "c88237d09254249537495afa0590ec245530210d326a4501cc445c529f53c5cd",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond"
+            },
+            "expected_prefill_sha256": "d0a4284fd4be848cb9b990bc91d6a8a4ba89d1e8d6d142f529e0fa68b059104e",
+            "actual_prefill_sha256": "d0a4284fd4be848cb9b990bc91d6a8a4ba89d1e8d6d142f529e0fa68b059104e",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "25",
+            "name": "Your Welcome Pal",
+            "native_id": "campaign-your-welcome-pal",
+            "current_design": "campaign-your-welcome-pal",
+            "current_setup": "campaign-your-welcome-pal",
+            "revision": 4,
+            "picture_slots": 1,
+            "copy_sha256": "9947bb961a95eea33f34c8df18d45723be0dcc49c94f5d49e1729681fed69071",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond"
+            },
+            "expected_prefill_sha256": "23e8506d2c6f84e51796b2f4ce6c00d936a472feaa2a73d674410ac7b03f1753",
+            "actual_prefill_sha256": "23e8506d2c6f84e51796b2f4ce6c00d936a472feaa2a73d674410ac7b03f1753",
+            "pass": false,
+            "differences": [
+                {
+                    "path": "/pictures/tree/steps/0/content/children/0/children/0/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/webp;base64,UklGRor8AABXRUJQVlA4IH78AABwkASdASqEA4QDPmEuk0ckIqatpjMqMbAMCWNu8bL\u2026 [sha256:1c17a25a62fff5963850b3728b355af6f7e407e1cf4ff41801fbfe2604829a07]"
+                }
+            ]
+        },
+        {
+            "id": "26",
+            "name": "Breakfast Edit",
+            "native_id": "campaign-breakfast-edit",
+            "current_design": "campaign-breakfast-edit",
+            "current_setup": "campaign-breakfast-edit",
+            "revision": 4,
+            "picture_slots": 1,
+            "copy_sha256": "2771b08738f41397d4089331b180068ac8e04c8a1f7a1208098517c4f09d58c8",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond"
+            },
+            "expected_prefill_sha256": "8c28f21c69fa6fd9fdf6a240d8fc901fcafaff963a178e77d9cbbfa419708b1e",
+            "actual_prefill_sha256": "8c28f21c69fa6fd9fdf6a240d8fc901fcafaff963a178e77d9cbbfa419708b1e",
+            "pass": false,
+            "differences": [
+                {
+                    "path": "/pictures/tree/steps/0/content/children/0/children/0/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/webp;base64,UklGRsa2AABXRUJQVlA4ILq2AACwQwOdASqEA4QDPmEwlEekIyInI7QZEOAMCWVu1NJ\u2026 [sha256:a3c3b777ec071980718fd3bc4d50fd5645d40fc07c847f3281fda792c8e10f42]"
+                }
+            ]
+        },
+        {
+            "id": "27",
+            "name": "Welcome Label",
+            "native_id": "campaign-welcome-label",
+            "current_design": "design-4-campaign-welcome-label",
+            "current_setup": "setup-4-campaign-welcome-label",
+            "revision": 4,
+            "picture_slots": 0,
+            "copy_sha256": "be4e650f26b7b85b319397ee3f959ceefdba8474de500ee323d2ca6ccc40e59b",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/start/0/children/0/children/1/tokens/font": "\"Bebas Neue\", Impact, sans-serif"
+            },
+            "expected_prefill_sha256": "5072c2673a515c23e4e0a3893879d884f06c2026845960b5c062de97a2f9c654",
+            "actual_prefill_sha256": "5072c2673a515c23e4e0a3893879d884f06c2026845960b5c062de97a2f9c654",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "28",
+            "name": "Pixel Play Sale",
+            "native_id": "campaign-pixel-play-sale",
+            "current_design": "design-4-campaign-pixel-play-sale",
+            "current_setup": "setup-4-campaign-pixel-play-sale",
+            "revision": 4,
+            "picture_slots": 1,
+            "copy_sha256": "48361de441f3f3e4e9869facf6dd0e477189d187b2da295e7d24b6e183c8702e",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond",
+                "/tree/steps/0/content/children/3/children/0/tokens/font": "\"Bebas Neue\", Impact, sans-serif"
+            },
+            "expected_prefill_sha256": "2112f7f5d213b54151793049e0a2eb32ed5a3763536a84927e9a038076d64b53",
+            "actual_prefill_sha256": "2112f7f5d213b54151793049e0a2eb32ed5a3763536a84927e9a038076d64b53",
+            "pass": true,
+            "differences": []
+        },
+        {
+            "id": "29",
+            "name": "Black Friday Departments",
+            "native_id": "campaign-black-friday-departments",
+            "current_design": "campaign-black-friday-departments",
+            "current_setup": "campaign-black-friday-departments",
+            "revision": 4,
+            "picture_slots": 3,
+            "copy_sha256": "0eaecbefc2acceca995d3fc7443e46c472e72b200e616bce2d4192d86b3d9008",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond"
+            },
+            "expected_prefill_sha256": "7d58320ba029940804333a0507535cab602d1458e3bda9da5ff0cc1d1f93abdb",
+            "actual_prefill_sha256": "7d58320ba029940804333a0507535cab602d1458e3bda9da5ff0cc1d1f93abdb",
+            "pass": false,
+            "differences": [
+                {
+                    "path": "/pictures/tree/steps/0/content/children/1/children/0/children/0/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/webp;base64,UklGRqr2AABXRUJQVlA4IJ72AACQEQSdASqEA4QDPmEuk0ekIiispLTpcZAMCWVu1ND\u2026 [sha256:c392083388341b798993ae615e73b986df142f13cdec14b29754a07da4dcc785]"
+                },
+                {
+                    "path": "/pictures/tree/steps/0/content/children/1/children/1/children/0/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/webp;base64,UklGRkTyAABXRUJQVlA4IDjyAAAwMQSdASqEA4QDPmEsk0ekIiIqopWKWVAMCWdtFZh\u2026 [sha256:a4e173de42b56ecec47b6084d9c4cebacedcf25268d9bb57d6224f2c78963848]"
+                },
+                {
+                    "path": "/pictures/tree/steps/0/content/children/1/children/2/children/0/src",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/webp;base64,UklGRsa3AABXRUJQVlA4ILq3AAAwSwOdASqEA4QDPmEwlEekIqapI1NpkSAMCWVu1Ox\u2026 [sha256:3dc755ecbfff563ebe1686237afd2da521ee44526ad982afe7911aff3384b805]"
+                }
+            ]
+        },
+        {
+            "id": "30",
+            "name": "Anniversary Event",
+            "native_id": "campaign-anniversary-event",
+            "current_design": "campaign-anniversary-event",
+            "current_setup": "campaign-anniversary-event",
+            "revision": 7,
+            "picture_slots": 1,
+            "copy_sha256": "b5f07ee38e1f111068c807393f833d5af217229126207c7d74b24387ad439569",
+            "font_rules": {
+                "/tokens/font": "\"DM Sans\", Arial, sans-serif",
+                "/tokens/heading-font": "\"Bebas Neue\", Impact, sans-serif",
+                "/tree/fonts/0/faces/0/weight": 400,
+                "/tree/fonts/0/faces/1/weight": 700,
+                "/tree/fonts/0/family": "DM Sans",
+                "/tree/fonts/1/faces/0/weight": 400,
+                "/tree/fonts/1/family": "Bebas Neue",
+                "/tree/fonts/2/faces/0/weight": 400,
+                "/tree/fonts/2/family": "Cormorant Garamond"
+            },
+            "expected_prefill_sha256": "a9239013a4b074dafdca79679a75ae27daac4c1da299f2389a062b561e6ba7a2",
+            "actual_prefill_sha256": "a9239013a4b074dafdca79679a75ae27daac4c1da299f2389a062b561e6ba7a2",
+            "pass": false,
+            "differences": [
+                {
+                    "path": "/pictures/tree/steps/0/content/tokens/bg-image",
+                    "expected": "Materialized local image URL",
+                    "actual": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABkAAAAJYCAYAAAA6xipCAAAQAElEQVR4nOzdB5hdV3kv\u2026 [sha256:c3c7a6423e6887b392976ded8808f2390bdbdee399f68e5e425dea58840bf4d0]"
+                }
+            ]
+        }
+    ]
+}

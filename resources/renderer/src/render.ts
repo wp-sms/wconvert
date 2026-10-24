@@ -7,6 +7,7 @@ import type {
   CodeNode,
   ConsentNode,
   CountdownNode,
+  DividerNode,
   EyebrowNode,
   FieldNode,
   FollowupNode,
@@ -285,7 +286,7 @@ function elementFor(node: TemplateNode, scoped: Tokens, at: string | null): HTML
     case 'badge':
       return badge(node as BadgeNode);
     case 'divider':
-      return divider();
+      return divider(node as DividerNode);
     case 'countdown':
       return countdown(node as CountdownNode);
     case 'code':
@@ -661,8 +662,10 @@ function rating(node: RatingNode): HTMLElement {
  * without this vocabulary having to invent a role for it — and it is the one
  * leaf here with no words at all, so semantics is the only thing it has.
  */
-function divider(): HTMLElement {
-  return words('hr', 'wc-divider', '');
+function divider(node: DividerNode): HTMLElement {
+  const element = words('hr', 'wc-divider', '');
+  if (node.pattern === 'dashed') element.dataset.pattern = 'dashed';
+  return element;
 }
 
 /**
@@ -1050,9 +1053,11 @@ function field(node: FieldNode): HTMLElement | null {
  */
 function code(node: CodeNode, at: string | null): HTMLElement {
   const value = words('span', 'wc-code', node.text);
+  if (node.appearance === 'plain') value.dataset.appearance = 'plain';
   const href = safeHref(node.apply_href);
   if (!node.copy && href === null) return value;
   const wrapper = wrap('div', node.layout === 'inline' ? 'wc-code-inline' : 'wc-stack', value);
+  if (node.appearance === 'plain') wrapper.dataset.appearance = 'plain';
   if (node.copy) {
     const copy = words('button', 'wc-button', node.copy_label || pageLabel(12, 'Copy code')) as HTMLButtonElement;
     copy.type = 'button';

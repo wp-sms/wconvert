@@ -1,0 +1,55 @@
+{
+  "id": "campaign-welcome-label",
+  "revision": "a7f464510837db22c37a28ac41da70741943ac767e622ecb37beb1c464c39bf9",
+  "base_id": "b4699b073c91dc0d7a128da49bd41e173bc8245d0368b10d58a32daea40d1b5d",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **27 · Welcome Label** — Plain selectable code, rounded offer panel and right-hand copy retained. Phone stacks these sections. Body copy now makes sense both with a public code and when signup reveals it on acknowledgement.",
+  "at": "2026-10-24T15:58:06.156Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/27-1440-wordpress.png",
+          "sha256": "7c93a87d89926211cb388c2db326c93c711a22b1337af129aaf411a9cea7b359"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/27-390-wordpress.png",
+          "sha256": "14a60689eebf64bfa469afd8fe029866dde3b2a316d59701f8e723987c106f0b"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "7f3a68d9cbd5bf8d7fe6f31457302c311913b2da6ec7d4b7ce0eb2032af5b5ca"
+}

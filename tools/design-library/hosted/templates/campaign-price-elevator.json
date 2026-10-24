@@ -47,65 +47,92 @@
               "children": [
                 {
                   "type": "panel",
+                  "min": "0px",
                   "children": [
                     {
-                      "type": "eyebrow",
-                      "id": "n1",
-                      "role": "eyebrow",
-                      "text": "EXAMPLE PRICE / 40% OFF",
+                      "type": "panel",
+                      "children": [
+                        {
+                          "type": "eyebrow",
+                          "id": "n1",
+                          "role": "eyebrow",
+                          "text": "EXAMPLE PRICE / 40% OFF",
+                          "tokens": {
+                            "text-size": "9px",
+                            "tracking": ".1em"
+                          }
+                        },
+                        {
+                          "type": "text",
+                          "id": "n2",
+                          "role": "body",
+                          "text": "WAS $100",
+                          "tokens": {
+                            "text-size": "40px",
+                            "font": "\"Bebas Neue\", Impact, sans-serif"
+                          },
+                          "narrow": {
+                            "text-size": "28px"
+                          }
+                        },
+                        {
+                          "type": "eyebrow",
+                          "id": "n9",
+                          "role": "eyebrow",
+                          "text": "↓",
+                          "tokens": {
+                            "text-size": "24px",
+                            "tracking": ".08em"
+                          }
+                        },
+                        {
+                          "type": "text",
+                          "id": "n3",
+                          "role": "body",
+                          "text": "%b",
+                          "tokens": {
+                            "text-size": "6rem",
+                            "leading": ".95",
+                            "font": "\"Bebas Neue\", Impact, sans-serif"
+                          },
+                          "emphasis": "$60",
+                          "narrow": {
+                            "text-size": "52px"
+                          }
+                        },
+                        {
+                          "type": "eyebrow",
+                          "id": "n11",
+                          "role": "eyebrow",
+                          "text": "● ● ●",
+                          "tokens": {
+                            "text-size": "14px",
+                            "tracking": ".12em"
+                          }
+                        }
+                      ],
                       "tokens": {
-                        "text-size": "9px",
-                        "tracking": ".1em"
-                      }
-                    },
-                    {
-                      "type": "text",
-                      "id": "n2",
-                      "role": "body",
-                      "text": "WAS $100",
-                      "tokens": {
-                        "text-size": "28px"
-                      }
-                    },
-                    {
-                      "type": "eyebrow",
-                      "id": "n9",
-                      "role": "eyebrow",
-                      "text": "↓",
-                      "tokens": {
-                        "text-size": "24px",
-                        "tracking": ".08em"
-                      }
-                    },
-                    {
-                      "type": "text",
-                      "id": "n3",
-                      "role": "body",
-                      "text": "%b",
-                      "tokens": {
-                        "text-size": "6rem",
-                        "leading": ".95",
-                        "font": "\"Bebas Neue\", Impact, sans-serif"
+                        "pad": "26px 18px 38px",
+                        "gap": "17px",
+                        "bg": "input-bg",
+                        "fg": "border",
+                        "muted": "border",
+                        "radius": "12px",
+                        "align": "center"
                       },
-                      "emphasis": "$60",
                       "narrow": {
-                        "text-size": "4.5rem"
-                      }
+                        "pad": "20px 18px",
+                        "gap": "6px"
+                      },
+                      "edges": "all"
                     }
                   ],
                   "tokens": {
-                    "pad": "35px 20px",
-                    "gap": ".9rem",
-                    "bg": "input-bg",
-                    "fg": "border",
-                    "muted": "border",
-                    "radius": "1rem",
-                    "align": "center"
-                  },
-                  "narrow": {
-                    "pad": "1.4rem"
-                  },
-                  "edges": "all"
+                    "pad": "7px",
+                    "gap": "0",
+                    "radius": "18px",
+                    "bg": "input-bg"
+                  }
                 }
               ],
               "tokens": {
@@ -141,7 +168,7 @@
                       "role": "headline",
                       "text": "BLACK FRIDAY.",
                       "narrow": {
-                        "heading-size": "52px"
+                        "heading-size": "44px"
                       },
                       "tokens": {
                         "heading-size": "62px"
@@ -153,7 +180,7 @@
                       "role": "headline",
                       "text": "PRICE DROP.",
                       "narrow": {
-                        "heading-size": "52px"
+                        "heading-size": "44px"
                       },
                       "tokens": {
                         "heading-size": "62px",
@@ -172,15 +199,24 @@
                   "text": "Selected favorites are 40% off. A $100 item becomes $60."
                 },
                 {
-                  "type": "button",
-                  "id": "n7",
-                  "role": "cta_label",
-                  "label": "Shop the price drop",
-                  "action": "link",
-                  "icon": "arrow",
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "button",
+                      "id": "n7",
+                      "role": "cta_label",
+                      "label": "Shop the price drop",
+                      "action": "link",
+                      "icon": "arrow",
+                      "tokens": {
+                        "text-size": "14px",
+                        "radius": "0px"
+                      }
+                    }
+                  ],
                   "tokens": {
-                    "text-size": "14px",
-                    "radius": "0px"
+                    "input-bg": "bg",
+                    "gap": "16px"
                   }
                 },
                 {
@@ -199,7 +235,8 @@
                 "radius": "0"
               },
               "narrow": {
-                "pad": "56px 23px 25px 23px"
+                "pad": "24px",
+                "gap": "12px"
               }
             }
           ],

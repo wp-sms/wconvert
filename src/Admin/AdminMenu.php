@@ -200,6 +200,7 @@ final class AdminMenu
          * (`docs/adr/0055-the-font-list-is-the-sites.md`).
          */
         add_action('admin_print_styles', 'wp_print_font_faces');
+        add_action('admin_print_styles', [\WConvert\Template\BundledFonts::class, 'printAdminFaces'], 30);
 
         // `wp_add_inline_script()` rather than `wp_localize_script()`, and the
         // difference is not stylistic: `localize` casts every value to a

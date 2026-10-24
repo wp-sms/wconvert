@@ -537,6 +537,15 @@ final class TemplateVocabulary
                 if ($decoration !== null) $kept[$key] = $decoration;
                 continue;
             }
+            if ($type === 'code' && $key === 'appearance') {
+                if (in_array($node[$key], ['boxed', 'plain'], true)) $kept[$key] = $node[$key];
+                continue;
+            }
+            if ($type === 'divider' && $key === 'pattern') {
+                $choices = ['solid', 'dashed'];
+                if (in_array($node[$key], $choices, true)) $kept[$key] = $node[$key];
+                continue;
+            }
             if ($type === 'countdown' && $key === 'density') {
                 if (in_array($node[$key], ['regular', 'compact', 'stacked'], true)) $kept[$key] = $node[$key];
                 continue;

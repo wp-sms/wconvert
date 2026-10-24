@@ -519,6 +519,20 @@ describe('a block the catalogue builds', () => {
       .toBeGreaterThan(0);
   });
 
+  it('keeps an explicit offer figure while adding an ordinary sentence heading', () => {
+    expect(LEAVES.heading.roles).toContain('offer_amount');
+    const numeric = treeFixture({ steps: [{ type: 'stack', children: [
+      { type: 'heading', role: 'offer_amount', text: '10%' },
+      { type: 'heading', role: 'headline', text: 'A real offer' },
+      { type: 'heading', role: 'success_headline', text: 'Thank you' },
+    ] }] });
+    const heading = nodeFor(numeric, 'heading', at, 'submit');
+    expect(heading).toMatchObject({ role: 'headline' });
+    const added = withInserted(numeric, { ...at, index: 3 }, heading!);
+    expect(nodeAt(added, [0, 'children', 0])).toMatchObject({ role: 'offer_amount', text: '10%' });
+    expect(nodeAt(added, [0, 'children', 3])).toMatchObject({ role: 'headline' });
+  });
+
   /** A field capturing nothing the build knows renders NOTHING (`render.ts`). */
   it('gives a new field a capture kind, or is not built at all', () => {
     expect(nodeFor(TREE, 'field', at, 'submit')).toMatchObject({ name: 'name', required: true });

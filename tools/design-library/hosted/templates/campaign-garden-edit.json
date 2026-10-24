@@ -53,7 +53,7 @@
                   "fit": "contain",
                   "shape": "rect",
                   "tokens": {
-                    "image-height": "330px",
+                    "image-height": "300px",
                     "image-position": "center",
                     "radius": "0"
                   },
@@ -128,17 +128,17 @@
                 }
               ],
               "tokens": {
-                "pad": "56px 32px 28px 32px",
+                "pad": "42px 28px 28px 0",
                 "gap": "16px",
                 "radius": "0"
               },
               "narrow": {
-                "pad": "56px 23px 25px 23px"
+                "pad": "40px 24px 24px"
               }
             }
           ],
-          "ratio": 0.5,
-          "basis": "15rem",
+          "ratio": 0.39,
+          "basis": "0px",
           "narrow_layout": "reverse",
           "tokens": {
             "gap": "0"

@@ -1,0 +1,55 @@
+{
+  "id": "campaign-outdoor-edit",
+  "revision": "f0cf1959f607423c05652171b5bbae23bc3b554f1baf08bd46d80d74635d61af",
+  "base_id": "1984b29b7d53d2aa9bf20673e15269e74378e96147a0e0bca4c6099c253e78cb",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **08 · Outdoor Edit** — Tent artwork, condensed offer and earthy colours retained, with clean mobile order. Live “MORE OUTSIDE” badge sits below the art rather than floating over it; crop and spacing differ.",
+  "at": "2026-10-24T15:58:06.155Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/08-1440-wordpress.png",
+          "sha256": "b6f51b84d7fd8f0d235b9c660cab4d3d4eb145e13625b7cc511771c927f1d6f8"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/08-390-wordpress.png",
+          "sha256": "0a4fc7be32ee1f63d681f8f1004b5f817a497272b5ec7d60574ff780dd6fc165"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "6bd709cda7e2480ce83457134130469db740b21b42cd3dfd89a44b97fb3373bf"
+}

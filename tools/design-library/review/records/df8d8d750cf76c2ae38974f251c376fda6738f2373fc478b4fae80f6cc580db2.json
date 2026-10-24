@@ -1,0 +1,55 @@
+{
+  "id": "campaign-breakfast-edit",
+  "revision": "66e6fe5a823f8cc6f54cee3d40e7ce0a158cdd1303f7af03835591fff3c28475",
+  "base_id": "2404d20bf4fd3553e31c96e5238d829a014a4f3659533d046f2c02f804c06828",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **26 · Breakfast Edit** — Kitchen image, condensed offer and orange action retain the prototype hierarchy. Native supporting text is larger and adds height; converted email controls retain readable contrast.",
+  "at": "2026-10-24T15:58:06.156Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/26-1440-wordpress.png",
+          "sha256": "8a7bd95ee454033bd0d60eb579893f6b14b565f057c9390d9a8a7924fd7a66c8"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/26-390-wordpress.png",
+          "sha256": "fd249c0bfa0574d507daf5a06e518b8cc0bdc58a173b3d649430b14965a8784a"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "df8d8d750cf76c2ae38974f251c376fda6738f2373fc478b4fae80f6cc580db2"
+}

@@ -101,7 +101,7 @@
                 "radius": "0"
               },
               "narrow": {
-                "pad": "56px 23px 25px 23px"
+                "pad": "24px 23px 25px"
               }
             }
           ],
@@ -118,8 +118,9 @@
                 "image-position": "center"
               },
               "narrow": {
-                "pad": "70px 0",
-                "bg-size": "auto 300px"
+                "pad": "120px 0",
+                "bg-size": "cover",
+                "image-position": "center"
               },
               "decorations": {
                 "label": "Audio bars",

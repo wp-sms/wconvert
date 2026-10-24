@@ -46,13 +46,23 @@
               "type": "panel",
               "children": [
                 {
-                  "type": "eyebrow",
-                  "id": "n1",
-                  "role": "eyebrow",
-                  "text": "EVERYDAY / DROP 027 · 27—30 NOVEMBER",
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n1",
+                      "role": "eyebrow",
+                      "text": "EVERYDAY / DROP 027 · 27—30 NOVEMBER",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".1em"
+                      }
+                    }
+                  ],
                   "tokens": {
-                    "text-size": "9px",
-                    "tracking": ".1em"
+                    "pad": "0 32px 0 0",
+                    "gap": "0",
+                    "radius": "0"
                   }
                 },
                 {
@@ -69,12 +79,12 @@
                 }
               ],
               "tokens": {
-                "pad": "56px 48px 15px 25px",
+                "pad": "23px 28px 19px",
                 "gap": "12px",
                 "radius": "0"
               },
               "narrow": {
-                "pad": "56px 20px 15px 20px"
+                "pad": "24px 22px 20px"
               }
             },
             {
@@ -139,7 +149,8 @@
                             "text-size": "102px",
                             "leading": ".95",
                             "tracking": "-.04em",
-                            "fg": "accent"
+                            "fg": "accent",
+                            "text-weight": "950"
                           },
                           "emphasis": "40",
                           "narrow": {
@@ -156,7 +167,8 @@
                             "text-size": "39px",
                             "leading": ".95",
                             "tracking": "-.04em",
-                            "fg": "accent"
+                            "fg": "accent",
+                            "text-weight": "950"
                           },
                           "emphasis": "%",
                           "narrow": {
@@ -187,7 +199,8 @@
                         "font": "\"DM Sans\", Arial, sans-serif",
                         "text-size": "19px",
                         "leading": ".95",
-                        "tracking": "-.04em"
+                        "tracking": "-.04em",
+                        "text-weight": "950"
                       },
                       "emphasis": "GOOD FITS.\nBETTER PRICES.",
                       "narrow": {

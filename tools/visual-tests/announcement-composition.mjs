@@ -40,10 +40,12 @@ try {
    // Default labels should align. Deliberately lengthened merchant labels may
    // grow vertically; the stress case still checks wrapping, overlap and overflow.
    const unevenControls = !stress && !splitForm && Math.abs(f.height - b.height) > 2;
+   const adjacentControls = (f.right <= b.left + 1 || b.right <= f.left + 1) && f.bottom > b.top && b.bottom > f.top;
+   const misalignedControls = adjacentControls && Math.abs(f.bottom - b.bottom) > 2;
    const overflow = root.scrollWidth > root.clientWidth + 1;
    const c = close.getBoundingClientRect();
    const closeOverlap = [heading, field, button, root.querySelector('.wc-consent')].filter(Boolean).some(el => { const r=el.getBoundingClientRect(); return r.left<c.right && r.right>c.left && r.top<c.bottom && r.bottom>c.top; });
-   const result = { id: entry.id, width, actualWidth, rtl, stress, beside, splitForm, closeOverlap, wrongWidth, unevenControls, overflow, passed: !(beside && wrappedRow) && !closeOverlap && !wrongWidth && !unevenControls && !overflow };
+   const result = { id: entry.id, width, actualWidth, rtl, stress, beside, splitForm, closeOverlap, wrongWidth, unevenControls, misalignedControls, overflow, passed: !(beside && wrappedRow) && !closeOverlap && !wrongWidth && !unevenControls && !misalignedControls && !overflow };
    cases.push(result); if (!result.passed) failures.push(result);
    root.remove();
   }

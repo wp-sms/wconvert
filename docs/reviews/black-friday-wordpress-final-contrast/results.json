@@ -1,0 +1,79 @@
+{
+  "schema": 1,
+  "at": "2026-10-24T16:34:45.029Z",
+  "site": "disposable local WordPress",
+  "checks": [
+    "journey",
+    "wordpress"
+  ],
+  "setups": [
+    {
+      "id": "campaign-private-preview",
+      "revision": "28a619242dbf0e1a01b71f0e713fed2fa1a0ba854d45ad0c8a24dfb96dd1c094",
+      "width": 320,
+      "passed": true,
+      "screens": 2,
+      "validation": true,
+      "consentChecked": true,
+      "backChecked": false,
+      "simulatedFailureRetry": true,
+      "localLeadSaved": true,
+      "configuredResource": 200,
+      "actualCtaOpened": false,
+      "couponChecked": false,
+      "copiedCode": false,
+      "localResourceEmail": false
+    },
+    {
+      "id": "campaign-private-preview",
+      "revision": "28a619242dbf0e1a01b71f0e713fed2fa1a0ba854d45ad0c8a24dfb96dd1c094",
+      "width": 1280,
+      "passed": true,
+      "screens": 2,
+      "validation": true,
+      "consentChecked": true,
+      "backChecked": false,
+      "simulatedFailureRetry": true,
+      "localLeadSaved": true,
+      "configuredResource": 200,
+      "actualCtaOpened": false,
+      "couponChecked": false,
+      "copiedCode": false,
+      "localResourceEmail": false
+    },
+    {
+      "id": "campaign-wishlist-alert",
+      "revision": "4b3351a313ddf48eea34f6ec850df0d2fa4a0b67b59b1d38ea526da6485751fb",
+      "width": 320,
+      "passed": true,
+      "screens": 2,
+      "validation": true,
+      "consentChecked": true,
+      "backChecked": false,
+      "simulatedFailureRetry": true,
+      "localLeadSaved": true,
+      "configuredResource": 200,
+      "actualCtaOpened": false,
+      "couponChecked": false,
+      "copiedCode": false,
+      "localResourceEmail": false
+    },
+    {
+      "id": "campaign-wishlist-alert",
+      "revision": "4b3351a313ddf48eea34f6ec850df0d2fa4a0b67b59b1d38ea526da6485751fb",
+      "width": 1280,
+      "passed": true,
+      "screens": 2,
+      "validation": true,
+      "consentChecked": true,
+      "backChecked": false,
+      "simulatedFailureRetry": true,
+      "localLeadSaved": true,
+      "configuredResource": 200,
+      "actualCtaOpened": false,
+      "couponChecked": false,
+      "copiedCode": false,
+      "localResourceEmail": false
+    }
+  ]
+}

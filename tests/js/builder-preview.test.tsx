@@ -600,3 +600,15 @@ it('offers recovery inside the interactive preview when deadline loading fails',
   await waitFor(() => expect(mounts).toHaveLength(1));
   expect(preview.queryByRole('alert')).toBeNull();
 });
+
+it('shows a clearly marked admin code placeholder without writing it into the campaign', () => {
+  const template = { tokens: {}, tree: treeFixture({ steps: [{ type: 'stack', children: [
+    { type: 'code', role: 'code_value' },
+    { type: 'button', action: 'link', label: 'Shop', href: '/shop' },
+  ] }] }) };
+  const before = JSON.stringify(template);
+  render(<Preview template={template} />);
+  expect(drawn().querySelector('[data-preview-placeholder="code"]')).toHaveTextContent('YOUR CODE');
+  expect(drawn().querySelector('.wc-code')).toHaveAttribute('title', 'Add your store’s coupon code in the editor.');
+  expect(JSON.stringify(template)).toBe(before);
+});

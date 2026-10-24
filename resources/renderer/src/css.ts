@@ -219,7 +219,7 @@ export const SHADOW_CSS = [
    * A media alone in a pane fills it, exactly as an image alone in one does —
    * the rule below this one, for the same design and the same reason.
    */
-  `.wc-pane>.wc-media{block-size:100%}`,
+  `.wc-pane>.wc-media{block-size:100%;flex:1}`,
 
   // `flex-basis` plus `wrap` is what stacks the two panes on a narrow screen,
   // with no media query and no container query to keep in step.
@@ -253,6 +253,8 @@ export const SHADOW_CSS = [
    */
   // Basis is set by the renderer; the two growth rules below fill each line.
   `.wc-pane{min-inline-size:0;display:flex;flex-direction:column;justify-content:center}`,
+  // A field includes its visible label; align adjacent submit controls to its input.
+  `.wc-split:has(>.wc-pane>.wc-field):has(>.wc-pane>.wc-button)>.wc-pane{justify-content:flex-end}`,
   /*
    * ==========================================================================
    * THE GROWS ARE SCALED BY TEN, AND THAT IS A BUG FIX RATHER THAN A STYLE.
@@ -307,7 +309,7 @@ export const SHADOW_CSS = [
    * heading rather than body text at the default 1.5rem).
    */
   `h3.wc-heading{font-size:calc(var(--wc-heading-size,1.5rem)*.72)}`,
-  `.wc-text{margin:0}`,
+  `.wc-text{margin:0;font-weight:var(--wc-text-weight,400)}`,
   `.wc-answer-review{margin-block:.75rem;text-align:start;overflow-wrap:anywhere}.wc-answer-review h3{font-size:inherit}.wc-answer-review dl{margin:.5rem 0}.wc-answer-review dt{font-weight:600;margin-block-start:.5rem}.wc-answer-review dd{margin:0;white-space:pre-wrap}.wc-capture-note{font-size:max(.875rem,.875em);white-space:pre-wrap}`,
   // Secondary copy must remain readable, including when the design reduces
   // its body scale. Keep larger authored sizes; never shrink essential copy below 14px.
@@ -393,6 +395,7 @@ export const SHADOW_CSS = [
   // that stops being a rule. Its COLOUR is the design's border colour, which is
   // the lever that matters.
   `.wc-divider{margin:0;border:0;border-block-start:1px solid var(--wc-border,#e5e7eb)}`,
+  `.wc-divider[data-pattern=dashed]{border-block-start-style:dashed}`,
 
   // Tabular figures so the digits do not jitter as they tick — the one thing a
   // countdown does that nothing else in this vocabulary does.
@@ -454,6 +457,7 @@ export const SHADOW_CSS = [
   `.wc-code-inline>.wc-code{flex:1 1 10ch;min-inline-size:min(100%,10ch);border:0;padding:.375rem;overflow-wrap:anywhere}`,
   `.wc-code-inline>.wc-button{inline-size:auto;background:transparent;color:var(--wc-fg,#111827);border:0;padding:.625rem;box-shadow:none}`,
   `.wc-code-inline>[role=status]{flex-basis:100%}.wc-code-inline>[role=status]:empty{display:none}`,
+  `.wc-code[data-appearance=plain],.wc-code-inline[data-appearance=plain]{border:0;padding:0;text-align:var(--wc-align,start)}`,
 
   `.wc-rating{display:flex;flex-wrap:wrap;align-items:center;gap:.375rem}`,
   `.wc-stars{display:inline-flex;color:var(--wc-border,#e5e7eb)}`,
@@ -503,7 +507,7 @@ export const SHADOW_CSS = [
    * `inherit` on colour is therefore the feature rather than an omission: an
    * emphasised run is the sentence around it, said harder.
    */
-  `.wc-strong{font-weight:700}`,
+  `.wc-strong{font-weight:max(700,var(--wc-text-weight,700))}`,
   `.wc-italic{font-style:italic}`,
   `.wc-image{display:block;inline-size:100%;block-size:var(--wc-image-height,auto);object-fit:cover;object-position:var(--wc-image-position,center);border-radius:var(--wc-radius,.5rem)}`,
   /*
@@ -781,7 +785,7 @@ export const SHADOW_CSS = [
    * desktop, and the viewport would call it wide. `.wc-root` is the container,
    * declared above.
    * --------------------------------------------------------------------- */
-  `@container wc (max-width:24rem){[data-narrow]{${'bg fg muted placeholder accent accent-fg border input-bg font heading-font heading-size heading-weight heading-leading heading-style image-height bg-size countdown-size tracking text-size leading radius pad gap width align bg-image image-position overlay shadow motion backdrop close-fg close-bg close-border close-radius close-inset error-fg error-bg'.split(' ').map(name => `--wc-${name}:var(--wc-n-${name})!important`).join(';')}}}`,
+  `@container wc (max-width:24rem){[data-narrow]{${'bg fg muted placeholder accent accent-fg border input-bg font heading-font heading-size heading-weight heading-leading heading-style image-height bg-size countdown-size tracking text-size text-weight leading radius pad gap width align bg-image image-position overlay shadow motion backdrop close-fg close-bg close-border close-radius close-inset error-fg error-bg'.split(' ').map(name => `--wc-${name}:var(--wc-n-${name})!important`).join(';')}}}`,
 ].join('');
 
 let premiumStyles = '';

@@ -1,0 +1,47 @@
+{
+  "id": "weekend-observations",
+  "revision": "6e005594d3caf5e54b30fa66f0bdf8309f80e09af37925060547c6395f42eeda",
+  "base_id": "51bdf1a61668796d608a73fb1302528769aca192292e69169306647275475a61",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-export-spacing-2026-10-23/README.md",
+          "sha256": "6f30791df1d1fd3e8bfb43f3feb5df6e414501265efbecf5e1300e8f8328a072"
+        },
+        {
+          "path": "docs/reviews/winter-export-spacing-2026-10-23/weekend-320.png",
+          "sha256": "924d0be74c817dcde8b3e9e92e15b826edcf28e83ac10c4ea379f33391d30aec"
+        },
+        {
+          "path": "docs/reviews/winter-export-spacing-2026-10-23/weekend-1440.png",
+          "sha256": "3d3543d430393bb6dc0263a3948383be3700e3c5aa22fe551b4c4d963e3cc2fb"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-export-spacing-2026-10-23/results.json",
+          "sha256": "14319df56111ae91619204ff79add1dc8ef792577c3f70a17060eece1d1dcafc"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-export-spacing-2026-10-23/results.json",
+          "sha256": "14319df56111ae91619204ff79add1dc8ef792577c3f70a17060eece1d1dcafc"
+        }
+      ]
+    }
+  },
+  "record_id": "f22522e9421e155a8fde0ae9a6b0c6764aebe8b653959d660f3693465615cba8"
+}

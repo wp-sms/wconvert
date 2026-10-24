@@ -53,6 +53,37 @@ final class PackValidatorLayoutTest extends TestCase
         }
     }
 
+    public function testDashedDividerSurvivesCatalogueAndMerchantTransfer(): void
+    {
+        $reader = new PackValidator(TemplateManifest::load(), TemplateVocabulary::fromManifest());
+        $pack = $this->pack('panel', 'min', '0');
+        $pack['templates'][0]['tree']['steps'][0]['content']['children'][] = ['type' => 'divider', 'id' => 'receipt-rule', 'pattern' => 'dashed'];
+        $installed = $reader->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+        $portable = $reader->portable($pack['templates'][0]);
+        foreach ([$installed['templates'][0], $portable] as $design) {
+            self::assertSame('dashed', $design['tree']['steps'][0]['content']['children'][1]['pattern']);
+        }
+        $pack['templates'][0]['tree']['steps'][0]['content']['children'][1]['pattern'] = 'custom-css';
+        $this->expectException(RuntimeException::class);
+        $reader->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+    }
+
+    public function testPlainCodeAndHeavyTextSurviveCatalogueAndMerchantTransfer(): void
+    {
+        $reader = new PackValidator(TemplateManifest::load(), TemplateVocabulary::fromManifest());
+        $pack = $this->pack('panel', 'min', '0');
+        $pack['templates'][0]['tree']['steps'][0]['content']['children'][] = ['type' => 'code', 'id' => 'plain-code', 'text' => 'FRIDAY35', 'appearance' => 'plain', 'tokens' => ['text-weight' => '950']];
+        $installed = $reader->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+        $portable = $reader->portable($pack['templates'][0]);
+        foreach ([$installed['templates'][0], $portable] as $design) {
+            self::assertSame('plain', $design['tree']['steps'][0]['content']['children'][1]['appearance']);
+            self::assertSame('950', $design['tree']['steps'][0]['content']['children'][1]['tokens']['text-weight']);
+        }
+        $pack['templates'][0]['tree']['steps'][0]['content']['children'][1]['appearance'] = 'custom-css';
+        $this->expectException(RuntimeException::class);
+        $reader->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+    }
+
     public function testEveryDeclaredDecorationSurvivesCatalogueAndMerchantTransfer(): void
     {
         $manifest = TemplateManifest::load();
@@ -77,7 +108,7 @@ final class PackValidatorLayoutTest extends TestCase
     {
         $reader = new PackValidator(TemplateManifest::load(), TemplateVocabulary::fromManifest());
         $cases = [
-            ['split', 'narrow_layout', 'unknown'], ['grid', 'narrow_basis', 'calc(100% - 2px)'], ['split', 'ratio', -.1], ['split', 'ratio', 1.1], ['split', 'ratio', true], ['split', 'ratio', 'NaN'],
+            ['panel', 'edge', 'polygon(0 0)'], ['split', 'narrow_layout', 'unknown'], ['grid', 'narrow_basis', 'calc(100% - 2px)'], ['split', 'ratio', -.1], ['split', 'ratio', 1.1], ['split', 'ratio', true], ['split', 'ratio', 'NaN'],
             ['split', 'ratio', '0.5;display:none'], ['split', 'basis', '-6rem'], ['grid', 'basis', '10001px'],
             ['media', 'min', '380'], ['panel', 'min', 'url(https://example.com/pixel)'],
             ['media', 'min', '380px;position:fixed'], ['panel', 'min', ['380px']], ['panel', 'edges', 'unknown'],

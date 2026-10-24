@@ -1,5 +1,7 @@
 # The font list is the site's, and WConvert loads no face
 
+**Amended by [ADR 0169](0169-campaign-fonts-are-local-assets.md): DM Sans, Bebas Neue and Cormorant Garamond now ship as licensed local campaign faces. They load at document level without Google permission; other families retain the site/remote policy below.**
+
 **Amended by [ADR 0160](0160-templates-declare-fonts-decorations-and-countdown-density.md): site fonts remain supported; an explicit, default-off Google Fonts option can now load declared font requirements at document level after merchant acknowledgment. The earlier absolute refusal below is historical.**
 
 The Design panel offered four typefaces: *System*, *Sans serif*, *Serif*,
@@ -80,7 +82,7 @@ That call prints the **site's** faces, or none; it fetches nothing.
 
 > Extended by [ADR 0077](0077-editor-controls-make-placement-and-formatting-explicit.md): the site-font picker adds search and a capability/version-aware route to the WordPress Font Library for installing locally hosted Google Fonts. WConvert still loads no face of its own.
 >
-> _Amended by [ADR 0160](0160-templates-declare-fonts-decorations-and-countdown-density.md): with the default-off Google Fonts setting enabled, WConvert does load a design's declared faces from Google; with it off, this still holds._
+> _Amended by [ADR 0160](0160-templates-declare-fonts-decorations-and-countdown-density.md): with the default-off Google Fonts setting enabled, WConvert does load a design's declared faces from Google; with it off, this still holds for unbundled families. ADR 0169 subsequently adds the three licensed local families._
 
 ## The control changes shape, and that is rule 5 rather than a new treatment
 
@@ -171,7 +173,7 @@ enough:
   ignored, so the request would need a second hoisting path into the document —
   new machinery, for the one option that also carries the legal problem.
 
-**Bundling woff2 files.** A licensing audit per family, a ZIP that grows by
+**Bundling woff2 files.** _The refusal is amended by ADR 0169 for three reviewed campaign families with shipped OFL licenses and bounded local files; it still rules out an arbitrary font catalogue._ A licensing audit per family, a ZIP that grows by
 hundreds of kilobytes for faces most merchants will not use, and a second
 answer to *"which fonts exist"* that would immediately disagree with the
 theme's.

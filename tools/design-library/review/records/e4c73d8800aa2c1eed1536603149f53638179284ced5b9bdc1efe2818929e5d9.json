@@ -1,0 +1,47 @@
+{
+  "id": "sizing-guide",
+  "revision": "26164498fa7f9baa2098e7f100f4639213bf2385f21f4e52b75a969b9be99315",
+  "base_id": "e4f4b5a3543fcbe52378f5153dd535d791eb457aa6a7ef3bcaf3cab94412661e",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/sizing-guide-320.png",
+          "sha256": "4c9f3d0df08a62fa4c2a4178a8262c9221dd1f8a7b92c3e5002886590e14dea4"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/sizing-guide-1440.png",
+          "sha256": "cb2117e5e928832fab41411c090d744680c471ab9a0b7142336517c1b0b04351"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "e4c73d8800aa2c1eed1536603149f53638179284ced5b9bdc1efe2818929e5d9"
+}

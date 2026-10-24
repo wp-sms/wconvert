@@ -1,0 +1,55 @@
+{
+  "id": "campaign-friday-coupon",
+  "revision": "b47d3a8c45164094f6758b05fe54a327958ccc7b509fcafc937f8dc76a342e4f",
+  "base_id": "40657e4a42d3919f73d7572b4c3f45f46d8d7b71d85c8b7062cfe5e0fd868f35",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **03 · Friday Coupon** — Red/mint coupon, matching notch colour and 40% display retained. Public code is populated; body now works before and after email capture. Native coupon styling and extra copy wrapping change spacing; form palette corrected for readable text. Palette references were rechecked against pre-refactor actual WordPress captures: normal and email desktop/phone views are pixel-identical.",
+  "at": "2026-10-24T16:24:10.643Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/03-1440-wordpress.png",
+          "sha256": "c35aaf8e8ed209279b31983a222b862f7d09036941e02ee4881ef26841494d6f"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/03-390-wordpress.png",
+          "sha256": "bf94a1744364ae1c3161aa08cfc10e207a8f427f3398fe281445d7cead32dd14"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "9e3ee8a59134d7cdda74319ad40454f9634ceb6e09ef0f70d3630a78f66de3b0"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "64658b330127835eb1a32c711c654a42558785445782307da4ec83bf04975457"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "612280bf7c05641759430a7fdea0aea3853f9dd4b8fd033dc1bac8c372cc6d39"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "612280bf7c05641759430a7fdea0aea3853f9dd4b8fd033dc1bac8c372cc6d39"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "9e3ee8a59134d7cdda74319ad40454f9634ceb6e09ef0f70d3630a78f66de3b0"
+        }
+      ]
+    }
+  },
+  "record_id": "d453d8df473adeefa9a217c6ceac3ee45b03e0f119d1161cfe3d1fe8829886ae"
+}

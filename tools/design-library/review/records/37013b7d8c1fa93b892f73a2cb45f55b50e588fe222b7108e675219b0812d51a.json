@@ -1,0 +1,55 @@
+{
+  "id": "campaign-restock-mosaic",
+  "revision": "ea2d3eddb3e58964af1184521267c8b8855b9737a6f46d1e161b9f273ab75a69",
+  "base_id": "2f111310376e825d6b2764d997922a71ce186a93b8d8bedd837edf6412c802f1",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **36 · Restock Mosaic** — Three product crops, restock headline and heavy offer retained. On phone the native offer becomes its own row; the longer eyebrow and readable body add height. Form contrast is sound.",
+  "at": "2026-10-24T15:58:06.153Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/36-1440-wordpress.png",
+          "sha256": "4c9294a5bb75329e08632f874f64f3f4a81b9574b8baf03ab2bb6a418e1745ea"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/36-390-wordpress.png",
+          "sha256": "0376946839a78509d35539b82697e46f45413495738f24b8cfc43a3c10d17979"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "37013b7d8c1fa93b892f73a2cb45f55b50e588fe222b7108e675219b0812d51a"
+}

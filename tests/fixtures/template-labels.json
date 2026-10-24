@@ -1,6 +1,7 @@
 {
     "roles": {
         "headline": "Headline",
+        "offer_amount": "Offer amount",
         "body": "Body text",
         "fine_print": "Fine print",
         "eyebrow": "Line above the heading",
@@ -131,6 +132,8 @@
         "media.min.24rem": "Tall"
     },
     "nodeParams": {
+        "code.appearance": "Code style",
+        "divider.pattern": "Line pattern",
         "button.icon": "Button icon",
         "image.motion": "Picture motion",
         "button.action": "Button action",
@@ -154,6 +157,10 @@
         "badge.place": "Badge position"
     },
     "nodeParamValues": {
+        "code.appearance.boxed": "Boxed",
+        "code.appearance.plain": "Plain text",
+        "divider.pattern.solid": "Solid",
+        "divider.pattern.dashed": "Dashed",
         "button.icon.none": "None",
         "button.icon.arrow": "Arrow",
         "image.motion.none": "None",
@@ -277,6 +284,7 @@
         "bg-size": "Background image size",
         "countdown-size": "Countdown number size",
         "tracking": "Heading letter spacing",
+        "text-weight": "Text weight",
         "text-size": "Text size",
         "leading": "Line spacing",
         "radius": "Corner rounding",
@@ -324,6 +332,11 @@
         "bg-size.cover": "Fill the panel",
         "bg-size.contain": "Show the whole image",
         "bg-size.100% auto": "Fit the width",
+        "text-weight.400": "Regular",
+        "text-weight.600": "Semibold",
+        "text-weight.700": "Bold",
+        "text-weight.900": "Black",
+        "text-weight.950": "Extra black",
         "heading-weight.400": "Regular",
         "heading-weight.600": "Semibold",
         "heading-weight.700": "Bold",

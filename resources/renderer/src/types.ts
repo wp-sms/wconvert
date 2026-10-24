@@ -28,6 +28,7 @@
  */
 export type SlotRole =
   | 'headline'
+  | 'offer_amount'
   | 'body'
   | 'fine_print'
   | 'eyebrow'
@@ -321,6 +322,7 @@ export interface BadgeNode extends HideableNode {
  */
 export interface DividerNode extends HideableNode {
   readonly type: 'divider';
+  readonly pattern?: 'solid' | 'dashed';
 }
 
 /**
@@ -427,6 +429,7 @@ export interface CountdownNode extends HideableNode {
  */
 export interface CodeNode extends HideableNode {
   readonly type: 'code';
+  readonly appearance?: 'boxed' | 'plain';
   readonly layout?: 'stack' | 'inline';
   readonly text?: string;
   readonly copy?: boolean;
@@ -758,7 +761,7 @@ export interface PanelNode {
    * Two circles punched out of the panel's corners, so the page shows through.
    *
    * ==========================================================================
-   * THE ONE ORNAMENT SCOPING CANNOT REACH, AND THE ONLY `mask` IN THE PRODUCT.
+   * A CUTOUT SCOPING CANNOT REACH, AND THE ONLY `mask` IN THE PRODUCT.
    * ==========================================================================
    * Every other decoration in the reference set is a token in disguise: a
    * photo scrim is `overlay`, a tick bullet is an `icon`, a ring is the data

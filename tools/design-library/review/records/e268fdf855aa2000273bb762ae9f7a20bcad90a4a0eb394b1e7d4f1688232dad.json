@@ -1,0 +1,55 @@
+{
+  "id": "campaign-turn-it-up",
+  "revision": "8e672c770dc3381c38fab7b455fccd9c654c01e2aae3c1fc49af43c8b144dbde",
+  "base_id": "4c4c1921c2d9139b2834b3e94bbb2e1e7a92ffb0c25ba221ddfe82f748038d0d",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **04 · Turn It Up** — Full-width headphone image restored on phone; headline and CTA are readable and arrows intact. Desktop uses separate native copy/art panels; the outlined ghost word behind the prototype was not reproduced.",
+  "at": "2026-10-24T15:58:06.154Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/04-1440-wordpress.png",
+          "sha256": "0b21783e75d4fddeed37bca73e2fddefb7713565f07d641f1cb59f8adb779d54"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/04-390-wordpress.png",
+          "sha256": "bcd65d79aa89cf230546abfb6814365b30d30512c8d20d0007d69a7049255e3b"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "e268fdf855aa2000273bb762ae9f7a20bcad90a4a0eb394b1e7d4f1688232dad"
+}

@@ -1,5 +1,7 @@
 # Native fidelity review — 24 October 2026
 
+This is the earlier renderer review. The later [actual WordPress review](../black-friday-wordpress/review.md) and [verification record](../black-friday-wordpress/validation.md) supersede its completion claims and contain the current fonts, responsive fixes and plugin captures.
+
 The initial implementation passed structural and interaction checks but lost visual fidelity. Generic root padding, display fonts and timer defaults changed the approved compositions. This review compares all fifty designs against the unchanged approved prototype at desktop and phone widths, then checks prepared campaigns and acknowledgement screens using the shipping renderer.
 
 This is an editor-compatible reconstruction, not a pixel-identical HTML import. Native text, fields, actions, coupons, countdowns and product images remain editable. The original artwork is retained or reconstructed from the original vector sources; no competitor images are imported. Arrows stay SVG and decoration does not rotate. Small photo captions, borders, masks and decorative layers have the specific adaptations below. Form inputs use 16px text and readable fine print; merchant consent follows site settings. Countdown values in comparisons are illustrative, while WordPress uses a real configured deadline.

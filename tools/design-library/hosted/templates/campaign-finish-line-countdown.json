@@ -46,13 +46,23 @@
               "type": "panel",
               "children": [
                 {
-                  "type": "eyebrow",
-                  "id": "n1",
-                  "role": "eyebrow",
-                  "text": "BLACK FRIDAY / SCHEDULED SPORTSWEAR SALE",
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n1",
+                      "role": "eyebrow",
+                      "text": "BLACK FRIDAY / SCHEDULED SPORTSWEAR SALE",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".1em"
+                      }
+                    }
+                  ],
                   "tokens": {
-                    "text-size": "9px",
-                    "tracking": ".1em"
+                    "pad": "0 32px 0 0",
+                    "gap": "0",
+                    "radius": "0"
                   }
                 },
                 {
@@ -124,12 +134,12 @@
                 }
               ],
               "tokens": {
-                "pad": "56px 25px 25px 25px",
+                "pad": "35px 25px 25px",
                 "gap": "20px",
                 "radius": "0"
               },
               "narrow": {
-                "pad": "56px 24px 24px 24px"
+                "pad": "28px 24px"
               }
             }
           ],
@@ -184,6 +194,9 @@
                   ],
                   "tokens": {
                     "gap": "24px"
+                  },
+                  "narrow": {
+                    "gap": "12px"
                   }
                 }
               ],
@@ -195,7 +208,7 @@
                 "align": "center"
               },
               "narrow": {
-                "pad": "24px 15px"
+                "pad": "20px 15px"
               }
             }
           ],

@@ -1,0 +1,55 @@
+{
+  "id": "campaign-friday-game-code",
+  "revision": "a4bea98d92130a8232e88e6aa80ef91925f52fdf331e746c6c293aa85a57a615",
+  "base_id": "34109b232a7233a211a5e2287f42909150495baa581f15824aa77741a72e579f",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **19 · Friday Game Code** — Framed arcade panel, heavy offer and public coupon preserved. Native pixel decoration differs from the prototype illustration. Root and input colors were separated from the art palette; actual phone field and fine print are readable, including the email variant.",
+  "at": "2026-10-24T15:58:06.155Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/19-1440-wordpress.png",
+          "sha256": "ec049af8aade8f76f74558494b6e059689184cb5c719d3a268d8b11b2f33beb8"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/19-390-wordpress.png",
+          "sha256": "39d18e0327ca0156137631cbb5182c969aca3ff80464a5544d66896b73fbef2e"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "147f0b41307ed2fd2a2ef733e77cf7b4d7931b6cc2171d92195b736142638f49"
+}

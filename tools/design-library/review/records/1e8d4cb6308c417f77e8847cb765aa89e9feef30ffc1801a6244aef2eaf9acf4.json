@@ -1,0 +1,55 @@
+{
+  "id": "campaign-black-friday-archive",
+  "revision": "89d11580135794431e61e01801b0092d41c5672a1788e928348e96cf8e9a014a",
+  "base_id": "783ca0cabfd1e03e750e875812f55e0bfe8444613c978f03bd4443bb1678a8c8",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **17 · Black Friday Archive** — Archive texture, blue event strip, condensed headline, offer card and barcode retained. The phone coupon stays vertical rather than rearranging its contents into the prototype's horizontal label. The form remains grouped with the offer copy and readable.",
+  "at": "2026-10-24T15:58:06.155Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/17-1440-wordpress.png",
+          "sha256": "6c5901002ae86b4d8d6f4fc6ab7a24eebc7c197ec07ec51b04899c2f974dd6e2"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/17-390-wordpress.png",
+          "sha256": "41124260a3dda22f93b6a97e108e0f18bdfafa6b99b9d9088c05d59ec9c5d947"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "1e8d4cb6308c417f77e8847cb765aa89e9feef30ffc1801a6244aef2eaf9acf4"
+}

@@ -1,0 +1,55 @@
+{
+  "id": "campaign-friday-coupon",
+  "revision": "55cc189f85a64b575b56b6a50d0d2f7fa42c709bca5d195f892d91c28e353a8c",
+  "base_id": "875ee91dfba7adc451df836f45c087291e999b5432a7e9142b217769523c0036",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **03 · Friday Coupon** — Red/mint coupon, matching notch colour and 40% display retained. Public code is populated; body now works before and after email capture. Native coupon styling and extra copy wrapping change spacing; form palette corrected for readable text.",
+  "at": "2026-10-24T15:58:06.154Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/03-1440-wordpress.png",
+          "sha256": "c35aaf8e8ed209279b31983a222b862f7d09036941e02ee4881ef26841494d6f"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/03-390-wordpress.png",
+          "sha256": "bf94a1744364ae1c3161aa08cfc10e207a8f427f3398fe281445d7cead32dd14"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "40657e4a42d3919f73d7572b4c3f45f46d8d7b71d85c8b7062cfe5e0fd868f35"
+}

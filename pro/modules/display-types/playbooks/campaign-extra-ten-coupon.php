@@ -9,7 +9,8 @@ return [
     'goal' => 'promote_offer',
     'template_id' => 'campaign-extra-ten-coupon',
     'notes' => __('Set the shop link and review the offer, eligible items and terms. Configure any coupon, spend threshold, gift or shipping offer in your shop. Match written dates to the campaign schedule.', 'wconvert-pro'),
-    'copy' => ['eyebrow' => [__('BLACK FRIDAY / ONE MORE REASON', 'wconvert-pro'), __('AN EXTRA', 'wconvert-pro'), __('OFF', 'wconvert-pro')], 'headline' => __('10%', 'wconvert-pro'), 'cta_label' => __('Use my code', 'wconvert-pro'), 'fine_print' => ['text' => __('Extra 10% off selected sale styles with the code shown. Nov 27–30.', 'wconvert-pro')]],
+    'copy' => ['eyebrow' => [__('BLACK FRIDAY / ONE MORE REASON', 'wconvert-pro'), __('AN
+EXTRA', 'wconvert-pro'), __('OFF', 'wconvert-pro')], 'offer_amount' => __('10%', 'wconvert-pro'), 'cta_label' => __('Use my code', 'wconvert-pro'), 'fine_print' => ['text' => __('Extra 10% off selected sale styles. Enter your code at checkout. Nov 27–30.', 'wconvert-pro')]],
     'rules' => [['type' => 'time_on_page', 'seconds' => 15]],
     'destination_hint' => ['types' => [], 'fields' => []],
 ];

@@ -10,6 +10,8 @@ const flower=colour=>vm.runInContext(`flower('${colour}')`,context);
 const svg=(w,h,body)=>`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${body}</svg>`;
 const inner=s=>s.replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'');
 const drawings={
+ 'fidelity-receipt-eyes':svg(100,48,'<ellipse cx="25" cy="24" rx="17.5" ry="24" fill="#243f31"/><ellipse cx="74" cy="24" rx="17.5" ry="24" fill="#243f31"/><ellipse cx="31" cy="15" rx="5" ry="7" fill="#fff6d8"/><ellipse cx="80" cy="15" rx="5" ry="7" fill="#fff6d8"/>'),
+ 'fidelity-receipt-edge':svg(400,18,'<path d="M0 0H400L380 18 360 0 340 18 320 0 300 18 280 0 260 18 240 0 220 18 200 0 180 18 160 0 140 18 120 0 100 18 80 0 60 18 40 0 20 18Z" fill="#fff6d8"/>'),
  'fidelity-face':svg(120,120,inner(face('#fff1a8'))),
  'fidelity-flowers':svg(430,300,`<g transform="translate(0 100) scale(.86)">${inner(flower('#ef779c'))}</g><g transform="translate(125 15) scale(1.14)">${inner(flower('#b7a0e7'))}</g><g transform="translate(280 100) scale(.86)">${inner(flower('#fa9754'))}</g>`),
  'fidelity-door':svg(300,400,'<defs><linearGradient id="door"><stop stop-color="#6f345d"/><stop offset=".48" stop-color="#7b385f"/><stop offset=".5" stop-color="#ffe7af"/><stop offset=".72" stop-color="#be7e68"/><stop offset="1" stop-color="#70405e"/></linearGradient></defs><path d="M35 385V160a115 115 0 0 1 230 0v225Z" fill="url(#door)" stroke="#68405d" stroke-width="12"/><path d="M150 51v333" stroke="#ffe7af" stroke-width="2"/>'),
@@ -22,7 +24,7 @@ const directory=new URL('../pilot/assets/black-friday/',import.meta.url);
 const catalogueFile=new URL('../publishing/catalog.json',import.meta.url);
 const catalogue=JSON.parse(fs.readFileSync(catalogueFile));
 const browser=await chromium.launch();
-try{const page=await browser.newPage({deviceScaleFactor:2});for(const [name,art] of Object.entries(drawings)){
+try{const page=await browser.newPage({deviceScaleFactor:2});for(const [name,art] of Object.entries(drawings).filter(([name])=>!process.env.FIDELITY_ART||process.env.FIDELITY_ART.split(',').includes(name))){
  fs.writeFileSync(new URL(name+'.svg',directory),art);
  await page.setContent(`<style>body{margin:0;background:transparent}svg{display:block}</style>${art}`);
  const png=await page.locator('svg').first().screenshot({omitBackground:true});

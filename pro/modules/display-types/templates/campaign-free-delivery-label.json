@@ -61,24 +61,14 @@
                     {
                       "type": "panel",
                       "children": [],
-                      "min": "30px",
+                      "min": "23px",
                       "tokens": {
                         "pad": "0",
-                        "radius": "0"
+                        "radius": "0",
+                        "bg-image": "repeating-linear-gradient(90deg,currentColor 0 2px,transparent 2px 5px,currentColor 5px 6px,transparent 6px 9px,currentColor 9px 13px,transparent 13px 15px)"
                       },
-                      "decorations": {
-                        "label": "Decorative barcode",
-                        "hidden": false,
-                        "items": [
-                          {
-                            "kind": "barcode",
-                            "x": 50,
-                            "y": 50,
-                            "size": 120,
-                            "color": "fg",
-                            "motion": "none"
-                          }
-                        ]
+                      "narrow": {
+                        "pad": "0"
                       }
                     },
                     {
@@ -160,7 +150,8 @@
                   "basis": "0px",
                   "narrow_layout": "stack",
                   "tokens": {
-                    "gap": "20px"
+                    "gap": "20px",
+                    "input-bg": "bg"
                   }
                 }
               ],

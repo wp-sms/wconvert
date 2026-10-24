@@ -10,7 +10,7 @@
     "accent": "#d8ef89",
     "accent-fg": "#25352d",
     "border": "#2e3831",
-    "input-bg": "#f2a46b",
+    "input-bg": "#252b26",
     "placeholder": "fg",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"Bebas Neue\", Impact, sans-serif",
@@ -53,12 +53,37 @@
                   "fit": "cover",
                   "shape": "rect",
                   "tokens": {
-                    "image-height": "420px",
+                    "image-height": "380px",
                     "image-position": "center",
                     "radius": "0"
                   },
                   "narrow": {
-                    "image-height": "240px"
+                    "image-height": "210px"
+                  }
+                },
+                {
+                  "type": "panel",
+                  "min": "0px",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n10",
+                      "role": "eyebrow",
+                      "text": "BLACK FRIDAY / SELECTED SNEAKERS",
+                      "tokens": {
+                        "text-size": "8px",
+                        "tracking": ".08em",
+                        "font": "monospace"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "10px 16px",
+                    "gap": "0",
+                    "radius": "0",
+                    "bg": "accent",
+                    "fg": "input-bg",
+                    "muted": "input-bg"
                   }
                 }
               ],
@@ -153,7 +178,8 @@
                 "radius": "0"
               },
               "narrow": {
-                "pad": "56px 23px 25px 23px"
+                "pad": "24px",
+                "gap": "16px"
               }
             }
           ],

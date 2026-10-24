@@ -1,0 +1,47 @@
+{
+  "id": "equipment-hire-enquiry",
+  "revision": "390191113bcdbeef583b815a42f7c7956cd7f5a69e57c4ca0c0d84c8a3467963",
+  "base_id": "18b7286e32c706c77d85910724106ec462b0e4caf052c9a337ff97d19c8e8002",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/equipment-hire-enquiry-320.png",
+          "sha256": "3593c7f2222459980ec6a91af14c6088fef5ae9046398d9b1e2ba9c29a6988d5"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/equipment-hire-enquiry-1440.png",
+          "sha256": "36089b61613076692e132403276fd6169b5e8d6eed45f0397af28aae7cd67374"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "ee7b58a269cb559e267679a9076033e054e03f608214f0efab4aaacc607d5854"
+}

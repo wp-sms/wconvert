@@ -1,5 +1,9 @@
 /** Explicit native compositions for the fidelity review; preserve existing leaf identities. */
 import fs from 'node:fs';
+import { refineReceipt } from './receipt.mjs';
+import { refineFirstBatch } from './first-batch-fidelity.mjs';
+import { refineRetail } from './retail.mjs';
+import { refineCore } from './core.mjs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 const root=path.resolve(import.meta.dirname,'../../..');
@@ -9,7 +13,7 @@ const copy=JSON.parse(fs.readFileSync(new URL('./reference/copy.json',import.met
 const DM='"DM Sans", Arial, sans-serif',DISPLAY='"Bebas Neue", Impact, sans-serif';
 const sizes=[53,66,58,72,68,62,41,58,48,51,67,45,42,49,40,62,55,56,62,60,34,34,34,32,37,43,53,55,60,85,102,36,27,65,44,48,41,35,80,31,47,35,49,39,34,25,76,85,80,92];
 const mobile=[45,55,50,65,49,52,33,48,43,45,58,35,35,42,34,54,44,48,51,51,33,38,33,32,35,40,47,43,49,56,49,30,27,58,32,35,31,30,50,25,31,27,34,34,28,29,70,76,62,57];
-for(const item of map){
+for(const item of map.filter(item=>!process.env.FIDELITY_IDS||process.env.FIDELITY_IDS.split(',').includes(item.id))){
  const file=path.join(item.directory,'templates',item.native_id+'.json');
  // A frozen input makes refinements reproducible without ever allocating a new id to an old leaf.
  const d=JSON.parse(execFileSync('git',['show',`d7688edf:${file}`],{cwd:root,encoding:'utf8'}));
@@ -105,7 +109,7 @@ for(const item of map){
  case 45:{E.text='BLACK FRIDAY / NOV 27—30';A.label='Shop the event';H.tokens={'heading-size':'34px','heading-font':DM,'heading-weight':'900',tracking:'-.04em'};const top=row([E,H,label('THE CLOCK IS ON.')],{align:'space-between',gap:'25px'});c=stack([panel([top],{bg:'accent',fg:'accent-fg',muted:'accent-fg',pad:'22px 60px 19px'},{pad:'40px 50px 22px 24px'}),panel([row([row([openTimer(),text('ENDS NOVEMBER 30\n23:59 UTC',{'text-size':'12px'})],{gap:'27px'}),A],{align:'space-between',gap:'27px'})],{pad:'19px 28px'},{pad:'24px'})],'0');break;}
  case 46:{const field=all.find(n=>n.type==='field'),consent=all.find(n=>n.type==='consent');A.label='Request access';c=split(panel([strong('26','67px'),label('NOV / EARLY ACCESS')],{bg:'accent',fg:'accent-fg',pad:'40px 10px 22px',align:'center'}),panel([split(stack([E,H],'11px'),stack([row([field,A]),consent,F],'10px'),.4,'12rem','27px')],{pad:'40px 55px 25px 30px'}),.14,'0px');c.start[0]=stretch(c.start[0]);break;}
  case 47:{E.text='BLACK FRIDAY / DELIVERY';H.text='$0';H.tokens={'heading-size':'76px','heading-font':DM,'heading-weight':'900',fg:'accent'};c=panel([row([panel([E,barcode(),label('27—30 NOV / STANDARD')],{bg:'input-bg',fg:'border',pad:'18px',gap:'12px'}),row([H,text('DELIVERY\nON ORDERS $100+',{'text-size':'11px'})],{gap:'16px'}),A],{align:'space-between',gap:'20px'})],{pad:'30px 55px 24px 20px'},{pad:'45px 24px 24px'});break;}
- case 48:{A.label='Use my code';H.text='10%';H.tokens={fg:'accent','heading-size':'85px','heading-weight':'900',tracking:'-.05em'};c=stack([photo(0,'180px'),panel([E,row([label('AN EXTRA'),H,label('OFF')],{gap:'12px'})],{pad:'24px 26px',gap:'18px'}),panel([codes[0],A,F],{bg:'input-bg',pad:'23px 26px',gap:'18px'})],'0');c.children[2].notch=true;break;}
+ case 48:{H.role='offer_amount';A.label='Use my code';H.text='10%';H.tokens={fg:'accent','heading-size':'85px','heading-weight':'900',tracking:'-.05em'};c=stack([photo(0,'180px'),panel([E,row([label('AN EXTRA'),H,label('OFF')],{gap:'12px'})],{pad:'24px 26px',gap:'18px'}),panel([codes[0],A,F],{bg:'input-bg',pad:'23px 26px',gap:'18px'})],'0');c.children[2].notch=true;break;}
  case 49:{E.text='BLACK FRIDAY / HOME';c=split(photo(0,'365px'),split(panel([E,label('01 / THE WEEKEND EDIT'),heading('80px'),B],{pad:'42px 24px 30px',gap:'24px'}),panel([label('SELECTED HOMEWARE'),strong('30%','90px','accent'),label('OFF'),A,F],{bg:'input-bg',pad:'42px 24px 30px',gap:'24px'}),.5,'0px'),.36,'0px');c.end[0].end[0]=stretch(c.end[0].end[0]);break;}
  case 50:{A.label='Enter the Friday sale';H.text='BLACK FRIDAY. ALL IN.';c=panel([E,H,grid(pics.map((p,i)=>stack([Object.assign(img(i,'210px'),{narrow:{'image-height':'150px'}}),label(['01 / WEAR IT','02 / UPGRADE IT','03 / RESTOCK IT'][i])],'12px')),'12rem','12px'),split(row([label('UP TO'),strong('50%','75px','accent'),label('OFF SELECTED\nCOLLECTIONS')]),A,.65,'18rem','24px'),F],{pad:'42px 38px 28px',gap:'26px'});break;}
  }
@@ -190,8 +194,12 @@ for(const item of map){
  walk(d.tree,n=>{for(const bag of [n.tokens,n.narrow])if(bag)for(const key of Object.keys(bag))if(bag[key]===key)delete bag[key];});
  walk(c,n=>{for(const bag of [n.tokens,n.narrow])if(bag)for(const key of Object.keys(bag))if(bag[key]===key)delete bag[key];});
  d.tree.steps[0].content=c;
+ if(id===9)refineReceipt(d);
+ refineFirstBatch(d,id);
+ if(id>=31)refineRetail(d,id);
+ if(id>=16&&id<=30)refineCore(d,id);
  // These layouts arrange without painting; explicit zero avoids an inherited gutter at panel seams.
  const seen=new Set();walk(d.tree,n=>{if(n.tokens&&!Object.keys(n.tokens).length)delete n.tokens;if(n.type&&!['stack','row','grid','split','panel','media'].includes(n.type)&&!n.id)n.id='n'+(++serial);if(n.id&&n.type){if(seen.has(n.id))throw Error(item.native_id+': duplicate '+n.id);seen.add(n.id);}});
  fs.writeFileSync(path.join(root,file),JSON.stringify(d,null,2)+'\n');
 }
-console.log('Refined all 50 native compositions.');
+console.log('Refined selected native compositions.');

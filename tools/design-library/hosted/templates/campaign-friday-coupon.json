@@ -71,7 +71,7 @@
                   "type": "text",
                   "id": "n3",
                   "role": "body",
-                  "text": "Your code is ready. Save on selected favorites during the Black Friday event."
+                  "text": "Save 40% on selected favorites during the Black Friday event."
                 },
                 {
                   "type": "button",
@@ -98,7 +98,8 @@
               "tokens": {
                 "pad": "56px 32px 28px 32px",
                 "gap": "16px",
-                "radius": "0"
+                "radius": "0",
+                "input-bg": "bg"
               },
               "narrow": {
                 "pad": "56px 23px 25px 23px"

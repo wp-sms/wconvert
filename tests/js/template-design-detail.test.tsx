@@ -70,6 +70,17 @@ describe('inspecting a design before replacing the draft', () => {
     expect(onChoose).toHaveBeenCalledExactlyOnceWith(ENTRY.id, TEMPLATE);
   });
 
+  it('explains the missing offer figure instead of fitting a sentence into the amount', async () => {
+    const amount: Template = { tokens: {}, tree: treeFixture({ steps: [{ type: 'stack', children: [
+      { type: 'heading', role: 'offer_amount' },
+      { type: 'button', role: 'cta_label', label: 'Shop', action: 'link', href: '/shop' },
+    ] }] }) };
+    const onPrepare = vi.fn().mockResolvedValue(amount);
+    detail({ onPrepare });
+    expect(await screen.findByText('Add the offer amount for this design. Your previous headline is not a discount figure.')).toBeInTheDocument();
+    expect(drawn().querySelector('[data-role="offer_amount"]')?.textContent).toBe('');
+  });
+
   it('defaults to carried content and applies the exact normalized preview', async () => {
     const carried = JSON.parse(JSON.stringify(TEMPLATE).replace('Get 10% off your first order', 'My own invitation')) as Template;
     const onPrepare = vi.fn().mockResolvedValue(carried);

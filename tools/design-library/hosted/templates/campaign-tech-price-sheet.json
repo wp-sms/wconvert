@@ -46,13 +46,23 @@
               "type": "panel",
               "children": [
                 {
-                  "type": "eyebrow",
-                  "id": "n1",
-                  "role": "eyebrow",
-                  "text": "BLACK FRIDAY / EVERYDAY TECH SALE",
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n1",
+                      "role": "eyebrow",
+                      "text": "BLACK FRIDAY / EVERYDAY TECH SALE",
+                      "tokens": {
+                        "text-size": "9px",
+                        "tracking": ".1em"
+                      }
+                    }
+                  ],
                   "tokens": {
-                    "text-size": "9px",
-                    "tracking": ".1em"
+                    "pad": "0 32px 0 0",
+                    "gap": "0",
+                    "radius": "0"
                   }
                 },
                 {
@@ -90,12 +100,12 @@
                 }
               ],
               "tokens": {
-                "pad": "56px 48px 19px 28px",
+                "pad": "23px 28px 19px",
                 "gap": "19px",
                 "radius": "0"
               },
               "narrow": {
-                "pad": "56px 24px 24px 24px"
+                "pad": "24px 22px 20px"
               }
             },
             {
@@ -148,7 +158,8 @@
                             "font": "\"DM Sans\", Arial, sans-serif",
                             "text-size": "51px",
                             "leading": ".95",
-                            "tracking": "-.04em"
+                            "tracking": "-.04em",
+                            "text-weight": "950"
                           },
                           "emphasis": "$84",
                           "narrow": {
@@ -176,7 +187,7 @@
                     "radius": "0"
                   },
                   "narrow": {
-                    "pad": "24px"
+                    "pad": "18px 24px"
                   }
                 }
               ],
@@ -185,7 +196,7 @@
                   "type": "media",
                   "children": [
                     {
-                      "type": "stack",
+                      "type": "row",
                       "children": [
                         {
                           "type": "text",
@@ -197,11 +208,12 @@
                             "text-size": "43px",
                             "leading": ".95",
                             "tracking": "-.04em",
-                            "fg": "accent"
+                            "fg": "accent",
+                            "text-weight": "950"
                           },
                           "emphasis": "−30%",
                           "narrow": {
-                            "text-size": "43px"
+                            "text-size": "32px"
                           }
                         },
                         {
@@ -216,7 +228,8 @@
                         }
                       ],
                       "tokens": {
-                        "gap": "12px"
+                        "gap": "10px",
+                        "align": "space-between"
                       }
                     }
                   ],
@@ -227,7 +240,7 @@
                     "bg": "input-bg"
                   },
                   "narrow": {
-                    "pad": "24px"
+                    "pad": "12px 24px"
                   }
                 }
               ],

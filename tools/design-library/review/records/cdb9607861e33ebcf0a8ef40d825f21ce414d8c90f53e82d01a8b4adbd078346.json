@@ -1,0 +1,47 @@
+{
+  "id": "halloween-sale-countdown",
+  "revision": "83e65e04d226e14b0764319ef9720277713bf42615802977885b44a85027c99a",
+  "base_id": "fd8ec0e441338ea028dd23ff62d3bbbd6b97c2b9b1f9698e24d37f6a6c3a00f3",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/halloween-sale-countdown-320.png",
+          "sha256": "5ffff8813bb0c415825d8c60f01c2bbffe28eec0937436cc873bd5eae5dc3a52"
+        },
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/halloween-sale-countdown-1440.png",
+          "sha256": "ad6e730bba3eab08d4e4320980af0ef6e4adb0aeb4603d991e3f25ff57957063"
+        },
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/review.md",
+          "sha256": "ef35ba6c37ecb334228f59a65f5a6cc2b9d0288a28c7be3ebfbbd1b6c712aa4d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/results.json",
+          "sha256": "402c3d44b9b37fac483320a2b09b33b4ddf782431f7e7095c4f478614447b64b"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/results.json",
+          "sha256": "402c3d44b9b37fac483320a2b09b33b4ddf782431f7e7095c4f478614447b64b"
+        }
+      ]
+    }
+  },
+  "record_id": "cdb9607861e33ebcf0a8ef40d825f21ce414d8c90f53e82d01a8b4adbd078346"
+}

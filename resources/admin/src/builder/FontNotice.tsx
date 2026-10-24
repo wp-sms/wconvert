@@ -15,7 +15,7 @@ export function FontNotice({ template }: { template: Template }) {
     return () => { active = false; };
   }, [required]);
   if (!required || !site || site.google_fonts_enabled) return null;
-  const installed = (site.fonts ?? []).map(font => firstFamily(font.stack));
+  const installed = [...(site.fonts ?? []).map(font => firstFamily(font.stack)), ...(site.bundled_fonts ?? []).map(font => font.toLowerCase())];
   const missing = usedGoogleFonts(template).filter(font => !installed.includes(font.family.toLowerCase()));
   if (!missing.length) return null;
   return <PanelHint>

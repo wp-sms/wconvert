@@ -1021,6 +1021,7 @@ function FontField({
   const named = `${id}-name`;
   const [site, setSite] = useState<readonly SiteFont[] | null>(null);
   const [search, setSearch] = useState('');
+  const [bundled, setBundled] = useState<readonly string[]>([]);
   const [libraryUrl, setLibraryUrl] = useState<string | null>(null);
   const [fontError, setFontError] = useState(false);
   const advanced = useAdvanced();
@@ -1028,7 +1029,7 @@ function FontField({
   const read = () => {
     setFontError(false);
     getThemeTokens()
-      .then(({ fonts, font_library_url }) => { setSite(fonts ?? []); setLibraryUrl(font_library_url ?? null); })
+      .then(({ fonts, font_library_url, bundled_fonts }) => { setSite(fonts ?? []); setBundled(bundled_fonts ?? []); setLibraryUrl(font_library_url ?? null); })
       // Keep system stacks available and offer a local retry for site fonts.
       .catch(() => { setSite([]); setFontError(true); });
   };
@@ -1109,8 +1110,14 @@ function FontField({
                 </>
               )}
 
+              {bundled.length > 0 && <p className="wconvert-fonts__group text-micro uppercase text-muted-foreground">{__('Included fonts', 'wconvert')}</p>}
+              {GOOGLE_FONTS.filter(([family]) => bundled.includes(family) && !(site ?? []).some(font => firstFamily(font.stack) === family.toLowerCase()) && family.toLowerCase().includes(search.toLowerCase())).map(([family, fallback, weights]) => {
+                const stack = `'${family}', ${fallback}`;
+                return <FontRow key={family} name={id} stack={stack} label={family} checked={shown === stack}
+                  onChange={value => onChange(value, { family, faces: weights.map(weight => ({ weight, italic: false })) })} />;
+              })}
               <p className="wconvert-fonts__group text-micro uppercase text-muted-foreground">{__('Google Fonts', 'wconvert')}</p>
-              {GOOGLE_FONTS.filter(([family]) => family.toLowerCase().includes(search.toLowerCase()) && !(site ?? []).some(font => firstFamily(font.stack) === family.toLowerCase())).map(([family, fallback, weights]) => {
+              {GOOGLE_FONTS.filter(([family]) => family.toLowerCase().includes(search.toLowerCase()) && !bundled.includes(family) && !(site ?? []).some(font => firstFamily(font.stack) === family.toLowerCase())).map(([family, fallback, weights]) => {
                 const stack = `'${family}', ${fallback}`;
                 return <FontRow key={family} name={id} stack={stack} label={family} checked={shown === stack}
                   onChange={value => onChange(value, { family, faces: weights.map(weight => ({ weight, italic: false })) })} />;

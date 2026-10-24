@@ -1,0 +1,47 @@
+{
+  "id": "winter-christmas-express",
+  "revision": "8e070add798cd097baac51a45f1f9fd097ec05356af5796d2d26501a74cb606c",
+  "base_id": "44e7420609ab8ae21b60c2eeb7089c36312e53aed49dc364eb122b68012cc808",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-10.jpg",
+          "sha256": "17d6490c0a95cc7dd6954e526999b81a2ccb066ff8ff466b8c93ae7abc82fdb0"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-10.jpg",
+          "sha256": "008a2fe876c16a38a80c3534892a1592834818c6ba882a46ba43b0d79a123163"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "2809baec3a22c32e1b02711edbcbe1059cb88f021568002c2e195031e76f1ac4"
+}

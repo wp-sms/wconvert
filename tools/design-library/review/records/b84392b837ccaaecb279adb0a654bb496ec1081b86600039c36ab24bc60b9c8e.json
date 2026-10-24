@@ -1,0 +1,47 @@
+{
+  "id": "remote-consultation-details",
+  "revision": "f8fd348e2764b64f2ec7e7174703b8d7129fa4979b87f37b0af86a73e754ab6e",
+  "base_id": "73e309d4615c42e978431c0d4a519dfd33c06218b983cfa7c1b4eb4e581e7b28",
+  "decision": "revise",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/remote-consultation-details-320.png",
+          "sha256": "b74ce99f8cc19869f0ba4b7721f0ea600073ff612a237f82273a017fc906d4b9"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/remote-consultation-details-1440.png",
+          "sha256": "69885fa636c551c04807bef02c4ae938ef71821626966f2ff594ab35135b4e6b"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "b84392b837ccaaecb279adb0a654bb496ec1081b86600039c36ab24bc60b9c8e"
+}

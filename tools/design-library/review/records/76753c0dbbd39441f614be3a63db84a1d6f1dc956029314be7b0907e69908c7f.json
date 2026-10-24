@@ -1,0 +1,55 @@
+{
+  "id": "campaign-wishlist-alert",
+  "revision": "02bead941aa8b9926b739e5d849e09b06919af5abbae4f2f14dbc3b263035c68",
+  "base_id": "d300536ff1d3f859159beb811c98fab8a7b27d63d77f62e0620ec1bf407ed80b",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **13 · Wishlist Alert** — Chat bubbles alternate, original face artwork appears in the header, matching serif/italic restored and form remains usable. Face colour/size, bubble radii, field fill and vertical spacing differ from the prototype.",
+  "at": "2026-10-24T15:58:06.155Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/13-1440-wordpress.png",
+          "sha256": "90c4f37c4e4989d442dfa2fc834e13a546a617f4f8f05b47feb137b23f9b628c"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/13-390-wordpress.png",
+          "sha256": "0782224768432370dd571f7b6b03255ec306fb429da7c4933371d37141c53905"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "76753c0dbbd39441f614be3a63db84a1d6f1dc956029314be7b0907e69908c7f"
+}

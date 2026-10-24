@@ -10,13 +10,14 @@ import { renderedIdentities } from './rendered-identity.mjs';
 import { SAMPLE_DEADLINE, SAMPLE_ERROR, SAMPLE_NOW, drawWithChrome } from './chrome.mjs';
 import { carryCollections } from './collections.mjs';
 import { campaignRevision } from './revision.mjs';
+import { bundledFontComparison } from './bundled-fonts.mjs';
 import { evidenceFile, latestReview, loadReviews, reviewQueue, writeReviews } from './reviews.mjs';
 
 /**
  * After a renderer change, ask only about campaigns that LOOK different
  * (ADR 0156, Phase 5).
  *
- *   npm run templates:visual-diff -- [--base <git ref>] [--apply]
+ *   npm run templates:visual-diff -- [--base <git ref>] [--exclude-batch <batch>] [--apply]
  *
  * `--base` defaults to where this branch left `origin/main`, which is what
  * `templates:releasable` asks for. Builds the renderer at `--base` beside the
@@ -54,18 +55,18 @@ export function carryCandidates(entries, store, previous) {
 }
 
 /** One chained record per pixel-identical campaign, carrying its decision and evidence. */
-export function carriedRecords({ carried, entries, store, base, at }) {
+export function carriedRecords({ carried, entries, store, base, at, fontComparison = '' }) {
   return carried.map(id => {
     const latest = latestReview(store, id), entry = entries.find(item => item.id === id);
     const body = { id, revision: entry.revision, base_id: latest.record_id, decision: latest.decision, reviewer: 'Visual diff (ADR 0156)',
-      note: `Pixel-identical to the decision this follows under the renderer at ${base}, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.`, at, checks: latest.checks };
+      note: `Pixel-identical output from baseline renderer ${base} and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. ${fontComparison}Not a new review.`, at, checks: latest.checks };
     return { ...body, record_id: createHash('sha256').update(JSON.stringify(body)).digest('hex') };
   });
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const root = resolve(fileURLToPath(new URL('../../..', import.meta.url)));
-  const { values } = parseArgs({ options: { base: { type: 'string' }, apply: { type: 'boolean', default: false }, 'all-approved': { type: 'boolean', default: false } } });
+  const { values } = parseArgs({ options: { base: { type: 'string' }, apply: { type: 'boolean', default: false }, 'all-approved': { type: 'boolean', default: false }, 'exclude-batch': { type: 'string' } } });
   // `--all-approved` compares every current approval too: a check of the tool, never applied.
   if (values['all-approved'] && values.apply) throw new Error('--all-approved is a diagnostic and cannot be applied');
   // Where this branch left main: what the approvals were last current against.
@@ -82,15 +83,18 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     const after = readFileSync(resolve(root, 'tools/design-library/out/renderer.iife.js'), 'utf8');
     const entries = JSON.parse(readFileSync(resolve(root, 'tools/design-library/out/pilot.json'), 'utf8'));
     const store = loadReviews(root);
+    const fonts = bundledFontComparison(root);
+    const fontComparison = 'Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. ';
+    const eligible = entries.filter(entry => !values['exclude-batch'] || entry.batch !== values['exclude-batch']);
     // A decision may have been recorded under either identity scheme; both are
     // computed for the BASE renderer, so only what was current there is carried.
     const schemes = [renderedIdentities(before, entries, { version: 1 }), renderedIdentities(before, entries)];
     const previous = new Map(entries.map(entry => [entry.id, schemes.map(identities => campaignRevision(entry, identities.get(entry.id)))]));
     const candidates = values['all-approved']
-      ? entries.filter(entry => { const latest = latestReview(store, entry.id); return latest?.decision === 'approved' && latest.revision === entry.revision; })
-      : carryCandidates(entries, store, previous);
+      ? eligible.filter(entry => { const latest = latestReview(store, entry.id); return latest?.decision === 'approved' && latest.revision === entry.revision; })
+      : carryCandidates(eligible, store, previous);
     const browser = await chromium.launch();
-    const report = { base: values.base, carried: [], review: [] };
+    const report = { base: values.base, renderer: { before: createHash('sha256').update(before).digest('hex'), after: createHash('sha256').update(after).digest('hex') }, excludedBatch: values['exclude-batch'] ?? null, fonts: { families: fonts.families, files: fonts.files, note: fontComparison.trim(), affected: candidates.filter(entry => fonts.familiesIn(entry).length).map(entry => entry.id) }, carried: [], review: [] };
     try {
       const page = await browser.newPage({ deviceScaleFactor: 1 });
       await page.route('**/*', route => route.abort());
@@ -99,7 +103,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
         await page.setViewportSize({ width, height: 900 });
         const images = [];
         for (const [index, step] of entry.tree.steps.entries()) for (const variant of step.results?.length ? step.results : [null]) {
-          await page.setContent('<!doctype html><body style="margin:0"><div id="sample"></div></body>');
+          await page.setContent(`<!doctype html><style>${fonts.cssFor(entry)}</style><body style="margin:0"><div id="sample"></div></body>`);
           await page.addScriptTag({ content: renderer });
           await page.evaluate(([draw, entry, index, variant, deadline, message]) => {
             const { host } = new Function(`return ${draw}`)()(window.WConvertRenderer, entry, index, variant, deadline, message);
@@ -127,12 +131,12 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
         + `<h1>${changes.length} setups look different from ${values.base}</h1>`
         + changes.map(item => `<h2>${item.name} <small>${item.id}</small></h2>` + item.changed.map(change => `<p>${change.label}</p><figure>${data(change.before)}${data(change.after)}</figure>`).join('')).join('');
       mkdirSync(resolve(root, 'tools/design-library/out'), { recursive: true });
-      writeFileSync(resolve(root, 'tools/design-library/out/visual-diff.html'), html);
+      writeFileSync(resolve(root, 'tools/design-library/out/visual-diff.html'), html.replace('<h1>', `<p>${fontComparison}</p><h1>`));
       report.page = 'tools/design-library/out/visual-diff.html';
     } finally { await browser.close(); }
     if (values.apply && report.carried.length) {
       const next = structuredClone(store), at = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
-      next.records.push(...carriedRecords({ carried: report.carried, entries, store, base: values.base, at }));
+      next.records.push(...carriedRecords({ carried: report.carried, entries, store, base: values.base, at, fontComparison }));
       // The Collections that moved only because these setups did, carried with a
       // note saying so — the record PR #314 wrote by hand.
       const source = JSON.parse(readFileSync(resolve(root, 'tools/design-library/collections/source.json'), 'utf8'));
@@ -141,9 +145,9 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
         const note = `docs/reviews/visual-diff-${at.slice(0, 10)}/collections-carry-${values.base.replace(/[^a-zA-Z0-9]+/g, '-')}.md`;
         mkdirSync(resolve(root, note, '..'), { recursive: true });
         writeFileSync(resolve(root, note), `# Collections carried over a renderer change\n\n`
-          + `\`npm run templates:visual-diff -- --base ${values.base} --apply\` rendered every setup whose decision was current under ${values.base} with both renderers, `
+          + `\`npm run templates:visual-diff -- --base ${values.base}${values['exclude-batch'] ? ' --exclude-batch ' + values['exclude-batch'] : ''} --apply\` rendered every eligible setup whose decision was current under ${values.base}${values['exclude-batch'] ? ', excluding batch ' + values['exclude-batch'] : ''} with both renderers, `
           + `each screen and result at 1200 and 375 px with the close control, a refused field and the countdown drawn. ${report.carried.length} were pixel-identical and carried; `
-          + `${report.review.length} are listed for review.\n\nA Collection's revision hashes its setups' revisions, so these went stale with no change to their items, order, words or screens. `
+          + `${report.review.length} are listed for review. ${fontComparison}\n\nA Collection's revision hashes its setups' revisions, so these went stale with no change to their items, order, words or screens. `
           + `Each is carried with its previous evidence. Not a new review.\n\n${pending.map(record => `- ${record.id.replace(/^collection-/, '')}`).join('\n')}\n`);
         const evidence = [evidenceFile(root, note)];
         next.records.push(...carryCollections({ source, entries, store, carried: report.carried, previous, at, evidence }));
@@ -154,6 +158,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
       writeFileSync(resolve(root, 'tools/design-library/out/review-queue.json'), JSON.stringify(reviewQueue(loadReviews(root), entries, root), null, 2) + '\n');
       if (pending.length) execFileSync('node', [resolve(root, 'tools/design-library/build/collections.mjs'), '--publish'], { cwd: root, stdio: 'inherit' });
     }
+    writeFileSync(resolve(root, 'tools/design-library/out/visual-diff.json'), JSON.stringify(report, null, 2) + '\n');
     console.log(JSON.stringify(report, null, 2));
   } finally { rmSync(scratch, { recursive: true, force: true }); }
 }

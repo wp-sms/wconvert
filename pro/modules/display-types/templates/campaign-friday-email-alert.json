@@ -45,7 +45,7 @@
             {
               "type": "split",
               "ratio": 0.35,
-              "basis": "23rem",
+              "basis": "0px",
               "start": [
                 {
                   "type": "stack",
@@ -151,11 +151,12 @@
               ],
               "tokens": {
                 "gap": "1rem"
-              }
+              },
+              "narrow_layout": "stack"
             }
           ],
           "tokens": {
-            "pad": "40px 60px 32px",
+            "pad": "32px 60px 28px 30px",
             "gap": ".9rem",
             "radius": ".5rem"
           },

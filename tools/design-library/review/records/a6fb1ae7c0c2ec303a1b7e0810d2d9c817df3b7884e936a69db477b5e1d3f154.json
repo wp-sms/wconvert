@@ -1,0 +1,55 @@
+{
+  "id": "everyday-frame-by-frame",
+  "revision": "0b84c6dd9675137627df7520a6c143e472fd4c1a9eda34700d6a23581f86b82a",
+  "base_id": "92113a0e582c43c76718254f98cb3f0150582e820ccaa04fb272a499c7323965",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/review.md",
+          "sha256": "f6b502dde0c4c73b459faf3f1a57081ad88a66a77bc19b5a5095f11c7f8a8573"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-frame-by-frame-320.png",
+          "sha256": "083cd90c77951fb16e0091c3e0be98c941ea872006eb68fa22c71e0a4192bf33"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-frame-by-frame-1440.png",
+          "sha256": "46ab791f060ac282b6d3b34ac50e2faf444f1d31ed03007b2d7b0585d2c7fc16"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/fidelity.json",
+          "sha256": "358e4290ffc8f1760ac04e1994edfb346f4ef8391aee56aa07bf2c3c173f96c1"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/layout.json",
+          "sha256": "d7b61c2cf2f4caab48c27de857e575e2d6f6629973bf2defca7e3a5589679645"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "aeed28a507f4ca7fcdb9372be362c5f920f35da8f4942ac727686496b3f8cbf6"
+        }
+      ]
+    }
+  },
+  "record_id": "a6fb1ae7c0c2ec303a1b7e0810d2d9c817df3b7884e936a69db477b5e1d3f154"
+}

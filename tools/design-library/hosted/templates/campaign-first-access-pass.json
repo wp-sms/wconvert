@@ -68,7 +68,8 @@
                         "font": "\"DM Sans\", Arial, sans-serif",
                         "text-size": "92px",
                         "leading": ".95",
-                        "tracking": "-.04em"
+                        "tracking": "-.04em",
+                        "text-weight": "950"
                       },
                       "emphasis": "26",
                       "narrow": {
@@ -108,7 +109,7 @@
                 }
               ],
               "tokens": {
-                "pad": "56px 19px 25px",
+                "pad": "70px 19px 35px",
                 "gap": "24px",
                 "radius": "0",
                 "bg": "accent",
@@ -117,7 +118,26 @@
                 "align": "center"
               },
               "narrow": {
-                "pad": "56px 22px 20px"
+                "pad": "22px 48px 22px 20px"
+              },
+              "decorations": {
+                "label": "Pass barcode",
+                "hidden": false,
+                "items": [
+                  {
+                    "kind": "barcode",
+                    "x": 50,
+                    "y": 80,
+                    "size": 110,
+                    "color": "fg",
+                    "motion": "none",
+                    "narrow": {
+                      "x": 50,
+                      "y": 98,
+                      "size": 12
+                    }
+                  }
+                ]
               }
             }
           ],
@@ -148,7 +168,7 @@
                     "muted": "accent"
                   },
                   "narrow": {
-                    "pad": "24px"
+                    "pad": "9px 12px"
                   }
                 },
                 {
@@ -219,12 +239,12 @@
                 }
               ],
               "tokens": {
-                "pad": "45px 30px 30px",
+                "pad": "35px 28px 28px",
                 "gap": "20px",
                 "radius": "0"
               },
               "narrow": {
-                "pad": "42px 22px 24px"
+                "pad": "24px"
               }
             }
           ],

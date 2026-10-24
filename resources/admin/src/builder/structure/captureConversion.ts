@@ -194,7 +194,7 @@ function addForm(tree: TemplateTree, channel: ContactChannel, consentShown: bool
       for (const key of ['tokens', 'narrow']) if ((node as unknown as Node)[key]) action[key] = (node as unknown as Node)[key];
       return [action as unknown as TemplateNode];
     }
-    if (node.type === 'heading' && text(node, 'role') === 'headline') {
+    if (node.type === 'heading' && ['headline', 'offer_amount'].includes(text(node, 'role'))) {
       if (headlined) return [];
       headlined = true;
       // The offer's headline may be one giant number; thanks reads at the design's size.
@@ -203,6 +203,10 @@ function addForm(tree: TemplateTree, channel: ContactChannel, consentShown: bool
         const bag = { ...(headline[key] as Record<string, string> | undefined) };
         delete bag['heading-size'];
         if (Object.keys(bag).length) headline[key] = bag; else delete headline[key];
+      }
+      if (text(node, 'role') === 'offer_amount') {
+        headline.tokens = { ...(headline.tokens as Record<string, string> | undefined), 'heading-size': '32px' };
+        headline.narrow = { ...(headline.narrow as Record<string, string> | undefined), 'heading-size': '32px' };
       }
       delete headline.size;
       return [headline as unknown as TemplateNode];

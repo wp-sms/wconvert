@@ -1,0 +1,55 @@
+{
+  "id": "campaign-friday-email-alert",
+  "revision": "37b1f8d6555b23a07020064ba49ad2c232dbcf32c03b6c4d4ef3cf11fdba34ca",
+  "base_id": "8ac9febc6ce63f04a8aff89773c7abc4998118d82b6429080335d2a52f4238b5",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **24 · Friday Email Alert** — Fixed outer phone stacking and adjacent desktop input/button baseline. The shorter Get access label remains on one line. Native consent follows the submit control; required labels and readable terms add a little height.",
+  "at": "2026-10-24T15:58:06.156Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/24-1440-wordpress.png",
+          "sha256": "e601efc9b8dbe7af3b89957190c459db3f7b81c9fd8cdc806c1f157b3143bf12"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/24-390-wordpress.png",
+          "sha256": "3b58a974ee658cf0a49ec39f9a94e0035bb439ca406eaf18ac99cebd46bf77fd"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "44365b3f8fc926578813ad03055d9a675978b58466252c3933df38f89346d902"
+}

@@ -1,0 +1,54 @@
+{
+  "rules": "@font-face{font-family:\"DM Sans\";font-style:normal;font-weight:100 1000;font-display:swap;src:url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-fonts/dm-sans.woff2\") format(\"woff2\")}@font-face{font-family:\"Bebas Neue\";font-style:normal;font-weight:400;font-display:swap;src:url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-fonts/bebas-neue.woff2\") format(\"woff2\")}@font-face{font-family:\"Cormorant Garamond\";font-style:normal;font-weight:300 700;font-display:swap;src:url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-fonts/cormorant-garamond.woff2\") format(\"woff2\")}@font-face{font-family:\"Cormorant Garamond\";font-style:italic;font-weight:300 700;font-display:swap;src:url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-fonts/cormorant-garamond-italic.woff2\") format(\"woff2\")}",
+  "faces": [
+    {
+      "family": "DM Sans",
+      "weight": "400",
+      "style": "normal",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "weight": "500",
+      "style": "normal",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "weight": "600",
+      "style": "normal",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "weight": "700",
+      "style": "normal",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "weight": "100 1000",
+      "style": "normal",
+      "status": "loaded"
+    },
+    {
+      "family": "Bebas Neue",
+      "weight": "400",
+      "style": "normal",
+      "status": "unloaded"
+    },
+    {
+      "family": "Cormorant Garamond",
+      "weight": "300 700",
+      "style": "normal",
+      "status": "unloaded"
+    },
+    {
+      "family": "Cormorant Garamond",
+      "weight": "300 700",
+      "style": "italic",
+      "status": "unloaded"
+    }
+  ],
+  "title": "Black Friday ArchivePopup · for “Promote an offer or content”DesktopMobileLoading preview…Set the shop link and review the offer, eligible items and terms.Counts as successLink clicksYou’ll needUse a "
+}

@@ -1,0 +1,55 @@
+{
+  "id": "campaign-sneaker-edit",
+  "revision": "bad154312504ea30aed87ffdf7c4ee45b88bb80ea581d34a22f814267a27709a",
+  "base_id": "032cdb3e96bd472ea704bf7a0c47594bf1b3b4d787411f5ef563f6096bbf6e1d",
+  "decision": "approved",
+  "reviewer": "Codex — actual WordPress fidelity review",
+  "note": "- **11 · Sneaker Edit** — Product photo, bold type, lime action and dark palette retained. Caption is a live full-width band below the photo instead of a small overlapping tag; caption and email field contrast corrected.",
+  "at": "2026-10-24T15:58:06.155Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/11-1440-wordpress.png",
+          "sha256": "011b24741db942da91190d806424b4a1e750303a5304d6a4714c89597af42aa7"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/11-390-wordpress.png",
+          "sha256": "63b0f60ffb69ce6d70228119ed6c4240508333ebc1ed663225c89a3de6f55384"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "d8eae597268833ff7045d7d8b93cc27807993a222873fa3c1d0748824dcb39fc"
+}

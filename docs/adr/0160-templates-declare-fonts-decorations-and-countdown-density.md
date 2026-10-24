@@ -1,5 +1,7 @@
 # 0160: Templates declare fonts, decorations and countdown density
 
+**Amended by [ADR 0169](0169-campaign-fonts-are-local-assets.md): DM Sans, Bebas Neue and Cormorant Garamond now ship as licensed local campaign faces. They load at document level without Google permission; other families retain the site/remote policy below.**
+
 Accepted 2026-10-21. Implements the Halloween design exploration without adding
 position or animation controls to the merchant editor. The winter fidelity
 review later added a closed countdown-size appearance token; see the inline
@@ -19,7 +21,7 @@ The font picker retains site/system fonts and adds a local, searchable starter
 selection of Google families. Choosing one writes its stack and requirement in
 one undoable draft edit. Installed site families are offered once. A design
 missing fonts uses its fallback stack and explains how to install the font in
-WordPress or enable Google delivery. The existing Font Library is still the
+WordPress or enable Google delivery. For families beyond those bundled in ADR 0169, the existing Font Library is still the
 local-hosting path; WConvert adds no upload manager or font-file cache.
 
 `wconvert_google_fonts` is a WordPress option, off by default. Enabling requires

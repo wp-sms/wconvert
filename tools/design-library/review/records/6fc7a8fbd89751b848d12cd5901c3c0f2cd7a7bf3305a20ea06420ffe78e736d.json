@@ -1,0 +1,47 @@
+{
+  "id": "gift-wrap-details",
+  "revision": "64982907de03fc820e963e08060a74c66b78f277ed20d79a1482920c40108bd7",
+  "base_id": "85434b6f79dff64e8d2397bf7f4130ab592942ffb2f3e0f59136f5c7f2c2e03c",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer dc915bdc and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-10-24T15:43:06Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/gift-wrap-details-320.png",
+          "sha256": "a1b8737114ac2c882b1ba571fc86779236365216586d0c50c22c45857f3a4aa8"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/gift-wrap-details-1440.png",
+          "sha256": "e3cc27df20685da58d4efa246e9f01791c71009579c106b9abb6025069422523"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "6fc7a8fbd89751b848d12cd5901c3c0f2cd7a7bf3305a20ea06420ffe78e736d"
+}

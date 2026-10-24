@@ -6,6 +6,6 @@ const commerce = size('pro/modules/cart-recovery/public/commerce.js');
 const loader = size('pro/public/loader/loader.js');
 // ADR 0124: +808 B cap for shared quiz cards, protected actions and per-mount outcomes.
 const cap = 6208;
-// 31744 B: the Pro loader budget from check-loader.mjs (ADR 0155, ADR 0158, ADR 0159).
-if (commerce > cap || loader + commerce > 31744 + cap) throw new Error(`Commerce page exceeds budget: loader ${loader} B + commerce ${commerce} B gzip`);
+// 32064 B: the Pro loader budget from check-loader.mjs (ADR 0155, ADR 0158, ADR 0159, ADR 0168).
+if (commerce > cap || loader + commerce > 32064 + cap) throw new Error(`Commerce page exceeds budget: loader ${loader} B + commerce ${commerce} B gzip`);
 console.log(`Commerce: ${commerce} B gzip (cap ${cap} B); loader + commerce ${loader + commerce} B, commerce campaigns only.`);

@@ -34,6 +34,7 @@ final class TemplateLabels
     {
         return [
             'headline' => __('Headline', 'wconvert'),
+            'offer_amount' => __('Offer amount', 'wconvert'),
             'body' => __('Body text', 'wconvert'),
             'fine_print' => __('Fine print', 'wconvert'),
             /* translators: the small line above a heading, e.g. “LIMITED TIME”. */
@@ -507,6 +508,8 @@ final class TemplateLabels
     public static function nodeParams(): array
     {
         return [
+            'code.appearance' => __('Code style', 'wconvert'),
+            'divider.pattern' => __('Line pattern', 'wconvert'),
             /*
              * **`level` and `size` are two questions and the label for `level`
              * used to answer both.** It read *"Not its size, which is a token"*,
@@ -566,6 +569,10 @@ final class TemplateLabels
     public static function nodeParamValues(): array
     {
         return [
+            'code.appearance.boxed' => __('Boxed', 'wconvert'),
+            'code.appearance.plain' => __('Plain text', 'wconvert'),
+            'divider.pattern.solid' => __('Solid', 'wconvert'),
+            'divider.pattern.dashed' => __('Dashed', 'wconvert'),
             /* translators: a heading rank. This heading is the Optin's own main heading. */
             'button.icon.none' => __('None', 'wconvert'),
             'button.icon.arrow' => __('Arrow', 'wconvert'),
@@ -857,6 +864,7 @@ final class TemplateLabels
             'countdown-size' => __('Countdown number size', 'wconvert'),
             /* translators: the space between letters in a heading. Typographers call it tracking; "letter spacing" is the phrase a merchant knows. */
             'tracking' => __('Heading letter spacing', 'wconvert'),
+            'text-weight' => __('Text weight', 'wconvert'),
             'text-size' => __('Text size', 'wconvert'),
             /* translators: the space between lines of text. Typographers call it leading. */
             'leading' => __('Line spacing', 'wconvert'),
@@ -1000,6 +1008,11 @@ final class TemplateLabels
             'bg-size.cover' => __('Fill the panel', 'wconvert'),
             'bg-size.contain' => __('Show the whole image', 'wconvert'),
             'bg-size.100% auto' => __('Fit the width', 'wconvert'),
+            'text-weight.400' => __('Regular', 'wconvert'),
+            'text-weight.600' => __('Semibold', 'wconvert'),
+            'text-weight.700' => __('Bold', 'wconvert'),
+            'text-weight.900' => __('Black', 'wconvert'),
+            'text-weight.950' => __('Extra black', 'wconvert'),
             'heading-weight.400' => __('Regular', 'wconvert'),
             /* translators: a heading weight, between regular and bold. */
             'heading-weight.600' => __('Semibold', 'wconvert'),

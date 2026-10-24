@@ -78,6 +78,28 @@ final class DesignFeaturesTest extends TestCase
         $this->assertArrayNotHasKey('narrow_layout', $normal);
     }
 
+    public function testReceiptFeaturesAreBoundedAndSurviveCopyBinding(): void
+    {
+        $vocabulary = TemplateVocabulary::fromManifest(dirname(__DIR__, 3));
+        $design = ['tokens' => [], 'tree' => ['steps' => [['id' => 'offer', 'name' => 'Offer', 'kind' => 'content', 'content' => [
+            'type' => 'panel', 'children' => [
+                ['type' => 'divider', 'id' => 'n1', 'pattern' => 'dashed'],
+                ['type' => 'divider', 'id' => 'n2', 'pattern' => 'url(evil)'],
+                ['type' => 'panel', 'edge' => 'polygon(anything)', 'children' => []],
+                ['type' => 'code', 'id' => 'n3', 'appearance' => 'plain', 'text' => 'CODE'],
+                ['type' => 'code', 'id' => 'n4', 'appearance' => 'custom-css', 'text' => 'CODE'],
+                ['type' => 'text', 'id' => 'n5', 'text' => '50%', 'tokens' => ['text-weight' => '950']],
+            ],
+        ]]]]];
+        $normal = $vocabulary->normalize($design)['tree']['steps'][0]['content'];
+        $this->assertSame('dashed', $normal['children'][0]['pattern']);
+        $this->assertArrayNotHasKey('pattern', $normal['children'][1]);
+        $this->assertArrayNotHasKey('edge', $normal['children'][2]);
+        $this->assertSame('plain', $normal['children'][3]['appearance']);
+        $this->assertArrayNotHasKey('appearance', $normal['children'][4]);
+        $this->assertSame('950', $normal['children'][5]['tokens']['text-weight']);
+    }
+
     public function testFeaturesSurviveSaveSnapshotAndCopyBinding(): void
     {
         $vocabulary = TemplateVocabulary::fromManifest(dirname(__DIR__, 3));

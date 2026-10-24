@@ -43,13 +43,23 @@
           "type": "panel",
           "children": [
             {
-              "type": "eyebrow",
-              "id": "n3",
-              "role": "eyebrow",
-              "text": "BLACK FRIDAY",
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n3",
+                  "role": "eyebrow",
+                  "text": "BLACK FRIDAY",
+                  "tokens": {
+                    "text-size": "9px",
+                    "tracking": ".1em"
+                  }
+                }
+              ],
               "tokens": {
-                "text-size": "9px",
-                "tracking": ".1em"
+                "pad": "0 32px 0 0",
+                "gap": "0",
+                "radius": "0"
               }
             },
             {
@@ -68,11 +78,12 @@
                         "text-size": "103px",
                         "leading": ".95",
                         "tracking": "-.04em",
-                        "fg": "accent"
+                        "fg": "accent",
+                        "text-weight": "950"
                       },
                       "emphasis": "40",
                       "narrow": {
-                        "text-size": "85px"
+                        "text-size": "103px"
                       }
                     },
                     {
@@ -85,7 +96,8 @@
                         "text-size": "39px",
                         "leading": ".95",
                         "tracking": "-.04em",
-                        "fg": "accent"
+                        "fg": "accent",
+                        "text-weight": "950"
                       },
                       "emphasis": "%",
                       "narrow": {
@@ -201,12 +213,12 @@
             }
           ],
           "tokens": {
-            "pad": "56px 25px 28px 25px",
+            "pad": "28px 28px 26px",
             "gap": "20px",
             "radius": "0"
           },
           "narrow": {
-            "pad": "56px 22px 24px 22px"
+            "pad": "28px 24px 24px"
           }
         }
       },
