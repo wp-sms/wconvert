@@ -4,7 +4,9 @@ import { afterEach, expect, it } from 'vitest';
 import { JourneyTest } from '../../resources/admin/src/builder/JourneyTest';
 import { enhancePhones } from '../../resources/phone/src/enhance';
 import type { Template, TemplateNode } from '@renderer/types';
-import source from '../../resources/templates/library/journey-email-only.json';
+import sourceJson from '../../resources/templates/library/journey-email-only.json';
+import { consentShown } from './support/designs';
+const source = consentShown(sourceJson);
 
 const api = () => window as Window & { __wcPhone?: (root: HTMLElement) => void };
 afterEach(() => { cleanup(); delete api().__wcPhone; });

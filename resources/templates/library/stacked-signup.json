@@ -55,14 +55,6 @@
               }
             },
             {
-              "type": "button",
-              "id": "n4",
-              "role": "cta_label",
-              "label": "Request text updates",
-              "action": "submit",
-              "submission": "primary"
-            },
-            {
               "type": "consent",
               "id": "n5",
               "role": "consent_text",
@@ -74,6 +66,14 @@
               "tokens": {
                 "text-size": "1.125rem"
               }
+            },
+            {
+              "type": "button",
+              "id": "n4",
+              "role": "cta_label",
+              "label": "Request text updates",
+              "action": "submit",
+              "submission": "primary"
             },
             {
               "type": "text",

@@ -1,0 +1,47 @@
+{
+  "id": "studio-welcome",
+  "revision": "959173787c9d86d3b8a07aa65cd9b20359a159234afe7a858f4d61ea9bb57616",
+  "base_id": "14b7ba79735cd6d8409599d73841d2fd2524f73f2d3a8fd4cdc3a7b16daf3eb6",
+  "decision": "approved",
+  "reviewer": "Claude",
+  "note": "Second pass after code review: wording corrected; see review.md.",
+  "at": "2026-10-25T20:30:00Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/studio-welcome-320.png",
+          "sha256": "d20ea6079964ddcf152841b4442b0f5662e91bd3877b2851054949f162dbad3c"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/studio-welcome-1440.png",
+          "sha256": "b8332dcab13f59d6193ed4560525191fa845443d8473b4df6f1bfb28455c4925"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/review.md",
+          "sha256": "86c12cbcf32d7846bf93b750fcc96388d149f746b88b74b9b9dcf1aa6e3f455d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "0b0014399f011a8d79af5f170b3c43a5196e847688610c324fd08ee4aca75c79"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "0b0014399f011a8d79af5f170b3c43a5196e847688610c324fd08ee4aca75c79"
+        }
+      ]
+    }
+  },
+  "record_id": "443348926a598e55f658f956f76115e86875d7a1d9f5c8f94b431dfc86e060c5"
+}

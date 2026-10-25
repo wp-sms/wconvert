@@ -76,7 +76,7 @@
               "type": "consent",
               "id": "n3",
               "role": "consent_text",
-              "hidden": false,
+              "hidden": true,
               "text": "Email me news and offers."
             },
             {
@@ -123,19 +123,8 @@
               "type": "consent",
               "id": "n8",
               "role": "consent_text",
-              "hidden": false,
+              "hidden": true,
               "text": "Send me news and offers by text message."
-            },
-            {
-              "type": "button",
-              "id": "n9",
-              "role": "back_label",
-              "label": "Review email",
-              "action": "back",
-              "tokens": {
-                "accent": "transparent",
-                "accent-fg": "fg"
-              }
             },
             {
               "type": "button",
@@ -152,6 +141,17 @@
               "label": "Finish without SMS",
               "action": "skip",
               "submission": "sms-signup",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "fg"
+              }
+            },
+            {
+              "type": "button",
+              "id": "n9",
+              "role": "back_label",
+              "label": "Change email",
+              "action": "back",
               "tokens": {
                 "accent": "transparent",
                 "accent-fg": "fg"

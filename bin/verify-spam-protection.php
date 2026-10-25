@@ -21,6 +21,8 @@ wp_set_current_user(1);
 $settings=$c->resolve(WConvert\Protection\Settings::class);
 $settings->save(['provider'=>'none','rules'=>[]]);
 $template=json_decode((string) file_get_contents(WCONVERT_DIR.'resources/templates/library/journey-email-only.json'),true);
+// The library ships consent hidden; a list-Goal campaign gets it revealed at prefill (ADR 0099).
+$template['tree']=$c->resolve(WConvert\Privacy\PrivacyGuidance::class)->treeFor($template['tree'],WConvert\Goal\Goal::GrowEmailList);
 $config=['template'=>$template,'display_type'=>'popup','capture_mode'=>'local','display_rules'=>WConvert\Rules\DisplayPlan::immediate()];
 $optins=$c->resolve(WConvert\Optin\OptinRepository::class);
 $optin=$optins->create('Spam protection QA','grow_email_list',$config);

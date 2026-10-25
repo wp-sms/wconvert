@@ -2,9 +2,12 @@ import { afterEach, expect, it, vi } from 'vitest';
 import { mount } from '@renderer/mount';
 import { bindJourney } from '@loader/journey';
 import type { Template } from '@renderer/types';
-import source from '../../resources/templates/library/journey-email-then-sms.json';
+import sourceJson from '../../resources/templates/library/journey-email-then-sms.json';
 import { removedScreen, referencedJourney } from '../../resources/admin/src/builder/structure/journey';
-import enquiry from '../../resources/templates/library/journey-enquiry.json';
+import enquiryJson from '../../resources/templates/library/journey-enquiry.json';
+import { consentShown } from './support/designs';
+const source = consentShown(sourceJson);
+const enquiry = consentShown(enquiryJson);
 
 afterEach(() => { document.body.replaceChildren(); vi.unstubAllGlobals(); });
 function setup(template: Template) {

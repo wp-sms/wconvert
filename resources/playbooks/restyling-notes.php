@@ -21,9 +21,9 @@ return [
         'email_placeholder' => __('you@example.com', 'wconvert'),
         'cta_label' => __('Request room ideas', 'wconvert'),
         'consent_text' => __('Email me monthly room ideas. I can unsubscribe anytime.', 'wconvert'),
-        'fine_print' => __('You can unsubscribe at any time.', 'wconvert'),
+        'fine_print' => __('One email a month. No sales calls or consultations.', 'wconvert'),
         'success_headline' => __('Request received', 'wconvert'),
-        'success_body' => __('Thank you. We have received your request.', 'wconvert')
+        'success_body' => __('Thank you for requesting our monthly room ideas.', 'wconvert')
     ],
     'rules' => [['type' => 'time_on_page', 'seconds' => 15]],
     'destination_hint' => ['types' => [], 'fields' => ['email']],

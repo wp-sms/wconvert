@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import type { Template, TemplateTree } from '@renderer/types';
 import coffee from '../fixtures/journey-graph-coffee.json';
 import split from '../fixtures/journey-graph-split-capture.json';
-import progressive from '../../resources/templates/library/journey-email-then-sms.json';
+import progressiveJson from '../../resources/templates/library/journey-email-then-sms.json';
 import { upgradeToGraph } from '../../resources/admin/src/builder/structure/graph';
 import { captureOwnership, withCaptureOwner } from '../../resources/admin/src/builder/structure/captureOwnership';
 import { captureReadiness } from '../../resources/admin/src/builder/structure/captureReadiness';
@@ -13,6 +13,8 @@ import { CaptureOwnership } from '../../resources/admin/src/builder/CaptureOwner
 import { BlockInspector } from '../../resources/admin/src/builder/BlockInspector';
 import { nodesOf, nodeAt, withRemoved } from '../../resources/admin/src/builder/structure/tree';
 import { withValue } from '../../resources/admin/src/builder/panel';
+import { consentShown } from './support/designs';
+const progressive = consentShown(progressiveJson);
 
 const template = () => structuredClone(coffee.template) as Template;
 const pathOf = (tree: TemplateTree, id: string) => nodesOf(tree).find(block => {

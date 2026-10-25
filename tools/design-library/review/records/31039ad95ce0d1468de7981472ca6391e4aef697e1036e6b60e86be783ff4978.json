@@ -1,0 +1,47 @@
+{
+  "id": "translation-project-enquiry",
+  "revision": "cb23a4eec89366a853307a93e6084ba0af1b892bcef2efce0331f6fdbf7687f3",
+  "base_id": "66e12d5fa0c7c80ed549e94f279c225d06ad900d9f20bcc156201e665342e84c",
+  "decision": "approved",
+  "reviewer": "Claude",
+  "note": "Revision of the 20 October request; see review.md for what changed and why it now passes.",
+  "at": "2026-10-25T18:00:00Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/translation-project-enquiry-320.png",
+          "sha256": "f52421ae88c35a87e2edf150d73c6ae349a212e36bb2885908941c6cead96a3f"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/translation-project-enquiry-1440.png",
+          "sha256": "d16faa44736995801f3d11926c719becd812f45da0ed3ebe0b67f45d2b42566f"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/review.md",
+          "sha256": "438777d237ee10d12f22d764d859c4d671cd876f0b72e0bcaf0afc84d211265e"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "30c7764d8e1a150bdc7441c3911f7e8da31476cf95a1c628e9b2f5185d21b79a"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "30c7764d8e1a150bdc7441c3911f7e8da31476cf95a1c628e9b2f5185d21b79a"
+        }
+      ]
+    }
+  },
+  "record_id": "31039ad95ce0d1468de7981472ca6391e4aef697e1036e6b60e86be783ff4978"
+}

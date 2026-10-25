@@ -3,7 +3,9 @@ import { templatePresenter, captureInto } from '@loader/present';
 import { mount } from '@renderer/mount';
 import { campaignLifecycle } from '@loader/events';
 import type { Template } from '@renderer/types';
-import source from '../../resources/templates/library/journey-email-then-sms.json';
+import sourceJson from '../../resources/templates/library/journey-email-then-sms.json';
+import { consentShown } from './support/designs';
+const source = consentShown(sourceJson);
 
 const template = source as Template;
 const controls = () => ({ impression: vi.fn(), dismiss: vi.fn(), convert: vi.fn() });

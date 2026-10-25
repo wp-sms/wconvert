@@ -96,7 +96,7 @@ final class GraphCaptureContractTest extends TestCase
     {
         $path = WCONVERT_DIR . "/pro/modules/journeys/templates/$name.json";
         if (!file_exists($path)) $path = WCONVERT_DIR . "/resources/templates/library/$name.json";
-        $tree = json_decode((string) file_get_contents($path), true)['tree'];
+        $tree = \WConvert\Tests\Unit\Support\BundledJourney::revealed(json_decode((string) file_get_contents($path), true)['tree']);
         $edges = [];
         foreach ($tree['steps'] as $index => &$screen) {
             if (!isset($tree['steps'][$index + 1])) { continue; }

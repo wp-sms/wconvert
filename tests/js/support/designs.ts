@@ -12,3 +12,13 @@ export function freeDesign(id: string): Template {
   if (file === undefined) throw new Error(`No Free design is authored as ${id}`);
   return JSON.parse(readFileSync(file, 'utf8')) as Template;
 }
+
+/**
+ * A design as a list-Goal campaign holds it. The library ships every consent
+ * hidden and Privacy Guidance reveals it at prefill (ADR 0099), so a test that
+ * ticks consent starts from the revealed design.
+ */
+export function consentShown<T>(design: T): T {
+  return JSON.parse(JSON.stringify(design), (_key, value) =>
+    value && typeof value === 'object' && !Array.isArray(value) && value.type === 'consent' ? { ...value, hidden: false } : value) as T;
+}

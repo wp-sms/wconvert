@@ -6,7 +6,7 @@ import { captureSwitch, convertCapture, type Conversion } from '../../resources/
 import { upgradeToGraph } from '../../resources/admin/src/builder/structure/graph';
 import { walkNodes } from '../../resources/admin/src/builder/structure/journey';
 import { GOALS } from './support/goals';
-import { freeDesign } from './support/designs';
+import { consentShown, freeDesign } from './support/designs';
 
 const design = freeDesign;
 const nodes = (tree: TemplateTree, at: number): TemplateNode[] => walkNodes(tree.steps[at].content);
@@ -97,7 +97,7 @@ describe('removing every form from a longer campaign (R3–R5)', () => {
     { id: 'wsms', label: 'WP SMS · Coffee texts', channels: ['phone'] },
   ];
   const journey = () => {
-    const template = design('journey-email-then-sms');
+    const template = consentShown(design('journey-email-then-sms'));
     const intro = { id: 'intro', name: 'Intro', kind: 'content', content: { type: 'stack', children: [
       { type: 'heading', id: 'i1', role: 'headline', text: 'Wait! Before you go…' },
       { type: 'button', id: 'i2', role: 'next_label', label: 'Continue', action: 'next' },

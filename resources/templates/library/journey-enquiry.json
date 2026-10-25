@@ -110,6 +110,14 @@
             },
             {
               "type": "button",
+              "id": "n9",
+              "role": "cta_label",
+              "label": "Send my enquiry",
+              "action": "submit",
+              "submission": "enquiry-request"
+            },
+            {
+              "type": "button",
               "id": "n8",
               "role": "back_label",
               "label": "Back",
@@ -118,14 +126,6 @@
                 "accent": "transparent",
                 "accent-fg": "fg"
               }
-            },
-            {
-              "type": "button",
-              "id": "n9",
-              "role": "cta_label",
-              "label": "Send my enquiry",
-              "action": "submit",
-              "submission": "enquiry-request"
             }
           ]
         }

@@ -100,14 +100,6 @@
                   }
                 },
                 {
-                  "type": "button",
-                  "id": "n5",
-                  "role": "cta_label",
-                  "label": "Get first pick",
-                  "action": "submit",
-                  "submission": "primary"
-                },
-                {
                   "type": "consent",
                   "id": "n6",
                   "role": "consent_text",
@@ -119,6 +111,14 @@
                   "tokens": {
                     "text-size": "1.125rem"
                   }
+                },
+                {
+                  "type": "button",
+                  "id": "n5",
+                  "role": "cta_label",
+                  "label": "Get first pick",
+                  "action": "submit",
+                  "submission": "primary"
                 },
                 {
                   "type": "text",
@@ -156,25 +156,36 @@
               },
               "children": [
                 {
-                  "type": "icon",
-                  "id": "n8",
-                  "name": "check"
-                },
-                {
-                  "type": "heading",
-                  "id": "n9",
-                  "role": "success_headline",
-                  "size": "xl",
-                  "text": "Thanks for the interest",
+                  "type": "stack",
                   "tokens": {
-                    "heading-size": "clamp(1.1rem, 4.5cqi, 1.5rem)"
-                  }
-                },
-                {
-                  "type": "text",
-                  "id": "n10",
-                  "role": "success_body",
-                  "text": "We have received your request for first access."
+                    "gap": "0.5rem"
+                  },
+                  "narrow": {
+                    "gap": "0.875rem"
+                  },
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "n8",
+                      "name": "check"
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n9",
+                      "role": "success_headline",
+                      "size": "xl",
+                      "text": "Thanks for the interest",
+                      "tokens": {
+                        "heading-size": "clamp(1.1rem, 4.5cqi, 1.5rem)"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n10",
+                      "role": "success_body",
+                      "text": "We have received your request for first access."
+                    }
+                  ]
                 }
               ],
               "narrow": {

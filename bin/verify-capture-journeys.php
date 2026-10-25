@@ -68,6 +68,8 @@ $c->resolve(DestinationRegistry::class)->register($provider);
 $emailRoute = $destinations->save(null, $provider->id(), 'Verification email', null, []);
 $smsRoute = $destinations->save(null, $provider->id(), 'Verification SMS', null, []);
 $template = json_decode((string) file_get_contents(dirname(__DIR__) . '/resources/templates/library/journey-email-then-sms.json'), true, 32, JSON_THROW_ON_ERROR);
+// The library ships consent hidden; a list-Goal campaign gets it revealed at prefill (ADR 0099).
+$template['tree'] = $c->resolve(\WConvert\Privacy\PrivacyGuidance::class)->treeFor($template['tree'], \WConvert\Goal\Goal::GrowEmailList);
 $resolvedTemplate = PhoneCountry::resolved(['template' => $template], 'US');
 if ($resolvedTemplate === null) throw new RuntimeException('Journey verification needs a valid phone starting country');
 $template = $resolvedTemplate['template'];
