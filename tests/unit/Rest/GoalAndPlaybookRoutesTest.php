@@ -9,6 +9,7 @@ use WConvert\Playbook\PlaybookLibrary;
 use WConvert\Playbook\Prefill;
 use WConvert\Rest\GoalController;
 use WConvert\Rest\PlaybookController;
+use WConvert\Discovery\GoalGallery;
 use WConvert\Discovery\SetupIndex;
 use WConvert\Rest\Routes;
 use WConvert\Rules\RuleVocabulary;
@@ -57,7 +58,7 @@ final class GoalAndPlaybookRoutesTest extends TestCase
         $goals = new GoalRegistry(new FakeProPresence(), new FakeSitePresence());
 
         (new GoalController($goals))->registerRoutes();
-        (new PlaybookController($playbooks, $goals, new Prefill($playbooks, $templates, $vocabulary, InstalledRules::free()), new SetupIndex($templates, new FakeProPresence())))
+        (new PlaybookController($playbooks, $goals, new Prefill($playbooks, $templates, $vocabulary, InstalledRules::free()), new SetupIndex($templates, new FakeProPresence()), new GoalGallery($playbooks, new SetupIndex($templates, new FakeProPresence()), new FakeProPresence())))
             ->registerRoutes();
     }
 

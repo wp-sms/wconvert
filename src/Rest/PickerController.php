@@ -32,7 +32,6 @@ final class PickerController implements RestController
     {
         return new WP_REST_Response([
             'schema' => 1, 'today' => wp_date('Y-m-d'), 'timezone' => wp_timezone_string(),
-            'country_suggestion' => \WConvert\Discovery\CountrySuggestion::fromTimezone(wp_timezone_string()),
             'server_time' => microtime(true), 'timezone_offset' => (int) wp_date('Z'),
             'collections' => $this->collections->all(),
             'preferences' => $this->readPreferences(),
@@ -45,7 +44,9 @@ final class PickerController implements RestController
     private function readPreferences(): array
     {
         $value = get_user_meta(get_current_user_id(), PickerDocuments::USER_KEY . get_current_blog_id(), true);
-        return is_array($value) ? $value : PickerDocuments::preferences();
+        $defaults = PickerDocuments::preferences();
+        // Only the keys the gallery still reads; an older document's extras are not sent.
+        return is_array($value) ? array_intersect_key($value + $defaults, $defaults) : $defaults;
     }
 
     /** Preserve recognizable saved entries even after retirement from discovery.

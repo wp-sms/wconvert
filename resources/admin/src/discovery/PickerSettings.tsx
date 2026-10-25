@@ -1,9 +1,7 @@
 import { newAuthoringId } from '../authoringId';
 import { useRef, useEffect, useId, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import apiFetch from '@wordpress/api-fetch';
-import { PhoneCountryPicker as CountryPicker, type Country } from '../PhoneCountryPicker';
-import { ArrowLeft, MoreHorizontal, Pencil, Trash2, X } from 'lucide-react';
+import { ArrowLeft, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { AdminDialogBody, AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
@@ -12,7 +10,7 @@ import { CheckRow } from '../shell/CheckRow';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { Description } from '../shell/Description';
 import { Field } from '../shell/Field';
-import { RegionError, RegionErrorState, TryAgain } from '../shell/Region';
+import { RegionErrorState, TryAgain } from '../shell/Region';
 import { SaveStatus, useSaveStatus } from '../shell/SaveStatus';
 import { formatRange, siteLocale } from '../lib/format';
 import { zoneName } from './model';
@@ -37,17 +35,6 @@ export function PickerSettings({ picker, onBack, onPlan, context = 'creation', n
   picker: ReturnType<typeof usePicker>; onBack: () => void; onPlan?: (id: string) => void;
   context?: 'creation' | 'replacement'; nested?: boolean; backLabel?: string;
 }) {
-  const [countries, setCountries] = useState<Country[]>([]);
-  const [countryError, setCountryError] = useState(false);
-  const [countryAttempt, setCountryAttempt] = useState(0);
-  useEffect(() => {
-    let active = true;
-    setCountryError(false);
-    void apiFetch<{ countries: Country[] }>({ path: '/wconvert/v1/optins/phone-country' }).then(result => {
-      if (active) setCountries(result.countries);
-    }).catch(() => { if (active) setCountryError(true); });
-    return () => { active = false; };
-  }, [countryAttempt]);
   const heading = useRef<HTMLHeadingElement>(null);
   const sections = useId();
   useEffect(() => { if (nested) heading.current?.focus({ preventScroll: true }); }, [nested]);
@@ -56,13 +43,6 @@ export function PickerSettings({ picker, onBack, onPlan, context = 'creation', n
   const meta = context === 'creation'
     ? __('Recommendations are yours alone. Occasions are shared with this site’s campaign managers.', 'wconvert')
     : __('Personal to your account on this site.', 'wconvert');
-  const suggestion = data?.country_suggestion;
-  const regional = data?.collections.some(collection => collection.markets.length > 0) ?? false;
-  const suggestedCountry = suggestion && !data?.preferences.markets.length && data?.preferences.country_suggestion_dismissed !== suggestion.timezone
-    ? countries.find(country => country.code.toUpperCase() === suggestion.code) : undefined;
-  // A market the country list has not named yet is still a country, never a code.
-  const regions = (() => { try { return new Intl.DisplayNames(siteLocale(), { type: 'region' }); } catch { return null; } })();
-  const countryName = (code: string) => countries.find(country => country.code.toUpperCase() === code)?.name ?? regions?.of(code) ?? __('Unknown country', 'wconvert');
 
   return <>
     {nested
@@ -80,36 +60,8 @@ export function PickerSettings({ picker, onBack, onPlan, context = 'creation', n
             <h3 id={`${sections}-recommendations`}>{__('Personal recommendations', 'wconvert')}</h3>
             <CheckRow label={__('Show featured collections', 'wconvert')} checked={data.preferences.show_featured !== false} disabled={picker.saving}
               onChange={event => { void picker.preferences({ ...data.preferences, show_featured: event.target.checked }); }} />
-            <fieldset>
-              <legend>{__('Businesses to recommend first', 'wconvert')}</legend>
-              <div className="wconvert-picker-settings__choices">{[['stores', __('Stores', 'wconvert')], ['services', __('Services', 'wconvert')], ['publishers', __('Publishers', 'wconvert')]].map(([id, label]) =>
-                <CheckRow key={id} label={label} disabled={picker.saving} checked={data.preferences.businesses.includes(id)}
-                  onChange={event => { void picker.preferences({ ...data.preferences, businesses: event.target.checked ? [...data.preferences.businesses, id] : data.preferences.businesses.filter(value => value !== id) }); }} />)}</div>
-              <Description>{__('Matching collections are listed first. Nothing is removed from the library.', 'wconvert')}</Description>
-            </fieldset>
-            {/* Countries only steer collections that declare markets; with none, the question changes nothing. */}
-            {regional && suggestedCountry && suggestion && <div className="wconvert-picker-settings__suggestion">
-              <p className="m-0">{sprintf(/* translators: %s: a country's name, e.g. “Germany”. */ __('Suggested country: %s', 'wconvert'), suggestedCountry.name)}</p>
-              <Description>{__('Based on this site’s time zone. Choose the countries your business serves.', 'wconvert')}</Description>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="outline" disabled={picker.saving} onClick={() => { void picker.preferences({ ...data.preferences, markets: [suggestion.code] }); }}>{sprintf(/* translators: %s: a country's name, e.g. “Germany”. */ __('Add %s', 'wconvert'), suggestedCountry.name)}</Button>
-                <Button variant="ghost" disabled={picker.saving} onClick={() => { void picker.preferences({ ...data.preferences, country_suggestion_dismissed: suggestion.timezone }); }}>{__('Dismiss country suggestion', 'wconvert')}</Button>
-              </div>
-            </div>}
-            {regional && <div className="wconvert-picker-settings__markets">
-              <CountryPicker label={__('Countries you serve', 'wconvert')} value="" countries={countries.filter(country => !data.preferences.markets.includes(country.code.toUpperCase()))}
-                disabled={picker.saving || countries.length === 0} onChange={code => { void picker.preferences({ ...data.preferences, markets: [...data.preferences.markets, code.toUpperCase()] }); }} />
-              {!countryError && countries.length === 0 && <p role="status" className="m-0 text-note text-muted-foreground">{__('Loading countries…', 'wconvert')}</p>}
-              <div className="wconvert-picker-settings__countries">{data.preferences.markets.map(code => {
-                const name = countryName(code);
-                return <Button key={code} variant="outline" disabled={picker.saving} aria-label={sprintf(/* translators: %s: a country's name, e.g. “Germany”. */ __('Remove %s', 'wconvert'), name)} onClick={() => { void picker.preferences({ ...data.preferences, markets: data.preferences.markets.filter(value => value !== code) }); }}><bdi>{name}</bdi><X aria-hidden="true" /></Button>;
-              })}</div>
-              <Description>{__('Regional collections use these countries.', 'wconvert')}</Description>
-            </div>}
-            {countryError && <RegionError message={__('Countries could not be loaded.', 'wconvert')} onRetry={() => setCountryAttempt(value => value + 1)} />}
-            {(data.preferences.hidden.length > 0 || data.preferences.events.length > 0) && <div className="flex flex-wrap gap-2">
-              {data.preferences.hidden.length > 0 && <Button variant="outline" disabled={picker.saving} onClick={() => { void picker.preferences({ ...data.preferences, hidden: [] }); }}>{__('Restore hidden collections', 'wconvert')}</Button>}
-              {data.preferences.events.length > 0 && <Button variant="outline" disabled={picker.saving} onClick={() => { void picker.preferences({ ...data.preferences, events: [] }); }}>{__('Restore seasonal recommendations', 'wconvert')}</Button>}
+            {data.preferences.hidden.length > 0 && <div className="flex flex-wrap gap-2">
+              <Button variant="outline" disabled={picker.saving} onClick={() => { void picker.preferences({ ...data.preferences, hidden: [] }); }}>{__('Restore hidden collections', 'wconvert')}</Button>
             </div>}
           </section>
           {data.preferences.saved.length > 0 && <section className="wconvert-picker-settings__section" aria-labelledby={`${sections}-saved`}>

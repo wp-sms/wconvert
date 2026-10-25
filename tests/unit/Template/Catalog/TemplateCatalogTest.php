@@ -392,6 +392,24 @@ final class TemplateCatalogTest extends TestCase
         self::assertSame('ready', $this->catalog(Tier::Pro, $premium, $this->archive(Tier::Pro, 'pro'))->status()['setups'][0]['state']);
     }
 
+    public function testASetupRowCarriesItsBusinessesAndTheInstallItWouldReplace(): void
+    {
+        $playbook = require WCONVERT_DIR . 'resources/playbooks/reading-recommendation.php';
+        $design = $this->service->design(self::FREE_DESIGN, $playbook['template_id']);
+        $this->service->setup('shop-note', $design, ['business_types' => ['stores', 'wizards']] + $playbook);
+        $this->service->setup('older-note', $design, array_diff_key($playbook, ['business_types' => 1]));
+        $this->service->publish();
+        $catalog = $this->catalog();
+        $catalog->refresh();
+        $rows = array_column($catalog->status()['setups'], null, 'id');
+        self::assertSame(['stores'], $rows['shop-note']['business_types'], 'Only the three known businesses are read');
+        self::assertSame([], $rows['older-note']['business_types'], 'A row published before businesses has none');
+        self::assertNull($rows['older-note']['installed_playbook_id']);
+
+        $catalog->installSetup('older-note', $this->service->setupSha('older-note'));
+        self::assertSame('setup-1-older-note', array_column($this->catalog()->status()['setups'], null, 'id')['older-note']['installed_playbook_id']);
+    }
+
     public function testAChangedDigestCannotInstall(): void
     {
         $this->service->design(self::FREE_DESIGN, 'reading');

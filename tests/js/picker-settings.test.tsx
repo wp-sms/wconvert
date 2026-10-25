@@ -1,5 +1,5 @@
 import { beforeEach,expect,it,vi } from 'vitest';
-import { render,screen,waitFor } from '@testing-library/react';
+import { render,screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ComponentProps } from 'react';
 import { PickerSettings as Settings } from '../../resources/admin/src/discovery/PickerSettings';
@@ -38,23 +38,6 @@ it('shows save failures in both picker contexts and restores the library without
 });
 
 
-it('selects countries by name and preserves the saved values when a write fails', async () => {
-  const picker = state(); picker.preferences.mockResolvedValue(false);
-  const view = { ...picker, data: { ...picker.data, preferences: { ...picker.data.preferences, markets: ['GB'] } } };
-  render(<PickerSettings picker={view as ReturnType<typeof usePicker>} onBack={vi.fn()} />);
-  const choose = screen.getByRole('button', { name: 'Countries you serve Choose a country' });
-  await waitFor(() => expect(choose).toBeEnabled());
-  expect(screen.getByRole('button', { name: 'Remove United Kingdom' })).toBeVisible();
-  await userEvent.click(choose);
-  await userEvent.type(screen.getByRole('searchbox', { name: 'Search countries' }), 'United');
-  expect(screen.queryByRole('button', { name: 'United Kingdom' })).not.toBeInTheDocument();
-  await userEvent.click(screen.getByRole('button', { name: 'United States' }));
-  expect(picker.preferences).toHaveBeenCalledWith(expect.objectContaining({ markets: ['GB', 'US'] }));
-  expect(screen.getByRole('button', { name: 'Remove United Kingdom' })).toBeVisible();
-  expect(screen.queryByRole('button', { name: 'Remove United States' })).not.toBeInTheDocument();
-  expect(countryApi).toHaveBeenCalledExactlyOnceWith({ path: '/wconvert/v1/optins/phone-country' });
-});
-
 it('keeps layout replacement preferences personal without occasion management', async () => {
   const picker = state();
   render(<PickerSettings context="replacement" picker={picker as ReturnType<typeof usePicker>} onBack={vi.fn()} />);
@@ -63,23 +46,6 @@ it('keeps layout replacement preferences personal without occasion management', 
   expect(screen.queryByRole('heading', { name: 'Site occasions' })).not.toBeInTheDocument();
   expect(screen.queryByLabelText('Occasion name')).not.toBeInTheDocument();
   expect(screen.queryByText(/Occasions are shared/)).not.toBeInTheDocument();
-  await waitFor(() => expect(countryApi).toHaveBeenCalledOnce());
-});
-
-it('offers a timezone hint without saving and requires explicit confirmation or dismissal', async () => {
-  const picker = state();
-  const data = { ...picker.data, country_suggestion: { code: 'GB', timezone: 'Europe/London' } };
-  const view = render(<PickerSettings picker={{ ...picker, data } as ReturnType<typeof usePicker>} onBack={vi.fn()} />);
-  const add = await screen.findByRole('button', { name: 'Add United Kingdom' });
-  expect(picker.preferences).not.toHaveBeenCalled();
-  await userEvent.click(add);
-  expect(picker.preferences).toHaveBeenCalledWith(expect.objectContaining({ markets: ['GB'] }));
-  await userEvent.click(screen.getByRole('button', { name: 'Dismiss country suggestion' }));
-  expect(picker.preferences).toHaveBeenLastCalledWith(expect.objectContaining({ country_suggestion_dismissed: 'Europe/London', markets: [] }));
-  view.rerender(<PickerSettings picker={{ ...picker, data: { ...data, preferences: { ...data.preferences, country_suggestion_dismissed: 'Europe/London' } } } as ReturnType<typeof usePicker>} onBack={vi.fn()} />);
-  expect(screen.queryByRole('button', { name: 'Add United Kingdom' })).not.toBeInTheDocument();
-  view.rerender(<PickerSettings picker={{ ...picker, data: { ...data, preferences: { ...data.preferences, markets: ['US'] } } } as ReturnType<typeof usePicker>} onBack={vi.fn()} />);
-  expect(screen.queryByRole('button', { name: 'Add United Kingdom' })).not.toBeInTheDocument();
 });
 
 it('shows occasion days in words and asks before deleting one, saying what stays', async () => {
@@ -117,8 +83,10 @@ it('says a first read failed and offers the one retry, rather than an empty form
   expect(picker.reload).toHaveBeenCalledOnce();
 });
 
-it('leaves countries out while no collection is regional', () => {
-  const picker = state();
-  render(<PickerSettings picker={{ ...picker, data: { ...picker.data, collections: [] } } as never} onBack={vi.fn()} />);
+it('asks for no countries, businesses or events: the gallery no longer sorts by them', () => {
+  render(<PickerSettings picker={state() as ReturnType<typeof usePicker>} onBack={vi.fn()} />);
   expect(screen.queryByText('Countries you serve')).toBeNull();
+  expect(screen.queryByText('Businesses to recommend first')).toBeNull();
+  expect(screen.queryByRole('button', { name: 'Restore seasonal recommendations' })).toBeNull();
+  expect(countryApi).not.toHaveBeenCalled();
 });

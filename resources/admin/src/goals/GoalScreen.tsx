@@ -411,7 +411,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
       {selectedOccasion && <p className="text-note">{sprintf(
         /* translators: 1: an occasion's name, 2: its dates, e.g. “Nov 27 – Dec 1, 2026”. */
         __('Ideas for %1$s, %2$s.', 'wconvert'), selectedOccasion.name, formatRange(selectedOccasion.start, selectedOccasion.end))}</p>}
-      {editorialCollection.event && !selectedOccasion && <div className="wconvert-collection-detail__event"><p>{sprintf(/* translators: %s: a date, e.g. “Nov 27, 2026”. */ __('Event starts %s', 'wconvert'), formatDay(editorialCollection.event.start))}</p><Button variant="ghost" disabled={picker.saving} onClick={() => { if (picker.data && editorialCollection.event) void picker.preferences({ ...picker.data.preferences, events: [...picker.data.preferences.events, editorialCollection.event.family] }); backToLibrary(); }}>{__('I don’t run this event', 'wconvert')}</Button></div>}
+      {editorialCollection.event && !selectedOccasion && <div className="wconvert-collection-detail__event"><p>{sprintf(/* translators: %s: a date, e.g. “Nov 27, 2026”. */ __('Event starts %s', 'wconvert'), formatDay(editorialCollection.event.start))}</p></div>}
       {editorialCollection.items.some(item => item.stage !== 'any') && <OptionStrip label={__('Campaign stage', 'wconvert')} value={effectiveStage}
         options={[
           ['any', __('All stages', 'wconvert')], ['before', __('Before', 'wconvert')], ['during', __('During', 'wconvert')], ['after', __('After', 'wconvert')],

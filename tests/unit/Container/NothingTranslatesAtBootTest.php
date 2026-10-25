@@ -329,7 +329,7 @@ final class NothingTranslatesAtBootTest extends TestCase
         $this->assertIsCallable($callbacks['/playbooks'] ?? null);
         $request = new WP_REST_Request('GET', '/wconvert/v1/playbooks');
         $request->set_param('goal', 'grow_email_list');
-        $playbooks = $callbacks['/playbooks']($request)->get_data();
+        $playbooks = $callbacks['/playbooks']($request)->get_data()['setups'];
         $this->assertContains('welcome-discount', array_column($playbooks, 'id'));
         $this->assertContains('fullscreen-newsletter', array_column($playbooks, 'id'));
     }

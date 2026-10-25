@@ -78,12 +78,25 @@ final class Playbook
             'targeting' => $this->targeting,
             'destination_hint' => $this->destinationHint,
             'notes' => $this->notes,
-            'business_types' => array_map(static fn (string $id): array => ['id' => $id, 'label' => match ($id) {
-                'stores' => __('Stores', 'wconvert'),
-                'services' => __('Service businesses', 'wconvert'),
-                'publishers' => __('Publishers & creators', 'wconvert'),
-            }], $this->businessTypes),
+            'business_types' => self::businessTypes($this->businessTypes),
             ...($this->collection === null ? [] : ['collection' => $this->collection]),
         ];
+    }
+
+    /**
+     * Business ids in the merchant's words, for a bundled setup and an online
+     * one alike.
+     *
+     * @param list<string> $ids
+     * @return list<array{id: string, label: string}>
+     */
+    public static function businessTypes(array $ids): array
+    {
+        return array_values(array_filter(array_map(static fn (string $id): ?array => match ($id) {
+            'stores' => ['id' => $id, 'label' => __('Stores', 'wconvert')],
+            'services' => ['id' => $id, 'label' => __('Service businesses', 'wconvert')],
+            'publishers' => ['id' => $id, 'label' => __('Publishers & creators', 'wconvert')],
+            default => null,
+        }, $ids)));
     }
 }

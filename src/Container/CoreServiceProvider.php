@@ -243,6 +243,7 @@ final class CoreServiceProvider implements ServiceProvider
             }
         );
 
+        $container->register(\WConvert\Discovery\GoalGallery::class, static fn (ServiceContainer $c) => new \WConvert\Discovery\GoalGallery($c->resolve(PlaybookLibrary::class), $c->resolve(\WConvert\Discovery\SetupIndex::class), $c->resolve(ProPresence::class), $c->resolve(TemplateCatalog::class)));
         $container->register(\WConvert\Discovery\SetupIndex::class, static fn (ServiceContainer $c) => new \WConvert\Discovery\SetupIndex($c->resolve(TemplateLibrary::class), $c->resolve(ProPresence::class)));
         $container->register(\WConvert\Discovery\CollectionLibrary::class, static fn (ServiceContainer $c) => new \WConvert\Discovery\CollectionLibrary(WCONVERT_DIR, $c->resolve(PlaybookLibrary::class), $c->resolve(TemplateCatalog::class)));
         $container->register(\WConvert\Rest\PickerController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\PickerController($c->resolve(\WConvert\Discovery\CollectionLibrary::class), $c->resolve(TemplateLibrary::class), $c->resolve(\WConvert\Discovery\OccasionStore::class)));
@@ -491,7 +492,8 @@ final class CoreServiceProvider implements ServiceProvider
                 $c->resolve(PlaybookLibrary::class),
                 $c->resolve(GoalRegistry::class),
                 $c->resolve(Prefill::class),
-                $c->resolve(\WConvert\Discovery\SetupIndex::class)
+                $c->resolve(\WConvert\Discovery\SetupIndex::class),
+                $c->resolve(\WConvert\Discovery\GoalGallery::class)
             )
         );
 

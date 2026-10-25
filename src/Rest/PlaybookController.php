@@ -22,6 +22,7 @@ final class PlaybookController implements RestController
         private readonly GoalRegistry $goals,
         private readonly Prefill $prefill,
         private readonly \WConvert\Discovery\SetupIndex $setups,
+        private readonly \WConvert\Discovery\GoalGallery $gallery,
     ) {
     }
 
@@ -77,10 +78,7 @@ final class PlaybookController implements RestController
             return $goal;
         }
 
-        return new WP_REST_Response(array_map(
-            fn (Playbook $playbook): array => $this->metadata($playbook),
-            FlagshipCollection::prioritize($this->playbooks->servicing($goal))
-        ));
+        return new WP_REST_Response($this->gallery->of($goal));
     }
 
     /** @return array<string, mixed> */
