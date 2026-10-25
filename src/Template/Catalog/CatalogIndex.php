@@ -194,6 +194,9 @@ final class CatalogIndex
             'design' => ['id' => $design['id'], 'revision' => $design['revision']],
             'requires' => $requires,
             'prerequisites' => self::prerequisites($row['prerequisites'] ?? null),
+            // Editorial examples, as on a bundled Playbook. A row from before
+            // they were published simply has none.
+            'business_types' => array_slice(array_values(array_intersect(self::identifiers($row['business_types'] ?? null, 20), ['stores', 'services', 'publishers'])), 0, 3),
         ];
     }
 

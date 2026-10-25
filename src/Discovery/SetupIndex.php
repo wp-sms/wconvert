@@ -24,6 +24,9 @@ final class SetupIndex
         unset($entry['copy']);
         $entry['revision'] = $revision;
         $entry['design_key'] = $design['design_key'] ?? 'registered:' . $playbook->templateId;
+        // What the gallery filters and labels by: the design's own facets and plan.
+        $entry['facets'] = $design['facets'] ?? null;
+        $entry['tier'] = (string) ($design['tier'] ?? 'free');
         $entry['availability'] = Availability::of($design !== null,
             (Tier::tryFrom((string) ($design['tier'] ?? 'free')) ?? Tier::Free)->isSuppliedBy($this->pro))->value;
         // Only what the merchant still has to do: a design that already meets

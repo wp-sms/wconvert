@@ -54,7 +54,7 @@ final class CollectionLibrary
             if (!$items || $stale) continue;
             if (isset($labels[$collection['id']])) $collection = array_replace($collection, $labels[$collection['id']]);
             $collections[] = array_intersect_key($collection, array_flip([
-                'id', 'revision', 'name', 'description', 'business_types', 'markets', 'priority', 'cover', 'event',
+                'id', 'revision', 'name', 'description', 'business_types', 'priority', 'cover', 'event',
             ])) + ['items' => $items];
         }
         usort($collections, static fn (array $a, array $b): int => ($b['priority'] <=> $a['priority']) ?: strcmp($a['id'], $b['id']));

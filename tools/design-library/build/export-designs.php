@@ -183,7 +183,7 @@ if (($input['mode'] ?? '') === 'designs') {
             $validator->validate(DesignObject::setup($json, hash('sha256', $json), $packs[$designId], $design['revision'])['pack']);
             $output['setups'][] = ['id' => $id, 'revision' => $request['revision'], 'tier' => $object['tier'], 'json' => $json,
                 'entry' => ['id' => $id, 'revision' => $request['revision'], 'name' => $setup['name'], 'goal' => $setup['goal'], 'tier' => $object['tier'],
-                    'design' => $object['design'], 'requires' => $object['requires']] + (isset($design['entry']['prerequisites']) ? ['prerequisites' => $design['entry']['prerequisites']] : [])];
+                    'design' => $object['design'], 'requires' => $object['requires'], 'business_types' => $setup['business_types'] ?? []] + (isset($design['entry']['prerequisites']) ? ['prerequisites' => $design['entry']['prerequisites']] : [])];
         } catch (RuntimeException $error) {
             $output['failures'][] = ['kind' => 'setup', 'id' => $id, 'reason' => $error->getMessage()];
         }

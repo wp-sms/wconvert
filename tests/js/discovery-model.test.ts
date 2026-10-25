@@ -4,8 +4,8 @@ import type { PlaybookEntry } from '../../resources/admin/src/goals/api';
 import type { Collection, PickerData } from '../../resources/admin/src/discovery/api';
 import halloweenSource from '../../resources/collections/halloween-2026.json';
 const setup = (id: string, design = 'registered:card', availability = 'ready', format = 'popup') => ({ id, design_key: design, display_type: format, availability }) as PlaybookEntry;
-const collection: Collection = { id: 'bf', revision: 'r', name: 'Sale', description: 'Sale ideas', cover: 'sale', priority: 1, business_types: ['stores'], markets: [], event: { family: 'black-friday', start: '2026-11-27', end_exclusive: '2026-12-01', feature_start: '2026-10-16', feature_end_exclusive: '2026-12-01' }, items: [{ setup_id: 'before', stage: 'before' }, { setup_id: 'bar', stage: 'during' }] };
-const data: PickerData = { schema: 1, today: '2026-11-06', timezone: 'Asia/Muscat', collections: [collection], preferences: { schema: 1, revision: 0, saved: [], hidden: [], events: [], businesses: [], markets: [] }, occasions: { schema: 1, revision: 0, items: [] } };
+const collection: Collection = { id: 'bf', revision: 'r', name: 'Sale', description: 'Sale ideas', cover: 'sale', priority: 1, business_types: ['stores'], event: { family: 'black-friday', start: '2026-11-27', end_exclusive: '2026-12-01', feature_start: '2026-10-16', feature_end_exclusive: '2026-12-01' }, items: [{ setup_id: 'before', stage: 'before' }, { setup_id: 'bar', stage: 'during' }] };
+const data: PickerData = { schema: 1, today: '2026-11-06', timezone: 'Asia/Muscat', collections: [collection], preferences: { schema: 1, revision: 0, saved: [], hidden: [] }, occasions: { schema: 1, revision: 0, items: [] } };
 describe('bundled Halloween planning window', () => {
   const halloween = halloweenSource as Collection;
   const entries = halloween.items.map(item => setup(item.setup_id, `registered:${item.setup_id}`));
@@ -23,11 +23,9 @@ describe('bundled Halloween planning window', () => {
     expect(matchingCollections(calendar('2026-11-01'), entries, false)).toEqual([]);
   });
 
-  it('still offers four designs without the Pro countdown and respects the seasonal opt-out', () => {
+  it('still offers four designs without the Pro countdown', () => {
     const free = entries.filter(entry => entry.id !== 'halloween-sale-countdown');
     expect(matchingCollections(calendar('2026-10-01'), free, true)[0].designs).toBe(4);
-    const hidden = { ...calendar('2026-10-01'), preferences: { ...data.preferences, events: ['halloween'] } };
-    expect(matchingCollections(hidden, entries, false)).toEqual([]);
   });
 });
 describe('relevant, distinct discovery', () => {
@@ -42,13 +40,11 @@ describe('relevant, distinct discovery', () => {
     const shared = matchingCollections(data, [setup('before'), setup('bar', 'registered:card', 'ready', 'floating_bar')], true);
     expect(shared[0].setups).toHaveLength(2); expect(shared[0].designs).toBe(1);
   });
-  it('uses site calendar days, feature windows, market preferences and event opt-outs', () => {
+  it('uses site calendar days and feature windows', () => {
     const entries = [setup('before')];
     expect(matchingCollections({ ...data, today: '2026-10-15' }, entries, true)).toEqual([]);
     expect(matchingCollections({ ...data, today: '2026-10-15' }, entries, false)).toHaveLength(1);
     expect(matchingCollections({ ...data, today: '2026-12-01' }, entries, false)).toEqual([]);
-    expect(matchingCollections({ ...data, preferences: { ...data.preferences, events: ['black-friday'] } }, entries, false)).toEqual([]);
-    expect(matchingCollections({ ...data, collections: [{ ...collection, markets: ['GB'] }] }, entries, false)).toEqual([]);
     expect(matchingCollections({ ...data, preferences: { ...data.preferences, hidden: ['bf'] } }, entries, true)).toEqual([]);
     expect(matchingCollections({ ...data, preferences: { ...data.preferences, hidden: ['bf'] } }, entries, false)).toHaveLength(1);
   });
@@ -69,10 +65,10 @@ it('uses the site calendar across midnight and daylight-saving changes', async (
   expect(siteDay(Date.parse('2026-03-08T05:00:00Z'), 'America/New_York', -18000)).toBe('2026-03-08');
 });
 
-it('recommends preferred businesses first without removing other matching collections', () => {
+it('orders collections by priority alone', () => {
   const service = { ...collection, id: 'services', business_types: ['services'], priority: 0 };
-  const matches = matchingCollections({ ...data, collections: [collection, service], preferences: { ...data.preferences, businesses: ['services'] } }, [setup('before')], true);
-  expect(matches.map(value => value.collection.id)).toEqual(['services', 'bf']);
+  const matches = matchingCollections({ ...data, collections: [service, collection] }, [setup('before')], true);
+  expect(matches.map(value => value.collection.id)).toEqual(['bf', 'services']);
 });
 
 it('uses custom occasion dates inclusively and falls back only to a reviewed nonempty stage', () => {

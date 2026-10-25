@@ -4,7 +4,6 @@ namespace WConvert\Rest;
 
 use WConvert\Goal\Goal;
 use WConvert\Goal\GoalRegistry;
-use WConvert\Playbook\FlagshipCollection;
 use WConvert\Playbook\Playbook;
 use WConvert\Playbook\PlaybookLibrary;
 use WConvert\Playbook\Prefill;
@@ -21,7 +20,7 @@ final class PlaybookController implements RestController
         private readonly PlaybookLibrary $playbooks,
         private readonly GoalRegistry $goals,
         private readonly Prefill $prefill,
-        private readonly \WConvert\Discovery\SetupIndex $setups,
+        private readonly \WConvert\Discovery\GoalGallery $gallery,
     ) {
     }
 
@@ -77,19 +76,13 @@ final class PlaybookController implements RestController
             return $goal;
         }
 
-        return new WP_REST_Response(array_map(
-            fn (Playbook $playbook): array => $this->metadata($playbook),
-            FlagshipCollection::prioritize($this->playbooks->servicing($goal))
-        ));
+        return new WP_REST_Response($this->gallery->of($goal));
     }
 
     /** @return array<string, mixed> */
     private function metadata(Playbook $playbook): array
     {
-        $entry = $this->setups->entry($playbook);
-        $recommendation = FlagshipCollection::recommendation($playbook->id);
-        if ($recommendation !== null) $entry['recommendation'] = $recommendation;
-        return $entry;
+        return $this->gallery->setup($playbook);
     }
 
     public function previews(WP_REST_Request $request): WP_REST_Response|WP_Error
@@ -114,10 +107,6 @@ final class PlaybookController implements RestController
     private function withItsDesign(Playbook $playbook): array
     {
         $entry = $this->metadata($playbook);
-        $recommendation = FlagshipCollection::recommendation($playbook->id);
-        if ($recommendation !== null) {
-            $entry['recommendation'] = $recommendation;
-        }
         $draft = $this->prefill->fromPlaybook($playbook->id);
         $entry['prepared_revision'] = hash('sha256', (string) wp_json_encode($draft, JSON_THROW_ON_ERROR));
         $config = $draft['config'] ?? null;

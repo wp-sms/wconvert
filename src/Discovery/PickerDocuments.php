@@ -16,7 +16,7 @@ final class PickerDocuments
     /** @return array<string, mixed> */
     public static function preferences(): array
     {
-        return ['schema' => 1, 'revision' => 0, 'saved' => [], 'hidden' => [], 'events' => [], 'businesses' => [], 'markets' => [], 'show_featured' => true, 'country_suggestion_dismissed' => ''];
+        return ['schema' => 1, 'revision' => 0, 'saved' => [], 'hidden' => [], 'show_featured' => true];
     }
 
     /** @param array<string, mixed> $input
@@ -24,17 +24,13 @@ final class PickerDocuments
     public static function validatePreferences(array $input): array
     {
         if (array_key_exists('show_featured', $input) && !is_bool($input['show_featured'])) throw new InvalidArgumentException(__('Invalid featured collection preference.', 'wconvert'));
-        $dismissed = $input['country_suggestion_dismissed'] ?? '';
-        if (!is_string($dismissed) || strlen($dismissed) > 100 || preg_match('/[^a-zA-Z0-9_+\/-]/', $dismissed)) throw new InvalidArgumentException(__('Invalid country suggestion preference.', 'wconvert'));
-        $output = ['show_featured' => $input['show_featured'] ?? true, 'country_suggestion_dismissed' => $dismissed];
-        foreach (['saved' => 200, 'hidden' => 100, 'events' => 100, 'businesses' => 3, 'markets' => 20] as $key => $bound) {
+        $output = ['show_featured' => $input['show_featured'] ?? true];
+        foreach (['saved' => 200, 'hidden' => 100] as $key => $bound) {
             $values = $input[$key] ?? null;
             /* translators: %s: the name of a preference list, for example "saved". */
             if (!is_array($values) || !array_is_list($values) || count($values) > $bound) throw new InvalidArgumentException(sprintf(__('Invalid preference list: %s', 'wconvert'), $key));
             foreach ($values as $value) {
                 if (!is_string($value) || !preg_match('/^[a-zA-Z0-9][a-zA-Z0-9:_-]{0,159}$/D', $value)) throw new InvalidArgumentException(__('Invalid preference identifier.', 'wconvert'));
-                if ($key === 'businesses' && !in_array($value, ['stores', 'services', 'publishers'], true)) throw new InvalidArgumentException(__('Invalid business.', 'wconvert'));
-                if ($key === 'markets' && !preg_match('/^[A-Z]{2}$/D', $value)) throw new InvalidArgumentException(__('Use a two-letter market code.', 'wconvert'));
             }
             $output[$key] = array_values(array_unique($values));
         }

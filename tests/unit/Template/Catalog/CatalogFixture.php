@@ -72,7 +72,7 @@ final class CatalogFixture
      */
     public function setup(string $id, array $design, array $playbook, int $revision = 1, string $tier = 'free'): void
     {
-        $this->setups[] = ['object' => ['schema' => 3, 'minor' => 0, 'id' => $id, 'revision' => $revision, 'name' => $playbook['name'], 'tier' => $tier,
+        $this->setups[] = ['business_types' => $playbook['business_types'] ?? null, 'prerequisites' => $design['entry']['prerequisites'] ?? null, 'object' => ['schema' => 3, 'minor' => 0, 'id' => $id, 'revision' => $revision, 'name' => $playbook['name'], 'tier' => $tier,
             'design' => ['id' => $design['object']['id'], 'revision' => $design['object']['revision']],
             'requires' => ['plugin' => '1.0.0', 'capabilities' => ['campaign-starts:1']],
             'playbook' => array_diff_key($playbook, array_flip(['id', 'name', 'template_id']))], 'tier' => $tier, 'goal' => $playbook['goal']];
@@ -95,7 +95,9 @@ final class CatalogFixture
             $this->http->responses[self::BASE . ($setup['tier'] === 'free' ? '' : 'premium/') . 'setups/' . $sha . '.json'] = $json;
             $setups[] = ['id' => $setup['object']['id'], 'revision' => $setup['object']['revision'], 'sha256' => $sha, 'bytes' => strlen($json),
                 'name' => $setup['object']['name'], 'goal' => $setup['goal'], 'tier' => $setup['tier'], 'design' => $setup['object']['design'],
-                'requires' => $setup['object']['requires']];
+                'requires' => $setup['object']['requires']] + ($setup['business_types'] === null ? [] : ['business_types' => $setup['business_types']])
+                // As the exporter does: a setup carries its design's prerequisites.
+                + ($setup['prerequisites'] === null ? [] : ['prerequisites' => $setup['prerequisites']]);
         }
         $pages = [];
         foreach (array_chunk($entries, $this->designsPerPage) ?: [[]] as $i => $chunk) {

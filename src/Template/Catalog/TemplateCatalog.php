@@ -84,6 +84,12 @@ final class TemplateCatalog
         return (bool) apply_filters('wconvert_template_catalog', true) && self::sourceIn($options) !== '';
     }
 
+    /** A design's page on wconvert.io: where a locked card's one link goes. */
+    public static function previewUrl(string $slug): string
+    {
+        return 'https://wconvert.io/templates/' . rawurlencode($slug) . '/?utm_source=plugin&utm_medium=picker&utm_campaign=pro-design';
+    }
+
     /** Kept for the admin boot data, which says whether to draw the library at all. */
     public static function configured(OptionStore $options): bool
     {
@@ -127,7 +133,9 @@ final class TemplateCatalog
             $state = Goal::tryFrom($entry['goal']) === null ? 'update_plugin'
                 : $this->state($entry['tier'], $design['format'], $entry['requires'], $entry['prerequisites'], ($setupRevisions[$entry['id']] ?? 0) >= $entry['revision']);
             $setups[] = ['id' => $entry['id'], 'revision' => $entry['revision'], 'sha256' => $entry['sha256'], 'name' => $entry['name'], 'goal' => $entry['goal'],
-                'tier' => $entry['tier'], 'design' => $entry['design'], 'state' => $state];
+                'tier' => $entry['tier'], 'design' => $entry['design'], 'business_types' => $entry['business_types'], 'state' => $state,
+                // The Playbook an earlier install of this setup left here, so a gallery shows one card for both.
+                'installed_playbook_id' => isset($setupRevisions[$entry['id']]) ? DesignArchive::setupId($entry['id'], $setupRevisions[$entry['id']]) : null];
         }
         return [
             'enabled' => self::enabled($this->options), 'consent' => $this->consent(), 'source' => $this->source(),
@@ -267,6 +275,7 @@ final class TemplateCatalog
                     'playbook_id' => $setup['state'] === 'ready' ? DesignArchive::setupId($setup['id'], $installed[$setup['id']]) : null];
             }
             if ($items === []) continue;
+            unset($collection['markets']);
             $collection['items'] = $items;
             $collection['online'] = $online;
             $collection['id'] = 'catalog-' . $collection['id'];

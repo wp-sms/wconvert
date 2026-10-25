@@ -121,6 +121,18 @@ the returned or bundled `playbook_id` and the member's Goal to prefill; only
 an explicit subsequent creation writes a draft. Membership and counts do not
 depend on installation or the previously selected Goal.
 
+### Step 2's one answer
+
+`GET /wconvert/v1/playbooks?goal=<goal>` returns
+`{setups, online, library}` (ADR 0171). `setups` are this site's setups for the
+Goal, recommended first, each with its design's `facets`. `online` are the
+consented catalogue's setups for the Goal that this site does not have: setup
+identity and `state`, `installed_playbook_id` (an earlier revision already
+here), labelled `business_types`, the design's `display_type`, `facets`,
+`thumbnail` and `tags`, and `preview_url`. A `locked` row is sent only where
+`ProHints::shown()`; nothing is sent until consent is `yes`. `library` is
+`{configured, consent}`.
+
 ### Index page — `v3/index/<sha>.json`
 
 ```json
@@ -140,10 +152,15 @@ depend on installation or the previously selected Goal.
     "id": "welcome-discount", "revision": 1, "sha256": "<setup object>", "bytes": 2048,
     "name": "Welcome discount", "goal": "grow_email_list", "tier": "free",
     "design": {"id": "reading-slip", "revision": 3},
-    "requires": {"plugin": "1.0.0", "capabilities": ["campaign-starts:1"]}
+    "requires": {"plugin": "1.0.0", "capabilities": ["campaign-starts:1"]},
+    "business_types": ["stores"]
   }]
 }
 ```
+
+- A setup row's `business_types` are its Playbook's editorial examples
+  (`stores`, `services`, `publishers`), so the gallery's Business filter
+  reaches a setup before it is installed. A row without them reads as none.
 
 - `facets` are DERIVED by the publisher with the shipping `TemplateFacets`
   (ADR 0043), so a card with no tree can still be filtered by Goal.

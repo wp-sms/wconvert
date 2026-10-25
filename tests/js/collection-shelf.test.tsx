@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, expect, it, vi } from 'vitest';
 import { CollectionShelf } from '../../resources/admin/src/discovery/CollectionShelf';
 import type { Collection } from '../../resources/admin/src/discovery/api';
-const collection: Collection = { id: 'useful', revision: 'r', name: 'Useful starts', description: 'Useful ideas', cover: 'reading', priority: 1, business_types: [], markets: [], items: [] };
+const collection: Collection = { id: 'useful', revision: 'r', name: 'Useful starts', description: 'Useful ideas', cover: 'reading', priority: 1, business_types: [], items: [] };
 const props = { matches: [{ collection, setups: [], designs: 1 }], disabled: false, onOpen: vi.fn(), onAll: vi.fn(), onHide: vi.fn() };
 afterEach(() => { vi.restoreAllMocks(); document.documentElement.removeAttribute('dir'); });
 function geometry(scroll: number, direction = 'ltr') {

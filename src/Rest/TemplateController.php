@@ -223,7 +223,7 @@ final class TemplateController implements RestController
         ];
         if ($card['state'] === 'locked') {
             // The one place a free admin meets a Pro design: a link to see it, never to buy it here.
-            $entry['preview_url'] = 'https://wconvert.io/templates/' . rawurlencode((string) $card['slug']) . '/?utm_source=plugin&utm_medium=picker&utm_campaign=pro-design';
+            $entry['preview_url'] = TemplateCatalog::previewUrl((string) $card['slug']);
         }
         return $entry;
     }

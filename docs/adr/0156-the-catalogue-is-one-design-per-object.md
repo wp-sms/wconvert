@@ -118,7 +118,7 @@ for someone who could install Pro (`ProHints::shown()`): a server thumbnail
 loaded with `referrerpolicy="no-referrer"`, the plan's name and a link to the
 design's page on wconvert.io. *(Amended by [ADR 0170](0170-every-design-is-drawn-on-one-stage.md): the thumbnail is drawn
 on the stage a local render stands on, offered by width at 600w/1200w.)* No Apply, no disabled control, no Pro JSON, no
-"upgrade". Free sorts what it can use first. This **supersedes 0116 §1 and
+"upgrade". Free sorts what it can use first *(amended by [ADR 0171](0171-one-template-gallery.md): locked cards stay where they fall in recommended order, a Plan filter separates them, and step 2 shows them too under the same gate)*. This **supersedes 0116 §1 and
 0147 rule 3 for designs only**. **Amended 22 October 2026:** hosted collection
 browsing also shows every published member, before installation and across
 Goals, with Free/Pro labels. The existing `ProHints::shown()` gate still applies

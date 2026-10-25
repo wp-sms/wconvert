@@ -8,6 +8,7 @@ use WConvert\Goal\GoalRegistry;
 use WConvert\Playbook\PlaybookLibrary;
 use WConvert\Playbook\Prefill;
 use WConvert\Rest\PlaybookController;
+use WConvert\Discovery\GoalGallery;
 use WConvert\Discovery\SetupIndex;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Template\TemplateLibrary;
@@ -35,12 +36,16 @@ final class PlaybookSetupTest extends TestCase
         ];
         $playbooks = PlaybookLibrary::fromEntries($entries, $templates, $vocabulary, $rules);
         $prefill = new Prefill($playbooks, $templates, $vocabulary, InstalledRules::free());
-        $controller = new PlaybookController($playbooks, new GoalRegistry(new FakeProPresence(), new FakeSitePresence()), $prefill, new SetupIndex($templates, new FakeProPresence()));
+        $controller = new PlaybookController($playbooks, new GoalRegistry(new FakeProPresence(), new FakeSitePresence()), $prefill, new GoalGallery($playbooks, new SetupIndex($templates, new FakeProPresence()), new FakeProPresence()));
         $request = new WP_REST_Request('GET', '/wconvert/v1/playbooks');
         $request->set_param('goal', 'grow_email_list');
         $response = $controller->index($request);
         $this->assertInstanceOf(WP_REST_Response::class, $response);
-        $cards = $response->get_data();
+        $gallery = $response->get_data();
+        // One envelope: no catalogue here, so nothing online and the library is not configured.
+        $this->assertSame([], $gallery['online']);
+        $this->assertSame(['configured' => false, 'consent' => 'unanswered'], $gallery['library']);
+        $cards = $gallery['setups'];
         $this->assertSame(['welcome-discount', 'read-to-the-end', 'a-extension', 'z-extension'], array_column($cards, 'id'));
         $this->assertSame('Recommended for stores', $cards[0]['recommendation']);
         $this->assertSame('Recommended for publishers', $cards[1]['recommendation']);
@@ -68,7 +73,7 @@ final class PlaybookSetupTest extends TestCase
         $this->assertSame([], $playbooks->rejections());
         $prefill = new Prefill($playbooks, $templates, $vocabulary, InstalledRules::free());
         $controller = new PlaybookController($playbooks,
-            new GoalRegistry(new FakeProPresence(), new FakeSitePresence()), $prefill, new SetupIndex($templates, new FakeProPresence()));
+            new GoalRegistry(new FakeProPresence(), new FakeSitePresence()), $prefill, new GoalGallery($playbooks, new SetupIndex($templates, new FakeProPresence()), new FakeProPresence()));
         $request = new WP_REST_Request('GET', '/wconvert/v1/playbooks');
         $request->set_param('goal', 'grow_email_list');
         $response = $controller->index($request);

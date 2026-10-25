@@ -102,7 +102,10 @@ to a populated stage. Manual arrows/scrolling expose up to five featured entries
 with all relevant collections available separately. There is no auto-rotation. Arrows appear only for overflow and disable at the
 ends. The user can hide the entire featured shelf while retaining Browse
 collections, and restore it in preferences. Preferred business groups affect
-collection order rather than removing other matching collections.
+collection order rather than removing other matching collections. *Amended by
+[ADR 0171](0171-one-template-gallery.md): markets, preferred businesses and event opt-outs are gone. A
+seasonal collection shows inside its window wherever the shop is; collections
+order by priority; Business is a gallery filter instead.*
 
 The server supplies the site day, timezone and clock reference. The browser
 updates the site day as time passes, including while offline, without another
@@ -111,9 +114,12 @@ inclusive. Collection expiry removes recommendations, not drafts or saved
 campaigns. Open inspection does not jump away at midnight.
 
 Saved design identities, hidden collections, event opt-outs, preferred businesses, shelf visibility and market
-preferences are authenticated user meta, scoped to the current blog. Markets
+preferences are authenticated user meta, scoped to the current blog. *Amended
+by [ADR 0171](0171-one-template-gallery.md): only saved, hidden and shelf visibility remain; the document
+sends only those keys.* ~~Markets
 are chosen by country name through the existing searchable country picker and
-read-only country vocabulary endpoint; this never writes the phone default. A favorite
+read-only country vocabulary endpoint; this never writes the phone default.~~
+*(Gone with markets, [ADR 0171](0171-one-template-gallery.md).)* A favorite
 survives installed pack version changes through `pack:<pack-id>:<logical-id>`;
 immutable template IDs still include the package digest for source baselines.
 Removed designs remain named Saved entries that can be removed by the user.
@@ -250,6 +256,7 @@ creation retains that management surface.
 
 ## 2026-10-01 — local follow-through
 
+*Removed by [ADR 0171](0171-one-template-gallery.md): with markets gone there is no country to suggest.*
 Named WordPress timezones can suggest a country using the timezone database. Suggestions never choose a market automatically or identify visitors. The user confirms or dismisses; explicit markets take precedence. UTC/fixed offsets/unknown zones have no inferred country. Dismissal is personal and scoped to the suggested timezone.
 
 Custom occasions now select an available stage in reviewed evergreen planning collections. The inclusive occasion end remains distinct from campaign scheduling. *Amended by [ADR 0149](0149-an-occasion-groups-campaigns.md): it is converted once, as a prefill, when a campaign is created inside the occasion — `ends_at` is the day after the inclusive end, 00:00.* HTTP sites use a shared getRandomValues-based authoring ID helper. The journey tester excludes genuinely hidden consent from submitted answers; it neither invents consent nor accepts unresolved references.

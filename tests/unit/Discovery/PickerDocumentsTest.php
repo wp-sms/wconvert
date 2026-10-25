@@ -18,13 +18,20 @@ final class PickerDocumentsTest extends TestCase
     {
         $input = PickerDocuments::preferences();
         $input['show_featured'] = false;
-        $input['markets'] = ['GB'];
+        $input['hidden'] = ['bf'];
         $validated = PickerDocuments::validatePreferences($input);
         $this->assertFalse($validated['show_featured']);
-        $this->assertSame(['GB'], $validated['markets']);
+        $this->assertSame(['bf'], $validated['hidden']);
         $input['show_featured'] = 'false';
         $this->expectException(\InvalidArgumentException::class);
         PickerDocuments::validatePreferences($input);
+    }
+
+    public function testKeepsOnlyWhatTheGalleryStillAsks(): void
+    {
+        $this->assertSame(['schema', 'revision', 'saved', 'hidden', 'show_featured'], array_keys(PickerDocuments::preferences()));
+        $input = PickerDocuments::preferences() + ['markets' => ['GB'], 'businesses' => ['stores'], 'events' => ['halloween']];
+        $this->assertSame(['show_featured', 'saved', 'hidden'], array_keys(PickerDocuments::validatePreferences($input)));
     }
 
     public function testBoundedListsRejectUnboundedWrites(): void

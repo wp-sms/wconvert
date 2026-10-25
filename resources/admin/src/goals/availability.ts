@@ -39,13 +39,12 @@ import { adminSettings } from '../settings';
  * WooCommerce a `split` layout needs — so the branch this file spends its last
  * line on has nothing to decide there.
  *
- * The `locked` arm below is the whole of it: free bundles the CARD for a premium
- * design — a name, its facets, a link to a live preview on wconvert.io — and
- * never the design, because shipping the tree and refusing the save is
- * trialware (issue #7). The comment under `locked` about bundled copy is
- * therefore literal for templates as well: `resources/templates/locked.json` is
- * in the ZIP, and a free install hides every card in it (ADR 0116) — the
- * server leaves them out of the payload before this function is asked.
+ * The `locked` arm below is the whole of it: a premium design reaches a free
+ * install only as a hosted catalogue card — a name, its facets, the catalogue's
+ * picture and a link to its page on wconvert.io — and never as the design,
+ * because shipping the tree and refusing the save is trialware (issue #7). The
+ * server sends those cards only where `ProHints::shown()` (ADR 0156 §9), and
+ * the one gallery mixes them in where they fall (ADR 0171).
  */
 
 /**

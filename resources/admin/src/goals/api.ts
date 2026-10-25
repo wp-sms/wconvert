@@ -4,6 +4,7 @@ import type { Template } from '@renderer/types';
 import type { Availability } from './availability';
 import type { OutcomeContract } from './outcome';
 import type { Frequency, Targeting } from '../builder/api';
+import type { TemplateFacets } from '../templates/api';
 
 /**
  * The creation flow's three reads.
@@ -57,6 +58,9 @@ export interface PlaybookEntry {
   destination_hint: Record<string, unknown>;
   /** Why it works, in the merchant's language. */
   notes: string;
+  /** The design's facets and plan, which the gallery filters and labels by. */
+  facets?: TemplateFacets | null;
+  tier?: string;
   /** Optional editorial recommendation; never a Goal or design restriction. */
   recommendation?: string;
   /** Editorial examples; choosing a business never changes Goal eligibility. */
@@ -95,11 +99,42 @@ export interface Draft {
 
 export const listGoals = () => apiFetch<GoalEntry[]>({ path: '/wconvert/v1/goals' });
 
+/** A setup the hosted library has for this Goal and this site does not, as `/playbooks` sends it (ADR 0171). */
+export interface OnlineSetup {
+  id: string;
+  revision: number;
+  sha256: string;
+  name: string;
+  goal: string;
+  tier: string;
+  /** What still stands between the merchant and using it; `ready` rows are sent as the local setup they became. */
+  state: 'install' | 'locked' | 'update_plugin' | 'unavailable';
+  /** The Playbook an earlier revision left on this site, so the gallery shows one card for both. */
+  installed_playbook_id: string | null;
+  business_types: { id: string; label: string }[];
+  design: { id: string; name: string; tier: string };
+  display_type: string;
+  facets: TemplateFacets;
+  thumbnail: { '1x': string; '2x': string } | null;
+  tags: string[];
+  preview_url: string;
+}
+
+/** Everything step 2 offers for one Goal, in one answer. */
+export interface GoalGallery {
+  setups: PlaybookEntry[];
+  online: OnlineSetup[];
+  library: { configured: boolean; consent: 'unanswered' | 'yes' | 'no' };
+}
+
 // Filtered on Goal ONLY. Display Type is prefilled by the chosen Playbook and
 // is selectable as an override afterwards — it is never the first question
 // asked, and a second parameter here is how it would become one.
-export const listPlaybooks = (goal: string) =>
-  apiFetch<PlaybookEntry[]>({ path: `/wconvert/v1/playbooks?goal=${encodeURIComponent(goal)}` });
+export const readGoalGallery = (goal: string) =>
+  apiFetch<GoalGallery>({ path: `/wconvert/v1/playbooks?goal=${encodeURIComponent(goal)}` });
+
+/** This site's setups for a Goal, recommended first. */
+export const listPlaybooks = (goal: string) => readGoalGallery(goal).then(gallery => gallery.setups);
 
 // `playbookId` absent is "start from scratch", which skips the Playbook and
 // never the Goal.
