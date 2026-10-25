@@ -1,5 +1,5 @@
 import splitCapture from '../fixtures/journey-graph-split-capture.json';
-import enquiry from '../../resources/templates/library/journey-enquiry.json';
+import enquiry from '../../tools/design-library/hosted/templates/journey-enquiry.json';
 import optionalSignup from '../../resources/templates/library/journey-email-then-sms.json';
 import { treeFixture } from './support/journey';
 import { readFileSync } from 'node:fs';

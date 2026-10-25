@@ -225,7 +225,7 @@ final class CaptureJourneyTest extends TestCase
     public function testTheServerCollectsAllDeclaredEnquiryFieldsButNoLaterSms(): void
     {
         $vocabulary = \WConvert\Template\TemplateVocabulary::fromManifest(dirname(__DIR__, 3));
-        $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/resources/templates/library/journey-enquiry.json'), true);
+        $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/tools/design-library/hosted/templates/journey-enquiry.json'), true);
         $form = \WConvert\Lead\CaptureForm::fromTemplate($template, $vocabulary, 'enquiry-request');
         $result = $form->validate(['fields' => ['email' => 'visitor@example.com', 'interest' => 'quote']]);
         self::assertInstanceOf(\WConvert\Lead\Submission::class, $result);

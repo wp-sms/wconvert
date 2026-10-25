@@ -17,9 +17,8 @@
       "name": "Black Friday popup",
       "goal": "promote_offer",
       "display_type": "popup",
-      "design": "flash-offer",
+      "design": "summer-archive",
       "copy": {
-        "badge": "30% OFF",
         "eyebrow": "Black Friday",
         "headline": "Our biggest sale of the year",
         "body": { "text": "Everything in the shop, 30% off with code BF30." },

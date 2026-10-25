@@ -108,7 +108,10 @@ deliberately withholds trees, so it would have nothing to read.
 1. **Bundled free entries** — `resources/templates/library/`, now twelve across
    `popup` and `inline`, which are free's only renderer paths
    (`mount.ts`, [ADR 0015](0015-enforcement-is-by-non-registration.md)). Always
-   present, so a fresh or offline install is never empty.
+   present, so a fresh or offline install is never empty. *(Amended by
+   [ADR 0173](0173-the-free-zip-carries-a-core.md): the bundled set is a core
+   of 55; an offline install keeps two popups and two inline forms for every
+   Free Goal, or every one the Goal had where it had fewer.)*
 2. **Bundled locked metadata** — `resources/templates/locked.json`: `id`,
    `name`, `display_type`, `facets`, `preview_url`, and **no tree**. Bundled,
    never fetched: *a free wp.org plugin phoning home for advertising copy is a

@@ -81,9 +81,9 @@ test('extraction stores a photo once, moves its rights and deletes what nothing 
 test('the exporter sends a bundled photo as its own asset, from the file its ZIP ships, Free and Pro', () => {
   const root = fileURLToPath(new URL('../../..', import.meta.url));
   const catalog = JSON.parse(readFileSync(join(root, 'tools/design-library/publishing/catalog.json'), 'utf8'));
-  const exported = exportObjects(root, root, { designs: [{ id: 'citrus-sunrise', revision: 1 }, { id: 'polaroid', revision: 1 }], setups: [], raster_sources: {}, image_rights: catalog.image_rights });
+  const exported = exportObjects(root, root, { designs: [{ id: 'halloween-forest', revision: 1 }, { id: 'polaroid', revision: 1 }], setups: [], raster_sources: {}, image_rights: catalog.image_rights });
   assert.deepEqual(exported.failures ?? [], []);
-  for (const [id, folder] of [['citrus-sunrise', 'resources/template-artwork'], ['polaroid', 'pro/resources/template-artwork']]) {
+  for (const [id, folder] of [['halloween-forest', 'resources/template-artwork'], ['polaroid', 'pro/resources/template-artwork']]) {
     const design = exported.designs.find(item => item.id === id);
     const [name] = artworkReferences(JSON.parse(readFileSync(join(root, folder === 'resources/template-artwork' ? 'resources/templates/library' : 'pro/modules/display-types/templates', `${id}.json`), 'utf8')));
     const file = readFileSync(join(root, folder, name.slice('artwork:'.length)));

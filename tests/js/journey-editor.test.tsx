@@ -569,7 +569,7 @@ it('removes Back when deleting an introductory screen makes the signup first', (
 
 
 it('reveals the earned coupon immediately when adding SMS and preserves it when SMS is deleted', async () => {
-  const { default: coupon } = await import('../../resources/templates/library/code-reveal.json');
+  const { default: coupon } = await import('../../tools/design-library/hosted/templates/code-reveal.json');
   const user = userEvent.setup();
   const initial = structuredClone(coupon.tree) as TemplateTree;
   const thanks = initial.steps[1].content as unknown as { children: import('@renderer/types').TemplateNode[] };

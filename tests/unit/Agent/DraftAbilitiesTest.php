@@ -91,8 +91,8 @@ final class DraftAbilitiesTest extends TestCase
     {
         $designs = array_column($this->ask('wconvert/find-designs', ['display_type' => 'popup', 'goal' => 'promote_offer', 'per_page' => 50])['items'], 'design_id');
 
-        self::assertContains('deadline-panel', $designs);
-        self::assertNotContains('bold-ask', $designs);
+        self::assertContains('summer-archive', $designs);
+        self::assertNotContains('centred-card', $designs);
     }
 
     public function testAStarterIsPrefilledAndTheGivenWordsReplaceItsOwn(): void

@@ -4,7 +4,7 @@ import { bindJourney } from '@loader/journey';
 import type { Template } from '@renderer/types';
 import source from '../../resources/templates/library/journey-email-then-sms.json';
 import { removedScreen, referencedJourney } from '../../resources/admin/src/builder/structure/journey';
-import enquiry from '../../resources/templates/library/journey-enquiry.json';
+import enquiry from '../../tools/design-library/hosted/templates/journey-enquiry.json';
 
 afterEach(() => { document.body.replaceChildren(); vi.unstubAllGlobals(); });
 function setup(template: Template) {

@@ -1,6 +1,6 @@
 import { treeFixture } from './support/journey';
 import { CAPTURE_OUTCOME } from './support/outcomes';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -14,8 +14,10 @@ import { ruleTypes } from './support/rule-types';
 import graphFixture from '../fixtures/journey-graph-enquiry.json';
 import coffee from '../fixtures/journey-graph-coffee.json';
 
+// A Free design the catalogue alone serves lives under hosted/ (ADR 0157).
 const design = (id: string): Template => JSON.parse(readFileSync(
-  resolve(import.meta.dirname, `../../resources/templates/library/${id}.json`), 'utf8',
+  [`../../resources/templates/library/${id}.json`, `../../tools/design-library/hosted/templates/${id}.json`]
+    .map(path => resolve(import.meta.dirname, path)).find(existsSync) ?? id, 'utf8',
 ));
 const FORM = design('centred-card');
 const LINK = design('offer-panel');
