@@ -32,6 +32,7 @@ import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { designDirectories } from './sources.mjs';
+import { inlineArtwork } from './artwork-files.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT = resolve(HERE, '../out');
@@ -75,7 +76,7 @@ const entries = designDirectories(PLUGIN).map(({ dir }) => resolve(PLUGIN, dir))
   try {
     return readdirSync(library)
       .filter((file) => file.endsWith('.json'))
-      .map((file) => JSON.parse(readFileSync(resolve(library, file), 'utf8')));
+      .map((file) => inlineArtwork(JSON.parse(readFileSync(resolve(library, file), 'utf8')), PLUGIN));
   } catch {
     return [];
   }

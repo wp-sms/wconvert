@@ -7,7 +7,7 @@ import { readDesigns } from './inventory.mjs';
 // Run after templates:pilot; open control-proof.html and press Run checks.
 const root = resolve(import.meta.dirname, '../../..');
 const out = resolve(import.meta.dirname, '../out');
-const designs = readDesigns(root);
+const designs = readDesigns(root, { pictures: true });
 const setups = JSON.parse(execFileSync('php', ['tools/design-library/build/pilot.php'], {
   cwd: root, env: { ...process.env, WCONVERT_EXPORT_ALL: '1' }, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024,
 }));

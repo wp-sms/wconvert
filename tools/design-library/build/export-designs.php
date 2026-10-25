@@ -35,6 +35,7 @@ function _doing_it_wrong(string $function, string $message, string $version): vo
 require $root . '/vendor/autoload.php';
 
 use WConvert\Support\Tier;
+use WConvert\Template\BundledArtwork;
 use WConvert\Template\Catalog\DesignObject;
 use WConvert\Template\Catalog\PackValidator;
 use WConvert\Template\Catalog\VocabularySince;
@@ -117,7 +118,10 @@ if (($input['mode'] ?? '') === 'designs') {
     foreach ($input['designs'] as $request) {
         $id = $request['id'];
         try {
-            $template = json_decode((string) file_get_contents(source($root, 'design', $id)), true, 48, JSON_THROW_ON_ERROR);
+            $file = source($root, 'design', $id);
+            // A bundled photo is a file (ADR 0172); the catalogue still receives it as its own asset, split below.
+            $template = BundledArtwork::inlined(json_decode((string) file_get_contents($file), true, 48, JSON_THROW_ON_ERROR),
+                str_starts_with($file, $root . '/pro/') ? $root . '/pro' : $root);
             // The wire says a flow with `graph` and `v` is the vocabulary (ADR 0156).
             $template['tree']['v'] = \WConvert\Template\TemplateTree::VERSION;
             [$template, $assets, $bindings, $media] = images($template, $input);

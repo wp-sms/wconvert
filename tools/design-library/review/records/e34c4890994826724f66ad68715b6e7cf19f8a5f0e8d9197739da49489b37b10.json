@@ -1,0 +1,63 @@
+{
+  "id": "campaign-black-friday-department",
+  "revision": "d2dd8b2be311f126978f3b515a44957794cfa562419198a7fb05df73c809cbb0",
+  "base_id": "e0de0df2356e4ecff46ff68aeb445f94ac58b983d63aaa2d83edb4dbba42a8c7",
+  "decision": "approved",
+  "reviewer": "Artwork files (ADR 0172)",
+  "note": "Only its photos were re-saved as optimised WebP files at the same size; every screen at 1200 and 375 px compared with main and indistinguishable (docs/reviews/artwork-files-2026-10-25). Not a new review.",
+  "at": "2026-10-25T07:31:37Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/50-1440-wordpress.png",
+          "sha256": "eb5fdb8f39742731790b4a467b4de5d5dbeb9c75f74db8792aeb7553a8ceafe8"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/50-390-wordpress.png",
+          "sha256": "949e583b57ede832b26379f3ca5eb0c8e996870be04942b0cb3e3be212564bef"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        },
+        {
+          "path": "docs/reviews/artwork-files-2026-10-25/review.md",
+          "sha256": "0e54364a8329f533e5cd2b242eaaea66efa597708b966208ca8fbbf4c0e84fd8"
+        },
+        {
+          "path": "docs/reviews/artwork-files-2026-10-25/metrics.json",
+          "sha256": "e904c4ea78c22461814a39d6aed271846adca8012074b2587b150456078c3809"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "e34c4890994826724f66ad68715b6e7cf19f8a5f0e8d9197739da49489b37b10"
+}

@@ -1,0 +1,51 @@
+{
+  "id": "halloween-after-dark-offer",
+  "revision": "5a7ad859e3e285b24ab942036f9d5045f40b992456e2a11dff451a7848d1725c",
+  "base_id": "4a030b299e4580d6d233acabbabae875dd880775dd67eafe8a324e7a744c2b83",
+  "decision": "approved",
+  "reviewer": "Artwork files (ADR 0172)",
+  "note": "Only its photos were re-saved as optimised WebP files at the same size; every screen at 1200 and 375 px compared with main and indistinguishable (docs/reviews/artwork-files-2026-10-25). Not a new review.",
+  "at": "2026-10-25T07:31:37Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/shared-renderer-3.jpg",
+          "sha256": "aaacebbc8d691f7f5944df3b09518da6095875684c1993c49a9d86ea8fd1d60a"
+        },
+        {
+          "path": "docs/reviews/artwork-files-2026-10-25/review.md",
+          "sha256": "0e54364a8329f533e5cd2b242eaaea66efa597708b966208ca8fbbf4c0e84fd8"
+        },
+        {
+          "path": "docs/reviews/artwork-files-2026-10-25/metrics.json",
+          "sha256": "e904c4ea78c22461814a39d6aed271846adca8012074b2587b150456078c3809"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "b6bff116019673534815225e0495d1ab2d48072f40627ff8aadb6a597818c662"
+}

@@ -467,8 +467,8 @@
       "added": 175
     },
     "field-guide": {
-      "revision": 2,
-      "content": "8fce05485c044b6249d5f98ddeb795b0957c3f7f0baa2dd15fa5ab90a51c6fd5",
+      "revision": 3,
+      "content": "c0acc828e6adf4a2f5d369422044bf2afeaca43d39df55135ade5c6871938927",
       "added": 176
     },
     "glacier": {
@@ -487,13 +487,13 @@
       "added": 179
     },
     "lookbook": {
-      "revision": 3,
-      "content": "ef5ebc1f8855358970d1e62da41c45673c2e9326dabf6745617d7df6d5bd6304",
+      "revision": 4,
+      "content": "6c4a4e3945750352cb0b11455f6bd42d7d1e65ec5a0f945c00b85b1dcb081dc5",
       "added": 180
     },
     "polaroid": {
-      "revision": 2,
-      "content": "b457a3157420ee261c32a8df876dba83e698d600487adbfc23d8bbd15d4759a5",
+      "revision": 3,
+      "content": "a65c60c758310d7bb118c98fabcc88e6ef40ad6b5ffb0aad3ab2bafc567b602d",
       "added": 181
     },
     "product-trio": {
@@ -517,8 +517,8 @@
       "added": 185
     },
     "halloween-bats": {
-      "revision": 1,
-      "content": "da3a9f37ef8224ab87bf608ab37e74dfc078acd4bcec8cdb0853fa715a26c520",
+      "revision": 2,
+      "content": "04fbe742c6301e38961041d0b7e1ced0bbd3aefde004ff02a86194cb07996265",
       "added": 240
     },
     "halloween-countdown": {
@@ -527,18 +527,18 @@
       "added": 241
     },
     "halloween-engraved": {
-      "revision": 1,
-      "content": "1889f764f116b94b906aa3bfde368f2b79b69cc9b00d6f67120c79acccd7559f",
+      "revision": 2,
+      "content": "40a02d036d333c67fa766ef21c660d329be4d818a94af11644a3f22b6993c1a4",
       "added": 242
     },
     "halloween-forest": {
-      "revision": 1,
-      "content": "46dfc6afabe81d9ca3bad15b32f97e7a8ed5c16f938195c1bf91592716327758",
+      "revision": 2,
+      "content": "6f14540ee1005005d9e9cf2fa2ec43fed78dc3cc3b3d4b9cefa9cd6beac20ba2",
       "added": 243
     },
     "halloween-monster": {
-      "revision": 2,
-      "content": "2d75ee84ffaa6f4dcfdf2cae87fe2fa64fb4eba61527482aaa5a672fda5f1e49",
+      "revision": 3,
+      "content": "38caeb323402133bf344e068c77bce71c2d6dd094706d2c4b9cba5d0827ee946",
       "added": 244
     },
     "bf-acid-markdown": {
@@ -602,13 +602,13 @@
       "added": 261
     },
     "bf-midnight-atelier": {
-      "revision": 2,
-      "content": "867e11e4f5abaab95db366dda192c9d9c84f9bc5785cc9be875a6ed2effcd5df",
+      "revision": 3,
+      "content": "ebe1a1b4e69677f1d8c7990dec55093deea6c578d10cd1d7f84c3c6b1836a0a8",
       "added": 274
     },
     "bf-velvet-rope": {
-      "revision": 7,
-      "content": "15bedaed04ba147c6ff155bddc37e653967ea899bf89ac2c76da4e7ef2dc93ea",
+      "revision": 8,
+      "content": "8c772521667989203d49906d4a50e2ff4b7baa1a076d60205ace14f8e41e5dd5",
       "added": 275
     },
     "bf-weekend-edition": {
@@ -617,8 +617,8 @@
       "added": 276
     },
     "cm-chrome-hour": {
-      "revision": 2,
-      "content": "165713e307ded017dcd9358bdd6503e00ab664a1e7fc669f1283cf369bf41a5c",
+      "revision": 3,
+      "content": "f7bfcb3796dc7d0c4d579fb3f632d9c93c359b5eacc5186d4e8341d16f032c8c",
       "added": 277
     },
     "cm-cyber-club": {
@@ -632,8 +632,8 @@
       "added": 279
     },
     "cm-electric-aisle": {
-      "revision": 2,
-      "content": "0755801227ddca5ea34a14c547b8c637bac3fa37ba6ab5f883ef07062e509c15",
+      "revision": 3,
+      "content": "d68cea0389f45ae3ba6bfc0d582cbc9f05c8de723c9a2db95e7dc0ec4163a07e",
       "added": 280
     },
     "cm-midnight-transmission": {
@@ -642,38 +642,38 @@
       "added": 281
     },
     "winter-advent-letter": {
-      "revision": 2,
-      "content": "0d13cb4b312fead48aa0321562dad4ab6e393290318361d4c8ac26b6b6ad9d5b",
+      "revision": 3,
+      "content": "d3e7aa9bffb0f1a7638291771343f7135883c8ed4e3b5b9cc0f31827ef7cb740",
       "added": 292
     },
     "winter-after-hours-atelier": {
-      "revision": 2,
-      "content": "f75dbb081030cd87b1324568213828033ced0bc5c3504bfa7a120c53578002ab",
+      "revision": 3,
+      "content": "ff93149b65809d7fe34e28046e48a8f0c6e74415bd48b43b5cb21f147583a667",
       "added": 293
     },
     "winter-all-wrapped-up": {
-      "revision": 2,
-      "content": "a2040aa24a7f993c02e2aa1a8c80d4ab2e113e1568a83a4f87bbc92be607a188",
+      "revision": 3,
+      "content": "03d768fe3b6daf705cc44286c786e2651e16f020131f07f00c29753aac697196",
       "added": 294
     },
     "winter-before-the-bow": {
-      "revision": 2,
-      "content": "d9758fc57b6082f6b70f454bf2d22ccbe8f2b78b991709e66b7ac906f11bb19a",
+      "revision": 3,
+      "content": "c7e3d31dc5189496b5295d110b65328c7c88d139bbfec813bbd3a085e098ced3",
       "added": 295
     },
     "winter-bright-new-chapter": {
-      "revision": 2,
-      "content": "c3ed80444f70f5c45c300339c5f24ff4b30f39c686dad9fe4820b02eb55e587b",
+      "revision": 3,
+      "content": "f71d032de7aacb148be2510be7794c9fc92741985d8eb58c2902482fcc34ef17",
       "added": 296
     },
     "winter-by-the-fire": {
-      "revision": 2,
-      "content": "f19227975c21c0a6019c097202ea7cb652cb3c4e5dcd3664b5a824c168f1dee0",
+      "revision": 3,
+      "content": "25e6eda2cb589f13ea031f6e1bd4958aba280135001a241a328605b7e4341db6",
       "added": 297
     },
     "winter-candle-club": {
-      "revision": 2,
-      "content": "100408e138b92c5a3d25d1522630c215a5a0f2e8b677dfd8cb762c82e3725cc6",
+      "revision": 3,
+      "content": "c1b8404cc87252ab0d3b8429b41195e9060be09327ed890bd0b78a52e27c83c8",
       "added": 298
     },
     "winter-christmas-express": {
@@ -697,13 +697,13 @@
       "added": 302
     },
     "winter-final-sparkle": {
-      "revision": 2,
-      "content": "144bf2115b0710f69a76ffdd24a69df28785c3b5dd1f43a1b24cc0f56a58f89b",
+      "revision": 3,
+      "content": "67efd2f993622816e9bc86ee18ab4c8f90ce105f155ddd31a5270741a95661bb",
       "added": 303
     },
     "winter-first-light-access": {
-      "revision": 2,
-      "content": "27c8cb4e90c523b4a18b1971bae978251cb61d519ff7deb0c3d1ceed4a3d29ad",
+      "revision": 3,
+      "content": "dab7bc41c47ba8083445e1fe8d5962a1d4dc58ae6b06f8763dd096c76362625e",
       "added": 304
     },
     "winter-first-page": {
@@ -717,8 +717,8 @@
       "added": 306
     },
     "winter-gift-atelier": {
-      "revision": 3,
-      "content": "48c1d1f7182b2ae6056b2719c4b44647dc2fd497861a19ff188fe891be42de24",
+      "revision": 4,
+      "content": "6a42281b495ed2c6fe1d9ac90b317eb2c158ce88fe493020f219733bffed50cb",
       "added": 307
     },
     "winter-hello-2027": {
@@ -747,13 +747,13 @@
       "added": 312
     },
     "winter-midnight-garden": {
-      "revision": 2,
-      "content": "440a4878a906fb64794a12f9318631ddf0f698d53def1e8aa5dff5b9ded93eda",
+      "revision": 3,
+      "content": "811e223f35b300aafc0448be8441a8c3cd586eb0072595cfe1bc7e895a2e22a2",
       "added": 313
     },
     "winter-ornament-edit": {
-      "revision": 2,
-      "content": "6b469d014798dcc6dc503adc686fe1cb54b6393a282ee1d4f9a2f48be78e3159",
+      "revision": 3,
+      "content": "a4eb21223c0fcb553ce5a9953412a7114d8e1df59dd1844adf562316bf7deb5a",
       "added": 314
     },
     "winter-paper-pine": {
@@ -772,18 +772,18 @@
       "added": 317
     },
     "winter-ribbon-room": {
-      "revision": 2,
-      "content": "d5ab1fd61b4321a11bc31c00190ee691fa4df1908d2da966e02ce07a880e678c",
+      "revision": 3,
+      "content": "874141e489eab5e78e4ec5f8aadfd76dbdbe98ec7550a29b3a76b62594c873a5",
       "added": 318
     },
     "winter-santa-letter": {
-      "revision": 2,
-      "content": "b7e0c31d95733260ac7d17c5635bfa7a19abd20eb3d19cebb033db6376191bf5",
+      "revision": 3,
+      "content": "50af0c62cb3b14607589c356eff7738d20642c57f541bc668e218c842d3b57a6",
       "added": 319
     },
     "winter-shop-is-sleeping": {
-      "revision": 2,
-      "content": "a4214ddd4770039ea5f13bcc80aa6a55255e68a179f2ae038201156eaf935afd",
+      "revision": 3,
+      "content": "138db2883fe8cc83d8395c17727a8e07bf65ecab93c359256d9d23649732dfed",
       "added": 320
     },
     "winter-small-kindness": {
@@ -792,13 +792,13 @@
       "added": 321
     },
     "winter-snowglobe-society": {
-      "revision": 2,
-      "content": "0acb9dbb0ba95fe47125c8b0f7645da4b76eaad7343fcc8adcba57cd15fb1a4c",
+      "revision": 3,
+      "content": "159820cb1110b43ada37f992b5e113421deedc481e7828a2311b987bc1442f10",
       "added": 322
     },
     "winter-softer-beginning": {
-      "revision": 2,
-      "content": "abca9fda23b86290d6bdfce231ef2ae5e403d712325cbbe57ffbc29334645509",
+      "revision": 3,
+      "content": "114843bdba321f5cfd1631c4aebf549f7228b83a7d05ef16d27501e7d10a65c7",
       "added": 323
     },
     "winter-still-time": {
@@ -812,8 +812,8 @@
       "added": 325
     },
     "winter-tied-with-joy": {
-      "revision": 2,
-      "content": "856a802102ad0ec4b35f48918c40849d94f9dd5cc59df7dd6857e7d32df7eb13",
+      "revision": 3,
+      "content": "92bf1f9bf5ab7b3e2e616394c54b333d1db4e4d34c541a92216ae1b5e73fd983",
       "added": 326
     },
     "winter-winter-hours": {
@@ -822,8 +822,8 @@
       "added": 327
     },
     "winter-winter-postcards": {
-      "revision": 2,
-      "content": "cad7a146fce417a9a1cdf77331ea9183f0987deb516501c602157e009295f674",
+      "revision": 3,
+      "content": "5be3d0ac3857c8e93f19bbdc52334f32aa3700ab77f2dd25a6fd53107e41e6f9",
       "added": 328
     },
     "winter-winter-reading-room": {
@@ -832,13 +832,13 @@
       "added": 329
     },
     "winter-winter-windows": {
-      "revision": 2,
-      "content": "ad1795707d137302a434e594a6f8a8e25a25bd633a0f9f904a4a4561f2afaa7b",
+      "revision": 3,
+      "content": "58e6f819419f3cd6089f2655b264726cee78f78025cb2ee9b3231fda900d1919",
       "added": 330
     },
     "winter-wrapped-in-colour": {
-      "revision": 2,
-      "content": "885d3c49c6cf3d427a928653f950c626fa69afd5d257f264e9fc930662b191d4",
+      "revision": 3,
+      "content": "43151e91366dd19cd89a2e935a5ccaa32c1c03a945d77081820a5fdf758d96a2",
       "added": 331
     },
     "bar-email-capture": {
@@ -862,8 +862,8 @@
       "added": 375
     },
     "everyday-a-curious-future": {
-      "revision": 2,
-      "content": "f72f357607486247c2232fb80e9f7e74218a284d7067d54944ce5da0d006e422",
+      "revision": 3,
+      "content": "34811d893142099691a28dbaaaa4afe19318b8d0126a8b75d87f04fe9394b1f9",
       "added": 381
     },
     "everyday-a-date-with-making": {
@@ -872,8 +872,8 @@
       "added": 382
     },
     "everyday-a-desk-away": {
-      "revision": 2,
-      "content": "a597cb33aa0ddedcaa47f939cd0d32e169e9fb29df012da3488eb5cdb940dcf5",
+      "revision": 3,
+      "content": "9d7957f3defccb2bb630c2e173367b51709df19961e42cbcbcec81287b675427",
       "added": 383
     },
     "everyday-a-fresh-start": {
@@ -892,8 +892,8 @@
       "added": 386
     },
     "everyday-almost-somewhere": {
-      "revision": 2,
-      "content": "062be936d8c2d1b484011efac4372a579b0ed2daa9746f6f65876917815e92e2",
+      "revision": 3,
+      "content": "4acfe77905b97c55a66565b942abc3e9374cc8b1c2f0e3a8e1184ad2e00e1073",
       "added": 387
     },
     "everyday-an-evening-worth-making": {
@@ -947,13 +947,13 @@
       "added": 397
     },
     "everyday-from-the-ground-up": {
-      "revision": 2,
-      "content": "010eb88e895613ed83fb29de71a49151be23782365901bb00e0e40d7bc798478",
+      "revision": 3,
+      "content": "8fe762c50266c834649c89262471241a5b67173748a3c3d0679c44018986e0e2",
       "added": 398
     },
     "everyday-good-dog-society": {
-      "revision": 2,
-      "content": "65c1a4593d1e64b24a6ab6ecd556bab312baa78faf552718c7b3b77674a63ea8",
+      "revision": 3,
+      "content": "a91731380c32b44ee2685faea4de132937a70fa4c01341b030dcacf82d2671f8",
       "added": 399
     },
     "everyday-listen-closer": {
@@ -962,8 +962,8 @@
       "added": 400
     },
     "everyday-listening-party": {
-      "revision": 2,
-      "content": "18ebd8b605c6f2344f4bc27c71eb6644783a263593411b25863de45b2c852185",
+      "revision": 3,
+      "content": "7d722c798092fb67af27d87ff35e32a8d8ab1f9f81f0c2cecd799965e15257dc",
       "added": 401
     },
     "everyday-make-it-yours": {
@@ -997,13 +997,13 @@
       "added": 407
     },
     "everyday-school-of-small-things": {
-      "revision": 2,
-      "content": "2651141457a3c5772d4aefd9ec093f61879e4bf81c0a80bd763bc6ed0851d6b1",
+      "revision": 3,
+      "content": "89745f19dfd9f3d2035152411408ee09a843be3eccee881d960a2dc8b844a223",
       "added": 408
     },
     "everyday-slow-sunday-notes": {
-      "revision": 2,
-      "content": "4131ca81c8eee008be00457dce67df718eddecb089a0add90581a039abbd370e",
+      "revision": 3,
+      "content": "762df499e0c32424214156b0b61e826df0922c5d1bd32b7422a7844a769892dd",
       "added": 409
     },
     "everyday-small-batch-bulletin": {
@@ -1012,8 +1012,8 @@
       "added": 410
     },
     "everyday-soft-science": {
-      "revision": 2,
-      "content": "a2086c76f326978b74a7c153d60fd8d1299da933ef42f54edcba9b5ea3b09918",
+      "revision": 3,
+      "content": "d46249a3b9038cefacb272d65567e9e0d3d95e8b6db6cdeb6bbe583447b981f3",
       "added": 411
     },
     "everyday-start-a-conversation": {
@@ -1037,13 +1037,13 @@
       "added": 415
     },
     "everyday-the-daily-ritual": {
-      "revision": 2,
-      "content": "0af746c47c4181a264b9d7191010db6a7ae911109d91b9f60b44b8209eeeea43",
+      "revision": 3,
+      "content": "d89b3c26ac1c9da2cd4a2156a30170d9efe89c38f2b6a858453dc1b223d2977a",
       "added": 416
     },
     "everyday-the-future-is-friendly": {
-      "revision": 2,
-      "content": "14dfa2fe70154597d8c0cd319c99ed01a144d688579745383a471a2733cacf0d",
+      "revision": 3,
+      "content": "1e4f1ff38ec290bcf4c852c6b43d59fc8b6e5c6f506d196be09c7974390535f5",
       "added": 417
     },
     "everyday-the-lemon-hour": {
@@ -1052,8 +1052,8 @@
       "added": 418
     },
     "everyday-the-listening-room": {
-      "revision": 2,
-      "content": "9b98d5b2bad2503747d2fd1a332b59d7a6eaddfe9559d58578f2ff2dd2357321",
+      "revision": 3,
+      "content": "c9ae7c4442231bb796923a0594a44ec90ac0684fc50aa0c7d224e957b0122cc2",
       "added": 419
     },
     "everyday-the-little-things-shop": {
@@ -1072,8 +1072,8 @@
       "added": 422
     },
     "everyday-the-object-room": {
-      "revision": 2,
-      "content": "e32a398084d66bebc3dea6d79a6488b92c08db5a88e4ebda4908aebb585c7002",
+      "revision": 3,
+      "content": "b546134d07870f66a3dca8a65518824c691d072cf4fe8d4bc58804f20fc769c6",
       "added": 423
     },
     "everyday-the-reading-shelf": {
@@ -1082,8 +1082,8 @@
       "added": 424
     },
     "everyday-the-scenic-route": {
-      "revision": 2,
-      "content": "dadacb1692b65d8a0dc6d3da456f013fac892c93c604102491bb5352c2b9cab9",
+      "revision": 3,
+      "content": "793af96148c3362e24f70afb478d739913b3aee629fe6291f6ad26f02c869e37",
       "added": 425
     },
     "everyday-the-small-start-studio": {
@@ -1112,8 +1112,8 @@
       "added": 430
     },
     "campaign-anniversary-event": {
-      "revision": 7,
-      "content": "970f1e8515a941251d247f47f5484e9c4694bc9fa9aa63f81a1e2de00482b3c4",
+      "revision": 9,
+      "content": "0508455ed5d4be5ad032806e56f4665c8ccbfdac7c400e7cd15818f372215e04",
       "added": 481
     },
     "campaign-black-friday-archive": {
@@ -1127,18 +1127,18 @@
       "added": 483
     },
     "campaign-black-friday-department": {
-      "revision": 4,
-      "content": "2871bbad12b300f94e2c0ffdb38f983b96059f9095cd9856a46c9f6e922e96a9",
+      "revision": 5,
+      "content": "b602c862ff327b9f471f3eb707e02db88865a8d031e0633d77018fb190f18c90",
       "added": 484
     },
     "campaign-black-friday-departments": {
-      "revision": 4,
-      "content": "c1b09af657d1893d740266653e4f9d59353be17995cb713d63f8126fbd2841cf",
+      "revision": 5,
+      "content": "9be579c181d4ee4bfaaab735b318603cdf4b8a27c269f6ecbcdc442a383616a6",
       "added": 485
     },
     "campaign-black-friday-fast-lane": {
-      "revision": 4,
-      "content": "714f9dc4a02b900ac5afa557ddf49d054e06102e1bcaf38ed82a90e404bd3a38",
+      "revision": 5,
+      "content": "fb72a79b67dd114f955fdfaee4e3c9449efdbf75f8e75fb49d99e01dcde8b9ff",
       "added": 486
     },
     "campaign-black-friday-plus-one": {
@@ -1147,8 +1147,8 @@
       "added": 487
     },
     "campaign-breakfast-edit": {
-      "revision": 4,
-      "content": "c2ee352ad65ce16e2b89b52862bbcf3d2c301ee90fccdb0fed4d022937a0b9f1",
+      "revision": 5,
+      "content": "130dc824ef59a4d2246f11d7f0b687d3b882422336c2e022888417c58f791d6a",
       "added": 488
     },
     "campaign-deadline-scoreboard": {
@@ -1172,8 +1172,8 @@
       "added": 492
     },
     "campaign-extra-ten-coupon": {
-      "revision": 6,
-      "content": "9d8250a4d96a7d1c67687c0d7006493862551c3079b246669a99ec60a4b27196",
+      "revision": 7,
+      "content": "2e3a4ea1fef53214b240c4537fc54672d654b13e6b2b1d9e56987db36ef573bb",
       "added": 493
     },
     "campaign-fifty-fifty-poster": {
@@ -1247,8 +1247,8 @@
       "added": 507
     },
     "campaign-layer-edit": {
-      "revision": 4,
-      "content": "e8dd8ce36cfc49ae520b6e28414ab9932569bd7859fc8e10ba2736832cce653a",
+      "revision": 5,
+      "content": "9977b8052cb0983f4861fee2fc792fedd3d348861ff00d27484c945467fd1a5d",
       "added": 508
     },
     "campaign-midnight-fragrance-edit": {
@@ -1262,8 +1262,8 @@
       "added": 510
     },
     "campaign-packing-perk": {
-      "revision": 5,
-      "content": "fb14d17af63d97178f6673cbb16253c240ea42a96da3fdd119415b6f8cbd34a7",
+      "revision": 7,
+      "content": "70d95c2e9486d5719662d35652e71a4cef7bc2349e7ba72d9a8ce6625a009c79",
       "added": 511
     },
     "campaign-pixel-play-sale": {
@@ -1287,8 +1287,8 @@
       "added": 515
     },
     "campaign-savings-receipt": {
-      "revision": 4,
-      "content": "0ed51713aad765bdb99614d9fab7324334b98c62df0f06c0f1d83b86b9e2489d",
+      "revision": 5,
+      "content": "f749cae7fc70bd825b819e12aba1949b623828e33b1b9e829335a73b00c0abbe",
       "added": 516
     },
     "campaign-savings-staircase": {
@@ -1357,9 +1357,24 @@
       "added": 529
     },
     "campaign-your-welcome-pal": {
-      "revision": 4,
-      "content": "94b34ed28200d9d0454ffb278f71e5229bb26bd63179802a746aaecad3afa1ce",
+      "revision": 5,
+      "content": "812b1c6da4bf23e9fc02751cc5d6fb7b3c3939a74bf8e9a89b146c01dcb0af9d",
       "added": 530
+    },
+    "citrus-sunrise": {
+      "revision": 1,
+      "content": "0eb008296b5093241d3887d1069e58ebbc763e47ee28f1a1fb75dfacb43bcad7",
+      "added": 581
+    },
+    "exhibition-wall": {
+      "revision": 1,
+      "content": "fd5a1d972ee52fdc3e36b9d4508bde135095841dab8126d4bbda01185153189f",
+      "added": 582
+    },
+    "trail-window": {
+      "revision": 1,
+      "content": "46cadf4d3bc3f1ae7b7b244c647e33e5ec8ff5797837927c7338709b036a39d8",
+      "added": 583
     }
   },
   "setups": {
@@ -1779,18 +1794,18 @@
       "added": 186
     },
     "early-access-launch": {
-      "revision": 3,
-      "content": "f3229e1c4d9c69abee80cba38acf9378d2fd215ea66488fed9896a9121400e5f",
+      "revision": 4,
+      "content": "ba8c3ed518ed16670b8cf4101fd85fef7d19d69538fc97f5106bf60185cad684",
       "added": 187
     },
     "monthly-planting-letter": {
-      "revision": 2,
-      "content": "15b4926bfe1df49be87d3c8200c227abfd5f634ad6fbc100e254d4ea9ff89a25",
+      "revision": 3,
+      "content": "b40246fbf41479efe3a3f6b84d3a2f9165a051634750dd8f3f4afd9d2ef5dcea",
       "added": 188
     },
     "new-batch-first-look": {
-      "revision": 2,
-      "content": "27e9fd83494d5255f6c6642a8f6f64b7320d7a46b475da45bedc08f652e38785",
+      "revision": 3,
+      "content": "a4c1d0a53c14b899ab2389092c6582708baff65fce87ba2b3175c1d0b22db23c",
       "added": 189
     },
     "finish-the-set": {
@@ -2044,18 +2059,18 @@
       "added": 239
     },
     "halloween-after-dark-offer": {
-      "revision": 1,
-      "content": "9b3edf6f64e6fe7bf83338fd89deeaa7dbf8a94b9fb969ded5c7c9d2b5e2cff6",
+      "revision": 2,
+      "content": "c5098d202aca745f5da41dbfcf5b3af0a8f182f737247322c069361b1efd1536",
       "added": 245
     },
     "halloween-midnight-flight-offer": {
-      "revision": 1,
-      "content": "1258e99aa4d7772098ca47192fb0790a0cd9fc47297d21fed120e3871d52688a",
+      "revision": 2,
+      "content": "e029ab4caca08b22b846335ce573e5438ceebe74ab8a41cdac1d63e1df7a2bbc",
       "added": 246
     },
     "halloween-midnight-offer": {
-      "revision": 1,
-      "content": "204739db1701393535ce3797068a2c62e4c0d5e63955ebf1d396f2d8b58f7929",
+      "revision": 2,
+      "content": "1ca629cbb276ec7c68928fa3d69328546cd722fe732e4778daae8522ef2b1d9d",
       "added": 247
     },
     "halloween-sale-countdown": {
@@ -2064,8 +2079,8 @@
       "added": 248
     },
     "halloween-treat-signup": {
-      "revision": 2,
-      "content": "9165cc238bc775e1cc61ac711650eeb6842cc1d8341087e41bda86964fcc60dd",
+      "revision": 3,
+      "content": "51d7cac4a07ad0339ea34633b8ea0be60c671201f1841aa72ee2adea5a43112c",
       "added": 249
     },
     "bf-acid-markdown": {
@@ -2129,13 +2144,13 @@
       "added": 273
     },
     "bf-midnight-atelier": {
-      "revision": 2,
-      "content": "10b764989a513f4821ae13ed7d9e71951033c4721e675ea92f1001378c94cb7c",
+      "revision": 3,
+      "content": "4326453800c6abea40dc31a2eb7448698f24d7e6ceb6ee7914c7ccfcef5222fe",
       "added": 282
     },
     "bf-velvet-rope": {
-      "revision": 7,
-      "content": "61037a8da01d83aa629445c5cadeffb96e55980891de132262af5a2fc8ab0c6d",
+      "revision": 8,
+      "content": "fac33f50a340948ff7224693fc10cdced36e48484d32fd0cf724e284e044b8ae",
       "added": 283
     },
     "bf-weekend-edition": {
@@ -2144,8 +2159,8 @@
       "added": 284
     },
     "cm-chrome-hour": {
-      "revision": 2,
-      "content": "27977fdc590de4c7b79aa94aadcf94a3f028aa77dac9497951a44425453f5067",
+      "revision": 3,
+      "content": "7bac738d8b8b8858ecdfb8d8e3f487412dc3c4ebd683005ceacdad61f109ff21",
       "added": 285
     },
     "cm-cyber-club": {
@@ -2159,8 +2174,8 @@
       "added": 287
     },
     "cm-electric-aisle": {
-      "revision": 2,
-      "content": "0a3405254d618fb9a066b1a42841722896c9f5b2111df9cad61acd59ea34f528",
+      "revision": 3,
+      "content": "5e673bac55aff871693644fcca71b71b470d69b913e0738c64e49750622524d5",
       "added": 288
     },
     "cm-midnight-transmission": {
@@ -2179,38 +2194,38 @@
       "added": 291
     },
     "winter-advent-letter": {
-      "revision": 2,
-      "content": "f52dfe2dd45fc2b693fe500407abd9ee01682467b43b6a62621c58d377300418",
+      "revision": 3,
+      "content": "495ad45586b2122f9cfe917161c8aac7c686a88478e17dd4635fe637fd5a53d8",
       "added": 332
     },
     "winter-after-hours-atelier": {
-      "revision": 2,
-      "content": "eec014c03d2c8edf58418b1c7d64b55cdaa5d970370a96e07f19b5e0083a0651",
+      "revision": 3,
+      "content": "47d7c02f24d89578c8a3b33558aaaed8df9740fc6bbd1c90d5c6bb27420cd722",
       "added": 333
     },
     "winter-all-wrapped-up": {
-      "revision": 2,
-      "content": "eb37faceb484baa3eb8cc2a7c40179810b6de91a28e3848b21ad25898392e008",
+      "revision": 3,
+      "content": "9ff1c0e71b31faf9b52a70fcdf4a8adc2353c1bd502a53d4926b97604a61c31a",
       "added": 334
     },
     "winter-before-the-bow": {
-      "revision": 2,
-      "content": "634fcc41e69124da1cd0dd2ba24c52f6c94428ce82b3afc8b1a46785bf8452b5",
+      "revision": 3,
+      "content": "7249f44a0c8a4a1426437bb55ebfddc1c0c2e59a3d0cabe2648bde0eeb77b2ce",
       "added": 335
     },
     "winter-bright-new-chapter": {
-      "revision": 2,
-      "content": "f5c4d05267107dc3686006c7c42b5d0e7e41a55886d459d92826e75f2c77eada",
+      "revision": 3,
+      "content": "590d30f7ad7a3c3314c5c84af7442dabfe81944cf721e696d3c80d1683ec0ea0",
       "added": 336
     },
     "winter-by-the-fire": {
-      "revision": 2,
-      "content": "ed3cca1a9f8b59345ae969feaec0f04bb2c73e8a15e8e1e46bfd2d461b514888",
+      "revision": 3,
+      "content": "fc35eb63a4bb19741eef30e5678d528c2b9838471d8ffdff42d4b9904dfb7e54",
       "added": 337
     },
     "winter-candle-club": {
-      "revision": 2,
-      "content": "ac4fc6f7cb40d44cfeaefb7b2df03f63a4fa42f740a7d8d675c1097221468cb6",
+      "revision": 3,
+      "content": "bf4d11e303de3eed0eaf91bf56e4755662f758bf946a62bfe675d6495095ba82",
       "added": 338
     },
     "winter-christmas-express": {
@@ -2234,13 +2249,13 @@
       "added": 342
     },
     "winter-final-sparkle": {
-      "revision": 2,
-      "content": "85be785e523a2d0584fa701ad050e91e3905cb449e838cf6b4b3cafe66be2451",
+      "revision": 3,
+      "content": "63a1fd63cea347d65e0d3cae2c8ea855de5bb7b9ba07e3b154337c6dd3736cb9",
       "added": 343
     },
     "winter-first-light-access": {
-      "revision": 2,
-      "content": "393903138a5f410544e2bac568d9cb928d97b9b265d701fcdb56eb2a1eebb208",
+      "revision": 3,
+      "content": "0899d2f033565f55791cb258d3453a7c209b06cf2767bc9555a31e2b62e2dc16",
       "added": 344
     },
     "winter-first-page": {
@@ -2254,8 +2269,8 @@
       "added": 346
     },
     "winter-gift-atelier": {
-      "revision": 3,
-      "content": "b24d88312022224780fc7c519b21cd031fcda3f206cfa87d83dcf64287271aae",
+      "revision": 4,
+      "content": "1f6b004de0e39921df0455f8a9ef7c150648e0d3205ad1f492d74a98a3ff5851",
       "added": 347
     },
     "winter-hello-2027": {
@@ -2284,13 +2299,13 @@
       "added": 352
     },
     "winter-midnight-garden": {
-      "revision": 2,
-      "content": "84095023c37344311bffba79f8e1851b49f6c3093e17c5accf54ea1ca466cddc",
+      "revision": 3,
+      "content": "8e20c7acaba060c66daa89f5ffef94618126e676fe5da5b11d90f5a2a089be6b",
       "added": 353
     },
     "winter-ornament-edit": {
-      "revision": 2,
-      "content": "24f6bbc0e3ce8e2c099c9479894b34c68b029a0ad6822cc7bae001a71986c033",
+      "revision": 3,
+      "content": "989ae405f5d1beb337fe889c3ad760e3cc999411d49c76df378b3da1aeb10fd9",
       "added": 354
     },
     "winter-paper-pine": {
@@ -2309,18 +2324,18 @@
       "added": 357
     },
     "winter-ribbon-room": {
-      "revision": 2,
-      "content": "c68ee58d47ef262118946eb273cf3b67e28ee8b0beb9a3e8fe5b9d3845a9500f",
+      "revision": 3,
+      "content": "d83816115179812a154578c3b78a578aa98a4cb0bef2c301ff01d11139484cdc",
       "added": 358
     },
     "winter-santa-letter": {
-      "revision": 2,
-      "content": "e28c4d325116838c2344df952ea20530f2374ccd23e0e59e8af01fb967b5caf1",
+      "revision": 3,
+      "content": "7a0140bad9fda60f4c95066a9325a13e3c895ddcd9fe61a11bb7e63adb52946e",
       "added": 359
     },
     "winter-shop-is-sleeping": {
-      "revision": 2,
-      "content": "b1af9964b9f29a21864df277234ee1d66dde2c30322dd2f9c961ed9ff5c11cc9",
+      "revision": 3,
+      "content": "f5ef1b6fa632bb6f7cfb1929eb4afd2403d374e37dea787ea877189b5555ab53",
       "added": 360
     },
     "winter-small-kindness": {
@@ -2329,13 +2344,13 @@
       "added": 361
     },
     "winter-snowglobe-society": {
-      "revision": 2,
-      "content": "255d1e50878bb92a132a6863a383bcc805c63f551aa2f5859c24a14eae7b4ad0",
+      "revision": 3,
+      "content": "bae13d9977d18db0380c7b0eef01e9f9dc2f77e79e6075483b73d58aea4a6073",
       "added": 362
     },
     "winter-softer-beginning": {
-      "revision": 2,
-      "content": "63bf2c998fa8da7026a377c3dcba1f4a9b4e1970a6e7d7d6eb1fea1a12ad1001",
+      "revision": 3,
+      "content": "57e42ba3df5760ea183fd60e6fc7e2c6542854ed8524990555fb4da4939d9cda",
       "added": 363
     },
     "winter-still-time": {
@@ -2349,8 +2364,8 @@
       "added": 365
     },
     "winter-tied-with-joy": {
-      "revision": 2,
-      "content": "52f4fec7106537007f1854ef968904757d59553af6e0c6bea00785edb8cc2a8e",
+      "revision": 3,
+      "content": "2efe73f31acbb52a24bc335a98da12474c526ea56aa8ec89512ddd36393d8812",
       "added": 366
     },
     "winter-winter-hours": {
@@ -2359,8 +2374,8 @@
       "added": 367
     },
     "winter-winter-postcards": {
-      "revision": 2,
-      "content": "5d8c6000703e16bfc79347aeaa78bd3e02dbb9d52cbd0d86543bb1350bd720a0",
+      "revision": 3,
+      "content": "897070389e23befcdbc93ee3f0af7fec3d740295c8ec64a47e0b6210fc78fbd1",
       "added": 368
     },
     "winter-winter-reading-room": {
@@ -2369,13 +2384,13 @@
       "added": 369
     },
     "winter-winter-windows": {
-      "revision": 2,
-      "content": "d7e5269a550a5ea5c16937df01a3f28296a50be0a79f020c2960506ce55f8ad0",
+      "revision": 3,
+      "content": "74f0794d33d1cc25c13e117b2e7263787ff9f5489a042c5f785aef8438f1a1a7",
       "added": 370
     },
     "winter-wrapped-in-colour": {
-      "revision": 2,
-      "content": "c85e81fa8bf9de6feeddb89ee232970a2392bb7edc563970acba91b61f4ecd6c",
+      "revision": 3,
+      "content": "4976302779f3b8ac5cda8df60fafe6c877eb5612b6c7fa42acb3b83962d199e9",
       "added": 371
     },
     "colour-collection-notes": {
@@ -2404,8 +2419,8 @@
       "added": 380
     },
     "everyday-a-curious-future": {
-      "revision": 2,
-      "content": "2a904db7c6427ff9ca66cd5088a59316eff064e286d229ad57c515dcb8528f4c",
+      "revision": 3,
+      "content": "c602a251eb8e96bf6d4ba54254e37a44aa71c11bba546896d7aa3068318dd746",
       "added": 431
     },
     "everyday-a-date-with-making": {
@@ -2414,8 +2429,8 @@
       "added": 432
     },
     "everyday-a-desk-away": {
-      "revision": 2,
-      "content": "1cc5fa79a71e3115eff5ea1f68699b0648188c9fa7b7097b0ce5e95a126723d4",
+      "revision": 3,
+      "content": "cceabb9d107895d1a7a28f95fe57ab328ea6fd3c5e32cbd3542fadbc08602786",
       "added": 433
     },
     "everyday-a-fresh-start": {
@@ -2434,8 +2449,8 @@
       "added": 436
     },
     "everyday-almost-somewhere": {
-      "revision": 2,
-      "content": "fa0cc1f9c549100426d3ab3f1325e6dcd5d2044ccd97050328c84a375a89e1a1",
+      "revision": 3,
+      "content": "ad1bcabfc520f082a65fc061aa52683ffb556aced616c5b24eae39f0fb24440b",
       "added": 437
     },
     "everyday-an-evening-worth-making": {
@@ -2489,13 +2504,13 @@
       "added": 447
     },
     "everyday-from-the-ground-up": {
-      "revision": 2,
-      "content": "2bb8e569fac71a074cb2767d91598815a2a2456eac24ace92d1e21bb0cf0e6ef",
+      "revision": 3,
+      "content": "710773f1c87f33473213f8fccf0f9d368177b183a30ec1b2e9dbf629a4e2e590",
       "added": 448
     },
     "everyday-good-dog-society": {
-      "revision": 2,
-      "content": "1c9c013ca46a2e576f328a9f83fc216872e7088ce09acffbc1c43d6962876ccd",
+      "revision": 3,
+      "content": "9876b4d1b68224e6dc81753a11dc671d75fc1e10948d0825956a2342e2ced187",
       "added": 449
     },
     "everyday-listen-closer": {
@@ -2504,8 +2519,8 @@
       "added": 450
     },
     "everyday-listening-party": {
-      "revision": 2,
-      "content": "5368198b67610b2098c299e534369b81df037d2295e4da9a81d965145a8715d6",
+      "revision": 3,
+      "content": "8a1314cc898e7b2ed4f400240a1e2d61b77ee115271e8c342b336d351205d588",
       "added": 451
     },
     "everyday-make-it-yours": {
@@ -2539,13 +2554,13 @@
       "added": 457
     },
     "everyday-school-of-small-things": {
-      "revision": 2,
-      "content": "1392aaf27c267eeac5d05a00af8f93d9a5cf9988895cef431203e9a8804b4a8e",
+      "revision": 3,
+      "content": "afdc3f9d6631e23ecd9a2ef5e054bb9f842441841dc059ac6de85fd5aab8deee",
       "added": 458
     },
     "everyday-slow-sunday-notes": {
-      "revision": 2,
-      "content": "0bf7992c3439c9c5e45defe7d99c76669e1911455d3f2491d21263f4b6d64db0",
+      "revision": 3,
+      "content": "64c59f040ef67035ab8b106a21c564bef940d3121745a4757a05e1ab8425652b",
       "added": 459
     },
     "everyday-small-batch-bulletin": {
@@ -2554,8 +2569,8 @@
       "added": 460
     },
     "everyday-soft-science": {
-      "revision": 2,
-      "content": "8ead8acef33b1866f66dd217976589a55ac8a0a038e18466a6ddf93d53303868",
+      "revision": 3,
+      "content": "58ec3955fe8cc45e268f15046d3eaaa0f518fef610e12f0c82a3a83f4c558cde",
       "added": 461
     },
     "everyday-start-a-conversation": {
@@ -2579,13 +2594,13 @@
       "added": 465
     },
     "everyday-the-daily-ritual": {
-      "revision": 2,
-      "content": "0cff686c1e45b36574f3263948ad2e0034e7e1c571f073215d08c84075db48cb",
+      "revision": 3,
+      "content": "716b02787e17ba7ab79951f871cf93ac86a2d74c94eedd495e7a1e80836026c9",
       "added": 466
     },
     "everyday-the-future-is-friendly": {
-      "revision": 2,
-      "content": "014f3a78db51d4acc2ac167b7c1d208a2576aa449f027a8d1b040d129b026915",
+      "revision": 3,
+      "content": "655e688f60da7c2d100de2923c51761d21998807d640bb151ddae3f85925934a",
       "added": 467
     },
     "everyday-the-lemon-hour": {
@@ -2594,8 +2609,8 @@
       "added": 468
     },
     "everyday-the-listening-room": {
-      "revision": 2,
-      "content": "d9c25d3c016f9e5166b351f6d237dd9b0878f8e3ad49b1c6418775336fe69444",
+      "revision": 3,
+      "content": "8055ff64860c654ac3d55727ddae018eac5ed6e3ce5f5baca94139d9dbcd4394",
       "added": 469
     },
     "everyday-the-little-things-shop": {
@@ -2614,8 +2629,8 @@
       "added": 472
     },
     "everyday-the-object-room": {
-      "revision": 2,
-      "content": "2d34d4958f48bf1c87b84c7e2bea9e45b9a04c119b3ce2f7e8ce82ed3becad70",
+      "revision": 3,
+      "content": "ef9199ec2a21df40b07bcda042f54ed50238aa8a8d0cadbb0cc55aaf729b049e",
       "added": 473
     },
     "everyday-the-reading-shelf": {
@@ -2624,8 +2639,8 @@
       "added": 474
     },
     "everyday-the-scenic-route": {
-      "revision": 2,
-      "content": "1b811ee3b59c6569df091a97802c8c1ed96a9e31d9e2f41717aa28e2fe14bdf3",
+      "revision": 3,
+      "content": "9b2755acd9c7994d03afd455a256c58c1b6c9ce376e3c9b9e04a9e350936737b",
       "added": 475
     },
     "everyday-the-small-start-studio": {
@@ -2654,8 +2669,8 @@
       "added": 480
     },
     "campaign-anniversary-event": {
-      "revision": 7,
-      "content": "7b72e375d0f3870915e932a857943b5c2c4f541fce504ffce3cf3ea9cbdb7470",
+      "revision": 9,
+      "content": "c564687c9bf9e013f3486dbfb637d263a14bdaf1cb8c7aae51cf89f9bfedd1bf",
       "added": 531
     },
     "campaign-black-friday-archive": {
@@ -2669,18 +2684,18 @@
       "added": 533
     },
     "campaign-black-friday-department": {
-      "revision": 4,
-      "content": "2f6b0493ceeab82df4ac86e5c75c6609e5a630d14fa624d6e24f005dd1b3637c",
+      "revision": 5,
+      "content": "79f4cba47eade125c72b53ac84689bfcf5e021317a321e1af73fcbcec09c8136",
       "added": 534
     },
     "campaign-black-friday-departments": {
-      "revision": 4,
-      "content": "50fa26d7f1987b5b5c1e49e71db3b8aedf664b7ad1647fd341056347dd84148c",
+      "revision": 5,
+      "content": "6d91141ea869930b2a1f828aed7d1942a7228e0cf1d117db4dde852a5a1251b0",
       "added": 535
     },
     "campaign-black-friday-fast-lane": {
-      "revision": 4,
-      "content": "90d7ee538e0a4d4cd641dea5d301404669be517c783d3ced2dc65a040106d429",
+      "revision": 5,
+      "content": "d51a96a429bbed36560775167b854ee3a3fe22ec8442414c52351b6dfbb80b49",
       "added": 536
     },
     "campaign-black-friday-plus-one": {
@@ -2689,8 +2704,8 @@
       "added": 537
     },
     "campaign-breakfast-edit": {
-      "revision": 4,
-      "content": "270818ff850271ed2140a6dfc12f127519f364f71d7103976f10cdbafdcda18d",
+      "revision": 5,
+      "content": "ec652b28bf01b201c67cf4179ed9198742c0cd1c206c2c97f52d40f963292f6d",
       "added": 538
     },
     "campaign-deadline-scoreboard": {
@@ -2714,8 +2729,8 @@
       "added": 542
     },
     "campaign-extra-ten-coupon": {
-      "revision": 6,
-      "content": "2018cc9f0029c30c1d650e5613c14cc0c14121c4747789bd7fb347a063b408a4",
+      "revision": 7,
+      "content": "1af70e4642b43c083fc29381e6425631352e6ad553199092c1d74d5e0abfcfa7",
       "added": 543
     },
     "campaign-fifty-fifty-poster": {
@@ -2789,8 +2804,8 @@
       "added": 557
     },
     "campaign-layer-edit": {
-      "revision": 4,
-      "content": "f47e3b11670ee5b2f6720ecb9fabc3ce0921274d9b376d277ab5e9760b6e31bc",
+      "revision": 5,
+      "content": "9a203087c7f25ceada54aa2a1d5ee4f3d16c66717bf4b94fd7087d42361fcf7b",
       "added": 558
     },
     "campaign-midnight-fragrance-edit": {
@@ -2804,8 +2819,8 @@
       "added": 560
     },
     "campaign-packing-perk": {
-      "revision": 5,
-      "content": "f95232a5f4a87e09266ff8a1d531ceccfafe87f37c95d4cb1b3c9464ffa0644f",
+      "revision": 7,
+      "content": "4a0e00e12ecdfbebdd39704a2149af9481efad62aced19d341fc87cb418f52c3",
       "added": 561
     },
     "campaign-pixel-play-sale": {
@@ -2829,8 +2844,8 @@
       "added": 565
     },
     "campaign-savings-receipt": {
-      "revision": 4,
-      "content": "9e6ffcc762a08667fd3b9d11cf8df369dad86475630c375182643895043e2566",
+      "revision": 5,
+      "content": "b267bdd563eb13da1ef38d3718026af9c20a23a31d5fde09289bd0bcdf91d656",
       "added": 566
     },
     "campaign-savings-staircase": {
@@ -2899,9 +2914,24 @@
       "added": 579
     },
     "campaign-your-welcome-pal": {
-      "revision": 4,
-      "content": "71b1aec8da05c9d1031ec710fb0f6608f97a77fd3bdf87a0d7d504d223e929e0",
+      "revision": 5,
+      "content": "79c408f445e9f1bd53b0d43cd40a41196b3ed30e8996f1492109e7bb1233aee2",
       "added": 580
+    },
+    "ceramics-open-studio": {
+      "revision": 1,
+      "content": "2026085fd145f802ab5e08f1ba7d92913871d8fdae2e00daad04b7d4882416ef",
+      "added": 584
+    },
+    "seasonal-sunshine": {
+      "revision": 1,
+      "content": "a50e24108dcafb3a7a9bfaf12731a20006541e8a35ef4632636cd4223ec7a382",
+      "added": 585
+    },
+    "slower-outdoor-guide": {
+      "revision": 1,
+      "content": "56d61ca4f306070c0aafeaadb0cd2b830d201197e7f7e19fab8cd4bfbad65ac8",
+      "added": 586
     }
   },
   "retired": []

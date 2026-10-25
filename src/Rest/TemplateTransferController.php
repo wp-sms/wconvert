@@ -3,7 +3,7 @@ namespace WConvert\Rest;
 
 use WConvert\Template\Transfer\{DesignPackage, DesignImages, ImportSession, TransferDraft, TransferProblems};
 use WConvert\Template\Catalog\{PackValidator, VerifiedAssets};
-use WConvert\Template\{TemplateLibrary, TemplateVocabulary, TemplateFacets};
+use WConvert\Template\{TemplateLibrary, TemplateMedia, TemplateVocabulary, TemplateFacets};
 use WConvert\Optin\OptinRepository;
 use WConvert\Privacy\PrivacyGuidance;
 use WConvert\Goal\Goal;
@@ -260,6 +260,14 @@ final class TemplateTransferController implements RestController
 
     public static function localImage(string $url): ?string
     {
+        // A bundled photo (Free's or Pro's) or a verified gallery image: an unsaved draft still names one (ADR 0172).
+        try {
+            $artwork = TemplateMedia::forSite()->source($url);
+        } catch (\RuntimeException) {
+            return null;
+        }
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a verified, content-addressed local file, never a URL.
+        if ($artwork !== null) return file_get_contents($artwork['path']) ?: null;
         $uploads = wp_upload_dir(null, false);
         $roots = [[$uploads['baseurl'], $uploads['basedir']], [plugins_url('', WCONVERT_DIR . '/wconvert.php'), WCONVERT_DIR]];
         foreach ($roots as [$baseUrl, $baseDir]) {

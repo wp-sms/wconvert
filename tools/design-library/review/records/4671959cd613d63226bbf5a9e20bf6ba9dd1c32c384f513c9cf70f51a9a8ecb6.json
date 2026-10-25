@@ -1,0 +1,55 @@
+{
+  "id": "winter-softer-beginning",
+  "revision": "fc84203c1c5512bca5e74f360416b34a752d159650cd4fa7ad35aaef5c81f2ed",
+  "base_id": "307fb631f0c6b1c1e6de8548e236d341fbd3f1fa1f346dee8974a0165e3ef289",
+  "decision": "approved",
+  "reviewer": "Artwork files (ADR 0172)",
+  "note": "Only its photos were re-saved as optimised WebP files at the same size; every screen at 1200 and 375 px compared with main and indistinguishable (docs/reviews/artwork-files-2026-10-25). Not a new review.",
+  "at": "2026-10-25T07:31:37Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-7.jpg",
+          "sha256": "0cbe0c1d76aeae60b840039260bf125f180712abbbab8928e4f68fc39fc24afe"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-7.jpg",
+          "sha256": "1fa3a95540b20188432cd465e99e9987588b253ba537a66ac98b6c9d990f2c19"
+        },
+        {
+          "path": "docs/reviews/artwork-files-2026-10-25/review.md",
+          "sha256": "0e54364a8329f533e5cd2b242eaaea66efa597708b966208ca8fbbf4c0e84fd8"
+        },
+        {
+          "path": "docs/reviews/artwork-files-2026-10-25/metrics.json",
+          "sha256": "e904c4ea78c22461814a39d6aed271846adca8012074b2587b150456078c3809"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "4671959cd613d63226bbf5a9e20bf6ba9dd1c32c384f513c9cf70f51a9a8ecb6"
+}

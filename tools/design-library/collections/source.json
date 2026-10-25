@@ -398,25 +398,25 @@
           "setup_id": "halloween-midnight-offer",
           "stage": "any",
           "setup_hash": "1d310b32caae86f204a0b55e817ab715d14735cbe0a16aeb6a26a2409528f783",
-          "design_hash": "85aa58eca3d7b444ee8c2447a0f704c9c60cf1965fa75986e5552762a5d0538d"
+          "design_hash": "874793e5d8207d36db5d5063afdeefe728f2953a4a56ea024cba710f454d5c64"
         },
         {
           "setup_id": "halloween-treat-signup",
           "stage": "any",
           "setup_hash": "88f10429c378b9f9827cee475625f943cf0dcde0ec404e09b5b624cc4385cdd6",
-          "design_hash": "9f470e414dbadbb47d15efae46003b0b67c1607ad7f894fffa35189e4ba4f5c5"
+          "design_hash": "e6264cd30ce3bd970508a7d0ebb1a39bb6088ad8440823255eb2da65cfbd0442"
         },
         {
           "setup_id": "halloween-after-dark-offer",
           "stage": "any",
           "setup_hash": "cb7849ae3bd8c34563af658979c97267f45c88a5beef7f459c0c2c5fb0936649",
-          "design_hash": "e7ab886a0d8325c52f19afa22eeb792bcafd3a225018a54c37c66b9b3acde5ec"
+          "design_hash": "fbcfac35da950cafa9fdebe209986874b2a04c1f738b42f1aa535feea902b90d"
         },
         {
           "setup_id": "halloween-midnight-flight-offer",
           "stage": "any",
           "setup_hash": "3d83a0ecf8240dcd9b8f8212a56f3fef5ed86b6dbc095023eab4af8636697a8d",
-          "design_hash": "11312f12063c2057f96e4e9c599b2ba6641acd4fdafbe8047b82a9800ff83b02"
+          "design_hash": "b928d8ec2e6e94c9cce26372c618318694371fb2d8ad6450901d2c30d82438ee"
         },
         {
           "setup_id": "halloween-sale-countdown",
@@ -449,7 +449,7 @@
           "setup_id": "bf-midnight-atelier",
           "stage": "during",
           "setup_hash": "232214f40cd41ee64697c74b20dc9b60cc0dfa7575b2554d1da287db89ea0c1e",
-          "design_hash": "eb38880d7332d21eec66701e0c744fc2271d93620a2ace9e8623cc9196975d26"
+          "design_hash": "2693699f0a554fd672451d10af50eef1c0f806ec66415bf8a8d2d6741f592f75"
         },
         {
           "setup_id": "bf-acid-markdown",
@@ -485,19 +485,19 @@
           "setup_id": "bf-velvet-rope",
           "stage": "before",
           "setup_hash": "c5c532ee45552cbdb35b046709e4c7c843f80c8405838b2cd2a1285d5ec63ca9",
-          "design_hash": "67cebadb374c5df2dd2ff7945f20af0169c013ef07826a763b7e181f8df13be4"
+          "design_hash": "5e533cadc175b9405322bb221a267e39a227799b436792ee81723ef1f400e640"
         },
         {
           "setup_id": "bf-little-black-gift",
           "stage": "during",
           "setup_hash": "b6f52b69717f2b243889de9d7e89ad679f3b214289b284f95d61a5964870c0f5",
-          "design_hash": "14e4af47492d01600ce33c15310fadc5d079a9c6b5cda103822594905bba9f16"
+          "design_hash": "4995a115d8f902d6224d84899941a9feaefa2d49c4a8586775559b5d7ed72a70"
         },
         {
           "setup_id": "cm-chrome-hour",
           "stage": "during",
           "setup_hash": "5f89d0bb2e7e80f3e05b337fdbac317f08990a76539646d5657f797b9ef7c13c",
-          "design_hash": "6c787c954537449bf842b1167239bd8a9794d281ca3a5d43d07be494208db3b0"
+          "design_hash": "6a554aeb68c97767d1f67ad0ef446fec31709f6bcd9f3cc53e63e9e29685ba5d"
         },
         {
           "setup_id": "cm-system-upgrade",
@@ -515,13 +515,13 @@
           "setup_id": "cm-pixel-drop",
           "stage": "before",
           "setup_hash": "6e141c6b5e768f8ad0c74ad788c7ee19013f4b0c96907ada5438f29a39d919de",
-          "design_hash": "06990fd40cb735584b192b0fee66b598746781db370641f6c2a935026324ff2d"
+          "design_hash": "e509df1302b1b39dfa554ba39f080762935f2b8b43ce690c5bc7ee2b77611602"
         },
         {
           "setup_id": "cm-electric-aisle",
           "stage": "during",
           "setup_hash": "045260da038d6802d139d3376de59b44ff0078f4d1aa6f123e3badc6c4f805d9",
-          "design_hash": "f37c8f683ec8aaffb7ab7f87cf93c5329b2674c7a23ea898bac463437085ac9c"
+          "design_hash": "97005997f6b6aee92e71b836d48a4668e15fa66c9900de6e7fe1b6f39abd4e09"
         },
         {
           "setup_id": "cm-night-shift",
@@ -590,7 +590,7 @@
           "setup_id": "winter-ribbon-room",
           "stage": "during",
           "setup_hash": "71c490b4200ba35c0bc99a450e5faeb7472e892568cc72c9cab4a9f3cebc8ea9",
-          "design_hash": "02a56323074d5b2d8c9b408026b5fae6d916c6a8c27c1f886d1a0799d19704ae"
+          "design_hash": "6bbea109abdb5020b3d9fff935e4213b142a89f40df9366947b364d09fbc6177"
         },
         {
           "setup_id": "winter-little-gift",
@@ -602,13 +602,13 @@
           "setup_id": "winter-winter-windows",
           "stage": "during",
           "setup_hash": "b36a226cae51ce175f66d3ed3b0a5da484af9cc936080529a087815ad9cb0319",
-          "design_hash": "f0bdc47a10d6d26520781e2aa01bb88e420d95bdac02ab55de34e000c4e9ee6c"
+          "design_hash": "3402ce3c97303be4a4de56fca43c047f573ba2d4eef3b2dfc9a419b99ec5c8f4"
         },
         {
           "setup_id": "winter-ornament-edit",
           "stage": "during",
           "setup_hash": "2830c371c893c0d71a4443def822da194bb5b50b1b421b616c5ff4a044bcdebc",
-          "design_hash": "605d4dc6315f4263ed863392a46c2ac83937a203baaa868d23f19bd86cad1acc"
+          "design_hash": "3e4458c2e18d9c779af9174a4e3e3fc8d0061ab52c0787a16f34be301fbb58ed"
         },
         {
           "setup_id": "winter-paper-pine",
@@ -620,13 +620,13 @@
           "setup_id": "winter-candle-club",
           "stage": "before",
           "setup_hash": "087ca73387d6417c3494e04d3622f09d8d7763ec741fbe46a0cfb5c51ecf32b2",
-          "design_hash": "74e792f07b49dbaabbbdcc467f0e04b27dd01a0df5ae11a2343aa1bb6db8c895"
+          "design_hash": "1ad53ba73dc66c5b04b174365c1f0b5ff3ace38f717b721f8b853f188b876d58"
         },
         {
           "setup_id": "winter-wrapped-in-colour",
           "stage": "during",
           "setup_hash": "ede9ba10fd9acd7a5e68d1ab3bcddc9a33fb73b2fc2304bcd026b1c618db7ec6",
-          "design_hash": "799c36194721bb42631adc14fbf0b13c5e86c0081dbd80500c961c56a99dc0b7"
+          "design_hash": "e470613f34d1bba57c0fd4bbe4939d70129f1567cbc15c5298b58abe59a5b6c9"
         },
         {
           "setup_id": "winter-thoughtful-list",
@@ -644,7 +644,7 @@
           "setup_id": "winter-gift-atelier",
           "stage": "during",
           "setup_hash": "1ef1733094149bc7ab126c28920c9679e87b4d3fdff72e885f2a28cd3c873978",
-          "design_hash": "47f12a0910454183460ee84e775af64181e5ca73d61f62b5a85f80873a146ae5"
+          "design_hash": "a3e0690102bb2616cc6d609d555cfbc44177d0ac3e7ed557a30ffca49a8d22cc"
         },
         {
           "setup_id": "winter-dear-december",
@@ -656,13 +656,13 @@
           "setup_id": "winter-winter-postcards",
           "stage": "before",
           "setup_hash": "8c5011629c3f31a16fe6d31edcdd0343af714163804fad913161ace859f92281",
-          "design_hash": "0f6473213caa341ce8057214b3959588afd407691f95b8c85355a3649bb91b63"
+          "design_hash": "a8e36e68032102a93b3a625456050b6852c59cdb6a3eb0e0f31adf80717dd43d"
         },
         {
           "setup_id": "winter-snowglobe-society",
           "stage": "before",
           "setup_hash": "b56d001d04aebec8584b1f85b485ba7c9e49acd04541523b092c859f6486d129",
-          "design_hash": "f7611b54600204e7e8e37a4e16138cbf418a2baca95478e6c6256637e5b959de"
+          "design_hash": "1d7bbd5ea17a2f24b92ced58e1ee4a691e0bb2d1b3b556974c2f6549d009bca4"
         },
         {
           "setup_id": "winter-small-kindness",
@@ -674,19 +674,19 @@
           "setup_id": "winter-after-hours-atelier",
           "stage": "before",
           "setup_hash": "7091e46bb2c7649d42199924c3969f5670576f6282249f5dc6465850cf5b35ca",
-          "design_hash": "edbd37d88b197402dc837e71b0875f6fa0f614c4aa1c158b4e82c507f80ed509"
+          "design_hash": "3dfd9476421812379bb00813126588dbbd64c378238fbd2d3338558c093118ad"
         },
         {
           "setup_id": "winter-first-light-access",
           "stage": "before",
           "setup_hash": "0bb77bc057fa452f2f65fcb5c3e4492838fbb9169ccbfee78c74f09c51c55737",
-          "design_hash": "06e283f380615dede640be5d07dd42eae7a8730163550e4cb7fb08aecb715853"
+          "design_hash": "4e87ded777bca6e73bd16db67458584797f8c5b0bf02155e64637416aa557022"
         },
         {
           "setup_id": "winter-advent-letter",
           "stage": "before",
           "setup_hash": "b2744a2416a6cf1b5f7ec8d814f575fb038f99e3f9c585609971e2b414f99f0e",
-          "design_hash": "75565a1b8a294a54c642fa44083a4e1bd6664538d973e25f5209aaf540539c8e"
+          "design_hash": "7cd1de6c7a857e56d5b055ab2e23308be12da7d8e7cb4c56775b3703c7e03c26"
         },
         {
           "setup_id": "winter-winter-reading-room",
@@ -704,7 +704,7 @@
           "setup_id": "winter-before-the-bow",
           "stage": "during",
           "setup_hash": "d93e4d68b2b6fb5ae88f6d75de41fc0ef486a96b9d29c7a25404b93c3d288dd4",
-          "design_hash": "7dac74af99da114b044ed886f513ee87b738d40eeae324ef1f47e20838aba327"
+          "design_hash": "39d350747c864c0d3dda83029963bb1131ad601ec271d5df4765c594086e4a3f"
         },
         {
           "setup_id": "winter-dispatch-desk",
@@ -734,13 +734,13 @@
           "setup_id": "winter-final-sparkle",
           "stage": "during",
           "setup_hash": "52f41495d59a7ac56421f75aa7efc00b7b49548a97fe8445611b9a065e4fdd69",
-          "design_hash": "9ccf6b94b34d93b64a212cabc31dc65902eada851c350fec45a73905b5641e68"
+          "design_hash": "35f4ed70cbc659563e0e2ba1d66e83e3c96e64946656f1ba37f9349b1d4c376d"
         },
         {
           "setup_id": "winter-softer-beginning",
           "stage": "after",
           "setup_hash": "318cb9aa4b160f7165fe63f97372cbea74a53808f4cc28c5c5c16dfa8c853870",
-          "design_hash": "9e233a002939c706392bdd92b42bd5b0e287ba37a9877924177720b14454bbc1"
+          "design_hash": "4a8547cb4ad5fd970b309b9605b83bbc763ce68aee41b0bf462a8d0003f14546"
         },
         {
           "setup_id": "winter-hello-tomorrow",
@@ -752,13 +752,13 @@
           "setup_id": "winter-midnight-garden",
           "stage": "after",
           "setup_hash": "a7c44b0679604b1f784d95336605bc556b9fef4c7c5d298abdefc06e838bce7f",
-          "design_hash": "e874507805d2eacaa0115b6487575dbb168be2123a2479fe76916ad0c19eb084"
+          "design_hash": "56e946ff4bca9219ea4c4bfd952c1b535a5c7a6182a29b20a523b612429629a6"
         },
         {
           "setup_id": "winter-bright-new-chapter",
           "stage": "after",
           "setup_hash": "77857cd9fb235564a1ad048e5facb0eb3197a5e7fa1f804885ff59eb2865b29a",
-          "design_hash": "708e26e409a0f7643538e6f6e94e89eecd33fa9d13fed5d21edaee9e2cc64896"
+          "design_hash": "f155e1e12eb7e8de9a19b0175c218d4d0a5cfe7a560b469e6bbbe99e052e20d6"
         },
         {
           "setup_id": "winter-first-page",
@@ -776,13 +776,13 @@
           "setup_id": "winter-shop-is-sleeping",
           "stage": "during",
           "setup_hash": "483bcdeff232c3eb57617e3aac5a176b892e8c9c010d3b707732b2ccdef6199d",
-          "design_hash": "0cdad711a5d40d56da1efa55c340e44ecbcae22bfa927121a1b64b7731203c6f"
+          "design_hash": "273472fe03682a9d21a251965d2f32ed9873b5f40cb354888a105198ac7e5a4e"
         },
         {
           "setup_id": "winter-by-the-fire",
           "stage": "during",
           "setup_hash": "5df80eb8d27c82269dee6c0731b033d5e90abd0e0c9dfba9fb09e0a3b43d56c6",
-          "design_hash": "0186b703c735359816c9de04131f093932089018138c410f194833f2d1ec456b"
+          "design_hash": "4dd74a8c796e2e6a5ee9677c16b3da27ed67a031f21fe4d0c1eb9c244bc0f9ae"
         },
         {
           "setup_id": "winter-holiday-post",
@@ -800,13 +800,13 @@
           "setup_id": "winter-tied-with-joy",
           "stage": "during",
           "setup_hash": "092c84764e1f4641f18b38b304b3199d0457abd108a36d17987b13c31ac83c51",
-          "design_hash": "49923d06a48cea70e3794689b569d08462645c20c8f1030f12cb3cd25beeacc5"
+          "design_hash": "eab15eb19539e367908e5e60eacc05a8fdc5e174675898f5f8de45ffde10da81"
         },
         {
           "setup_id": "winter-all-wrapped-up",
           "stage": "during",
           "setup_hash": "5ad58a55ed5ad0e6d585a7c63b3608b6621b4d6163dcce73bba83205d603fb82",
-          "design_hash": "420646046544d4b7ecff5c7d7ee918524eaa98795378bba922d831640fe19576"
+          "design_hash": "e122c48bde1c32506afb83772afcc5decfe3b89acecab4626d470599513a868a"
         },
         {
           "setup_id": "winter-christmas-express",
@@ -818,7 +818,7 @@
           "setup_id": "winter-santa-letter",
           "stage": "before",
           "setup_hash": "e64bb1cbf26bd1029c38daa51218c832e73d345d5dddd70910c6d3dc2cdb2129",
-          "design_hash": "ed2f4bc5fdb2f5bc2643530c7f1c8bb07f612f7051dca7ed423f0b08d702688e"
+          "design_hash": "175e1edd7cf713bb6fdef584741302b18331e23a8b325571a57b891c378d1e73"
         },
         {
           "setup_id": "winter-hello-2027",
@@ -859,19 +859,19 @@
           "setup_id": "everyday-the-object-room",
           "stage": "any",
           "setup_hash": "76172ae01835b2ec86ca29b834897ed3450e10cec8d094edeb2dbed1fe6081f2",
-          "design_hash": "b62fcc6aa3518e220b8e0bc81768ba5955007b034822f7deb1ea384d04aeddf1"
+          "design_hash": "a607d9122630a2cafba0a6f1c89922da71df40f8764ebfdb87d52654f7a219af"
         },
         {
           "setup_id": "everyday-listening-party",
           "stage": "any",
           "setup_hash": "a03d18052b4b9e18df2eee38a526994ebac2226f228db55925d0682f43a059f0",
-          "design_hash": "d23133f13b34952e625d7962587aee3e8ef963acfc73e943a92a2970b67b43f4"
+          "design_hash": "25be7b07fc05abdfb74c8566ea674701816306222c36c016c3e46ff081436b17"
         },
         {
           "setup_id": "everyday-almost-somewhere",
           "stage": "any",
           "setup_hash": "0e52f2b85ea87593748fa9a37cbd0478cc07217f4e48abd9071aee03dc1c94d5",
-          "design_hash": "a299503636a587caac67d510004319f5a157c6eb98843227923f602f94a909fc"
+          "design_hash": "39f26c112b2553742e5df4812a746ce17f53038c9d31d6c696fefa3613b0544b"
         },
         {
           "setup_id": "everyday-bloom-notes",
@@ -883,7 +883,7 @@
           "setup_id": "everyday-good-dog-society",
           "stage": "any",
           "setup_hash": "fbb7ff70570a7ee842e64618753bf2628955a2fddd3b23c6bd0aa7b00ac61643",
-          "design_hash": "a29a3c16400417612a24cec9618b542d51126cd10185ea51426721ce93e4f8fe"
+          "design_hash": "e49e5c89b20ea51e619f0ebb61ddb4b7e60eddef33303c919d17305bc7aa370c"
         },
         {
           "setup_id": "everyday-the-lemon-hour",
@@ -895,13 +895,13 @@
           "setup_id": "everyday-school-of-small-things",
           "stage": "any",
           "setup_hash": "df4dfcf6584e4788d09295ffc33906ea660312b6862f690aca5633d45983ce9f",
-          "design_hash": "dac3eb888148418235320eca028c4a5629c7b4090079575624cf0bc2f9039e8a"
+          "design_hash": "209872de359c9911d0db8d735c7aa16b299b23a599f4dceb3d7ac2e116908eff"
         },
         {
           "setup_id": "everyday-soft-science",
           "stage": "any",
           "setup_hash": "33ccd49bf3a9b5dbfa92768124a4458d49bdfdf5af7c419a9abccb7f857a9e80",
-          "design_hash": "cdbcb4e17a885c39a253af3ab75e808180289fb5a316e2b26ae5df2143bbcc3b"
+          "design_hash": "b54702e4b1da2cc1cd2e973cce0cdcc3f959429a38dd7f9e03c769aba1cd7ecd"
         },
         {
           "setup_id": "everyday-frame-by-frame",
@@ -913,7 +913,7 @@
           "setup_id": "everyday-the-daily-ritual",
           "stage": "any",
           "setup_hash": "93e5954d3332451d571f7a2ff1c0383db068b37331bd8a2826122a02294707d0",
-          "design_hash": "bff10c60a0e75052129f9b0d312f5379edd3118fe6501c0c4f94bdb0db33b36c"
+          "design_hash": "ebf24683da9bdcc97c5761228a623b3ca7da83c46a2079c8e7e59947f392b55e"
         },
         {
           "setup_id": "everyday-permission-to-pause",
@@ -1015,7 +1015,7 @@
           "setup_id": "everyday-the-listening-room",
           "stage": "any",
           "setup_hash": "f699ee753779913745a29534c1952040d7cf3cb553df7eba9187d32a7868fd04",
-          "design_hash": "11b6182aa241e6415fde05cc5e2e71378972f09074babcc3de42a545c70f9110"
+          "design_hash": "847c625ffdf001d5afaedcdb239e1adb09d0910d11708822f465ff1ce980c4ab"
         },
         {
           "setup_id": "everyday-a-date-with-making",
@@ -1033,7 +1033,7 @@
           "setup_id": "everyday-a-desk-away",
           "stage": "any",
           "setup_hash": "eb828b25b9ddad8281c86f1aea51c79387c85f01b2c820c73d6ee72c6b70cd72",
-          "design_hash": "2ea465856db785c7d6a1c6f86dda6a518d7425c2be5e2f7d8ac03953b44e1c3f"
+          "design_hash": "a2f2c03794be164a2fd769341bfdd4e3355c21470482d922d3a1080d3c1dea35"
         },
         {
           "setup_id": "everyday-fix-it-friday",
@@ -1057,7 +1057,7 @@
           "setup_id": "everyday-from-the-ground-up",
           "stage": "any",
           "setup_hash": "a1f78a9042d23b7b73271bea8b6a3b7dc52e01a54c9165d6ddbf6381771d52ce",
-          "design_hash": "ac33819989813ec8f2c266378c5abe6fe2a75def042fc337aaa93ec1c977c732"
+          "design_hash": "279d96182a793fbd99c1addf764efd47f1b22ca331ced3afdaeb1c7e04bd28ba"
         },
         {
           "setup_id": "everyday-a-fresh-start",
@@ -1081,7 +1081,7 @@
           "setup_id": "everyday-slow-sunday-notes",
           "stage": "any",
           "setup_hash": "f5c61704b18d38973332340796ea91529546679435aa33e0f94151dd937053d2",
-          "design_hash": "8aa628e277601aa39b73f7109003f6b93b04d3a415ed31741f4f2f8cb9f4483e"
+          "design_hash": "0f8ec0ae710b253ac9e9763fed400db1f832f5f2724351ffa8086a0245bb31af"
         },
         {
           "setup_id": "everyday-the-little-things-shop",
@@ -1093,7 +1093,7 @@
           "setup_id": "everyday-a-curious-future",
           "stage": "any",
           "setup_hash": "02f531afd6c63981b6c39a79eed87f7fb856cd39ea183b7ebabf701f16fbef65",
-          "design_hash": "3c6ac8e5a477dfa75e8af84d4435d3d283993225b247d89da7b13ba51c236d76"
+          "design_hash": "cf76b8740ad491be5bb5d49d346eb7d33b9eb750051af11cb92b85b212df45e2"
         },
         {
           "setup_id": "everyday-the-weekend-court",
@@ -1123,7 +1123,7 @@
           "setup_id": "everyday-the-scenic-route",
           "stage": "any",
           "setup_hash": "4222e4a099c9f1c43a90cd22729125230aaefcadcbe96b6d50618292b4f4cbed",
-          "design_hash": "b42958af5db7ac15a448e26461da3ba99b5441a80d03f4c5731fc0de2a68ad2e"
+          "design_hash": "84316cd56a73546aa9a3aa0f10337cbdbbc7e5960b47556ea56491be9d8ba895"
         },
         {
           "setup_id": "everyday-first-light-journal",
@@ -1147,7 +1147,7 @@
           "setup_id": "everyday-the-future-is-friendly",
           "stage": "any",
           "setup_hash": "1335d910ee60e692b4efc7b2007ee04e42c08f256ae13335b7d484472143a35a",
-          "design_hash": "14198b95cf0f8b21392fb185f4095dfe9ba3305d9f71f65f40619d9a7d2b861b"
+          "design_hash": "7dfa0db7007d1b5c8090e1249665a8fb2c68cfcc5dc06d57aa9d2ff633a20be4"
         }
       ]
     }

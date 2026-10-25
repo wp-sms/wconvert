@@ -155,7 +155,9 @@ style, colour, family, aliases — live in `publishing/designs.json`, beside
 0043's derived facets, which the publisher also writes into each entry so a
 card with no tree can still be filtered by Goal. Taxonomy labels live in the
 release, not the plugin. Every image needs a rights record of a known kind
-(original, AI-generated or licensed), bundled designs included. Literal colours
+(original, AI-generated or licensed), bundled designs included. *(Amended by
+[ADR 0172](0172-bundled-photos-are-stored-once-as-files.md): a bundled photo is a
+file named `artwork:<sha256>.webp`, and its record is keyed by that file's hash.)* Literal colours
 in node tokens can only go down (`publishing/colour-baseline.json`), so a
 later Brand setting can restyle designs through their tokens.
 

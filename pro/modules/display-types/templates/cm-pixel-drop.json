@@ -48,7 +48,7 @@
             },
             {
               "type": "image",
-              "src": "data:image/webp;base64,UklGRoYAAABXRUJQVlA4THoAAAAv48JZEBcgEEiy2B9tK4FAksP+OnMJBJIgZp1//gOqP7CKJKvRK+TgBxOoQAqfsDYv53wT0f8JMPz/2p/U7cZQt8N//9P6Fo1oOxn//ejR5DF018a0+O9fWVhTbKHJY4+qyXlLz7wYb5uP//Af/sN/+O+g4X/8j//nDg==",
+              "src": "artwork:4a35d13fa9cfcd75e648bbaf8f27f25767b377181af2affaa642a10f8a8f7df1.webp",
               "alt": "A green pixel-art gift",
               "fit": "contain",
               "tokens": {

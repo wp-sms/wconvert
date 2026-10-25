@@ -1024,14 +1024,16 @@ describe('the font picker', () => {
 
 
 describe('Look reads the current screen background', () => {
-  const halloween = JSON.parse(readFileSync(resolve(import.meta.dirname, '../../resources/templates/library/halloween-engraved.json'), 'utf8')) as TemplateEntry;
+  // As a site reads it: the bundled photo is a plugin URL (ADR 0172).
+  const halloween = JSON.parse(readFileSync(resolve(import.meta.dirname, '../../resources/templates/library/halloween-engraved.json'), 'utf8')
+    .replaceAll('artwork:', 'https://shop.example/wp-content/plugins/wconvert/resources/template-artwork/')) as TemplateEntry;
   it('shows the authored midnight print and removes it at its own scope', async () => {
     const changed = vi.fn();
     const view = render(<Tokens template={halloween} labels={{ ...LABELS, tokens: { ...LABELS.tokens, 'bg-image': 'Background image' } }}
       design={halloween.tokens} pictureStep={0} openToken={null} onOpenToken={vi.fn()} onChange={changed} onError={vi.fn()} />);
     const input = screen.getByLabelText('Background image');
-    expect((input as HTMLInputElement).value).toContain('data:image/webp');
-    expect(view.container.querySelector('.wconvert-media-preview')).toHaveAttribute('src', expect.stringContaining('data:image/webp'));
+    expect((input as HTMLInputElement).value).toContain('/resources/template-artwork/');
+    expect(view.container.querySelector('.wconvert-media-preview')).toHaveAttribute('src', expect.stringContaining('/resources/template-artwork/'));
     fireEvent.change(input, { target: { value: 'https://example.test/replacement.webp' } });
     fireEvent.blur(input);
     expect(changed.mock.calls.at(-1)![0].tree.steps[0].content.tokens['bg-image']).toContain('https://example.test/replacement.webp');

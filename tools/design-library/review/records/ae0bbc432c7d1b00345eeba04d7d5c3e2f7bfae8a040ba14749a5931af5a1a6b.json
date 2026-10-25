@@ -1,0 +1,55 @@
+{
+  "id": "winter-by-the-fire",
+  "revision": "769b996af2c3646768f2dc4ec2c5124a8e2bf194666775df9dc2947e19ff4cc2",
+  "base_id": "75d43204316736e3ebb0116b8d9fbe950ba02906386494447dd63ce4a925cebb",
+  "decision": "approved",
+  "reviewer": "Artwork files (ADR 0172)",
+  "note": "Only its photos were re-saved as optimised WebP files at the same size; every screen at 1200 and 375 px compared with main and indistinguishable (docs/reviews/artwork-files-2026-10-25). Not a new review.",
+  "at": "2026-10-25T07:31:37Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-9.jpg",
+          "sha256": "d22e0be5d733704db93faaec5cbbbbb5d8e8274559f2588384cc39376ddab7e6"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-9.jpg",
+          "sha256": "08b54d23fa3d2619e6127ac38f581fc5e5e4e393615b187b0373d86476704a88"
+        },
+        {
+          "path": "docs/reviews/artwork-files-2026-10-25/review.md",
+          "sha256": "0e54364a8329f533e5cd2b242eaaea66efa597708b966208ca8fbbf4c0e84fd8"
+        },
+        {
+          "path": "docs/reviews/artwork-files-2026-10-25/metrics.json",
+          "sha256": "e904c4ea78c22461814a39d6aed271846adca8012074b2587b150456078c3809"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "ae0bbc432c7d1b00345eeba04d7d5c3e2f7bfae8a040ba14749a5931af5a1a6b"
+}

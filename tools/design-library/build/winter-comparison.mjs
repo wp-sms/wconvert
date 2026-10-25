@@ -6,7 +6,7 @@ import { publicPreview } from './public-preview.mjs';
 const root = resolve(import.meta.dirname, '../../..');
 const out = resolve(root, 'tools/design-library/out');
 const map = JSON.parse(readFileSync(resolve(root, 'docs/reviews/winter-fidelity-2026-10-23/prototype-map.json')));
-const designs = readDesigns(root);
+const designs = readDesigns(root, { pictures: true });
 const renderer = readFileSync(resolve(out, 'renderer.iife.js'), 'utf8');
 mkdirSync(resolve(out, 'winter-fidelity'), { recursive: true });
 for (const item of map) {

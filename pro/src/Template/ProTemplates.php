@@ -87,10 +87,14 @@ final class ProTemplates implements TemplateSource
         foreach ($files === false ? [] : $files as $file) {
             $decoded = JsonFile::read($file);
 
-            if ($decoded !== null) {
+            if ($decoded === null) continue;
+            try {
                 // Pro's photographs ship as files beside its designs, so a
                 // campaign carries a cacheable URL rather than the photo.
                 $entries[] = BundledArtwork::forSite($decoded, $this->pluginDir, defined('WCONVERT_PRO_URL') ? WCONVERT_PRO_URL : '');
+            } catch (\RuntimeException) {
+                // A design whose photo is missing from the ZIP is left out; the rest still list.
+                continue;
             }
         }
 

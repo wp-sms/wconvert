@@ -205,6 +205,12 @@ Every design is published as its own object with its own **revision**
   `licensed` — then `licence` too), `source`, `redistribution: true`,
   `reviewedBy`, `access`. Bundled designs included. A design with an image and
   no record cannot be exported; its approved setups are shown bundled-only.
+- **A bundled photo is a file, not text** (ADR 0172). Paste it as a data URI
+  while authoring, then run `node tools/design-library/build/extract-artwork.mjs`:
+  it re-saves the photo as WebP in the ZIP's `template-artwork/`, rewrites the
+  reference to `artwork:<sha256>.webp` and moves any rights record to the new
+  hash. Record the rights under that hash. `BundledArtworkFilesTest` fails while a
+  bundled design still holds a photo as text. Hosted designs keep theirs.
 - **Colour lives in the top-level tokens.** A literal colour in a node's
   `tokens` or `narrow` bag is counted against
   `publishing/colour-baseline.json`; a new design starts at zero and an

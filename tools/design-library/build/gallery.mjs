@@ -24,6 +24,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { containerCss } from './containers.mjs';
 import { designDirectories } from './sources.mjs';
+import { inlineArtwork } from './artwork-files.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT = resolve(HERE, '../out');
@@ -40,7 +41,7 @@ const designs = libraries
     try {
       return readdirSync(library)
         .filter((file) => file.endsWith('.json'))
-        .map((file) => JSON.parse(readFileSync(resolve(library, file), 'utf8')));
+        .map((file) => inlineArtwork(JSON.parse(readFileSync(resolve(library, file), 'utf8')), PLUGIN));
     } catch {
       return [];
     }
