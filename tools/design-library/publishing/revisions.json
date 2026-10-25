@@ -1934,8 +1934,8 @@
       "added": 199
     },
     "collection-interest": {
-      "revision": 3,
-      "content": "c12e2938a33e4eb0f41de8bcae446043066d5d5c3c0323021054982c5592a2cd",
+      "revision": 5,
+      "content": "a4fd85c97ffaa5d8e6675710409b17993bb7d370722cb19ba08bbbbf9d475d5b",
       "added": 200
     },
     "coupon-ticket": {
@@ -2049,8 +2049,8 @@
       "added": 222
     },
     "related-essay": {
-      "revision": 3,
-      "content": "00962289962e3b7a68a31566048c9ad344059ed6a64ea2ab6b8307654b84eab7",
+      "revision": 4,
+      "content": "713699d84b3bf94d0115bda7801d523a193ec511ad5c944d84e02929d2186103",
       "added": 223
     },
     "remote-walkthrough-request": {
@@ -2099,8 +2099,8 @@
       "added": 232
     },
     "service-text-updates": {
-      "revision": 3,
-      "content": "416c1e33744bdbe3e7b5b79ee4abcee0f8935528cba419a7cb7946712b2ce5bd",
+      "revision": 4,
+      "content": "e2c18c9fdde1973f74ba41862d4b3f1df242e2fff427f33c0657fcc03f86f9ca",
       "added": 233
     },
     "space-fit-finder": {
@@ -3079,8 +3079,8 @@
       "added": 615
     },
     "studio-welcome": {
-      "revision": 2,
-      "content": "7325f2a832cb3bf93b8d06a931b933105361e0edf223015bcc097214690c4a06",
+      "revision": 3,
+      "content": "9f25eb89fa4dec31634a5ae0f978a89e2d38b0950599fd753f93a3bdaebe51f5",
       "added": 616
     },
     "workspace-change-story": {

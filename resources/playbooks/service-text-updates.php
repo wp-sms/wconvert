@@ -10,7 +10,7 @@ return [
     'business_types' => ['services'],
     'notes' => __('Connect a supported SMS service or choose Keep in WConvert only with a defined follow-up process. These are marketing announcements, not appointment reminders.', 'wconvert'),
     'copy' => [
-        'headline' => __('Useful service news, by text.', 'wconvert'),
+        'headline' => __('Service news by text.', 'wconvert'),
         'body' => __('Request occasional announcements about new services and seasonal availability.', 'wconvert'),
         'phone_label' => __('Mobile number', 'wconvert'),
         'phone_placeholder' => __('+44 7700 900000', 'wconvert'),

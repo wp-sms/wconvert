@@ -2,6 +2,9 @@
 
 namespace WConvert\Tests\Unit\Support;
 
+use WConvert\Goal\Goal;
+use WConvert\Privacy\PrivacyGuidance;
+
 /**
  * A bundled journey design as a list-Goal campaign holds it. The library ships
  * every consent hidden, and Privacy Guidance reveals it at prefill (ADR 0099),
@@ -29,11 +32,6 @@ final class BundledJourney
      */
     public static function revealed(array $tree): array
     {
-        $reveal = static function (array $node) use (&$reveal): array {
-            if (($node['type'] ?? null) === 'consent') $node['hidden'] = false;
-            foreach ($node as $key => $child) if (is_array($child)) $node[$key] = $reveal($child);
-            return $node;
-        };
-        return $reveal($tree);
+        return (new PrivacyGuidance(new FakeOptionStore()))->treeFor($tree, Goal::GrowEmailList);
     }
 }

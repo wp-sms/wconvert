@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "at": "2026-10-25T15:01:07.693Z",
+  "at": "2026-10-25T15:28:44.927Z",
   "site": "disposable local WordPress",
   "checks": [
     "journey",
@@ -9,7 +9,7 @@
   "setups": [
     {
       "id": "studio-welcome",
-      "revision": "f6913d0c521ad434a5566246b14d1eb687fb417248af80fd06a5ebddb5c47974",
+      "revision": "959173787c9d86d3b8a07aa65cd9b20359a159234afe7a858f4d61ea9bb57616",
       "width": 320,
       "passed": true,
       "screens": 2,
@@ -26,7 +26,7 @@
     },
     {
       "id": "studio-welcome",
-      "revision": "f6913d0c521ad434a5566246b14d1eb687fb417248af80fd06a5ebddb5c47974",
+      "revision": "959173787c9d86d3b8a07aa65cd9b20359a159234afe7a858f4d61ea9bb57616",
       "width": 1280,
       "passed": true,
       "screens": 2,
@@ -281,7 +281,7 @@
     },
     {
       "id": "service-text-updates",
-      "revision": "40fb7d9dd3d95ba57e4a9d7a7d65e2bef11f62405b119ded6bfda74780ec72ab",
+      "revision": "3bd0423df36a7345774ccadaa2e50b14c80be64b44e78519905a4e2ab9a88a79",
       "width": 320,
       "passed": true,
       "screens": 2,
@@ -298,7 +298,7 @@
     },
     {
       "id": "service-text-updates",
-      "revision": "40fb7d9dd3d95ba57e4a9d7a7d65e2bef11f62405b119ded6bfda74780ec72ab",
+      "revision": "3bd0423df36a7345774ccadaa2e50b14c80be64b44e78519905a4e2ab9a88a79",
       "width": 1280,
       "passed": true,
       "screens": 2,
@@ -349,7 +349,7 @@
     },
     {
       "id": "related-essay",
-      "revision": "92f5d0a88a39c0627514ff426ce38c0835a645cec7295a0647f67405a0923c9b",
+      "revision": "22dfef588d75f4ea16bd64ae9ce0bbf02c6fb97f4d4b3dd5610391f4cb461531",
       "width": 320,
       "passed": true,
       "screens": 1,
@@ -366,7 +366,7 @@
     },
     {
       "id": "related-essay",
-      "revision": "92f5d0a88a39c0627514ff426ce38c0835a645cec7295a0647f67405a0923c9b",
+      "revision": "22dfef588d75f4ea16bd64ae9ce0bbf02c6fb97f4d4b3dd5610391f4cb461531",
       "width": 1280,
       "passed": true,
       "screens": 1,
@@ -417,7 +417,7 @@
     },
     {
       "id": "collection-interest",
-      "revision": "c093398068a1b90a4ff987ea9c855595dd4ba4be698305afac32d22f040c158c",
+      "revision": "24d2a5f1381e4888fd456c1dfc5cbbf44c735d81a2c1a3f76c608db99a844481",
       "width": 320,
       "passed": true,
       "screens": 2,
@@ -434,7 +434,7 @@
     },
     {
       "id": "collection-interest",
-      "revision": "c093398068a1b90a4ff987ea9c855595dd4ba4be698305afac32d22f040c158c",
+      "revision": "24d2a5f1381e4888fd456c1dfc5cbbf44c735d81a2c1a3f76c608db99a844481",
       "width": 1280,
       "passed": true,
       "screens": 2,

@@ -12,7 +12,7 @@ return [
     'copy' => [
         'eyebrow' => __('Keep reading', 'wconvert'),
         'headline' => __('Next: putting the idea into practice.', 'wconvert'),
-        'body' => __('The follow-up article walks through one small change to try this week, with an example.', 'wconvert'),
+        'body' => __('The follow-up turns this article’s idea into practical steps you can try.', 'wconvert'),
         'fine_print' => __('Continue when you have a moment.', 'wconvert'),
         'cta_label' => __('Read the follow-up', 'wconvert')
     ],

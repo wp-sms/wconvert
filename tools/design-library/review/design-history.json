@@ -274,6 +274,12 @@
           "date": "2026-10-12",
           "revision": "3c4318060102ee87ce1c36c5949e8c6d09458957f7d351ecbd2fc28c48d1fe1b",
           "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
+        },
+        {
+          "version": 4,
+          "date": "2026-10-25",
+          "revision": "a48302346974286804a32f0bb1e7302cb7c740bf2ebb29634c817b04825ea6e7",
+          "note": "Consent above the submit button; centre the acknowledgement check mark"
         }
       ]
     },
@@ -454,6 +460,12 @@
           "date": "2026-10-12",
           "revision": "1221cf4c1c2508de8ff1d654f4dc61f5e256113966dced25d1126b2076e619c7",
           "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
+        },
+        {
+          "version": 4,
+          "date": "2026-10-25",
+          "revision": "a680be838bd4b3280642f24ae14e1da88ebddef8b53fa45ae1285b03735b3457",
+          "note": "Consent ships hidden, as every capture design does"
         }
       ]
     },
@@ -478,6 +490,12 @@
           "date": "2026-10-12",
           "revision": "182592cf59628db554f9ba58483d0608151f8cf2d21732c7023381847363eb32",
           "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
+        },
+        {
+          "version": 4,
+          "date": "2026-10-25",
+          "revision": "da6e9b4444fbd5cdc0e8da7a963f3d5b92c5335ee74f8ef83cbeef2faa8f36ff",
+          "note": "Back after the skip action, labelled Change email; consent ships hidden"
         }
       ]
     },
@@ -502,6 +520,12 @@
           "date": "2026-10-12",
           "revision": "b2ce51b8a2ed3f614ee98ff04aa92e1e0e3be5e4d2348842eb6b5d7677cd856e",
           "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
+        },
+        {
+          "version": 4,
+          "date": "2026-10-25",
+          "revision": "675714f185af8b4b65d9a15b887ba7ad7d131e84619708947248788854846461",
+          "note": "Back after the primary action"
         }
       ]
     },
@@ -526,6 +550,12 @@
           "date": "2026-09-29",
           "revision": "7c1e285b6e12d57b065148894b48ad0e780fc09f89e08c26a2c1fa39694f836a",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 4,
+          "date": "2026-10-25",
+          "revision": "e28e859177f08d338292f20f79a53e1180943f9ffc7127a436abb567205288a7",
+          "note": "Consent ships hidden, as every capture design does"
         }
       ]
     },
@@ -1018,6 +1048,12 @@
           "date": "2026-10-12",
           "revision": "15c75405d69c0a85780bbb28e1c29c432c4c1e6aedfb1487e9d019118da0c70a",
           "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
+        },
+        {
+          "version": 4,
+          "date": "2026-10-25",
+          "revision": "3804b90967642f2af2b4a41c827f908a3fe37bc4b67ff7ad48da3bd7439af9da",
+          "note": "Consent above the submit button"
         }
       ]
     },
@@ -1042,6 +1078,12 @@
           "date": "2026-10-12",
           "revision": "f76a7db71ac4659261ab259d77606f29e7c880419716de63aad6bdc2c1aecdfd",
           "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
+        },
+        {
+          "version": 4,
+          "date": "2026-10-25",
+          "revision": "0be21a37f410763e2b64b2b2d4fbfc15539e3a8da2d607212b234737c8827773",
+          "note": "Cap the drawing at 7rem on phones so the offer starts in the first screen"
         }
       ]
     },
