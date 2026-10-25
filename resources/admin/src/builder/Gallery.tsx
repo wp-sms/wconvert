@@ -2,8 +2,6 @@ import { __, sprintf } from '@wordpress/i18n';
 import { ExternalLink, Lock, Star } from 'lucide-react';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
-import { Skeleton } from '../components/ui/skeleton';
-import { useShownAfterDelay } from '../shell/skeletonDelay';
 import { isShown, renderingFor, tierName, tierProductName } from '../goals/availability';
 import { displayTypeLabel } from '../displayTypes';
 import { CompareSelection } from '../discovery/CompareSelection';
@@ -395,56 +393,6 @@ export function Gallery({
         );
       })}
     </ul>
-  );
-}
-
-/**
- * The grid's own shape, while the index is still arriving.
- *
- * **Loading is not empty** (ADR 0039). The pair mirrors `ChoiceGrid` and
- * `ChoiceSkeleton` one surface over: a shape, and a placeholder built to that
- * shape so the screen does not jump when the data lands — and, more
- * importantly, so a picker that has not answered yet never says *"No designs
- * match"*, which is a false statement about the merchant's library at the exact
- * moment they are deciding whether this product has anything for them.
- */
-export function GallerySkeleton({ cards = 6 }: { cards?: number }) {
-  /*
-    **It delays**, for {@see ChoiceSkeleton}'s reason: the creation flow's step
-    two is re-entered whenever the merchant picks a different [[Goal]], so this
-    can replace a grid that was already full.
-  */
-  if (!useShownAfterDelay()) {
-    return null;
-  }
-
-  return (
-    <>
-      {/*
-        **The announcement is the component's, not the call site's.** It had
-        none at all and neither did two of its three callers, so a merchant on
-        a screen reader met a silent wait. `aria-hidden` on the grid below is
-        what makes one `role="status"` the right number: six placeholder cards
-        have nothing to say and the word "Loading" has everything.
-      */}
-      <span role="status" className="sr-only">
-        {__('Loading…', 'wconvert')}
-      </span>
-
-      <ul className="wconvert-gallery" aria-hidden="true">
-      {Array.from({ length: cards }, (_each, index) => (
-        <li key={index} className="wconvert-gallery__card">
-          <div className="wconvert-gallery__waiting">
-            <Skeleton className="size-full" />
-          </div>
-          <div className="flex flex-col items-start gap-2 border-t border-border px-3 py-2.5">
-            <Skeleton className="h-4 w-32 max-w-full" />
-            <Skeleton className="h-8 w-28" />
-          </div>
-        </li>
-      ))}
-      </ul>
-    </>
   );
 }
 

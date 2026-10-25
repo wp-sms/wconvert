@@ -154,7 +154,7 @@ external copies. See
 [ADR 0094](docs/adr/0094-privacy-guidance-reports-the-current-data-flow.md).
 
 Privacy Guidance is a site-wide authoring preference, on by default. It adds
-short purpose-specific privacy defaults to new Campaign setups and checks them
+short purpose-specific privacy defaults to new campaigns made from a [[Playbook]] and checks them
 in the editor's readiness review. A form used for one request starts with a
 policy notice; a Campaign growing an ongoing email or SMS list also starts with
 explicit consent visible; a click-only Campaign has neither because it captures
@@ -1054,7 +1054,7 @@ define the quiz and its conditional references; ordinary display copy still
 uses Slot Roles. A Results screen carries ordered variants, the last for [[All other answers]].
 
 A submit Template also supplies a hidden consent control as a capability, not a
-decision that the Campaign needs it. With Privacy Guidance on, Campaign setup
+decision that the Campaign needs it. With Privacy Guidance on, a [[Playbook]]
 reveals that control for ongoing marketing Goals and optional quiz signup, and
 keeps it hidden for one-time requests. Choosing another Template reapplies the same purpose-based
 starting point; the design never acquires a Goal tag (ADR 0099).
@@ -1124,8 +1124,10 @@ starting point; the design never acquires a Goal tag (ADR 0099).
 
 A design a paid install did not get is still advertised — a card with a name,
 its facets and a link to a live preview, and no tree
-([[Availability]], `locked`). A free install is shown no such card
-([ADR 0116](docs/adr/0116-free-shows-nothing-it-cannot-run.md)). **So a card is an advertisement, and an
+([[Availability]], `locked`). A free install is shown such a card only where Pro
+hints are wanted — the catalogue's picture, the plan's name and a link, mixed
+into the one template gallery ([ADR 0116](docs/adr/0116-free-shows-nothing-it-cannot-run.md),
+[ADR 0171](docs/adr/0171-one-template-gallery.md)). **So a card is an advertisement, and an
 advertisement for a design nobody can be given is a worse defect than one fewer
 design.** It is the same rule as *a paying customer is never shown an upsell*,
 one step earlier: that one is about who sees the card, this one is about whether
@@ -1338,10 +1340,9 @@ sets* in the UI) that ADR 0129 removed.
 
 ### Playbook
 
-Shown as **Campaign setup** in the UI (ADR 0086). Task-based names and a derived,
-expandable checklist explain the actual design and remaining setup. Cards keep
-only the choice summary; full facts and checklist are in optional **Setup details**
-(ADR 0087).
+Shown as a **template** in the UI's one template gallery (ADR 0171; it was
+*Campaign setup*, ADR 0086). A card shows the design on its stage, what it asks
+for and its one action; inspection adds the gist and its screens.
 
 A ready-to-run bundle serving one [[Goal]] — a [[Template]], copy, a
 [[Display Type]], display rules and destination hints, packaged with notes on why

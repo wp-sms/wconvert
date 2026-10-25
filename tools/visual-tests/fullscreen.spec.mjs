@@ -113,13 +113,12 @@ test('goal-first setup filtering creates a fullscreen draft with a viewport prev
   await page.goto('/wp-admin/admin.php?page=wconvert#optins');
   await page.getByRole('button', { name: 'Create campaign', exact: true }).click();
   await page.getByRole('listitem').filter({ has: page.getByRole('heading', { name: 'Grow my email list', exact: true }) }).getByRole('button', { name: 'Choose: Grow my email list', exact: true }).click();
-  const fullscreen = page.getByRole('radio', { name: 'Fullscreen', exact: true });
-  await page.locator('label').filter({ has: fullscreen }).click();
-  await expect(fullscreen).toBeChecked();
-  await expect(page.getByText('Offer a weekly email in fullscreen', { exact: true })).toBeVisible();
-  await expect(page.getByText('Fullscreen', { exact: true }).last()).toBeVisible();
-  await page.getByRole('button', { name: 'Setup details for Offer a weekly email in fullscreen', exact: true }).click();
-  await page.getByRole('button', { name: 'Use this setup', exact: true }).click();
+  // The one template gallery (ADR 0171): Format is a select, and Use template is on the card.
+  await page.getByRole('combobox', { name: 'Format', exact: true }).selectOption('fullscreen');
+  const card = page.getByRole('listitem').filter({ has: page.getByRole('heading', { name: 'Offer a weekly email in fullscreen', exact: true }) });
+  await expect(card).toBeVisible();
+  await expect(card.getByText('Fullscreen', { exact: true })).toBeVisible();
+  await card.getByRole('button', { name: 'Use template', exact: true }).click();
   const fullscreenSite = page.getByRole('tabpanel', { name: 'Edit', exact: true }).locator('.wconvert-stage[data-display-type="fullscreen"]');
   await expect(fullscreenSite).toBeVisible();
   const geometry = await fullscreenSite.evaluate(site => {

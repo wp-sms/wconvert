@@ -35,6 +35,7 @@ locked design to a free install, so `locked.json` stays in the ZIP but never
 reaches the payload. Surfaces that don't route through `renderingFor` (format
 picker, starting points, rule notes, the A/B item, packs, analytics, reopen and
 inline-placement fallbacks) filter on the same `isFreeInstall()`.
+*(Starting points: see the [ADR 0171](0171-one-template-gallery.md) note below.)*
 
 > _Amended by [ADR 0147](0147-free-names-what-pro-adds-where-it-is-wanted.md): a locked member is still never drawn, but the list where it would sit may end in one line of text naming it — "Also in WConvert Pro ↗: …" — under that ADR's eight rules. Text, never an item._
 

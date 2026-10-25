@@ -260,13 +260,12 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await page.goto('/wp-admin/admin.php?page=wconvert#optins');
   await page.getByRole('button', { name: 'Create campaign', exact: true }).click();
   await page.getByRole('listitem').filter({ has: page.getByRole('heading', { name: 'Grow my email list', exact: true }) }).getByRole('button', { name: 'Choose: Grow my email list', exact: true }).click();
-  const inline = page.getByRole('radio', { name: 'Inline form', exact: true });
-  await page.locator('label').filter({ has: inline }).click();
-  await expect(inline).toBeChecked();
-  await expect(page.getByText('Newsletter signup after an article', { exact: true })).toBeVisible();
-  await expect(page.getByText('Inline form', { exact: true }).last()).toBeVisible();
-  await page.getByRole('button', { name: 'Setup details for Newsletter signup after an article', exact: true }).click();
-  await page.getByRole('button', { name: 'Use this setup', exact: true }).click();
+  // The one template gallery (ADR 0171): Format is a select, and Use template is on the card.
+  await page.getByRole('combobox', { name: 'Format', exact: true }).selectOption('inline');
+  const card = page.getByRole('listitem').filter({ has: page.getByRole('heading', { name: 'Newsletter signup after an article', exact: true }) });
+  await expect(card).toBeVisible();
+  await expect(card.getByText('Inline form', { exact: true })).toBeVisible();
+  await card.getByRole('button', { name: 'Use template', exact: true }).click();
 
   // Placement authoring belongs only to Display rules. The Look states where
   // the campaign sits and links there; it draws no placement control, in

@@ -1,0 +1,131 @@
+/*
+ * THE ONE TEMPLATE GALLERY (ADR 0171), as the approved prototype draws it:
+ * the collections shelf, one toolbar row, a grid of cards with the stage on
+ * top, and the inspect view. Creation's step 2 and the editor share it.
+ */
+
+/* Each gallery measures its own width: a dialog's is not the window's. */
+.wconvert-gallery-scope { container: wconvert-gallery / inline-size; }
+
+/* ---- the grid and its cards ---- */
+.wconvert-template-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin: 0; padding: 0; list-style: none; }
+@container wconvert-gallery (max-width: 1180px) { .wconvert-template-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@container wconvert-gallery (max-width: 620px) { .wconvert-template-grid { grid-template-columns: minmax(0, 1fr); } }
+
+.wconvert-template-card { display: flex; flex-direction: column; min-inline-size: 0; overflow: hidden; border: 1px solid var(--border); border-radius: 8px; background: var(--card); content-visibility: auto; contain-intrinsic-size: auto 420px; }
+.wconvert-template-card__stage { position: relative; border-block-end: 1px solid var(--border); }
+.wconvert-template-card__inspect { position: absolute; inset: 0; z-index: 2; border: 0; background: transparent; cursor: zoom-in; }
+.wconvert-template-card__inspect:focus-visible { outline: 2px solid var(--ring); outline-offset: -3px; }
+.wconvert-template-card__failed { position: absolute; inset: 0; z-index: 3; display: grid; place-content: center; justify-items: center; gap: 8px; padding: 12px; background: var(--stage); color: var(--muted-foreground); font-size: var(--text-note); text-align: center; }
+.wconvert-template-card__body { display: flex; flex: 1; flex-direction: column; gap: 9px; padding: 12px 14px 14px; }
+.wconvert-template-card__title { display: flex; align-items: flex-start; gap: 6px; }
+.wconvert-template-card__title h3 { flex: 1; min-inline-size: 0; margin: 0; font-size: var(--text-item); line-height: 1.3rem; font-weight: 600; text-wrap: balance; overflow-wrap: anywhere; }
+.wconvert-template-card__save { display: grid; flex: none; place-items: center; inline-size: 28px; block-size: 28px; margin-block: -4px; margin-inline-end: -6px; border: 0; border-radius: var(--radius); background: transparent; color: var(--muted-foreground); cursor: pointer; }
+.wconvert-template-card__save:hover { background: var(--surface); }
+.wconvert-template-card__save[aria-pressed='true'] { color: #b7791f; }
+.wconvert-template-card__marks { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+.wconvert-template-card__action { display: flex; align-items: center; gap: 8px; margin-block-start: auto; padding-block-start: 3px; }
+@media (pointer: coarse) {
+  .wconvert-template-card__save { inline-size: 44px; block-size: 44px; margin-block: -12px; }
+  .wconvert-template-card__action :is(a, button) { min-block-size: 44px; }
+}
+
+/* ---- chips: format, fields, plan, recommendation ---- */
+.wconvert-chip { display: inline-flex; align-items: center; gap: 4px; block-size: 22px; padding-inline: 8px; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--foreground); font-size: var(--text-note); font-weight: 500; white-space: nowrap; }
+.wconvert-chip svg { inline-size: 12px; block-size: 12px; }
+.wconvert-chip[data-kind='format'] { color: var(--muted-foreground); }
+.wconvert-chip[data-kind='field'] { border-color: transparent; background: var(--ice); color: var(--secondary-foreground); }
+.wconvert-chip[data-kind='recommended'] { border-color: transparent; background: var(--recommended-surface); color: var(--recommended-foreground); }
+.wconvert-chip[data-kind='locked'] { border-color: transparent; background: var(--surface); color: var(--muted-foreground); }
+.wconvert-chip[data-kind='conversion'] { border-color: #9cc7d3; background: var(--ice); color: var(--secondary-foreground); font-weight: 600; }
+.wconvert-chip[data-kind='current'] { border-color: transparent; background: var(--primary); color: var(--primary-foreground); }
+
+.wconvert-template-note { display: flex; align-items: flex-start; gap: 6px; padding: 6px 8px; border-radius: var(--radius); background: var(--warning-surface); color: var(--warning); font-size: var(--text-note); line-height: 1.25rem; }
+.wconvert-template-error { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 6px 8px; border-radius: var(--radius); background: var(--destructive-surface); color: var(--destructive); font-size: var(--text-note); }
+.wconvert-template-note svg { flex: none; inline-size: 14px; block-size: 14px; margin-block-start: 3px; }
+
+/* ---- the toolbar: one row, then the chips of what More filters holds ---- */
+.wconvert-gallery-toolbar { display: grid; gap: 10px; }
+.wconvert-gallery-toolbar__row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.wconvert-gallery-toolbar__row > * { min-inline-size: 0; }
+.wconvert-gallery-toolbar__row > .wconvert-picker__search { flex: 1 1 16rem; }
+.wconvert-gallery-toolbar__count { margin-inline-start: auto; color: var(--muted-foreground); font-size: var(--text-note); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.wconvert-gallery-toolbar__field { display: inline-flex; align-items: center; gap: 8px; }
+.wconvert-gallery-toolbar__field > span { color: var(--muted-foreground); font-size: var(--text-note); white-space: nowrap; }
+.wconvert-gallery-toolbar__more-count { display: inline-grid; place-items: center; min-inline-size: 18px; block-size: 18px; padding-inline: 4px; border-radius: 9px; background: var(--action); color: var(--action-foreground); font-size: var(--text-label); }
+.wconvert-gallery-more { display: grid; gap: 12px; inline-size: 17rem; }
+.wconvert-gallery-more label:has(> select) { display: grid; gap: 6px; }
+.wconvert-gallery-more label > span:first-child { color: var(--muted-foreground); font-size: var(--text-micro); }
+.wconvert-gallery-more select { inline-size: 100%; }
+.wconvert-gallery-active { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.wconvert-gallery-active__chip { display: inline-flex; align-items: center; gap: 4px; block-size: 26px; padding-inline: 10px 6px; border: 0; border-radius: 999px; background: var(--ice); color: var(--secondary-foreground); font-size: var(--text-note); font-weight: 500; cursor: pointer; }
+.wconvert-gallery-active__chip:hover { background: #cfe5ec; }
+@media (pointer: coarse) { .wconvert-gallery-active__chip { min-block-size: 44px; } }
+@container wconvert-gallery (max-width: 782px) {
+  .wconvert-gallery-toolbar__row { gap: 8px; }
+  .wconvert-gallery-toolbar__count { margin-inline-start: 0; }
+}
+
+/* ---- the collections shelf, and the bar of the one that is open ---- */
+.wconvert-shelf { display: grid; gap: 10px; }
+.wconvert-shelf__head { display: flex; align-items: center; gap: 10px; }
+.wconvert-shelf__head h2 { margin: 0; font-size: var(--text-heading); line-height: 1.25rem; font-weight: 600; }
+.wconvert-shelf__head > :nth-child(2) { margin-inline-start: auto; }
+.wconvert-shelf__row { display: grid; grid-auto-columns: 16.5rem; grid-auto-flow: column; gap: 12px; margin: 0; padding: 0 0 4px; overflow-x: auto; list-style: none; scroll-snap-type: x mandatory; scrollbar-width: thin; }
+@container wconvert-gallery (max-width: 782px) { .wconvert-shelf__row { grid-auto-columns: 78%; } }
+.wconvert-shelf__tile { position: relative; display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 10px; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); scroll-snap-align: start; }
+.wconvert-shelf__tile[data-active] { border-color: var(--action); background: #f5fafb; box-shadow: inset 0 0 0 1px var(--action); }
+.wconvert-shelf__open { position: absolute; inset: 0; border: 0; border-radius: 8px; background: transparent; cursor: pointer; }
+.wconvert-shelf__open:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.wconvert-shelf__cover { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; inline-size: 92px; }
+.wconvert-shelf__cover > * { overflow: hidden; border-radius: 3px; box-shadow: 0 0 0 1px var(--border); aspect-ratio: 4 / 3; }
+.wconvert-shelf__cover > :first-child { grid-column: 1 / -1; }
+.wconvert-shelf__text { display: grid; gap: 2px; min-inline-size: 0; padding-inline-end: 22px; }
+.wconvert-shelf__text strong { font-size: var(--text-body); line-height: 1.2rem; font-weight: 600; text-wrap: balance; }
+.wconvert-shelf__text span { color: var(--muted-foreground); font-size: var(--text-note); }
+.wconvert-shelf__text [data-season] { color: var(--secondary-foreground); font-weight: 600; }
+.wconvert-shelf__hide { position: absolute; inset-block-start: 4px; inset-inline-end: 4px; z-index: 1; display: grid; place-items: center; inline-size: 28px; block-size: 28px; border: 0; border-radius: var(--radius); background: transparent; color: var(--muted-foreground); cursor: pointer; }
+.wconvert-shelf__hide:hover { background: var(--surface); color: var(--foreground); }
+@media (pointer: coarse) { .wconvert-shelf__hide { inset-block-start: 0; inset-inline-end: 0; inline-size: 44px; block-size: 44px; } }
+.wconvert-shelf__off { display: flex; align-items: center; gap: 8px; color: var(--muted-foreground); font-size: var(--text-note); }
+
+.wconvert-collection-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 10px 12px; border: 1px solid #c6dfe6; border-radius: 8px; background: #f5fafb; }
+.wconvert-collection-bar__text { display: grid; flex: 1 1 18rem; gap: 1px; min-inline-size: 0; }
+.wconvert-collection-bar__text strong { font-weight: 600; }
+.wconvert-collection-bar__text span { color: var(--muted-foreground); font-size: var(--text-note); }
+
+/* ---- empty states and the consent card, inside the grid ---- */
+.wconvert-template-grid > .wconvert-template-empty,
+.wconvert-template-grid > .wconvert-library-consent { grid-column: 1 / -1; }
+.wconvert-template-empty { display: grid; justify-items: center; gap: 8px; padding: 48px 16px; text-align: center; }
+.wconvert-template-empty__icon { display: grid; place-items: center; inline-size: 44px; block-size: 44px; border-radius: 50%; background: var(--surface); color: var(--muted-foreground); }
+.wconvert-template-empty h3 { margin: 0; font-size: var(--text-heading); font-weight: 600; }
+.wconvert-template-grid > .wconvert-library-consent { margin: 0; border-style: dashed; border-color: var(--input); }
+
+/* ---- the step 2 header: steps, title and the goal switcher ---- */
+.wconvert-gallery-head { display: grid; gap: 14px; padding: 20px 24px 18px; border-block-end: 1px solid var(--border); }
+.wconvert-gallery-head__title { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+.wconvert-gallery-head__title h2 { margin: 0; font-size: var(--text-title); line-height: 1.875rem; font-weight: 600; letter-spacing: -0.01em; text-wrap: balance; }
+.wconvert-goal-switch__key { color: var(--muted-foreground); font-weight: 400; }
+.wconvert-gallery-body { display: grid; gap: 18px; padding: 18px 24px 24px; }
+.wconvert-gallery-body > * { min-inline-size: 0; }
+@container wconvert-gallery (max-width: 782px) {
+  .wconvert-gallery-head, .wconvert-gallery-body { padding-inline: 14px; }
+  .wconvert-gallery-head__title h2 { font-size: var(--text-section); line-height: 1.6rem; }
+}
+
+/* ---- inspect ---- */
+/* A larger look sizes to what it shows, as the prototype's does, up to the viewport. */
+.wconvert-picker.wconvert-inspect-dialog { block-size: auto; max-block-size: calc(100dvh - 2rem); --wconvert-picker-width: 70rem; }
+.wconvert-inspect { display: grid; grid-template-columns: minmax(0, 1fr) 19rem; min-block-size: 0; }
+.wconvert-inspect__view { display: grid; align-content: start; gap: 12px; padding: 16px 20px 20px; border-inline-end: 1px solid var(--border); background: #faf9f6; }
+.wconvert-inspect__bar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; }
+.wconvert-inspect__stage { display: grid; block-size: min(62vh, 560px); }
+.wconvert-inspect__stage > .wconvert-stage { block-size: 100%; aspect-ratio: auto; }
+.wconvert-inspect__about { display: grid; align-content: start; gap: 14px; padding: 18px 20px; }
+.wconvert-inspect__about > p { margin: 0; }
+@media (max-width: 782px) {
+  .wconvert-inspect { grid-template-columns: minmax(0, 1fr); }
+  .wconvert-inspect__view { padding: 12px; border-inline-end: 0; border-block-end: 1px solid var(--border); }
+  .wconvert-inspect__stage { block-size: 380px; }
+}

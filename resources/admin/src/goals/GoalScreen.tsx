@@ -1,66 +1,46 @@
-import { useEffect, useRef, useState, type MouseEvent } from 'react';
-import { __, _n, sprintf } from '@wordpress/i18n';
-import { ArrowLeft, CalendarDays, Check, LayoutTemplate, Library, MoreHorizontal, Sparkles, Star, X } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
-import { CompareSelection } from '../discovery/CompareSelection';
-import { ComparisonTray } from '../discovery/ComparisonTray';
-import { MoreFilters, SavedLabel } from '../discovery/MoreFilters';
-import { PickerPagination } from '../discovery/PickerPagination';
-import { PickerSearch } from '../discovery/PickerSearch';
-import { Dialog, DialogTitle, DialogDescription } from '../components/ui/dialog';
-import { AdminDialogContent, AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
-import { PickerDialogContent, PickerDialogHeader, PickerDialogBody } from '../discovery/PickerDialog';
-import { OnlineCollection } from '../discovery/OnlineCollection';
-import { OnlineSetups } from '../templates/OnlineSetups';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { __, sprintf } from '@wordpress/i18n';
+import { Check, ChevronDown, Sparkles } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
 import { PinnedDesignNotice, usePinnedDesign } from '../templates/PinnedDesign';
+import { LibraryConsent } from '../templates/LibraryConsent';
+import { installSetup } from '../templates/catalog';
 import { fitsOutcome } from './outcome';
-import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { ChoiceGrid, ChoiceSkeleton } from '../shell/ChoiceGrid';
-import { CheckRow } from '../shell/CheckRow';
-import { GallerySkeleton, conversionWords } from '../builder/Gallery';
-import { conversionFor, otherSideOf, convertedFor, type CaptureChoice } from '../builder/structure/captureConversion';
-import { shopNowLink } from '../builder/structure/captureWording';
-import type { Template } from '@renderer/types';
-import { TemplateCard } from '../builder/TemplateCard';
-import { getRules, type RuleVocabulary } from '../builder/api';
 import { EmptyState } from '../shell/EmptyState';
 import { Region, RegionBody, RegionError, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { createOptin } from '../optins/api';
 import { occasionSchedule } from '../lib/occasion';
-import { formatCount, formatDay, formatRange } from '../lib/format';
 import { GoalCard, offerableGoals } from './GoalCard';
-import { listGoals, listPlaybooks, prefill, type GoalEntry, type PlaybookEntry } from './api';
-import { StartingPointFacts, startingPointDisplayType } from './StartingPointFacts';
+import { listGoals, prefill, readGoalGallery, type GoalEntry, type GoalGallery } from './api';
 import { usePicker } from '../discovery/usePicker';
 import { useSetupPreviews } from '../discovery/useSetupPreviews';
-import { designKey, groupSetups, matchingCollections, preferredStage } from '../discovery/model';
-import { CollectionShelf } from '../discovery/CollectionShelf';
-import { PickerSettings } from '../discovery/PickerSettings';
-import { SetupPreview } from '../discovery/SetupPreview';
-import { SetupComparison } from '../discovery/SetupComparison';
-import type { Collection } from '../discovery/api';
-import { displayTypeLabel, displayTypeOptions } from '../displayTypes';
-import { renderingFor, tierProductName } from './availability';
-import { adminSettings, catalogConfigured } from '../settings';
-import { OptionStrip } from '../shell/OptionStrip';
-import { matchesSearch } from '../discovery/search';
+import { preferredStage } from '../discovery/model';
+import { adminSettings } from '../settings';
+import { filterCards, mergeSetups, shelfCollections, type GalleryCard as Card, type GalleryFilters } from '../gallery/model';
+import { GalleryCard } from '../gallery/GalleryCard';
+import { GalleryGrid, GallerySkeleton, PER_PAGE } from '../gallery/GalleryGrid';
+import { GalleryToolbar, NO_CHOICES, type GalleryChoices } from '../gallery/GalleryToolbar';
+import { CollectionBar, CollectionShelf, ShelfOff } from '../gallery/CollectionShelf';
+import { InspectDialog } from '../gallery/InspectDialog';
+import '../gallery/gallery.css';
 
 /**
- * Goal first, then a starting point. Browsing only reads; Use this setup explicitly
- * creates a draft and opens the editor. The editor owns review and publishing.
- * Every read belongs to the current step, so an abandoned response cannot
- * replace a later choice or start a draft after this flow was closed.
+ * Goal first, then a template (ADR 0171). Browsing only reads; Use template
+ * creates a draft and opens the editor — installing an online template first,
+ * silently. The editor owns review and publishing. Every read belongs to the
+ * current step, so an abandoned response cannot replace a later choice or
+ * start a draft after this flow was closed.
  *
- * The library's first row is search and the three places to browse
- * (collections, packs, preferences); format is the second. Every other filter
- * sits under one "More filters", the same control the design library uses
- * (ADR 0131), so step two reads as a choice rather than a control panel.
+ * Step 2 is the one gallery: the collections shelf, one toolbar row, and a
+ * grid of every template this goal can start from — this site's, the online
+ * library's, and Pro's as locked hints where those are wanted.
  */
 export interface GoalScreenProps {
   onCreated: (id: string) => void;
-  /** The occasion a new campaign is created into: its ideas first, its dates prefilled (ADR 0149 §3). */
+  /** The occasion a new campaign is created into: its collection first, its dates prefilled (ADR 0149 §3). */
   occasion?: string;
   onBusyChange?: (busy: boolean) => void;
   onCheckOptins?: () => void;
@@ -74,57 +54,29 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
   // The local design a new campaign starts from, once it is on this site.
   const pinned = pinnedState?.state === 'ready' ? pinnedState.entry : null;
   const [goals, setGoals] = useState<Loadable<GoalEntry[]>>(LOADING);
-  const [packsOpen, setPacksOpen] = useState(false);
-  const [inspected, setInspected] = useState<PlaybookEntry | null>(null);
-  const detailTrigger = useRef<HTMLButtonElement | null>(null);
-  const detailGroup = useRef<string | null>(null);
-  const modalOrigin = useRef<HTMLElement | null>(null);
-  const modalTitle = useRef<HTMLHeadingElement | null>(null);
-  const modalContent = useRef<HTMLDivElement | null>(null);
-  const collectionScroll = useRef(0);
-  const [collectionId, setCollectionId] = useState('all');
-  const [formatId, setFormatId] = useState('all');
-  const [businessId, setBusinessId] = useState('all');
-  const [query, setQuery] = useState('');
-  const picker = usePicker();
-  const [savedOnly, setSavedOnly] = useState(false);
-  const [availableOnly, setAvailableOnly] = useState(false);
-  const [filtersOpen, setFiltersOpen] = useState(false);
-  const [settings, setSettings] = useState(false);
-  const browseTrigger = useRef<HTMLButtonElement>(null);
-  const [allCollections, setAllCollections] = useState(false);
-  const [editorialCollection, setEditorialCollection] = useState<Collection | null>(null);
-  const [stage, setStage] = useState('any');
-  const [occasion, setOccasion] = useState<string | null>(into ?? null);
-  const [sort, setSort] = useState('recommended');
-  const [compareIds, setCompareIds] = useState<string[]>([]);
-  const [comparing, setComparing] = useState(false);
-  const [page, setPage] = useState(0);
-  const libraryPosition = useRef<{ scroll: number; trigger: HTMLElement | null; page: number; allCollections: boolean }>({ scroll: 0, trigger: null, page: 0, allCollections: false });
-
-  const [useCases, setUseCases] = useState<Record<string, string>>({});
-  const collectionPicker = useRef<HTMLSelectElement>(null);
-  const choseCollection = useRef(false);
   const [goal, setGoal] = useState<GoalEntry | null>(null);
-  const [playbooks, setPlaybooks] = useState<Loadable<PlaybookEntry[]>>(LOADING);
-  const previewEntries = playbooks.status === 'ready' ? playbooks.data : [];
-  const previews = useSetupPreviews(goal?.id ?? '', previewEntries);
-  // Setups made for another Goal that fit this one once the form switch
-  // converts them: an offer for a list, a signup for an offer (ADR 0163).
-  const source = goal && goals.status === 'ready' ? otherSideOf(goal, goals.data) : null;
-  const convertTo = goal && source ? conversionFor(goal.outcome, { act: source.outcome.action, captures: source.outcome.capture_any_of }) : null;
-  const [otherSide, setOtherSide] = useState<PlaybookEntry[]>([]);
-  const otherSidePreviews = useSetupPreviews(source?.id ?? '', otherSide);
-  const [vocabulary, setVocabulary] = useState<Loadable<RuleVocabulary>>(LOADING);
+  const [gallery, setGallery] = useState<Loadable<GoalGallery>>(LOADING);
+  const [choices, setChoices] = useState<GalleryChoices>(NO_CHOICES);
+  const [collectionId, setCollectionId] = useState<string | null>(null);
+  const [stage, setStage] = useState('any');
+  const [page, setPage] = useState(0);
+  const [inspected, setInspected] = useState<string | null>(null);
+  const inspectTrigger = useRef<HTMLElement | null>(null);
+  const picker = usePicker();
+  const setups = useMemo(() => gallery.status === 'ready' ? gallery.data.setups : [], [gallery]);
+  const previews = useSetupPreviews(goal?.id ?? '', setups);
   const [goalsRetry, setGoalsRetry] = useState(0);
-  const [playbooksRetry, setPlaybooksRetry] = useState(0);
-  const [rulesRetry, setRulesRetry] = useState(0);
+  const [galleryRetry, setGalleryRetry] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [createUnconfirmed, setCreateUnconfirmed] = useState(false);
   // A setup that changed or left the library since it was previewed can only be reloaded, never retried.
   const [staleSetup, setStaleSetup] = useState(false);
   const [starting, setStarting] = useState<string | null>(null);
-  const lastStart = useRef<{ playbookId?: string; goalId?: string; convert?: CaptureChoice }>({});
+  /** The card being added from the library, and the card whose install failed. */
+  const [adding, setAdding] = useState<string | null>(null);
+  const [installFailed, setInstallFailed] = useState<{ key: string; message: string } | null>(null);
+  const lastStart = useRef<string | undefined>(undefined);
+  const preselected = useRef(false);
   const active = useRef(false);
   const operation = useRef(0);
   const busy = useRef(false);
@@ -134,11 +86,11 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
     return () => { active.current = false; operation.current += 1; };
   }, []);
   useEffect(() => {
-    onBusyChange?.(starting !== null);
+    onBusyChange?.(starting !== null || adding !== null);
     return () => onBusyChange?.(false);
-  }, [onBusyChange, starting]);
+  }, [onBusyChange, starting, adding]);
   useEffect(() => {
-    if (starting === null) return;
+    if (starting === null && adding === null) return;
     // WordPress sidebar links and reloads leave the React navigation guard.
     const warn = (event: BeforeUnloadEvent) => {
       event.preventDefault();
@@ -146,7 +98,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
     };
     window.addEventListener('beforeunload', warn);
     return () => window.removeEventListener('beforeunload', warn);
-  }, [starting]);
+  }, [starting, adding]);
 
   useEffect(() => {
     let current = true;
@@ -159,54 +111,34 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
   useEffect(() => {
     if (goal === null) return;
     let current = true;
-    setPlaybooks(LOADING);
-    void listPlaybooks(goal.id).then((entries) => { if (current) setPlaybooks(ready(entries)); })
-      .catch((cause: unknown) => { if (current) setPlaybooks(failed(cause)); });
+    setGallery(LOADING);
+    void readGoalGallery(goal.id).then((answer) => { if (current) setGallery(ready(answer)); })
+      .catch((cause: unknown) => { if (current) setGallery(failed(cause)); });
     return () => { current = false; };
-  }, [goal, playbooksRetry]);
-
-  useEffect(() => {
-    if (!source) { setOtherSide([]); return; }
-    let current = true;
-    // Optional: a failed read leaves the group out rather than the page in error.
-    void listPlaybooks(source.id).then((entries) => { if (current) setOtherSide(entries.filter(entry => (entry.availability ?? 'ready') === 'ready')); })
-      .catch(() => { if (current) setOtherSide([]); });
-    return () => { current = false; };
-  }, [source?.id]); // eslint-disable-line react-hooks/exhaustive-deps -- the Goal's id is the whole of the question
-
-  useEffect(() => {
-    let current = true;
-    setVocabulary(LOADING);
-    void getRules().then((rules) => { if (current) setVocabulary(ready(rules)); })
-      .catch((cause: unknown) => { if (current) setVocabulary(failed(cause)); });
-    return () => { current = false; };
-  }, [rulesRetry]);
+  }, [goal, galleryRetry]);
 
   const choose = (chosen: GoalEntry) => {
     if (busy.current) return;
     operation.current += 1;
     setGoal(chosen);
-    setCollectionId('all');
-    setFormatId('all');
-    setBusinessId('all');
-    setQuery(''); setCompareIds([]); setComparing(false); setSort('recommended'); setSavedOnly(false); setAvailableOnly(false); setEditorialCollection(null); setAllCollections(false); setPage(0);
-    setPlaybooks(LOADING);
+    setChoices(NO_CHOICES); setCollectionId(null); setStage('any'); setPage(0); setInspected(null);
+    setGallery(LOADING);
     setError(null);
     setCreateUnconfirmed(false);
+    setInstallFailed(null);
   };
 
-  const start = async (playbookId?: string, goalId?: string, convert?: CaptureChoice) => {
+  const start = async (playbookId?: string) => {
     // The ref closes the same-tick double-click gap before React disables UI.
     if (goal === null || busy.current || createUnconfirmed) return;
-    const targetGoal = goalId ? goals.status === 'ready' ? goals.data.find(entry => entry.id === goalId) : undefined : goal;
-    if (!targetGoal || targetGoal.availability !== 'ready') return;
+    if (goal.availability !== 'ready') return;
     // Created into an occasion, the draft needs its dates; never create it
     // unlinked because they had not arrived yet.
     if (into && !picker.data) { setError(__('Occasions are still loading. Try again in a moment.', 'wconvert')); return; }
-    const choice = previewEntries.find(entry => entry.id === playbookId);
+    const choice = setups.find(entry => entry.id === playbookId);
     if (choice?.availability && choice.availability !== 'ready') return;
     busy.current = true;
-    lastStart.current = { playbookId, goalId, convert };
+    lastStart.current = playbookId;
     const request = ++operation.current;
     setStarting(playbookId ?? 'scratch');
     setError(null);
@@ -214,16 +146,10 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
     setStaleSetup(false);
     let creating = false;
     try {
-      // The other side's setups are checked against their own revisions too.
-      const selected = (convert ? otherSide : previewEntries).find(entry => entry.id === playbookId);
-      const prepared = selected && (convert ? otherSidePreviews : previews).previews.get(selected.id);
-      const asSetUp = selected?.revision ? await prefill(targetGoal.id, playbookId, selected.revision, prepared?.prepared_revision) : await prefill(targetGoal.id, playbookId);
-      // Another Goal's setup, converted to fit this one; it keeps this Goal (ADR 0163).
-      const converted = convert && goals.status === 'ready' ? convertedFor(asSetUp.config, goal.id, goals.data, convert, shopNowLink()) : null;
-      if (convert && !converted) throw new Error(__('This setup could not be changed for this goal. Choose another.', 'wconvert'));
-      const filled = converted ? { ...asSetUp, goal: goal.id, config: converted.config } : asSetUp;
+      const prepared = choice && previews.previews.get(choice.id);
+      const asSetUp = choice?.revision ? await prefill(goal.id, playbookId, choice.revision, prepared?.prepared_revision) : await prefill(goal.id, playbookId);
       // Started from a linked design with no setup: the server snapshots it on create.
-      const prefilled = pinned && !playbookId ? { ...filled, config: { ...filled.config, template_id: pinned.id } } : filled;
+      const prefilled = pinned && !playbookId ? { ...asSetUp, config: { ...asSetUp.config, template_id: pinned.id } } : asSetUp;
       // Leads stay in WConvert until a service is connected (ADR 0133), so
       // the prefill needs no capture mode written into it.
       const home = into ? picker.data?.occasions.items.find(item => item.id === into) : undefined;
@@ -249,6 +175,64 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
     }
   };
 
+  /** Using an online card installs it first, silently, then starts from what it became (ADR 0171). */
+  const use = async (card: Card) => {
+    if (busy.current || adding !== null || createUnconfirmed) return;
+    if (card.availability === 'ready') { void start(card.key); return; }
+    if (card.availability !== 'install' || card.sha256 === null) return;
+    const request = ++operation.current;
+    setAdding(card.key); setInstallFailed(null); setError(null);
+    try {
+      const installed = await installSetup(card.key, card.sha256);
+      if (!active.current || request !== operation.current) return;
+      setAdding(null);
+      await start(installed.playbook_id);
+    } catch (cause) {
+      if (active.current && request === operation.current) {
+        setAdding(null);
+        setInstallFailed({ key: card.key, message: __('Couldn’t add this template.', 'wconvert') + ' ' + messageOf(cause) });
+      }
+    }
+  };
+
+  /** A newer revision is added, then the gallery is read again to show it. */
+  const update = async (card: Card) => {
+    if (!card.newerRevision || adding !== null || busy.current) return;
+    setAdding(card.key); setInstallFailed(null);
+    try {
+      await installSetup(card.newerRevision.id, card.newerRevision.sha256);
+      if (active.current) { previews.reset(); setGalleryRetry(value => value + 1); }
+    } catch (cause) {
+      if (active.current) setInstallFailed({ key: card.key, message: __('Couldn’t add this template.', 'wconvert') + ' ' + messageOf(cause) });
+    } finally {
+      if (active.current) setAdding(null);
+    }
+  };
+
+  // Every template card this goal offers, before any filter.
+  const proHints = adminSettings()?.proHints === true;
+  const cards = useMemo(() => gallery.status === 'ready'
+    // A setup whose design is missing is not a choice: creation hides what it cannot start (ADR 0026).
+    ? mergeSetups(gallery.data, { proHints }).filter(card => !(card.source === 'local' && card.availability === 'unavailable'))
+      .filter(card => !pinned || card.template_id === pinned.id)
+    : [], [gallery, proHints, pinned]);
+  const today = picker.data?.today ?? '';
+  const showShelf = picker.data?.preferences.show_featured !== false;
+  const shelf = useMemo(() => picker.data ? shelfCollections(picker.data.collections, cards, today, picker.data.preferences.hidden) : [],
+    [picker.data, cards, today]);
+  const open = shelf.find(item => item.collection.id === collectionId) ?? null;
+  const home = into ? picker.data?.occasions.items.find(item => item.id === into) : undefined;
+
+  // Created from an occasion: its seasonal collection is open, at the stage the occasion is in.
+  useEffect(() => {
+    if (preselected.current || !home || shelf.length === 0) return;
+    preselected.current = true;
+    const match = shelf.find(({ collection }) => collection.event && collection.event.start >= home.start && collection.event.start <= home.end);
+    if (!match) return;
+    setCollectionId(match.collection.id);
+    setStage(preferredStage(match.collection, today, cards.map(card => ({ id: card.key })), home));
+  }, [home, shelf, cards, today]);
+
   if (goal === null) {
     // A linked design offers only the goals it can serve (ADR 0085).
     const shown = goals.status === 'ready' ? offerableGoals(goals.data, 'creation_flow').filter((entry) => !pinned || fitsOutcome(entry.outcome, pinned.facets)) : [];
@@ -267,378 +251,121 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
     </Region>;
   }
 
-  const selectedOccasion = picker.data?.occasions.items.find(item => item.id === occasion);
-  // A setup this install could only buy is not a setup on a free install
-  // (ADR 0116).
-  // Nor is one whose design is missing: creation hides what it cannot start (ADR 0026).
-  const allEntries = playbooks.status === 'ready' ? playbooks.data.filter((entry) => renderingFor(entry.availability ?? 'ready', 'creation_flow') !== 'hide') : [];
-  const collections = new Map(allEntries.flatMap((entry) => entry.collection ? [[entry.collection.id, entry.collection.name] as const] : []));
-  const businesses = new Map(allEntries.flatMap((entry) => (entry.business_types ?? []).map(({ id, label }) => [id, label] as const)));
-  const availableFormats = new Set(allEntries.map(startingPointDisplayType));
-  const formatOptions = displayTypeOptions().filter(({ value }) => availableFormats.has(value));
-  const search = query.trim().toLocaleLowerCase();
-  const matchingCollection = allEntries.filter((entry) =>
-    (collectionId === 'all' || (collectionId === 'bundled' ? !entry.collection : entry.collection?.id === collectionId))
-    && (businessId === 'all' || !entry.business_types?.length || entry.business_types.some(({ id }) => id === businessId))
-    && (!savedOnly || picker.data?.preferences.saved.includes(designKey(entry)))
-    && (!availableOnly || !entry.availability || entry.availability === 'ready')
-    && matchesSearch(search, [entry.name, entry.notes, entry.recommendation, entry.collection?.name, ...(entry.business_types ?? []).map(({ label }) => label), displayTypeLabel(startingPointDisplayType(entry))]));
-  const filtered = matchingCollection.filter((entry) => formatId === 'all' || startingPointDisplayType(entry) === formatId);
-  const collectionEligible = filtered.filter(entry => !entry.availability || entry.availability === 'ready');
-  const effectiveStage = editorialCollection && stage !== 'any' && !editorialCollection.items.some(item => item.stage === stage && collectionEligible.some(entry => entry.id === item.setup_id))
-    ? preferredStage(editorialCollection, picker.data?.today ?? '', collectionEligible, selectedOccasion) : stage;
-  const collectionItems = editorialCollection?.items.filter(item => effectiveStage === 'any' || item.stage === effectiveStage);
-  const entries = collectionItems ? collectionEligible.filter(entry => collectionItems.some(item => item.setup_id === entry.id)) : filtered;
-  const showProDesigns = adminSettings()?.installedTier === 'pro' || adminSettings()?.proHints === true;
-  const relevant = picker.data ? matchingCollections(picker.data, filtered, false, showProDesigns) : [];
-  const featured = picker.data ? matchingCollections(picker.data, filtered, true, showProDesigns) : [];
-  const openCollection = (collection: Collection) => {
-    libraryPosition.current = { scroll: window.scrollY, trigger: document.activeElement as HTMLElement | null, page, allCollections };
-    modalOrigin.current = document.activeElement as HTMLElement | null;
-    setEditorialCollection(collection); setAllCollections(false); setPage(0);
-    setStage(preferredStage(collection, picker.data?.today ?? '', collectionEligible, selectedOccasion));
+  const working = starting !== null || adding !== null;
+  const saved = picker.data?.preferences.saved ?? [];
+  const filters: GalleryFilters = {
+    ...choices,
+    saved: choices.savedOnly ? new Set(saved) : undefined,
+    collection: open ? { members: open.members } : null,
+    stage,
   };
-  const backToLibrary = () => {
-    setEditorialCollection(null); setAllCollections(libraryPosition.current.allCollections); setPage(libraryPosition.current.page);
-    requestAnimationFrame(() => { window.scrollTo(0, libraryPosition.current.scroll); libraryPosition.current.trigger?.focus({ preventScroll: true }); });
-  };
-  const changeGoal = () => {
-    if (busy.current) return;
-    operation.current += 1; setGoal(null); setError(null); setCreateUnconfirmed(false);
-  };
-  const reloadSetups = () => { previews.reset(); setPlaybooksRetry(value => value + 1); setError(null); };
-
-  const clearFilters = () => { setCollectionId('all'); setFormatId('all'); setBusinessId('all'); setQuery(''); setSavedOnly(false); setAvailableOnly(false); setPage(0); };
-  const activeFilters = [
-    ...(availableOnly ? [{ id: 'availability', label: __('Available on this site', 'wconvert'), remove: () => setAvailableOnly(false) }] : []),
-    ...(savedOnly ? [{ id: 'saved', label: __('Saved designs', 'wconvert'), remove: () => setSavedOnly(false) }] : []),
-    ...(query ? [{ id: 'query', label: query, remove: () => setQuery('') }] : []),
-    ...(businessId !== 'all' ? [{ id: 'business', label: businesses.get(businessId) ?? __('Selected business', 'wconvert'), remove: () => setBusinessId('all') }] : []),
-    ...(formatId !== 'all' ? [{ id: 'format', label: displayTypeLabel(formatId), remove: () => setFormatId('all') }] : []),
-    ...(collectionId !== 'all' ? [{ id: 'collection', label: collectionId === 'bundled'
-      ? __('Included with WConvert', 'wconvert') : collections.get(collectionId) ?? __('Selected source', 'wconvert'), remove: () => setCollectionId('all') }] : []),
-  ];
-  // What "More filters" holds, so its closed row can say how many are on.
-  const hiddenFilters = Number(businessId !== 'all') + Number(collectionId !== 'all') + Number(savedOnly) + Number(availableOnly);
-  const groups = groupSetups(entries);
-  const sortedGroups = [...groups];
-  if (sort === 'name') sortedGroups.sort((a, b) => a[1][0].name.localeCompare(b[1][0].name));
-  /*
-   * **One setup to start from** (ADR 0112, amended). Before a merchant has
-   * narrowed anything, the first recommended setup this site can use is drawn
-   * on its own with a direct Use; the gallery under it is everything else.
-   */
-  // A handful of setups is already a short choice; a recommendation earns its place past three.
-  const startGroup = sortedGroups.length > 3 && !editorialCollection && !allCollections && !selectedOccasion && sort === 'recommended' && activeFilters.length === 0
-    ? sortedGroups.find(([, variants]) => (variants[0].availability ?? 'ready') === 'ready') : undefined;
-  const galleryGroups = startGroup ? sortedGroups.filter((group) => group !== startGroup) : sortedGroups;
-  const pageCount = Math.max(1, Math.ceil(galleryGroups.length / 24));
-  const shownPage = Math.min(page, pageCount - 1);
-  const pagedGroups = galleryGroups.slice(shownPage * 24, (shownPage + 1) * 24);
-  const inspectedPreview = inspected && previews.previews.get(inspected.id);
-  const inspectedEntry = inspected && (inspectedPreview?.revision === inspected.revision ? inspectedPreview ?? inspected : inspected);
-  const inspectedChoices = inspected ? (comparing ? allEntries : entries).filter(entry => designKey(entry) === designKey(inspected) && startingPointDisplayType(entry) === startingPointDisplayType(inspected)) : [];
-  const inspectedRefusal = inspected?.availability && inspected.availability !== 'ready'
-    ? inspected.availability === 'locked' ? sprintf(/* translators: %s: the product a setup needs, e.g. “WConvert Pro”. */ __('Available with %s.', 'wconvert'), tierProductName(undefined)) : __('This setup needs a design that is not installed.', 'wconvert')
-    : null;
-  const comparisonEntries = compareIds.flatMap(id => {
-    const entry = allEntries.find(value => value.id === id); const prepared = previews.previews.get(id);
-    return entry ? [prepared?.revision === entry.revision ? prepared ?? entry : entry] : [];
-  });
+  const shown = filterCards(cards, filters);
+  const pages = Math.max(1, Math.ceil(shown.length / PER_PAGE));
+  const shownPage = Math.min(page, pages - 1);
+  const paged = shown.slice(shownPage * PER_PAGE, (shownPage + 1) * PER_PAGE);
+  const change = (next: Partial<GalleryChoices>) => { setChoices(value => ({ ...value, ...next })); setPage(0); };
+  const clear = () => { setChoices(NO_CHOICES); setPage(0); };
+  // A collection with one format needs no Format choice.
+  const collectionFormats = open ? new Set(filterCards(cards, { ...filters, format: 'all' }).map(card => card.displayType)) : null;
+  const library = gallery.status === 'ready' ? gallery.data.library : null;
+  const asking = library?.configured === true && library.consent === 'unanswered' && open === null;
+  const goalsHere = goals.status === 'ready'
+    ? offerableGoals(goals.data, 'creation_flow').filter(entry => entry.availability === 'ready' && (!pinned || fitsOutcome(entry.outcome, pinned.facets)))
+    : [goal];
+  const inspectedCard = cards.find(card => card.key === inspected) ?? null;
+  const entryOf = (card: Card) => setups.find(entry => entry.id === card.key);
+  // The prepared tree once it arrives, or one the index already carried.
+  const treeOf = (card: Card) => card.source === 'local' ? previews.previews.get(card.key)?.template ?? entryOf(card)?.template : undefined;
   const unconfirmed = __('Draft creation could not be confirmed. Check your campaigns before trying again, so you don’t create a second draft.', 'wconvert');
   const checkCampaigns = onCheckOptins
     ? <Button variant="outline" onClick={onCheckOptins}>{__('Check campaigns', 'wconvert')}</Button>
     : <Button variant="outline" asChild><a href="#optins">{__('Check campaigns', 'wconvert')}</a></Button>;
-  const comparisonControls = <ComparisonTray names={comparisonEntries.map(entry=>entry.name)} disabled={starting !== null} onClear={()=>setCompareIds([])} onCompare={event => {
-    if (!editorialCollection) modalOrigin.current = event.currentTarget; collectionScroll.current = modalContent.current?.scrollTop ?? 0;
-    comparisonEntries.forEach(entry => previews.onNear(entry.id)); setComparing(true);
-    requestAnimationFrame(() => { if (modalContent.current) modalContent.current.scrollTop = 0; modalTitle.current?.focus({ preventScroll: true }); });
-  }} />;
-  const startCard = startGroup ? card(startGroup[0], startGroup[1], true) : null;
-  const setupGallery = playbooks.status === 'failed' ? <RegionErrorState message={playbooks.message} onRetry={() => setPlaybooksRetry((value) => value + 1)} />
-    : playbooks.status === 'loading' ? <RegionBody><GallerySkeleton cards={2} /></RegionBody>
-      : allEntries.length === 0 ? <EmptyState icon={Sparkles} title={__('No campaign setups available', 'wconvert')}
-        action={<Button disabled={starting !== null} onClick={() => { void start(); }}>{__('Choose a design myself', 'wconvert')}</Button>}>
-        {__('Start a draft for this goal and choose its design in the editor.', 'wconvert')}
-      </EmptyState> : entries.length === 0 ? <EmptyState icon={Sparkles} title={__('No campaign setups match', 'wconvert')}
-        action={<Button variant="outline" disabled={starting !== null} onClick={clearFilters}>{__('Show all campaign setups', 'wconvert')}</Button>}>
-        {savedOnly ? __('No saved designs match this goal and your filters.', 'wconvert') : __('Try another search, business, format or collection.', 'wconvert')}
-      </EmptyState> : <RegionBody className={editorialCollection ? 'px-0' : undefined}>
-        {startCard && shownPage === 0 && <section className="wconvert-start-here" aria-labelledby="wconvert-start-here-title">
-          <h3 id="wconvert-start-here-title" className="wconvert-start-here__title">{__('Start here', 'wconvert')}</h3>
-          <ul className="wconvert-gallery wconvert-start-here__card">{startCard}</ul>
-          <h3 className="wconvert-start-here__title">{__('Or choose another setup', 'wconvert')}</h3>
-        </section>}
-        <ul className="wconvert-gallery">{pagedGroups.map(([designId, variants]) => card(designId, variants))}</ul>
-        {!editorialCollection && <PickerPagination label={__('Setup pages', 'wconvert')} page={shownPage} pages={pageCount} disabled={starting !== null} onChange={setPage} />}
-      </RegionBody>;
-  function card(designId: string, variants: PlaybookEntry[], featured = false) {
-          const selected = variants.find((entry) => entry.id === useCases[designId]) ?? variants[0];
-          const prepared = previews.previews.get(selected.id);
-          const playbook = prepared?.revision === selected.revision ? prepared ?? selected : selected;
-          const openDetails = (event: MouseEvent<HTMLButtonElement>) => { detailGroup.current = designId; detailTrigger.current = event.currentTarget; if (!editorialCollection) modalOrigin.current = event.currentTarget; collectionScroll.current = modalContent.current?.scrollTop ?? 0; previews.onNear(playbook.id); setInspected(playbook); requestAnimationFrame(() => { if (modalContent.current) modalContent.current.scrollTop = 0; modalTitle.current?.focus({ preventScroll: true }); }); };
-          return <TemplateCard
-          key={designId} id={playbook.id} name={playbook.name} template={playbook.template}
-          displayType={startingPointDisplayType(playbook)}
-          onNear={previews.onNear} loadError={previews.failed.has(playbook.id)} onRetry={() => previews.retry(playbook.id)}
-          reason={playbook.availability === 'locked' ? sprintf(/* translators: %s: the product a setup needs, e.g. “WConvert Pro”. */ __('Available with %s.', 'wconvert'), tierProductName(undefined)) : playbook.availability === 'unavailable' ? __('This setup needs a design that is not installed.', 'wconvert') : undefined}
-          absent={playbook.template === undefined && (!playbook.revision || (playbook.availability !== undefined && playbook.availability !== 'ready')) ? <p>{__('This design is not available on this site.', 'wconvert')}</p> : undefined}
-          selected={compareIds.some(id => variants.some(entry => entry.id === id))}
-          saveAction={<Button variant="ghost" size="icon" className="wconvert-picker__save" disabled={picker.saving || !picker.data} aria-pressed={picker.data?.preferences.saved.includes(designKey(playbook)) ?? false} aria-label={sprintf(/* translators: %s: a campaign setup's name, e.g. “Spring sale popup”. */ __('Save design: %s', 'wconvert'), playbook.name)} onClick={() => picker.toggleSaved(designKey(playbook))}><Star size={17} aria-hidden="true" fill={picker.data?.preferences.saved.includes(designKey(playbook)) ? 'currentColor' : 'none'} /></Button>}
-          marks={<><Badge variant="outline">{displayTypeLabel(startingPointDisplayType(playbook))}</Badge>
-            {variants.length > 1 && <span>{sprintf(/* translators: %s: how many use cases a campaign setup offers, e.g. “3”. */ _n('%s use case', '%s use cases', variants.length, 'wconvert'), formatCount(variants.length))}</span>}
-            {playbook.template && playbook.template.tree.steps.length > 1 && <span>{sprintf(/* translators: %s: how many screens a campaign setup's design has, e.g. “3”. */ _n('%s screen', '%s screens', playbook.template.tree.steps.length, 'wconvert'), formatCount(playbook.template.tree.steps.length))}</span>}
-          </>}
-          notes={playbook.recommendation || playbook.business_types?.map(item => item.label).join(' · ') || undefined}
-          selection={featured ? undefined : <CompareSelection name={playbook.name} checked={compareIds.some(id => variants.some(entry => entry.id === id))}
-            disabled={starting !== null} full={compareIds.length >= 2 && !compareIds.some(id => variants.some(entry => entry.id === id))} onChange={() => {
-              setCompareIds(current => current.some(id => variants.some(entry => entry.id === id)) ? current.filter(id => !variants.some(entry => entry.id === id)) : [...current, playbook.id]);
-            }} />}
-          action={(describedBy) => featured ? <>
-              <Button aria-describedby={describedBy} disabled={starting !== null || (playbook.revision !== undefined && !playbook.template)} onClick={() => { void start(playbook.id); }}>
-                {starting === playbook.id ? __('Creating draft…', 'wconvert') : __('Use this setup', 'wconvert')}
-              </Button>
-              <Button ref={node => { if (detailGroup.current === designId) detailTrigger.current = node; }} variant="outline" aria-describedby={describedBy} disabled={starting !== null}
-                aria-label={sprintf(/* translators: %s: a campaign setup's name, e.g. “Spring sale popup”. */ __('Preview %s first', 'wconvert'), playbook.name)} onClick={openDetails}>
-                {__('Preview first', 'wconvert')}
-              </Button>
-            </> : <Button ref={node => { if (detailGroup.current === designId) detailTrigger.current = node; }} variant="outline" aria-describedby={describedBy} disabled={starting !== null}
-                aria-label={sprintf(/* translators: %s: a campaign setup's name, e.g. “Spring sale popup”. */ __('Setup details for %s', 'wconvert'), playbook.name)} onClick={openDetails}>
-                {__('Preview & details', 'wconvert')}
-              </Button>} />;
-  }
-  const collectionDetails = editorialCollection ? <section className="wconvert-collection-detail">
-      {selectedOccasion && <p className="text-note">{sprintf(
-        /* translators: 1: an occasion's name, 2: its dates, e.g. “Nov 27 – Dec 1, 2026”. */
-        __('Ideas for %1$s, %2$s.', 'wconvert'), selectedOccasion.name, formatRange(selectedOccasion.start, selectedOccasion.end))}</p>}
-      {editorialCollection.event && !selectedOccasion && <div className="wconvert-collection-detail__event"><p>{sprintf(/* translators: %s: a date, e.g. “Nov 27, 2026”. */ __('Event starts %s', 'wconvert'), formatDay(editorialCollection.event.start))}</p></div>}
-      {editorialCollection.items.some(item => item.stage !== 'any') && <OptionStrip label={__('Campaign stage', 'wconvert')} value={effectiveStage}
-        options={[
-          ['any', __('All stages', 'wconvert')], ['before', __('Before', 'wconvert')], ['during', __('During', 'wconvert')], ['after', __('After', 'wconvert')],
-        ].map(([id, label]) => ({ value: id, label,
-          count: collectionEligible.filter(entry => editorialCollection.items.some(item => item.setup_id === entry.id && (id === 'any' || item.stage === id))).length,
-          disabled: id !== 'any' && !editorialCollection.items.some(item => item.stage === id && collectionEligible.some(entry => entry.id === item.setup_id)),
-        }))} onChange={id => { setStage(id); setPage(0); }} />}
-      {effectiveStage !== stage && <p role="status" className="text-note">{__('Your filters have no setups in the previous stage. Showing a matching stage instead.', 'wconvert')}</p>}
-      {picker.data && editorialCollection.event && picker.data.today >= editorialCollection.event.end_exclusive && <p className="text-note">{__('This event has ended. Its setups still work; update dates and offer terms in the editor.', 'wconvert')}</p>}
-    </section> : null;
-  const showFeatured = !selectedOccasion && !allCollections && !editorialCollection && !query.trim() && !savedOnly && picker.data?.preferences.show_featured !== false;
-  return <Region className="wconvert-creation">
-    <Step at={2} />
-    <RegionHeader title={__('Choose a campaign setup', 'wconvert')}
-      description={sprintf(/* translators: %s: the goal chosen in step one. */ __('For “%s”.', 'wconvert'), goal.label)}
-      trailing={<Button variant="outline" disabled={starting !== null} onClick={changeGoal}>
-        <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Change goal', 'wconvert')}
-      </Button>} />
-    {pinned && <div className="wconvert-picker__notice" role="status">
-      <strong>{sprintf(/* translators: %s: a design name. */ __('Starting from “%s”', 'wconvert'), pinned.name)}</strong>
-      <p>{__('Start with this design and your own words, or pick a setup below that uses it.', 'wconvert')}</p>
-      <div><Button disabled={starting !== null} onClick={() => { void start(); }}>{starting === 'scratch' ? __('Starting…', 'wconvert') : __('Start with this design', 'wconvert')}</Button></div>
-    </div>}
-    {picker.error && !settings && <RegionError message={picker.error} onRetry={() => { void picker.reload(); }} />}
-    {vocabulary.status === 'failed' && <RegionError message={__('Setup details could not be loaded. You can still choose a setup and review its rules in the editor.', 'wconvert')} onRetry={() => setRulesRetry((value) => value + 1)} />}
-    {/*
-      Two rows, then the cards (ADR 0131, GUIDELINES §9): what to look for,
-      how to order it and where else to browse; then format, the rarer filters
-      and how many match. Everything else is one ⋯ away.
-    */}
-    <div className="wconvert-picker__controls wconvert-toolbar">
-      <div className="wconvert-picker__search-row">
-        <PickerSearch label={__('Search campaign setups', 'wconvert')} value={query} disabled={starting !== null} onChange={value => {setQuery(value);setPage(0);}} />
-        <select className="wconvert-picker__select" aria-label={__('Sort campaign setups', 'wconvert')} value={sort} onChange={event => { setSort(event.target.value); setPage(0); }}>
-          <option value="recommended">{__('Recommended first', 'wconvert')}</option>
-          <option value="name">{__('Name A–Z', 'wconvert')}</option>
-        </select>
+  const reload = () => { previews.reset(); setGalleryRetry(value => value + 1); setError(null); };
+
+  const cardAction = (card: Card) => card.availability === 'locked' ? (card.previewUrl && <Button asChild variant="outline">
+    <a href={card.previewUrl} target="_blank" rel="noopener noreferrer">{__('See this design', 'wconvert')}</a></Button>)
+    : card.availability === 'ready' || card.availability === 'install'
+      ? <Button disabled={working} onClick={() => { void use(card); }}>
+        {starting === card.key || adding === card.key ? __('Adding…', 'wconvert') : __('Use template', 'wconvert')}</Button>
+      : <p className="wconvert-template-note m-0">{card.availability === 'update_plugin' ? __('Needs a newer version of WConvert.', 'wconvert') : __('Needs a plugin this site doesn’t have.', 'wconvert')}</p>;
+
+  return <Region className="wconvert-creation wconvert-gallery-scope">
+    <div className="wconvert-gallery-head">
+      <Step at={2} />
+      <div className="wconvert-gallery-head__title">
+        <h2>{__('Choose a template', 'wconvert')}</h2>
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
-            <Button ref={browseTrigger} variant="outline" size="icon" disabled={starting !== null} aria-label={__('More ways to browse', 'wconvert')}>
-              <MoreHorizontal aria-hidden="true" />
+            <Button variant="outline" size="sm" disabled={working}>
+              <span className="wconvert-goal-switch__key">{__('Goal:', 'wconvert')}</span> {goal.label}<ChevronDown aria-hidden="true" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" sideOffset={5}>
-            <DropdownMenuItem onSelect={() => setAllCollections(value => !value)}>
-              <Library aria-hidden="true" />{allCollections ? __('Show all setups', 'wconvert') : __('Browse collections', 'wconvert')}
-            </DropdownMenuItem>
-            {catalogConfigured() && <DropdownMenuItem onSelect={() => { choseCollection.current = false; setPacksOpen(true); }}>
-              <LayoutTemplate aria-hidden="true" />{__('Online setups', 'wconvert')}
-            </DropdownMenuItem>}
-            <DropdownMenuItem onSelect={() => { setSettings(true); void picker.reload(); }}>
-              <CalendarDays aria-hidden="true" />{__('Occasions & preferences', 'wconvert')}
-            </DropdownMenuItem>
+          <DropdownMenuContent align="start" sideOffset={4}>
+            <DropdownMenuRadioGroup value={goal.id} onValueChange={id => { const next = goalsHere.find(entry => entry.id === id); if (next && next.id !== goal.id) choose(next); }}>
+              {goalsHere.map(entry => <DropdownMenuRadioItem key={entry.id} value={entry.id}>{entry.label}</DropdownMenuRadioItem>)}
+            </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="wconvert-picker__facet">
-        <OptionStrip label={__('Format', 'wconvert')} value={formatId} disabled={starting !== null}
-          options={[{ value: 'all', label: __('All formats', 'wconvert') }, ...formatOptions,
-            ...(formatId !== 'all' && !availableFormats.has(formatId) ? [{ value: formatId, label: displayTypeLabel(formatId) }] : [])]
-            .map(({value, label}) => { const count = value === 'all' ? matchingCollection.length : matchingCollection.filter(entry => startingPointDisplayType(entry) === value).length;
-              return { value, label, count, disabled: count === 0 && formatId !== value }; })}
-          onChange={value => { setFormatId(value); setPage(0); }} />
-        <span role="status" className="wconvert-picker__count">{playbooks.status === 'ready'
-          ? entries.length === allEntries.length
-            ? sprintf(/* translators: %s: how many campaign setups there are for the chosen goal, e.g. “12”. */ _n('%s setup', '%s setups', allEntries.length, 'wconvert'), formatCount(allEntries.length))
-            : sprintf(/* translators: 1: how many setups match the filters, 2: how many setups there are for the chosen goal. */ __('%1$s of %2$s setups', 'wconvert'), formatCount(entries.length), formatCount(allEntries.length))
-          : playbooks.status === 'loading' ? __('Loading campaign setups…', 'wconvert') : __('Campaign setups could not be loaded.', 'wconvert')}</span>
-        <MoreFilters active={hiddenFilters} open={filtersOpen} onToggle={setFiltersOpen}>
-          {/* Labels above their controls in one aligned grid, the way a form reads (GUIDELINES §7, Field). */}
-          <div className="wconvert-filter-grid">
-            {businesses.size > 0 && <label className="wconvert-filter-field">
-              <span>{__('Business', 'wconvert')}</span>
-              <select className="wconvert-picker__select" value={businessId} disabled={starting !== null} onChange={(event) => { setBusinessId(event.target.value); setPage(0); }}>
-                <option value="all">{__('All businesses', 'wconvert')}</option>
-                {[...businesses].map(([id, label]) => <option key={id} value={id}>{label}</option>)}
-              </select>
-            </label>}
-            <label className="wconvert-filter-field">
-              <span>{__('Source', 'wconvert')}</span>
-              <select className="wconvert-picker__select" ref={collectionPicker} value={collectionId} disabled={starting !== null} onChange={(event) => setCollectionId(event.target.value)}>
-                <option value="all">{__('All campaign setups', 'wconvert')}</option>
-                <option value="bundled">{__('Included with WConvert', 'wconvert')}</option>
-                {[...collections].map(([id, name]) => <option key={id} value={id}>{name}</option>)}
-                {collectionId !== 'all' && collectionId !== 'bundled' && !collections.has(collectionId) && <option value={collectionId}>{__('Selected source', 'wconvert')}</option>}
-              </select>
-            </label>
-            <fieldset className="wconvert-filter-field">
-              <legend>{__('Show', 'wconvert')}</legend>
-              <CheckRow label={<SavedLabel count={picker.data?.preferences.saved.length ?? 0} />} checked={savedOnly} disabled={starting !== null || !picker.data}
-                onChange={(event) => { setSavedOnly(event.target.checked); setPage(0); }} />
-              {allEntries.some(entry => entry.availability && entry.availability !== 'ready') && <CheckRow label={__('Available on this site', 'wconvert')} checked={availableOnly} disabled={starting !== null}
-                onChange={(event) => { setAvailableOnly(event.target.checked); setPage(0); }} />}
-            </fieldset>
-          </div>
-        </MoreFilters>
-      </div>
-      {activeFilters.length > 0 && <div className="wconvert-picker__active">
-        {activeFilters.map(({ id, label, remove }) => <button key={id} type="button" className="wconvert-picker__active-filter"
-          disabled={starting !== null} aria-label={sprintf(/* translators: %s: an active filter's label, e.g. “Popup”, “Saved designs” or a search phrase. */ __('Remove filter: %s', 'wconvert'), label)} onClick={remove}>
-          <bdi>{label}</bdi><X size={12} aria-hidden="true" />
-        </button>)}
-        <Button variant="link" disabled={starting !== null} onClick={clearFilters}>{__('Clear filters', 'wconvert')}</Button>
+      {pinned && <div className="wconvert-picker__notice" role="status">
+        <strong>{sprintf(/* translators: %s: a design name. */ __('Starting from “%s”', 'wconvert'), pinned.name)}</strong>
+        <p>{__('Start with this design and your own words, or pick a template below that uses it.', 'wconvert')}</p>
+        <div className="flex flex-wrap gap-2">
+          <Button disabled={working} onClick={() => { void start(); }}>{starting === 'scratch' ? __('Starting…', 'wconvert') : __('Start with this design', 'wconvert')}</Button>
+          <Button variant="outline" disabled={working} onClick={() => setUnpinned(true)}>{__('Show every template', 'wconvert')}</Button>
+        </div>
       </div>}
     </div>
-    {selectedOccasion && <section aria-label={__('Occasion planning ideas', 'wconvert')}>
-      <div className="wconvert-picker__notice"><strong><bdi>{selectedOccasion.name}</bdi></strong><p>{formatRange(selectedOccasion.start, selectedOccasion.end)}</p>
-        <p>{__('Explore before, during and after ideas for your goal. Campaign dates are set in the editor.', 'wconvert')}</p>
-        <Button variant="outline" onClick={() => setOccasion(null)}>{__('Back to full library', 'wconvert')}</Button></div>
-      <CollectionShelf matches={relevant.filter(match => !match.collection.event)} all disabled={starting !== null} onOpen={openCollection} onAll={() => {}} onHide={() => {}} />
-      {relevant.every(match => !!match.collection.event) && <EmptyState icon={Sparkles} title={__('No reviewed occasion ideas match yet', 'wconvert')} action={<Button variant="outline" onClick={() => setOccasion(null)}>{__('Browse all setups', 'wconvert')}</Button>}>
-        {__('Clear your filters or browse the full library.', 'wconvert')}
-      </EmptyState>}
-    </section>}
-    <Dialog open={packsOpen} onOpenChange={setPacksOpen}>
-      <PickerDialogContent onCloseAutoFocus={(event) => {
-        event.preventDefault();
-        (choseCollection.current ? collectionPicker.current : browseTrigger.current)?.focus();
-      }}>
-        <AdminDialogHeader title={__('Online setups', 'wconvert')} meta={sprintf(/* translators: %s: a campaign goal. */ __('Campaign setups from the WConvert library for “%s”.', 'wconvert'), goal.label)} />
-        <PickerDialogBody><OnlineSetups goal={goal.id} onLibraryChanged={picker.reload} onInstalled={() => { setPlaybooksRetry((value) => value + 1); void picker.reload(); }} /></PickerDialogBody>
-      </PickerDialogContent>
-    </Dialog>
-    <Dialog open={settings} onOpenChange={setSettings}>
-      <AdminDialogContent size="md" onCloseAutoFocus={(event) => { event.preventDefault(); browseTrigger.current?.focus(); }}>
-        <PickerSettings picker={picker} onBack={() => setSettings(false)}
-          onPlan={id => { setOccasion(id); setSettings(false); setAllCollections(false); setEditorialCollection(null); setPage(0); }} />
-      </AdminDialogContent>
-    </Dialog>
-    {!inspected && !editorialCollection?.online && error !== null && (createUnconfirmed
+    {picker.error && <RegionError message={picker.error} onRetry={() => { void picker.reload(); }} />}
+    {!inspected && error !== null && (createUnconfirmed
       ? <RegionError message={unconfirmed} action={checkCampaigns} />
-      : <RegionError message={error} onRetry={() => { void start(lastStart.current.playbookId, lastStart.current.goalId, lastStart.current.convert); }} />)}
+      : staleSetup ? <RegionError message={error} action={<Button variant="outline" disabled={working} onClick={reload}>{__('Reload templates', 'wconvert')}</Button>} />
+        : <RegionError message={error} onRetry={() => { void start(lastStart.current); }} />)}
     {starting !== null && <RegionBody><p role="status" className="m-0 text-note">{__('Creating your draft and opening the editor…', 'wconvert')}</p></RegionBody>}
-    {!selectedOccasion && !editorialCollection && !allCollections && <>{setupGallery}{comparisonControls}</>}
-    {!selectedOccasion && !editorialCollection && !allCollections && source && convertTo && otherSide.length > 0 && <section className="wconvert-works-with" aria-labelledby="wconvert-works-with-title">
-      <RegionBody>
-        <h3 id="wconvert-works-with-title" className="wconvert-start-here__title">{__('Works with this goal', 'wconvert')}</h3>
-        <p className="text-note text-muted-foreground">{convertTo === 'none'
-          ? __('Setups made with a form. Using one removes the form, and it keeps your goal.', 'wconvert')
-          : __('Setups made without a form. Using one adds the form, and it keeps your goal.', 'wconvert')}</p>
-        <ul className="wconvert-gallery">{otherSide.slice(0, 6).map(entry => {
-          const shown = otherSidePreviews.previews.get(entry.id) ?? entry;
-          // Drawn as it would be created: with its form added or removed.
-          const drawn = shown.template && goals.status === 'ready'
-            ? convertedFor({ template: shown.template }, goal.id, goals.data, convertTo, shopNowLink())?.config.template as Template | undefined ?? shown.template : shown.template;
-          return <TemplateCard key={entry.id} id={entry.id} name={entry.name} template={drawn} displayType={startingPointDisplayType(entry)}
-            onNear={otherSidePreviews.onNear} loadError={otherSidePreviews.failed.has(entry.id)} onRetry={() => otherSidePreviews.retry(entry.id)}
-            marks={<><Badge variant="outline">{displayTypeLabel(startingPointDisplayType(entry))}</Badge><Badge variant="secondary">{conversionWords(convertTo, goal.outcome).chip}</Badge></>}
-            notes={entry.recommendation || entry.business_types?.map(item => item.label).join(' · ') || undefined}
-            action={(describedBy) => <Button aria-describedby={describedBy} disabled={starting !== null || createUnconfirmed} onClick={() => { void start(entry.id, source.id, convertTo); }}>
-              {starting === entry.id ? __('Creating draft…', 'wconvert') : __('Use this setup', 'wconvert')}</Button>} />;
-        })}</ul>
-      </RegionBody>
-    </section>}
-    {/* Collections are a second way in, so the featured shelf follows the setups rather than preceding them. */}
-    {!selectedOccasion && !editorialCollection && picker.data && (allCollections || showFeatured) && <CollectionShelf matches={allCollections ? relevant : featured} all={allCollections} disabled={starting !== null || picker.saving} onOpen={openCollection} onAll={() => setAllCollections(true)}
-      onHide={id => { if (picker.data) void picker.preferences({ ...picker.data.preferences, hidden: [...picker.data.preferences.hidden, id] }); }}
-      onHideAll={allCollections ? undefined : () => { if (picker.data) void picker.preferences({ ...picker.data.preferences, show_featured: false }); }} />}
-    {allCollections && !editorialCollection && relevant.length === 0 && <EmptyState icon={Sparkles} title={__('No collections match', 'wconvert')} action={<Button variant="outline" onClick={clearFilters}>{__('Clear filters', 'wconvert')}</Button>}>{__('Try another business, search or format, or return to the full library.', 'wconvert')}</EmptyState>}
-    <Dialog open={inspected !== null || editorialCollection !== null || comparing} onOpenChange={(open) => { if (!open) { setInspected(null); setComparing(false); if (editorialCollection) backToLibrary(); } }}>
-      <PickerDialogContent className="wconvert-setup-detail" onOpenAutoFocus={event => { event.preventDefault(); modalTitle.current?.focus({ preventScroll: true }); }} onCloseAutoFocus={(event) => {
-        event.preventDefault(); (modalOrigin.current?.isConnected ? modalOrigin.current : collectionPicker.current)?.focus({ preventScroll: true });
-      }}>
-        {/* The title is the subject: a setup, a collection, or the comparison itself (ADR 0131). */}
-        <PickerDialogHeader>
-          <DialogTitle ref={modalTitle} tabIndex={-1}>{inspected?.name ?? (comparing ? __('Compare setups', 'wconvert') : editorialCollection?.name)}</DialogTitle>
-          {(inspected || (!comparing && editorialCollection?.description)) && <DialogDescription>{inspected
-            ? sprintf(/* translators: 1: a format, e.g. “Popup”. 2: the chosen goal. */ __('%1$s · for “%2$s”', 'wconvert'), displayTypeLabel(startingPointDisplayType(inspected)), goal.label)
-            : editorialCollection?.description}</DialogDescription>}
-        </PickerDialogHeader>
-        <PickerDialogBody ref={modalContent}>
-          {!inspected && !comparing && editorialCollection?.online && <>
-            {error && (createUnconfirmed ? <RegionError message={unconfirmed} action={checkCampaigns} /> : <RegionError message={error} onRetry={() => { void start(lastStart.current.playbookId, lastStart.current.goalId, lastStart.current.convert); }} />)}
-            {starting !== null && <p role="status">{__('Creating your draft and opening the editor…', 'wconvert')}</p>}
-            <OnlineCollection key={editorialCollection.id} collection={editorialCollection} goals={goals.status === 'ready' ? goals.data : []} busy={starting !== null || createUnconfirmed}
-              onInstalled={() => { setPlaybooksRetry(value => value + 1); void picker.reload(); }} onUse={(id, goalId) => { void start(id, goalId); }} />
+    <div className="wconvert-gallery-body">
+      {!pinned && picker.data && (showShelf
+        ? <CollectionShelf shelf={shelf} cards={cards} trees={new Map(cards.map(card => [card.key, treeOf(card)]))} active={collectionId}
+          hidden={picker.data.preferences.hidden.length} disabled={working || picker.saving} onNear={previews.onNear}
+          onOpen={id => { setCollectionId(id); setStage(id ? preferredStage(shelf.find(item => item.collection.id === id)!.collection, today, cards.map(card => ({ id: card.key })), home) : 'any'); setPage(0); }}
+          onHide={id => { if (picker.data) void picker.preferences({ ...picker.data.preferences, hidden: [...picker.data.preferences.hidden, id] }); if (id === collectionId) setCollectionId(null); }}
+          onRestore={() => { if (picker.data) void picker.preferences({ ...picker.data.preferences, hidden: [] }); }}
+          onHideAll={() => { if (picker.data) void picker.preferences({ ...picker.data.preferences, show_featured: false }); setCollectionId(null); }} />
+        : <ShelfOff disabled={picker.saving} onShow={() => { if (picker.data) void picker.preferences({ ...picker.data.preferences, show_featured: true }); }} />)}
+      {gallery.status === 'failed' ? <RegionErrorState message={gallery.message} onRetry={() => setGalleryRetry((value) => value + 1)} />
+        : gallery.status === 'loading' ? <GallerySkeleton cards={3} />
+          : <>
+            <GalleryToolbar cards={cards} filters={filters} choices={choices} onChange={change} onClear={clear} shown={shown.length} disabled={working}
+              showPlan={proHints && cards.some(card => card.availability === 'locked')}
+              showFormat={!collectionFormats || collectionFormats.size > 1 || choices.format !== 'all'} />
+            {open && <CollectionBar shelf={open} stage={stage} disabled={working} onStage={value => { setStage(value); setPage(0); }}
+              onClose={() => { setCollectionId(null); setStage('any'); setPage(0); }} />}
+            <GalleryGrid total={cards.length} shown={shown.length} page={shownPage} pages={pages} onPage={setPage} onClear={clear} disabled={working}
+              empty={{ title: __('No templates for this goal yet', 'wconvert'), body: __('Start from a blank design instead.', 'wconvert'),
+                action: <Button disabled={working} onClick={() => { void start(); }}>{__('Choose a design myself', 'wconvert')}</Button> }}
+              consent={asking && <LibraryConsent title={__('See more templates from the WConvert library?', 'wconvert')} allow={__('Show online templates', 'wconvert')}
+                onAnswered={() => setGalleryRetry(value => value + 1)} />}>
+              {paged.map(card => <GalleryCard key={card.key} card={card} template={treeOf(card)} onNear={previews.onNear}
+                previewFailed={previews.failed.has(card.key)} onRetryPreview={() => previews.retry(card.key)}
+                saved={saved.includes(card.designKey)} onSave={picker.data ? () => picker.toggleSaved(card.designKey) : undefined}
+                busy={starting === card.key || adding === card.key} disabled={working || createUnconfirmed}
+                failed={installFailed?.key === card.key ? installFailed.message : null}
+                onInspect={() => { inspectTrigger.current = document.activeElement as HTMLElement | null; if (card.source === 'local') previews.onNear(card.key); setInspected(card.key); }}
+                onUse={() => { void use(card); }} onUpdate={card.newerRevision ? () => { void update(card); } : undefined} />)}
+            </GalleryGrid>
           </>}
-          {!inspected && !comparing && editorialCollection && !editorialCollection.online && <>
-            <div className="wconvert-collection-detail__controls">{collectionDetails}
-            <div className="wconvert-picker__controls wconvert-toolbar"><div className="wconvert-picker__search-row"><PickerSearch label={__('Search collection setups','wconvert')} value={query} placeholder={__('Search this collection','wconvert')} onChange={value=>{setQuery(value);setPage(0);}} /></div>
-              {(new Set(matchingCollection.filter(entry => editorialCollection.items.some(item => item.setup_id === entry.id)).map(startingPointDisplayType)).size > 1 || formatId !== 'all') && <OptionStrip label={__('Collection format', 'wconvert')} value={formatId}
-                options={[{value:'all',label:__('All formats','wconvert')}, ...formatOptions].filter(({value}) => value === 'all' || value === formatId || matchingCollection.some(entry => editorialCollection.items.some(item => item.setup_id === entry.id) && startingPointDisplayType(entry) === value))}
-                onChange={value => { setFormatId(value); setPage(0); }} />}
-            </div></div>
-            <p role="status" className="text-note">{sprintf(/* translators: %s: how many campaign setups match the search and filters, e.g. “4”. */ _n('%s matching setup', '%s matching setups', entries.length, 'wconvert'), formatCount(entries.length))}</p>
-            {setupGallery}
-          </>}
-          {!inspected && comparing && <SetupComparison entries={comparisonEntries} busy={starting !== null} vocabulary={vocabulary.status === 'ready' ? vocabulary.data : null}
-            onUse={entry => { if ((entry.availability ?? 'ready') === 'ready') void start(entry.id); }} failed={previews.failed} onRetry={previews.retry} onInspect={entry => { setInspected(entry); requestAnimationFrame(() => { if (modalContent.current) modalContent.current.scrollTop = 0; modalTitle.current?.focus({ preventScroll: true }); }); }} />}
-          {inspected && <div className="wconvert-setup-inspector">
-            <div>
-              {inspectedEntry && <SetupPreview key={`${designKey(inspected)}:${startingPointDisplayType(inspected)}`} entry={inspectedEntry} failed={previews.failed.has(inspected.id)} onRetry={() => previews.retry(inspected.id)} />}
-            </div>
-            <aside className="wconvert-setup-inspector__facts" aria-label={__('Campaign setup details', 'wconvert')}>
-              {inspectedChoices.length > 1 && <section className="wconvert-setup-inspector__cases">
-                <h3>{__('Choose a use case', 'wconvert')}</h3>
-                <OptionStrip label={__('Use case', 'wconvert')} value={inspected.id} disabled={starting !== null}
-                  options={inspectedChoices.map(entry => ({ value: entry.id, label: entry.name }))}
-                  onChange={id => { const next = inspectedChoices.find(entry => entry.id === id); if (next) { setUseCases(value => ({ ...value, [`${designKey(next)}:${startingPointDisplayType(next)}`]: next.id })); previews.onNear(next.id); setInspected(next); } }} />
-              </section>}
-              {/* The gist only: the rest of an authored note repeats what You’ll need lists. */}
-              {inspected.notes && <p className="m-0 text-note text-muted-foreground">{gistOf(inspected.notes)}</p>}
-              <StartingPointFacts playbook={inspectedEntry ?? inspected} goal={goal} vocabulary={vocabulary.status === 'ready' ? vocabulary.data : null} />
-            </aside>
-          </div>}
-        </PickerDialogBody>
-        {!inspected && !comparing && editorialCollection && !editorialCollection.online && entries.length > 0 && <PickerPagination label={__('Setup pages', 'wconvert')} page={shownPage} pages={pageCount} disabled={starting !== null} onChange={setPage} />}
-        {!inspected && !comparing && !editorialCollection?.online && comparisonControls}
-        <AdminDialogFooter
-          back={<Button className="wconvert-picker__back" variant="outline" disabled={starting !== null} onClick={() => {
-            if (inspected) { setInspected(null); requestAnimationFrame(() => { if (modalContent.current) modalContent.current.scrollTop = collectionScroll.current; (detailTrigger.current?.isConnected ? detailTrigger.current : modalTitle.current)?.focus({ preventScroll: true }); }); }
-            else if (comparing) { setComparing(false); requestAnimationFrame(() => { if (modalContent.current) modalContent.current.scrollTop = collectionScroll.current; modalTitle.current?.focus({ preventScroll: true }); }); }
-            else backToLibrary();
-          }}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{inspected ? (comparing ? __('Back to comparison', 'wconvert') : editorialCollection ? __('Back to collection', 'wconvert') : __('Back to setups', 'wconvert')) : comparing ? (editorialCollection ? __('Back to collection', 'wconvert') : __('Back to library', 'wconvert')) : libraryPosition.current.allCollections ? __('All collections', 'wconvert') : __('Back to library', 'wconvert')}</Button>}
-          /* The refusal is the note beside the button it refuses, so it is read with it. */
-          note={inspected ? inspectedRefusal ? <span id="setup-refusal">{inspectedRefusal}</span> : __('Creates an unpublished draft.', 'wconvert') : undefined}
-          error={inspected && error ? createUnconfirmed ? unconfirmed : error : undefined}>
-          {inspected && error && (createUnconfirmed ? checkCampaigns
-            : staleSetup ? <Button variant="outline" disabled={starting !== null} onClick={() => { setInspected(null); reloadSetups(); }}>{__('Reload setups', 'wconvert')}</Button>
-              : null)}
-          {inspected && !staleSetup && <Button aria-describedby={inspectedRefusal ? 'setup-refusal' : undefined} aria-disabled={createUnconfirmed || inspectedRefusal !== null} disabled={starting !== null || (inspected.availability === 'ready' && inspected.revision !== undefined && !inspectedEntry?.template)} onClick={() => { if (!createUnconfirmed) void start(inspected.id); }}>{starting === inspected.id ? __('Creating draft…', 'wconvert') : error && !createUnconfirmed ? __('Try again', 'wconvert') : __('Use this setup', 'wconvert')}</Button>}
-        </AdminDialogFooter>
-      </PickerDialogContent>
-    </Dialog>
-    {allEntries.length > 0 && <RegionFooter className="flex flex-wrap items-center justify-between gap-3">
+    </div>
+    <InspectDialog card={inspectedCard} template={inspectedCard ? treeOf(inspectedCard) : undefined}
+      gist={inspectedCard ? gistOf(entryOf(inspectedCard)?.notes ?? '') : undefined}
+      onClose={() => setInspected(null)} returnFocusTo={inspectTrigger}
+      action={inspectedCard && <>
+        {error && (createUnconfirmed ? <><p role="alert" className="m-0 text-note text-destructive">{unconfirmed}</p>{checkCampaigns}</>
+          : <p role="alert" className="m-0 text-note text-destructive">{error}</p>)}
+        {installFailed?.key === inspectedCard.key && <p role="alert" className="m-0 text-note text-destructive">{installFailed.message}</p>}
+        {cardAction(inspectedCard)}
+      </>} />
+    {cards.length > 0 && <RegionFooter className="flex flex-wrap items-center justify-end gap-3">
       <span className="text-note text-muted-foreground">{__('None of these fit?', 'wconvert')}</span>
-      <Button variant="outline" disabled={starting !== null} onClick={() => { void start(); }}>{starting === 'scratch' ? __('Creating draft…', 'wconvert') : __('Choose a design myself', 'wconvert')}</Button>
+      <Button variant="outline" disabled={working} onClick={() => { void start(); }}>{starting === 'scratch' ? __('Creating draft…', 'wconvert') : __('Choose a design myself', 'wconvert')}</Button>
     </RegionFooter>}
   </Region>;
 }
@@ -647,7 +374,7 @@ function Step({ at }: { at: 1 | 2 }) {
   return <nav className="wconvert-creation__steps" aria-label={sprintf(/* translators: 1: the current step's number, e.g. “1”, 2: how many steps there are, e.g. “2”. */ __('Choice %1$s of %2$s', 'wconvert'), String(at), '2')}>
     <span className="sr-only">{sprintf(/* translators: 1: the current step's number, e.g. “1”, 2: how many steps there are, e.g. “2”. */ __('Choice %1$s of %2$s', 'wconvert'), String(at), '2')}</span>
     <ol>
-      {[__('Choose a goal', 'wconvert'), __('Choose a campaign setup', 'wconvert')].map((label, index) => <li key={label} aria-current={at === index + 1 ? 'step' : undefined}>
+      {[__('Choose a goal', 'wconvert'), __('Choose a template', 'wconvert')].map((label, index) => <li key={label} aria-current={at === index + 1 ? 'step' : undefined}>
         <span className="wconvert-creation__step-number" aria-hidden="true">{index + 1 < at ? <Check size={14} /> : index + 1}</span>{label}
       </li>)}
     </ol>

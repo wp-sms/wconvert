@@ -4,7 +4,9 @@ Accepted 2026-09-14, completing the approved pre-release UX follow-ups to ADR 00
 
 ## Merchant language
 
-The UI calls an Optin a **Campaign** and a Playbook a **Campaign setup**. A campaign
+The UI calls an Optin a **Campaign** and a Playbook a **Campaign setup**
+(*shown as a **template** in the one gallery since [ADR 0171](0171-one-template-gallery.md); the domain term is
+unchanged*). A campaign
 is an on-site form or offer, not a WSMS outbound send; the campaigns list says so.
 Internal class names, routes, block identity, config keys and tables remain Optin
 and Playbook. Smaller rule-only bundles are **Display rule sets**. A design remains
@@ -50,7 +52,8 @@ describing it as manual export. The collection and publication contracts above r
 
 ## Reviewed format choice
 
-The library has a visible Format selector. Browsing/cancelling never edits the
+The library has a visible Format selector (*a select in the one toolbar row,
+naming Pro-only formats "· Pro" where hints are wanted, [ADR 0171](0171-one-template-gallery.md)*). Browsing/cancelling never edits the
 draft. Applying writes the prepared `template`, `template_id` and selected design's
 `display_type` in one Undo entry. Keep/sample-content review and binding/A/B checks
 remain. Saved rules are preserved; inline needs block/shortcode placement and does

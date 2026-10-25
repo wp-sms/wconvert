@@ -21,6 +21,11 @@ capture fields and report navigation remain separate work.
 
 ## Find designs by what they actually offer
 
+> **Amended by [ADR 0171](0171-one-template-gallery.md):** creation's step 2 and the editor share one gallery
+> with one toolbar row — search, Format, Plan, More filters (Asks for, Business,
+> Saved, and the editor's industry, occasion, style, layout and With a picture)
+> and the count. Comparison is gone from both pickers.
+
 **Amended by [ADR 0086](0086-campaign-setups-explain-handoff-and-format.md):** Format
 is a visible browsing choice. Browsing does not change the draft; applying a prepared
 design updates design identity, tree and display type atomically. Search and relevant filters remain available
@@ -87,7 +92,8 @@ confirmation dialog, database schema or migration is introduced.
 
 Compatibility reasons and an act-change warning remain visible before applying.
 Inspection does not waive a refusal. Locked metadata cards keep their existing
-external **See this design** path; they gain no bundled premium tree or invented
+external **See this design** path (*the one action a locked card has in the one
+gallery, [ADR 0171](0171-one-template-gallery.md)*); they gain no bundled premium tree or invented
 interactive preview.
 
 Back returns to the same query, filters and scrolled results. Focus enters the

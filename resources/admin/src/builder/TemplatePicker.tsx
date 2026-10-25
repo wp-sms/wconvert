@@ -221,7 +221,7 @@ export function TemplatePicker({
 
   return (
     <div className="wconvert-design-browser">
-      {settings && <div className="wconvert-design-browser__settings"><PickerSettings nested context="replacement" picker={picker} backLabel={__('Back to designs', 'wconvert')} onBack={() => { setSettings(false); requestAnimationFrame(() => returnFocus.current?.focus({ preventScroll: true })); }} /></div>}
+      {settings && <div className="wconvert-design-browser__settings"><PickerSettings nested picker={picker} backLabel={__('Back to designs', 'wconvert')} onBack={() => { setSettings(false); requestAnimationFrame(() => returnFocus.current?.focus({ preventScroll: true })); }} /></div>}
       {/* Keep this view mounted so Back restores the filters and the scroll position. */}
       <div className="wconvert-design-browser__browse" hidden={inspected !== undefined || comparing || settings}>
         <div className="wconvert-picker__controls wconvert-toolbar">

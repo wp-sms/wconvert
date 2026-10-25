@@ -6,8 +6,8 @@ import userEvent from '@testing-library/user-event';
 import { ruleTypes } from './support/rule-types';
 import { editorHref } from '../../resources/admin/src/nav';
 
-const api = vi.hoisted(() => ({ listGoals: vi.fn(), listPlaybooks: vi.fn(), prefill: vi.fn(), createOptin: vi.fn(), getRules: vi.fn() }));
-vi.mock('../../resources/admin/src/goals/api', () => ({ listGoals: api.listGoals, listPlaybooks: api.listPlaybooks, prefill: api.prefill }));
+const api = vi.hoisted(() => ({ listGoals: vi.fn(), readGoalGallery: vi.fn(), prefill: vi.fn(), createOptin: vi.fn(), getRules: vi.fn() }));
+vi.mock('../../resources/admin/src/goals/api', () => ({ listGoals: api.listGoals, readGoalGallery: api.readGoalGallery, prefill: api.prefill }));
 vi.mock('../../resources/admin/src/optins/api', () => ({ createOptin: api.createOptin }));
 vi.mock('../../resources/admin/src/builder/api', async (original) => ({ ...(await original<typeof import('../../resources/admin/src/builder/api')>()), getRules: api.getRules }));
 vi.mock('../../resources/admin/src/stats/Dashboard', () => ({ Dashboard: () => <p>Report content</p> }));
@@ -35,18 +35,16 @@ beforeEach(() => {
   vi.clearAllMocks();
   window.innerWidth = 1200;
   window.history.replaceState({}, '', '/wp-admin/admin.php?page=wconvert#optins');
-  api.listGoals.mockResolvedValue([GOAL]); api.listPlaybooks.mockResolvedValue([START]);
+  api.listGoals.mockResolvedValue([GOAL]); api.readGoalGallery.mockResolvedValue({ setups: [START], online: [], library: { configured: false, consent: 'unanswered' } });
   api.prefill.mockResolvedValue(DRAFT); api.createOptin.mockResolvedValue({ id: ID }); api.getRules.mockResolvedValue(ruleTypes());
 });
 afterEach(() => { window.innerWidth = 1024; });
-async function openCreation(inspect = true) {
+/** Step 2, and the one card's Use template. */
+async function openCreation() {
   render(<App />);
   await userEvent.click(screen.getByRole('button', { name: 'Create campaign' }));
   await userEvent.click(await screen.findByRole('button', { name: /^Choose/ }, { timeout: 5000 }));
-  const preview = await screen.findByRole('button', { name: 'Setup details for Welcome' });
-  if (!inspect) return preview;
-  await userEvent.click(preview);
-  return screen.findByRole('button', { name: 'Use this setup' });
+  return screen.findByRole('button', { name: 'Use template' });
 }
 async function requestReports() {
   await act(async () => { window.location.hash = '#analytics'; });
@@ -54,10 +52,10 @@ async function requestReports() {
 
 describe('creation and its owning admin page', () => {
   it('lets the creation prompt replace the redundant page-heading band', async () => {
-    await openCreation(false);
+    await openCreation();
     expect(screen.queryByText('Your on-site forms and offers, in one place.')).toBeNull();
     expect(screen.getByRole('heading', { level: 1, name: 'Campaigns' })).toHaveClass('sr-only');
-    expect(screen.getByRole('heading', { name: 'Choose a campaign setup' })).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Choose a template' })).toBeVisible();
     await userEvent.click(screen.getByRole('button', { name: 'Back to Campaigns' }));
     expect(screen.getByText('Your on-site forms and offers, in one place.')).toBeVisible();
   });
@@ -86,7 +84,7 @@ describe('creation and its owning admin page', () => {
     await userEvent.click(await openCreation());
     await userEvent.click(await screen.findByRole('button', { name: 'Check campaigns' }));
     expect(screen.getByText('Campaign index')).toBeInTheDocument();
-    expect(screen.queryByText('Choose a campaign setup')).not.toBeInTheDocument();
+    expect(screen.queryByText('Choose a template')).not.toBeInTheDocument();
   });
 
   it('does not let creation cleanup erase the newly mounted editor guard', async () => {

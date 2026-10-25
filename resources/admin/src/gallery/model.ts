@@ -1,5 +1,7 @@
+import { __ } from '@wordpress/i18n';
 import type { GoalGallery, OnlineSetup, PlaybookEntry } from '../goals/api';
 import type { TemplateFacets, TemplateIndexEntry } from '../templates/api';
+import type { Collection } from '../discovery/api';
 
 /**
  * One card in the one template gallery (ADR 0171), whatever it came from: a
@@ -26,6 +28,8 @@ export interface GalleryCard {
   thumbnail: { '1x': string; '2x': string } | null;
   /** The design: a local template id, or the hosted design's id. */
   template_id: string;
+  /** What Save stores: the design, so a star means the same thing in creation and in the editor. */
+  designKey: string;
   business_types: { id: string; label: string }[];
   tags: string[];
   /** The digest an install must match; null for what is already here. */
@@ -48,7 +52,7 @@ function localSetup(entry: PlaybookEntry): GalleryCard {
     key: entry.id, name: entry.name, words: [entry.name, entry.notes, ...(entry.business_types ?? []).map(type => type.label)].join(' ').toLowerCase(),
     displayType: entry.display_type, ...fromFacets(entry.facets), tier: entry.tier ?? 'free',
     availability: entry.availability ?? 'ready', recommended: entry.recommendation ?? null, newerRevision: null, source: 'local',
-    thumbnail: null, template_id: entry.template_id, business_types: entry.business_types ?? [], tags: [], sha256: null, previewUrl: null,
+    thumbnail: null, template_id: entry.template_id, designKey: entry.design_key ?? `registered:${entry.template_id}`, business_types: entry.business_types ?? [], tags: [], sha256: null, previewUrl: null,
   };
 }
 
@@ -57,7 +61,7 @@ function onlineSetup(row: OnlineSetup): GalleryCard {
     key: row.id, name: row.name, words: [row.name, row.design.name, ...row.business_types.map(type => type.label)].join(' ').toLowerCase(),
     displayType: row.display_type, ...fromFacets(row.facets), tier: row.tier,
     availability: row.state, recommended: null, newerRevision: null, source: 'online', thumbnail: row.thumbnail,
-    template_id: row.design.id, business_types: row.business_types, tags: row.tags, sha256: row.sha256, previewUrl: row.preview_url,
+    template_id: row.design.id, designKey: `registered:${row.design.id}`, business_types: row.business_types, tags: row.tags, sha256: row.sha256, previewUrl: row.preview_url,
   };
 }
 
@@ -91,7 +95,7 @@ export function mergeDesigns(entries: readonly TemplateIndexEntry[], context: Me
     availability: entry.remote?.state ?? entry.availability, recommended: null,
     newerRevision: entry.newer_revision ? { id: entry.id, ...entry.newer_revision } : null,
     source: entry.remote ? 'online' : 'local', thumbnail: entry.remote?.thumbnail ?? null,
-    template_id: entry.id, business_types: [], tags: entry.tags ?? entry.remote?.tags ?? [],
+    template_id: entry.id, designKey: entry.design_key ?? `registered:${entry.id}`, business_types: [], tags: entry.tags ?? entry.remote?.tags ?? [],
     sha256: entry.remote?.sha256 ?? null, previewUrl: entry.preview_url ?? null,
   })).filter(card => card.availability !== 'locked' || context.proHints);
 }
@@ -105,7 +109,7 @@ export interface GalleryFilters {
   readonly business?: string;
   /** `pro` is the locked cards. */
   readonly plan?: 'all' | 'free' | 'pro';
-  /** The saved cards' keys, when only those are wanted. */
+  /** The saved design keys, when only those cards are wanted. */
   readonly saved?: ReadonlySet<string>;
   /** The active collection's members, each with its stage. */
   readonly collection?: { readonly members: ReadonlyMap<string, string> } | null;
@@ -143,7 +147,7 @@ function passes(card: GalleryCard, filters: GalleryFilters, skip?: GalleryFacet)
   if (skip !== 'asks' && asks && asks !== 'any' && !(asks === 'none' ? card.captures.length === 0 : card.captures.includes(asks))) return false;
   if (skip !== 'business' && business && business !== 'any' && !card.business_types.some(type => type.id === business)) return false;
   if (skip !== 'plan' && plan && plan !== 'all' && (plan === 'pro') !== isPro(card)) return false;
-  if (saved && !saved.has(card.key)) return false;
+  if (saved && !saved.has(card.designKey)) return false;
   if (collection) {
     const at = collection.members.get(card.key);
 
@@ -199,4 +203,53 @@ export function optionCounts(cards: readonly GalleryCard[], filters: GalleryFilt
   if (selected && !Object.hasOwn(counts, selected)) counts[selected] = 0;
 
   return counts;
+}
+
+/** What a card asks a visitor for, in the merchant's words — or Button for a design that only takes a click. */
+export function fieldChips(card: GalleryCard): string[] {
+  const words: Record<string, string> = { email: __('Email', 'wconvert'), phone: __('Phone', 'wconvert'), name: __('Name', 'wconvert') };
+  const chips = card.captures.flatMap(field => words[field] ?? []);
+
+  return chips.length === 0 && card.act === 'click' ? [__('Button', 'wconvert')] : chips;
+}
+
+export interface ShelfCollection {
+  readonly collection: Collection;
+  /** Each member on this page of cards, with the stage it belongs to. */
+  readonly members: ReadonlyMap<string, string>;
+}
+
+/**
+ * The collections the shelf offers: in their featured window, not hidden, and
+ * holding at least one card the gallery would show. A seasonal collection
+ * shows inside its window wherever the shop is (ADR 0171). The library's copy
+ * of a bundled collection (`catalog-<id>`) is one tile with it: the bundled
+ * order, then any member only the library has.
+ */
+export function shelfCollections(collections: readonly Collection[], cards: readonly GalleryCard[], today: string, hidden: readonly string[]): ShelfCollection[] {
+  const keys = new Set(cards.map(card => card.key));
+
+  return collections
+    // Hiding a tile hides the library's copy of it too.
+    .filter(collection => !hidden.includes(collection.id) && !hidden.includes(collection.id.replace(/^catalog-/, '')))
+    .filter(({ event }) => !event || (today >= event.feature_start && today < event.feature_end_exclusive && today < event.end_exclusive))
+    .map(collection => {
+      // A hosted member already installed is a local card under its Playbook's id.
+      const installed = new Map((collection.online ?? []).flatMap(member => member.playbook_id ? [[member.setup.id, member.playbook_id] as const] : []));
+      const members = collection.items.flatMap(item => [item.setup_id, installed.get(item.setup_id)].filter((key): key is string => key !== undefined && keys.has(key))
+        .slice(0, 1).map(key => [key, item.stage] as const));
+
+      return { collection, members: new Map(members) };
+    })
+    .filter(shelf => shelf.members.size > 0)
+    .reduce<ShelfCollection[]>((shelves, shelf) => {
+      const base = shelf.collection.id.replace(/^catalog-/, '');
+      const twin = shelves.findIndex(other => other.collection.id.replace(/^catalog-/, '') === base);
+
+      if (twin === -1) return [...shelves, shelf];
+      const [first, second] = shelf.collection.id === base ? [shelf, shelves[twin]] : [shelves[twin], shelf];
+      shelves[twin] = { collection: first.collection, members: new Map([...first.members, ...[...second.members].filter(([key]) => !first.members.has(key))]) };
+      return shelves;
+    }, [])
+    .sort((a, b) => b.collection.priority - a.collection.priority || a.collection.id.localeCompare(b.collection.id));
 }

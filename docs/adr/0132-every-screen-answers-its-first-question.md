@@ -28,6 +28,9 @@ is the thing they came for the most visible thing, with one way forward?
 5. The owner chose not to add a "Today" line to Campaigns.
 
 ### Create a campaign
+*Decisions 6 and 7 are replaced by [ADR 0171](0171-one-template-gallery.md): no Start here, one toolbar row
+(search, Format, Plan, More filters, count) with no sort or ⋯ menu, and the
+collections shelf above the grid.*
 6. **Start here.** Past three setups, the first recommended one this site can
    use is drawn wide above the gallery with Use this setup and Preview first.
    It disappears as soon as the merchant searches, filters or sorts.
@@ -69,7 +72,7 @@ is the thing they came for the most visible thing, with one way forward?
     ⋯ (*since [ADR 0134](0134-one-edit-tab-look-screen-element.md), into the tree's one **+ Add screen** menu*); "Let answers
     choose the next screen" replaces "Enable flexible paths".
     The Design tab's "Edit screens & conditions" duplicate is gone.
-17. The design library toolbar matches creation's two rows; a colour drag is
+17. The design library toolbar matches creation's two rows (*one row since [ADR 0171](0171-one-template-gallery.md)*); a colour drag is
     one Undo step; a deleted layer shows its own Undo; Campaign details says
     Results and carries the developer ID disclosure.
 
@@ -131,6 +134,8 @@ is the thing they came for the most visible thing, with one way forward?
 
 - ADR 0112's "inspection is the sole creation-card action" now has one
   exception, the Start here card, and comparison can create a draft.
+  *(Superseded by [ADR 0171](0171-one-template-gallery.md): every card carries Use template, and there is no
+  comparison.)*
 - `SetupIndex` no longer sends the inline placement sentence; the client lists
   it with the other to-dos, so comparison shows what differs (format, timing)
   instead of two identical lists.
