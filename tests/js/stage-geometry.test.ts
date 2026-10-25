@@ -81,6 +81,22 @@ describe('where a design stands on the page', () => {
     expect(at.x).toBeCloseTo((448 / 0.72 - 448) / 2, 5);
   });
 
+  it('mirrors only what has a side: a popup and an inline design stand in the same place in RTL', () => {
+    for (const format of ['popup', 'inline']) {
+      expect(place(desktop(format, { rtl: true }), card, { width: 448, height: 300 }))
+        .toEqual(place(desktop(format), card, { width: 448, height: 300 }));
+    }
+  });
+
+  it('grows the page for each format at actual size', () => {
+    const actual = (format: string, design: { width: number; height: number }) => place(desktop(format, { zoom: 'actual' }), card, design);
+
+    expect(actual('inline', { width: 680, height: 150 })).toMatchObject({ scale: 1, page: { width: near(680 / 0.88), height: 250 } });
+    expect(actual('slide_in', { width: 416, height: 300 })).toMatchObject({ scale: 1, page: { width: 832, height: near(300 / 0.86) } });
+    expect(actual('floating_bar', { width: 880, height: 88 })).toMatchObject({ scale: 1, y: 0, page: { width: 880, height: 225 } });
+    expect(actual('fullscreen', { width: 1024, height: 700 })).toMatchObject({ scale: 1, fill: 640, page: { width: 1024, height: 640 } });
+  });
+
   it('keeps the page at the stage size when the design already fits at actual size', () => {
     const at = place(desktop('popup', { zoom: 'actual' }), { width: 1200, height: 900 }, { width: 448, height: 520 });
 
@@ -117,6 +133,11 @@ describe('on a phone', () => {
     expect(place(phone('inline'), card, { width: 328, height: 200 }).y).toBe(150);
     expect(place(phone('inline'), card, { width: 328, height: 600 }).y).toBe(104);
     expect(place(phone('inline'), card, { width: 328, height: 700 }).y).toBe(64);
+  });
+
+  it('puts a bar at the top of the phone, or at the bottom when its placement says so', () => {
+    expect(place(phone('floating_bar'), card, { width: 360, height: 120 })).toMatchObject({ y: 0, barHeight: 120 });
+    expect(place({ ...phone('floating_bar'), placement: 'block_end' }, card, { width: 360, height: 120 }).y).toBe(600);
   });
 
   it('fills the phone with a fullscreen', () => {

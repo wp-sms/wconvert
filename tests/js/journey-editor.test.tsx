@@ -74,7 +74,7 @@ afterEach(() => { cleanup(); vi.unstubAllGlobals(); delete window.wconvertAdmin;
 
 it('focuses the existing workspace without remounting it and closes nested UI before exiting', async () => {
   const user = userEvent.setup();
-  const { unmount } = render(<JourneyEditor embedded tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} />);
+  const { unmount } = render(<JourneyEditor displayType="popup" embedded tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} />);
   const map = await screen.findByLabelText('Journey map');
   await user.click(screen.getByRole('button', { name: 'Focus' }));
   expect(document.body).toHaveClass('wconvert-journey-focus');
@@ -94,7 +94,7 @@ it('focuses the existing workspace without remounting it and closes nested UI be
 
 it('leaves the saved Full width preference intact when exiting journey focus', async () => {
   const user = userEvent.setup();
-  render(<><Fullscreen /><JourneyEditor embedded tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} /></>);
+  render(<><Fullscreen /><JourneyEditor displayType="popup" embedded tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} /></>);
   await user.click(screen.getByRole('button', { name: 'Full width' }));
   const remembered = localStorage.getItem('wconvert:fullscreen');
   await user.click(screen.getByRole('button', { name: 'Focus' }));
@@ -107,7 +107,7 @@ it('leaves the saved Full width preference intact when exiting journey focus', a
 function Editor({ initial = source.tree as TemplateTree }: { initial?: TemplateTree }) {
   const [tree, setTree] = useState(initial);
   const [step, setStep] = useState(0);
-  return <><JourneyEditor tree={tree} step={step} primaryChannel="email" onChange={setTree} onSelect={setStep} />
+  return <><JourneyEditor displayType="popup" tree={tree} step={step} primaryChannel="email" onChange={setTree} onSelect={setStep} />
     <output data-testid="draft">{JSON.stringify(tree)}</output></>;
 }
 function draft(): TemplateTree { return JSON.parse(screen.getByTestId('draft').textContent!); }
@@ -118,7 +118,7 @@ it('lets an ending selection add a question at an explicit location and restores
   function EndingEditor() {
     const [tree, setTree] = useState(initial);
     const [step, setStep] = useState(initial.steps.findIndex(item => item.id === 'received'));
-    return <><JourneyEditor embedded tree={tree} step={step} onChange={setTree} onSelect={setStep} />
+    return <><JourneyEditor displayType="popup" embedded tree={tree} step={step} onChange={setTree} onSelect={setStep} />
       <output data-testid="draft">{JSON.stringify(tree)}</output></>;
   }
   render(<EndingEditor />);
@@ -158,7 +158,7 @@ it('clears stale branch instructions when Undo restores the prior draft', async 
     const [tree, setTree] = useState(initial);
     const [step, setStep] = useState(0);
     return <><button onClick={() => setTree(initial)}>Undo fixture edit</button>
-      <JourneyEditor embedded tree={tree} step={step} onChange={setTree} onSelect={setStep} /></>;
+      <JourneyEditor displayType="popup" embedded tree={tree} step={step} onChange={setTree} onSelect={setStep} /></>;
   }
   render(<HistoryEditor />);
   await user.click(await screen.findByRole('button', { name: 'Insert test screen' }));
@@ -237,7 +237,7 @@ it('returns focus to the Preview button when Preview closes', async () => {
     const trigger = useRef<HTMLButtonElement>(null);
     const [request, setRequest] = useState(0);
     return <><button ref={trigger} type="button" onClick={() => setRequest(value => value + 1)}>Preview</button>
-      <JourneyEditor embedded editorCanvas={<div />} tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} testRequest={request} testReturnFocus={trigger} /></>;
+      <JourneyEditor displayType="popup" embedded editorCanvas={<div />} tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} testRequest={request} testReturnFocus={trigger} /></>;
   }
   render(<Host />);
   await user.click(screen.getByRole('button', { name: 'Preview' }));
@@ -253,7 +253,7 @@ it('opens a requested graph repair on its source screen and path settings', asyn
   ] } };
   function RepairEditor() {
     const [step, setStep] = useState(0);
-    return <JourneyEditor embedded tree={tree} step={step} onChange={() => {}} onSelect={setStep}
+    return <JourneyEditor displayType="popup" embedded tree={tree} step={step} onChange={() => {}} onSelect={setStep}
       repairRequest={{ serial: 1, screenId: 'interests', section: 'paths', edgeId: 'repair' }} />;
   }
   render(<RepairEditor />);
@@ -268,7 +268,7 @@ it('focuses a visibility repair once and lets the merchant continue editing', as
     const [tree, setTree] = useState<TemplateTree>({ ...base, steps: base.steps.map(item => item.id === 'garden'
       ? { ...item, when: { match: 'all', clauses: [{ question: 'deleted', operator: 'is', values: ['old'] }] } } : item) });
     const [step, setStep] = useState(0);
-    return <JourneyEditor embedded tree={tree} step={step} onChange={setTree} onSelect={setStep}
+    return <JourneyEditor displayType="popup" embedded tree={tree} step={step} onChange={setTree} onSelect={setStep}
       repairRequest={{ serial: 1, screenId: 'garden', section: 'content' }} />;
   }
   render(<RepairEditor />);
@@ -431,7 +431,7 @@ it('keeps management off the canvas and restores focus after choosing a screen t
 
 it('starts the embedded journey with a readable overview and can return to it after editing', async () => {
   const user = userEvent.setup();
-  render(<JourneyEditor embedded tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} />);
+  render(<JourneyEditor displayType="popup" embedded tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} />);
   expect(screen.getByLabelText('Journey map')).toBeInTheDocument();
   expect(screen.queryByLabelText('Selected screen settings')).not.toBeInTheDocument();
   await user.click(screen.getByRole('radio', { name: 'Screens' }));
@@ -664,7 +664,7 @@ it('focuses the hidden continuation when repairing a required-save bypass', asyn
   const tree = graphFixture as unknown as TemplateTree;
   function RepairEditor() {
     const [step, setStep] = useState(0);
-    return <JourneyEditor embedded tree={tree} step={step} onChange={() => {}} onSelect={setStep}
+    return <JourneyEditor displayType="popup" embedded tree={tree} step={step} onChange={() => {}} onSelect={setStep}
       repairRequest={{ serial: 1, screenId: 'balcony', section: 'paths', edgeId: 'balcony_hidden', focus: 'hidden-route' }} />;
   }
   render(<RepairEditor />);
@@ -675,7 +675,7 @@ it('focuses the default destination when repairing a required-save bypass', asyn
   const tree = graphFixture as unknown as TemplateTree;
   function RepairEditor() {
     const [step, setStep] = useState(0);
-    return <JourneyEditor embedded tree={tree} step={step} onChange={() => {}} onSelect={setStep}
+    return <JourneyEditor displayType="popup" embedded tree={tree} step={step} onChange={() => {}} onSelect={setStep}
       repairRequest={{ serial: 1, screenId: 'balcony', section: 'paths', edgeId: 'balcony_next' }} />;
   }
   render(<RepairEditor />);
@@ -691,7 +691,7 @@ it('undoes a journey typing burst once and keeps separate fields as separate edi
     const [step, setStep] = useState(tree.steps.findIndex(item => item.id === 'interests'));
     const labels = draftHistoryLabels(history);
     return <><button onClick={() => setHistory(undo)}>{labels.undo}</button><button onClick={() => setHistory(redo)}>{labels.redo}</button>
-      <JourneyEditor tree={history.present.config.template.tree} step={step} onSelect={setStep}
+      <JourneyEditor displayType="popup" tree={history.present.config.template.tree} step={step} onSelect={setStep}
         onChange={(next, key) => setHistory(current => remember(current, { ...current.present, config: { template: { tree: next, tokens: {} } } }, key ? { key, at: Date.now() } : null))} /></>;
   }
   render(<HistoryEditor />);
@@ -716,7 +716,7 @@ it('opens the specific result and focuses its link when repairing publication', 
   const tree = upgradeToGraph(finder.tree as TemplateTree);
   function RepairEditor() {
     const [step, setStep] = useState(0);
-    return <JourneyEditor embedded tree={tree} step={step} onChange={() => {}} onSelect={setStep}
+    return <JourneyEditor displayType="popup" embedded tree={tree} step={step} onChange={() => {}} onSelect={setStep}
       repairRequest={{ serial: 1, screenId: 'match', section: 'content', resultId: 'balcony', focus: 'result-link' }} />;
   }
   render(<RepairEditor />);
@@ -727,7 +727,7 @@ it('opens the specific result and focuses its link when repairing publication', 
 
 it('returns keyboard focus to the screen control when closing its settings', async () => {
   const user = userEvent.setup();
-  render(<JourneyEditor embedded tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} />);
+  render(<JourneyEditor displayType="popup" embedded tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} />);
   const opener = await screen.findByRole('button', { name: 'Select first screen' });
   await user.click(opener);
   await user.click(screen.getByRole('button', { name: 'Close screen settings' }));
@@ -744,7 +744,7 @@ it('reviews a branch deletion, keeps Cancel unchanged, and restores the entire e
     const [history, setHistory] = useState(historyOf({ name: 'Enquiry', config: { template: { tree: initial, tokens: {} } } }));
     const [step, setStep] = useState(initial.steps.findIndex(item => item.id === 'garden'));
     return <><button onClick={() => setHistory(undo)}>Undo edit</button><button onClick={() => setHistory(redo)}>Redo edit</button>
-      <JourneyEditor tree={history.present.config.template.tree} step={step} onSelect={setStep}
+      <JourneyEditor displayType="popup" tree={history.present.config.template.tree} step={step} onSelect={setStep}
         onChange={next => setHistory(current => remember(current, { ...current.present, config: { template: { tree: next, tokens: {} } } }))} />
       <output data-testid="draft">{JSON.stringify(history.present.config.template.tree)}</output></>;
   }
@@ -796,7 +796,7 @@ it('removes a graph optional signup as one undoable edit and explains its captur
     const [history, setHistory] = useState(historyOf({ name: 'Signup', config: { template: { tree: initial, tokens: {} } } }));
     const [step, setStep] = useState(initial.steps.findIndex(item => item.id === 'sms'));
     return <><button onClick={() => setHistory(undo)}>Undo edit</button>
-      <JourneyEditor tree={history.present.config.template.tree} step={step} onSelect={setStep}
+      <JourneyEditor displayType="popup" tree={history.present.config.template.tree} step={step} onSelect={setStep}
         onChange={next => setHistory(current => remember(current, { ...current.present, config: { template: { tree: next, tokens: {} } } }))} />
       <output data-testid="draft">{JSON.stringify(history.present.config.template.tree)}</output></>;
   }
@@ -872,7 +872,7 @@ it('focuses the exact answer on the second question when repairing a blank label
   ] } } : item) };
   function RepairEditor() {
     const [step, setStep] = useState(0);
-    return <JourneyEditor embedded tree={tree} step={step} onChange={() => {}} onSelect={setStep}
+    return <JourneyEditor displayType="popup" embedded tree={tree} step={step} onChange={() => {}} onSelect={setStep}
       repairRequest={{ serial: 1, screenId: 'interests', section: 'content', questionId: 'extra', choiceIndex: 1, focus: 'questions' }} />;
   }
   render(<RepairEditor />);
@@ -883,7 +883,7 @@ it.each(['result-heading', 'products-required'] as const)('focuses the %s repair
   const tree = upgradeToGraph(finder.tree as TemplateTree);
   function RepairEditor() {
     const [step, setStep] = useState(0);
-    return <JourneyEditor embedded tree={tree} step={step} onChange={() => {}} onSelect={setStep}
+    return <JourneyEditor displayType="popup" embedded tree={tree} step={step} onChange={() => {}} onSelect={setStep}
       repairRequest={{ serial: 1, screenId: 'match', section: 'content', ...(focus === 'result-heading' ? { resultId: 'balcony' } : {}), focus }} />;
   }
   render(<RepairEditor />);
@@ -896,7 +896,7 @@ it('keeps the clicked connection when questions are unavailable after a save', a
   const tree = graphFixture as unknown as TemplateTree;
   const saved = tree.graph!.edges.find(edge => edge.from === 'contact')!;
   const draft = { ...tree, graph: { ...tree.graph!, edges: tree.graph!.edges.map(edge => edge.id === saved.id ? { ...edge, id: 'saved' } : edge) } };
-  render(<JourneyEditor embedded tree={draft} step={0} onChange={() => {}} onSelect={() => {}} />);
+  render(<JourneyEditor displayType="popup" embedded tree={draft} step={0} onChange={() => {}} onSelect={() => {}} />);
   await user.click(await screen.findByRole('button', { name: 'Insert after save' }));
   if (!screen.queryByRole('combobox', { name: 'Where' })) await user.click(screen.getByRole('button', { name: 'Change' }));
   expect(screen.getByRole('combobox', { name: 'Where' })).toHaveValue('edge:saved');
@@ -915,7 +915,7 @@ it('inserts into legacy campaigns as one undoable edit and leaves Cancel unchang
     const [history, setHistory] = useState(historyOf({ name: 'Signup', config: { template: { tree: original, tokens: {} } } }));
     const [step, setStep] = useState(0);
     return <><button onClick={() => setHistory(undo)}>Undo draft edit</button>
-      <JourneyEditor embedded tree={history.present.config.template.tree} step={step} onSelect={setStep}
+      <JourneyEditor displayType="popup" embedded tree={history.present.config.template.tree} step={step} onSelect={setStep}
         onChange={tree => setHistory(current => remember(current, { ...current.present, config: { template: { tree, tokens: {} } } }))}/>
       <output data-testid="draft">{JSON.stringify(history.present.config.template.tree)}</output></>;
   }
@@ -940,7 +940,7 @@ it('opens the exact referenced show condition and returns to its source question
   const initial = graphFixture as unknown as TemplateTree;
   function References() {
     const [step, setStep] = useState(initial.steps.findIndex(item => item.id === 'interests'));
-    return <JourneyEditor tree={initial} step={step} onChange={() => { throw new Error('Navigation must not edit the draft'); }} onSelect={setStep} />;
+    return <JourneyEditor displayType="popup" tree={initial} step={step} onChange={() => { throw new Error('Navigation must not edit the draft'); }} onSelect={setStep} />;
   }
   render(<References />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
@@ -985,7 +985,7 @@ it('adds a follow-up beside its answer, preserves every relevant path, and undoe
     const [history, setHistory] = useState(historyOf(original));
     const [step, setStep] = useState(2);
     return <><button onClick={() => setHistory(undo)}>Undo test edit</button>
-      <JourneyEditor embedded editorCanvas={<div>Actual campaign canvas</div>} {...questionPanel(step)} tree={history.present} step={step} onSelect={setStep}
+      <JourneyEditor displayType="popup" embedded editorCanvas={<div>Actual campaign canvas</div>} {...questionPanel(step)} tree={history.present} step={step} onSelect={setStep}
         onChange={tree => setHistory(current => remember(current, tree))} />
       <output data-testid="draft">{JSON.stringify(history.present)}</output></>;
   }
@@ -1020,7 +1020,7 @@ it('reviews a shared follow-up continuation change and updates shown and skipped
   const initial = graphFixture as unknown as TemplateTree;
   function Campaign() {
     const [tree, setTree] = useState(initial);
-    return <><JourneyEditor embedded editorCanvas={<div />} {...questionPanel(2)} tree={tree} step={2} onSelect={() => {}} onChange={setTree} />
+    return <><JourneyEditor displayType="popup" embedded editorCanvas={<div />} {...questionPanel(2)} tree={tree} step={2} onSelect={() => {}} onChange={setTree} />
       <output data-testid="draft">{JSON.stringify(tree)}</output></>;
   }
   render(<Campaign />);
@@ -1042,7 +1042,7 @@ it.each(['home', 'business'])('adds a follow-up to the matching %s branch withou
   function Campaign() {
     const [tree, setTree] = useState(original);
     const [step, setStep] = useState(original.steps.findIndex(item => item.id === 'scope'));
-    return <><JourneyEditor embedded editorCanvas={<div />} {...questionPanel(step)} tree={tree} step={step} onSelect={setStep} onChange={setTree} />
+    return <><JourneyEditor displayType="popup" embedded editorCanvas={<div />} {...questionPanel(step)} tree={tree} step={step} onSelect={setStep} onChange={setTree} />
       <output data-testid="draft">{JSON.stringify(tree)}</output></>;
   }
   render(<Campaign />);
@@ -1066,7 +1066,7 @@ it('asks for placement when a multi-answer choice does not determine a single br
   const question = walkNodes(original.steps[at].content).find(node => node.type === 'question') as QuestionNode;
   Object.assign(question, { answer_type: 'multi' });
   const change = vi.fn();
-  render(<JourneyEditor embedded editorCanvas={<div />} {...questionPanel(at)} tree={original} step={at} onSelect={() => {}} onChange={change} />);
+  render(<JourneyEditor displayType="popup" embedded editorCanvas={<div />} {...questionPanel(at)} tree={original} step={at} onSelect={() => {}} onChange={change} />);
   await addFollowup(user, 'My home');
   await user.type(screen.getByRole('textbox', { name: 'Question' }), 'When would you like to start?');
   expect(screen.getByText('This answer is on more than one line. Choose where this follow-up belongs.')).toBeInTheDocument();
@@ -1084,7 +1084,7 @@ it('restores the pending answer review after editing a referenced branch', async
   const user = userEvent.setup();
   function ReviewEditor() {
     const [tree, setTree] = useState(initial), [step, setStep] = useState(initial.steps.findIndex(item => item.id === 'brew'));
-    return <><JourneyEditor tree={tree} step={step} onSelect={setStep} onChange={setTree} /><output data-testid="draft">{JSON.stringify(tree)}</output></>;
+    return <><JourneyEditor displayType="popup" tree={tree} step={step} onSelect={setStep} onChange={setTree} /><output data-testid="draft">{JSON.stringify(tree)}</output></>;
   }
   render(<ReviewEditor />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
@@ -1118,7 +1118,7 @@ it('opens an incomplete continuation from the screen’s own warning', async () 
   function Editor() {
     const [step, setStep] = useState(0);
     const [repair, setRepair] = useState<JourneyRepair & { serial: number }>();
-    return <JourneyEditor embedded editorCanvas={<div />} {...questionPanel(step)} tree={tree} step={step} issues={issues} repairRequest={repair}
+    return <JourneyEditor displayType="popup" embedded editorCanvas={<div />} {...questionPanel(step)} tree={tree} step={step} issues={issues} repairRequest={repair}
       onIssue={issue => { if (issue.go.to === 'journey') setRepair({ ...issue.go.repair, serial: 1 }); }} onChange={() => {}} onSelect={setStep} />;
   }
   render(<Editor />);
@@ -1129,7 +1129,7 @@ it('opens an incomplete continuation from the screen’s own warning', async () 
 
 it('keeps unsent visitor inputs across Preview’s two tabs, and offers no third', async () => {
   const user = userEvent.setup();
-  render(<JourneyEditor embedded editorCanvas={<div>Canvas</div>} tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} testRequest={1}
+  render(<JourneyEditor displayType="popup" embedded editorCanvas={<div>Canvas</div>} tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} testRequest={1}
     whoSeesIt={() => <p>The visitor</p>} />);
   const dialog = await screen.findByRole('dialog', { name: 'Preview' });
   const root = () => [...dialog.querySelectorAll('*')].find(node => node.shadowRoot)!.shadowRoot!;
@@ -1191,7 +1191,7 @@ it('lets a free install delete a journey draft’s question and result screens',
   function FreeEditor({ start }: { start: number }) {
     const [tree, setTree] = useState(initial);
     const [step, setStep] = useState(start);
-    return <><JourneyEditor tree={tree} step={step} primaryChannel="email" onChange={setTree} onSelect={setStep} />
+    return <><JourneyEditor displayType="popup" tree={tree} step={step} primaryChannel="email" onChange={setTree} onSelect={setStep} />
       <output data-testid="draft">{JSON.stringify(tree)}</output></>;
   }
   for (const target of [question, result]) {
@@ -1230,7 +1230,7 @@ it('undoes making it straight in one step', async () => {
     const [history, setHistory] = useState(historyOf({ name: 'Enquiry', config: { template: { tree: initial, tokens: {} } } }));
     const [step, setStep] = useState(0);
     return <><button onClick={() => setHistory(undo)}>Undo edit</button>
-      <JourneyEditor tree={history.present.config.template.tree} step={step} onSelect={setStep}
+      <JourneyEditor displayType="popup" tree={history.present.config.template.tree} step={step} onSelect={setStep}
         onChange={next => setHistory(current => remember(current, { ...current.present, config: { template: { tree: next, tokens: {} } } }))} />
       <output data-testid="draft">{JSON.stringify(history.present.config.template.tree)}</output></>;
   }
@@ -1264,10 +1264,10 @@ it('keeps Flow when the last branch goes', async () => {
   const straightened: TemplateTree = { ...branched, steps: branched.steps.map(item => ({ ...item, when: undefined })),
     graph: { ...branched.graph!, edges: branched.graph!.edges.filter(edge => edge.kind === 'default') } };
   const props = { embedded: true, editorCanvas: <div>Actual campaign canvas</div>, step: 0, onSelect: () => {}, onChange: () => {} };
-  const { rerender } = render(<JourneyEditor {...props} tree={branched} />);
+  const { rerender } = render(<JourneyEditor displayType="popup" {...props} tree={branched} />);
   await userEvent.click(screen.getByRole('radio', { name: 'Flow' }));
   expect(screen.queryByText('Actual campaign canvas')).toBeNull();
-  rerender(<JourneyEditor {...props} tree={straightened} />);
+  rerender(<JourneyEditor displayType="popup" {...props} tree={straightened} />);
   expect(screen.getByRole('radio', { name: 'Flow' })).toBeChecked();
   expect(screen.queryByText('Actual campaign canvas')).toBeNull();
 });

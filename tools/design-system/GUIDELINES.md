@@ -602,7 +602,7 @@ the affordance.
 **Every box is written in logical properties.** `inline-start`/`inline-end`,
 `block-start`/`block-end`, `ps-`/`pe-`/`ms-`/`me-`/`start-`/`end-`, and
 `text-start`/`text-end`. Across every `.tsx` this project wrote and across 4,470
-lines of `index.css` there are zero exceptions. `components/ui/` — the code
+lines of `index.css` there are no exceptions but the ones listed below. `components/ui/` — the code
 nobody wrote — carried six, and those files are WConvert's from the moment they
 land.
 
@@ -619,7 +619,9 @@ The exceptions, and they are the only ones:
   sit at the `left`/`top` its layout computed, already mirrored for RTL, inside
   a scroll box that is itself `dir="ltr"` (ADR 0142). A logical property would
   mirror them a second time. The words on each card still take the page's
-  direction.
+  direction. The design stage is the same case (ADR 0170): `place()` mirrors a
+  slide-in's corner, the stage is the `ltr` scroll box, and its page takes the
+  admin's direction back.
 
 **A directional glyph is mirrored.** A Back arrow, a submenu chevron, a
 disclosure twist, the corner arrow marking an A/B arm — `rtl:-scale-x-100` in a

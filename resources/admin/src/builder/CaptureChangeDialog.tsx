@@ -29,7 +29,7 @@ export interface CaptureChangeDialogProps {
   readonly onOpenChange: (open: boolean) => void;
   readonly before: Template;
   /** The campaign's format, so the screen tiles stand in its slot (ADR 0170). */
-  readonly displayType?: string;
+  readonly displayType: string;
   /** What was asked for. A channel the merchant may still change in `copy`. */
   readonly target: CaptureTarget;
   readonly convert: (target: CaptureTarget) => Conversion | NotConverted;
@@ -118,9 +118,9 @@ function changeRows(changes: readonly Change[], copy: boolean, swapNote: SwapNot
 }
 
 /** One screen, drawn small and inert. */
-function ScreenTile({ template, displayType, step, caption }: { template: Template; displayType?: string; step: number; caption: string }) {
+function ScreenTile({ template, displayType, step, caption }: { template: Template; displayType: string; step: number; caption: string }) {
   return <figure className="wconvert-capture-box__tile">
-    <div className="wconvert-journey-card__preview" aria-hidden="true"><DesignStage size="thumb" displayType={displayType ?? 'popup'} step={step} source={{ live: { template } }} /></div>
+    <div className="wconvert-journey-card__preview" aria-hidden="true"><DesignStage size="thumb" displayType={displayType} step={step} source={{ live: { template } }} /></div>
     <figcaption><strong>{template.tree.steps[step].name}</strong><small>{caption}</small></figcaption>
   </figure>;
 }

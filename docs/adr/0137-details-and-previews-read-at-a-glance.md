@@ -62,7 +62,8 @@ and none could be read at a glance:
    read.
 5. **The setup preview is for looking.** One toolbar row: Desktop | Mobile, a
    visibly labelled **Screen** choice, and an icon toggle at the end that names
-   what pressing it does ("Fit whole design" / "Actual width"). *The preview
+   what pressing it does ("Fit whole design" / "Actual size" — *"Actual
+   width" until [ADR 0170](0170-every-design-is-drawn-on-one-stage.md)*). *The preview
    is the stage at its inspect size ([ADR 0170](0170-every-design-is-drawn-on-one-stage.md)).* The journey
    test is out of setup inspection — it lives in the editor — though the
    preview stays clickable. The side column is the use case, the gist, the

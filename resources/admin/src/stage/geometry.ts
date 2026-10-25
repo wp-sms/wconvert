@@ -39,6 +39,13 @@ export interface Placed {
 
 const PHONE = { width: 360, height: 720 } as const;
 
+/** Each floating format's slot, as fractions of the page: the one table fit and actual size both read. */
+const SLOTS: Record<string, { readonly width: number; readonly height: number }> = {
+  popup: { width: 0.72, height: 0.88 },
+  slide_in: { width: 0.5, height: 0.86 },
+  inline: { width: 0.88, height: 0.6 },
+};
+
 /**
  * Where a design stands on the faint page behind it (ADR 0170).
  *
@@ -79,50 +86,41 @@ export function place(framing: Framing, stage: Size, design: Size): Placed {
   }
 
   const actual = framing.zoom === 'actual';
+  const fraction = SLOTS[format] ?? SLOTS.popup;
   // At actual size the page grows until the slot holds the design at scale 1.
-  const grown = (sw: number, sh: number) => actual
-    ? { width: Math.max(stage.width, w / sw), height: Math.max(stage.height, h / sh) }
-    : stage;
-  const { width: W, height: H } = format === 'floating_bar'
-    ? (actual ? { width: Math.max(stage.width, w), height: stage.height } : stage)
-    : format === 'fullscreen'
-      ? (actual ? { width: Math.max(stage.width, w), height: Math.max(stage.height, 640) } : stage)
-      : format === 'slide_in' ? grown(0.5, 0.86) : format === 'inline' ? grown(0.84, 0.6) : grown(0.72, 0.88);
+  const { width: W, height: H } = !actual ? stage
+    : format === 'floating_bar' ? { width: Math.max(stage.width, w), height: stage.height }
+      : format === 'fullscreen' ? { width: Math.max(stage.width, w), height: Math.max(stage.height, 640) }
+        : { width: Math.max(stage.width, w / fraction.width), height: Math.max(stage.height, h / fraction.height) };
   const page = { width: W, height: H, scale: 1, x: 0, y: 0 };
-  const slot = (sw: number, sh: number) => actual ? 1 : Math.min(sw / w, sh / h, framing.cap);
+  const scale = actual ? 1 : Math.min((W * fraction.width) / w, (H * fraction.height) / h, framing.cap);
 
   switch (format) {
-    case 'floating_bar': {
-      const scale = actual ? 1 : W / w;
+    case 'floating_bar':
+    case 'fullscreen': {
+      // A page-wide format is the page's width, whatever the cap.
+      const across = actual ? 1 : W / w;
+
+      if (format === 'fullscreen') return { x: 0, y: 0, scale: across, page, fill: H / across };
 
       return placement === 'block_end'
-        ? { x: 0, y: H - h * scale, scale, page }
-        : { x: 0, y: 0, scale, page, barHeight: h * scale };
-    }
-    case 'fullscreen': {
-      const scale = actual ? 1 : W / w;
-
-      return { x: 0, y: 0, scale, page, fill: H / scale };
+        ? { x: 0, y: H - h * across, scale: across, page }
+        : { x: 0, y: 0, scale: across, page, barHeight: h * across };
     }
     case 'slide_in': {
-      const scale = slot(W * 0.5, H * 0.86);
       const margin = W * 0.04;
       const x = onLeft ? margin : W - margin - w * scale;
 
       return { x, y: top ? H * 0.07 : H - H * 0.07 - h * scale, scale, page };
     }
     case 'inline': {
-      const scale = slot(W * 0.88, H * 0.6);
       const x = (W - w * scale) / 2;
-      const y = H * 0.22 + (H * 0.6 - h * scale) / 2;
+      const y = H * 0.22 + (H * fraction.height - h * scale) / 2;
 
       return { x, y, scale, page, plate: plate(y, h * scale, W) };
     }
-    default: {
-      const scale = slot(W * 0.72, H * 0.88);
-
+    default:
       return { x: (W - w * scale) / 2, y: (H - h * scale) / 2, scale, page };
-    }
   }
 }
 

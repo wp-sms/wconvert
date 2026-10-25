@@ -3,6 +3,7 @@ import { Skeleton } from '../components/ui/skeleton';
 import { Preview } from '../builder/Preview';
 import type { SlotKey } from '../builder/slots';
 import type { ResultVariant, Template } from '@renderer/types';
+import { useDirection } from '../hooks/useDirection';
 import { GhostPage } from './GhostPage';
 import { renderWidth, type Device } from './renderWidth';
 import { useFitScale } from './useFitScale';
@@ -119,8 +120,10 @@ export function DesignStage({
       : { ...live, tokens: { ...live.tokens, width: '100%' } },
     [live, displayType],
   );
+  const rtl = useDirection() === 'rtl';
   const showing = near && children === undefined && (drawn !== undefined || image !== undefined);
-  const placed = useFitScale(stage, design, { format: displayType, device, zoom, cap: size === 'canvas' ? 1 : 1.25, placement }, showing, drawn ?? image);
+  const placed = useFitScale(stage, design, { format: displayType, device, zoom, cap: size === 'canvas' ? 1 : 1.25, placement, rtl },
+    showing || children !== undefined, children !== undefined ? 'screen' : drawn ?? image);
   const seen = placed === null ? null : placed.scale * placed.page.scale;
 
   useEffect(() => {
@@ -143,9 +146,16 @@ export function DesignStage({
   const fill = image === undefined ? placed?.fill : undefined;
 
   return (
+    /*
+      Coordinates of a laid-out picture (GUIDELINES §15): `place()` has already
+      mirrored them for RTL, so the scroll box is `ltr` — an RTL scroll origin
+      would hide an actual-size page's overflow on the side it cannot scroll
+      to — and the page inside takes the admin's direction back.
+    */
     /* eslint-disable-next-line jsx-a11y/click-events-have-key-events -- a pointer shortcut; the Look row in the tree is the keyboard way. */
     <div
       ref={stage}
+      dir="ltr"
       className="wconvert-stage"
       data-display-type={displayType}
       data-placement={placement ?? undefined}
@@ -163,6 +173,7 @@ export function DesignStage({
     >
       <div
         className="wconvert-stage__page"
+        dir={rtl ? 'rtl' : 'ltr'}
         style={{
           left: placed?.page.x ?? 0,
           top: placed?.page.y ?? 0,

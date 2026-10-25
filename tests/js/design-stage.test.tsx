@@ -104,7 +104,35 @@ describe('a card far from the viewport', () => {
   });
 });
 
+describe('direction', () => {
+  it('lays its coordinates out in an ltr scroll box and gives the page the admin’s direction back', () => {
+    document.documentElement.dir = 'rtl';
+    document.documentElement.style.direction = 'rtl';
+    try {
+      const { container } = render(<DesignStage displayType="slide_in" size="card" lazy={false} source={{ live: { template } }} />);
+
+      expect(container.querySelector('.wconvert-stage')).toHaveAttribute('dir', 'ltr');
+      expect(container.querySelector('.wconvert-stage__page')).toHaveAttribute('dir', 'rtl');
+    } finally {
+      document.documentElement.dir = '';
+      document.documentElement.style.direction = '';
+    }
+  });
+});
+
 describe('the canvas’s own screen', () => {
+  it('still draws the phone around it', () => {
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) { return this.classList.contains('wconvert-stage') ? 720 : 0; });
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockImplementation(function (this: HTMLElement) { return this.classList.contains('wconvert-stage') ? 720 : 0; });
+    try {
+      const { container } = render(<DesignStage displayType="popup" size="canvas" device="mobile" source={{ live: { template } }}><p>Reopen</p></DesignStage>);
+
+      expect(container.querySelector('.wconvert-stage__page')).toHaveStyle({ transform: 'scale(1)' });
+    } finally {
+      vi.restoreAllMocks();
+    }
+  });
+
   it('stands on the page in place of the design, with no ghost page under an in-flow one', () => {
     const { container, getByText } = render(<DesignStage displayType="inline" size="canvas" inFlow source={{ live: { template } }}><p>Lock</p></DesignStage>);
 

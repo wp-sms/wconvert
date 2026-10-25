@@ -63,7 +63,8 @@ width fitting so tall phone forms remain readable with vertical scrolling; the
 shared Zoom control also offers Fit entire design.~~ *Amended by [0137](0137-details-and-previews-read-at-a-glance.md): full
 inspection opens on the whole design on desktop and on the width on a phone,
 where that reason holds; the shared control is an icon toggle naming what it
-does ("Fit whole design" / "Actual width").* Comparison keeps equal-height
+does ("Fit whole design" / "Actual width"); *renamed "Actual size" by
+[ADR 0170](0170-every-design-is-drawn-on-one-stage.md), where it draws the design at scale 1 on a page grown to hold it.* Comparison keeps equal-height
 fully fitted frames. Screen labels use the
 actual tree names, and result variants remain inspectable. Pack contents use
 the existing lazy actual design cards, format/search filters and 24-card pages,

@@ -8,33 +8,36 @@ export type Fitted = Placed & { readonly stage: Size };
  * The design's place on the stage, kept current by one ResizeObserver over the
  * stage and the design's content (ADR 0170).
  *
+ * The direction is the page's, handed in: the stage itself is a `dir="ltr"`
+ * scroll box (GUIDELINES §15), so its own computed direction says nothing.
+ *
  * The design is measured at its render width, unscaled: `offsetWidth` and
  * `offsetHeight` ignore transforms, so the scale this sets never feeds back
  * into the next measurement. `null` until both have a size, which is what keeps
  * a design hidden for the frame before it is placed.
  */
-export function useFitScale(stage: RefObject<HTMLElement | null>, design: RefObject<HTMLElement | null>, framing: Omit<Framing, 'rtl'>, active: boolean, content: unknown): Fitted | null {
+export function useFitScale(stage: RefObject<HTMLElement | null>, design: RefObject<HTMLElement | null>, framing: Framing, active: boolean, content: unknown): Fitted | null {
   const [placed, setPlaced] = useState<Fitted | null>(null);
-  const { format, device, zoom, cap, placement } = framing;
+  const { format, device, zoom, cap, placement, rtl } = framing;
 
   useLayoutEffect(() => {
     const area = stage.current;
     const box = design.current;
 
-    if (!active || area === null || box === null) {
+    if (!active || area === null) {
       setPlaced(null);
       return;
     }
 
     const measure = () => {
       // The content, not the box: a fullscreen's box is given its height from here.
-      const content = (box.firstElementChild as HTMLElement | null) ?? box;
-      const width = box.offsetWidth;
-      const height = content.offsetHeight;
+      // With no design (the canvas's own screen) only the page is placed.
+      const content = (box?.firstElementChild as HTMLElement | null) ?? box;
+      const width = box === null ? 1 : box.offsetWidth;
+      const height = content === null ? 1 : content.offsetHeight;
 
       if (!area.clientWidth || !area.clientHeight || !width || !height) return;
 
-      const rtl = getComputedStyle(area).direction === 'rtl';
       const size = { width: area.clientWidth, height: area.clientHeight };
       const next = { ...place({ format, device, zoom, cap, placement, rtl }, size, { width, height }), stage: size };
 
@@ -46,15 +49,15 @@ export function useFitScale(stage: RefObject<HTMLElement | null>, design: RefObj
     if (typeof ResizeObserver === 'undefined') return;
 
     const observer = new ResizeObserver(measure);
-    const inner = box.firstElementChild;
+    const inner = box?.firstElementChild;
 
     observer.observe(area);
-    observer.observe(box);
+    if (box) observer.observe(box);
     if (inner) observer.observe(inner);
 
     return () => observer.disconnect();
     // `content` names what is drawn: a new one is a new element to observe.
-  }, [stage, design, format, device, zoom, cap, placement, active, content]);
+  }, [stage, design, format, device, zoom, cap, placement, rtl, active, content]);
 
   return placed;
 }

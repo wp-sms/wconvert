@@ -7,8 +7,8 @@ import type { Template } from '@renderer/types';
 import { DesignStage } from '../stage/DesignStage';
 
 /** Pointer dragging supplements the same move operation used by the arrow buttons. */
-export function JourneyScreenCard({ template, displayType = 'popup', index, ordinal, selected, scope, label, condition, onSelect, onMove }: {
-  template: Template; displayType?: string; index: number; ordinal?: number; selected: boolean; scope: string; label: string; condition?: string;
+export function JourneyScreenCard({ template, displayType, index, ordinal, selected, scope, label, condition, onSelect, onMove }: {
+  template: Template; displayType: string; index: number; ordinal?: number; selected: boolean; scope: string; label: string; condition?: string;
   onSelect(): void; onMove?(from: string, to: string): void;
 }) {
   const card = useRef<HTMLLIElement>(null);

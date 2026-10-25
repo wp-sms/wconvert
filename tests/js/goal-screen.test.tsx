@@ -854,7 +854,7 @@ it('requires inspection before creating and keeps preview controls out of the ca
   expect(screen.queryByRole('button', { name: 'Use this setup' })).not.toBeInTheDocument();
   await userEvent.click(preview);
   // Desktop opens on the whole design; the toggle says what pressing it does.
-  await userEvent.click(screen.getByRole('button', { name: 'Actual width' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Actual size' }));
   expect(screen.getByRole('button', { name: 'Fit whole design' })).toBeInTheDocument();
   await userEvent.click(screen.getByRole('radio', { name: 'Mobile' }));
   expect(screen.getByRole('button', { name: 'Fit whole design' })).toBeInTheDocument();

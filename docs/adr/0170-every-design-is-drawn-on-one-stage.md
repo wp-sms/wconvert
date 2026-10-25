@@ -1,6 +1,6 @@
 # 0170: Every design is drawn on one stage
 
-Accepted 2026-10-25. Amends 0010, 0043, 0137 and 0156.
+Accepted 2026-10-25. Amends 0010, 0043, 0065, 0067, 0112, 0137 and 0156.
 
 ## Eight places drew a design five ways
 
@@ -37,13 +37,19 @@ is the spec for what replaces them.
    pure function of the framing, the stage size and the design size. On
    desktop: a popup is centred in 72% × 88% over a dim; a slide-in takes
    50% × 86% in the end corner, 4% in and 7% up, mirrored in RTL; an inline
-   design is centred in a band 88% × 60% starting 22% down, on a plate; a bar
+   design is centred in a band 88% × 60% starting 22% down, on a plate that
+   runs the page's width 2% above and below it (so the page's lines never
+   peek past a design the cap keeps narrower than its band); a bar
    spans the top at `scale = W / w` and the page starts under it; a fullscreen
    is `W / 1024` across and as tall as the page. A saved placement (a bottom
    bar, a slide-in's corner) moves the slot; a card has none. The scale is
-   capped at 1.25, or 1 on the canvas. **Actual size** grows the page until the
-   slot holds the design at scale 1, and the stage scrolls and becomes a named,
-   focusable region.
+   capped at 1.25, or 1 on the canvas. **Actual size** (the inspect toggle,
+   "Actual width" before this) grows the page until the slot holds the design
+   at scale 1, and the stage scrolls and becomes a named, focusable region.
+   The fractions live in one table that fit and actual size both read. The
+   coordinates are physical and already mirrored, so the stage is a
+   `dir="ltr"` scroll box whose page takes the admin's direction back
+   (GUIDELINES §15's laid-out-picture exception, as the Flow map).
 5. **Local is live, hosted is a picture, and the stage frames both.** A design
    on this site always renders through `Preview`, never a raw `mount()`, so
    coupon space, the phone field and Pro's format surfaces come with it. A

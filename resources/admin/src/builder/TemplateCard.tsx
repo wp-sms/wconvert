@@ -37,7 +37,7 @@ import type { Template } from '@renderer/types';
  */
 
 export interface TemplateCardProps {
-  readonly displayType?: string;
+  readonly displayType: string;
   /** Namespaces the ids this card owns, so forty cards do not collide. */
   readonly id: string;
   readonly name: string;
@@ -160,7 +160,7 @@ export function TemplateCard({
       ) : (
         <div className="wconvert-gallery__preview" aria-hidden="true">
           <DesignStage
-            displayType={displayType ?? 'inline'}
+            displayType={displayType}
             size="card"
             source={picture !== undefined ? { image: picture } : template !== undefined ? { live: { template } } : undefined}
             onNear={near}

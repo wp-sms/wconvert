@@ -82,7 +82,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   /** Preview's title: the campaign's name. */
   previewTitle?: string;
   /** The campaign's format, so each screen's thumb stands in its slot (ADR 0170). */
-  displayType?: string;
+  displayType: string;
   /** Preview's second tab, Who sees it; `close` closes Preview. */
   whoSeesIt?(close: () => void): ReactNode;
   /** Where focus returns when a requested test closes: the menu item that asked is gone by then. */

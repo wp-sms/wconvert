@@ -352,7 +352,7 @@ describe('fitting the preview without changing its layout width', () => {
     const { container } = detail();
     designHeight = 900;
     act(() => resized());
-    await userEvent.click(screen.getByRole('button', { name: 'Actual width' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Actual size' }));
     act(() => resized());
     expect(design(container)).toHaveStyle({ transform: 'scale(1)' });
     expect(screen.getByRole('region', { name: 'Scrollable design preview' })).toBe(container.querySelector('.wconvert-stage'));

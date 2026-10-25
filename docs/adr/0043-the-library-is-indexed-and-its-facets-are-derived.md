@@ -221,7 +221,8 @@ work to 360px.
   width. The wrapper sits outside the host's `all: initial !important` reset;
   the visitor renderer and its protection from page styles are unchanged.
   Real WordPress checks cover gallery cards at 1024px, creation previews, and
-  the editor's 600px desktop and 352px mobile canvases.
+  the editor's 600px desktop and 352px mobile canvases. *(Amended by
+  [ADR 0170](0170-every-design-is-drawn-on-one-stage.md): the canvas is the stage, and its phone is 360 wide.)*
 - **Picking a design after editing the structure is destructive, and the
   affordance says so.** `snapshotInto()` carries copy by [[Slot Role]] and
   `MerchantsOwn` carries image `src`/`alt` and button `href` — but **blocks the

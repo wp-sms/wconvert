@@ -27,7 +27,7 @@ export function PreviewControls({ mobile, onMobile, template, step, onStep, disa
   const screens = template?.tree.steps ?? [];
   const shown = String(Math.min(step, Math.max(0, screens.length - 1)));
   // The label says what pressing it does, so it is not also a pressed toggle.
-  const fitLabel = fitHeight ? __('Actual width', 'wconvert') : __('Fit whole design', 'wconvert');
+  const fitLabel = fitHeight ? __('Actual size', 'wconvert') : __('Fit whole design', 'wconvert');
   const FitIcon = fitHeight ? Minimize2 : Maximize2;
   return <div className="wconvert-preview-controls wconvert-toolbar">
     <OptionStrip label={__('Preview size', 'wconvert')} value={mobile ? 'mobile' : 'desktop'} disabled={disabled}
