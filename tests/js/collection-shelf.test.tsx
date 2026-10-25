@@ -10,7 +10,7 @@ const card = (key: string): GalleryCard => ({ key, name: key, words: key, displa
   recommended: null, newerRevision: null, source: 'online', thumbnail: { '1x': `https://cdn/${key}.webp` , '2x': `https://cdn/${key}@2x.webp` }, template_id: key, designName: null, designKey: `registered:${key}`,
   business_types: [], tags: [], sha256: null, previewUrl: null });
 const shelf = [{ collection, members: new Map([['a', 'before'], ['b', 'during']]) }];
-const props = { shelf, cards: [card('a'), card('b')], trees: new Map(), active: null, hidden: 0, onOpen: vi.fn(), onHide: vi.fn(), onRestore: vi.fn(), onHideAll: vi.fn() };
+const props = { shelf, cards: [card('a'), card('b')], trees: new Map(), today: '2026-11-01', active: null, hidden: 0, onOpen: vi.fn(), onHide: vi.fn(), onRestore: vi.fn(), onHideAll: vi.fn() };
 
 it('filters by a collection and shows every template again when pressed twice', async () => {
   const onOpen = vi.fn();
@@ -31,6 +31,18 @@ it('covers a tile with three of its templates and says how long a seasonal one r
 
   expect(container.querySelectorAll('.wconvert-shelf__cover .wconvert-stage')).toHaveLength(2);
   expect(screen.getByText(/^Until (1 Dec|Dec 1)$/)).toBeInTheDocument();
+});
+
+it('counts the days to a seasonal event once it is two weeks away or less', () => {
+  const halloween = { family: 'halloween', start: '2026-10-31', end_exclusive: '2026-11-01', feature_start: '2026-10-01', feature_end_exclusive: '2026-11-01' };
+  const tile = (today: string) => {
+    const { unmount } = render(<CollectionShelf {...props} today={today} shelf={[{ ...shelf[0], collection: { ...collection, event: halloween } }]} />);
+    const words = document.querySelector('[data-season]')?.textContent;
+    unmount();
+    return words;
+  };
+
+  expect([tile('2026-10-10'), tile('2026-10-25'), tile('2026-10-30'), tile('2026-10-31')]).toEqual([expect.stringMatching(/^Until (31 Oct|Oct 31)$/), 'In 6 days', 'Tomorrow', 'Ends today']);
 });
 
 it('hides one collection, restores the hidden ones, or hides the shelf', async () => {

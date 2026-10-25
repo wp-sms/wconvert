@@ -140,4 +140,17 @@ final class GoalGalleryTest extends TestCase
         $catalog->installSetup('online-reading', $this->service->setupSha('online-reading'));
         self::assertNotContains('online-reading', array_column($this->gallery(catalog: $this->catalog())['online'], 'id'));
     }
+
+    public function testALibrarySetupThisSiteShipsWithIsNotOfferedAgain(): void
+    {
+        $free = require WCONVERT_DIR . 'resources/playbooks/reading-recommendation.php';
+        $this->service->setup('reading-recommendation', $this->service->design('resources/templates/library/reading-slip.json', $free['template_id']), $free);
+        $this->service->publish();
+        $this->options->set(TemplateCatalog::CONSENT_OPTION, 'yes');
+        $catalog = $this->catalog();
+        $catalog->refresh();
+        $gallery = $this->gallery(catalog: $catalog);
+        self::assertContains('reading-recommendation', array_column($gallery['setups'], 'id'));
+        self::assertNotContains('reading-recommendation', array_column($gallery['online'], 'id'), 'One card per setup: the bundled one is drawn live');
+    }
 }

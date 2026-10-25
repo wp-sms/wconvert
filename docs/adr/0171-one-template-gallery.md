@@ -20,11 +20,13 @@ list (`src/Discovery/GoalGallery.php`):
   `display_type`, `tags` and `preview_url`, and carrying the catalogue's
   `state` (unavailable → locked → update_plugin → install). A `locked` row is
   sent only where `ProHints::shown()`, exactly as the design index does. A row
-  already installed is not sent; one installed at an older revision names the
-  Playbook it left (`installed_playbook_id`) so the gallery shows one card,
-  offering the newer revision only when it can be installed. Nothing is sent
-  until consent is `yes`. Pro is one plan (ADR 0146), so nothing is locked on a
-  Pro site and the gate is `ProHints::shown()` alone.
+  already installed is not sent, and nor is one whose id is a setup this site
+  ships with: the bundled setup is that card, drawn live (two cards under one
+  key left the bundled one without its tree). One installed at an older
+  revision names the Playbook it left (`installed_playbook_id`) so the gallery
+  shows one card, offering the newer revision only when it can be installed.
+  Nothing is sent until consent is `yes`. Pro is one plan (ADR 0146), so
+  nothing is locked on a Pro site and the gate is `ProHints::shown()` alone.
 - `library`: `{configured, consent}`, so the gallery can ask once.
 
 Online setups carry `business_types`: the publisher emits a setup's Playbook
@@ -67,7 +69,8 @@ rather than a preference. Picker preferences keep `saved`, `hidden` and
 4. **The collections shelf** sits on top. A tile filters the grid; When
    (only the stages that collection has) and "Show all templates" appear in a
    bar while it is open. Each tile can be hidden; the shelf can be hidden and
-   shown again. A seasonal tile says "Until …".
+   shown again. A seasonal tile counts the days while its event is two weeks
+   away or less ("In 6 days", "Tomorrow"), then says "Until …" or "Ends today".
 5. **On Free with Pro hints**, locked cards are mixed in where they fall in
    recommended order, Format names Pro-only formats "· Pro", and a Plan strip
    (All/Free/Pro) appears. Pro goals stay hidden.
