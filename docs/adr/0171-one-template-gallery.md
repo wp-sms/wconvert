@@ -39,8 +39,7 @@ the design index (`mergeDesigns`) into the same `GalleryCard`. Recommended
 cards come first and the server's order stands otherwise; a locked card stays
 where it falls — nothing sorts the usable ones first. `filterCards` and
 `optionCounts` are the gallery's filters: an option that would match nothing is
-not offered unless it is selected (GUIDELINES §20). `fieldChips` names what a
-card asks for — Email, Phone, Name — or Button for a click design.
+not offered unless it is selected (GUIDELINES §20).
 
 ## What the picker stops remembering
 

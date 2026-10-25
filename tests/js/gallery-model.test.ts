@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fieldChips, filterCards, mergeDesigns, mergeSetups, optionCounts, type GalleryCard, type GalleryFilters } from '../../resources/admin/src/gallery/model';
+import { filterCards, mergeDesigns, mergeSetups, optionCounts, type GalleryCard, type GalleryFilters } from '../../resources/admin/src/gallery/model';
 import type { GoalGallery, OnlineSetup, PlaybookEntry } from '../../resources/admin/src/goals/api';
 import type { TemplateFacets, TemplateIndexEntry } from '../../resources/admin/src/templates/api';
 
@@ -121,12 +121,3 @@ describe('filtering', () => {
   });
 });
 
-describe('the field chips', () => {
-  it('names what a card asks for, or Button when it only takes a click', () => {
-    const [mail, both, button] = mergeSetups(gallery([local('mail'), local('both', { facets: facets(['name', 'email', 'phone']) }), local('button', { facets: facets([]) })]), free);
-
-    expect(fieldChips(mail)).toEqual(['Email']);
-    expect(fieldChips(both)).toEqual(['Name', 'Email', 'Phone']);
-    expect(fieldChips(button)).toEqual(['Button']);
-  });
-});

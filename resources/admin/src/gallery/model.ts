@@ -1,4 +1,3 @@
-import { __ } from '@wordpress/i18n';
 import type { GoalGallery, OnlineSetup, PlaybookEntry } from '../goals/api';
 import type { TemplateFacets, TemplateIndexEntry } from '../templates/api';
 
@@ -197,12 +196,4 @@ export function optionCounts(cards: readonly GalleryCard[], filters: GalleryFilt
   if (selected && !Object.hasOwn(counts, selected)) counts[selected] = 0;
 
   return counts;
-}
-
-/** What a card asks a visitor for, in the merchant's words — or Button for a design that only takes a click. */
-export function fieldChips(card: GalleryCard): string[] {
-  const words: Record<string, string> = { email: __('Email', 'wconvert'), phone: __('Phone', 'wconvert'), name: __('Name', 'wconvert') };
-  const chips = card.captures.flatMap(field => words[field] ?? []);
-
-  return chips.length === 0 && card.act === 'click' ? [__('Button', 'wconvert')] : chips;
 }
