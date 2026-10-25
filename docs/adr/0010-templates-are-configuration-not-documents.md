@@ -284,6 +284,11 @@ third-party ones. Under configuration they are properties of the one renderer.
   installed, so its card is a **server thumbnail** — WebP at 1× and 2×, made by
   the publisher from the shipping renderer and keyed by its bytes, so a new
   render is a new file rather than a stale one. Local cards still render live.*
+  *Amended by [ADR 0170](0170-every-design-is-drawn-on-one-stage.md): "no static thumbnails" now reads **local is
+  live, hosted is a picture, and the stage frames both.** Every surface draws a
+  design through one stage — the same render width, the same slot on the same
+  faint page — whether the source is the live render or the catalogue's
+  picture. The viewport gate moved from `TemplateCard` into the stage.*
   *Amended by [ADR 0098](0098-fullscreen-is-a-pro-modal-surface.md): until a
   fullscreen design's public preview exists, its Free card says "Included in
   Pro" with no link. Pro previews share the shipping fullscreen content surface;

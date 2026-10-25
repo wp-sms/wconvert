@@ -119,6 +119,8 @@ deliberately withholds trees, so it would have nothing to read.
    paid install, missing a higher rung, is sent these cards.*
    *Removed by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md): `locked.json` is gone. A design this install did not get
    is a hosted catalogue entry, and its card is the server's thumbnail.*
+   *Amended by [ADR 0170](0170-every-design-is-drawn-on-one-stage.md): that picture and a local render are drawn on the
+   same stage, in the same slot; the stage now owns the near-viewport mount.*
 3. **Fetched free entries** — `wp_remote_get` against a WConvert-hosted index,
    transient-cached, degrading to (1) on any failure. **Implemented and amended by
    [ADR 0082](0082-template-packs-install-as-validated-local-data.md):** explicit
@@ -219,7 +221,8 @@ work to 360px.
   width. The wrapper sits outside the host's `all: initial !important` reset;
   the visitor renderer and its protection from page styles are unchanged.
   Real WordPress checks cover gallery cards at 1024px, creation previews, and
-  the editor's 600px desktop and 352px mobile canvases.
+  the editor's 600px desktop and 352px mobile canvases. *(Amended by
+  [ADR 0170](0170-every-design-is-drawn-on-one-stage.md): the canvas is the stage, and its phone is 360 wide.)*
 - **Picking a design after editing the structure is destructive, and the
   affordance says so.** `snapshotInto()` carries copy by [[Slot Role]] and
   `MerchantsOwn` carries image `src`/`alt` and button `href` — but **blocks the

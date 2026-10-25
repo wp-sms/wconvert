@@ -50,6 +50,9 @@ it('draws a hosted design from its server thumbnail, without a referrer, and ins
   const image = card.querySelector('img')!;
   expect(image).toHaveAttribute('referrerpolicy', 'no-referrer');
   expect(image).toHaveAttribute('src', 'https://templates.example/v3/thumbs/supper.webp');
+  // On the same stage a render stands on, offered by width so the browser picks 1x or 2x for the size it is drawn at.
+  expect(image.closest('.wconvert-stage')).toHaveAttribute('data-display-type', 'popup');
+  expect(image.getAttribute('srcset')).toMatch(/ 600w, .* 1200w$/);
   expect(within(card).queryByRole('button', { name: 'Preview design' })).toBeNull();
   await userEvent.click(within(card).getByRole('button', { name: 'Add to my designs' }));
   expect(catalog.installDesign).toHaveBeenCalledWith('supper', 'b'.repeat(64));

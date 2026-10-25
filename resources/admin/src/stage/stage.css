@@ -1,0 +1,87 @@
+/*
+ * THE STAGE: every design in the admin, on one faint page (ADR 0170).
+ *
+ * The page, the plate and the design are placed by `geometry.ts` in physical
+ * pixels, so their `left`/`top` are written inline beside the scale that goes
+ * with them, and nothing here names a side.
+ * `transform` is right where `zoom` was right before: the old gallery let the
+ * design size its own card, so layout had to follow the paint. A stage has its
+ * own size and computes the design's place inside it, so nothing outside the
+ * stage depends on how big the design is drawn.
+ */
+.wconvert-stage {
+  position: relative;
+  overflow: hidden;
+  inline-size: 100%;
+  aspect-ratio: 4 / 3;
+  background: var(--stage);
+}
+.wconvert-stage[data-size='inspect'] { aspect-ratio: 16 / 10; }
+/* A thumb and the canvas take the size of the box they are put in. */
+.wconvert-stage:is([data-size='thumb'], [data-size='canvas']) { aspect-ratio: auto; block-size: 100%; }
+.wconvert-stage[data-zoom='actual'] { overflow: auto; }
+
+.wconvert-stage__page {
+  position: absolute;
+  inline-size: 100%;
+  block-size: 100%;
+  container-type: size;
+  overflow: hidden;
+  transform-origin: 0 0;
+  background: var(--ghost-page);
+}
+.wconvert-stage[data-device='mobile'] .wconvert-stage__page {
+  border-radius: 22px;
+  box-shadow: 0 0 0 1px var(--border), 0 10px 30px -14px rgb(48 39 32 / 0.4);
+}
+
+.wconvert-stage__dim { position: absolute; inset: 0; background: var(--ghost-dim); }
+.wconvert-stage__plate { position: absolute; background: var(--ghost-page); }
+
+.wconvert-stage__design {
+  position: absolute;
+  transform-origin: 0 0;
+}
+.wconvert-stage__design[data-waiting] { visibility: hidden; }
+.wconvert-stage__design[inert] { pointer-events: none; }
+.wconvert-stage__design[data-fill] { overflow: hidden; }
+.wconvert-stage__design > img { display: block; inline-size: 100%; block-size: auto; }
+
+/* The canvas's own screens (a reopen button, a content lock) fill the page instead. */
+.wconvert-stage__screen { position: absolute; inset: 0; overflow: auto; }
+.wconvert-stage__screen[data-in-flow] { padding: 4cqw 6cqw; }
+
+.wconvert-stage__waiting { position: absolute; inset: 16%; border-radius: var(--radius); opacity: 0.6; }
+
+/* ---- the ghost page ---- */
+.wconvert-ghost {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2.6cqw;
+  padding: 3.6cqw 6cqw;
+  padding-block-start: calc(var(--wconvert-stage-bar, 0px) + 3.6cqw);
+}
+.wconvert-ghost i, .wconvert-ghost span { display: block; }
+.wconvert-ghost__head { display: flex; align-items: center; gap: 3cqw; padding-block-end: 2.4cqw; border-block-end: max(1px, 0.25cqw) solid var(--ghost-soft); }
+.wconvert-ghost__head span { inline-size: 10cqw; block-size: 2.8cqw; border-radius: 0.7cqw; background: var(--ghost-ink); }
+.wconvert-ghost__head i { inline-size: 6.5cqw; block-size: 1.3cqw; border-radius: 1cqw; background: var(--ghost-soft); }
+.wconvert-ghost__head i:nth-of-type(1) { margin-inline-start: auto; }
+.wconvert-ghost__hero { display: grid; grid-template-columns: 1.15fr 1fr; gap: 5cqw; align-items: center; padding-block: 1.5cqw; }
+.wconvert-ghost__hero > div { display: grid; gap: 1.8cqw; }
+.wconvert-ghost__hero > div i { block-size: 3.2cqw; border-radius: 0.8cqw; background: var(--ghost-ink); }
+.wconvert-ghost__hero > div i:nth-child(2) { inline-size: 70%; }
+.wconvert-ghost__hero > div i:nth-child(3) { block-size: 1.4cqw; inline-size: 85%; margin-block-start: 1cqw; background: var(--ghost-soft); }
+.wconvert-ghost__hero > div i:nth-child(4) { block-size: 1.4cqw; inline-size: 60%; background: var(--ghost-soft); }
+.wconvert-ghost__hero > span { aspect-ratio: 4 / 3; border-radius: 1.2cqw; background: var(--ghost-soft); }
+.wconvert-ghost__lines { display: grid; gap: 2.2cqw; }
+.wconvert-ghost__lines i { block-size: 1.4cqw; border-radius: 1cqw; background: var(--ghost-soft); }
+.wconvert-ghost__lines i:nth-child(3n + 2) { inline-size: 92%; }
+.wconvert-ghost__lines i:nth-child(4n) { inline-size: 64%; }
+.wconvert-ghost__cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3cqw; }
+.wconvert-ghost__cols i { aspect-ratio: 1; border-radius: 1cqw; background: var(--ghost-soft); }
+.wconvert-stage[data-size='thumb'] .wconvert-ghost { gap: 4cqw; padding: 5cqw 7cqw; padding-block-start: calc(var(--wconvert-stage-bar, 0px) + 5cqw); }
+.wconvert-stage[data-size='thumb'] .wconvert-ghost__head i,
+.wconvert-stage[data-size='thumb'] .wconvert-ghost__hero > div i:nth-child(n + 3) { display: none; }
+.wconvert-stage[data-size='thumb'] .wconvert-ghost__lines i { block-size: 2.4cqw; }

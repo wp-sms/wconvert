@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useRef, useState, type ReactNode, type RefObject } from 'react';
+import { useId, useMemo, useState, type ReactNode, type RefObject } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { ArrowRight } from 'lucide-react';
 import type { Template } from '@renderer/types';
@@ -7,7 +7,7 @@ import { Input } from '../components/ui/input';
 import { AdminDialog, AdminDialogBody, AdminDialogContent, AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
 import { adminSettings } from '../settings';
 import { listWithAnd } from './rules/sentence';
-import { Preview } from './Preview';
+import { DesignStage } from '../stage/DesignStage';
 import { captureState, type CaptureTarget, type Change, type ChangeItem, type Conversion, type NotConverted } from './structure/captureConversion';
 import type { ContactChannel } from './structure/captureWording';
 import { walkNodes } from './structure/journey';
@@ -28,6 +28,8 @@ export interface CaptureChangeDialogProps {
   readonly open: boolean;
   readonly onOpenChange: (open: boolean) => void;
   readonly before: Template;
+  /** The campaign's format, so the screen tiles stand in its slot (ADR 0170). */
+  readonly displayType: string;
   /** What was asked for. A channel the merchant may still change in `copy`. */
   readonly target: CaptureTarget;
   readonly convert: (target: CaptureTarget) => Conversion | NotConverted;
@@ -116,25 +118,14 @@ function changeRows(changes: readonly Change[], copy: boolean, swapNote: SwapNot
 }
 
 /** One screen, drawn small and inert. */
-function ScreenTile({ template, step, caption }: { template: Template; step: number; caption: string }) {
-  const frame = useRef<HTMLDivElement>(null);
-  const drawing = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(.2);
-  useEffect(() => {
-    const viewport = frame.current, content = drawing.current;
-    if (!viewport || !content || typeof ResizeObserver === 'undefined') return;
-    const fit = () => { if (content.offsetWidth && content.offsetHeight) setScale(Math.min(viewport.clientWidth / content.offsetWidth, viewport.clientHeight / content.offsetHeight, 1)); };
-    const observer = new ResizeObserver(fit);
-    observer.observe(viewport); observer.observe(content); fit();
-    return () => observer.disconnect();
-  }, []);
+function ScreenTile({ template, displayType, step, caption }: { template: Template; displayType: string; step: number; caption: string }) {
   return <figure className="wconvert-capture-box__tile">
-    <div ref={frame} className="wconvert-journey-card__preview" inert aria-hidden="true"><div ref={drawing} className="wconvert-journey-card__drawing" style={{ transform: `translateY(-50%) scale(${scale})` }}><Preview template={template} step={step} /></div></div>
+    <div className="wconvert-journey-card__preview" aria-hidden="true"><DesignStage size="thumb" displayType={displayType} step={step} source={{ live: { template } }} /></div>
     <figcaption><strong>{template.tree.steps[step].name}</strong><small>{caption}</small></figcaption>
   </figure>;
 }
 
-export function CaptureChangeDialog({ open, onOpenChange, before, target, convert, mode = 'apply', copyName, hadForm = false, onConfirm, returnFocusTo }: CaptureChangeDialogProps) {
+export function CaptureChangeDialog({ open, onOpenChange, before, displayType, target, convert, mode = 'apply', copyName, hadForm = false, onConfirm, returnFocusTo }: CaptureChangeDialogProps) {
   const offer = adminSettings()?.offerLink;
   const was = captureState(before.tree);
   const [channel, setChannel] = useState<ContactChannel>(target.capture === 'none' ? 'email' : target.capture);
@@ -208,11 +199,11 @@ export function CaptureChangeDialog({ open, onOpenChange, before, target, conver
         {'reason' in result ? <p role="alert">{result.reason}</p> : <>
           {/* Before and after, drawn small, for every change the box describes, copies included. */}
           {after && <div className="wconvert-capture-box__tiles" aria-hidden="true">
-            {before.tree.steps.map((screen, index) => <ScreenTile key={screen.id} template={before} step={index}
+            {before.tree.steps.map((screen, index) => <ScreenTile key={screen.id} template={before} displayType={displayType} step={index}
               caption={adding ? __('Now', 'wconvert') : !removing ? (index === 0 ? __('Now', 'wconvert') : __('Stays', 'wconvert'))
                 : screen.id !== kept ? __('Removed', 'wconvert') : index === 0 ? __('With the form', 'wconvert') : __('Becomes the offer', 'wconvert')} />)}
             <ArrowRight aria-hidden="true" className="wconvert-capture-box__arrow rtl:-scale-x-100" />
-            {after.tree.steps.map((screen, index) => <ScreenTile key={screen.id} template={after} step={index}
+            {after.tree.steps.map((screen, index) => <ScreenTile key={screen.id} template={after} displayType={displayType} step={index}
               caption={removing ? __('One screen', 'wconvert') : !adding ? (index === 0
                 ? (effective.capture === 'phone' ? __('Phone field', 'wconvert') : __('Email field', 'wconvert')) : __('Stays', 'wconvert'))
                 : index === 0 ? __('With the form', 'wconvert') : __('New screen', 'wconvert')} />)}

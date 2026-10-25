@@ -348,6 +348,15 @@ toggle at the end — and it opens on the whole design on desktop and the width
 on a phone (ADR 0137). Dialog headers align to the start
 on every viewport; close controls have a 32px target (44px for coarse pointers).
 
+**Every design is drawn on one stage** (ADR 0170): `stage/DesignStage` at its
+card, thumb, inspect or canvas size. The design stands in its format's slot on a
+faint ghost page — a popup centred over a dim, a slide-in in the end corner, an
+inline design on a plate, a bar across the top, a fullscreen across the page —
+scaled to fill the slot and never past 1.25 (1 on the canvas). Mobile is a
+360 × 720 phone everywhere. A design on this site is drawn live through
+`Preview`; one only the catalogue has is its picture, in the same slot. Never
+write another scale-to-fit: a new surface picks a stage size.
+
 Creation cards open inspection before the draft action, except the one **Start
 here** card drawn above a list of more than three setups, which offers Use this
 setup directly (ADR 0132). A library toolbar is two rows: search, sort and a ⋯
@@ -593,7 +602,7 @@ the affordance.
 **Every box is written in logical properties.** `inline-start`/`inline-end`,
 `block-start`/`block-end`, `ps-`/`pe-`/`ms-`/`me-`/`start-`/`end-`, and
 `text-start`/`text-end`. Across every `.tsx` this project wrote and across 4,470
-lines of `index.css` there are zero exceptions. `components/ui/` — the code
+lines of `index.css` there are no exceptions but the ones listed below. `components/ui/` — the code
 nobody wrote — carried six, and those files are WConvert's from the moment they
 land.
 
@@ -610,7 +619,9 @@ The exceptions, and they are the only ones:
   sit at the `left`/`top` its layout computed, already mirrored for RTL, inside
   a scroll box that is itself `dir="ltr"` (ADR 0142). A logical property would
   mirror them a second time. The words on each card still take the page's
-  direction.
+  direction. The design stage is the same case (ADR 0170): `place()` mirrors a
+  slide-in's corner, the stage is the `ltr` scroll box, and its page takes the
+  admin's direction back.
 
 **A directional glyph is mirrored.** A Back arrow, a submenu chevron, a
 disclosure twist, the corner arrow marking an A/B arm — `rtl:-scale-x-100` in a

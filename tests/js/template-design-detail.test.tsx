@@ -187,7 +187,8 @@ describe('inspecting a design before replacing the draft', () => {
     expect(within(drawn()).queryByRole('textbox')).not.toBeInTheDocument();
     expect(screen.getByRole('radio', { name: 'Received' })).toBeChecked();
     await user.click(screen.getByRole('radio', { name: 'Mobile' }));
-    expect(container.querySelector('.wconvert-preview-frame__paper')).toHaveStyle({ inlineSize: '320px' });
+    expect(container.querySelector('.wconvert-stage')).toHaveAttribute('data-device', 'mobile');
+    expect(container.querySelector('.wconvert-stage__design')).toHaveStyle({ inlineSize: '328px' });
     expect(screen.getByRole('radio', { name: 'Received' })).toBeChecked();
     expect(onChoose).not.toHaveBeenCalled();
   });
@@ -195,7 +196,7 @@ describe('inspecting a design before replacing the draft', () => {
   it('keeps sample controls inside an inert subtree and describes what Apply changes', async () => {
     const user = userEvent.setup();
     const { onChoose, container } = detail();
-    const preview = container.querySelector('.wconvert-preview-frame__paper');
+    const preview = container.querySelector('.wconvert-stage__design');
     expect(preview).toHaveAttribute('inert');
     expect(preview).toHaveAttribute('aria-hidden', 'true');
     const apply = screen.getByRole('button', { name: 'Use this design' });
@@ -281,26 +282,29 @@ describe('inspecting a design before replacing the draft', () => {
 });
 
 describe('fitting the preview without changing its layout width', () => {
-  let stageWidth: number;
-  let pageHeight: number;
+  let stage: { width: number; height: number };
+  let designHeight: number;
   let resized: () => void;
   const disconnect = vi.fn();
 
   beforeEach(() => {
-    stageWidth = 272;
-    pageHeight = 900;
+    stage = { width: 800, height: 500 };
+    designHeight = 480;
     resized = () => undefined;
     disconnect.mockClear();
     // jsdom does not perform layout. Supply native dimensions, independent of
     // the visual transform, as the browser's layout measurements would be.
     vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(function (this: HTMLElement) {
-      return this.classList.contains('wconvert-preview-frame__paper') ? Number.parseFloat(this.style.inlineSize) * (this.style.inlineSize.endsWith('rem') ? 16 : 1) : 0;
+      return this.classList.contains('wconvert-stage__design') ? Number.parseFloat(this.style.inlineSize) : 0;
     });
     vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockImplementation(function (this: HTMLElement) {
-      return this.classList.contains('wconvert-preview-frame__paper') ? pageHeight : 0;
+      return this.parentElement?.classList.contains('wconvert-stage__design') ? designHeight : 0;
     });
     vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) {
-      return this.classList.contains('wconvert-preview-frame') ? stageWidth : 0;
+      return this.classList.contains('wconvert-stage') ? stage.width : 0;
+    });
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockImplementation(function (this: HTMLElement) {
+      return this.classList.contains('wconvert-stage') ? stage.height : 0;
     });
     vi.stubGlobal('ResizeObserver', class {
       constructor(callback: () => void) { resized = callback; }
@@ -311,48 +315,58 @@ describe('fitting the preview without changing its layout width', () => {
 
   afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
-  const detail = (template = TEMPLATE) => render(<TemplateDesignDetail entry={ENTRY} template={template} labels={LABELS}
+  const detail = (template = TEMPLATE, entry = ENTRY) => render(<TemplateDesignDetail entry={entry} template={template} labels={LABELS}
     current={false} fit={FIT} busy={false} onChoose={vi.fn()} onBack={vi.fn()} />);
+  const design = (container: HTMLElement) => container.querySelector('.wconvert-stage__design') as HTMLElement;
 
-  it('fits the native desktop width into the padded stage and reserves the full scaled height', () => {
+  it('draws the design at its own width and fits it whole into the popup slot', () => {
     const { container, unmount } = detail();
-    const stage = container.querySelector('.wconvert-preview-frame') as HTMLElement;
-    const preview = container.querySelector('.wconvert-preview-frame__paper') as HTMLElement;
-    stage.style.paddingInlineStart = '32px';
-    stage.style.paddingInlineEnd = '32px';
-    stage.style.blockSize = '100px';
     act(() => resized());
-    expect(preview).toHaveStyle({ inlineSize: '26rem', transform: 'scale(0.5)' });
-    expect(preview.style.maxInlineSize).toBe('');
-    // The 450px tall picture must scroll; fitting its height to the 100px
-    // stage would make every detail too small to inspect.
-    expect(container.querySelector('.wconvert-preview-frame__measure')).toHaveStyle({ inlineSize: '208px', blockSize: '450px' });
+    // 26rem wide; the slot is 72% × 88% of 800 × 500, and 440 / 480 is the tighter.
+    expect(design(container)).toHaveStyle({ inlineSize: '416px', transform: `scale(${440 / 480})` });
     unmount();
     expect(disconnect).toHaveBeenCalled();
   });
 
-  it('remeasures content and available width without magnifying a design on a wider stage', async () => {
+  it('remeasures and never enlarges a design more than 1.25 times', () => {
     const { container } = detail();
-    pageHeight = 480;
-    stageWidth = 800;
+    designHeight = 200;
+    stage = { width: 1600, height: 1000 };
     act(() => resized());
-    expect(container.querySelector('.wconvert-preview-frame__paper')).toHaveStyle({ inlineSize: '26rem', transform: 'scale(1)' });
-    expect(container.querySelector('.wconvert-preview-frame__measure')).toHaveStyle({ inlineSize: '416px', blockSize: '480px' });
-    expect(screen.queryByLabelText('Preview scale')).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole('radio', { name: 'Mobile' }));
-    expect(container.querySelector('.wconvert-preview-frame__paper')).toHaveStyle({ inlineSize: '320px', transform: 'scale(1)' });
-    expect(container.querySelector('.wconvert-preview-frame__measure')).toHaveStyle({ inlineSize: '320px', blockSize: '480px' });
+    expect(design(container)).toHaveStyle({ inlineSize: '416px', transform: 'scale(1.25)' });
   });
 
-  it('gives full-width designs a stated desktop reference area without changing their tokens', async () => {
+  it('draws a phone at 360 at its own size, and fits the whole phone on request', async () => {
+    const { container } = detail();
+    await userEvent.click(screen.getByRole('radio', { name: 'Mobile' }));
+    act(() => resized());
+    expect(design(container)).toHaveStyle({ inlineSize: '328px', transform: 'scale(1)' });
+    // A phone opens at its real width, so a tall form is read by scrolling (ADR 0137).
+    expect(container.querySelector('.wconvert-stage__page')).toHaveStyle({ transform: 'scale(1)' });
+    await userEvent.click(screen.getByRole('button', { name: 'Fit whole design' }));
+    act(() => resized());
+    expect(container.querySelector('.wconvert-stage__page')).toHaveStyle({ transform: `scale(${500 / 720})` });
+  });
+
+  it('scrolls a design bigger than the frame at actual size, and says so', async () => {
+    const { container } = detail();
+    designHeight = 900;
+    act(() => resized());
+    await userEvent.click(screen.getByRole('button', { name: 'Actual size' }));
+    act(() => resized());
+    expect(design(container)).toHaveStyle({ transform: 'scale(1)' });
+    expect(screen.getByRole('region', { name: 'Scrollable design preview' })).toBe(container.querySelector('.wconvert-stage'));
+    expect(screen.getByText('Scroll inside the preview to see the rest, or choose Fit whole design.')).toBeVisible();
+  });
+
+  it('gives a full-width design a stated desktop reference width without changing its tokens', async () => {
     const template = JSON.parse(readFileSync(resolve(import.meta.dirname, '../../resources/templates/library/inline-benefits.json'), 'utf8')) as Template;
     const before = JSON.stringify(template);
-    stageWidth = 512;
-    const { container } = detail(template);
-    expect(container.querySelector('.wconvert-preview-frame__paper')).toHaveStyle({ inlineSize: '64rem', transform: 'scale(0.5)' });
+    const { container } = detail(template, { ...ENTRY, display_type: 'inline' });
+    expect(design(container)).toHaveStyle({ inlineSize: '640px' });
     expect(screen.getByText('Full-width layout in a sample desktop area')).toBeVisible();
     await userEvent.click(screen.getByRole('radio', { name: 'Mobile' }));
-    expect(container.querySelector('.wconvert-preview-frame__paper')).toHaveStyle({ inlineSize: '320px', transform: 'scale(1)' });
+    expect(design(container)).toHaveStyle({ inlineSize: '328px' });
     expect(screen.queryByText('Full-width layout in a sample desktop area')).not.toBeInTheDocument();
     expect(JSON.stringify(template)).toBe(before);
   });
@@ -371,7 +385,7 @@ describe('gallery inspection actions', () => {
     await userEvent.click(actions[1]);
     expect(onPreview.mock.calls).toEqual([[ENTRY.id], [refused.id]]);
     expect(onChoose).not.toHaveBeenCalled();
-    expect(container.querySelectorAll('.wconvert-gallery__preview[inert]')).toHaveLength(2);
+    expect(container.querySelectorAll('.wconvert-gallery__preview .wconvert-stage__design[inert]')).toHaveLength(2);
   });
 
   it('shows a local preview retry while keeping the inspection action available', async () => {

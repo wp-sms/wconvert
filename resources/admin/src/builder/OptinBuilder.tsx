@@ -1064,7 +1064,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         <TabsContent value="edit" forceMount={journeyVisited || undefined} className="wconvert-workspace__journey">
           <Activity mode={tab === 'edit' ? 'visible' : 'hidden'}>
           {!entry && <EmptyState icon={Blocks} title={__('Choose a design', 'wconvert')} action={<Button onClick={() => setBrowsing(true)}>{__('Browse designs and formats', 'wconvert')}</Button>}>{__('Start from a ready-made design, then make it yours.', 'wconvert')}</EmptyState>}
-          {entry && <JourneyEditor onUndo={history.canUndo ? history.undo : undefined} embedded labels={gallery.labels} onResultSelect={setEditingResult}
+          {entry && <JourneyEditor displayType={displayTypeOf(config, templates)} onUndo={history.canUndo ? history.undo : undefined} embedded labels={gallery.labels} onResultSelect={setEditingResult}
             editorCanvas={previewPane}
             elementSelection={selection ?? undefined}
             onClearElement={() => setSelection(null)}
@@ -1283,7 +1283,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
       />
     </Tabs>
       {template && captureTarget && <CaptureChangeDialog open onOpenChange={next => { if (!next) setCapturing(null); }}
-        before={template} target={captureTarget} convert={convert} mode={canChangeGoal ? 'apply' : 'copy'} hadForm={hadForm}
+        before={template} displayType={displayTypeOf(config, templates)} target={captureTarget} convert={convert} mode={canChangeGoal ? 'apply' : 'copy'} hadForm={hadForm}
         copyName={copyName}
         onConfirm={canChangeGoal ? applyCapture : copyCapture} returnFocusTo={captureRow} />}
     </CampaignPreviewDeadline>

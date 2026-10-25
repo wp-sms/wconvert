@@ -420,7 +420,7 @@ export function OptinList({
     <div className="wconvert-campaign-thumbnail">
       {previews[row.id]?.template ? (
         <Suspense fallback={<div className="wconvert-preview-placeholder" />}>
-          <Design template={previews[row.id].template!} />
+          <Design template={previews[row.id].template!} displayType={previews[row.id].display_type} />
         </Suspense>
       ) : (
         <div

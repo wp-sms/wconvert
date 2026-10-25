@@ -265,7 +265,7 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
                       <DataTableCell label={__('Campaign', 'wconvert')} className="wconvert-campaign-identity">
                         <div className="wconvert-campaign-thumbnail" aria-hidden="true">
                           {previews[row.id]?.template
-                            ? <Suspense fallback={<div className="wconvert-preview-placeholder" />}><Design template={previews[row.id].template!} /></Suspense>
+                            ? <Suspense fallback={<div className="wconvert-preview-placeholder" />}><Design template={previews[row.id].template!} displayType={previews[row.id].display_type} /></Suspense>
                             : <div className="wconvert-preview-placeholder"><Megaphone aria-hidden="true" /></div>}
                         </div>
                         <div className="min-w-0">

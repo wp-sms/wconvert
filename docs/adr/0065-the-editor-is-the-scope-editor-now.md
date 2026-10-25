@@ -88,7 +88,10 @@ in a 280px sidebar is narrow on a desktop and a control labelled *Mobile* says
 the opposite. The narrow preview is drawn at **22rem**, inside the renderer's
 own breakpoint — a stage at a phone measure of 375px with the breakpoint at
 384px would have drawn the full-width design under a control that says *Narrow*
-and edited values nothing on screen was using.
+and edited values nothing on screen was using. *Amended by [ADR 0170](0170-every-design-is-drawn-on-one-stage.md): the
+narrow preview is a 360 × 720 phone — a bar or fullscreen 360 wide, every
+other format at most 328 — so the reason holds: both stay inside the 24rem
+(384px) breakpoint.*
 
 **And the breakpoint moved to 24rem**, derived from a split's two default
 12rem panes. **Amended by [ADR 0079](0079-a-split-can-reserve-room-for-its-form.md):**

@@ -450,8 +450,9 @@ export function GallerySkeleton({ cards = 6 }: { cards?: number }) {
 
 /**
  * A design only the hosted library has (ADR 0156). There is no tree on this
- * site, so the card is the server's thumbnail — loaded by the browser with no
- * referrer — and one honest action for what stands in the way.
+ * site, so the card is the server's picture on the same stage a render stands
+ * on (ADR 0170) — loaded by the browser with no referrer — and one honest
+ * action for what stands in the way.
  *
  * **A locked card is a picture and a link, never a control.** No Apply, no
  * disabled button, no Pro JSON; "Pro" is the plan's name, and the link leaves
@@ -476,10 +477,8 @@ function HostedCard({ entry, labels, busy, installing, onInstall }: {
         <Badge variant="outline">{displayTypeLabel(entry.display_type)}</Badge>
         {state === 'locked' && <Badge variant="secondary"><Lock aria-hidden="true" />{tierName(entry.tier)}</Badge>}
       </div>}
-      absent={thumbnail ? (
-        <img className="wconvert-gallery__thumbnail" src={thumbnail['1x']} srcSet={`${thumbnail['1x']} 1x, ${thumbnail['2x']} 2x`}
-          alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" />
-      ) : (
+      picture={thumbnail ?? undefined}
+      absent={thumbnail ? undefined : (
         <ul className="wconvert-facets">{marksFor(entry, labels).map((word) => <li key={word}>{word}</li>)}</ul>
       )}
       action={(describedBy) => state === 'locked' ? (

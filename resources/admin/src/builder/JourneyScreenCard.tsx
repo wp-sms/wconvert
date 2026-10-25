@@ -4,27 +4,13 @@ import { GripVertical } from 'lucide-react';
 import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/adapter/element-adapter';
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/utils/combine';
 import type { Template } from '@renderer/types';
-import { Preview } from './Preview';
+import { DesignStage } from '../stage/DesignStage';
 
 /** Pointer dragging supplements the same move operation used by the arrow buttons. */
-export function JourneyScreenCard({ template, index, ordinal, selected, scope, label, condition, onSelect, onMove }: {
-  template: Template; index: number; ordinal?: number; selected: boolean; scope: string; label: string; condition?: string;
+export function JourneyScreenCard({ template, displayType, index, ordinal, selected, scope, label, condition, onSelect, onMove }: {
+  template: Template; displayType: string; index: number; ordinal?: number; selected: boolean; scope: string; label: string; condition?: string;
   onSelect(): void; onMove?(from: string, to: string): void;
 }) {
-  const frame = useRef<HTMLDivElement>(null);
-  const drawing = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(.25);
-  useEffect(() => {
-    const viewport = frame.current;
-    const content = drawing.current;
-    if (!viewport || !content) return;
-    const fit = () => {
-      if (content.offsetWidth && content.offsetHeight) setScale(Math.min(viewport.clientWidth / content.offsetWidth, viewport.clientHeight / content.offsetHeight, 1));
-    };
-    const observer = new ResizeObserver(fit);
-    observer.observe(viewport); observer.observe(content); fit();
-    return () => observer.disconnect();
-  }, []);
   const card = useRef<HTMLLIElement>(null);
   const grip = useRef<HTMLSpanElement>(null);
   const latestMove = useRef(onMove);
@@ -52,7 +38,7 @@ export function JourneyScreenCard({ template, index, ordinal, selected, scope, l
       <span>{sprintf(/* translators: %d: the screen's position in the campaign, e.g. “2”. */ __('Screen %d', 'wconvert'), ordinal ?? index + 1)}</span>
       {onMove && <span ref={grip} className="wconvert-journey-card__grip" aria-hidden="true">{terminal ? __('Last', 'wconvert') : <GripVertical size={16} />}</span>}
     </div>
-    <div ref={frame} className="wconvert-journey-card__preview" inert aria-hidden="true"><div ref={drawing} className="wconvert-journey-card__drawing" style={{ transform: `translateY(-50%) scale(${scale})` }}><Preview template={template} step={index} /></div></div>
+    <div className="wconvert-journey-card__preview" aria-hidden="true"><DesignStage size="thumb" displayType={displayType} step={index} source={{ live: { template } }} /></div>
     <button type="button" className="wconvert-journey-card__select" aria-pressed={selected} onClick={onSelect}>
       <strong>{screen.name}</strong><span>{label}</span>
       {condition && <small className="wconvert-journey-card__condition">{condition}</small>}

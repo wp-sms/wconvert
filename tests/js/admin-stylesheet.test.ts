@@ -26,7 +26,7 @@ import { describe, expect, it } from 'vitest';
  * Vitest 4's Browser Mode is what closes the gap properly, in a pull request of
  * its own.
  */
-const CSS = ['index.css', 'builder/editor.css', 'builder/preview-test.css', 'optins/campaigns.css', 'shell/header.css', 'stats/report.css', '../../../pro/modules/inline-placement/admin/placement.css'].map(file => readFileSync(resolve(import.meta.dirname, '../../resources/admin/src', file), 'utf8')).join('\n');
+const CSS = ['index.css', 'stage/stage.css', 'builder/editor.css', 'builder/preview-test.css', 'optins/campaigns.css', 'shell/header.css', 'stats/report.css', '../../../pro/modules/inline-placement/admin/placement.css'].map(file => readFileSync(resolve(import.meta.dirname, '../../resources/admin/src', file), 'utf8')).join('\n');
 
 describe('journey choices', () => {
   it('keeps unchecked controls wide enough when WordPress removes native appearance', () => {
@@ -64,28 +64,29 @@ describe('the token row', () => {
   });
 });
 
-describe('the gallery preview', () => {
+describe('the design stage', () => {
   /**
-   * `transform: scale()` does not affect layout, so the wrapper reserved a fixed
-   * `12rem` and painted 106px — ~86px of dead white under a clipped design on
-   * every card. `zoom` sizes the wrapper to what it draws.
+   * The old gallery let the design size its card, so it scaled with `zoom` —
+   * the one scale that moves layout. A stage has its own shape and computes the
+   * design's place inside it (ADR 0170), so `transform` is right again and
+   * nothing outside the stage depends on how big the design is drawn.
    */
-  it('scales with a property that affects layout', () => {
-    expect(CSS).toMatch(/\.wconvert-gallery \.wconvert-preview\s*\{[^}]*zoom:/);
-    expect(CSS).not.toMatch(/\.wconvert-gallery \.wconvert-preview\s*\{[^}]*transform:\s*scale/);
+  it('gives a card a fixed 4:3 shape and moves the design by transform alone', () => {
+    expect(CSS).toMatch(/\.wconvert-stage\s*\{[^}]*aspect-ratio:\s*4\s*\/\s*3/);
+    expect(CSS).toMatch(/\.wconvert-stage__design\s*\{[^}]*transform-origin:\s*0 0/);
+    expect(CSS.replace(/\/\*[\s\S]*?\*\//g, '')).not.toMatch(/(?:^|[\s;{])zoom:/);
   });
 
   /**
-   * The reciprocal width and the FIXED height were both compensating for it, and
-   * both are gone. A `max-block-size` is a cap rather than a reservation and is
-   * the one measurement the lane is still allowed to state.
+   * The design is drawn after the page, so tree order puts it on top — as long
+   * as nothing on the page is translucent. An element with `opacity < 1` paints
+   * at the level of a positioned one, which is how the old mock page's ghosts
+   * ended up across the design.
    */
-  it('states neither of the numbers that were compensating for the transform', () => {
-    const rule = /\.wconvert-gallery \.wconvert-preview\s*\{([^}]*)\}/.exec(CSS)?.[1] ?? '';
-
-    expect(rule).not.toContain('calc(100% / 0.55)');
-    expect(rule).not.toMatch(/(?<!max-)(?<!min-)\bblock-size:/);
-    expect(rule).toMatch(/max-block-size:/);
+  it('keeps every part of the ghost page opaque', () => {
+    for (const [, body] of CSS.matchAll(/\.wconvert-ghost[^{]*\{([^}]*)\}/g)) {
+      expect(body).not.toMatch(/opacity:/);
+    }
   });
 });
 
@@ -195,27 +196,6 @@ describe('the design picker', () => {
    */
   it('sizes a toolbar input the way it sizes a toolbar button', () => {
     expect(CSS).toContain('[data-slot="select-trigger"], [data-slot="input"]');
-  });
-
-  /**
-   * ==========================================================================
-   * A CAP THAT FIRES ON SOMETHING WE SHIP IS SET FROM THE WRONG NUMBER.
-   * ==========================================================================
-   * `index.css` says exactly that about the first time this happened, at 22rem.
-   * It happened again at 30rem the moment the library went from three designs
-   * to twelve: measured in a browser, *Name and email* draws 349px into a 264px
-   * lane and *Photo offer* draws 276px, so two shipped designs were clipped
-   * mid-button on the screen a merchant chooses from.
-   *
-   * Asserted as a floor rather than a fixed value, because the number that
-   * matters is "above the tallest thing we ship" and that grows.
-   */
-  it('caps the card lane above the tallest design the library ships', () => {
-    const rule = /\.wconvert-gallery \.wconvert-preview\s*\{([^}]*)\}/.exec(CSS)?.[1] ?? '';
-    const cap = /max-block-size:\s*([\d.]+)rem/.exec(rule)?.[1];
-
-    expect(cap).toBeDefined();
-    expect(Number(cap)).toBeGreaterThanOrEqual(40);
   });
 
   /**
@@ -627,35 +607,6 @@ describe('the builder card’s one inset', () => {
   it('states no length against a variable it never declares', () => {
     expect(CSS).not.toContain('var(--spacing)');
   });
-});
-
-describe('the preview’s three out-of-flow containers', () => {
-  /**
-   * **Two translucent bands lay across the rendered design, and they were the
-   * mock page's own ghosts.** `.wconvert-site__ghost` carries `opacity: 0.55`,
-   * and an element with `opacity < 1` paints as if it were `position:
-   * relative; z-index: 0` — the same stacking level as a `position: absolute`
-   * slot with `z-index: auto`. Ties there break by tree order, and `MockPage`
-   * renders two ghosts AFTER the slot on purpose, so an `inline` Optin has page
-   * content below it as well as above.
-   *
-   * On a real page the container is a `<dialog>` in the top layer and none of
-   * this can happen. The preview mounts `inline` and the admin draws the
-   * container itself, so the admin has to say the one thing the top layer was
-   * saying for it. Deleting the `z-index` brings the bands straight back, and
-   * nothing else in this project would notice.
-   */
-  it.each(['popup', 'floating_bar', 'slide_in'])(
-    'lifts the %s slot above the page it is drawn over',
-    (type) => {
-      const rule = new RegExp(
-        String.raw`\.wconvert-site\[data-display-type='${type}'\] \.wconvert-site__slot\s*\{([^}]*)\}`,
-      ).exec(CSS)?.[1];
-
-      expect(rule).toBeDefined();
-      expect(rule).toMatch(/z-index:\s*[1-9]/);
-    },
-  );
 });
 
 /** Every `.ts`/`.tsx` under a directory, depth first. */

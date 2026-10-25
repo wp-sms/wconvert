@@ -59,7 +59,7 @@ export function OnlineCollection({ collection, goals, busy, onInstalled, onUse }
         : state === 'unavailable' || !goal || goal.availability !== 'ready' ? __('This site cannot use this campaign goal yet.', 'wconvert') : undefined;
       return <TemplateCard key={setup.id} id={`collection-${setup.id}`} name={setup.name} displayType={design.format}
         marks={<><Badge variant="outline">{displayTypeLabel(design.format)}</Badge><Badge variant={setup.tier === 'free' ? 'outline' : 'secondary'}>{setup.tier === 'free' ? __('Free', 'wconvert') : __('Pro', 'wconvert')}</Badge></>}
-        notes={goal?.label} absent={design.thumbnail ? <img className="wconvert-gallery__thumbnail" src={design.thumbnail['1x']} srcSet={`${design.thumbnail['1x']} 1x, ${design.thumbnail['2x']} 2x`} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" /> : <p>{__('Preview unavailable', 'wconvert')}</p>}
+        notes={goal?.label} picture={design.thumbnail ?? undefined} absent={design.thumbnail ? undefined : <p>{__('Preview unavailable', 'wconvert')}</p>}
         action={describedBy => <>
           {error?.id === setup.id && <p role="alert" className="text-note">{error.message}</p>}
           {state === 'locked' ? <Button asChild variant="outline"><a href={`https://wconvert.io/templates/${encodeURIComponent(design.slug)}/?utm_source=plugin&utm_medium=picker&utm_campaign=pro-design`} target="_blank" rel="noopener noreferrer" aria-describedby={describedBy}>{__('See this design', 'wconvert')}<ExternalLink aria-hidden="true" /></a></Button>

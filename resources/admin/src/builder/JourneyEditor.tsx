@@ -56,7 +56,7 @@ function holdsMainForm(tree: TemplateTree, index: number): boolean {
     || (node.type === 'button' && 'submission' in node && node.submission === main.id));
 }
 
-export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = EMPTY_TOKENS, step, primaryChannel, issues = NO_ISSUES, onIssue, look, formSwitch, announce, lookPanel, elements, extraRows, editingScreen = true, onSelectElement, onChange, onSelect, displaySummary, destinationSummary, deliveryMode, onGoToRules, onGoToDestinations, onGoToDesign, openRequest, repairRequest: requestedRepair, embedded = false, focusActions, editorCanvas, elementPanel, elementSelection, onClearElement, testRequest, testReturnFocus, onTestClose, onTestExit, previewTitle, whoSeesIt }: {
+export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = EMPTY_TOKENS, step, primaryChannel, issues = NO_ISSUES, onIssue, look, formSwitch, announce, lookPanel, elements, extraRows, editingScreen = true, onSelectElement, onChange, onSelect, displaySummary, destinationSummary, deliveryMode, onGoToRules, onGoToDestinations, onGoToDesign, openRequest, repairRequest: requestedRepair, embedded = false, focusActions, editorCanvas, elementPanel, elementSelection, onClearElement, testRequest, testReturnFocus, onTestClose, onTestExit, previewTitle, whoSeesIt, displayType }: {
   onUndo?(): void; labels?: TemplateLabels; onResultSelect?(id: string | undefined): void; tokens?: Tokens; primaryChannel?: string | null; tree: TemplateTree;
   /** The campaign's one issue list (ADR 0133); the screens and the map show the ones about a screen. */
   issues?: readonly CampaignIssue[];
@@ -81,6 +81,8 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   editorCanvas?: ReactNode; elementPanel?: ReactNode; elementSelection?: object; onClearElement?(): void; testRequest?: number; onTestClose?(): void; onTestExit?(): void;
   /** Preview's title: the campaign's name. */
   previewTitle?: string;
+  /** The campaign's format, so each screen's thumb stands in its slot (ADR 0170). */
+  displayType: string;
   /** Preview's second tab, Who sees it; `close` closes Preview. */
   whoSeesIt?(close: () => void): ReactNode;
   /** Where focus returns when a requested test closes: the menu item that asked is gone by then. */
@@ -551,7 +553,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
             {formSwitch}
             <div className="wconvert-journey-rail__heading"><strong>{__('Screens', 'wconvert')}</strong><span>{tree.graph ? tree.steps.length : sprintf(/* translators: %d: how many screens the journey has; 7 is the most allowed. */ __('%d of 7', 'wconvert'), tree.steps.length)}</span><small>{tree.graph ? __('Lines may skip screens', 'wconvert') : __('Up to 7 screens without answer lines', 'wconvert')}</small></div>
             <ol ref={screenList} className="wconvert-journey-dialog__screens" aria-label={__('All screens', 'wconvert')}>
-              {displayOrder.map((index, position) => <JourneyScreenCard key={tree.steps[index].id} template={{ tree, tokens }} index={index} ordinal={position + 1} selected={index === step}
+              {displayOrder.map((index, position) => <JourneyScreenCard key={tree.steps[index].id} template={{ tree, tokens }} displayType={displayType} index={index} ordinal={position + 1} selected={index === step}
                 scope={id} label={disconnected.has(tree.steps[index].id) ? __('Unreachable', 'wconvert') : screenLabel(index)} condition={tree.steps[index].when ? sprintf(/* translators: %s: the rule that shows the screen, e.g. “Skin type is Oily”. */ __('Only if %s', 'wconvert'), conditionText(tree, tree.steps[index].when!))
                   : tree.steps[index].kind === 'result' && (tree.steps[index].results?.length ?? 0) > 1 ? sprintf(/* translators: %d: how many results the result screen can show. */ __('%d possible results', 'wconvert'), tree.steps[index].results?.length ?? 0) : undefined}
                 onSelect={() => select(index)}

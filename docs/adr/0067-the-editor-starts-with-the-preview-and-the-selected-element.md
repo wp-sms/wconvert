@@ -84,6 +84,8 @@ prevent a local font or text-size token from taking effect.
 > Extended by [ADR 0084](0084-picture-transfer-and-friendly-style-controls.md): overlays and background layers now offer visual linear-gradient controls; unsupported syntax stays editable as CSS.
 
 Mobile means the 22rem preview inside the existing 24rem container breakpoint.
+*(Amended by [ADR 0170](0170-every-design-is-drawn-on-one-stage.md): the phone is 360 wide; a bar or fullscreen
+spans it at 360 and every other format is at most 328 — all inside 24rem.)*
 A mobile override wins over the same element's desktop value; clearing it reveals
 that desktop value, then the nearest ancestor. The renderer threads ancestor
 mobile overrides when materializing a child's narrow bag. Overriding a child's

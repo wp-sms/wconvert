@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import { CircleHelp, MousePointer2, X } from 'lucide-react';
 import { OptionStrip } from '../shell/OptionStrip';
 import { Popover, PopoverTrigger, PopoverContent } from '../components/ui/popover';
 import { Button } from '../components/ui/button';
-import { Preview } from './Preview';
+import { DesignStage } from '../stage/DesignStage';
 import { resolvedPlacement } from './PlacementControl';
 import { resolvedToken } from './panel';
 import type { SlotKey } from './slots';
@@ -64,47 +64,10 @@ export function EditorCanvas({
   /** A click on the empty stage around the design: the Edit tab opens the Look. */
   onStage?: () => void;
 }) {
-  const stage = useRef<HTMLDivElement>(null);
-  const page = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState({ width: 600, height: 500, availableWidth: 1000, availableHeight: 650 });
-  const [zoom, setZoom] = useState('fit');
+  const [zoom, setZoom] = useState<'fit' | 'actual'>('fit');
+  const [scale, setScale] = useState(1);
   const [message, setMessage] = useState('');
   const shown = Math.min(step, Math.max(template.tree.steps.length - 1, 0));
-  const measure = width === 'narrow' ? '22rem' : (displayType === 'inline' ? (template.tokens.width ?? '40rem') : '48rem');
-  const resolved = resolvedPlacement(displayType, placement);
-  useEffect(() => {
-    if (typeof ResizeObserver === 'undefined') return;
-    const read = () => {
-      const paper = page.current;
-      const area = stage.current;
-      if (!paper || !area) return;
-      const padding = getComputedStyle(area);
-      const next = {
-        width: paper.offsetWidth,
-        height: paper.offsetHeight,
-        availableWidth: area.clientWidth - (parseFloat(padding.paddingLeft) || 0) - (parseFloat(padding.paddingRight) || 0),
-        availableHeight: area.clientHeight - (parseFloat(padding.paddingTop) || 0) - (parseFloat(padding.paddingBottom) || 0),
-      };
-      setSize((current) =>
-        Object.keys(next).every((key) => current[key as keyof typeof next] === next[key as keyof typeof next])
-          ? current
-          : next,
-      );
-    };
-    const observer = new ResizeObserver(read);
-    if (stage.current) observer.observe(stage.current);
-    if (page.current) observer.observe(page.current);
-    read();
-    return () => observer.disconnect();
-  }, []);
-  const scale =
-    zoom === 'actual'
-      ? 1
-      : Math.min(
-          1,
-          Math.max(0.1, size.availableWidth / Math.max(1, size.width)),
-          Math.max(0.1, size.availableHeight / Math.max(1, size.height)),
-        );
   return (
     <section className="wconvert-canvas" data-width={width} aria-label={__('Design canvas', 'wconvert')}>
       <div className="wconvert-canvas__bar">
@@ -114,7 +77,7 @@ export function EditorCanvas({
           {view}
           <label>
             <span className="sr-only">{__('Canvas zoom', 'wconvert')}</span>
-            <select value={zoom} onChange={(event) => setZoom(event.target.value)}>
+            <select value={zoom} onChange={(event) => setZoom(event.target.value === 'actual' ? 'actual' : 'fit')}>
               <option value="fit">
                 {__('Fit', 'wconvert')} · {Math.round(scale * 100)}%
               </option>
@@ -124,59 +87,37 @@ export function EditorCanvas({
         </div>
       </div>
       {screen?.controls}
-      {/* The stage, the page around the design and its ghost lines are all "not the design". */}
-      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- a pointer shortcut; the Look row in the tree is the keyboard way. */}
-      <div className="wconvert-canvas__stage" ref={stage} onClick={event => {
-        const target = event.target as HTMLElement;
-        if (onStage && (target === event.currentTarget || target.matches('.wconvert-canvas__measure, .wconvert-canvas__document, .wconvert-site__page, .wconvert-site__ghost'))) onStage();
-      }}>
-          <div
-            className="wconvert-canvas__measure"
-            style={{ width: size.width * scale, height: size.height * scale }}
-          >
-            <div
-              className="wconvert-canvas__document wconvert-site"
-              ref={page}
-              data-screen-flow={screen?.inFlow || undefined}
-              data-display-type={screen ? 'preview' : displayType}
-              data-placement={resolved ?? undefined}
-              style={{ width: measure, transform: `scale(${scale})` }}
+      {/* The canvas is the stage at its canvas size, capped at 1× (ADR 0170). */}
+      <div className="wconvert-canvas__stage">
+        <DesignStage
+          size="canvas"
+          displayType={displayType}
+          device={width === 'narrow' ? 'mobile' : 'desktop'}
+          zoom={zoom}
+          step={shown}
+          placement={resolvedPlacement(displayType, placement)}
+          source={{ live: { template } }}
+          selected={selected}
+          onSelect={onSelect}
+          inFlow={screen?.inFlow}
+          onScale={setScale}
+          onStage={onStage}
+          chrome={displayType !== 'inline' && (
+            <button
+              type="button"
+              className="wconvert-canvas__close"
+              // Drawn in the design's own close colours and shape (ADR 0159),
+              // so a change in the Look's Close button section shows here.
+              style={closeLook(template.tokens)}
+              aria-label={__('Close preview', 'wconvert')}
+              onClick={() => setMessage(__('Visitors can always close this campaign.', 'wconvert'))}
             >
-              {!screen?.inFlow && <div className="wconvert-site__page" aria-hidden="true">
-                <span className="wconvert-site__ghost" data-ghost="head" />
-                <span className="wconvert-site__ghost" />
-                <span className="wconvert-site__ghost" />
-                <span className="wconvert-site__ghost" data-ghost="block" />
-                <span className="wconvert-site__ghost" />
-              </div>}
-              {screen ? <div className="wconvert-canvas__alternate">{screen.content}</div> : <div className="wconvert-site__slot">
-                <Preview
-                  template={template}
-                  displayType={displayType}
-                  step={shown}
-                  selected={selected}
-                  onSelect={onSelect}
-                />
-                {displayType !== 'inline' && (
-                  <button
-                    type="button"
-                    className="wconvert-canvas__close"
-                    // Drawn in the design's own close colours and shape (ADR 0159),
-                    // so a change in the Look's Close button section shows here.
-                    style={closeLook(template.tokens)}
-                    aria-label={__('Close preview', 'wconvert')}
-                    onClick={() => setMessage(__('Visitors can always close this campaign.', 'wconvert'))}
-                  >
-                    <X aria-hidden="true" />
-                  </button>
-                )}
-              </div>}
-              {!screen?.inFlow && <div className="wconvert-site__page" aria-hidden="true">
-                <span className="wconvert-site__ghost" />
-                <span className="wconvert-site__ghost" data-ghost="block" />
-              </div>}
-            </div>
-          </div>
+              <X aria-hidden="true" />
+            </button>
+          )}
+        >
+          {screen?.content}
+        </DesignStage>
       </div>
       <div className="wconvert-canvas__hint" role="status">
         {message || (screen ? __('Preview mode', 'wconvert') : hint ? null : (

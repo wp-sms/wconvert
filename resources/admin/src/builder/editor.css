@@ -471,57 +471,11 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
 :is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-canvas__stage {
   flex: 1;
   min-height: 0;
-  display: grid;
-  align-items: safe center;
-  justify-items: safe center;
-  overflow: auto;
-  padding: 32px;
+  display: flex;
   background: var(--stage);
 }
-:is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-canvas__measure {
-  position: relative;
-  flex: none;
-}
-:is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-canvas__document {
-  position: absolute;
-  inset-block-start: 0;
-  inset-inline-start: 0;
-  transform-origin: top left;
-  box-shadow: 0 12px 34px #3027201a;
-}
-:is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-canvas__document:dir(rtl) { transform-origin: top right; }
-:is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-canvas__document .wconvert-preview {
-  width: 100%;
-  max-width: none;
-}
-/* Overlay the mock page without removing the screen from intrinsic sizing.
- * Tall questions must grow the paper before Fit measures it. */
-:is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-canvas__document:is([data-display-type='popup'], [data-display-type='fullscreen'], [data-display-type='slide_in'], [data-display-type='floating_bar']) {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: auto auto;
-}
-:is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-canvas__document > .wconvert-site__page:first-child { grid-area: 1 / 1 / 2 / 2; }
-:is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-canvas__document > .wconvert-site__page:last-child { grid-area: 2 / 1 / 3 / 2; }
-:is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-canvas__document:is([data-display-type='popup'], [data-display-type='fullscreen'], [data-display-type='slide_in'], [data-display-type='floating_bar']) > .wconvert-site__slot {
-  position: relative;
-  inset: auto;
-  grid-area: 1 / 1 / 3 / 2;
-  min-inline-size: 0;
-}
-:is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-canvas__document[data-display-type='popup'] .wconvert-preview {
-  display: flex;
-  justify-content: center;
-}
-:is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-canvas__document[data-display-type='floating_bar'] > .wconvert-site__slot { align-self: end; }
-:is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-canvas__document[data-display-type='slide_in'] > .wconvert-site__slot {
-  align-self: end;
-  justify-self: end;
-  margin: .9rem;
-  max-inline-size: min(26rem, calc(100% - 1.8rem));
-}
-:is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-canvas__document:is([data-display-type='floating_bar'], [data-display-type='slide_in'])[data-placement^='block_start'] > .wconvert-site__slot { align-self: start; }
-:is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-canvas__document[data-display-type='slide_in'][data-placement$='inline_start'] > .wconvert-site__slot { justify-self: start; }
+/* The canvas is the stage at its canvas size (ADR 0170): it fills what the bar leaves. */
+:is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-canvas__stage > .wconvert-stage { flex: 1; block-size: auto; }
 :is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-canvas__close {
   position: absolute;
   inset-block-start: 8px;
@@ -733,7 +687,7 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
 .wconvert-launch-review__blockers li p { margin: 0 0 8px; }
 .wconvert-launch-review__fixes { display: flex; flex-wrap: wrap; gap: 8px; }
 .wconvert-launch-review__what { display: grid; gap: 14px; }
-.wconvert-launch-review .wconvert-campaign-thumbnail { inline-size: 100%; block-size: 200px; }
+.wconvert-launch-review .wconvert-campaign-thumbnail { inline-size: 200px; block-size: 150px; }
 .wconvert-launch-review__success-measure { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 10px; align-items: start; }
 .wconvert-launch-review__success-measure > svg { margin-block-start: 2px; color: var(--action); }
 .wconvert-launch-review__success-measure span { display: block; font-size: var(--text-note); color: var(--muted-foreground); }
@@ -928,9 +882,6 @@ body .wconvert-add-elements { inline-size: 280px; max-inline-size: calc(100vw - 
   font-size: var(--text-body);
   font-weight: 400;
 }
-:is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-canvas__alternate { position: absolute; inset: 0; z-index: 1; }
-
-:is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-canvas__document[data-screen-flow] .wconvert-canvas__alternate { position: relative; }
 
 @media (max-width: 1000px) {
   #wconvert-admin .wconvert-workspace__secondary[data-content-lock] {
@@ -960,9 +911,7 @@ body .wconvert-add-elements { inline-size: 280px; max-inline-size: calc(100vw - 
 .wconvert-journey-card:has(button:focus-visible) { outline: 2px solid var(--ring); outline-offset: 3px; }
 .wconvert-journey-card__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-block-end: 10px; color: var(--muted-foreground); font-size: var(--text-label); }
 .wconvert-journey-card__grip { cursor: grab; position: relative; z-index: 1; min-inline-size: 24px; block-size: 24px; display: grid; place-items: center; }
-.wconvert-journey-card__preview { position: relative; display: flex; align-items: center; justify-content: center; block-size: 116px; overflow: hidden; border-radius: 4px; background: var(--surface); pointer-events: none; }
-.wconvert-journey-card__drawing { position: absolute; inset-block-start: 50%; inset-inline: calc(50% - 300px); inline-size: 600px; transform-origin: center; pointer-events: none; }
-.wconvert-journey-card__drawing .wconvert-preview { display: flex; justify-content: center; }
+.wconvert-journey-card__preview { block-size: 116px; overflow: hidden; border-radius: 4px; box-shadow: 0 0 0 1px var(--border); pointer-events: none; }
 .wconvert-journey-card__select { display: flex; flex-direction: column; align-items: flex-start; text-align: start; gap: 5px; inline-size: 100%; padding: 10px 0 2px; border: 0; background: none; cursor: pointer; color: var(--foreground); }
 .wconvert-journey-card__select::after { content: ''; position: absolute; inset: 40px 0 0; }
 .wconvert-journey-card__select strong { font-size: var(--text-note); font-weight: 600; overflow-wrap: anywhere; }

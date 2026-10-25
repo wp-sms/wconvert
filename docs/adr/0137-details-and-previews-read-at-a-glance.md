@@ -62,7 +62,9 @@ and none could be read at a glance:
    read.
 5. **The setup preview is for looking.** One toolbar row: Desktop | Mobile, a
    visibly labelled **Screen** choice, and an icon toggle at the end that names
-   what pressing it does ("Fit whole design" / "Actual width"). The journey
+   what pressing it does ("Fit whole design" / "Actual size" — *"Actual
+   width" until [ADR 0170](0170-every-design-is-drawn-on-one-stage.md)*). *The preview
+   is the stage at its inspect size ([ADR 0170](0170-every-design-is-drawn-on-one-stage.md)).* The journey
    test is out of setup inspection — it lives in the editor — though the
    preview stays clickable. The side column is the use case, the gist, the
    facts without Format (the header says it) with **Counts as success**, then
@@ -73,6 +75,10 @@ and none could be read at a glance:
    desktop and on the width on a phone, so a tall phone form stays readable by
    scrolling (0112's reason, now applied only where it holds). A merchant's own
    choice holds until they switch device. `usePreviewView` is the one source.
+   *Amended by [ADR 0170](0170-every-design-is-drawn-on-one-stage.md): "the whole design" is the stage's Fit — the
+   design in its format's slot on a faint page — and "the width" is its Actual
+   size, where the page grows to hold the design at scale 1 and scrolls. A
+   phone is 360 × 720 in both.*
 7. **The editor's design preview is laid out like the setup preview.** While a
    design is inspected, the dialog's title is its name, with Current design as
    a badge and "Popup · Collects Email address" as the meta line; the library
