@@ -7,7 +7,7 @@ import { daysBetween, formatCount, siteLocale } from '../lib/format';
 import { lastDay } from '../discovery/model';
 import type { Template } from '@renderer/types';
 import type { Collection } from '../discovery/api';
-import type { GalleryCard, ShelfCollection } from './model';
+import { shelfCovers, type GalleryCard, type ShelfCollection } from './model';
 
 /**
  * The collections, on top of the grid (ADR 0171). A tile filters the grid to
@@ -33,7 +33,6 @@ export function CollectionShelf({ shelf, cards, trees, today, active, hidden, on
   disabled?: boolean;
 }) {
   if (shelf.length === 0 && hidden === 0) return null;
-  const byKey = new Map(cards.map(card => [card.key, card]));
 
   return (
     <section className="wconvert-shelf" aria-labelledby="wconvert-shelf-title">
@@ -47,7 +46,7 @@ export function CollectionShelf({ shelf, cards, trees, today, active, hidden, on
       <ul className="wconvert-shelf__row">
         {shelf.map(({ collection, members }) => {
           const on = active === collection.id;
-          const covers = [...members.keys()].flatMap(key => byKey.get(key) ?? []).slice(0, 3);
+          const covers = shelfCovers(members, cards);
           return (
             <li key={collection.id} className="wconvert-shelf__tile" data-active={on || undefined}>
               <button type="button" className="wconvert-shelf__open" disabled={disabled} aria-pressed={on} onClick={() => onOpen(on ? null : collection.id)}

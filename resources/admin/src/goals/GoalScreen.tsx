@@ -4,7 +4,7 @@ import { Check, ChevronDown, Sparkles } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
 import { PinnedDesignNotice, usePinnedDesign } from '../templates/PinnedDesign';
 import { LibraryConsent } from '../templates/LibraryConsent';
-import { installSetup } from '../templates/catalog';
+import { installSetup, refreshCatalog } from '../templates/catalog';
 import { fitsOutcome } from './outcome';
 import { Button } from '../components/ui/button';
 import { ChoiceGrid, ChoiceSkeleton } from '../shell/ChoiceGrid';
@@ -19,12 +19,13 @@ import { usePicker } from '../discovery/usePicker';
 import { useSetupPreviews } from '../discovery/useSetupPreviews';
 import { preferredStage } from '../discovery/model';
 import { adminSettings } from '../settings';
-import { filterCards, mergeSetups, shelfCollections, type GalleryCard as Card, type GalleryFilters } from '../gallery/model';
+import { filterCards, mergeSetups, shelfCollections, shelfCovers, type GalleryCard as Card, type GalleryFilters } from '../gallery/model';
 import { GalleryCard, TemplateAction } from '../gallery/GalleryCard';
 import { GalleryGrid, GallerySkeleton, PER_PAGE } from '../gallery/GalleryGrid';
 import { GalleryToolbar, NO_CHOICES, type GalleryChoices } from '../gallery/GalleryToolbar';
 import { CollectionBar, CollectionShelf, ShelfOff } from '../gallery/CollectionShelf';
 import { InspectDialog } from '../gallery/InspectDialog';
+import { useAskForPage } from '../gallery/useAskForPage';
 import '../gallery/gallery.css';
 
 /**
@@ -122,6 +123,25 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
       });
     return () => { current = false; };
   }, [goal, galleryRetry]);
+
+  /*
+   * Step 2 is a moment the library may check for new templates, as the
+   * editor's Change template is, and the server holds it to twice a day
+   * (ADR 0171). A newer list is read once; a failure is quiet, and the list
+   * already saved stays the answer. The previews already here are kept: a
+   * refresh changes the online cards, and a local setup whose revision moved
+   * is asked for again by `useSetupPreviews` itself. Once per visit: the
+   * library is the site's, not the goal's.
+   */
+  const checked = useRef(false);
+  const library = gallery.status === 'ready' ? gallery.data.library : null;
+  useEffect(() => {
+    if (checked.current || library === null || !library.configured || library.consent !== 'yes') return;
+    checked.current = true;
+    void refreshCatalog(true).then((status) => {
+      if (active.current && status.checked_at !== library.checked_at) setGalleryRetry(value => value + 1);
+    }).catch(() => undefined);
+  }, [library]);
 
   const choose = (chosen: GoalEntry) => {
     if (busy.current) return;
@@ -257,6 +277,21 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
     setStage(preferredStage(match.collection, today, cards.map(card => ({ id: card.key })), home));
   }, [home, shelf, cards, today]);
 
+  const saved = picker.data?.preferences.saved ?? [];
+  const filters: GalleryFilters = {
+    ...choices,
+    saved: choices.savedOnly ? new Set(saved) : undefined,
+    collection: open ? { members: open.members } : null,
+    stage,
+  };
+  const shown = filterCards(cards, filters);
+  const pages = Math.max(1, Math.ceil(shown.length / PER_PAGE));
+  const shownPage = Math.min(page, pages - 1);
+  const paged = shown.slice(shownPage * PER_PAGE, (shownPage + 1) * PER_PAGE);
+  // The shelf's covers ride with the page: past 24 ids they are a second request.
+  const covers = !pinned && showShelf ? shelf.flatMap(({ members }) => shelfCovers(members, cards)) : [];
+  useAskForPage([...paged, ...covers].filter(card => card.source === 'local').map(card => card.key), previews.onNear, setups);
+
   if (goal === null) {
     // A linked design offers only the goals it can serve (ADR 0085).
     const shown = goals.status === 'ready' ? offerableGoals(goals.data, 'creation_flow').filter((entry) => !pinned || fitsOutcome(entry.outcome, pinned.facets)) : [];
@@ -276,22 +311,10 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
   }
 
   const working = starting !== null || adding !== null;
-  const saved = picker.data?.preferences.saved ?? [];
-  const filters: GalleryFilters = {
-    ...choices,
-    saved: choices.savedOnly ? new Set(saved) : undefined,
-    collection: open ? { members: open.members } : null,
-    stage,
-  };
-  const shown = filterCards(cards, filters);
-  const pages = Math.max(1, Math.ceil(shown.length / PER_PAGE));
-  const shownPage = Math.min(page, pages - 1);
-  const paged = shown.slice(shownPage * PER_PAGE, (shownPage + 1) * PER_PAGE);
   const change = (next: Partial<GalleryChoices>) => { setChoices(value => ({ ...value, ...next })); setPage(0); };
   const clear = () => { setChoices(NO_CHOICES); setPage(0); };
   // A collection with one format needs no Format choice.
   const collectionFormats = open ? new Set(filterCards(cards, { ...filters, format: 'all' }).map(card => card.displayType)) : null;
-  const library = gallery.status === 'ready' ? gallery.data.library : null;
   const asking = library?.configured === true && library.consent === 'unanswered' && open === null;
   const goalsHere = goals.status === 'ready'
     ? offerableGoals(goals.data, 'creation_flow').filter(entry => entry.availability === 'ready' && (!pinned || fitsOutcome(entry.outcome, pinned.facets)))

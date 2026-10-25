@@ -35,7 +35,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   window.innerWidth = 1200;
   window.history.replaceState({}, '', '/wp-admin/admin.php?page=wconvert#optins');
-  api.listGoals.mockResolvedValue([GOAL]); api.readGoalGallery.mockResolvedValue({ setups: [START], online: [], library: { configured: false, consent: 'unanswered' } });
+  api.listGoals.mockResolvedValue([GOAL]); api.readGoalGallery.mockResolvedValue({ setups: [START], online: [], library: { configured: false, consent: 'unanswered', checked_at: null } });
   api.prefill.mockResolvedValue(DRAFT); api.createOptin.mockResolvedValue({ id: ID }); api.getRules.mockResolvedValue(ruleTypes());
 });
 afterEach(() => { window.innerWidth = 1024; });

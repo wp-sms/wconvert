@@ -17,7 +17,7 @@ const online = (id: string, more: Partial<OnlineSetup> = {}): OnlineSetup => ({
   business_types: [], design: { id: `${id}-design`, name: id, tier: 'free' }, display_type: 'inline', facets: facets(['phone']),
   thumbnail: { '1x': `https://cdn/${id}.webp`, '2x': `https://cdn/${id}@2x.webp` }, tags: [], preview_url: `https://wconvert.io/templates/${id}/`, ...more,
 });
-const gallery = (setups: PlaybookEntry[], rows: OnlineSetup[] = []): GoalGallery => ({ setups, online: rows, library: { configured: true, consent: 'yes' } });
+const gallery = (setups: PlaybookEntry[], rows: OnlineSetup[] = []): GoalGallery => ({ setups, online: rows, library: { configured: true, consent: 'yes', checked_at: null } });
 const free = { proHints: true };
 const keys = (cards: GalleryCard[]) => cards.map(card => card.key);
 const NONE: GalleryFilters = {};

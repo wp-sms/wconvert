@@ -80,7 +80,17 @@ final class GoalGalleryTest extends TestCase
         $gallery = $this->gallery();
         self::assertSame(['reading-recommendation'], array_column($gallery['setups'], 'id'));
         self::assertSame([], $gallery['online']);
-        self::assertSame(['configured' => true, 'consent' => 'unanswered'], $gallery['library']);
+        self::assertSame(['configured' => true, 'consent' => 'unanswered', 'checked_at' => null], $gallery['library']);
+    }
+
+    public function testSaysWhenTheLibraryWasLastChecked(): void
+    {
+        $this->options->set(TemplateCatalog::CONSENT_OPTION, 'yes');
+        $catalog = $this->catalog();
+        $catalog->refresh();
+        $checked = $this->gallery(catalog: $catalog)['library']['checked_at'];
+        self::assertIsString($checked, 'Step 2 compares it after its own refresh');
+        self::assertSame($catalog->status()['checked_at'], $checked);
     }
 
     public function testALocalSetupCarriesItsDesignsFacets(): void

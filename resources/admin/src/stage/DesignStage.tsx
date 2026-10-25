@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { __ } from '@wordpress/i18n';
 import { Skeleton } from '../components/ui/skeleton';
 import { Preview } from '../builder/Preview';
 import type { SlotKey } from '../builder/slots';
@@ -107,7 +108,16 @@ export function DesignStage({
   }, [near, onNear]);
 
   const live = source !== undefined && 'live' in source ? source.live.template : undefined;
-  const image = source !== undefined && 'image' in source ? source.image : undefined;
+  const picture = source !== undefined && 'image' in source ? source.image : undefined;
+  /*
+   * A site that cannot reach the catalogue still lists its online cards from
+   * the saved status, but their pictures cannot load (ADR 0170). The page is
+   * drawn in their place and says why; the card's own action still works
+   * (ADR 0171 §12). A new picture is tried again.
+   */
+  const [failedPicture, setFailedPicture] = useState<string | null>(null);
+  const unavailable = picture !== undefined && failedPicture === picture['1x'];
+  const image = unavailable ? undefined : picture;
   const width = live !== undefined ? renderWidth(live.tokens, displayType, device) : PICTURE_WIDTH;
   /*
    * The width is the anchor's, so the design fills it: the render is handed
@@ -216,14 +226,16 @@ export function DesignStage({
                 alt=""
                 decoding="async"
                 referrerPolicy="no-referrer"
+                onError={() => setFailedPicture(image['1x'])}
               />
             )}
             {chrome}
           </div>
-        ) : (
+        ) : !unavailable && (
           <Skeleton aria-hidden="true" className="wconvert-stage__waiting" />
         )}
       </div>
+      {unavailable && size !== 'thumb' && <p className="wconvert-stage__unavailable">{__('Picture unavailable offline', 'wconvert')}</p>}
     </div>
   );
 }
