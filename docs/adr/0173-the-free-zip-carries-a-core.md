@@ -36,6 +36,18 @@ any of these holds:
      approval (ADR 0162), and a bundled setup must not name a hosted design
      (ADR 0157).
 
+> **Amended 25 October 2026, second cut.** Rule 5 is cleared for 23 of these:
+> the setups sent back for revision were reworked and approved
+> (`docs/reviews/held-designs-2026-10-25`), the drawings got reviewed rasters
+> (`docs/reviews/drawing-exports-2026-10-25`), and the three journeys ship
+> consent hidden. Of those 23, rules 1–4 keep five, and four more stay because
+> a bundled setup outside the catalogue still names them: `photo-offer`
+> (`category-promotion`) and three `journey-*` designs, which about 30 tests
+> read as the capture baseline and whose own setups have no catalogue brief
+> (`journey-email-only`, the fourth, was never cleared for the same reason).
+> **14 designs and 23 setups move**; the ZIP now keeps **57 designs and 79
+> setups**.
+
 The list proposed on the review page (claude.ai/artifact/1oFFNK2N783q99w7AAs6sm)
 applied rules 1–4 and was approved as 41 kept; rule 3's `centred-card` and
 rule 5 were found while building and keep 30 more. A design held by rule 5
@@ -45,7 +57,11 @@ or its setups are approved; nothing else needs to change.
 Everything else moved: `agenda-card`, `citrus-sunrise`, `colour-atlas`,
 `material-pair`, `programme-board`, `project-workboard`, `recipe-clipping`,
 `resource-index`, `room-checklist`, `service-ledger`, `supper-menu`,
-`trail-window`, `weekend-broadsheet`.
+`trail-window`, `weekend-broadsheet`. The second cut moved `appointment-note`,
+`benefit-grid`, `ink-split`, `makers-index`, `measurement-map`,
+`night-observatory`, `number-invitation`, `portrait-frame`, `preference-card`,
+`project-notebook`, `project-pair`, `reader-review`, `split-hero` and
+`studio-window`.
 
 A moved design keeps its id and revision; a moved setup keeps its id. Their
 photos are written back into the design as data URIs, since a hosted design is
