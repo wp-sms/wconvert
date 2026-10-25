@@ -44,7 +44,9 @@ setup/measurement background is optional, while consequential warnings stay visi
   formats**. A draft without a design starts at that same goal-aware library rather
   than presenting format as a new first question.
 - Browse designs keeps Format and source in the header; search, **For this goal /
-  All designs**, and **Filters** in the toolbar. When available, the fit control
+  All designs**, and **Filters** in the toolbar. *Amended by [ADR 0171](0171-one-template-gallery.md): it is "Change
+  template", and its one toolbar row is search, Format, a "Show" select ("For
+  “goal”" / "All templates"), More filters and the count.* When available, the fit control
   names the actual Goal rather than the abstract phrase “this goal”. Format remains
   a browsing filter within the selected Goal, not a mandatory creation step. Filter
   options are collapsed by default. Active filter chips and the live result count

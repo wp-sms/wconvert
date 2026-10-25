@@ -35,6 +35,8 @@ export interface GalleryToolbarProps {
   readonly choices: GalleryChoices;
   readonly onChange: (next: Partial<GalleryChoices>) => void;
   readonly shown: number;
+  /** How many templates there are, where a filter outside the toolbar already narrowed `cards`. */
+  readonly total?: number;
   /** Drawn only where locked cards are mixed in: a Free site with Pro hints. */
   readonly showPlan: boolean;
   /** Hidden inside a collection that has one format. */
@@ -55,7 +57,7 @@ const ASKS_CHIP = () => ({ email: __('Asks for email', 'wconvert'), phone: __('A
  * The gallery's one toolbar row (ADR 0171): search, Format, Plan, More filters
  * and the count — then, under it, a chip for each filter More filters holds.
  */
-export function GalleryToolbar({ cards, filters, choices, onChange, shown, showPlan, showFormat = true, scope, extras, extrasActive = [], onClear, disabled = false }: GalleryToolbarProps) {
+export function GalleryToolbar({ cards, filters, choices, onChange, shown, total = cards.length, showPlan, showFormat = true, scope, extras, extrasActive = [], onClear, disabled = false }: GalleryToolbarProps) {
   const ids = useId();
   const formats = optionCounts(cards, filters, 'format');
   const offered = DISPLAY_TYPES.filter(type => (formats[type] ?? 0) > 0 || choices.format === type);
@@ -117,15 +119,15 @@ export function GalleryToolbar({ cards, filters, choices, onChange, shown, showP
                 {businessOptions.map(([id, label]) => <option key={id} value={id}>{label}</option>)}
               </select>
             </label>}
-            {extras}
             <label className="flex items-center gap-2">
               <input type="checkbox" checked={choices.savedOnly} onChange={event => onChange({ savedOnly: event.target.checked })} />
               {__('Saved only', 'wconvert')}
             </label>
+            {extras}
           </PopoverContent>
         </Popover>
         <span className="wconvert-gallery-toolbar__count" role="status">
-          {sprintf(/* translators: 1: how many templates match, 2: how many there are. */ __('%1$s of %2$s', 'wconvert'), formatCount(shown), formatCount(cards.length))}
+          {sprintf(/* translators: 1: how many templates match, 2: how many there are. */ __('%1$s of %2$s', 'wconvert'), formatCount(shown), formatCount(total))}
         </span>
       </div>
       {active.length > 0 && <div className="wconvert-gallery-active" role="group" aria-label={__('Active filters', 'wconvert')}>

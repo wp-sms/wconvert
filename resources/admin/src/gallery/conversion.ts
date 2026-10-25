@@ -110,7 +110,7 @@ export function refusalFor(entry: TemplateIndexEntry, fit: Fit): string | null {
   if (entry.facets.captures.length === 0) {
     if (fit.bound) {
       return __(
-        'This design collects nothing, so there would be no submissions to send to this campaign’s destinations.',
+        'This template collects nothing, so there would be no submissions to send to this campaign’s destinations.',
         'wconvert',
       );
     }
@@ -145,8 +145,7 @@ export function refusalFor(entry: TemplateIndexEntry, fit: Fit): string | null {
  *
  * That was impossible before, because the swap was refused outright. It is now
  * something a merchant does casually, so it is said before the apply click
- * (ADR 0042 rule 3). The preview-first library puts it in the design detail;
- * a direct-choice caller keeps it on the card that applies it. It shipped for a
+ * (ADR 0042 rule 3), in the review beside the button that applies it. It shipped for a
  * day as one clause appended to the dialog's header, which was wrong three
  * ways: it showed before anything was picked, it stayed up while the merchant
  * hovered a design that changes nothing, and it could not say which direction

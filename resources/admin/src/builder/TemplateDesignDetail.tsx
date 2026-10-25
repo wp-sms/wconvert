@@ -217,8 +217,8 @@ export function TemplateDesignDetail({
             {mode === 'keep' && template && whatNeedsOfferAmount(template).map(problem => <p key={problem.said} role="status" className="text-note text-warning">{problem.said}</p>)}
             {mode === 'keep' && candidate?.value?.transfer !== undefined && (candidate.value.transfer.unplaced > 0 || candidate.value.transfer.unverified > 0) && (
               <div role="status" className="rounded-md border border-warning p-3 text-note">
-                {candidate.value.transfer.unplaced > 0 && <p className="m-0">{sprintf(/* translators: %d: how many of the campaign's pictures cannot be moved into the new design. */ _n('%d picture has no clear matching place in this design and will not carry over. Check the preview before applying.', '%d pictures have no clear matching place in this design and will not carry over. Check the preview before applying.', candidate.value.transfer.unplaced, 'wconvert'), candidate.value.transfer.unplaced)}</p>}
-                {candidate.value.transfer.unverified > 0 && <p className="m-0">{__('The original design is unavailable, so we cannot identify your picture changes. Re-add your pictures after applying, or keep your current template.', 'wconvert')}</p>}
+                {candidate.value.transfer.unplaced > 0 && <p className="m-0">{sprintf(/* translators: %d: how many of the campaign's pictures cannot be moved into the new design. */ _n('%d picture has no clear matching place in this template and will not carry over. Check the preview before applying.', '%d pictures have no clear matching place in this template and will not carry over. Check the preview before applying.', candidate.value.transfer.unplaced, 'wconvert'), candidate.value.transfer.unplaced)}</p>}
+                {candidate.value.transfer.unverified > 0 && <p className="m-0">{__('The original template is unavailable, so we cannot identify your picture changes. Re-add your pictures after applying, or keep your current template.', 'wconvert')}</p>}
               </div>
             )}
             <div className="wconvert-design-detail__actions">

@@ -1,6 +1,6 @@
 # 0171: One template gallery
 
-Accepted 2026-10-25. Amends 0026, 0069, 0085, 0086, 0112, 0116, 0132, 0147, 0156 §9 and 0163.
+Accepted 2026-10-25. Amends 0026, 0039, 0043, 0069, 0085, 0086, 0087, 0112, 0116, 0132, 0134, 0137, 0147, 0156 §9 and 0163.
 
 The approved prototype (v5, 2026-10-24, branch `prototype/template-gallery`)
 replaces the creation flow's step 2 and the editor's design picker with one
@@ -103,7 +103,9 @@ gone. Look's **Change template** opens the gallery above, one card per design
    added", "Use with email form" (ADR 0163). The fit filter is the editor's
    alone; creation's templates are already the goal's.
 2. **The template in use comes first**, marked "Current template", with no
-   action; then the ones that fit, then the index's order. Format starts at
+   action; then the ones that fit, then the index's order. "For “goal”" is a
+   filter like the others, so the count still says how many templates there
+   are ("3 of 50"). Format starts at
    All formats, as the prototype does; picking a template in another format
    says "Switch to …" in its review. Each opening starts unfiltered.
 3. **More filters adds the editor's extras**: the library's Industry, Occasion

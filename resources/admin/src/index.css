@@ -1944,13 +1944,10 @@ body:has(#wconvert-admin) #wpbody-content {
 .wconvert-goal-card:has(.wconvert-goal-card__action:not([aria-disabled='true'])):hover { box-shadow: 0 3px 12px color-mix(in srgb, var(--action) 8%, transparent); }
 .wconvert-goal-card:has(.wconvert-goal-card__action:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
 .wconvert-goal-card--locked .wconvert-goal-card__icon { color: var(--muted-foreground); }
-
 .wconvert-creation .wconvert-picker__search { min-inline-size: 0; }
-
 @media (max-width: 640px) {
 .wconvert-creation__steps { padding: 1rem 1rem 0; }
 .wconvert-creation__steps ol { gap: 1rem; }
-
 .wconvert-creation select.wconvert-picker__select { min-inline-size: 0; max-inline-size: 100%; }
 }
 
@@ -2007,8 +2004,6 @@ body:has(#wconvert-admin) #wpbody-content {
 @media (max-width: 600px) {
   .wconvert-picker__body { padding: 0.875rem; }
   .wconvert-picker__search { flex-basis: 100%; }
-
-  .wconvert-picker__hint { display: none; }
   .wconvert-design-detail__actions { display: flex; }
 }
 
@@ -5763,7 +5758,6 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-packs__empty :is(h3, h4) { margin: 0; font-size: var(--text-heading); }
 .wconvert-packs__empty p { max-inline-size: 48ch; margin: 0; color: var(--muted-foreground); font-size: var(--text-body); }
 .wconvert-packs__loading { display: grid; gap: 1rem; }
-
 @media (max-width: 639px) {
   .wconvert-packs__grid { grid-template-columns: minmax(0, 1fr); }
 }
@@ -5941,7 +5935,6 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-option-strip > label:has(input:checked) { color: var(--primary-foreground); background: var(--action); border-color: var(--action); }
 .wconvert-option-strip > label:has(input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
 .wconvert-option-strip > label:has(input:disabled) { opacity: .5; cursor: default; }
-
 /*
  * A one-of-N strip that scrolls INSIDE itself on a phone rather than wrapping
  * (GUIDELINES §16, amended). Leads' purpose strip left "Enquiries" a line of
@@ -5958,7 +5951,6 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-preview-controls > .wconvert-preview-controls__screen { padding-inline-start: .75rem; border-inline-start: 1px solid var(--border); }
 .wconvert-preview-controls__screen > span { color: var(--muted-foreground); font-size: var(--text-note); }
 .wconvert-preview-controls__fit { margin-inline-start: auto; }
-
 @media (max-width: 639px) { .wconvert-preview-controls > .wconvert-preview-controls__screen { padding-inline-start: 0; border-inline-start: 0; } }
 /* The utility layer is necessary for shared Button/Input important sizing. */
 @layer utilities {

@@ -95,6 +95,11 @@ describe('the gallery it opens on', () => {
     expect(screen.getByRole('option', { name: 'For “Grow your email list”' })).toBeInTheDocument();
   });
 
+  it('counts every template, the goal filter included', async () => {
+    render(<Editor entries={[CENTRED, OFFER]} />);
+    expect(screen.getByRole('status')).toHaveTextContent('1 of 2');
+  });
+
   it('puts the template in use first, marked, with nothing to press', async () => {
     const second = local('stacked-signup', 'Stacked signup');
     render(<Editor entries={[second, CENTRED]} chosen="centred-card" />);
@@ -207,8 +212,16 @@ describe('the online library', () => {
     expect(catalog.refreshCatalog).not.toHaveBeenCalled();
   });
 
-  it('checks for new templates when it opens, once', async () => {
-    render(<Editor entries={[CENTRED]} />);
+  it('checks for new templates when it opens, once, and reloads only when the library changed', async () => {
+    const onLibraryChanged = vi.fn().mockResolvedValue(undefined);
+    const dialog = (catalogCheckedAt: string) => <TemplatePickerDialog open onOpenChange={vi.fn()} onLibraryChanged={onLibraryChanged}
+      index={{ templates: [CENTRED], labels: LABELS, facets: {}, catalog: { ...CATALOG()!, checked_at: catalogCheckedAt } }} trees={TREES}
+      displayType="popup" chosen={undefined} fit={EMAIL_LIST} busy={false} onChoose={vi.fn()} onNear={vi.fn()} />;
+    const same = render(dialog('2026-10-20T00:00:00+00:00'));
     await waitFor(() => expect(catalog.refreshCatalog).toHaveBeenCalledExactlyOnceWith(true));
+    expect(onLibraryChanged).not.toHaveBeenCalled();
+    same.unmount();
+    render(dialog('2026-10-19T00:00:00+00:00'));
+    await waitFor(() => expect(onLibraryChanged).toHaveBeenCalledTimes(1));
   });
 });
