@@ -209,8 +209,9 @@ work to 360px.
   its `Preview` only while near the viewport and takes it down again;
   `content-visibility: auto` plus `contain-intrinsic-size` stops an off-screen
   card that still exists from being laid out; trees are fetched for what is
-  visible. *(Amended by [ADR 0171](0171-one-template-gallery.md): a page's trees
-  are fetched together when it is drawn; only drawing waits for the viewport.)* Remounting is affordable because `mount()` reads nothing ambient — no
+  visible. *(Amended by [ADR 0171](0171-one-template-gallery.md) §11: a page's
+  trees are fetched together when it is drawn; only drawing waits for the
+  viewport.)* Remounting is affordable because `mount()` reads nothing ambient — no
   network, no layout measurement — so a card that comes back draws the same
   pixels. The alternative was a dependency inside a bundle whose halves are
   reported at every build (ADR 0038).

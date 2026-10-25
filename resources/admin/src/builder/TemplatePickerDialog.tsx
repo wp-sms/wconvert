@@ -20,6 +20,7 @@ import { GalleryCard, TemplateAction } from '../gallery/GalleryCard';
 import { GalleryGrid, PER_PAGE } from '../gallery/GalleryGrid';
 import { GalleryToolbar, NO_CHOICES, type ActiveFilter, type GalleryChoices } from '../gallery/GalleryToolbar';
 import { InspectDialog } from '../gallery/InspectDialog';
+import { useAskForPage } from '../gallery/useAskForPage';
 import '../gallery/gallery.css';
 
 export interface TemplatePickerDialogProps {
@@ -185,12 +186,7 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onLibraryCh
   const inspected = all.find(card => card.key === inspecting) ?? null;
   // Opening a design moves the caret to its name, as the setup preview does.
   useEffect(() => { if (reviewing) title.current?.focus({ preventScroll: true }); }, [reviewing]);
-  // The page's live cards are asked for at once, so a page is one trees request
-  // (useTemplateTrees batches a tick); a stage still draws only near the viewport.
-  const wanted = open && reviewed === undefined ? paged.filter(card => card.source === 'local' && !trees.has(card.key)).map(card => card.key).join(' ') : '';
-  useEffect(() => {
-    for (const key of wanted.split(' ')) if (key !== '') onNear(key);
-  }, [wanted, onNear]);
+  useAskForPage(open && reviewed === undefined ? paged.filter(card => card.source === 'local').map(card => card.key) : [], onNear);
 
   return (
     <Dialog open={open} onOpenChange={(next) => {

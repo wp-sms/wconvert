@@ -40,8 +40,11 @@ final class GoalGallery
             'online' => $status === null ? [] : $this->online($goal, $status, array_column($setups, 'id')),
             // `enabled` is TemplateCatalog::configured(): switched on and given a source.
             // `checked_at` tells step 2 whether its own refresh brought a newer list.
-            'library' => ['configured' => (bool) ($status['enabled'] ?? false), 'consent' => (string) ($status['consent'] ?? 'unanswered'),
-                'checked_at' => $status['checked_at'] ?? null],
+            'library' => [
+                'configured' => (bool) ($status['enabled'] ?? false),
+                'consent' => (string) ($status['consent'] ?? 'unanswered'),
+                'checked_at' => is_string($status['checked_at'] ?? null) ? $status['checked_at'] : null,
+            ],
         ];
     }
 

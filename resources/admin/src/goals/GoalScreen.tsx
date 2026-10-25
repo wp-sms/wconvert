@@ -25,6 +25,7 @@ import { GalleryGrid, GallerySkeleton, PER_PAGE } from '../gallery/GalleryGrid';
 import { GalleryToolbar, NO_CHOICES, type GalleryChoices } from '../gallery/GalleryToolbar';
 import { CollectionBar, CollectionShelf, ShelfOff } from '../gallery/CollectionShelf';
 import { InspectDialog } from '../gallery/InspectDialog';
+import { useAskForPage } from '../gallery/useAskForPage';
 import '../gallery/gallery.css';
 
 /**
@@ -129,7 +130,8 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
    * (ADR 0171). A newer list is read once; a failure is quiet, and the list
    * already saved stays the answer. The previews already here are kept: a
    * refresh changes the online cards, and a local setup whose revision moved
-   * is asked for again by `useSetupPreviews` itself.
+   * is asked for again by `useSetupPreviews` itself. Once per visit: the
+   * library is the site's, not the goal's.
    */
   const checked = useRef(false);
   const library = gallery.status === 'ready' ? gallery.data.library : null;
@@ -286,15 +288,9 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
   const pages = Math.max(1, Math.ceil(shown.length / PER_PAGE));
   const shownPage = Math.min(page, pages - 1);
   const paged = shown.slice(shownPage * PER_PAGE, (shownPage + 1) * PER_PAGE);
-  // The page's local cards and the shelf's covers are asked for at once, so a
-  // page is one previews request (useSetupPreviews batches a tick); a stage
-  // still draws only near the viewport. A re-read gallery asks again for what changed.
+  // The shelf's covers ride with the page: past 24 ids they are a second request.
   const covers = !pinned && showShelf ? shelf.flatMap(({ members }) => shelfCovers(members, cards)) : [];
-  const wanted = [...paged, ...covers].filter(card => card.source === 'local').map(card => card.key).join(' ');
-  const { onNear } = previews;
-  useEffect(() => {
-    for (const key of wanted.split(' ')) if (key !== '') onNear(key);
-  }, [wanted, onNear, setups]);
+  useAskForPage([...paged, ...covers].filter(card => card.source === 'local').map(card => card.key), previews.onNear, setups);
 
   if (goal === null) {
     // A linked design offers only the goals it can serve (ADR 0085).

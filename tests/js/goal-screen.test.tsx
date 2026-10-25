@@ -446,6 +446,7 @@ describe('the online library', () => {
     expect(await cardOf('Welcome discount')).toBeVisible();
     // The setup's revision did not move, so its preview is not asked for twice.
     expect(goals.previewPlaybooks).toHaveBeenCalledOnce();
+    expect(goals.readGoalGallery).toHaveBeenCalledTimes(2);
   });
 
   it('reads nothing again when the check brought nothing new', async () => {
@@ -536,6 +537,23 @@ describe('collections', () => {
     expect(screen.getByRole('heading', { name: 'Countdown bar' })).toBeVisible();
     await userEvent.click(screen.getByRole('button', { name: 'Show all templates' }));
     expect(await cardOf('Other')).toBeVisible();
+  });
+
+  it('asks for the shelf’s covers with the page, even when they are on a later one', async () => {
+    vi.stubGlobal('IntersectionObserver', class { observe() {} disconnect() {} });
+    onTestFinished(() => { vi.unstubAllGlobals(); });
+    const metadata = Array.from({ length: 30 }, (_, at) => ({ ...PLAYBOOK, id: `start-${at}`, name: `Start ${at}`, template_id: `card-${at}`, design_key: `registered:card-${at}`, revision: `revision-${at}`, template: undefined }));
+    const data = await picker.pickerData();
+    picker.pickerData.mockResolvedValue({ ...data, collections: [{ ...collection, items: [{ setup_id: 'start-28', stage: 'before' }, { setup_id: 'start-29', stage: 'during' }] }] });
+    goals.readGoalGallery.mockResolvedValue(galleryOf(metadata));
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    await screen.findByRole('button', { name: 'Sale planning, 2 templates' });
+    await waitFor(() => expect(goals.previewPlaybooks.mock.calls.flatMap(call => call[1])).toContain('start-29'));
+    const asked = goals.previewPlaybooks.mock.calls.flatMap(call => call[1]);
+    expect(asked).toHaveLength(26);
+    expect(asked).not.toContain('start-24');
+    expect(goals.previewPlaybooks.mock.calls.every(call => call[1].length <= 24)).toBe(true);
   });
 
   it('opens a seasonal collection whose event overlaps the occasion even when it started first', async () => {

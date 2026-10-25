@@ -92,10 +92,16 @@ rather than a preference. Picker preferences keep `saved`, `hidden` and
 
 10. **Step 2 checks the library too.** Once the gallery is read with consent
     `yes`, step 2 sends the same `refresh` with `if_stale` that opening Change
-    template does — a no-op inside twelve hours. When `checked_at` comes back
-    changed, the gallery is read once more; when it does not, nothing is. A
-    failure (the server's five-minute backoff, `WP_HTTP_BLOCK_EXTERNAL`, the
-    twenty-second budget) says nothing: the saved list stays the answer.
+    template does — a no-op inside twelve hours — once per visit, since the
+    library is the site's and not the goal's. When `checked_at` comes back
+    changed, the gallery is read once more; when it does not, nothing is. The
+    previews already fetched are kept: a refresh changes the online cards, and
+    a local setup whose revision moved is fetched again anyway (resetting them
+    re-downloaded a whole page, ~4.7 MB on a photo-heavy site). A failure (the
+    server's five-minute backoff, `WP_HTTP_BLOCK_EXTERNAL`, the twenty-second
+    budget) says nothing: the saved list stays the answer. A 304 also moves
+    `checked_at`, so the first visit after twelve hours re-reads the gallery
+    even when nothing changed — one GET, no previews.
 11. **A page's trees are one request.** The page's local cards, and in step 2
     the shelf's covers, are asked for together as soon as the page is drawn;
     `useSetupPreviews` and `useTemplateTrees` batch a tick, inside the routes'
@@ -103,7 +109,14 @@ rather than a preference. Picker preferences keep `saved`, `hidden` and
     request). The stage still draws only near the viewport (ADR 0170 §7).
     Before this, each scroll moment made its own request of one to three. Only
     the plugin's local preview routes are asked, so the catalogue's design
-    downloads, and its counts, are unchanged.
+    downloads, and its counts, are unchanged. An online card asks for no tree
+    at all: it is the catalogue's picture, and asking the trees route for its
+    id failed and covered the picture with "Preview could not be loaded."
+12. **An online card whose picture cannot load says so.** A site offline, or
+    blocking outgoing requests, still lists online cards from its saved status,
+    but their pictures fail. The stage keeps the ghost page and says "Picture
+    unavailable offline" (no words on a thumb); the card's action is unchanged
+    and says its own error, with Try again, if it is used.
 
 Inspection is a larger look at one card: Desktop/Mobile, Fit/Actual size, its
 screens, its gist and the same one action. The setup facts list that lived

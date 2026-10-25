@@ -108,15 +108,16 @@ export function DesignStage({
   }, [near, onNear]);
 
   const live = source !== undefined && 'live' in source ? source.live.template : undefined;
-  const shown = source !== undefined && 'image' in source ? source.image : undefined;
+  const picture = source !== undefined && 'image' in source ? source.image : undefined;
   /*
    * A site that cannot reach the catalogue still lists its online cards from
    * the saved status, but their pictures cannot load (ADR 0170). The page is
-   * drawn in their place and says why; the card's own action still works.
+   * drawn in their place and says why; the card's own action still works
+   * (ADR 0171 §12). A new picture is tried again.
    */
-  const [lost, setLost] = useState<string | null>(null);
-  const unavailable = shown !== undefined && lost === shown['1x'];
-  const image = unavailable ? undefined : shown;
+  const [failedPicture, setFailedPicture] = useState<string | null>(null);
+  const unavailable = picture !== undefined && failedPicture === picture['1x'];
+  const image = unavailable ? undefined : picture;
   const width = live !== undefined ? renderWidth(live.tokens, displayType, device) : PICTURE_WIDTH;
   /*
    * The width is the anchor's, so the design fills it: the render is handed
@@ -225,7 +226,7 @@ export function DesignStage({
                 alt=""
                 decoding="async"
                 referrerPolicy="no-referrer"
-                onError={() => setLost(image['1x'])}
+                onError={() => setFailedPicture(image['1x'])}
               />
             )}
             {chrome}
