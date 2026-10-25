@@ -440,6 +440,19 @@
   --ghost-ink: #e9e7e2;
   --ghost-soft: #f2f1ed;
   --ghost-dim: rgb(48 39 32 / 0.32);
+  /* A recommended template's chip: the brand's lime, quietened (ADR 0171). */
+  --recommended-surface: #f1f8c8;
+  --recommended-foreground: #485000;
+  /* A saved template's star (ADR 0171): gold, not the warning amber. */
+  --saved: #b7791f;
+  /* The open collection and its tile: the action colour, barely there. */
+  --action-surface: #f5fafb;
+  --action-border: #c6dfe6;
+  /* An ice chip's edge and hover, a step deeper than --ice. */
+  --ice-strong: #9cc7d3;
+  --ice-hover: #cfe5ec;
+  /* The inspect view's preview column, a shade off the card. */
+  --inspect-surface: #faf9f6;
 
   /*
    * `--border` draws dividers and card edges, which are decoration. `--input`
@@ -1448,7 +1461,7 @@ body:has(#wconvert-admin) #wpbody-content {
     inline-size: min(var(--wconvert-picker-width, 80rem), calc(100vw - 2rem)) !important;
     max-inline-size: calc(100vw - 2rem) !important;
   }
-  .wconvert-picker.wconvert-setup-detail[data-slot="dialog-content"] { padding: 0 !important; gap: 0 !important; overflow: hidden !important; }
+
   :is(#wconvert-admin, [data-slot="dialog-content"]) .wconvert-picker__back[data-slot="button"] { min-block-size: var(--control-height-sm) !important; block-size: auto !important; padding-block: .3125rem !important; }
 
 }
@@ -1909,7 +1922,6 @@ body:has(#wconvert-admin) #wpbody-content {
   background: var(--surface);
 }
 
-
 /* The one-time question before any online design loads. */
 .wconvert-library-consent {
   display: flex;
@@ -1932,29 +1944,6 @@ body:has(#wconvert-admin) #wpbody-content {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  min-inline-size: 0;
-}
-
-.wconvert-online-setups {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.wconvert-online-setups__row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem 0.75rem;
-  padding: 0.75rem 0;
-  border-block-end: 1px solid var(--border);
-}
-
-.wconvert-online-setups__row > :first-child {
-  flex: 1 1 12rem;
   min-inline-size: 0;
 }
 
@@ -2092,13 +2081,7 @@ body:has(#wconvert-admin) #wpbody-content {
 .wconvert-picker__extra { max-block-size: 40dvh; overflow-y: auto; }
 /* Beats the inline disclosure's own body padding by owning the pair, not by !important (§21). */
 .wconvert-disclosure.wconvert-picker__more > .wconvert-picker__extra { display: grid; gap: 1rem; margin-block-start: .25rem; padding: 1rem 1.25rem; border-radius: var(--radius); background: var(--surface); }
-.wconvert-filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); align-items: start; gap: 1rem 1.5rem; }
-.wconvert-filter-field { display: grid; gap: .375rem; min-inline-size: 0; margin: 0; padding: 0; border: 0; }
-.wconvert-filter-field > span, #wconvert-admin .wconvert-filter-field > legend { padding: 0; color: var(--muted-foreground); font-size: var(--text-micro); font-weight: 600; line-height: var(--text-micro--line-height, 1.4); letter-spacing: .04em; text-transform: uppercase; }
-/* A legend sits outside the fieldset's flow; floating it lines it up with the other captions. */
-#wconvert-admin .wconvert-filter-field > legend { float: inline-start; inline-size: 100%; margin-block-end: .375rem; }
-#wconvert-admin fieldset.wconvert-filter-field > label { min-block-size: 2rem; display: flex; align-items: center; clear: both; }
-.wconvert-filter-field > select { inline-size: 100%; max-inline-size: none; background-color: var(--card); }
+
 .wconvert-picker__active { gap: 0.375rem; }
 .wconvert-picker__active-filter { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.25rem 0.5rem; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--foreground); font-size: var(--text-note); cursor: pointer; }
 .wconvert-picker__active-filter:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
@@ -2131,20 +2114,6 @@ body:has(#wconvert-admin) #wpbody-content {
 .wconvert-picker__facet > .wconvert-picker__more > summary { grid-template-columns: max-content 16px; gap: .375rem; padding-inline: .25rem; color: var(--action); font-size: var(--text-note); }
 .wconvert-picker__facet > .wconvert-picker__more[open] { order: 3; flex-basis: 100%; }
 .wconvert-picker__count { order: 2; margin-inline-start: auto; color: var(--muted-foreground); font-size: var(--text-note); font-variant-numeric: tabular-nums; }
-/* One setup to start from, drawn wide: the design beside its name and two actions. */
-.wconvert-start-here { display: grid; gap: .75rem; margin-block-end: 1.5rem; }
-.wconvert-start-here__title { margin: 0; color: var(--muted-foreground); font-size: var(--text-micro); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
-.wconvert-start-here > .wconvert-start-here__title:last-child { margin-block-start: .75rem; }
-/* "Works with this goal": another Goal's setups, converted on the way in (ADR 0163). */
-.wconvert-works-with { margin-block-start: 1.5rem; border-block-start: 1px solid var(--border); }
-.wconvert-works-with p { margin-block: .25rem .75rem; }
-.wconvert-gallery.wconvert-start-here__card { grid-template-columns: minmax(0, 1fr); }
-.wconvert-start-here__card .wconvert-gallery__actions { justify-content: flex-start; gap: .5rem; }
-@media (min-width: 900px) {
-  .wconvert-start-here__card > .wconvert-gallery__card { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(16rem, 1fr); border-color: var(--action); }
-  .wconvert-start-here__card .wconvert-gallery__caption { justify-content: center; border-block-start: 0; border-inline-start: 1px solid var(--border); padding: 1.5rem; }
-  .wconvert-start-here__card .wconvert-gallery__identity h3 { font-size: var(--text-section); }
-}
 @media (max-width: 640px) {
 .wconvert-creation__steps { padding: 1rem 1rem 0; }
 .wconvert-creation__steps ol { gap: 1rem; }
@@ -2260,7 +2229,6 @@ body:has(#wconvert-admin) #wpbody-content {
 .wconvert-gallery__card[data-refused] .wconvert-preview {
   opacity: 0.55;
 }
-
 
 /* ---------------------------------------------------------------------------
  * THE BUILDER: TABS BESIDE A PINNED PREVIEW.
@@ -2647,8 +2615,6 @@ body:has(#wconvert-admin) #wpbody-content {
   border-radius: var(--radius);
   overflow: auto;
 }
-
-
 
 /* ---------------------------------------------------------------------------
  * THE BLOCK TREE: A TREEGRID, INDENTED BY A CUSTOM PROPERTY.
@@ -3352,8 +3318,6 @@ body:has(#wconvert-admin) #wpbody-content {
   white-space: nowrap;
 }
 
-
-
 /*
  * Which pane of a `split` a block sits in. Named first and second rather than
  * left and right, which is the only naming that survives `fa_IR` — the panes
@@ -3679,7 +3643,6 @@ body:has(#wconvert-admin) #wpbody-content {
 .wconvert-theme__swatch + .wconvert-theme__swatch {
   margin-inline-start: -0.3125rem;
 }
-
 
 /* ---------------------------------------------------------------------------
  * ONE CONTAINER OWNS THE RHYTHM. ITS CHILDREN OWN NONE.
@@ -4369,7 +4332,6 @@ body:has(#wconvert-admin) #wpbody-content {
   align-items: center;
   gap: 12px;
 }
-
 
 .wconvert-position__grid {
   display: grid;
@@ -5525,7 +5487,6 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   justify-self: start;
 }
 
-
 /* ---------------------------------------------------------------------------
  * THE ROW ABOVE THE THREE PANES, AND THE SCOPE PANEL UNDER IT.
  *
@@ -5941,7 +5902,6 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   letter-spacing: 0.02em;
 }
 
-
 /*
  * What is stored for this box, as data.
  *
@@ -6019,7 +5979,6 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 @media (max-width: 639px) {
   .wconvert-packs__grid { grid-template-columns: minmax(0, 1fr); }
 }
-
 
 /* Shared pointer floor: scope controls own density; coarse pointers need room.
  * Keep this in the same important layer as control scope rules so it wins. */
@@ -6168,31 +6127,8 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 /* Discovery controls qualify the library: use the shared compact toolbar scope. */
 .wconvert-picker__search { min-inline-size: 0; }
 .wconvert-picker__search input { box-sizing: border-box; }
-.wconvert-collections, .wconvert-collection-detail, .wconvert-picker__notice { margin: 1.25rem 1.5rem; }
-.wconvert-collections__heading { display: flex; justify-content: space-between; flex-wrap: wrap; align-items: center; gap: .75rem; margin-block-end: .75rem; }
-.wconvert-collections__heading h3 { margin: 0; font-size: var(--text-heading); font-weight: 600; }
-.wconvert-collections__shelf { display: flex; gap: 1rem; overflow-x: auto; scroll-snap-type: x proximity; padding: .25rem .125rem .75rem; }
-.wconvert-collections__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: 1rem; }
-.wconvert-collection { position: relative; flex: 0 0 calc((100% - 2rem) / 2.25); min-inline-size: 17rem; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; scroll-snap-align: start; background: var(--card); }
-.wconvert-collection__open { display: flex; flex-direction: column; inline-size: 100%; block-size: 100%; text-align: start; cursor: pointer; border: 0; padding: 0; background: transparent; color: var(--foreground); }
-.wconvert-collection__art { position: relative; display: block; inline-size: 100%; block-size: 7.5rem; overflow: hidden; background: #302720; }
-.wconvert-collection__art > span { position: absolute; display: block; background: #faf6ed; border-radius: .375rem; inline-size: 35%; block-size: 72%; inset-block-start: 28%; inset-inline-start: 16%; transform: rotate(-12deg); }
-.wconvert-collection__art > span:nth-child(2) { inset-inline-start: 40%; inset-block-start: 14%; background: #e2f475; transform: rotate(12deg); }
-.wconvert-collection__art > span:nth-child(3) { inline-size: 22%; block-size: .375rem; inset-inline-start: 45%; inset-block-start: 39%; background: #302720; transform: rotate(12deg); box-shadow: .2rem 1rem 0 #302720; }
-.wconvert-collection--launch .wconvert-collection__art { background: #c7d7c8; }
-.wconvert-collection--launch .wconvert-collection__art > span { background: #fffaf0; }
-.wconvert-collection--services .wconvert-collection__art { background: #d9e6f4; }
-.wconvert-collection--services .wconvert-collection__art > span { background: #fff; transform: none; inset-block-start: 22%; }
-.wconvert-collection--services .wconvert-collection__art > span:nth-child(2) { background: #7291b2; transform: none; inset-block-start: 40%; }
-.wconvert-collection--reading .wconvert-collection__art { background: #ece5d8; }
-.wconvert-collection--reading .wconvert-collection__art > span { background: #fffcf5; transform: rotate(-5deg); }
-.wconvert-collection--reading .wconvert-collection__art > span:nth-child(2) { background: #c5b592; transform: rotate(5deg); }
-.wconvert-collection__copy { display: flex; flex-direction: column; gap: .5rem; padding: 1rem 1.125rem; }
-.wconvert-collection__copy strong { font-size: var(--text-heading); line-height: 1.4; }
-.wconvert-collection__copy > span { font-size: var(--text-note); line-height: 1.55; }
-.wconvert-collection__count { color: var(--muted-foreground); }
-.wconvert-collection__hide { position: absolute; inset-inline-end: .5rem; inset-block-start: .5rem; display: grid; place-items: center; inline-size: 2rem; block-size: 2rem; border: 1px solid var(--input); border-radius: 50%; background: #fff; color: var(--foreground); cursor: pointer; }
-.wconvert-collection__open:focus-visible { outline: 3px solid var(--ring); outline-offset: -3px; }
+.wconvert-picker__notice { margin: 1.25rem 1.5rem; }
+
 .wconvert-picker__notice { border: 1px solid var(--border); background: var(--surface); border-radius: var(--radius); padding: 1rem; font-size: var(--text-note); }
 .wconvert-picker__pagination { display: flex; flex: none; flex-wrap: wrap; align-items: center; justify-content: center; gap: .75rem; padding: .75rem 1rem; border-block-start: 1px solid var(--border); background: var(--card); font-size: var(--text-note); }
 .wconvert-picker-settings { display: flex; flex-direction: column; gap: 1.25rem; }
@@ -6208,36 +6144,23 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-occasion-list li { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; padding-block: .75rem; border-block-end: 1px solid var(--border); }
 .wconvert-occasion-list li > div { flex: 1; min-inline-size: min(12rem, 100%); display: flex; flex-direction: column; gap: .25rem; overflow-wrap: anywhere; }
 .wconvert-occasion-list li > div > span { font-size: var(--text-note); color: var(--muted-foreground); }
-.wconvert-occasion-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; align-items: end; inline-size: 100%; }
-.wconvert-occasion-form > :first-child, .wconvert-occasion-form__actions { grid-column: 1 / -1; }
-.wconvert-occasion-form__actions { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; }
-.wconvert-setup-preview { min-inline-size: 0; }
-.wconvert-setup-preview > .wconvert-preview-frame { margin-block: 1rem; }
+
 /* Shared fitting is used by setup inspection, editor replacement and pack previews. */
 /* The frame is the box an inspect-size stage fills (ADR 0170); the stage scrolls itself at actual size. */
 .wconvert-preview-frame { flex: 1; display: flex; min-inline-size: 0; min-block-size: 16rem; overflow: hidden; background: var(--stage); }
 .wconvert-preview-frame > .wconvert-stage { flex: 1; aspect-ratio: auto; block-size: auto; min-block-size: 0; }
 .wconvert-preview-frame > .wconvert-stage:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
 .wconvert-preview-frame__hint { margin: .5rem 0; color: var(--muted-foreground); font-size: var(--text-note); line-height: 1.5; }
-.wconvert-setup-detail { --wconvert-picker-width: 72rem; padding: 1.5rem; overscroll-behavior: contain; scrollbar-gutter: stable; }
-.wconvert-setup-detail > [data-slot="dialog-header"] { margin-block-end: 0; }
-.wconvert-setup-detail [data-slot="dialog-title"]:focus { outline: none; }
-.wconvert-setup-detail > .wconvert-picker__back { margin-block-start: 1.25rem; }
+
 @media (max-width: 639px) {
-  .wconvert-collection { flex-basis: 86%; min-inline-size: 0; }
-  .wconvert-collections, .wconvert-collection-detail, .wconvert-picker__notice { margin-inline: 1rem; }
+
+  .wconvert-picker__notice { margin-inline: 1rem; }
   .wconvert-picker__search { flex-basis: 100%; }
-  .wconvert-setup-detail { padding: 1rem; }
-  .wconvert-occasion-form { grid-template-columns: minmax(0, 1fr); }
+
   .wconvert-picker__secondary > label { flex-basis: 100%; justify-content: space-between; }
 }
 
-.wconvert-picker__save, .wconvert-collections__heading button[data-size=icon], .wconvert-collection__hide { min-inline-size: 2.75rem; min-block-size: 2.75rem; }
-
-.wconvert-setup-detail .wconvert-collection-detail { margin: 0; }
-.wconvert-setup-detail .wconvert-picker__controls { padding-inline: 0; }
-
-
+.wconvert-picker__save { min-inline-size: 2.75rem; min-block-size: 2.75rem; }
 
 /* Native selection behavior, button-like chips; never mix WP pseudo dots with UA radios. */
 .wconvert-option-strip { display: flex; flex-wrap: wrap; gap: .375rem; font-size: var(--text-note); }
@@ -6261,8 +6184,8 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   .wconvert-option-strip--scroll { flex-wrap: nowrap; overflow-x: auto; margin: -0.25rem; padding: 0.25rem; }
   .wconvert-option-strip--scroll > label { flex: none; }
 }
-.wconvert-preview-controls, .wconvert-setup-preview__tools { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; min-inline-size: 0; }
-:is(.wconvert-setup-preview__tools, .wconvert-design-detail__controls) > .wconvert-preview-controls { flex: 1 1 auto; }
+.wconvert-preview-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; min-inline-size: 0; }
+
 .wconvert-preview-controls > .wconvert-preview-controls__screen { padding-inline-start: .75rem; border-inline-start: 1px solid var(--border); }
 .wconvert-preview-controls__screen > span { color: var(--muted-foreground); font-size: var(--text-note); }
 .wconvert-preview-controls__fit { margin-inline-start: auto; }
@@ -6283,14 +6206,13 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 @media (max-width: 639px) { .wconvert-preview-controls > .wconvert-preview-controls__screen { padding-inline-start: 0; border-inline-start: 0; } }
 /* The utility layer is necessary for shared Button/Input important sizing. */
 @layer utilities {
-  :is(#wconvert-admin, [data-slot="dialog-content"]) :is(.wconvert-picker__controls, .wconvert-preview-controls, .wconvert-setup-preview__tools, .wconvert-design-detail__header, .wconvert-design-detail__controls, .wconvert-picker__pagination, .wconvert-comparison-tray, .wconvert-setup-detail__actions) :is([data-slot="button"], [data-slot="input"], select) { line-height: 1.4 !important; min-block-size: var(--control-height-sm) !important; block-size: auto !important; padding-block: .3125rem !important; }
-  :is(#wconvert-admin, [data-slot="dialog-content"]) :is(.wconvert-picker__controls, .wconvert-preview-controls, .wconvert-setup-preview__tools, .wconvert-design-detail__header, .wconvert-design-detail__controls, .wconvert-picker__pagination, .wconvert-comparison-tray, .wconvert-setup-detail__actions) select { font-size: var(--text-body) !important; }
+
   /* A 16px phone input must not grow beyond its adjacent 32px controls. */
   :is(#wconvert-admin, [data-slot="dialog-content"]) .wconvert-picker__controls [data-slot="input"] { block-size: var(--control-height-sm) !important; line-height: 1.25 !important; }
   @media (pointer: coarse) {
     :is(#wconvert-admin, [data-slot="dialog-content"]) .wconvert-picker__controls [data-slot="input"] { block-size: 2.75rem !important; }
     :is(#wconvert-admin, [data-slot="dialog-content"]) .wconvert-picker__back[data-slot="button"] { min-block-size: 2.75rem !important; }
-    :is(#wconvert-admin, [data-slot="dialog-content"]) :is(.wconvert-picker__controls, .wconvert-preview-controls, .wconvert-setup-preview__tools, .wconvert-design-detail__header, .wconvert-design-detail__controls, .wconvert-picker__pagination, .wconvert-comparison-tray, .wconvert-setup-detail__actions) :is([data-slot="button"], [data-slot="input"], select) { min-block-size: 2.75rem !important; }
+
   }
 }
 @media (pointer: coarse) { .wconvert-option-strip > label, .wconvert-compare-choice { min-block-size: 2.75rem; } }
@@ -6299,31 +6221,15 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-comparison-tray__selection { flex: 1 1 14rem; min-inline-size: 0; display: grid; gap: .25rem; font-size: var(--text-note); }
 .wconvert-comparison-tray__selection > span { color: var(--muted-foreground); overflow-wrap: anywhere; }
 
-.wconvert-setup-detail__actions { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; margin-block-start: 1rem; }
-
 /* Template browsing layers share one header, scroll body and action footer. */
 .wconvert-picker__header { padding-inline: 1.25rem 3.25rem; text-align: start; }
 .wconvert-picker__body { flex: 1; min-block-size: 0; min-inline-size: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; padding: 1.25rem; }
 .wconvert-picker__footer { display: flex; flex: none; flex-wrap: wrap; align-items: center; gap: .75rem; padding: .875rem 1.25rem; border-block-start: 1px solid var(--border); background: var(--card); }
 .wconvert-picker__footer > span { flex: 1; }
-.wconvert-picker__body .wconvert-collection-detail { display: grid; gap: .75rem; margin: 0; }
-.wconvert-collection-detail__controls { display: grid; grid-template-columns: minmax(0, 1fr) minmax(16rem, 1fr); align-items: end; gap: 1rem; }
-.wconvert-collection-detail__controls > .wconvert-picker__controls { padding: 0; border: 0; }
-@media (max-width: 700px) { .wconvert-collection-detail__controls { grid-template-columns: minmax(0, 1fr); } }
-.wconvert-picker__body .wconvert-collection-detail p { margin: 0; max-inline-size: 75ch; font-size: var(--text-note); }
+
 .wconvert-picker__body > .wconvert-picker__controls { padding: 0 0 1rem; }
 /* The preview column fills the body, so a short side column leaves no dead space under the design. */
-.wconvert-setup-inspector { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(17rem, 1fr); align-items: stretch; gap: 1.5rem; min-block-size: 100%; }
-.wconvert-setup-inspector > div:first-child { display: flex; flex-direction: column; }
-.wconvert-setup-inspector .wconvert-setup-preview { display: flex; flex: 1; flex-direction: column; }
-.wconvert-setup-inspector__facts { align-content: start; }
-.wconvert-setup-inspector > div, .wconvert-setup-inspector__facts { min-inline-size: 0; }
-.wconvert-setup-inspector__facts { display: grid; gap: 1rem; }
-.wconvert-setup-inspector__facts > [data-slot="badge"] { justify-self: start; }
-.wconvert-setup-inspector__facts h3 { margin: 0 0 .5rem; font-size: var(--text-heading); font-weight: 600; }
-.wconvert-setup-inspector__facts ul { margin-block: .5rem 0; }
-.wconvert-setup-inspector__facts li + li { margin-block-start: .375rem; }
-.wconvert-setup-inspector__facts .wconvert-disclosure { border-block-start: 1px solid var(--border); }
+
 /* A setup at a glance: one icon line per fact, then what to have ready. */
 .wconvert-setup-glance { display: grid; gap: 1.25rem; }
 /* FactList (ADR 0137): Details, the setup preview and the design preview read facts the same way. */
@@ -6342,24 +6248,18 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-setup-todo li::marker { color: var(--muted-foreground); }
 .wconvert-setup-optional { margin: 0; color: var(--muted-foreground); font-size: var(--text-note); }
 .wconvert-setup-optional > strong { font-weight: 500; color: var(--foreground); }
-.wconvert-setup-inspector__cases p { margin-block: 0 .75rem; }
-.wconvert-setup-inspector__cases .wconvert-option-strip { flex-direction: column; }
-.wconvert-setup-inspector__cases .wconvert-option-strip > label { white-space: normal; overflow-wrap: anywhere; }
+
 /* A zero basis, so the design scrolls inside the frame rather than growing the row. */
-.wconvert-setup-inspector .wconvert-preview-frame { flex: 1 1 auto; block-size: 0; min-block-size: 22.5rem; margin-block-end: 0; border-radius: var(--radius-md); }
-@media (max-width: 899px) {
-  .wconvert-setup-inspector { grid-template-columns: minmax(0, 1fr); min-block-size: 0; }
-  .wconvert-setup-inspector .wconvert-preview-frame { flex: none; block-size: 22.5rem; min-block-size: 0; }
-}
+
 @media (max-width: 639px) {
   .wconvert-picker__header { padding-inline: 1rem 3rem; }
   .wconvert-picker__body { padding: 1rem; }
   .wconvert-picker__footer { padding: .75rem 1rem; }
   .wconvert-picker__footer > span { display: none; }
-  .wconvert-setup-inspector .wconvert-preview-frame { block-size: 20rem; }
+
 }
 
-.wconvert-setup-detail .wconvert-picker__body, .wconvert-design-detail__document { background: var(--card); }
+.wconvert-design-detail__document { background: var(--card); }
 .wconvert-design-detail__document { padding: 0; }
 /* As in the setup preview: the preview column fills the body and the design scrolls inside its frame. */
 .wconvert-design-detail__preview { display: flex; flex-direction: column; min-inline-size: 0; }
@@ -6374,13 +6274,8 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 }
 @media (max-width: 639px) { .wconvert-design-detail__document .wconvert-preview-frame { block-size: 20rem; } }
 
-
 /* A `Button` under `DialogClose asChild` keeps its own slot, so an icon close is named by its size. */
 @media (pointer: coarse) { :is([data-slot="dialog-close"], :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"]) [data-slot="button"][data-size^="icon"]) { min-inline-size: 2.75rem; min-block-size: 2.75rem; } }
-
-.wconvert-collection-detail__event { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem; }
-
-
 
 /* The one collapsible (GUIDELINES §21, ADR 0131): `shell/Disclosure`. */
 .wconvert-disclosure { min-inline-size: 0; margin: 0; }

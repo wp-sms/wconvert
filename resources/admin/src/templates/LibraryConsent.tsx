@@ -19,7 +19,12 @@ const disclosure = () => __('Designs and their thumbnails come from templates.wc
  * reaches the network until it is answered yes, and "Not now" is remembered
  * just as firmly; Settings can change either answer.
  */
-export function LibraryConsent({ onAnswered }: { onAnswered: (allowed: boolean) => void }) {
+export function LibraryConsent({ onAnswered, title = __('See more designs from the WConvert library?', 'wconvert'), allow = __('Show online designs', 'wconvert') }: {
+  onAnswered: (allowed: boolean) => void;
+  /** The one gallery asks about templates, in its own words (ADR 0171). */
+  title?: string;
+  allow?: string;
+}) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const answer = async (allowed: boolean) => {
@@ -38,11 +43,11 @@ export function LibraryConsent({ onAnswered }: { onAnswered: (allowed: boolean) 
     <section className="wconvert-library-consent" aria-labelledby="wconvert-library-consent-title">
       <Library aria-hidden="true" className="wconvert-library-consent__icon" />
       <div className="wconvert-library-consent__body">
-        <h3 id="wconvert-library-consent-title" className="m-0 text-body font-semibold">{__('See more designs from the WConvert library?', 'wconvert')}</h3>
+        <h3 id="wconvert-library-consent-title" className="m-0 text-body font-semibold">{title}</h3>
         <Description>{disclosure()}</Description>
         {error && <p role="alert" className="m-0 text-note text-destructive">{error}</p>}
         <div className="flex flex-wrap gap-2">
-          <Button disabled={busy} onClick={() => { void answer(true); }}>{__('Show online designs', 'wconvert')}</Button>
+          <Button disabled={busy} onClick={() => { void answer(true); }}>{allow}</Button>
           <Button variant="outline" disabled={busy} onClick={() => { void answer(false); }}>{__('Not now', 'wconvert')}</Button>
         </div>
       </div>

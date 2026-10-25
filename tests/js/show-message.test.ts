@@ -7,7 +7,6 @@ import { CLICK_OUTCOME } from './support/outcomes';
 import { countsNothing, fitsOutcome, outcomeDesignIssue, type OutcomeContract } from '../../resources/admin/src/goals/outcome';
 import { removalRefusal } from '../../resources/admin/src/builder/structure/guards';
 import { problemsIn } from '../../resources/admin/src/builder/structure/problems';
-import { howOftenSummary } from '../../resources/admin/src/builder/rules/sentence';
 import { factAct } from '../../resources/admin/src/optins/campaignFacts';
 import { rowResultOf, shownLine } from '../../resources/admin/src/optins/rowResult';
 import type { GoalReport, OptinReport } from '../../resources/admin/src/stats/api';
@@ -47,7 +46,6 @@ describe('a message under its Goal', () => {
     expect(factAct(notice(words), MESSAGE)).toBe('none');
     expect(factAct(notice(words), CLICK_OUTCOME)).toBeUndefined();
     expect(factAct(notice(words, link), MESSAGE)).toBe('click');
-    expect(howOftenSummary({}, 0, true, null).text).toBe('Every time, until they close it');
     expect(countsNothing(MESSAGE)).toBe(true);
     expect(countsNothing(CLICK_OUTCOME)).toBe(false);
     expect(countsNothing(undefined)).toBe(false);

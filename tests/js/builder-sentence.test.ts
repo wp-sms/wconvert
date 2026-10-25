@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   datesSummary,
-  howOftenSummary,
   phraseOf,
   whereSummary,
 } from '../../resources/admin/src/builder/rules/sentence';
@@ -214,38 +213,12 @@ describe('one rule, read', () => {
 });
 
 describe('how often', () => {
-  /**
-   * ==========================================================================
-   * THE DEFAULT IS NOT "EVERY TIME".
-   * ==========================================================================
-   * `stopAfterDismiss` and `stopAfterConversion` are both ON when absent —
-   * `frequency.ts` tests `!== false`, because closing a popup and completing
-   * one are the two strongest "stop showing me this" a visitor has (ADR 0017).
-   * So an untouched Optin already stops, and a summary reading "Every time"
-   * would be a lie on the commonest Optin there is.
-   */
-  it('states the per-visit limit and keeps a completion-only sentence grammatical', () => {
-    expect(howOftenSummary({ maxPerSession: 1, stopAfterDismiss: false }, 0, true, 'click').text)
-      .toBe('Shows at most 1 time per visit, and stops once they click the main button');
-  });
-
-  it('reads an untouched allowance as stopping, not as unlimited', () => {
-    expect(howOftenSummary({}, 0, true).text).toBe('Every time, until they close it or submit the form');
-  });
-
-  it('describes the actual completion action and waits for a known site timezone', () => {
-    expect(howOftenSummary({}, 0, true, 'click').text).toContain('click the main button');
+  it('waits for a known site timezone before calling a window finished', () => {
     expect(datesSummary({ ends_at: '2020-08-03 12:00' }).text).not.toContain('Stopped');
     vi.stubGlobal('wconvertAdmin', { timezone: 'Pacific/Honolulu', exportUrl: '' });
     vi.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-09-10T18:00:00Z'));
     expect(datesSummary({ ends_at: '2026-09-10 09:00' }).attention).toBe(false);
     vi.restoreAllMocks();
-  });
-
-  it('reads both switches off as genuinely every time', () => {
-    expect(
-      howOftenSummary({ stopAfterDismiss: false, stopAfterConversion: false }, 0, true).text,
-    ).toBe('Every time, with no limit');
   });
 
   /**
@@ -287,57 +260,6 @@ describe('how often', () => {
     expect(datesSummary({ starts_at: '2020-07-01 09:00' }).attention).toBe(false);
   });
 
-  it('reads the counts, singular and plural', () => {
-    expect(howOftenSummary({ maxImpressions: 1 }, 0, true).text).toMatch(/^Shows at most 1 time,/);
-    expect(howOftenSummary({ maxImpressions: 3 }, 0, true).text).toMatch(/^Shows at most 3 times,/);
-    expect(howOftenSummary({ cooldownDays: 7 }, 0, true).text).toMatch(/^Shows at most once every 7 days,/);
-  });
-
-  it('reads both counts and both switches together', () => {
-    expect(howOftenSummary({ maxImpressions: 3, cooldownDays: 7 }, 0, true).text).toBe(
-      'Shows at most 3 times and at most once every 7 days, and stops once they close it or submit the form',
-    );
-  });
-
-  it('reads a count with the switches off', () => {
-    expect(howOftenSummary({ maxImpressions: 3, stopAfterDismiss: false, stopAfterConversion: false }, 0, true).text)
-      .toBe('Shows at most 3 times');
-  });
-
-  /**
-   * **Every one of the sixteen combinations reads as a sentence.** Four
-   * independent fields is where a summary built by string concatenation
-   * produces "Shows  and ." on the combination nobody tried.
-   */
-  it('reads as a sentence for all sixteen combinations of the four fields', () => {
-    for (const max of [undefined, 3]) {
-      for (const days of [undefined, 7]) {
-        for (const dismiss of [undefined, false]) {
-          for (const convert of [undefined, false]) {
-            const text = howOftenSummary(
-              { maxImpressions: max, cooldownDays: days, stopAfterDismiss: dismiss, stopAfterConversion: convert },
-              0,
-              true,
-            ).text;
-
-            expect(text, JSON.stringify({ max, days, dismiss, convert })).toMatch(/^[A-Z]/);
-            expect(text).not.toMatch(/\s{2}|,\s*$|\s,|\band\s*$/);
-          }
-        }
-      }
-    }
-  });
-
-  /**
-   * **Priority is named only where it decides something.** `arbitrate()` sorts
-   * overlays and leaves an `inline` Optin alone, so on an inline design the
-   * number is real, stored and inert.
-   */
-  it('names the priority on an overlay and never on an inline Optin', () => {
-    expect(howOftenSummary({}, 10, true).text).toMatch(/shows before others \(10\)$/);
-    expect(howOftenSummary({}, 10, false).text).not.toMatch(/priority/);
-    expect(howOftenSummary({}, 0, true).text).not.toMatch(/priority/);
-  });
 });
 
 describe('the vocabulary these summaries are read against', () => {

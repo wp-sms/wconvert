@@ -48,3 +48,44 @@ gone (amending 0112). A seasonal collection shows inside its window wherever
 the shop is, collections order by priority, and Business is a gallery filter
 rather than a preference. Picker preferences keep `saved`, `hidden` and
 `show_featured`, still in user meta; only their keys shrink. No table changes.
+
+## Step 2 is the one gallery
+
+1. **One grid** holds bundled, installed, online and locked templates. Using
+   an online card installs it silently, then creates the draft from the
+   Playbook it became (just installed, it was never previewed, so there is no
+   revision to hold it to); a failed install says so on the card with Try again.
+   A card with a newer revision offers "Get the newer version" instead.
+2. **The UI word is "Template"**: "Choose a template", "Use template", "No
+   templates match". Domain terms in the code do not change: a Playbook is
+   still a Playbook, shown as a template.
+3. **Each card** is the stage (ADR 0170), the name and ★, one row of chips —
+   format, what it asks for (Email, Phone, Name, or Button for a click design),
+   and Recommended or a grey lock with the plan's name — and one action: Use
+   template, See this design ↗ for a locked card, or an amber note when the
+   site cannot use it.
+4. **The collections shelf** sits on top. A tile filters the grid; When
+   (only the stages that collection has) and "Show all templates" appear in a
+   bar while it is open. Each tile can be hidden; the shelf can be hidden and
+   shown again. A seasonal tile says "Until …".
+5. **On Free with Pro hints**, locked cards are mixed in where they fall in
+   recommended order, Format names Pro-only formats "· Pro", and a Plan strip
+   (All/Free/Pro) appears. Pro goals stay hidden.
+6. **One toolbar row**: search, Format, Plan, More filters (Asks for,
+   Business, Saved) and the count; a filter More filters holds is also a chip
+   that removes it, with Clear filters at two or more. There is no sort.
+7. **Removed**: Start here, Compare, "Works with this goal", the ⋯ menu,
+   "Online setups" and "Occasions & preferences". **New occasion** moved to
+   the Campaigns ⋯ menu beside Import occasion.
+8. **The goal step stays**; step 2's header carries a goal switcher. A
+   campaign created from an occasion opens the seasonal collection whose event
+   overlaps the occasion's days, at the stage the occasion is in. A new
+   occasion saved from the Campaigns ⋯ opens its page, where campaigns are made
+   for it.
+9. **The consent card** asks at the end of the grid — "See more templates from
+   the WConvert library?" — with no count, because nothing is fetched before
+   the answer (a departure from the prototype, which showed one).
+
+Inspection is a larger look at one card: Desktop/Mobile, Fit/Actual size, its
+screens, its gist and the same one action. The setup facts list that lived
+there is gone with the prototype; the editor shows what a draft needs.

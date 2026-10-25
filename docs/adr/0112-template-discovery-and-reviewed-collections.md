@@ -7,6 +7,15 @@ real email/SMS delivery is part of this local implementation.
 
 ## One preparation and editing path
 
+> **Amended by [ADR 0171](0171-one-template-gallery.md):** step 2 is one grid of templates — this site's
+> setups, the online library's (installed silently on Use) and Pro's as locked
+> hints — recommended first, 24 a page, one card per setup. There is no
+> grouping by design with use cases, no Start here, no sort, no comparison and
+> no collection dialog: the collections shelf sits on top and a collection
+> filters the grid, with Before/During/After shown only while one is open.
+> Inspection is a larger look with Desktop/Mobile and Fit/Actual size; Use
+> template is also on every card.
+
 Goal-first creation browses a metadata-only Playbook index. Cards are grouped by
 canonical design identity **after** applying Goal, business, format, search,
 source pack, availability and Saved filters. Recommended order and Name A–Z are available. Cards show matching use-case counts; inspection chooses among those use cases;
@@ -238,6 +247,7 @@ records the subsequent pack/editor alignment and guideline-based preference
 regions, verified on `wconvert.local`. This supersedes the earlier audit’s
 creation-only comparison limitation; it does not complete the wider API programme.
 
+*(The audit trail below is history; the gallery it describes was replaced by [ADR 0171](0171-one-template-gallery.md).)*
 The [1 October flow audit](../reviews/picker-flow-audit-2026-10-01.md) records
 inspection-first creation, consistent card actions, readable preview zoom,
 country-name selection and visible failure recovery. Collection introductions

@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { filterCards, mergeDesigns, mergeSetups, optionCounts, type GalleryCard, type GalleryFilters } from '../../resources/admin/src/gallery/model';
+import { fieldChips, filterCards, mergeDesigns, mergeSetups, optionCounts, shelfCollections, type GalleryCard, type GalleryFilters } from '../../resources/admin/src/gallery/model';
+import type { Collection } from '../../resources/admin/src/discovery/api';
+import halloweenSource from '../../resources/collections/halloween-2026.json';
+import { onlineCollection } from './support/online-collection';
 import type { GoalGallery, OnlineSetup, PlaybookEntry } from '../../resources/admin/src/goals/api';
 import type { TemplateFacets, TemplateIndexEntry } from '../../resources/admin/src/templates/api';
 
@@ -94,7 +97,7 @@ describe('filtering', () => {
     expect(keys(filterCards(cards, { business: 'stores' }))).toEqual(['mail']);
     expect(keys(filterCards(cards, { plan: 'pro' }))).toEqual(['pro']);
     expect(keys(filterCards(cards, { plan: 'free' }))).toEqual(['mail', 'text', 'both', 'button']);
-    expect(keys(filterCards(cards, { saved: new Set(['both']) }))).toEqual(['both']);
+    expect(keys(filterCards(cards, { saved: new Set(['registered:both-design']) }))).toEqual(['both']);
     expect(keys(filterCards(cards, { query: 'TEX' }))).toEqual(['text']);
     expect(keys(filterCards(cards, { query: 'stores' }))).toEqual(['mail']);
   });
@@ -123,3 +126,60 @@ describe('filtering', () => {
   });
 });
 
+describe('the field chips', () => {
+  it('names what a card asks for, or Button when it only takes a click', () => {
+    const [mail, both, button] = mergeSetups(gallery([local('mail'), local('both', { facets: facets(['name', 'email', 'phone']) }), local('button', { facets: facets([]) })]), free);
+
+    expect(fieldChips(mail)).toEqual(['Email']);
+    expect(fieldChips(both)).toEqual(['Name', 'Email', 'Phone']);
+    expect(fieldChips(button)).toEqual(['Button']);
+  });
+});
+
+describe('the collections shelf', () => {
+  const cards = mergeSetups(gallery([local('a'), local('b')], [online('c')]), free);
+  const collection = (id: string, items: string[], more: Partial<Collection> = {}): Collection => ({
+    id, revision: 'r', name: id, description: '', business_types: [], priority: 0, cover: 'sale',
+    items: items.map(setup_id => ({ setup_id, stage: 'during' as const })), ...more,
+  });
+  const halloween = { family: 'halloween', start: '2026-10-25', end_exclusive: '2026-11-01', feature_start: '2026-09-01', feature_end_exclusive: '2026-11-01' };
+
+  it('offers the collections with a card here, in priority order, and a seasonal one only in its window', () => {
+    const all = [collection('reading', ['a']), collection('sale', ['b', 'c'], { priority: 5 }), collection('elsewhere', ['z']), collection('spooky', ['a'], { event: halloween })];
+
+    expect(shelfCollections(all, cards, '2026-10-20', []).map(shelf => shelf.collection.id)).toEqual(['sale', 'reading', 'spooky']);
+    expect(shelfCollections(all, cards, '2026-11-02', []).map(shelf => shelf.collection.id)).toEqual(['sale', 'reading']);
+    expect(shelfCollections(all, cards, '2026-10-20', ['sale']).map(shelf => shelf.collection.id)).toEqual(['reading', 'spooky']);
+    expect([...shelfCollections(all, cards, '2026-10-20', [])[0].members]).toEqual([['b', 'during'], ['c', 'during']]);
+  });
+
+  it('features the bundled Halloween collection through September and October, then retires it', () => {
+    const halloween = halloweenSource as Collection;
+    const members = mergeSetups(gallery(halloween.items.map(item => local(item.setup_id))), free);
+
+    expect(shelfCollections([halloween], members, '2026-08-31', [])).toEqual([]);
+    for (const day of ['2026-09-01', '2026-10-31']) expect(shelfCollections([halloween], members, day, [])[0].members.size).toBe(5);
+    expect(shelfCollections([halloween], members, '2026-11-01', [])).toEqual([]);
+  });
+
+  it('finds a hosted member as an online card, and as the local card it became once installed', () => {
+    const hosted = onlineCollection();
+    const before = mergeSetups(gallery([], [online('sale-1'), online('sale-2')]), free);
+
+    expect([...shelfCollections([hosted], before, '2026-10-20', [])[0].members.keys()]).toEqual(['sale-1', 'sale-2']);
+    hosted.online![0].playbook_id = 'setup-1-sale-1';
+    const after = mergeSetups(gallery([local('setup-1-sale-1')], [online('sale-2')]), free);
+    expect([...shelfCollections([hosted], after, '2026-10-20', [])[0].members.keys()]).toEqual(['setup-1-sale-1', 'sale-2']);
+  });
+
+  it('draws the library’s copy of a bundled collection as one tile', () => {
+    const bundled = collection('sale', ['a']);
+    const hosted = { ...collection('catalog-sale', ['a', 'c']), name: 'Sale (library)' };
+
+    for (const order of [[bundled, hosted], [hosted, bundled]]) {
+      const shelves = shelfCollections(order, cards, '2026-10-20', []);
+      expect(shelves.map(shelf => [shelf.collection.id, [...shelf.members.keys()]])).toEqual([['sale', ['a', 'c']]]);
+    }
+    expect(shelfCollections([bundled, hosted], cards, '2026-10-20', ['sale'])).toEqual([]);
+  });
+});

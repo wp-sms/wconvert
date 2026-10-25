@@ -16,6 +16,13 @@ no store is never sold [[Pro]] for a feature Pro would not give them.
 
 > _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): one exception, on a free install only, for the Display rules Quick picks. A pick whose rule type is paid there reads as `locked` even when a plugin is also missing, so it is hidden rather than drawn as "Needs WooCommerce". Explaining the plugin would offer a free merchant a pick that vanishes the moment they install it. Rule rows and every other surface keep this precedence._
 
+> _Amended by [ADR 0171](0171-one-template-gallery.md): the one template gallery
+> is a library, not the front door, so an online template that needs a plugin
+> this site lacks is drawn with that reason and no action — as the design
+> picker already drew hosted designs ([ADR 0156](0156-the-catalogue-is-one-design-per-object.md)).
+> A local setup whose design is missing stays hidden, and the goal screen keeps
+> this rule._
+
 ## Availability names the reason, not the rendering
 
 `CONTEXT.md`'s [[Availability]] entry read *"`unavailable` … renders as an explanation

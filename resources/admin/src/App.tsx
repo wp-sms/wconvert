@@ -138,7 +138,8 @@ export function App() {
       // An empty list carries its own Create button; one primary action per screen.
       actions={section === 'optins' && !creating ? <>
         {/* Import is here even before the site has an occasion (#280). */}
-        <ImportOccasionMenu disabled={campaignBusy} onImported={(imported) => { setNotice(imported); setListVersion((n) => n + 1); }} />
+        <ImportOccasionMenu disabled={campaignBusy} onImported={(imported) => { setNotice(imported); setListVersion((n) => n + 1); }}
+          onCreated={(occasion) => navigate(occasionHref(occasion))} />
         {!campaignsEmpty && createButton}
       </> : section === 'leads'
         ? route.leadsView === 'issues'

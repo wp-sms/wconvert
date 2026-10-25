@@ -1,27 +1,25 @@
 import { displayPlan } from './support/display-entry';
 import { treeFixture } from './support/journey';
-import { CAPTURE_OUTCOME, CLICK_OUTCOME } from './support/outcomes';
+import { CLICK_OUTCOME } from './support/outcomes';
 import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DOCUMENT_STYLE_ID } from '@renderer/mount';
 import { ruleTypes } from './support/rule-types';
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
-import type { Template } from '@renderer/types';
-import type { PlaybookEntry } from '../../resources/admin/src/goals/api';
+import type { GoalGallery, OnlineSetup, PlaybookEntry } from '../../resources/admin/src/goals/api';
 
 /**
  * The goal-first creation flow, and the decisions in it that are not layout.
  *
  * **The goal screen is the front door**, so it *hides* what a settings list
- * would explain (ADR 0026), and it never advertises Pro for something Pro
- * would not supply. **The server query filters on Goal only**; the second step
- * can refine those setups by Format without making it the first question
- * (CONTEXT.md, Display Type). **"Start from scratch" skips the Playbook, never
- * the Goal.** Browsing reads only. Customize creates a draft and opens the editor directly.
+ * would explain (ADR 0026). **The server query filters on Goal only**; step 2
+ * is the one template gallery (ADR 0171), refined by Format, Asks for, Plan and
+ * a collection without making any of them the first question. **"Choose a
+ * design myself" skips the Playbook, never the Goal.** Browsing reads only;
+ * Use template creates a draft and opens the editor, installing an online
+ * template first.
  */
-const goals = vi.hoisted(() => ({ listGoals: vi.fn(), listPlaybooks: vi.fn(), prefill: vi.fn(), previewPlaybooks: vi.fn() }));
+const goals = vi.hoisted(() => ({ listGoals: vi.fn(), readGoalGallery: vi.fn(), prefill: vi.fn(), previewPlaybooks: vi.fn() }));
 const catalog = vi.hoisted(() => ({ catalogStatus: vi.fn(), refreshCatalog: vi.fn(), setCatalogConsent: vi.fn(), installSetup: vi.fn(), installDesign: vi.fn(), previewDesign: vi.fn() }));
 vi.mock('../../resources/admin/src/templates/catalog', () => catalog);
 const picker = vi.hoisted(() => ({ pickerData: vi.fn(), savePreferences: vi.fn(), saveOccasions: vi.fn() }));
@@ -87,6 +85,7 @@ const PLAYBOOK = {
   destination_hint: {},
   setup: { display_type: 'popup', display_rules: displayPlan([{ type: 'time_on_page', seconds: 8 }]), targeting: {} },
   notes: 'A first-order discount is the highest-converting trade there is.',
+  facets: { act: 'submit' as const, captures: ['email'], shape: 'stack', has_image: false, asks_consent: false },
   /**
    * **The design this Playbook would prefill, with its words already in it.**
    *
@@ -132,85 +131,50 @@ const DRAFT = {
   },
 };
 
+const NO_LIBRARY = { configured: false, consent: 'unanswered' } as const;
+function galleryOf(setups: unknown[], online: OnlineSetup[] = [], library: GoalGallery['library'] = NO_LIBRARY): GoalGallery {
+  return { setups: setups as PlaybookEntry[], online, library };
+}
+const FACETS = { act: 'submit' as const, captures: ['email'], shape: 'stack', has_image: false, asks_consent: false };
+const onlineSetup = (id: string, more: Partial<OnlineSetup> = {}): OnlineSetup => ({
+  id, revision: 1, sha256: 'a'.repeat(64), name: `Online ${id}`, goal: 'grow_email_list', tier: 'free', state: 'install', installed_playbook_id: null,
+  business_types: [], design: { id: `${id}-design`, name: `Online ${id}`, tier: 'free' }, display_type: 'popup', facets: FACETS,
+  thumbnail: { '1x': `https://templates.example/${id}.webp`, '2x': `https://templates.example/${id}@2x.webp` }, tags: [], preview_url: `https://wconvert.io/templates/${id}/`, ...more,
+});
+
 beforeEach(() => {
   vi.clearAllMocks();
   destinationsApi.readDestinations.mockRejectedValue(new Error('Not needed by this test'));
-  picker.pickerData.mockResolvedValue({ schema: 1, today: '2026-11-06', timezone: 'Asia/Muscat', collections: [], preferences: { schema: 1, revision: 0, saved: [], hidden: [], events: [], businesses: [], markets: [] }, occasions: { schema: 1, revision: 0, items: [] } });
+  picker.pickerData.mockResolvedValue({ schema: 1, today: '2026-11-06', timezone: 'Asia/Muscat', collections: [], preferences: { schema: 1, revision: 0, saved: [], hidden: [] }, occasions: { schema: 1, revision: 0, items: [] } });
   picker.savePreferences.mockImplementation(value => Promise.resolve({ ...value, revision: value.revision + 1 }));
   goals.previewPlaybooks.mockResolvedValue({ entries: [] });
   document.getElementById(DOCUMENT_STYLE_ID)?.remove();
   goals.listGoals.mockResolvedValue(GOALS);
-  goals.listPlaybooks.mockResolvedValue([PLAYBOOK]);
+  goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK]));
   goals.prefill.mockResolvedValue(DRAFT);
   rules.getRules.mockResolvedValue(ruleTypes());
   optins.createOptin.mockResolvedValue({ id: '01JQZK8N3M4P5Q6R7S8T9V0W1X' });
 });
 
+
 const pickGoal = async () => userEvent.click(await screen.findByRole('button', { name: /^Choose/ }));
-const inspect = async () => {
-  if (!screen.queryByRole('button', { name: 'Use this setup' })) await userEvent.click(await screen.findByRole('button', { name: /Setup details for/ }));
-};
-const customize = async () => { await inspect(); await userEvent.click(await screen.findByRole('button', { name: 'Use this setup' })); };
+const cardOf = async (name: string) => (await screen.findByRole('heading', { name, level: 3 })).closest('li')!;
+const useTemplate = async (name = PLAYBOOK.name) => userEvent.click(within(await cardOf(name)).getByRole('button', { name: 'Use template' }));
 const unloadPrevented = () => {
   const event = new Event('beforeunload', { cancelable: true });
   window.dispatchEvent(event);
   return event.defaultPrevented;
 };
+const withAdmin = (settings: Record<string, unknown>) => {
+  window.wconvertAdmin = { exportUrl: '', ...settings } as typeof window.wconvertAdmin;
+  onTestFinished(() => { delete window.wconvertAdmin; });
+};
+const moreFilters = async () => userEvent.click(screen.getByRole('button', { name: /More filters/ }));
 
-it('creates only the freshly selected setup after an inspected alternative preview arrives late', async () => {
-  // Keep cards outside the viewport: inspection itself requests each preview,
-  // so the two preview responses can arrive in the opposite order.
-  vi.stubGlobal('IntersectionObserver', class {
-    observe() {}
-    disconnect() {}
-  });
-  onTestFinished(() => { vi.unstubAllGlobals(); });
-  const load = (id: string): Template => {
-    const source = JSON.parse(readFileSync(resolve(import.meta.dirname, `../../pro/modules/display-types/templates/${id}.json`), 'utf8')) as Template;
-    return { tree: source.tree, tokens: source.tokens };
-  };
-  const closing = { ...PLAYBOOK, id: 'bf-closing-time', name: 'Closing time', goal: 'promote_offer', template_id: 'bf-closing-time',
-    display_type: 'slide_in', setup: { ...PLAYBOOK.setup, display_type: 'slide_in' },
-    revision: 'closing-r', availability: 'ready', template: undefined } as PlaybookEntry;
-  const coupon = { ...closing, id: 'campaign-extra-ten-coupon', name: 'Extra-Ten Coupon', template_id: 'campaign-extra-ten-coupon', revision: 'coupon-r' };
-  const closingPreview = { ...closing, prepared_revision: 'closing-prepared', template: load(closing.id) };
-  const couponPreview = { ...coupon, prepared_revision: 'coupon-prepared', template: load(coupon.id) };
-  const draft = { name: coupon.name, goal: coupon.goal, config: { playbook_id: coupon.id, template_id: coupon.template_id, display_type: 'slide_in', template: couponPreview.template } };
-  const pending = new Map<string, (response: { entries: PlaybookEntry[] }) => void>();
-  goals.listGoals.mockResolvedValue([{ ...GOALS[1], availability: 'ready' }]);
-  goals.listPlaybooks.mockResolvedValue([closing, coupon]);
-  goals.previewPlaybooks.mockImplementation((_goal: string, ids: string[]) => new Promise(resolve => pending.set(ids[0], resolve)));
-  goals.prefill.mockImplementation((_goal: string, id: string) => {
-    if (id !== coupon.id) throw new Error('The unchosen setup must never be prefilled');
-    return Promise.resolve(draft);
-  });
-  const created = vi.fn();
-  render(<GoalScreen onCreated={created} />);
-  await pickGoal();
-  await userEvent.click(await screen.findByRole('button', { name: 'Setup details for Closing time' }));
-  await waitFor(() => expect(pending.has(closing.id)).toBe(true));
-  expect(screen.getByRole('button', { name: 'Use this setup' })).toBeDisabled();
-  await userEvent.click(screen.getByRole('button', { name: 'Back to setups' }));
-  await userEvent.click(await screen.findByRole('button', { name: 'Setup details for Extra-Ten Coupon' }));
-  await waitFor(() => expect(pending.has(coupon.id)).toBe(true));
-  await act(async () => pending.get(coupon.id)!({ entries: [couponPreview] }));
-  await waitFor(() => expect(screen.getByRole('button', { name: 'Use this setup' })).toBeEnabled());
-  await act(async () => pending.get(closing.id)!({ entries: [closingPreview] }));
-  expect(screen.getByRole('dialog')).toHaveAccessibleName('Extra-Ten Coupon');
-  expect(goals.prefill).not.toHaveBeenCalled();
-  expect(optins.createOptin).not.toHaveBeenCalled();
-  await userEvent.click(screen.getByRole('button', { name: 'Use this setup' }));
-  await waitFor(() => expect(created).toHaveBeenCalledOnce());
-  expect(goals.prefill).toHaveBeenCalledExactlyOnceWith('promote_offer', coupon.id, 'coupon-r', 'coupon-prepared');
-  expect(optins.createOptin).toHaveBeenCalledExactlyOnceWith(draft.name, draft.goal, draft.config);
-  expect(JSON.stringify(optins.createOptin.mock.calls[0][2])).not.toContain('Goodbyes can');
-});
-
-describe('a goal then a draft', () => {
+describe('step 1: a goal', () => {
   it('preserves ready, locked and unavailable Goal semantics on a paid install', async () => {
     // A paid install meeting a Goal it does not have (ADR 0116).
-    window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
-    onTestFinished(() => { delete window.wconvertAdmin; });
+    withAdmin({ installedTier: 'pro' });
     render(<GoalScreen onCreated={vi.fn()} />);
     await screen.findByText('Grow my email list');
     expect(screen.getByText('Promote a sale or offer')).toBeInTheDocument();
@@ -225,7 +189,6 @@ describe('a goal then a draft', () => {
     await screen.findByText('Grow my email list');
     expect(screen.queryByText('Promote a sale or offer')).not.toBeInTheDocument();
     expect(screen.queryByText(/Available with/)).not.toBeInTheDocument();
-    expect(screen.queryByText('Pro')).not.toBeInTheDocument();
   });
 
   it('keeps loading separate from an empty Goal registry and offers retry on failure', async () => {
@@ -234,7 +197,6 @@ describe('a goal then a draft', () => {
     await screen.findByText('Goals unavailable.');
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     expect(await screen.findByText('Grow my email list')).toBeInTheDocument();
-    expect(screen.queryByText('Goals unavailable.')).not.toBeInTheDocument();
   });
 
   it('explains a successfully read empty Goal registry', async () => {
@@ -242,150 +204,367 @@ describe('a goal then a draft', () => {
     render(<GoalScreen onCreated={vi.fn()} />);
     expect(await screen.findByText('No goals available')).toBeInTheDocument();
   });
+});
 
-  it('filters starting points on the selected Goal and writes nothing while browsing', async () => {
+describe('step 2: one template gallery', () => {
+  it('reads the chosen goal’s gallery and writes nothing while browsing', async () => {
     render(<GoalScreen onCreated={vi.fn()} />);
     await pickGoal();
-    await screen.findByText('Welcome discount');
-    expect(goals.listPlaybooks).toHaveBeenCalledWith(GOALS[0].id);
+    const card = await cardOf('Welcome discount');
+    expect(goals.readGoalGallery).toHaveBeenCalledWith(GOALS[0].id);
     expect(screen.getByText('Choice 2 of 2')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Choose a template', level: 2 })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Goal: Grow my email list' })).toBeVisible();
+    // One row of what the template is: format and what it asks for.
+    expect(within(card).getByText('Popup')).toBeVisible();
+    expect(within(card).getByText('Email')).toBeVisible();
+    expect(screen.getByText('1 of 1')).toHaveAttribute('role', 'status');
     expect(optins.createOptin).not.toHaveBeenCalled();
     expect(goals.prefill).not.toHaveBeenCalled();
-    // The reassurance repeated on every step is gone (§8); the one scope note is on the inspector's Use this setup.
-    expect(screen.queryByText(/Nothing goes live/)).not.toBeInTheDocument();
-    expect(screen.getByRole('radio', { name: 'All formats' })).toBeChecked();
-    expect(screen.getByText('Popup', { selector: '[data-slot="badge"]' })).toBeVisible();
   });
 
-  it('lists no setup a free install would have to buy', async () => {
-    goals.listPlaybooks.mockResolvedValue([PLAYBOOK, { ...PLAYBOOK, id: 'paid-setup', name: 'Paid setup', template_id: 'paid-card', availability: 'locked' as const }]);
-    render(<GoalScreen onCreated={vi.fn()} />);
-    await pickGoal();
-    await screen.findByText('Welcome discount');
-    expect(screen.queryByText('Paid setup')).not.toBeInTheDocument();
-    expect(screen.queryByText(/Available with/)).not.toBeInTheDocument();
-  });
-
-  it('labels every setup with its format and filters the goal-scoped choices', async () => {
-    const inline = { ...PLAYBOOK, id: 'inline-signup', name: 'Inline signup', display_type: 'inline',
-      setup: { ...PLAYBOOK.setup, display_type: 'inline' } };
-    goals.listPlaybooks.mockResolvedValue([PLAYBOOK, inline]);
-    render(<GoalScreen onCreated={vi.fn()} />);
-    await pickGoal();
-    const popupCard = (await screen.findByText('Welcome discount')).closest('li')!;
-    const inlineCard = screen.getByText('Inline signup').closest('li')!;
-    expect(within(popupCard).getByText('Popup', { selector: '[data-slot="badge"]' })).toBeVisible();
-    expect(within(inlineCard).getByText('Inline form', { selector: '[data-slot="badge"]' })).toBeVisible();
-
-    await userEvent.click(screen.getByRole('radio', { name: 'Inline form' }));
-    expect(screen.queryByText('Welcome discount')).not.toBeInTheDocument();
-    expect(screen.getByText('Inline signup')).toBeVisible();
-    expect(goals.listPlaybooks).toHaveBeenCalledTimes(1);
-    expect(goals.prefill).not.toHaveBeenCalled();
-  });
-
-  it('keeps the real design preview and makes the long rationale optional', async () => {
+  it('draws each local template live on the stage', async () => {
     const { container } = render(<GoalScreen onCreated={vi.fn()} />);
     await pickGoal();
-    await screen.findByText('Welcome discount');
-    await waitFor(() => expect(container.querySelectorAll('.wconvert-gallery__card .wconvert-preview')).toHaveLength(1));
-    expect(screen.queryByText(PLAYBOOK.notes)).not.toBeInTheDocument();
-    expect(screen.queryByRole('term')).not.toBeInTheDocument();
-    const details = screen.getByRole('button', { name: 'Setup details for Welcome discount' });
-    await userEvent.click(details);
-    // One line of why, then the facts at a glance; nothing to open first.
-    expect(screen.getByText(PLAYBOOK.notes)).toBeVisible();
-    expect(screen.getByRole('dialog', { name: 'Welcome discount' })).toBeVisible();
-    expect(screen.getByRole('heading', { name: 'You’ll need' })).toBeVisible();
-    // The journey test lives in the editor; inspecting a setup is looking at it (ADR 0137).
-    expect(screen.queryByRole('button', { name: 'Try visitor journey' })).toBeNull();
-    expect(optins.createOptin).not.toHaveBeenCalled();
-    await userEvent.keyboard('{Escape}');
-    await waitFor(() => expect(details).toHaveFocus());
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    await cardOf('Welcome discount');
+    await waitFor(() => expect(container.querySelectorAll('.wconvert-template-card .wconvert-stage[data-display-type="popup"] .wconvert-preview')).toHaveLength(1));
   });
 
-  it('shows the server recommendation without adding another choice step', async () => {
-    goals.listPlaybooks.mockResolvedValue([{ ...PLAYBOOK, recommendation: 'Recommended for stores' }]);
+  it('filters by format, offering only the formats it has', async () => {
+    const inline = { ...PLAYBOOK, id: 'inline-signup', name: 'Inline signup', display_type: 'inline' };
+    goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK, inline]));
     render(<GoalScreen onCreated={vi.fn()} />);
     await pickGoal();
-    expect(await screen.findByText('Recommended for stores')).toBeVisible();
-    await customize();
-    await waitFor(() => expect(optins.createOptin).toHaveBeenCalledExactlyOnceWith(DRAFT.name, DRAFT.goal, DRAFT.config));
+    await cardOf('Welcome discount');
+    const format = screen.getByRole('combobox', { name: 'Format' });
+    expect(within(format).getAllByRole('option').map(option => option.textContent)).toEqual(['All formats', 'Popup', 'Inline form']);
+    await userEvent.selectOptions(format, 'inline');
+    expect(screen.queryByRole('heading', { name: 'Welcome discount' })).toBeNull();
+    expect(screen.getByRole('heading', { name: 'Inline signup' })).toBeVisible();
+    expect(goals.readGoalGallery).toHaveBeenCalledTimes(1);
   });
 
-  it('creates exactly the prefilled draft and hands it straight to the editor', async () => {
+  it('finds the phone templates under More filters, and says the filter as a chip that removes it', async () => {
+    const sms = { ...PLAYBOOK, id: 'sms', name: 'Text signup', facets: { ...FACETS, captures: ['phone'] } };
+    goals.readGoalGallery.mockResolvedValue(galleryOf([{ ...PLAYBOOK, facets: FACETS }, sms]));
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    await cardOf('Text signup');
+    await moreFilters();
+    await userEvent.selectOptions(await screen.findByRole('combobox', { name: 'Asks for' }), 'phone');
+    expect(screen.queryByRole('heading', { name: 'Welcome discount' })).toBeNull();
+    expect(within(await cardOf('Text signup')).getByText('Phone')).toBeVisible();
+    await userEvent.keyboard('{Escape}');
+    await userEvent.click(screen.getByRole('button', { name: 'Remove filter: Asks for phone' }));
+    expect(screen.getByRole('heading', { name: 'Welcome discount' })).toBeVisible();
+  });
+
+  it('says No templates match and clears every filter at once', async () => {
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    await cardOf('Welcome discount');
+    await userEvent.type(screen.getByRole('searchbox', { name: 'Search templates' }), 'nothing like this');
+    expect(screen.getByText('No templates match')).toBeVisible();
+    await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
+    expect(await cardOf('Welcome discount')).toBeVisible();
+  });
+
+  it('shows the server recommendation as a chip, first', async () => {
+    goals.readGoalGallery.mockResolvedValue(galleryOf([{ ...PLAYBOOK, id: 'other', name: 'Other' }, { ...PLAYBOOK, recommendation: 'Recommended for stores' }]));
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    await cardOf('Other');
+    expect(screen.getAllByRole('heading', { level: 3 }).map(heading => heading.textContent)).toEqual(['Welcome discount', 'Other']);
+    expect(within(await cardOf('Welcome discount')).getByText('Recommended')).toBeVisible();
+  });
+
+  it('hides a setup whose design is missing from this site', async () => {
+    goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK, { ...PLAYBOOK, id: 'gone', name: 'Gone', availability: 'unavailable' }]));
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    await cardOf('Welcome discount');
+    expect(screen.queryByRole('heading', { name: 'Gone' })).toBeNull();
+  });
+
+  it('switches goal from the header without leaving step 2', async () => {
+    const second = { ...GOALS[0], id: 'collect_enquiries', label: 'Collect enquiries' };
+    goals.listGoals.mockResolvedValue([GOALS[0], second]);
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await userEvent.click(await screen.findByRole('button', { name: 'Choose: Grow my email list' }));
+    await cardOf('Welcome discount');
+    await userEvent.click(screen.getByRole('button', { name: 'Goal: Grow my email list' }));
+    await userEvent.click(await screen.findByRole('menuitemradio', { name: /^Collect enquiries/ }));
+    expect(await screen.findByRole('button', { name: 'Goal: Collect enquiries' })).toBeVisible();
+    expect(goals.readGoalGallery).toHaveBeenLastCalledWith('collect_enquiries');
+  });
+
+  it('discards an abandoned goal’s late templates', async () => {
+    const second = { ...GOALS[0], id: 'collect_enquiries', label: 'Collect enquiries' };
+    goals.listGoals.mockResolvedValue([GOALS[0], second]);
+    let old!: (gallery: GoalGallery) => void;
+    goals.readGoalGallery.mockReturnValueOnce(new Promise(resolve => { old = resolve; }));
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await userEvent.click(await screen.findByRole('button', { name: 'Choose: Grow my email list' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Goal: Grow my email list' }));
+    await userEvent.click(await screen.findByRole('menuitemradio', { name: /^Collect enquiries/ }));
+    await cardOf('Welcome discount');
+    await act(async () => old(galleryOf([{ ...PLAYBOOK, name: 'Abandoned result' }])));
+    expect(screen.queryByRole('heading', { name: 'Abandoned result' })).toBeNull();
+  });
+
+  it('retries a failed gallery read on the same goal', async () => {
+    goals.readGoalGallery.mockRejectedValueOnce(new Error('Templates unavailable.'));
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    await screen.findByText('Templates unavailable.');
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    await cardOf('Welcome discount');
+    expect(goals.readGoalGallery).toHaveBeenLastCalledWith(GOALS[0].id);
+  });
+
+  it('saves a design through personal preferences and filters by Saved', async () => {
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    await userEvent.click(within(await cardOf('Welcome discount')).getByRole('button', { name: 'Save Welcome discount' }));
+    await waitFor(() => expect(picker.savePreferences).toHaveBeenCalledWith(expect.objectContaining({ saved: ['registered:centred-card'], revision: 0 })));
+    await moreFilters();
+    await userEvent.click(await screen.findByRole('checkbox', { name: 'Saved only' }));
+    expect(screen.getByRole('button', { name: /More filters/ })).toHaveTextContent('1');
+    expect(screen.getByRole('heading', { name: 'Welcome discount' })).toBeVisible();
+    expect(optins.createOptin).not.toHaveBeenCalled();
+  });
+
+  it('opens a template larger, with its gist, and returns focus to the card', async () => {
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    const open = within(await cardOf('Welcome discount')).getByRole('button', { name: 'Preview Welcome discount' });
+    await userEvent.click(open);
+    const dialog = await screen.findByRole('dialog', { name: 'Welcome discount' });
+    expect(within(dialog).getByText('A first-order discount is the highest-converting trade there is.')).toBeVisible();
+    expect(within(dialog).getByRole('radio', { name: 'Actual size' })).toBeInTheDocument();
+    expect(within(dialog).getByRole('button', { name: 'Use template' })).toBeEnabled();
+    expect(optins.createOptin).not.toHaveBeenCalled();
+    await userEvent.keyboard('{Escape}');
+    await waitFor(() => expect(open).toHaveFocus());
+  });
+
+  it('requests only the prepared trees on the first page of 500, 24 per batch', async () => {
+    const metadata = Array.from({ length: 500 }, (_, at) => ({ ...PLAYBOOK, id: `start-${at}`, name: `Start ${at}`, template_id: `card-${at}`, design_key: `registered:card-${at}`, revision: `revision-${at}`, template: undefined }));
+    goals.readGoalGallery.mockResolvedValue(galleryOf(metadata));
+    goals.previewPlaybooks.mockImplementation((_goal, ids: string[]) => Promise.resolve({ entries: metadata.filter(entry => ids.includes(entry.id)).map(entry => ({ ...entry, template: PLAYBOOK.template })) }));
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    await screen.findByText('Page 1 of 21');
+    expect(screen.getAllByRole('button', { name: /^Preview Start/ })).toHaveLength(24);
+    await waitFor(() => expect(goals.previewPlaybooks).toHaveBeenCalled());
+    expect(goals.previewPlaybooks.mock.calls.flatMap(call => call[1])).toHaveLength(24);
+  });
+});
+
+describe('Pro hints on a free install', () => {
+  const locked = onlineSetup('night-sale', { state: 'locked', tier: 'pro', display_type: 'slide_in', design: { id: 'night', name: 'Night sale', tier: 'pro' } });
+
+  it('mixes a locked template in where it falls, with its plan and a link instead of a control', async () => {
+    withAdmin({ installedTier: 'free', proHints: true });
+    goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK], [locked], { configured: true, consent: 'yes' }));
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    const card = await cardOf('Online night-sale');
+    expect(within(card).getByText('Pro')).toBeVisible();
+    expect(within(card).getByRole('link', { name: 'See this design' })).toHaveAttribute('href', 'https://wconvert.io/templates/night-sale/');
+    expect(within(card).queryByRole('button', { name: 'Use template' })).toBeNull();
+    // A format only Pro has says so in the Format select, and Plan separates the locked cards.
+    expect(within(screen.getByRole('combobox', { name: 'Format' })).getByRole('option', { name: 'Slide-in · Pro' })).toBeInTheDocument();
+    await userEvent.click(within(screen.getByRole('group', { name: 'Plan' })).getByRole('radio', { name: 'Free' }));
+    expect(screen.queryByRole('heading', { name: 'Online night-sale' })).toBeNull();
+    expect(screen.getByRole('heading', { name: 'Welcome discount' })).toBeVisible();
+  });
+
+  it('offers no Plan and no locked card where hints are off', async () => {
+    withAdmin({ installedTier: 'free', proHints: false });
+    goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK], [locked], { configured: true, consent: 'yes' }));
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    await cardOf('Welcome discount');
+    expect(screen.queryByRole('heading', { name: 'Online night-sale' })).toBeNull();
+    expect(screen.queryByRole('group', { name: 'Plan' })).toBeNull();
+  });
+});
+
+describe('the online library', () => {
+  it('asks once, at the end of the grid, and reads the gallery again when answered', async () => {
+    goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK], [], { configured: true, consent: 'unanswered' }));
+    catalog.setCatalogConsent.mockResolvedValue({});
+    catalog.refreshCatalog.mockResolvedValue({});
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    expect(await screen.findByRole('heading', { name: 'See more templates from the WConvert library?' })).toBeVisible();
+    expect(catalog.refreshCatalog).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('button', { name: 'Show online templates' }));
+    expect(catalog.setCatalogConsent).toHaveBeenCalledWith(true);
+    await waitFor(() => expect(goals.readGoalGallery).toHaveBeenCalledTimes(2));
+  });
+
+  it('keeps the grid when reading it again fails, and says so', async () => {
+    goals.readGoalGallery.mockResolvedValueOnce(galleryOf([PLAYBOOK], [], { configured: true, consent: 'unanswered' }))
+      .mockRejectedValueOnce(new Error('The library could not be reached.'));
+    catalog.setCatalogConsent.mockResolvedValue({});
+    catalog.refreshCatalog.mockResolvedValue({});
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    await userEvent.click(await screen.findByRole('button', { name: 'Show online templates' }));
+    expect(await screen.findByText('The library could not be reached.')).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Welcome discount' })).toBeVisible();
+  });
+
+  it('installs an online template silently, then creates the draft from what it became', async () => {
+    goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK], [onlineSetup('welcome-online')], { configured: true, consent: 'yes' }));
+    catalog.installSetup.mockResolvedValue({ playbook_id: 'setup-1-welcome-online', template_id: 'design-1-welcome-online-design', status: {} });
     const created = vi.fn();
     render(<GoalScreen onCreated={created} />);
     await pickGoal();
-    await customize();
-    await waitFor(() => expect(created).toHaveBeenCalledWith('01JQZK8N3M4P5Q6R7S8T9V0W1X'));
-    expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, PLAYBOOK.id);
-    expect(optins.createOptin).toHaveBeenCalledExactlyOnceWith(DRAFT.name, DRAFT.goal, DRAFT.config);
-    expect(screen.queryByRole('button', { name: 'Create this Campaign' })).not.toBeInTheDocument();
-    expect(screen.queryByText('Step 3 of 3')).not.toBeInTheDocument();
+    await useTemplate('Online welcome-online');
+    await waitFor(() => expect(created).toHaveBeenCalledOnce());
+    expect(catalog.installSetup).toHaveBeenCalledExactlyOnceWith('welcome-online', 'a'.repeat(64));
+    expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, 'setup-1-welcome-online');
   });
 
-  it('creates a blank draft under the Goal already chosen', async () => {
-    const draft = { name: GOALS[0].label, goal: GOALS[0].id, config: { rules: [] } };
-    goals.prefill.mockResolvedValue(draft);
-    const created = vi.fn();
-    render(<GoalScreen onCreated={created} />);
+  it('keeps saying Adding… from the install until the draft is created', async () => {
+    goals.readGoalGallery.mockResolvedValue(galleryOf([], [onlineSetup('welcome-online')], { configured: true, consent: 'yes' }));
+    catalog.installSetup.mockResolvedValue({ playbook_id: 'setup-1-welcome-online', template_id: 'x', status: {} });
+    goals.prefill.mockReturnValue(new Promise(() => undefined));
+    render(<GoalScreen onCreated={vi.fn()} />);
     await pickGoal();
-    await userEvent.click(screen.getByRole('button', { name: 'Choose a design myself' }));
-    await waitFor(() => expect(created).toHaveBeenCalled());
-    expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, undefined);
-    expect(optins.createOptin).toHaveBeenCalledWith(draft.name, draft.goal, draft.config);
+    await useTemplate('Online welcome-online');
+    await waitFor(() => expect(goals.prefill).toHaveBeenCalled());
+    expect(within(await cardOf('Online welcome-online')).getByRole('button', { name: 'Adding…' })).toBeDisabled();
   });
 
-  /** ADR 0149 §3: a campaign made inside an occasion is linked and starts with its dates. */
-  it('creates into the occasion it was started from, with the occasion’s dates', async () => {
-    picker.pickerData.mockResolvedValue({ schema: 1, today: '2026-11-06', timezone: 'Asia/Muscat', collections: [], preferences: { schema: 1, revision: 0, saved: [], hidden: [], events: [], businesses: [], markets: [] },
+  it('says on the card when adding fails, and tries again from there', async () => {
+    goals.readGoalGallery.mockResolvedValue(galleryOf([], [onlineSetup('welcome-online')], { configured: true, consent: 'yes' }));
+    catalog.installSetup.mockRejectedValueOnce(new Error('The library could not be reached.')).mockResolvedValue({ playbook_id: 'setup-1-welcome-online', template_id: 'x', status: {} });
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    await useTemplate('Online welcome-online');
+    const card = await cardOf('Online welcome-online');
+    expect(await within(card).findByRole('alert')).toHaveTextContent('Couldn’t add this template.');
+    expect(goals.prefill).not.toHaveBeenCalled();
+    await userEvent.click(within(card).getByRole('button', { name: 'Try again' }));
+    await waitFor(() => expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, 'setup-1-welcome-online'));
+  });
+});
+
+describe('collections', () => {
+  const collection = { id: 'sale', revision: 'r', name: 'Sale planning', description: 'Before, during and after', business_types: [], priority: 1, cover: 'sale',
+    event: { family: 'black-friday', start: '2026-11-27', end_exclusive: '2026-12-01', feature_start: '2026-10-16', feature_end_exclusive: '2026-12-01' },
+    items: [{ setup_id: PLAYBOOK.id, stage: 'before' }, { setup_id: 'bar', stage: 'during' }] };
+  const bar = { ...PLAYBOOK, id: 'bar', name: 'Countdown bar', display_type: 'floating_bar' };
+  const other = { ...PLAYBOOK, id: 'other', name: 'Other' };
+
+  it('filters the grid to a collection from the shelf, with When for the stages it has', async () => {
+    const data = await picker.pickerData();
+    picker.pickerData.mockResolvedValue({ ...data, collections: [collection] });
+    goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK, bar, other]));
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    await userEvent.click(await screen.findByRole('button', { name: 'Sale planning, 2 templates' }));
+    expect(screen.queryByRole('heading', { name: 'Other' })).toBeNull();
+    const when = screen.getByRole('group', { name: 'When' });
+    await userEvent.click(within(when).getByRole('radio', { name: 'During' }));
+    expect(screen.queryByRole('heading', { name: 'Welcome discount' })).toBeNull();
+    expect(screen.getByRole('heading', { name: 'Countdown bar' })).toBeVisible();
+    await userEvent.click(screen.getByRole('button', { name: 'Show all templates' }));
+    expect(await cardOf('Other')).toBeVisible();
+  });
+
+  it('opens a seasonal collection whose event overlaps the occasion even when it started first', async () => {
+    const data = await picker.pickerData();
+    picker.pickerData.mockResolvedValue({ ...data, collections: [collection],
+      occasions: { schema: 1, revision: 3, items: [{ id: 'late-sale', name: 'Late sale', start: '2026-11-29', end: '2026-12-03' }] } });
+    goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK, bar, other]));
+    render(<GoalScreen occasion="late-sale" onCreated={vi.fn()} />);
+    await pickGoal();
+    expect(await screen.findByText('Before, during and after')).toBeVisible();
+  });
+
+  /** ADR 0149 §3, ADR 0171: a campaign made inside an occasion starts in its collection, with its dates. */
+  it('opens the occasion’s seasonal collection and creates into the occasion with its dates', async () => {
+    const data = await picker.pickerData();
+    picker.pickerData.mockResolvedValue({ ...data, collections: [collection],
       occasions: { schema: 1, revision: 3, items: [{ id: 'black-friday-2026', name: 'Black Friday 2026', start: '2026-11-20', end: '2026-12-01' }] } });
+    goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK, bar, other]));
     const draft = { name: GOALS[0].label, goal: GOALS[0].id, config: { rules: [] } };
     goals.prefill.mockResolvedValue(draft);
     const created = vi.fn();
     render(<GoalScreen occasion="black-friday-2026" onCreated={created} />);
     await pickGoal();
-    expect(await screen.findByText('Black Friday 2026')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Choose a design myself' }));
+    expect(await screen.findByText('Before, during and after')).toBeVisible();
+    expect(screen.queryByRole('heading', { name: 'Other' })).toBeNull();
+    await useTemplate();
     await waitFor(() => expect(created).toHaveBeenCalled());
     expect(optins.createOptin).toHaveBeenCalledWith(draft.name, draft.goal, {
       rules: [], occasion: 'black-friday-2026', starts_at: '2026-11-20 00:00', ends_at: '2026-12-02 00:00',
     });
   });
+});
 
-  it('offers a blank draft when this Goal has no starting points', async () => {
-    goals.listPlaybooks.mockResolvedValue([]);
+describe('creating the draft', () => {
+  it('creates exactly the prefilled draft and hands it straight to the editor', async () => {
+    const created = vi.fn();
+    render(<GoalScreen onCreated={created} />);
+    await pickGoal();
+    await useTemplate();
+    await waitFor(() => expect(created).toHaveBeenCalledWith('01JQZK8N3M4P5Q6R7S8T9V0W1X'));
+    expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, PLAYBOOK.id);
+    expect(optins.createOptin).toHaveBeenCalledExactlyOnceWith(DRAFT.name, DRAFT.goal, DRAFT.config);
+  });
+
+  it('creates the exact reviewed revision of a prepared template', async () => {
+    const metadata = { ...PLAYBOOK, revision: 'reviewed-revision', design_key: 'registered:card', template: undefined, availability: 'ready' };
+    goals.readGoalGallery.mockResolvedValue(galleryOf([metadata]));
+    goals.previewPlaybooks.mockResolvedValue({ entries: [{ ...metadata, template: PLAYBOOK.template, prepared_revision: 'prepared' }] });
     render(<GoalScreen onCreated={vi.fn()} />);
     await pickGoal();
-    expect(await screen.findByText('No campaign setups available')).toBeInTheDocument();
+    await waitFor(() => expect(goals.previewPlaybooks).toHaveBeenCalledWith(GOALS[0].id, [PLAYBOOK.id]));
+    await useTemplate();
+    await waitFor(() => expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, PLAYBOOK.id, 'reviewed-revision', 'prepared'));
+  });
+
+  it('creates a blank draft under the goal already chosen', async () => {
+    const draft = { name: GOALS[0].label, goal: GOALS[0].id, config: { rules: [] } };
+    goals.prefill.mockResolvedValue(draft);
+    const created = vi.fn();
+    render(<GoalScreen onCreated={created} />);
+    await pickGoal();
+    await cardOf('Welcome discount');
+    await userEvent.click(screen.getByRole('button', { name: 'Choose a design myself' }));
+    await waitFor(() => expect(created).toHaveBeenCalled());
+    expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, undefined);
+  });
+
+  it('offers a blank draft when this goal has no templates yet', async () => {
+    goals.readGoalGallery.mockResolvedValue(galleryOf([]));
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    expect(await screen.findByText('No templates for this goal yet')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Choose a design myself' })).toBeEnabled();
   });
 
-  it('identifies a missing design instead of leaving an endless preview skeleton', async () => {
-    goals.listPlaybooks.mockResolvedValue([{ ...PLAYBOOK, template: undefined }]);
-    render(<GoalScreen onCreated={vi.fn()} />);
-    await pickGoal();
-    expect(await screen.findByText(/This design is not available on this site/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Setup details for/ })).toBeEnabled();
-  });
-
-  it('guards creation paths, Back, and leaving the page throughout prefill and POST', async () => {
+  it('guards every way out throughout prefill and POST', async () => {
     let finishPrefill!: (draft: unknown) => void, finishCreate!: (draft: unknown) => void;
     goals.prefill.mockReturnValue(new Promise(resolve => { finishPrefill = resolve; }));
     optins.createOptin.mockReturnValue(new Promise(resolve => { finishCreate = resolve; }));
     const busy = vi.fn();
     render(<GoalScreen onCreated={vi.fn()} onBusyChange={busy} />);
     expect(unloadPrevented()).toBe(false);
-    await pickGoal(); await customize();
-    expect(screen.getByRole('button', { name: 'Creating draft…' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Choose a design myself', hidden: true })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Change goal', hidden: true })).toBeDisabled();
+    await pickGoal();
+    await useTemplate();
+    expect(within(await cardOf('Welcome discount')).getByRole('button', { name: 'Adding…' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Choose a design myself' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Goal: Grow my email list' })).toBeDisabled();
     expect(busy).toHaveBeenLastCalledWith(true);
     expect(unloadPrevented()).toBe(true);
     await act(async () => finishPrefill(DRAFT));
-    expect(screen.getByRole('button', { name: 'Creating draft…' })).toBeDisabled();
     expect(unloadPrevented()).toBe(true);
     await act(async () => finishCreate({ id: 'created' }));
     expect(busy).toHaveBeenLastCalledWith(false);
@@ -394,16 +573,18 @@ describe('a goal then a draft', () => {
 
   it('suppresses duplicate same-tick start events', async () => {
     goals.prefill.mockReturnValue(new Promise(() => undefined));
-    render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-    await inspect();
-    const button = await screen.findByRole('button', { name: 'Use this setup' });
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    const button = within(await cardOf('Welcome discount')).getByRole('button', { name: 'Use template' });
     act(() => { fireEvent.click(button); fireEvent.click(button); });
     expect(goals.prefill).toHaveBeenCalledTimes(1);
   });
 
-  it('retries a failed prefill without claiming an Optin was created', async () => {
+  it('retries a failed prefill without claiming a campaign was created', async () => {
     goals.prefill.mockRejectedValueOnce(new Error('Campaign setup unavailable.'));
-    render(<GoalScreen onCreated={vi.fn()} />); await pickGoal(); await customize();
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    await useTemplate();
     await screen.findByText('Campaign setup unavailable.');
     expect(optins.createOptin).not.toHaveBeenCalled();
     expect(screen.queryByText(/Draft creation could not be confirmed/)).not.toBeInTheDocument();
@@ -414,11 +595,11 @@ describe('a goal then a draft', () => {
   it('does not automatically retry a possibly committed POST', async () => {
     optins.createOptin.mockRejectedValueOnce(new Error('Network interrupted.'));
     const created = vi.fn(), check = vi.fn();
-    render(<GoalScreen onCreated={created} onCheckOptins={check} />); await pickGoal(); await customize();
+    render(<GoalScreen onCreated={created} onCheckOptins={check} />);
+    await pickGoal();
+    await useTemplate();
     await screen.findByText(/Draft creation could not be confirmed/);
-    expect(screen.getByRole('button', { name: 'Use this setup' })).toHaveAttribute('aria-disabled', 'true');
-    await userEvent.click(screen.getByRole('button', { name: 'Use this setup' }));
-    expect(optins.createOptin).toHaveBeenCalledTimes(1);
+    expect(within(await cardOf('Welcome discount')).getByRole('button', { name: 'Use template' })).toBeDisabled();
     expect(unloadPrevented()).toBe(false);
     await userEvent.click(screen.getByRole('button', { name: 'Check campaigns' }));
     expect(check).toHaveBeenCalledOnce();
@@ -426,12 +607,12 @@ describe('a goal then a draft', () => {
     expect(created).not.toHaveBeenCalled();
   });
 
-  it('discards prefill after the flow closes, before issuing any POST', async () => {
+  it('discards a prefill after the flow closes, before issuing any POST', async () => {
     let finish!: (draft: unknown) => void;
     goals.prefill.mockReturnValue(new Promise(resolve => { finish = resolve; }));
     const { unmount } = render(<GoalScreen onCreated={vi.fn()} />);
-    await pickGoal(); await customize();
-    expect(unloadPrevented()).toBe(true);
+    await pickGoal();
+    await useTemplate();
     unmount();
     expect(unloadPrevented()).toBe(false);
     await act(async () => finish(DRAFT));
@@ -442,564 +623,11 @@ describe('a goal then a draft', () => {
     let finish!: (draft: unknown) => void;
     optins.createOptin.mockReturnValue(new Promise(resolve => { finish = resolve; }));
     const created = vi.fn(), { unmount } = render(<GoalScreen onCreated={created} />);
-    await pickGoal(); await customize();
+    await pickGoal();
+    await useTemplate();
     await waitFor(() => expect(optins.createOptin).toHaveBeenCalledTimes(1));
-    unmount(); await act(async () => finish({ id: 'created' }));
+    unmount();
+    await act(async () => finish({ id: 'created' }));
     expect(created).not.toHaveBeenCalled();
   });
-
-  it('discards an abandoned Goal’s late starting points', async () => {
-    let old!: (entries: unknown) => void;
-    goals.listPlaybooks.mockReturnValueOnce(new Promise(resolve => { old = resolve; }));
-    render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-    expect(await screen.findByRole('status')).toHaveTextContent('Loading');
-    await userEvent.click(screen.getByRole('button', { name: 'Change goal' }));
-    await pickGoal(); await screen.findByText('Welcome discount');
-    await act(async () => old([{ ...PLAYBOOK, name: 'Abandoned result' }]));
-    expect(screen.queryByText('Abandoned result')).not.toBeInTheDocument();
-  });
-
-  it('retries a failed starting-point read on the same selected Goal', async () => {
-    goals.listPlaybooks.mockRejectedValueOnce(new Error('Campaign setups unavailable.'));
-    render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-    await screen.findByText('Campaign setups unavailable.');
-    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
-    await screen.findByText('Welcome discount');
-    expect(goals.listPlaybooks).toHaveBeenLastCalledWith(GOALS[0].id);
-  });
-
-  it('uses resolved setup rules instead of raw authored rules for timing', async () => {
-    goals.listPlaybooks.mockResolvedValue([{ ...PLAYBOOK, rules: [{ type: 'exit_intent' }],
-      setup: { ...PLAYBOOK.setup, display_rules: displayPlan([{ type: 'time_on_page', seconds: 15, degraded_from: 'exit_intent' }]) } }]);
-    render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-    await inspect();
-    expect(await screen.findByText(/After 15 seconds/)).toBeInTheDocument();
-    expect(screen.queryByText(/exit_intent/)).not.toBeInTheDocument();
-  });
-
-  it('describes repeat display using the actual design action and orders audience before timing', async () => {
-    goals.listPlaybooks.mockResolvedValue([{ ...PLAYBOOK,
-      template: { ...PLAYBOOK.template, tree: treeFixture({ steps: [{ type: 'stack', children: [
-        { type: 'button', label: 'View the offer', action: 'link', href: '/offer' },
-      ] }] }) },
-      setup: { ...PLAYBOOK.setup, display_rules: displayPlan([{ type: 'time_on_page', seconds: 8 }], [{ type: 'logged_in', value: false }]), frequency: { cooldownDays: 2 } },
-    }]);
-    render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-    await userEvent.click(await screen.findByRole('button', { name: 'Setup details for Welcome discount' }));
-    expect(await screen.findByText(/click the main button/)).toBeInTheDocument();
-    expect(screen.queryByText(/submit the form/)).not.toBeInTheDocument();
-    expect(screen.getAllByRole('term').map((term) => term.textContent)).toEqual([
-      'Opens', 'Where', 'Who', 'How often', 'Counts as success',
-    ]);
-  });
-
-  it('names known page sets from the site vocabulary without claiming a count of pages', async () => {
-    const vocabulary = ruleTypes();
-    const contentType = vocabulary.targeting.find((entry) => entry.type === 'singular')!;
-    contentType.label = 'Any single item of a type';
-    contentType.params.value.options = [{ value: 'post', label: 'Blog posts' }];
-    const path = vocabulary.targeting.find((entry) => entry.type === 'url')!;
-    path.label = 'A URL path';
-    rules.getRules.mockResolvedValue(vocabulary);
-    goals.listPlaybooks.mockResolvedValue([{ ...PLAYBOOK, setup: { ...PLAYBOOK.setup,
-      targeting: { include: [{ type: 'singular', value: 'post' }], exclude: [{ type: 'url', value: '/private/*' }] },
-    } }]);
-    render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-    await userEvent.click(await screen.findByRole('button', { name: 'Setup details for Welcome discount' }));
-    expect(await screen.findByText('Any single item of a type: Blog posts, except A URL path: /private/*')).toBeInTheDocument();
-    expect(screen.queryByText(/Matches 1 page rule/)).not.toBeInTheDocument();
-  });
-
-  it('keeps a page-rule count when a stored object ID needs a separate lookup', async () => {
-    goals.listPlaybooks.mockResolvedValue([{ ...PLAYBOOK, setup: { ...PLAYBOOK.setup,
-      targeting: { include: [{ type: 'post', value: '42' }] },
-    } }]);
-    render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-    await userEvent.click(await screen.findByRole('button', { name: 'Setup details for Welcome discount' }));
-    expect(await screen.findByText('Matches 1 page rule')).toBeInTheDocument();
-    expect(screen.queryByText(/42/)).not.toBeInTheDocument();
-  });
-
-  it('allows creation and retry when optional setup descriptions cannot load', async () => {
-    rules.getRules.mockRejectedValueOnce(new Error('Rules unavailable.'));
-    render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-    await screen.findByText(/Setup details could not be loaded/);
-    expect(screen.getByRole('button', { name: /Setup details for/ })).toBeEnabled();
-    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
-    await inspect();
-    expect(await screen.findByText(/After 8 seconds/)).toBeInTheDocument();
-  });
-
-  it('makes inline placement work visible before creating the draft', async () => {
-    goals.listPlaybooks.mockResolvedValue([{ ...PLAYBOOK, display_type: 'inline', setup: { ...PLAYBOOK.setup, display_type: 'inline' } }]);
-    render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-    expect(await screen.findByText('Inline form', { selector: '[data-slot=badge]' })).toBeInTheDocument();
-    await userEvent.click(await screen.findByRole('button', { name: 'Setup details for Welcome discount' }));
-    expect(screen.getByText('Where you place it')).toBeInTheDocument();
-    expect(screen.getByText('A page to place its block or shortcode on')).toBeInTheDocument();
-  });
-});
-
-
-it('filters installed starting points by collection and creates only the chosen prepared draft', async () => {
-  const downloaded = { ...PLAYBOOK, id: 'pack-hash-welcome', collection: { id: 'store', name: 'Store collection', version: '1.1.0' } };
-  goals.listPlaybooks.mockResolvedValue([PLAYBOOK, downloaded]);
-  render(<GoalScreen onCreated={vi.fn()} />);
-  await pickGoal();
-  await screen.findByText('Store collection', { selector: 'option' });
-  await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Source' }), 'store');
-  expect(screen.getAllByRole('button', { name: /Setup details for/ })).toHaveLength(1);
-  expect(goals.prefill).not.toHaveBeenCalled();
-  expect(optins.createOptin).not.toHaveBeenCalled();
-  await customize();
-  await waitFor(() => expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, downloaded.id));
-  expect(optins.createOptin).toHaveBeenCalledWith(DRAFT.name, DRAFT.goal, DRAFT.config);
-});
-
-it('recovers when collection and format filters have no setup in common', async () => {
-  const downloaded = { ...PLAYBOOK, id: 'pack-inline', name: 'Pack inline', display_type: 'inline',
-    setup: { ...PLAYBOOK.setup, display_type: 'inline' }, collection: { id: 'store', name: 'Store collection', version: '1.1.0' } };
-  goals.listPlaybooks.mockResolvedValue([PLAYBOOK, downloaded]);
-  render(<GoalScreen onCreated={vi.fn()} />);
-  await pickGoal();
-  await userEvent.click(screen.getByRole('radio', { name: 'Inline form' }));
-  await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Source' }), 'bundled');
-  expect(screen.getByText('No campaign setups match')).toBeVisible();
-  expect(screen.getByText('Try another search, business, format or collection.')).toBeVisible();
-  await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
-  expect(screen.getAllByRole('button', { name: /Setup details for/ })).toHaveLength(2);
-  expect(screen.getByRole('radio', { name: 'All formats' })).toBeChecked();
-  expect(screen.getByRole('combobox', { name: 'Source' })).toHaveValue('all');
-});
-
-it('combines search with collection and format filters, and removes each independently', async () => {
-  const collection = { id: 'store', name: 'Store collection', version: '1.0' };
-  goals.listPlaybooks.mockResolvedValue([
-    PLAYBOOK,
-    { ...PLAYBOOK, id: 'inline', name: 'Inline welcome', collection, setup: { ...PLAYBOOK.setup, display_type: 'inline' } },
-    { ...PLAYBOOK, id: 'seasonal', name: 'Seasonal offer', notes: 'A seasonal campaign', collection },
-  ]);
-  render(<GoalScreen onCreated={vi.fn()} />);
-  await pickGoal();
-  await userEvent.type(screen.getByRole('searchbox', { name: 'Search campaign setups' }), '  WELCOME  ');
-  await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Source' }), 'store');
-  expect(screen.getByText(/1 of 3 setups/)).toBeVisible();
-  expect(screen.getByRole('radio', { name: 'Popup' })).toBeDisabled();
-  await userEvent.click(screen.getByRole('radio', { name: 'Inline form' }));
-  expect(screen.getByRole('radio', { name: 'Inline form' })).toBeChecked();
-  expect(screen.getByText('Inline welcome')).toBeVisible();
-  await userEvent.click(screen.getByRole('button', { name: 'Remove filter: Inline form' }));
-  await userEvent.click(screen.getByRole('button', { name: 'Remove filter: Store collection' }));
-  expect(screen.getByText(/2 of 3 setups/)).toBeVisible();
-  await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
-  expect(screen.getByText(/^3 setups$/)).toBeVisible();
-  expect(screen.getByRole('searchbox')).toHaveValue('');
-  expect(goals.listPlaybooks).toHaveBeenCalledTimes(1);
-  expect(goals.prefill).not.toHaveBeenCalled();
-  expect(optins.createOptin).not.toHaveBeenCalled();
-});
-
-it('clears a previous search when switching goals', async () => {
-  render(<GoalScreen onCreated={vi.fn()} />);
-  await pickGoal();
-  await userEvent.type(screen.getByRole('searchbox'), 'nothing matches');
-  expect(screen.getByText('No campaign setups match')).toBeVisible();
-  await userEvent.click(screen.getByRole('button', { name: 'Change goal' }));
-  await pickGoal();
-  expect(screen.getByRole('searchbox')).toHaveValue('');
-  expect(await screen.findByRole('button', { name: /Setup details for/ })).toBeVisible();
-});
-
-it('offers no online setups while the library is switched off', async () => {
-  render(<GoalScreen onCreated={vi.fn()} />);
-  await pickGoal();
-  await userEvent.click(await screen.findByRole('button', { name: 'More ways to browse' }));
-  expect(await screen.findByRole('menuitem', { name: 'Occasions & preferences' })).toBeInTheDocument();
-  expect(screen.queryByRole('menuitem', { name: 'Template packs' })).not.toBeInTheDocument();
-  expect(catalog.catalogStatus).not.toHaveBeenCalled();
-});
-
-it('adds an online setup for the chosen goal without creating a draft (ADR 0156)', async () => {
-  const setup = { id: 'welcome-online', revision: 1, sha256: 'a'.repeat(64), name: 'Welcome discount online', goal: GOALS[0].id, tier: 'free', design: { id: 'reading-slip', revision: 1 }, state: 'install' };
-  const status = { enabled: true, consent: 'yes', checked_at: null, update_required: false, skipped: 0, taxonomy: {}, designs: [{ id: 'reading-slip', format: 'popup' }], setups: [setup] };
-  window.wconvertAdmin = { exportUrl: '', catalogConfigured: true };
-  onTestFinished(() => { delete window.wconvertAdmin; });
-  catalog.catalogStatus.mockResolvedValue(status);
-  catalog.refreshCatalog.mockResolvedValue(status);
-  catalog.installSetup.mockResolvedValue({ playbook_id: 'setup-1-welcome-online', template_id: 'design-1-reading-slip', status: { ...status, setups: [{ ...setup, state: 'ready' }] } });
-  goals.listPlaybooks.mockResolvedValueOnce([PLAYBOOK]).mockResolvedValue([PLAYBOOK, { ...PLAYBOOK, id: 'setup-1-welcome-online', name: 'Welcome discount online' }]);
-  render(<GoalScreen onCreated={vi.fn()} />);
-  await pickGoal();
-  await userEvent.click(await screen.findByRole('button', { name: 'More ways to browse' }));
-  await userEvent.click(await screen.findByRole('menuitem', { name: 'Online setups' }));
-  await userEvent.click(await screen.findByRole('button', { name: 'Add to my setups' }));
-  expect(catalog.installSetup).toHaveBeenCalledWith('welcome-online', 'a'.repeat(64));
-  expect(await screen.findByText('In your library')).toBeInTheDocument();
-  await waitFor(() => expect(goals.listPlaybooks).toHaveBeenCalledTimes(2));
-  expect(optins.createOptin).not.toHaveBeenCalled();
-  expect(goals.prefill).not.toHaveBeenCalled();
-});
-it('refreshes collection discovery after reading the online library without installing anything', async () => {
-  const { onlineCollection } = await import('./support/online-collection');
-  const data = await picker.pickerData();
-  picker.pickerData.mockResolvedValueOnce(data).mockResolvedValue({ ...data, collections: [onlineCollection()] });
-  const status = { enabled: true, consent: 'yes', checked_at: null, update_required: false, skipped: 0, taxonomy: {}, designs: [], setups: [] };
-  window.wconvertAdmin = { exportUrl: '', catalogConfigured: true };
-  onTestFinished(() => { delete window.wconvertAdmin; });
-  catalog.catalogStatus.mockResolvedValue(status); catalog.refreshCatalog.mockResolvedValue(status);
-  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-  await userEvent.click(await screen.findByRole('button', { name: 'More ways to browse' }));
-  await userEvent.click(await screen.findByRole('menuitem', { name: 'Online setups' }));
-  expect(await screen.findByText('No online setups for this goal yet')).toBeVisible();
-  await userEvent.click(screen.getByRole('button', { name: 'Close' }));
-  expect(await screen.findByRole('button', { name: /Shopping weekend Twenty sale designs/ })).toBeVisible();
-  expect(catalog.installSetup).not.toHaveBeenCalled();
-  expect(optins.createOptin).not.toHaveBeenCalled();
-});
-
-it('asks before the online library is used from creation', async () => {
-  window.wconvertAdmin = { exportUrl: '', catalogConfigured: true };
-  onTestFinished(() => { delete window.wconvertAdmin; });
-  catalog.catalogStatus.mockResolvedValue({ enabled: true, consent: 'unanswered', checked_at: null, update_required: false, skipped: 0, taxonomy: {}, designs: [], setups: [] });
-  goals.listPlaybooks.mockResolvedValue([PLAYBOOK]);
-  render(<GoalScreen onCreated={vi.fn()} />);
-  await pickGoal();
-  await userEvent.click(await screen.findByRole('button', { name: 'More ways to browse' }));
-  await userEvent.click(await screen.findByRole('menuitem', { name: 'Online setups' }));
-  expect(await screen.findByRole('heading', { name: 'See more designs from the WConvert library?' })).toBeInTheDocument();
-  expect(catalog.refreshCatalog).not.toHaveBeenCalled();
-});
-it('combines business and format filters without writing a draft', async () => {
-  goals.listPlaybooks.mockResolvedValue([
-    { ...PLAYBOOK, business_types: [{ id: 'stores', label: 'Stores' }] },
-    { ...PLAYBOOK, id: 'service', name: 'Service newsletter', business_types: [{ id: 'services', label: 'Service businesses' }], setup: { ...PLAYBOOK.setup, display_type: 'inline' } },
-  ]);
-  render(<GoalScreen onCreated={vi.fn()} />);
-  await userEvent.click((await screen.findAllByRole('button', { name: /^Choose/ }))[0]);
-  await userEvent.selectOptions(await screen.findByRole('combobox', { name: 'Business' }), 'services');
-  expect(screen.getAllByRole('button', { name: /Setup details for/ })).toHaveLength(1);
-  expect(screen.getByText('Service newsletter')).toBeVisible();
-  expect(screen.getByRole('radio', { name: 'Popup' })).toBeDisabled();
-  await userEvent.click(screen.getByRole('radio', { name: 'Inline form' }));
-  expect(screen.getByText('Service newsletter')).toBeVisible();
-  await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Source' }), 'bundled');
-  expect(screen.getAllByRole('button', { name: /Setup details for/ })).toHaveLength(1);
-  await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
-  expect(screen.getAllByRole('button', { name: /Setup details for/ })).toHaveLength(2);
-  expect(optins.createOptin).not.toHaveBeenCalled();
-});
-
-
-it('groups shared designs, keeps matching use cases reachable and creates only the chosen setup', async () => {
-  const repair = { ...PLAYBOOK, id: 'repair', name: 'Repair request', notes: 'Discuss a repair', business_types: [{ id: 'services', label: 'Service businesses' }] };
-  goals.listPlaybooks.mockResolvedValue([PLAYBOOK, repair]);
-  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-  expect(screen.getAllByRole('button', { name: /Setup details for/ })).toHaveLength(1);
-  expect(screen.queryByRole('combobox', { name: /Use case for/ })).not.toBeInTheDocument();
-  await userEvent.click(screen.getByRole('button', { name: 'Setup details for Welcome discount' }));
-  await userEvent.click(screen.getByRole('radio', { name: 'Repair request' }));
-  await userEvent.click(screen.getByRole('button', { name: 'Back to setups' }));
-  expect(screen.getByText('Repair request', { selector: '.wconvert-gallery__card h3' })).toBeVisible();
-  await userEvent.click(screen.getByRole('button', { name: 'Setup details for Repair request' }));
-  expect(screen.getByRole('dialog', { name: 'Repair request' })).toHaveTextContent('Discuss a repair');
-  await userEvent.keyboard('{Escape}');
-  expect(goals.prefill).not.toHaveBeenCalled();
-  await userEvent.type(screen.getByRole('searchbox'), 'Welcome');
-  expect(screen.getByText('Welcome discount', { selector: '.wconvert-gallery__card h3' })).toBeVisible();
-  expect(screen.queryByRole('combobox', { name: /Use case for/ })).not.toBeInTheDocument();
-  await userEvent.clear(screen.getByRole('searchbox'));
-  expect(screen.getByText('Repair request', { selector: '.wconvert-gallery__card h3' })).toBeVisible();
-  await customize();
-  await waitFor(() => expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, repair.id));
-  expect(optins.createOptin).toHaveBeenCalledOnce();
-});
-
-it('requests only visible prepared previews and creates the exact reviewed revision', async () => {
-  const metadata = { ...PLAYBOOK, revision: 'reviewed-revision', design_key: 'registered:card', template: undefined, availability: 'ready' };
-  goals.listPlaybooks.mockResolvedValue([metadata]);
-  goals.previewPlaybooks.mockResolvedValue({ entries: [{ ...metadata, template: PLAYBOOK.template }] });
-  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-  await waitFor(() => expect(goals.previewPlaybooks).toHaveBeenCalledWith(GOALS[0].id, [PLAYBOOK.id]));
-  await customize();
-  expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, PLAYBOOK.id, 'reviewed-revision', undefined);
-});
-
-it('paginates 500 metadata entries without requesting all their prepared trees', async () => {
-  const metadata = Array.from({ length: 500 }, (_, at) => ({ ...PLAYBOOK, id: `start-${at}`, name: `Start ${at}`, template_id: `card-${at}`, design_key: `registered:card-${at}`, revision: `revision-${at}`, template: undefined }));
-  goals.listPlaybooks.mockResolvedValue(metadata);
-  goals.previewPlaybooks.mockImplementation((_goal, ids: string[]) => Promise.resolve({ entries: metadata.filter(entry => ids.includes(entry.id)).map(entry => ({ ...entry, template: PLAYBOOK.template })) }));
-  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-  await screen.findByText('Page 1 of 21');
-  // Twenty-four on the page, plus the one drawn on its own to start from.
-  expect(screen.getAllByRole('button', { name: /Setup details for/ })).toHaveLength(24);
-  expect(screen.getByRole('button', { name: 'Preview Start 0 first' })).toBeInTheDocument();
-  await waitFor(() => expect(goals.previewPlaybooks).toHaveBeenCalled());
-  expect(goals.previewPlaybooks.mock.calls.flatMap(call => call[1])).toHaveLength(25);
-  expect(goals.previewPlaybooks.mock.calls.every(call => call[1].length <= 24)).toBe(true);
-});
-
-it('saves canonical designs through authenticated preferences and filters without writing a campaign', async () => {
-  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-  await userEvent.click(await screen.findByRole('button', { name: 'Save design: Welcome discount' }));
-  await waitFor(() => expect(picker.savePreferences).toHaveBeenCalledWith(expect.objectContaining({ saved: ['registered:centred-card'], revision: 0 })));
-  await userEvent.click(await screen.findByRole('checkbox', { name: /Saved designs only/ }));
-  expect(screen.getByText('More filters').closest('summary')).toHaveTextContent('1 on');
-  expect(screen.getByText('Welcome discount')).toBeVisible();
-  expect(optins.createOptin).not.toHaveBeenCalled();
-});
-
-it('keeps collection membership exact when two use cases share a design', async () => {
-  const second = { ...PLAYBOOK, id: 'unrelated-copy', name: 'Unrelated copy' };
-  goals.listPlaybooks.mockResolvedValue([PLAYBOOK, second]);
-  const data = await picker.pickerData();
-  picker.pickerData.mockResolvedValue({ ...data, collections: [{ id: 'useful', revision: 'r', name: 'Useful collection', description: 'Useful starts', business_types: [], markets: [], priority: 1, cover: 'reading', items: [{ setup_id: PLAYBOOK.id, stage: 'any' }] }] });
-  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-  await userEvent.click(await screen.findByRole('button', { name: /Useful collection Useful starts/ }));
-  expect(screen.queryByRole('combobox', { name: /Use case for/ })).not.toBeInTheDocument();
-  await customize(); expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, PLAYBOOK.id);
-});
-
-it('changes the use case inside inspection and creates the exact chosen snapshot', async () => {
-  const other = { ...PLAYBOOK, id: 'guide', name: 'Practical guide', requirements: ['Have the guide URL ready'], revision: 'guide-r', prepared_revision: 'guide-prepared', template: PLAYBOOK.template };
-  goals.listPlaybooks.mockResolvedValue([PLAYBOOK, other]);
-  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-  await userEvent.click(await screen.findByRole('button', { name: 'Setup details for Welcome discount' }));
-  await userEvent.click(screen.getByRole('radio', { name: 'Mobile' }));
-  await userEvent.click(screen.getByRole('radio', { name: 'Practical guide' }));
-  expect(screen.getByRole('heading', { name: 'Practical guide' })).toBeVisible();
-  expect(screen.getByText('Have the guide URL ready')).toBeVisible();
-  expect(screen.getByRole('radio', { name: 'Mobile' })).toBeChecked();
-  await userEvent.click(screen.getByRole('button', { name: 'Use this setup' }));
-  expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, 'guide', 'guide-r', undefined);
-});
-
-it('uses one collection dialog, recovers an empty filtered stage and restores its view after inspection', async () => {
-  // A floating bar is a paid format; a free install is not offered it (ADR 0116).
-  window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
-  onTestFinished(() => { delete window.wconvertAdmin; });
-  const announcement = { ...PLAYBOOK, id: 'sale-bar', name: 'Sale announcement', template_id: 'bar', setup: { ...PLAYBOOK.setup, display_type: 'floating_bar' } };
-  goals.listPlaybooks.mockResolvedValue([PLAYBOOK, announcement]);
-  const data = await picker.pickerData();
-  picker.pickerData.mockResolvedValue({ ...data, collections: [{ id: 'event', revision: 'r', name: 'Sale preparation', description: 'Prepare a useful sale', business_types: [], markets: [], priority: 1, cover: 'reading', items: [{ setup_id: PLAYBOOK.id, stage: 'before' }, { setup_id: announcement.id, stage: 'during' }] }] });
-  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-  await userEvent.click(await screen.findByRole('button', { name: /Sale preparation Prepare a useful sale/ }));
-  expect(screen.getAllByRole('dialog')).toHaveLength(1);
-  const dialog = screen.getByRole('dialog');
-  await userEvent.click(within(dialog).getByRole('radio', { name: 'Floating bar' }));
-  expect(within(dialog).getByRole('radio', { name: /Before/ })).toBeDisabled();
-  expect(within(dialog).getByRole('radio', { name: /During/ })).toBeChecked();
-  expect(within(dialog).getByText(/Showing a matching stage instead/)).toBeVisible();
-  await userEvent.click(within(dialog).getByRole('button', { name: 'Setup details for Sale announcement' }));
-  expect(screen.getAllByRole('dialog')).toHaveLength(1);
-  await userEvent.click(screen.getByRole('button', { name: 'Back to collection' }));
-  expect(screen.getByRole('heading', { name: 'Sale preparation' })).toBeVisible();
-  expect(screen.getByRole('radio', { name: /During/ })).toBeChecked();
-  expect(optins.createOptin).not.toHaveBeenCalled();
-});
-
-it('compares two distinct designs, reviews one in the same dialog and returns without creating', async () => {
-  const other = { ...PLAYBOOK, id: 'guide', name: 'Practical guide', template_id: 'other-card' };
-  goals.listPlaybooks.mockResolvedValue([PLAYBOOK, other]);
-  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-  await userEvent.click(await screen.findByRole('checkbox', { name: 'Compare design: Welcome discount' }));
-  await userEvent.click(screen.getByRole('checkbox', { name: 'Compare design: Practical guide' }));
-  await userEvent.click(screen.getByRole('button', { name: 'Compare' }));
-  expect(screen.getAllByRole('dialog')).toHaveLength(1);
-  expect(screen.getAllByRole('region', { name: 'Design preview' })).toHaveLength(2);
-  await userEvent.click(screen.getByRole('button', { name: 'Review setup: Practical guide' }));
-  expect(screen.getByRole('heading', { name: 'Practical guide' })).toBeVisible();
-  await userEvent.click(screen.getByRole('button', { name: 'Back to comparison' }));
-  expect(screen.getByRole('heading', { name: 'Compare setups' })).toBeVisible();
-  expect(optins.createOptin).not.toHaveBeenCalled();
-});
-
-it('keeps comparison recoverable when a search hides every selected design', async () => {
-  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-  await userEvent.click(await screen.findByRole('checkbox', { name: 'Compare design: Welcome discount' }));
-  await userEvent.type(screen.getByRole('searchbox', { name: 'Search campaign setups' }), 'no matching setup');
-  expect(screen.getByText('No campaign setups match')).toBeVisible();
-  expect(screen.getByRole('complementary', { name: 'Selected for comparison' })).toBeVisible();
-  await userEvent.click(screen.getByRole('button', { name: 'Clear' }));
-  await userEvent.clear(screen.getByRole('searchbox', { name: 'Search campaign setups' }));
-  expect(screen.getByRole('checkbox', { name: 'Compare design: Welcome discount' })).not.toBeChecked();
-  expect(optins.createOptin).not.toHaveBeenCalled();
-});
-
-it('keeps a refused setup focusable with its reason and never prepares it', async () => {
-  // A paid site is shown a setup it does not have, refused.
-  window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
-  onTestFinished(() => { delete window.wconvertAdmin; });
-  goals.listPlaybooks.mockResolvedValue([{ ...PLAYBOOK, availability: 'locked', template: undefined }]);
-  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-  await inspect();
-  const use = await screen.findByRole('button', { name: 'Use this setup' });
-  expect(use).toHaveAttribute('aria-disabled', 'true');
-  expect(use).toBeEnabled();
-  expect(use).toHaveAccessibleDescription(/Available with/);
-  await userEvent.click(use);
-  expect(goals.prefill).not.toHaveBeenCalled(); expect(optins.createOptin).not.toHaveBeenCalled();
-});
-
-
-it('never offers a setup whose design is missing from this site', async () => {
-  goals.listPlaybooks.mockResolvedValue([{ ...PLAYBOOK, availability: 'unavailable', template: undefined }]);
-  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-  expect(await screen.findByText('No campaign setups available')).toBeInTheDocument();
-  expect(screen.queryByRole('button', { name: /Setup details for/ })).toBeNull();
-});
-
-it('requires inspection before creating and keeps preview controls out of the cards', async () => {
-  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-  const preview = await screen.findByRole('button', { name: 'Setup details for Welcome discount' });
-  expect(screen.queryByRole('button', { name: 'Use this setup' })).not.toBeInTheDocument();
-  await userEvent.click(preview);
-  // Desktop opens on the whole design; the toggle says what pressing it does.
-  await userEvent.click(screen.getByRole('button', { name: 'Actual size' }));
-  expect(screen.getByRole('button', { name: 'Fit whole design' })).toBeInTheDocument();
-  await userEvent.click(screen.getByRole('radio', { name: 'Mobile' }));
-  expect(screen.getByRole('button', { name: 'Fit whole design' })).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Use this setup' })).toBeEnabled();
-  expect(optins.createOptin).not.toHaveBeenCalled();
-});
-
-
-it('replaces a failed inspection preview with recovery, then shows the exact retried setup', async () => {
-  const metadata = { ...PLAYBOOK, revision: 'review-r', availability: 'ready', template: undefined };
-  goals.listPlaybooks.mockResolvedValue([metadata]);
-  goals.previewPlaybooks.mockRejectedValueOnce(new Error('Offline')).mockResolvedValue({ entries: [{ ...metadata, template: PLAYBOOK.template }] });
-  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-  await screen.findByText('Preview could not be loaded.');
-  await inspect();
-  expect(screen.getByRole('alert')).toHaveTextContent('This preview could not be loaded.');
-  expect(screen.queryByText('Loading preview…')).not.toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Use this setup' })).toBeDisabled();
-  await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
-  await waitFor(() => expect(screen.getByRole('button', { name: 'Use this setup' })).toBeEnabled());
-  expect(optins.createOptin).not.toHaveBeenCalled();
-});
-
-it('folds the secondary filters under one More filters row and opens preferences over the library', async () => {
-  const repair = { ...PLAYBOOK, id: 'repair', name: 'Repair request', template_id: 'repair-card', business_types: [{ id: 'services', label: 'Service businesses' }] };
-  goals.listPlaybooks.mockResolvedValue([PLAYBOOK, repair]);
-  const data = await picker.pickerData();
-  picker.pickerData.mockResolvedValue({ ...data, occasions: { schema: 1, revision: 0, items: [{ id: 'sale', name: 'Anniversary sale', start: '2026-11-27', end: '2026-12-01' }] } });
-  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-  await screen.findByText('Repair request');
-  const more = screen.getByText('More filters').closest('summary')!;
-  expect(screen.getByRole('combobox', { name: 'Business' })).not.toBeVisible();
-  expect(screen.queryByRole('button', { name: 'Help me choose' })).not.toBeInTheDocument();
-  await userEvent.click(more);
-  await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Business' }), 'services');
-  expect(more).toHaveTextContent('1 on');
-
-  await userEvent.click(screen.getByRole('button', { name: 'More ways to browse' }));
-  await userEvent.click(await screen.findByRole('menuitem', { name: 'Occasions & preferences' }));
-  const dialog = await screen.findByRole('dialog', { name: 'Occasions & preferences' });
-  // A dialog over the library, not a panel in its place.
-  expect(screen.getByRole('heading', { name: 'Choose a campaign setup', hidden: true })).toBeInTheDocument();
-  expect(within(dialog).getByText('Nov 27 – Dec 1, 2026')).toBeVisible();
-  await userEvent.click(within(dialog).getByRole('button', { name: 'Find ideas' }));
-  await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
-  expect(screen.getByRole('region', { name: 'Occasion planning ideas' })).toHaveTextContent('Nov 27 – Dec 1, 2026');
-  expect(optins.createOptin).not.toHaveBeenCalled();
-});
-
-it('starts a long list with one recommended setup that can be used straight away', async () => {
-  const many = Array.from({ length: 5 }, (_, at) => ({ ...PLAYBOOK, id: `start-${at}`, name: `Start ${at}`, template_id: `card-${at}`, design_key: `registered:card-${at}` }));
-  goals.listPlaybooks.mockResolvedValue(many);
-  goals.prefill.mockResolvedValue(DRAFT);
-  const created = vi.fn();
-  render(<GoalScreen onCreated={created} />); await pickGoal();
-  const start = (await screen.findByRole('heading', { name: 'Start here' })).closest('section')!;
-  expect(within(start).getByText('Start 0')).toBeInTheDocument();
-  // The recommended one is not drawn twice.
-  expect(screen.getAllByRole('button', { name: /Setup details for/ })).toHaveLength(4);
-  await userEvent.click(within(start).getByRole('button', { name: 'Use this setup' }));
-  await waitFor(() => expect(created).toHaveBeenCalled());
-  expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, 'start-0');
-});
-
-it('stops recommending once the merchant narrows the list', async () => {
-  const many = Array.from({ length: 5 }, (_, at) => ({ ...PLAYBOOK, id: `start-${at}`, name: `Start ${at}`, template_id: `card-${at}`, design_key: `registered:card-${at}` }));
-  goals.listPlaybooks.mockResolvedValue(many);
-  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-  await screen.findByRole('heading', { name: 'Start here' });
-  await userEvent.type(screen.getByRole('searchbox', { name: 'Search campaign setups' }), 'Start');
-  expect(screen.queryByRole('heading', { name: 'Start here' })).toBeNull();
-  expect(screen.getAllByRole('button', { name: /Setup details for/ })).toHaveLength(5);
-});
-
-/** Leads stay in WConvert until a service is connected (ADR 0133): the draft needs no mode written into it. */
-it('creates a list campaign from its prefill as it is', async () => {
-  goals.listGoals.mockResolvedValue([{ ...GOALS[0], outcome: CAPTURE_OUTCOME }]);
-  const draft = { name: GOALS[0].label, goal: GOALS[0].id, config: { rules: [] } };
-  goals.prefill.mockResolvedValue(draft);
-  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-  await userEvent.click(screen.getByRole('button', { name: 'Choose a design myself' }));
-  await waitFor(() => expect(optins.createOptin).toHaveBeenCalledWith(draft.name, draft.goal, draft.config));
-  expect(destinationsApi.readDestinations).not.toHaveBeenCalled();
-});
-
-it('browses every hosted collection member before installation and creates with the chosen member’s goal', async () => {
-  window.wconvertAdmin = { exportUrl: '', installedTier: 'free', proHints: true };
-  onTestFinished(() => { delete window.wconvertAdmin; });
-  const { onlineCollection } = await import('./support/online-collection');
-  const collection = onlineCollection();
-  goals.listGoals.mockResolvedValue(GOALS.map(goal => goal.id === 'promote_offer' ? { ...goal, availability: 'ready', tier: 'free' } : goal));
-  const data = await picker.pickerData();
-  picker.pickerData.mockResolvedValue({ ...data, collections: [collection] });
-  render(<GoalScreen onCreated={vi.fn()} />);
-  await userEvent.click(await screen.findByRole('button', { name: 'Choose: Grow my email list' }));
-  await userEvent.click(await screen.findByRole('button', { name: /Shopping weekend Twenty sale designs/ }));
-  const dialog = within(screen.getByRole('dialog'));
-  expect(dialog.getAllByRole('heading', { level: 3 })).toHaveLength(20);
-  expect(dialog.getAllByText('Pro')).toHaveLength(15);
-  expect(dialog.getAllByText('Free')).toHaveLength(5);
-  expect(dialog.getAllByRole('link', { name: 'See this design' })).toHaveLength(15);
-  expect(catalog.installSetup).not.toHaveBeenCalled();
-  expect(catalog.previewDesign).not.toHaveBeenCalled();
-  expect(optins.createOptin).not.toHaveBeenCalled();
-  catalog.installSetup.mockRejectedValueOnce(new Error('Connection interrupted'));
-  await userEvent.click(dialog.getAllByRole('button', { name: 'Install setup' })[0]);
-  expect(await dialog.findByRole('alert')).toHaveTextContent('Connection interrupted');
-  catalog.installSetup.mockResolvedValueOnce({ playbook_id: 'setup-1-sale-1', template_id: 'sale-1', status: {} });
-  await userEvent.click(dialog.getByRole('button', { name: 'Try again' }));
-  expect(await dialog.findByRole('button', { name: 'Use this setup' })).toBeVisible();
-  expect(dialog.getAllByRole('heading', { level: 3 })).toHaveLength(20);
-  expect(optins.createOptin).not.toHaveBeenCalled();
-  goals.prefill.mockResolvedValue({ ...DRAFT, goal: 'promote_offer' });
-  await userEvent.click(dialog.getByRole('button', { name: 'Use this setup' }));
-  await waitFor(() => expect(goals.prefill).toHaveBeenCalledWith('promote_offer', 'setup-1-sale-1'));
-  expect(optins.createOptin).toHaveBeenCalledWith(DRAFT.name, 'promote_offer', DRAFT.config);
-});
-
-it('uses a bundled Pro collection member without downloading it again', async () => {
-  const { onlineCollection } = await import('./support/online-collection');
-  const collection = onlineCollection();
-  collection.online![5].setup.state = 'ready';
-  collection.online![5].playbook_id = 'sale-6';
-  const data = await picker.pickerData();
-  picker.pickerData.mockResolvedValue({ ...data, collections: [collection] });
-  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-  await userEvent.click(await screen.findByRole('button', { name: /Shopping weekend Twenty sale designs/ }));
-  await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Use this setup' }));
-  expect(goals.prefill).toHaveBeenCalledWith('grow_email_list', 'sale-6');
-  expect(catalog.installSetup).not.toHaveBeenCalled();
-});
-
-
-it('respects the server’s Pro-hint opt-out in collection cards and counts', async () => {
-  window.wconvertAdmin = { exportUrl: '', installedTier: 'free', proHints: false };
-  onTestFinished(() => { delete window.wconvertAdmin; });
-  const { onlineCollection } = await import('./support/online-collection');
-  const data = await picker.pickerData();
-  picker.pickerData.mockResolvedValue({ ...data, collections: [onlineCollection()] });
-  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-  const open = await screen.findByRole('button', { name: /Shopping weekend Twenty sale designs/ });
-  expect(open).toHaveTextContent('5 setups');
-  await userEvent.click(open);
-  const dialog = within(screen.getByRole('dialog'));
-  expect(dialog.getAllByRole('heading', { level: 3 })).toHaveLength(5);
-  expect(dialog.queryByText('Pro')).not.toBeInTheDocument();
-  expect(dialog.queryByRole('link', { name: 'See this design' })).not.toBeInTheDocument();
 });

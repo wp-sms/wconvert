@@ -39,7 +39,9 @@ the Goal together.
 In the gallery, a design that fits the Goal once converted is listed with a
 chip ("Email form added", "Form removed") and applied converted; the goal
 picker's step 2 adds "Works with this goal", the other side's setups, created
-under the chosen Goal. A click design taken for Show a message is prepared
+under the chosen Goal. *(Amended by [ADR 0171](0171-one-template-gallery.md): creation's step 2 no longer has
+"Works with this goal"; the editor's Change template keeps the conversion
+chips.)* A click design taken for Show a message is prepared
 without its counted link.
 
 Quizzes, lead magnets, product blocks, content locks, cart Goals and branching

@@ -243,8 +243,7 @@ input, remove WordPress pseudo dots, and put selected and focus treatments on
 the label. Do not draw both a chip selection and a radio circle. Device and
 screen groups have an explicit gap; a long screen list uses a labeled select.
 Picker toolbars use the same 32px height for search, selects and buttons, with
-44px minimum targets for coarse pointers. Compare uses one shared checkbox
-treatment and a tray naming the selection. Pagination stays outside a scrolling
+44px minimum targets for coarse pointers. Pagination stays outside a scrolling
 gallery body, so it remains reachable without scrolling through every card.
 
 ## 8. The admin speaks only when it changes what you do next
@@ -357,15 +356,14 @@ scaled to fill the slot and never past 1.25 (1 on the canvas). Mobile is a
 `Preview`; one only the catalogue has is its picture, in the same slot. Never
 write another scale-to-fit: a new surface picks a stage size.
 
-Creation cards open inspection before the draft action, except the one **Start
-here** card drawn above a list of more than three setups, which offers Use this
-setup directly (ADR 0132). A library toolbar is two rows: search, sort and a ⋯
-for other ways to browse; then the main facet chips, a compact More filters
-toggle and the count. Shared cards place the
-name and Save together, metadata on its own row, then Preview and Compare. Do
-not scatter these controls between metadata and actions. Full inspection starts
-at width fit with vertical scrolling for tall content; offer Fit entire design
-for an overview. Comparison retains equally sized fitted stages. Errors and
+**There is one template gallery** (ADR 0171), in creation and in the editor:
+the collections shelf on top, one toolbar row — search, Format, Plan (Free
+with Pro hints only), More filters and the count, with a removable chip for
+each filter More filters holds — then the grid. A card is the stage, the name
+and ★, one row of chips (format; what it asks for — Email, Phone, Name, or
+Button; Recommended or a grey lock with the plan's name), and one action. No
+sort, no Start here, no comparison. A card's stage opens inspection: Desktop |
+Mobile, Fit | Actual size, its screens, the gist and the same action. Errors and
 recovery actions belong in the active modal, including an uncertain creation
 result. Country choices use names and searchable selection, not code entry.
 Keep collection introductions concise: one description in the header, stage
@@ -718,7 +716,7 @@ Not gaps. Each was decided:
 - The campaign list is a grid variant of `DataTable`: a tick-box column, then
   four. Thumbnails and names open saved-design details; explicit row actions
   lead to editing. Ticked rows are acted on together from a tray at the foot
-  of the sheet, the way Compare works in the design picker: Delete, Duplicate,
+  of the sheet: Delete, Duplicate,
   Unpublish and Publish, each confirmed where it changes what visitors see. The
   tray sticks to the viewport's foot, so ticking a row shows it.
   Gallery reuses those rows and semantics. On cards, identity is the heading,

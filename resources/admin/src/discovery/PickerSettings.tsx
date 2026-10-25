@@ -1,48 +1,30 @@
-import { newAuthoringId } from '../authoringId';
-import { useRef, useEffect, useId, useState } from 'react';
+import { useRef, useEffect, useId } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { ArrowLeft, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
 import { AdminDialogBody, AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
 import { CheckRow } from '../shell/CheckRow';
-import { ConfirmDialog } from '../shell/ConfirmDialog';
-import { Description } from '../shell/Description';
-import { Field } from '../shell/Field';
 import { RegionErrorState, TryAgain } from '../shell/Region';
-import { SaveStatus, useSaveStatus } from '../shell/SaveStatus';
-import { formatRange, siteLocale } from '../lib/format';
-import { zoneName } from './model';
-import type { Occasion } from './api';
 import type { usePicker } from './usePicker';
 
-const MAX_OCCASIONS = 50;
-
 /**
- * Picker preferences and site occasions as a dialog view (ADR 0131): header,
- * one scrolling body, a footer with the way back.
+ * The design library's preferences as a view (ADR 0131): header, one
+ * scrolling body, a footer with the way back. The library is already a dialog
+ * and never stacks another, so it opens in place (`nested`) with a plain
+ * heading. Occasions moved to the Campaigns ⋯ menu (ADR 0171).
  *
- * Creation opens it as its own Medium dialog. The design library is already a
- * dialog and never stacks another, so there it opens in place (`nested`) with
- * a plain heading instead of a second dialog title.
- *
- * Recommendation choices save as they are made, like the star on a card: they
- * are one person's sorting preferences, not a site setting. Occasions are
- * shared and have their own explicit Save.
+ * Choices save as they are made, like the star on a card: they are one
+ * person's preferences, not a site setting.
  */
-export function PickerSettings({ picker, onBack, onPlan, context = 'creation', nested = false, backLabel }: {
-  picker: ReturnType<typeof usePicker>; onBack: () => void; onPlan?: (id: string) => void;
-  context?: 'creation' | 'replacement'; nested?: boolean; backLabel?: string;
+export function PickerSettings({ picker, onBack, nested = false, backLabel }: {
+  picker: ReturnType<typeof usePicker>; onBack: () => void; nested?: boolean; backLabel?: string;
 }) {
   const heading = useRef<HTMLHeadingElement>(null);
   const sections = useId();
   useEffect(() => { if (nested) heading.current?.focus({ preventScroll: true }); }, [nested]);
   const data = picker.data;
-  const title = context === 'creation' ? __('Occasions & preferences', 'wconvert') : __('Preferences', 'wconvert');
-  const meta = context === 'creation'
-    ? __('Recommendations are yours alone. Occasions are shared with this site’s campaign managers.', 'wconvert')
-    : __('Personal to your account on this site.', 'wconvert');
+  const title = __('Preferences', 'wconvert');
+  const meta = __('Personal to your account on this site.', 'wconvert');
 
   return <>
     {nested
@@ -73,7 +55,6 @@ export function PickerSettings({ picker, onBack, onPlan, context = 'creation', n
                 <Button variant="ghost" disabled={picker.saving} aria-label={sprintf(/* translators: %s: a saved design's name, e.g. “Spring sale popup”. */ __('Remove %s from saved designs', 'wconvert'), name)} onClick={() => picker.toggleSaved(key)}>{__('Remove', 'wconvert')}</Button></li>;
             })}</ul>
           </section>}
-          {context === 'creation' && <Occasions picker={picker} items={data.occasions.items} timezone={data.timezone} onPlan={onPlan} />}
         </>}
     </AdminDialogBody>
     <AdminDialogFooter
@@ -83,83 +64,4 @@ export function PickerSettings({ picker, onBack, onPlan, context = 'creation', n
       {data && picker.error && <TryAgain busy={picker.saving} onClick={() => { void picker.reload(); }} />}
     </AdminDialogFooter>
   </>;
-}
-
-/**
- * Shared planning dates. A row has two actions behind its first: Find ideas
- * stays visible; Edit and Delete go in its ⋯ menu (§10).
- */
-function Occasions({ picker, items, timezone, onPlan }: {
-  picker: ReturnType<typeof usePicker>; items: Occasion[]; timezone: string; onPlan?: (id: string) => void;
-}) {
-  const [name, setName] = useState(''); const [start, setStart] = useState(''); const [end, setEnd] = useState('');
-  const [editing, setEditing] = useState<string | null>(null);
-  const [deleting, setDeleting] = useState<Occasion | null>(null);
-  const menu = useRef<HTMLButtonElement | null>(null);
-  const status = useSaveStatus();
-  const id = useId();
-  const full = !editing && items.length >= MAX_OCCASIONS;
-  const zone = zoneName(timezone, siteLocale());
-  const reset = () => { setEditing(null); setName(''); setStart(''); setEnd(''); };
-  const edit = (change: () => void) => { status.clear(); change(); };
-
-  return <section className="wconvert-picker-settings__section" aria-labelledby={`${id}-title`}>
-    <h3 id={`${id}-title`}>{__('Site occasions', 'wconvert')}</h3>
-    <Description>{zone
-      ? sprintf(/* translators: %s: the site's time zone, e.g. “Central European Time”. */ __('A sale or launch you are planning. Days follow this site’s time zone, %s. Saving one never schedules a campaign.', 'wconvert'), zone)
-      : __('A sale or launch you are planning. Saving one never schedules a campaign.', 'wconvert')}</Description>
-    {items.length === 0 && <p className="m-0 text-note text-muted-foreground">{__('No occasions yet. Add one to find campaign ideas for it.', 'wconvert')}</p>}
-    {items.length > 0 && <ul className="wconvert-occasion-list">{items.map(item => <li key={item.id}>
-      <div><strong><bdi>{item.name}</bdi></strong><span>{formatRange(item.start, item.end)}</span></div>
-      {onPlan && <Button variant="outline" onClick={() => onPlan(item.id)}>{__('Find ideas', 'wconvert')}</Button>}
-      <DropdownMenu modal={false}>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" disabled={picker.saving} aria-label={sprintf(/* translators: %s: an occasion's name. */ __('Actions for %s', 'wconvert'), item.name)}
-            onPointerDown={event => { menu.current = event.currentTarget; }} onKeyDown={event => { menu.current = event.currentTarget; }}>
-            <MoreHorizontal aria-hidden="true" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" sideOffset={5}>
-          <DropdownMenuItem onSelect={() => edit(() => { setEditing(item.id); setName(item.name); setStart(item.start); setEnd(item.end); })}>
-            <Pencil aria-hidden="true" />{__('Edit', 'wconvert')}
-          </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => setDeleting(item)}>
-            <Trash2 aria-hidden="true" />{__('Delete', 'wconvert')}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </li>)}</ul>}
-    <h4 className="m-0 text-body font-semibold">{editing ? __('Edit occasion', 'wconvert') : __('Add an occasion', 'wconvert')}</h4>
-    <form className="wconvert-occasion-form" onSubmit={event => {
-      event.preventDefault();
-      if (full) return;
-      const fields = new FormData(event.currentTarget);
-      const item = { id: editing ?? `occasion-${newAuthoringId()}`, name: String(fields.get('name') ?? '').trim(), start: String(fields.get('start') ?? ''), end: String(fields.get('end') ?? '') };
-      setStart(item.start); setEnd(item.end);
-      void picker.occasions(editing ? items.map(value => value.id === editing ? item : value) : [...items, item]).then(saved => { if (saved) { reset(); status.markSaved(); } });
-    }}>
-      <Field label={__('Occasion name', 'wconvert')} htmlFor={`${id}-name`}>
-        <Input id={`${id}-name`} name="name" required maxLength={120} value={name} placeholder={__('Anniversary sale', 'wconvert')} onChange={event => edit(() => setName(event.target.value))} />
-      </Field>
-      <Field label={__('First day', 'wconvert')} htmlFor={`${id}-start`}>
-        <Input id={`${id}-start`} name="start" required type="date" value={start} onChange={event => edit(() => setStart(event.target.value))} />
-      </Field>
-      <Field label={__('Last day', 'wconvert')} htmlFor={`${id}-end`}>
-        <Input id={`${id}-end`} name="end" required type="date" min={start || undefined} value={end} onChange={event => edit(() => setEnd(event.target.value))} />
-      </Field>
-      <div className="wconvert-occasion-form__actions">
-        {editing && <Button type="button" variant="outline" onClick={reset}>{__('Cancel', 'wconvert')}</Button>}
-        <Button type="submit" disabled={picker.saving} aria-disabled={full || undefined} aria-describedby={full ? `${id}-full` : undefined}>
-          {picker.saving ? __('Saving…', 'wconvert') : editing ? __('Save occasion', 'wconvert') : __('Add occasion', 'wconvert')}
-        </Button>
-        <SaveStatus saved={status.saved} />
-        {full && <span id={`${id}-full`} className="text-note text-muted-foreground">{sprintf(/* translators: %s: the most occasions you can keep, e.g. “50”. */ __('You can keep up to %s occasions. Delete one to add another.', 'wconvert'), String(MAX_OCCASIONS))}</span>}
-      </div>
-    </form>
-    <ConfirmDialog open={deleting !== null} onOpenChange={open => { if (!open) setDeleting(null); }} variant="destructive" returnFocusTo={menu}
-      title={sprintf(/* translators: %s: an occasion's name. */ __('Delete “%s”?', 'wconvert'), deleting?.name ?? '')}
-      description={__('Only the occasion goes. Campaigns and collections stay as they are.', 'wconvert')}
-      confirmLabel={__('Delete occasion', 'wconvert')}
-      onConfirm={() => { if (deleting) void picker.occasions(items.filter(value => value.id !== deleting.id)); setDeleting(null); }} />
-  </section>;
 }

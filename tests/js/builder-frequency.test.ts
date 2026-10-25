@@ -82,7 +82,6 @@ describe('the allowance', () => {
     for (const path of [
       'resources/loader/src/frequency.ts',
       'resources/admin/src/builder/rules/HowOften.tsx',
-      'resources/admin/src/builder/rules/sentence.ts',
     ]) {
       const text = source(path);
 

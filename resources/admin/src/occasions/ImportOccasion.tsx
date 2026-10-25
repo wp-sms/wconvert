@@ -1,20 +1,28 @@
 import { useId, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { MoreHorizontal, Upload } from 'lucide-react';
+import { CalendarPlus, MoreHorizontal, Upload } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { AdminDialog, AdminDialogBody, AdminDialogContent, AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
 import { DropdownMenu, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
 import { OptionGroup, OptionItem, OptionMenuContent } from '../components/ui/option-menu';
 import { messageOf } from '../shell/loadable';
 import { importOccasion, type OccasionNotice } from './api';
+import { NewOccasionDialog } from './NewOccasion';
 
 /**
- * Import an occasion file (#280, ADR 0153), from the ⋯ beside Create campaign
- * — there even before a site has any occasion, which is when an agency's file
- * arrives. Its campaigns land as drafts and the list says which did not.
+ * The ⋯ beside Create campaign: a new occasion (ADR 0171), or an imported
+ * one (#280, ADR 0153) — there even before a site has any occasion, which is
+ * when an agency's file arrives. Imported campaigns land as drafts and the
+ * list says which did not.
  */
-export function ImportOccasionMenu({ disabled = false, onImported }: { disabled?: boolean; onImported: (notice: OccasionNotice) => void }) {
+export function ImportOccasionMenu({ disabled = false, onImported, onCreated }: {
+  disabled?: boolean;
+  onImported: (notice: OccasionNotice) => void;
+  /** A new occasion was saved: its page is where campaigns are made for it. */
+  onCreated: (id: string) => void;
+}) {
   const [open, setOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
   const trigger = useRef<HTMLButtonElement>(null);
   return <>
     <DropdownMenu modal={false}>
@@ -25,10 +33,12 @@ export function ImportOccasionMenu({ disabled = false, onImported }: { disabled?
       </DropdownMenuTrigger>
       <OptionMenuContent align="end" sideOffset={5} aria-label={__('More campaign actions', 'wconvert')}>
         <OptionGroup>
+          <OptionItem icon={CalendarPlus} name={__('New occasion', 'wconvert')} onSelect={() => setCreating(true)} />
           <OptionItem icon={Upload} name={__('Import occasion', 'wconvert')} onSelect={() => setOpen(true)} />
         </OptionGroup>
       </OptionMenuContent>
     </DropdownMenu>
+    {creating && <NewOccasionDialog returnFocusTo={trigger} onClose={() => setCreating(false)} onCreated={(id) => { setCreating(false); onCreated(id); }} />}
     {open && <ImportDialog returnFocusTo={trigger} onClose={() => setOpen(false)} onImported={(notice) => { setOpen(false); onImported(notice); }} />}
   </>;
 }
