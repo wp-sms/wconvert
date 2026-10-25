@@ -137,7 +137,7 @@ final class LibraryLintTest extends TestCase
         // A Free design the catalogue alone serves installs onto a site and owes
         // the same budget as one in the ZIP (ADR 0157). Measured as installed:
         // PackImages::hydrate binds each picture to a verified local URL, just
-        // as BundledArtwork does for a bundled JPEG.
+        // as BundledArtwork does for a bundled photo (ADR 0172).
         $hosted = new class ($root . '/tools/design-library/hosted/templates') implements TemplateSource {
             public function __construct(private readonly string $directory)
             {

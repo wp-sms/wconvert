@@ -1,0 +1,1369 @@
+{
+ "_note": "Every screen of every setup the photo re-encode staled, drawn by one renderer from main's designs (data URIs) and this branch's (artwork files), at 1200 and 375 px with chrome. mean/max are per-pixel max-channel deltas on 0\u2013255; changed is the share of pixels that differ at all.",
+ "base": "2bdd7984",
+ "setups": [
+  {
+   "id": "ceramics-open-studio",
+   "screens": [
+    {
+     "screen": "ceramics-open-studio-1200-0",
+     "mean": 1.493,
+     "max": 25,
+     "changed": 0.5703
+    },
+    {
+     "screen": "ceramics-open-studio-375-0",
+     "mean": 0.394,
+     "max": 14,
+     "changed": 0.2241
+    }
+   ]
+  },
+  {
+   "id": "seasonal-sunshine",
+   "screens": [
+    {
+     "screen": "seasonal-sunshine-1200-0",
+     "mean": 0.32,
+     "max": 40,
+     "changed": 0.1109
+    },
+    {
+     "screen": "seasonal-sunshine-1200-1",
+     "mean": 0,
+     "max": 0,
+     "changed": 0
+    },
+    {
+     "screen": "seasonal-sunshine-375-0",
+     "mean": 0.82,
+     "max": 38,
+     "changed": 0.2847
+    },
+    {
+     "screen": "seasonal-sunshine-375-1",
+     "mean": 0,
+     "max": 0,
+     "changed": 0
+    }
+   ]
+  },
+  {
+   "id": "slower-outdoor-guide",
+   "screens": [
+    {
+     "screen": "slower-outdoor-guide-1200-0",
+     "mean": 0.646,
+     "max": 28,
+     "changed": 0.1816
+    },
+    {
+     "screen": "slower-outdoor-guide-1200-1",
+     "mean": 0,
+     "max": 0,
+     "changed": 0
+    },
+    {
+     "screen": "slower-outdoor-guide-1200-2",
+     "mean": 0,
+     "max": 0,
+     "changed": 0
+    },
+    {
+     "screen": "slower-outdoor-guide-375-0",
+     "mean": 1.143,
+     "max": 33,
+     "changed": 0.3188
+    },
+    {
+     "screen": "slower-outdoor-guide-375-1",
+     "mean": 0,
+     "max": 0,
+     "changed": 0
+    },
+    {
+     "screen": "slower-outdoor-guide-375-2",
+     "mean": 0,
+     "max": 0,
+     "changed": 0
+    }
+   ]
+  },
+  {
+   "id": "early-access-launch",
+   "screens": [
+    {
+     "screen": "early-access-launch-1200-0",
+     "mean": 0.846,
+     "max": 14,
+     "changed": 0.4394
+    },
+    {
+     "screen": "early-access-launch-1200-1",
+     "mean": 0.844,
+     "max": 13,
+     "changed": 0.4383
+    },
+    {
+     "screen": "early-access-launch-375-0",
+     "mean": 0.43,
+     "max": 11,
+     "changed": 0.2726
+    },
+    {
+     "screen": "early-access-launch-375-1",
+     "mean": 0.652,
+     "max": 11,
+     "changed": 0.4136
+    }
+   ]
+  },
+  {
+   "id": "monthly-planting-letter",
+   "screens": [
+    {
+     "screen": "monthly-planting-letter-1200-0",
+     "mean": 0.528,
+     "max": 16,
+     "changed": 0.2376
+    },
+    {
+     "screen": "monthly-planting-letter-1200-1",
+     "mean": 0.466,
+     "max": 15,
+     "changed": 0.2166
+    },
+    {
+     "screen": "monthly-planting-letter-375-0",
+     "mean": 0.52,
+     "max": 10,
+     "changed": 0.2857
+    },
+    {
+     "screen": "monthly-planting-letter-375-1",
+     "mean": 0.647,
+     "max": 10,
+     "changed": 0.3554
+    }
+   ]
+  },
+  {
+   "id": "new-batch-first-look",
+   "screens": [
+    {
+     "screen": "new-batch-first-look-1200-0",
+     "mean": 0.139,
+     "max": 17,
+     "changed": 0.0688
+    },
+    {
+     "screen": "new-batch-first-look-1200-1",
+     "mean": 0.214,
+     "max": 17,
+     "changed": 0.1057
+    },
+    {
+     "screen": "new-batch-first-look-375-0",
+     "mean": 0.446,
+     "max": 17,
+     "changed": 0.2203
+    },
+    {
+     "screen": "new-batch-first-look-375-1",
+     "mean": 0.684,
+     "max": 17,
+     "changed": 0.3383
+    }
+   ]
+  },
+  {
+   "id": "halloween-midnight-offer",
+   "screens": [
+    {
+     "screen": "halloween-midnight-offer-1200-0",
+     "mean": 0.606,
+     "max": 23,
+     "changed": 0.151
+    },
+    {
+     "screen": "halloween-midnight-offer-375-0",
+     "mean": 0.917,
+     "max": 15,
+     "changed": 0.3046
+    }
+   ]
+  },
+  {
+   "id": "halloween-treat-signup",
+   "screens": [
+    {
+     "screen": "halloween-treat-signup-1200-0",
+     "mean": 0.468,
+     "max": 26,
+     "changed": 0.1539
+    },
+    {
+     "screen": "halloween-treat-signup-1200-1",
+     "mean": 0.542,
+     "max": 30,
+     "changed": 0.1776
+    },
+    {
+     "screen": "halloween-treat-signup-375-0",
+     "mean": 1.275,
+     "max": 32,
+     "changed": 0.4218
+    },
+    {
+     "screen": "halloween-treat-signup-375-1",
+     "mean": 1.283,
+     "max": 21,
+     "changed": 0.5303
+    }
+   ]
+  },
+  {
+   "id": "halloween-after-dark-offer",
+   "screens": [
+    {
+     "screen": "halloween-after-dark-offer-1200-0",
+     "mean": 0.997,
+     "max": 31,
+     "changed": 0.3572
+    },
+    {
+     "screen": "halloween-after-dark-offer-375-0",
+     "mean": 1.037,
+     "max": 21,
+     "changed": 0.438
+    }
+   ]
+  },
+  {
+   "id": "halloween-midnight-flight-offer",
+   "screens": [
+    {
+     "screen": "halloween-midnight-flight-offer-1200-0",
+     "mean": 1.072,
+     "max": 23,
+     "changed": 0.381
+    },
+    {
+     "screen": "halloween-midnight-flight-offer-375-0",
+     "mean": 1.091,
+     "max": 18,
+     "changed": 0.4743
+    }
+   ]
+  },
+  {
+   "id": "bf-midnight-atelier",
+   "screens": [
+    {
+     "screen": "bf-midnight-atelier-1200-0",
+     "mean": 0.42,
+     "max": 21,
+     "changed": 0.1783
+    },
+    {
+     "screen": "bf-midnight-atelier-375-0",
+     "mean": 0.994,
+     "max": 19,
+     "changed": 0.4244
+    }
+   ]
+  },
+  {
+   "id": "bf-velvet-rope",
+   "screens": [
+    {
+     "screen": "bf-velvet-rope-1200-0",
+     "mean": 0.638,
+     "max": 20,
+     "changed": 0.268
+    },
+    {
+     "screen": "bf-velvet-rope-1200-1",
+     "mean": 0,
+     "max": 0,
+     "changed": 0
+    },
+    {
+     "screen": "bf-velvet-rope-375-0",
+     "mean": 0.994,
+     "max": 19,
+     "changed": 0.4244
+    },
+    {
+     "screen": "bf-velvet-rope-375-1",
+     "mean": 0,
+     "max": 0,
+     "changed": 0
+    }
+   ]
+  },
+  {
+   "id": "cm-chrome-hour",
+   "screens": [
+    {
+     "screen": "cm-chrome-hour-1200-0",
+     "mean": 0.557,
+     "max": 21,
+     "changed": 0.2178
+    },
+    {
+     "screen": "cm-chrome-hour-375-0",
+     "mean": 1.305,
+     "max": 24,
+     "changed": 0.5169
+    }
+   ]
+  },
+  {
+   "id": "cm-electric-aisle",
+   "screens": [
+    {
+     "screen": "cm-electric-aisle-1200-0",
+     "mean": 0.395,
+     "max": 24,
+     "changed": 0.141
+    },
+    {
+     "screen": "cm-electric-aisle-375-0",
+     "mean": 0.509,
+     "max": 16,
+     "changed": 0.2242
+    }
+   ]
+  },
+  {
+   "id": "winter-ribbon-room",
+   "screens": [
+    {
+     "screen": "winter-ribbon-room-1200-0",
+     "mean": 0.103,
+     "max": 18,
+     "changed": 0.0415
+    },
+    {
+     "screen": "winter-ribbon-room-375-0",
+     "mean": 0.073,
+     "max": 9,
+     "changed": 0.0402
+    }
+   ]
+  },
+  {
+   "id": "winter-winter-windows",
+   "screens": [
+    {
+     "screen": "winter-winter-windows-1200-0",
+     "mean": 0.518,
+     "max": 37,
+     "changed": 0.1435
+    },
+    {
+     "screen": "winter-winter-windows-375-0",
+     "mean": 0.235,
+     "max": 22,
+     "changed": 0.0742
+    }
+   ]
+  },
+  {
+   "id": "winter-ornament-edit",
+   "screens": [
+    {
+     "screen": "winter-ornament-edit-1200-0",
+     "mean": 0.073,
+     "max": 20,
+     "changed": 0.0283
+    },
+    {
+     "screen": "winter-ornament-edit-375-0",
+     "mean": 0.052,
+     "max": 11,
+     "changed": 0.0281
+    }
+   ]
+  },
+  {
+   "id": "winter-candle-club",
+   "screens": [
+    {
+     "screen": "winter-candle-club-1200-0",
+     "mean": 0.02,
+     "max": 18,
+     "changed": 0.007
+    },
+    {
+     "screen": "winter-candle-club-1200-1",
+     "mean": 0.029,
+     "max": 18,
+     "changed": 0.01
+    },
+    {
+     "screen": "winter-candle-club-375-0",
+     "mean": 0.065,
+     "max": 18,
+     "changed": 0.0224
+    },
+    {
+     "screen": "winter-candle-club-375-1",
+     "mean": 0.092,
+     "max": 18,
+     "changed": 0.0319
+    }
+   ]
+  },
+  {
+   "id": "winter-wrapped-in-colour",
+   "screens": [
+    {
+     "screen": "winter-wrapped-in-colour-1200-0",
+     "mean": 0.135,
+     "max": 17,
+     "changed": 0.0545
+    },
+    {
+     "screen": "winter-wrapped-in-colour-375-0",
+     "mean": 0.063,
+     "max": 10,
+     "changed": 0.0344
+    }
+   ]
+  },
+  {
+   "id": "winter-gift-atelier",
+   "screens": [
+    {
+     "screen": "winter-gift-atelier-1200-0",
+     "mean": 0.093,
+     "max": 17,
+     "changed": 0.0339
+    },
+    {
+     "screen": "winter-gift-atelier-375-0",
+     "mean": 0.029,
+     "max": 11,
+     "changed": 0.0142
+    }
+   ]
+  },
+  {
+   "id": "winter-winter-postcards",
+   "screens": [
+    {
+     "screen": "winter-winter-postcards-1200-0",
+     "mean": 0.105,
+     "max": 18,
+     "changed": 0.0398
+    },
+    {
+     "screen": "winter-winter-postcards-1200-1",
+     "mean": 0.02,
+     "max": 10,
+     "changed": 0.0104
+    },
+    {
+     "screen": "winter-winter-postcards-375-0",
+     "mean": 0.052,
+     "max": 11,
+     "changed": 0.0272
+    },
+    {
+     "screen": "winter-winter-postcards-375-1",
+     "mean": 0.119,
+     "max": 14,
+     "changed": 0.0457
+    }
+   ]
+  },
+  {
+   "id": "winter-snowglobe-society",
+   "screens": [
+    {
+     "screen": "winter-snowglobe-society-1200-0",
+     "mean": 0.036,
+     "max": 18,
+     "changed": 0.0139
+    },
+    {
+     "screen": "winter-snowglobe-society-1200-1",
+     "mean": 0.009,
+     "max": 11,
+     "changed": 0.0044
+    },
+    {
+     "screen": "winter-snowglobe-society-375-0",
+     "mean": 0.086,
+     "max": 15,
+     "changed": 0.033
+    },
+    {
+     "screen": "winter-snowglobe-society-375-1",
+     "mean": 0.099,
+     "max": 13,
+     "changed": 0.038
+    }
+   ]
+  },
+  {
+   "id": "winter-after-hours-atelier",
+   "screens": [
+    {
+     "screen": "winter-after-hours-atelier-1200-0",
+     "mean": 0,
+     "max": 0,
+     "changed": 0
+    },
+    {
+     "screen": "winter-after-hours-atelier-1200-1",
+     "mean": 0.027,
+     "max": 14,
+     "changed": 0.0111
+    },
+    {
+     "screen": "winter-after-hours-atelier-375-0",
+     "mean": 0,
+     "max": 0,
+     "changed": 0
+    },
+    {
+     "screen": "winter-after-hours-atelier-375-1",
+     "mean": 0.086,
+     "max": 14,
+     "changed": 0.0356
+    }
+   ]
+  },
+  {
+   "id": "winter-first-light-access",
+   "screens": [
+    {
+     "screen": "winter-first-light-access-1200-0",
+     "mean": 0.018,
+     "max": 14,
+     "changed": 0.0076
+    },
+    {
+     "screen": "winter-first-light-access-1200-1",
+     "mean": 0.026,
+     "max": 14,
+     "changed": 0.0109
+    },
+    {
+     "screen": "winter-first-light-access-375-0",
+     "mean": 0.059,
+     "max": 14,
+     "changed": 0.0244
+    },
+    {
+     "screen": "winter-first-light-access-375-1",
+     "mean": 0.084,
+     "max": 14,
+     "changed": 0.0348
+    }
+   ]
+  },
+  {
+   "id": "winter-advent-letter",
+   "screens": [
+    {
+     "screen": "winter-advent-letter-1200-0",
+     "mean": 0.098,
+     "max": 18,
+     "changed": 0.0412
+    },
+    {
+     "screen": "winter-advent-letter-1200-1",
+     "mean": 0.027,
+     "max": 10,
+     "changed": 0.0145
+    },
+    {
+     "screen": "winter-advent-letter-375-0",
+     "mean": 0.086,
+     "max": 10,
+     "changed": 0.0481
+    },
+    {
+     "screen": "winter-advent-letter-375-1",
+     "mean": 0.16,
+     "max": 19,
+     "changed": 0.0649
+    }
+   ]
+  },
+  {
+   "id": "winter-before-the-bow",
+   "screens": [
+    {
+     "screen": "winter-before-the-bow-1200-0",
+     "mean": 0.035,
+     "max": 16,
+     "changed": 0.0135
+    },
+    {
+     "screen": "winter-before-the-bow-375-0",
+     "mean": 0.084,
+     "max": 15,
+     "changed": 0.0326
+    }
+   ]
+  },
+  {
+   "id": "winter-final-sparkle",
+   "screens": [
+    {
+     "screen": "winter-final-sparkle-1200-0",
+     "mean": 0.193,
+     "max": 29,
+     "changed": 0.0597
+    },
+    {
+     "screen": "winter-final-sparkle-375-0",
+     "mean": 0.065,
+     "max": 10,
+     "changed": 0.0344
+    }
+   ]
+  },
+  {
+   "id": "winter-softer-beginning",
+   "screens": [
+    {
+     "screen": "winter-softer-beginning-1200-0",
+     "mean": 0.036,
+     "max": 14,
+     "changed": 0.0145
+    },
+    {
+     "screen": "winter-softer-beginning-1200-1",
+     "mean": 0.011,
+     "max": 8,
+     "changed": 0.0064
+    },
+    {
+     "screen": "winter-softer-beginning-375-0",
+     "mean": 0.032,
+     "max": 9,
+     "changed": 0.0179
+    },
+    {
+     "screen": "winter-softer-beginning-375-1",
+     "mean": 0.072,
+     "max": 12,
+     "changed": 0.0291
+    }
+   ]
+  },
+  {
+   "id": "winter-midnight-garden",
+   "screens": [
+    {
+     "screen": "winter-midnight-garden-1200-0",
+     "mean": 0.075,
+     "max": 15,
+     "changed": 0.0274
+    },
+    {
+     "screen": "winter-midnight-garden-375-0",
+     "mean": 0.039,
+     "max": 11,
+     "changed": 0.0195
+    }
+   ]
+  },
+  {
+   "id": "winter-bright-new-chapter",
+   "screens": [
+    {
+     "screen": "winter-bright-new-chapter-1200-0",
+     "mean": 0.014,
+     "max": 14,
+     "changed": 0.0047
+    },
+    {
+     "screen": "winter-bright-new-chapter-1200-1",
+     "mean": 0.018,
+     "max": 14,
+     "changed": 0.0063
+    },
+    {
+     "screen": "winter-bright-new-chapter-375-0",
+     "mean": 0.043,
+     "max": 14,
+     "changed": 0.015
+    },
+    {
+     "screen": "winter-bright-new-chapter-375-1",
+     "mean": 0.059,
+     "max": 14,
+     "changed": 0.0202
+    }
+   ]
+  },
+  {
+   "id": "winter-shop-is-sleeping",
+   "screens": [
+    {
+     "screen": "winter-shop-is-sleeping-1200-0",
+     "mean": 0.006,
+     "max": 7,
+     "changed": 0.0035
+    },
+    {
+     "screen": "winter-shop-is-sleeping-375-0",
+     "mean": 0.009,
+     "max": 7,
+     "changed": 0.0053
+    }
+   ]
+  },
+  {
+   "id": "winter-by-the-fire",
+   "screens": [
+    {
+     "screen": "winter-by-the-fire-1200-0",
+     "mean": 0.026,
+     "max": 12,
+     "changed": 0.0104
+    },
+    {
+     "screen": "winter-by-the-fire-375-0",
+     "mean": 0.083,
+     "max": 12,
+     "changed": 0.0332
+    }
+   ]
+  },
+  {
+   "id": "winter-tied-with-joy",
+   "screens": [
+    {
+     "screen": "winter-tied-with-joy-1200-0",
+     "mean": 0.558,
+     "max": 33,
+     "changed": 0.175
+    },
+    {
+     "screen": "winter-tied-with-joy-375-0",
+     "mean": 0.996,
+     "max": 20,
+     "changed": 0.4056
+    }
+   ]
+  },
+  {
+   "id": "winter-all-wrapped-up",
+   "screens": [
+    {
+     "screen": "winter-all-wrapped-up-1200-0",
+     "mean": 0.343,
+     "max": 24,
+     "changed": 0.106
+    },
+    {
+     "screen": "winter-all-wrapped-up-375-0",
+     "mean": 0.64,
+     "max": 27,
+     "changed": 0.1982
+    }
+   ]
+  },
+  {
+   "id": "winter-santa-letter",
+   "screens": [
+    {
+     "screen": "winter-santa-letter-1200-0",
+     "mean": 0.125,
+     "max": 21,
+     "changed": 0.0478
+    },
+    {
+     "screen": "winter-santa-letter-1200-1",
+     "mean": 0.176,
+     "max": 21,
+     "changed": 0.0672
+    },
+    {
+     "screen": "winter-santa-letter-375-0",
+     "mean": 0.215,
+     "max": 22,
+     "changed": 0.0824
+    },
+    {
+     "screen": "winter-santa-letter-375-1",
+     "mean": 0.349,
+     "max": 22,
+     "changed": 0.1339
+    }
+   ]
+  },
+  {
+   "id": "everyday-the-object-room",
+   "screens": [
+    {
+     "screen": "everyday-the-object-room-1200-0",
+     "mean": 0.767,
+     "max": 17,
+     "changed": 0.3341
+    },
+    {
+     "screen": "everyday-the-object-room-1200-1",
+     "mean": 0.767,
+     "max": 17,
+     "changed": 0.3341
+    },
+    {
+     "screen": "everyday-the-object-room-375-0",
+     "mean": 0.313,
+     "max": 10,
+     "changed": 0.1632
+    },
+    {
+     "screen": "everyday-the-object-room-375-1",
+     "mean": 1.137,
+     "max": 18,
+     "changed": 0.4826
+    }
+   ]
+  },
+  {
+   "id": "everyday-listening-party",
+   "screens": [
+    {
+     "screen": "everyday-listening-party-1200-0",
+     "mean": 0.116,
+     "max": 13,
+     "changed": 0.0732
+    },
+    {
+     "screen": "everyday-listening-party-1200-1",
+     "mean": 0.141,
+     "max": 13,
+     "changed": 0.0895
+    },
+    {
+     "screen": "everyday-listening-party-375-0",
+     "mean": 0.371,
+     "max": 13,
+     "changed": 0.2346
+    },
+    {
+     "screen": "everyday-listening-party-375-1",
+     "mean": 0.421,
+     "max": 13,
+     "changed": 0.2667
+    }
+   ]
+  },
+  {
+   "id": "everyday-almost-somewhere",
+   "screens": [
+    {
+     "screen": "everyday-almost-somewhere-1200-0",
+     "mean": 1.626,
+     "max": 34,
+     "changed": 0.3644
+    },
+    {
+     "screen": "everyday-almost-somewhere-1200-1",
+     "mean": 1.764,
+     "max": 34,
+     "changed": 0.3947
+    },
+    {
+     "screen": "everyday-almost-somewhere-375-0",
+     "mean": 0.92,
+     "max": 20,
+     "changed": 0.3157
+    },
+    {
+     "screen": "everyday-almost-somewhere-375-1",
+     "mean": 1.007,
+     "max": 20,
+     "changed": 0.3455
+    }
+   ]
+  },
+  {
+   "id": "everyday-good-dog-society",
+   "screens": [
+    {
+     "screen": "everyday-good-dog-society-1200-0",
+     "mean": 0.078,
+     "max": 12,
+     "changed": 0.0377
+    },
+    {
+     "screen": "everyday-good-dog-society-1200-1",
+     "mean": 0.09,
+     "max": 12,
+     "changed": 0.0436
+    },
+    {
+     "screen": "everyday-good-dog-society-375-0",
+     "mean": 0.251,
+     "max": 12,
+     "changed": 0.1215
+    },
+    {
+     "screen": "everyday-good-dog-society-375-1",
+     "mean": 0.315,
+     "max": 12,
+     "changed": 0.1525
+    }
+   ]
+  },
+  {
+   "id": "everyday-school-of-small-things",
+   "screens": [
+    {
+     "screen": "everyday-school-of-small-things-1200-0",
+     "mean": 0.539,
+     "max": 22,
+     "changed": 0.2
+    },
+    {
+     "screen": "everyday-school-of-small-things-1200-1",
+     "mean": 0.611,
+     "max": 22,
+     "changed": 0.2267
+    },
+    {
+     "screen": "everyday-school-of-small-things-375-0",
+     "mean": 0.335,
+     "max": 11,
+     "changed": 0.1762
+    },
+    {
+     "screen": "everyday-school-of-small-things-375-1",
+     "mean": 0.441,
+     "max": 11,
+     "changed": 0.2321
+    }
+   ]
+  },
+  {
+   "id": "everyday-soft-science",
+   "screens": [
+    {
+     "screen": "everyday-soft-science-1200-0",
+     "mean": 0.325,
+     "max": 21,
+     "changed": 0.1433
+    },
+    {
+     "screen": "everyday-soft-science-1200-1",
+     "mean": 0.364,
+     "max": 21,
+     "changed": 0.1608
+    },
+    {
+     "screen": "everyday-soft-science-375-0",
+     "mean": 0.272,
+     "max": 13,
+     "changed": 0.158
+    },
+    {
+     "screen": "everyday-soft-science-375-1",
+     "mean": 0.289,
+     "max": 13,
+     "changed": 0.1681
+    }
+   ]
+  },
+  {
+   "id": "everyday-the-daily-ritual",
+   "screens": [
+    {
+     "screen": "everyday-the-daily-ritual-1200-0",
+     "mean": 0.083,
+     "max": 20,
+     "changed": 0.0508
+    },
+    {
+     "screen": "everyday-the-daily-ritual-1200-1",
+     "mean": 0.111,
+     "max": 20,
+     "changed": 0.0682
+    },
+    {
+     "screen": "everyday-the-daily-ritual-375-0",
+     "mean": 0.253,
+     "max": 20,
+     "changed": 0.1555
+    },
+    {
+     "screen": "everyday-the-daily-ritual-375-1",
+     "mean": 0.336,
+     "max": 20,
+     "changed": 0.2062
+    }
+   ]
+  },
+  {
+   "id": "everyday-the-listening-room",
+   "screens": [
+    {
+     "screen": "everyday-the-listening-room-1200-0",
+     "mean": 0.311,
+     "max": 19,
+     "changed": 0.1497
+    },
+    {
+     "screen": "everyday-the-listening-room-375-0",
+     "mean": 0.378,
+     "max": 20,
+     "changed": 0.1821
+    }
+   ]
+  },
+  {
+   "id": "everyday-a-desk-away",
+   "screens": [
+    {
+     "screen": "everyday-a-desk-away-1200-0",
+     "mean": 0.553,
+     "max": 21,
+     "changed": 0.2335
+    },
+    {
+     "screen": "everyday-a-desk-away-1200-1",
+     "mean": 0.613,
+     "max": 21,
+     "changed": 0.2589
+    },
+    {
+     "screen": "everyday-a-desk-away-375-0",
+     "mean": 0.42,
+     "max": 19,
+     "changed": 0.179
+    },
+    {
+     "screen": "everyday-a-desk-away-375-1",
+     "mean": 0.611,
+     "max": 19,
+     "changed": 0.2601
+    }
+   ]
+  },
+  {
+   "id": "everyday-from-the-ground-up",
+   "screens": [
+    {
+     "screen": "everyday-from-the-ground-up-1200-0",
+     "mean": 0.077,
+     "max": 17,
+     "changed": 0.0366
+    },
+    {
+     "screen": "everyday-from-the-ground-up-1200-1",
+     "mean": 0.086,
+     "max": 17,
+     "changed": 0.0411
+    },
+    {
+     "screen": "everyday-from-the-ground-up-375-0",
+     "mean": 0.122,
+     "max": 16,
+     "changed": 0.0597
+    },
+    {
+     "screen": "everyday-from-the-ground-up-375-1",
+     "mean": 0.122,
+     "max": 16,
+     "changed": 0.0597
+    }
+   ]
+  },
+  {
+   "id": "everyday-slow-sunday-notes",
+   "screens": [
+    {
+     "screen": "everyday-slow-sunday-notes-1200-0",
+     "mean": 0.087,
+     "max": 20,
+     "changed": 0.0532
+    },
+    {
+     "screen": "everyday-slow-sunday-notes-1200-1",
+     "mean": 0.114,
+     "max": 20,
+     "changed": 0.0701
+    },
+    {
+     "screen": "everyday-slow-sunday-notes-375-0",
+     "mean": 0.265,
+     "max": 20,
+     "changed": 0.1625
+    },
+    {
+     "screen": "everyday-slow-sunday-notes-375-1",
+     "mean": 0.366,
+     "max": 20,
+     "changed": 0.2249
+    }
+   ]
+  },
+  {
+   "id": "everyday-a-curious-future",
+   "screens": [
+    {
+     "screen": "everyday-a-curious-future-1200-0",
+     "mean": 0.64,
+     "max": 24,
+     "changed": 0.237
+    },
+    {
+     "screen": "everyday-a-curious-future-1200-1",
+     "mean": 0.711,
+     "max": 24,
+     "changed": 0.2633
+    },
+    {
+     "screen": "everyday-a-curious-future-375-0",
+     "mean": 0.429,
+     "max": 19,
+     "changed": 0.1701
+    },
+    {
+     "screen": "everyday-a-curious-future-375-1",
+     "mean": 0.888,
+     "max": 23,
+     "changed": 0.3298
+    }
+   ]
+  },
+  {
+   "id": "everyday-the-scenic-route",
+   "screens": [
+    {
+     "screen": "everyday-the-scenic-route-1200-0",
+     "mean": 0.251,
+     "max": 25,
+     "changed": 0.0799
+    },
+    {
+     "screen": "everyday-the-scenic-route-1200-1",
+     "mean": 0.344,
+     "max": 25,
+     "changed": 0.1095
+    },
+    {
+     "screen": "everyday-the-scenic-route-375-0",
+     "mean": 0.646,
+     "max": 23,
+     "changed": 0.1947
+    },
+    {
+     "screen": "everyday-the-scenic-route-375-1",
+     "mean": 0.855,
+     "max": 19,
+     "changed": 0.268
+    }
+   ]
+  },
+  {
+   "id": "everyday-the-future-is-friendly",
+   "screens": [
+    {
+     "screen": "everyday-the-future-is-friendly-1200-0",
+     "mean": 0.043,
+     "max": 20,
+     "changed": 0.018
+    },
+    {
+     "screen": "everyday-the-future-is-friendly-1200-1",
+     "mean": 0.06,
+     "max": 20,
+     "changed": 0.0254
+    },
+    {
+     "screen": "everyday-the-future-is-friendly-375-0",
+     "mean": 0.137,
+     "max": 20,
+     "changed": 0.0576
+    },
+    {
+     "screen": "everyday-the-future-is-friendly-375-1",
+     "mean": 0.137,
+     "max": 20,
+     "changed": 0.0576
+    }
+   ]
+  },
+  {
+   "id": "campaign-layer-edit",
+   "screens": [
+    {
+     "screen": "campaign-layer-edit-1200-0",
+     "mean": 0.184,
+     "max": 12,
+     "changed": 0.1091
+    },
+    {
+     "screen": "campaign-layer-edit-375-0",
+     "mean": 0.515,
+     "max": 10,
+     "changed": 0.3114
+    }
+   ]
+  },
+  {
+   "id": "campaign-extra-ten-coupon",
+   "screens": [
+    {
+     "screen": "campaign-extra-ten-coupon-1200-0",
+     "mean": 0.273,
+     "max": 18,
+     "changed": 0.098
+    },
+    {
+     "screen": "campaign-extra-ten-coupon-375-0",
+     "mean": 0.873,
+     "max": 18,
+     "changed": 0.3137
+    }
+   ]
+  },
+  {
+   "id": "campaign-black-friday-department",
+   "screens": [
+    {
+     "screen": "campaign-black-friday-department-1200-0",
+     "mean": 0.418,
+     "max": 22,
+     "changed": 0.2057
+    },
+    {
+     "screen": "campaign-black-friday-department-375-0",
+     "mean": 0.859,
+     "max": 16,
+     "changed": 0.4302
+    }
+   ]
+  },
+  {
+   "id": "campaign-savings-receipt",
+   "screens": [
+    {
+     "screen": "campaign-savings-receipt-1200-0",
+     "mean": 0.0,
+     "max": 1,
+     "changed": 0.0004
+    },
+    {
+     "screen": "campaign-savings-receipt-375-0",
+     "mean": 0.001,
+     "max": 1,
+     "changed": 0.0014
+    }
+   ]
+  },
+  {
+   "id": "campaign-black-friday-fast-lane",
+   "screens": [
+    {
+     "screen": "campaign-black-friday-fast-lane-1200-0",
+     "mean": 0,
+     "max": 0,
+     "changed": 0
+    },
+    {
+     "screen": "campaign-black-friday-fast-lane-375-0",
+     "mean": 0,
+     "max": 0,
+     "changed": 0
+    }
+   ]
+  },
+  {
+   "id": "campaign-packing-perk",
+   "screens": [
+    {
+     "screen": "campaign-packing-perk-1200-0",
+     "mean": 0.102,
+     "max": 15,
+     "changed": 0.0446
+    },
+    {
+     "screen": "campaign-packing-perk-375-0",
+     "mean": 0.105,
+     "max": 13,
+     "changed": 0.0459
+    }
+   ]
+  },
+  {
+   "id": "campaign-your-welcome-pal",
+   "screens": [
+    {
+     "screen": "campaign-your-welcome-pal-1200-0",
+     "mean": 0.227,
+     "max": 22,
+     "changed": 0.0853
+    },
+    {
+     "screen": "campaign-your-welcome-pal-375-0",
+     "mean": 0.725,
+     "max": 22,
+     "changed": 0.273
+    }
+   ]
+  },
+  {
+   "id": "campaign-breakfast-edit",
+   "screens": [
+    {
+     "screen": "campaign-breakfast-edit-1200-0",
+     "mean": 0.24,
+     "max": 17,
+     "changed": 0.093
+    },
+    {
+     "screen": "campaign-breakfast-edit-375-0",
+     "mean": 0.769,
+     "max": 17,
+     "changed": 0.2977
+    }
+   ]
+  },
+  {
+   "id": "campaign-black-friday-departments",
+   "screens": [
+    {
+     "screen": "campaign-black-friday-departments-1200-0",
+     "mean": 0.462,
+     "max": 17,
+     "changed": 0.2288
+    },
+    {
+     "screen": "campaign-black-friday-departments-375-0",
+     "mean": 0.287,
+     "max": 11,
+     "changed": 0.1776
+    }
+   ]
+  },
+  {
+   "id": "campaign-anniversary-event",
+   "screens": [
+    {
+     "screen": "campaign-anniversary-event-1200-0",
+     "mean": 0.186,
+     "max": 49,
+     "changed": 0.0539
+    },
+    {
+     "screen": "campaign-anniversary-event-375-0",
+     "mean": 0.049,
+     "max": 25,
+     "changed": 0.0242
+    }
+   ]
+  }
+ ]
+}

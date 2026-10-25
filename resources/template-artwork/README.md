@@ -1,18 +1,17 @@
-# Bundled sample photographs
+# Bundled Free photographs
 
-The two JPEG files in this directory are byte-identical copies of `tools/design-library/pilot/assets/citrus-sunrise.jpg` and `trail-window.jpg`. Their names are SHA-256 hashes of their bytes. See that directory's README for generation prompts and provenance. They depict fictional sample objects and a fictional landscape.
+Every photograph Free's designs show, stored once (ADR 0172). A design names one
+as `artwork:<sha256>.webp` — an image's `src`, or a background's
+`url("artwork:<sha256>.webp")` — and the file here is named by the SHA-256 of
+its bytes. `BundledTemplates` resolves each name to this installation's plugin URL
+(`BundledArtwork`), so a campaign carries a cacheable URL rather than the
+photo; creating or saving one copies it into the Media Library (ADR 0161).
 
-`BundledTemplates` substitutes a matching, verified JPEG data URI with this installation's plugin URL when a site loads its bundled library. This keeps binary photos out of campaign JSON and lets the browser cache them. Portable studio and hosted-package exports retain the source bytes; hosted publishing continues through its reviewed asset-binding workflow. Missing or altered files are not substituted. No file is generated and no external request is made during registration.
-
-Retain content-addressed files when updating artwork: existing campaign snapshots may still reference an earlier filename. Use the existing import/media workflow for merchant-owned replacements. The photographs remain public sample artwork, not premium downloadable originals.
-
-## Halloween backgrounds
-
-Three WebP files are exact derivatives of the original Halloween prototype
-artwork (`halloween-engraved.webp`, `halloween-monster.webp`,
-`halloween-forest.webp` in the design-library asset folder). The forest is shared
-by After dark and Midnight flight. `BundledArtwork` also resolves exact raster
-`url(...)` values in root, layout and narrow `bg-image` bags. This keeps the
-main picture editable in its existing scope and out of visitor JSON; unknown
-bytes, gradients and merchant URLs remain untouched. The small pumpkin is an
-original inline SVG in the Pro bar, not a remote asset.
+Files are written by `tools/design-library/build/extract-artwork.mjs`, which
+re-saves a pasted photo as WebP at the same pixel size, rewrites the design and
+deletes any file no design names. Do not edit or add files by hand:
+`BundledArtworkFilesTest` checks that every named file exists and is what its
+name says, that none is orphaned, and that each has a rights record in
+`tools/design-library/publishing/catalog.json` → `image_rights`, keyed by the
+same hash. Provenance and generation prompts are in
+`tools/design-library/pilot/assets/`.

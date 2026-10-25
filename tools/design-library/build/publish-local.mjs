@@ -17,6 +17,7 @@ import { copyIssues } from './catalogue-copy.mjs';
 import { designSource } from './sources.mjs';
 import { delivery, releaseCollections, staleApprovals } from './delivery.mjs';
 import { withPictures } from './design-images.mjs';
+import { inlineArtwork } from './artwork-files.mjs';
 import { FIX } from './releasable.mjs';
 
 /**
@@ -82,7 +83,7 @@ const previewPack = (object, setupWords) => ({
 const artwork = designs.map(design => ({ id: design.id, pack: previewPack(JSON.parse(design.json)), media: media(design) }));
 // A bundled-only design is shown from its bundled source: it is not downloadable.
 const bundledArtwork = [...new Set(online.held.map(row => row.design))].map(id => {
-  const source = JSON.parse(readFileSync(designSource(root, id), 'utf8'));
+  const source = inlineArtwork(JSON.parse(readFileSync(designSource(root, id), 'utf8')), root);
   return { id, pack: previewPack({ ...source, revision: 0, meta: { description: metadata.designs?.[id]?.description } }), media: [] };
 });
 await galleryArtwork([...artwork, ...bundledArtwork], renderer);

@@ -42,7 +42,9 @@ $source = new class($root) implements TemplateSource {
     public function entries(): array {
         $files = array_merge(glob($this->root . '/resources/templates/library/*.json') ?: [], glob($this->root . '/pro/modules/*/templates/*.json') ?: [],
             glob($this->root . '/tools/design-library/hosted/templates/*.json') ?: []);
-        return array_map(static fn ($file) => json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR), $files);
+        // A bundled photo is a file (ADR 0172): the studio draws it inline, as an export does.
+        return array_map(fn ($file) => \WConvert\Template\BundledArtwork::forSite(json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR),
+            str_starts_with($file, $this->root . '/pro/') ? $this->root . '/pro' : $this->root, ''), $files);
     }
 };
 $templates = TemplateLibrary::from($vocabulary, $source);

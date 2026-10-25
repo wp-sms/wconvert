@@ -10,149 +10,9 @@
   ],
   "withdrawn": [],
   "image_rights": {
-    "9b44ba80b11a16e7277ad3073e2f1009e463debb5ed128f0302412fba6447152": {
-      "redistribution": true,
-      "source": "Original WConvert homeware-shelf.svg, extracted unchanged from product-shelf; GPL-2.0-or-later. Raster export: homeware-shelf.png. See pilot/assets/README.md.",
-      "reviewedBy": "Codex — source/provenance review, 2026-10-01",
-      "access": "free",
-      "kind": "original"
-    },
-    "606cf8ea1082395085f26566efff4285b3191e7b688f7498be38299463d1ccd6": {
-      "redistribution": true,
-      "source": "Original WConvert fabric-swatches.svg, extracted unchanged from sample-envelope; GPL-2.0-or-later. Reviewed raster export: fabric-swatches.png. See pilot/assets/README.md.",
-      "reviewedBy": "Codex — source/provenance review, 2026-10-19",
-      "access": "premium",
-      "kind": "original"
-    },
-    "bc39288923f8b6c4f321c7d0d3acc4b9c0ba781b105ce04b3e2792bcd85c4df3": {
-      "redistribution": true,
-      "source": "Original WConvert task-lamp.svg; GPL-2.0-or-later. Reviewed 960 × 800 raster export; see pilot/assets/README.md.",
-      "reviewedBy": "Codex — provenance and raster review, 2026-10-20",
-      "access": "free",
-      "kind": "original"
-    },
-    "69014598a8bce96b7d0eaf2574637ffb0b3c584032b44198975f6cc0caebdadc": {
+    "07e573507028b821dcd3421fd3a34104222e6a084cbc2acbed507f3c3658ea23": {
       "kind": "ai-generated",
-      "source": "gpt-image-2 via Codex CLI $imagegen (built-in image_gen, ChatGPT plan), 2026-10-20; used by lookbook; encoded to WebP q72-74. Prompt: Use case: photorealistic-natural | Asset type: full-bleed background photograph for a fashion boutique's fullscreen signup overlay; a wordmark sits over the top band and a short email form over the bottom band | Scene/backdrop: a quiet atelier with a warm off-white lime-plaster wall and pale oak floorboards, late-afternoon sun from a tall window out of frame on the left | Subject: a camel wool overcoat and a cream silk scarf hanging from a simple blackened-steel clothes rail, a pair of brown leather loafers on the floor below | Style/medium: photorealistic editorial fashion still life, shot on 35mm film, Kodak Portra 400 colour, fine natural film grain | Composition/framing: wide landscape frame, subject centred and occupying the middle third of the height; calm, empty plaster wall in the top quarter and plain floor in the bottom quarter as negative space for overlaid text | Lighting/mood: soft raking window light with a long gentle shadow on the wall, warm, unhurried, expensive but understated | Materials/textures: visible wool weave and brushed nap on the coat, sheen and soft folds in the silk, mottled plaster, oak grain, creased leather | Constraints: no people, no faces, no mannequins, no text, no logos, no labels, no watermark",
-      "redistribution": true,
-      "reviewedBy": "Claude — provenance and raster review (no text, logos or faces; artefacts checked at full size), 2026-10-21",
-      "access": "premium"
-    },
-    "6800e61f09ab44bc873e8b18c7fac5cdc128f3045b623ce050a9dc8f1324ab32": {
-      "kind": "ai-generated",
-      "source": "gpt-image-2 via Codex CLI $imagegen (built-in image_gen, ChatGPT plan), 2026-10-20; used by field-guide; encoded to WebP q72-74. Prompt: Use case: illustration-story | Asset type: square picture pane of a signup form for a garden and plant shop, shown beside a cream form panel and above it on phones | Scene/backdrop: plain warm cream paper with a faint deckled texture, evenly toned to all four edges, no vignette, no background scenery | Subject: a botanical plate of a single foxglove stem with pink spotted bell flowers and buds, two broad basal leaves at its foot, a small separate seed head on the left and one unfurling fern frond on the right | Style/medium: traditional botanical illustration, fine sepia ink linework with transparent watercolour washes on cold-press paper, in the manner of a 19th-century field guide plate | Composition/framing: square frame; the whole plant fits inside the frame from flower tip to leaf base, occupying about 80 percent of the height, centred, with even cream margins on every side; nothing touches or is cut by an edge | Lighting/mood: even, calm, scholarly and warm | Color palette: muted sage and moss greens, dusty rose and mauve flowers, sepia ink, cream paper | Materials/textures: visible paper tooth, soft watercolour blooms and granulation, hairline ink hatching | Constraints: no text, no labels, no numbers, no captions, no signature, no border, no logos, no watermark",
-      "redistribution": true,
-      "reviewedBy": "Claude — provenance and raster review (no text, logos or faces; artefacts checked at full size), 2026-10-21",
-      "access": "premium"
-    },
-    "6bb6a3076864e0040894f08ba20ec2b3726536d650a843778ff751863c293bd9": {
-      "kind": "ai-generated",
-      "source": "gpt-image-2 via Codex CLI $imagegen (built-in image_gen, ChatGPT plan), 2026-10-20; used by polaroid; encoded to WebP q72-74. Prompt: Use case: photorealistic-natural | Asset type: small snapshot photograph shown inside a white instant-photo style frame on a homewares shop's corner signup card | Scene/backdrop: a deep windowsill with a whitewashed wall behind, late-afternoon golden sun | Subject: three handmade stoneware vases of different heights, glazes in speckled oatmeal, deep teal and matte terracotta, one holding a single dried grass stem | Style/medium: photorealistic candid snapshot, 35mm film, slightly warm colour, gentle natural film grain, shallow depth of field | Composition/framing: landscape frame, vases grouped slightly left of centre at eye level, soft out-of-focus wall on the right | Lighting/mood: warm low sun casting long soft shadows across the sill, homely and calm | Materials/textures: glaze pooling and speckles, raw clay at the foot of each vase, flaking whitewash, dust motes in the light | Constraints: no people, no faces, no text, no logos, no labels, no watermark, no photo border (the frame is drawn by the page)",
-      "redistribution": true,
-      "reviewedBy": "Claude — provenance and raster review (no text, logos or faces; artefacts checked at full size), 2026-10-21",
-      "access": "premium"
-    },
-    "48da7011bbbf0239de68a92f713d32d766e383262017aa2286d4feeba774c598": {
-      "kind": "ai-generated",
-      "source": "gpt-image-2 via Codex CLI $imagegen (built-in image_gen, ChatGPT plan), 2026-10-20; used by tasting-card (cropped to 5:4 from the 1024x1536 output); encoded to WebP q72-74. Prompt: Use case: photorealistic-natural | Asset type: picture pane of a split signup popup for a bakery and deli, shown beside a cream form panel | Scene/backdrop: overhead view of a worn grey-green linen cloth on a rustic table | Subject: a dark-crusted sourdough loaf with one thick slice cut, a small ceramic dish of olive oil, a wedge of aged hard cheese, a few green olives and a scattering of crumbs and flour | Style/medium: photorealistic food photography, top-down, natural light | Composition/framing: tall portrait frame, food arranged through the centre, a little empty linen at the top and bottom edges | Lighting/mood: soft daylight from one side, appetising, warm, rustic and generous | Materials/textures: blistered crackling crust, open glossy crumb, flour dust, olive-oil sheen, crumbly cheese rind, linen weave and creases | Constraints: no people, no hands, no faces, no text, no logos, no labels, no cutlery brand marks, no watermark",
-      "redistribution": true,
-      "reviewedBy": "Claude — provenance and raster review (no text, logos or faces; artefacts checked at full size), 2026-10-21",
-      "access": "free"
-    },
-    "e3af8f4dec889fa40a36a1fad85ca79705bef0741784771a69181b7f4adf7585": {
-      "kind": "ai-generated",
-      "source": "gpt-image-2 via Codex CLI $imagegen (built-in image_gen, ChatGPT plan), 2026-10-20; used by glacier; encoded to WebP q72-74. Prompt: Use case: photorealistic-natural | Asset type: full-width background photograph behind a frosted signup panel embedded in a travel company's article page | Scene/backdrop: a still glacial lake in a high mountain valley at dawn, low mist on the water, snow-capped peaks and a blue-white glacier tongue in the distance | Subject: the landscape itself; a few pale icebergs floating near the far shore | Style/medium: photorealistic landscape photography, wide-angle lens, crisp but soft | Composition/framing: wide landscape frame, horizon slightly above centre, calm uncluttered water and mist across the middle where a panel will sit | Lighting/mood: cold early light, pale blue and soft pink sky, serene, quiet, airy | Color palette: glacier blue, slate, pale teal, soft dawn pink | Materials/textures: mirror-still water with faint ripples, translucent ice, granite scree, wisps of mist | Constraints: no people, no boats, no buildings, no text, no logos, no watermark",
-      "redistribution": true,
-      "reviewedBy": "Claude — provenance and raster review (no text, logos or faces; artefacts checked at full size), 2026-10-21",
-      "access": "free"
-    },
-    "04eeb5b460c1ceeef47849b15949c39c1430918214cc85115c7a2f32dfba7df5": {
-      "kind": "ai-generated",
-      "source": "Original Halloween prototype artwork generated with OpenAI, 2026-10-21. WebP derivative: tools/design-library/pilot/assets/halloween-engraved.webp. Prompt: Create an original Halloween decorative background illustration for an upscale popup campaign. Portrait 4:5 composition, full bleed warm vermilion orange paper, fine black antique woodcut / copperplate engraved linework of bats, a crescent moon, mushrooms, a pumpkin, moths, botanical vines and small stars concentrated at the outer edges. Center 65 percent width and 72 percent height remains plain orange negative space because a cream panel with LIVE text will be placed on top later. Sophisticated folk horror printmaking, imperfect ink, restrained paper grain, strong detailed perimeter and calm center. No words, no letters, no numbers, no typography, no UI, no border frame, no watermarks. Original composition not a copy of any existing template.",
-      "redistribution": true,
-      "reviewedBy": "Codex — prototype provenance and derivative review, 2026-10-21",
-      "access": "free"
-    },
-    "b8bde52b7523376ced8d5bf8a1a3f538e390cf1f453f7145c6eddeb908664a01": {
-      "kind": "ai-generated",
-      "source": "Original Halloween prototype artwork generated with OpenAI, 2026-10-21. WebP derivative: tools/design-library/pilot/assets/halloween-monster.webp. Prompt: Create an original Halloween monster-mouth decorative background for a playful premium sale popup. Portrait 4:5 image, flat full bleed. A mischievous midnight-purple monster face frames the canvas: two oversized expressive pale lime eyes and arched purple brows in the top 23 percent, irregular ivory fangs along upper and lower edges. Bright acid-chartreuse and lilac accents. Central 65 percent of the image is a very dark midnight purple open mouth with generous completely empty negative space, where LIVE offer text and a button will later go. Bottom 15 percent has playful lower jaw and a couple of teeth. Bold polished editorial cut-paper illustration, graphic screenprinted texture, charming rather than scary, asymmetric original character, visually crisp. No words, no lettering, no numbers, no text, no UI controls, no watermark. Keep teeth away from the central text-safe region.",
-      "redistribution": true,
-      "reviewedBy": "Codex — prototype provenance and derivative review, 2026-10-21",
-      "access": "free"
-    },
-    "728bd892d77f4e979df9e87cc23f6e41e6f5d13a5a66300074b49ae314c9d36e": {
-      "kind": "ai-generated",
-      "source": "Original Halloween prototype artwork generated with OpenAI, 2026-10-21. WebP derivative: tools/design-library/pilot/assets/halloween-forest.webp. Prompt: Create an original panoramic 3:2 Halloween campaign background illustration: a moody cinematic midnight forest, gnarled oak branches forming a natural arch at the top and sides, a tiny warm amber lantern and two small carved pumpkins near the lower right corner, soft silver mist along the ground, subtle distant crescent moon upper right. Near-black forest green and deep teal palette with warm copper highlights. Left central 55 percent should be calm dark negative space for large LIVE cream typography; right central area also relatively calm for a coupon panel. Extremely atmospheric, refined painterly realism, premium autumn editorial campaign, textured natural detail concentrated toward perimeter. No people, no writing, no letters, no numbers, no text, no watermark, no UI. Do not make it a screenshot or mockup, only background artwork.",
-      "redistribution": true,
-      "reviewedBy": "Codex — prototype provenance and derivative review, 2026-10-21",
-      "access": "free"
-    },
-    "68c32e754d49688bec1b2300742ce76107200bd762ee0ace581c5f8622e4c078": {
-      "redistribution": true,
-      "source": "Original WConvert halloween-pumpkin.svg, the Halloween prototype's geometric drawing; GPL-2.0-or-later. Reviewed 256 × 256 raster export: halloween-pumpkin.png. See pilot/assets/README.md.",
-      "reviewedBy": "Claude — provenance and raster review, 2026-10-21",
-      "access": "premium",
-      "kind": "original"
-    },
-    "ec671c352c5d830fe8b3e2aaac306deeeb571d9c983c65ac6a5e880460d5dc87": {
-      "kind": "ai-generated",
-      "source": "Original WConvert shopping-weekend prototype artwork; optimised export chrome-orbit.webp. See pilot/assets/commerce/README.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex — source provenance and export review, 2026-10-22",
-      "access": "premium"
-    },
-    "5d290fe74f67ccc116458a6e6b29be3edd3359abb7b2d0a1d165d970424773b0": {
-      "kind": "ai-generated",
-      "source": "Original WConvert shopping-weekend prototype artwork; optimised export midnight-shopping.webp. See pilot/assets/commerce/README.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex — source provenance and export review, 2026-10-22",
-      "access": "premium"
-    },
-    "a1e5685d835038910eeeb4a0171806a4a31505c82210b2be0df865c5ad0cc231": {
-      "kind": "original",
-      "source": "Original WConvert shopping-weekend prototype artwork; optimised export pixel.png. See pilot/assets/commerce/README.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex — source provenance and export review, 2026-10-22",
-      "access": "premium"
-    },
-    "7152b3fe4e257cfe0e34473b75e7e75c6ae427048b4e2afba3236ae0d89e27d3": {
-      "kind": "original",
-      "source": "Original WConvert shopping-weekend prototype artwork; optimised export gift.png. See pilot/assets/commerce/README.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex — source provenance and export review, 2026-10-22",
-      "access": "premium"
-    },
-    "1104c3f31d3ec63541d18bb1bef1e6cbce4dba4108bd79d5b68c153caa2ba34c": {
-      "kind": "original",
-      "source": "Original WConvert shopping-weekend prototype artwork; optimised export gift.png. See pilot/assets/commerce/README.md. Lossless WebP derivative for bundled artwork.",
-      "redistribution": true,
-      "reviewedBy": "Codex — source provenance and export review, 2026-10-22",
-      "access": "premium"
-    },
-    "4a35d13fa9cfcd75e648bbaf8f27f25767b377181af2affaa642a10f8a8f7df1": {
-      "kind": "original",
-      "source": "Original WConvert shopping-weekend prototype artwork; optimised export pixel.png. See pilot/assets/commerce/README.md. Lossless WebP derivative for bundled artwork.",
-      "redistribution": true,
-      "reviewedBy": "Codex — source provenance and export review, 2026-10-22",
-      "access": "premium"
-    },
-    "a5f48d2866b1dfb077bb3140fc14dcd5e6580834aad862a987502b6a844334d1": {
-      "kind": "original",
-      "source": "Original WConvert winter prototype, optimised WebP village.webp. See pilot/assets/winter/README.md for provenance.",
-      "redistribution": true,
-      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
-      "access": "premium"
-    },
-    "edd182ae2983ca73c2014375ab41216ba0c068d7853f79f5ee7543ed76ff61ba": {
-      "kind": "original",
-      "source": "Original WConvert winter prototype, optimised WebP bookBanner.webp. See pilot/assets/winter/README.md for provenance.",
-      "redistribution": true,
-      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
-      "access": "free"
-    },
-    "1397585ff63ec13d6de89e40136f4ec30874098524ce93b59fb6b7af5d2e498c": {
-      "kind": "original",
-      "source": "Original WConvert winter prototype, optimised WebP villageWide.webp. See pilot/assets/winter/README.md for provenance.",
+      "source": "Original WConvert winter prototype, optimised WebP ribboncard.webp. See pilot/assets/winter/README.md for provenance.",
       "redistribution": true,
       "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
       "access": "premium"
@@ -171,152 +31,12 @@
       "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
       "access": "free"
     },
-    "b97dbeb4c8a1d1899d9af4ceec8d575a67409ca4912651b7f3dd2a79eed880d0": {
-      "kind": "original",
-      "source": "Original WConvert winter prototype, optimised WebP starsBanner.webp. See pilot/assets/winter/README.md for provenance.",
-      "redistribution": true,
-      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
-      "access": "premium"
-    },
-    "da5498f04ab1963499af95e94869099ea61b884efbe13728c4c87842739c2c96": {
-      "kind": "original",
-      "source": "Original WConvert winter prototype, optimised WebP mugBanner.webp. See pilot/assets/winter/README.md for provenance.",
-      "redistribution": true,
-      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
-      "access": "premium"
-    },
-    "d75388806d3c1fba0fe9ce3543cfb4cf581f7ce3ebf049dfb9f4439c70000b43": {
-      "kind": "original",
-      "source": "Original WConvert winter prototype, optimised WebP baubles.webp. See pilot/assets/winter/README.md for provenance.",
-      "redistribution": true,
-      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
-      "access": "premium"
-    },
-    "d332f37d839a5f292034233a88bba8b969a336ed8d7d349efaf36c4c3a389ca2": {
-      "kind": "original",
-      "source": "Original WConvert winter prototype, optimised WebP presentsBanner.webp. See pilot/assets/winter/README.md for provenance.",
-      "redistribution": true,
-      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
-      "access": "premium"
-    },
-    "de629844b1960d6bd6cf67b1b22e768a3e548c5862ff507cb659c3cc5790ff74": {
-      "kind": "original",
-      "source": "Original WConvert winter prototype, optimised WebP globeBanner.webp. See pilot/assets/winter/README.md for provenance.",
-      "redistribution": true,
-      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
-      "access": "premium"
-    },
-    "f55a42212869793a0c8f754e2fd40a6328f777493d63517ca74242d9cd07839f": {
+    "0d70e0ff9a4decffd43d9b9a7ab8563827bf6d540d88bc61993450bda75ec8bf": {
       "kind": "ai-generated",
-      "source": "Original WConvert winter prototype, optimised WebP ribboncard.webp. See pilot/assets/winter/README.md for provenance.",
+      "source": "Original WConvert Everyday prototype artwork, dog. See pilot/assets/everyday/README.md.",
       "redistribution": true,
-      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
       "access": "premium"
-    },
-    "2acbcde1a05bf04e70a4d3a13c9ef4101b70a47aea49a34b3b3dcc25f8dc5b5c": {
-      "kind": "original",
-      "source": "Original WConvert winter prototype, optimised WebP advent.webp. See pilot/assets/winter/README.md for provenance.",
-      "redistribution": true,
-      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
-      "access": "premium"
-    },
-    "465da2c7a346b1f6ea0ad15bc8ec0f7c1618ac7ebc79a1ea719a1af7a729e07b": {
-      "kind": "original",
-      "source": "Original WConvert winter prototype, optimised WebP ribbon.webp. See pilot/assets/winter/README.md for provenance.",
-      "redistribution": true,
-      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
-      "access": "premium"
-    },
-    "a4a1e85201de54020dd43d3d5c2bd75df5270b24c051676f7fcbaf797fd4f29f": {
-      "kind": "original",
-      "source": "Original WConvert winter prototype, optimised WebP ribbonBanner.webp. See pilot/assets/winter/README.md for provenance.",
-      "redistribution": true,
-      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
-      "access": "premium"
-    },
-    "f3d1c2c7fbefd4970ffc40069f8ffb91aca11ef0fb93cadc141ce297f1a78397": {
-      "kind": "original",
-      "source": "Original WConvert winter prototype, optimised WebP dawnBanner.webp. See pilot/assets/winter/README.md for provenance.",
-      "redistribution": true,
-      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
-      "access": "free"
-    },
-    "2ba5bbd400f6aae799ccc314e94acbdab12bc8f0deaabeefd984d3241413d5b7": {
-      "kind": "original",
-      "source": "Original WConvert winter prototype, optimised WebP moon.webp. See pilot/assets/winter/README.md for provenance.",
-      "redistribution": true,
-      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
-      "access": "premium"
-    },
-    "46bd8930a73fc55e842ce0423ed811a5c4088e9b3f3a8239d8482ca00a788018": {
-      "kind": "original",
-      "source": "Original WConvert winter prototype, optimised WebP book.webp. See pilot/assets/winter/README.md for provenance.",
-      "redistribution": true,
-      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
-      "access": "free"
-    },
-    "3bbc5e3efaf679ee36d43f8394b840fc283f71c824987524e0774130b95f7ae0": {
-      "kind": "ai-generated",
-      "source": "Original WConvert winter prototype, optimised WebP catnap.webp. See pilot/assets/winter/README.md for provenance.",
-      "redistribution": true,
-      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
-      "access": "premium"
-    },
-    "2907cc8d3ae53dfdceca9889e54ec92c4dc3fcccc7f9dc2365d1fefaa7ec3002": {
-      "kind": "original",
-      "source": "Original WConvert winter prototype, optimised WebP villageBanner.webp. See pilot/assets/winter/README.md for provenance.",
-      "redistribution": true,
-      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
-      "access": "premium"
-    },
-    "b0127299ae7109b62ebefa7122e021481862d16c836ff71c433260177001f5dd": {
-      "kind": "original",
-      "source": "Original WConvert winter prototype, optimised WebP flower.webp. See pilot/assets/winter/README.md for provenance.",
-      "redistribution": true,
-      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
-      "access": "free"
-    },
-    "8096bde6894350bb2fe11d6a0edad3a66b91c00ee2697f0b28aedd81c2f95e29": {
-      "kind": "ai-generated",
-      "source": "Original WConvert winter prototype, optimised WebP santaletter.webp. See pilot/assets/winter/README.md for provenance.",
-      "redistribution": true,
-      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
-      "access": "premium"
-    },
-    "b2dee59f53a1b71502229bbf0d49631d1c745b355fae5df1886d1b408c4320bc": {
-      "kind": "original",
-      "source": "Original WConvert winter prototype, optimised WebP botanical.webp. See pilot/assets/winter/README.md for provenance.",
-      "redistribution": true,
-      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
-      "access": "premium"
-    },
-    "d4afc02abb208f7bb3b1da1c4ba2538b36a68d414a94d3d5e13227a3a04ce802": {
-      "kind": "original",
-      "source": "Original WConvert winter prototype, optimised WebP dawn.webp. See pilot/assets/winter/README.md for provenance.",
-      "redistribution": true,
-      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
-      "access": "premium"
-    },
-    "1b86313571571d05535dd2ec3a35e6ae24ad8d3a481cff5e4b9db86d948e0286": {
-      "kind": "original",
-      "source": "Original WConvert winter prototype, optimised WebP presents.webp. See pilot/assets/winter/README.md for provenance.",
-      "redistribution": true,
-      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
-      "access": "free"
-    },
-    "b7c0fa583e883fe65ddfc583b12b5a91b2c789bba3618fc15d18b794b0389b13": {
-      "kind": "original",
-      "source": "Original WConvert winter prototype, optimised WebP candlesBanner.webp. See pilot/assets/winter/README.md for provenance.",
-      "redistribution": true,
-      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
-      "access": "premium"
-    },
-    "db4c9006572a68eed3c9a78457e6f28e107698fd472b37bebe2a02d853537938": {
-      "kind": "original",
-      "source": "Original WConvert winter prototype, optimised WebP flowerGreen.webp. See pilot/assets/winter/README.md for provenance.",
-      "redistribution": true,
-      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
-      "access": "free"
     },
     "0fd3a75f3a730c73c9f2fe5fcd1f5203e8ec19faec8ed2a7a90c322f692ccf90": {
       "kind": "original",
@@ -325,67 +45,25 @@
       "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
       "access": "free"
     },
-    "36635e399c7f5ed348fc004fd265b5572971e187e45009357df4c85dac6d41da": {
-      "kind": "ai-generated",
-      "source": "Original WConvert Everyday prototype artwork, bakery. See pilot/assets/everyday/README.md.",
+    "1104c3f31d3ec63541d18bb1bef1e6cbce4dba4108bd79d5b68c153caa2ba34c": {
+      "kind": "original",
+      "source": "Original WConvert shopping-weekend prototype artwork; optimised export gift.png. See pilot/assets/commerce/README.md. Lossless WebP derivative for bundled artwork.",
       "redistribution": true,
-      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
+      "reviewedBy": "Codex — source provenance and export review, 2026-10-22",
+      "access": "premium"
+    },
+    "118fed67111f23d2379dfc17f1f652128bdee205b77cf8349eb951e9317f5d13": {
+      "kind": "ai-generated",
+      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
       "access": "free"
     },
-    "93651f6d22776fb677f74f794b6846663b2424e00a199c3c6f76cc6c6e2eb379": {
-      "kind": "ai-generated",
-      "source": "Original WConvert Everyday prototype artwork, chair. See pilot/assets/everyday/README.md.",
+    "1252a8d6cced52568dc95e62538e8ff8e647ddf6e9a82dba9b34439d099fcba0": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP moon.webp. See pilot/assets/winter/README.md for provenance.",
       "redistribution": true,
-      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
-      "access": "premium"
-    },
-    "78cd5b90467705404e4337fee42cb3ad59792c270e6f34ae4156689f2a9c09b3": {
-      "kind": "ai-generated",
-      "source": "Original WConvert Everyday prototype artwork, headphones. See pilot/assets/everyday/README.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
-      "access": "premium"
-    },
-    "01c1b9c2ae76890c310db5170636f5d58b8077bb2b3f068d22ab8d4741052e97": {
-      "kind": "ai-generated",
-      "source": "Original WConvert Everyday prototype artwork, coast. See pilot/assets/everyday/README.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
-      "access": "premium"
-    },
-    "69f43357381ef27d827307b0b633c7ccc1a371bb64d84458928cce4fff14f025": {
-      "kind": "ai-generated",
-      "source": "Original WConvert Everyday prototype artwork, botanical. See pilot/assets/everyday/README.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
-      "access": "free"
-    },
-    "c5ad47037b4f4994c002dc9cc755a4d6470e87cbe3a0fc57c8bfdcb799d2f093": {
-      "kind": "ai-generated",
-      "source": "Original WConvert Everyday prototype artwork, dog. See pilot/assets/everyday/README.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
-      "access": "premium"
-    },
-    "5502d8331f403564732fa46359fe55de77d47b62813232fc48e026a23c923e7e": {
-      "kind": "ai-generated",
-      "source": "Original WConvert Everyday prototype artwork, lemon. See pilot/assets/everyday/README.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
-      "access": "free"
-    },
-    "da2b0afebb5f612027b3e7ffb7178a805ea37b389cb02a2af1d08d170f7fbdd4": {
-      "kind": "ai-generated",
-      "source": "Original WConvert Everyday prototype artwork, octopus. See pilot/assets/everyday/README.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
-      "access": "premium"
-    },
-    "ae8af9073874b56ea20e4c949ca55d1f3e4686d08be7843bb693948346938ad0": {
-      "kind": "ai-generated",
-      "source": "Original WConvert Everyday prototype artwork, skincare. See pilot/assets/everyday/README.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
       "access": "premium"
     },
     "1a73e508686657cb130e26ffd993255992bddbffee9362ebc919c893ba32e735": {
@@ -395,124 +73,26 @@
       "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
       "access": "free"
     },
-    "cdd8d88378f7ad3701b6fbc7d431a60eb946869b4f53d54b387c9befffbe9315": {
+    "1b86313571571d05535dd2ec3a35e6ae24ad8d3a481cff5e4b9db86d948e0286": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP presents.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "free"
+    },
+    "1bd6cffde944b440df6508b916571c0b86141fce22122a0a5e931601eb1b5e96": {
       "kind": "ai-generated",
-      "source": "Original WConvert Everyday prototype artwork, coffee. See pilot/assets/everyday/README.md.",
+      "source": "Original WConvert sample artwork citrus-sunrise.jpg (built-in OpenAI image generation, no reference image), re-saved as WebP. See pilot/assets/README.md.",
+      "redistribution": true,
+      "reviewedBy": "Claude, provenance read from pilot/assets/README.md, 2026-10-25",
+      "access": "free"
+    },
+    "237e0fc7a846226f964f08d185642c2edda5fd6ecca383472effabd1330bb268": {
+      "kind": "ai-generated",
+      "source": "Original WConvert Everyday prototype artwork, octopus. See pilot/assets/everyday/README.md.",
       "redistribution": true,
       "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
       "access": "premium"
-    },
-    "5ea9d2fdc48a9edb965474681867462dde501e64b06a28c2e49fe9d9e937dead": {
-      "kind": "ai-generated",
-      "source": "Original WConvert Everyday prototype artwork, fox. See pilot/assets/everyday/README.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
-      "access": "free"
-    },
-    "894c2570a0287927c26185a58e259e2d82e411d02fd9d0131517fe8e253d6ec0": {
-      "kind": "original",
-      "source": "Original WConvert Everyday prototype artwork, vinyl. See pilot/assets/everyday/README.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
-      "access": "premium"
-    },
-    "5caa842311eb46e92f0398deefa8f36d5bbc618ab17f3dd5f68a9e0e8b836c83": {
-      "kind": "original",
-      "source": "Original WConvert Everyday prototype artwork, seedling. See pilot/assets/everyday/README.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
-      "access": "premium"
-    },
-    "d88e3cc509a160ec5abe59552477665e7d78c019e4726499ad1382cde98fecc7": {
-      "kind": "original",
-      "source": "Original WConvert Everyday prototype artwork, tennis. See pilot/assets/everyday/README.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
-      "access": "free"
-    },
-    "5435a71a8cbe64a4416575c60d520b0bba7b9586e2e09b24fd69693abff3c245": {
-      "kind": "original",
-      "source": "Original WConvert Everyday prototype artwork, sun. See pilot/assets/everyday/README.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
-      "access": "free"
-    },
-    "59ab68ba8c823c9cf984eaa00be0d57c03fad0941efebd27b7abd4c8e84b77a0": {
-      "kind": "original",
-      "source": "Original WConvert Everyday prototype artwork, orbit. See pilot/assets/everyday/README.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
-      "access": "premium"
-    },
-    "a89a3ffb9d1096824e52915c591e4c1a19b8cf446c75f60fb6ce164a44a4c92b": {
-      "kind": "ai-generated",
-      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
-      "access": "free"
-    },
-    "5ae3b7622809d1af6210602a9d45b7164594f2a1faf7ac22b239ba199e385441": {
-      "kind": "ai-generated",
-      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
-      "access": "free"
-    },
-    "95f9364d04855fe6c5e8d9f835c1f7e076234f8ed25d0f7fa94adc5f2c1c9b5b": {
-      "kind": "ai-generated",
-      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
-      "access": "free"
-    },
-    "f58a322b7a9d5dee4c7f43bba783c85db4be1f7236bafb1e73c0ae6a8494c25b": {
-      "kind": "ai-generated",
-      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
-      "access": "free"
-    },
-    "3ace2281ed867e47411fc418cbd2ea9b4cd02e4a8e5331c1a2eb253ef1e282ce": {
-      "kind": "ai-generated",
-      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
-      "access": "free"
-    },
-    "d53aaf47e5cd7be5dd3ffe21ed37951a7bfa438a8ec964ec8afb0f9f4c480bf9": {
-      "kind": "ai-generated",
-      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
-      "access": "free"
-    },
-    "118fed67111f23d2379dfc17f1f652128bdee205b77cf8349eb951e9317f5d13": {
-      "kind": "ai-generated",
-      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
-      "access": "free"
-    },
-    "e5ff2db4d9f8aae8b0a1e9cb45df1e7c5b3ea48f33274e24b8f96f72133a3d71": {
-      "kind": "ai-generated",
-      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
-      "access": "free"
-    },
-    "639f844c6d0918e6586800f29fddcdb4fe18d0c49479a51a2be986cfa713b151": {
-      "kind": "ai-generated",
-      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
-      "access": "free"
-    },
-    "d73183072ff5db5626b9eb46fb922a8b9228e0ea0b3f9b82e2f0596db5bf0b1e": {
-      "kind": "original",
-      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
-      "access": "free"
     },
     "2b49c7a57e7242da370ebe959a0b6087c6c7fdcf4d16ca1c0bc9c8e1cce1e3db": {
       "kind": "original",
@@ -521,21 +101,7 @@
       "reviewedBy": "Codex, original asset provenance, 2026-10-24",
       "access": "free"
     },
-    "97a4f3a55f11cccbc9e0fb77272d75283057821379d2f81d4f797bcc60b96064": {
-      "kind": "original",
-      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
-      "access": "free"
-    },
-    "4c4fbadbe535f6442f0888fda04fe176b4ccff4e651655a512c5a5db325f3754": {
-      "kind": "ai-generated",
-      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
-      "redistribution": true,
-      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
-      "access": "free"
-    },
-    "9bcc662d87e6a2f33c63f984ec9235c53058e2d23ecbcfb1451a4ca0a9b2f490": {
+    "2eb1e419664c0a302e0a1b28e11fcde130ece79d9d4d818d3dc69c288f950a5a": {
       "kind": "ai-generated",
       "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
       "redistribution": true,
@@ -549,6 +115,230 @@
       "reviewedBy": "Codex, original asset provenance, 2026-10-24",
       "access": "free"
     },
+    "3317bc2d9da91cbb38a6e69cb0e16dfc12978702340399284a5664ac3854882a": {
+      "kind": "ai-generated",
+      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
+      "access": "free"
+    },
+    "36635e399c7f5ed348fc004fd265b5572971e187e45009357df4c85dac6d41da": {
+      "kind": "ai-generated",
+      "source": "Original WConvert Everyday prototype artwork, bakery. See pilot/assets/everyday/README.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
+      "access": "free"
+    },
+    "3ace2281ed867e47411fc418cbd2ea9b4cd02e4a8e5331c1a2eb253ef1e282ce": {
+      "kind": "ai-generated",
+      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
+      "access": "free"
+    },
+    "43feafd813ed5cb6ec055079d40170f2200bc1a4648ead8d9664dce3835cfeac": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP advent.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "46bd8930a73fc55e842ce0423ed811a5c4088e9b3f3a8239d8482ca00a788018": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP book.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "free"
+    },
+    "48da7011bbbf0239de68a92f713d32d766e383262017aa2286d4feeba774c598": {
+      "kind": "ai-generated",
+      "source": "gpt-image-2 via Codex CLI $imagegen (built-in image_gen, ChatGPT plan), 2026-10-20; used by tasting-card (cropped to 5:4 from the 1024x1536 output); encoded to WebP q72-74. Prompt: Use case: photorealistic-natural | Asset type: picture pane of a split signup popup for a bakery and deli, shown beside a cream form panel | Scene/backdrop: overhead view of a worn grey-green linen cloth on a rustic table | Subject: a dark-crusted sourdough loaf with one thick slice cut, a small ceramic dish of olive oil, a wedge of aged hard cheese, a few green olives and a scattering of crumbs and flour | Style/medium: photorealistic food photography, top-down, natural light | Composition/framing: tall portrait frame, food arranged through the centre, a little empty linen at the top and bottom edges | Lighting/mood: soft daylight from one side, appetising, warm, rustic and generous | Materials/textures: blistered crackling crust, open glossy crumb, flour dust, olive-oil sheen, crumbly cheese rind, linen weave and creases | Constraints: no people, no hands, no faces, no text, no logos, no labels, no cutlery brand marks, no watermark",
+      "redistribution": true,
+      "reviewedBy": "Claude — provenance and raster review (no text, logos or faces; artefacts checked at full size), 2026-10-21",
+      "access": "free"
+    },
+    "4a35d13fa9cfcd75e648bbaf8f27f25767b377181af2affaa642a10f8a8f7df1": {
+      "kind": "original",
+      "source": "Original WConvert shopping-weekend prototype artwork; optimised export pixel.png. See pilot/assets/commerce/README.md. Lossless WebP derivative for bundled artwork.",
+      "redistribution": true,
+      "reviewedBy": "Codex — source provenance and export review, 2026-10-22",
+      "access": "premium"
+    },
+    "4ae1a5eeb6d8a5fd85b8703fd1ae6ed15281a8a4d2f3c40dd0305cc99ee3b1f8": {
+      "kind": "original",
+      "source": "Original WConvert Everyday prototype artwork, orbit. See pilot/assets/everyday/README.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
+      "access": "premium"
+    },
+    "4b8cf1d76ca091280d6245e74d7e6f7b0b35effce3e889566eeea27057b06517": {
+      "kind": "ai-generated",
+      "source": "gpt-image-2 via Codex CLI $imagegen (built-in image_gen, ChatGPT plan), 2026-10-20; used by lookbook; encoded to WebP q72-74. Prompt: Use case: photorealistic-natural | Asset type: full-bleed background photograph for a fashion boutique's fullscreen signup overlay; a wordmark sits over the top band and a short email form over the bottom band | Scene/backdrop: a quiet atelier with a warm off-white lime-plaster wall and pale oak floorboards, late-afternoon sun from a tall window out of frame on the left | Subject: a camel wool overcoat and a cream silk scarf hanging from a simple blackened-steel clothes rail, a pair of brown leather loafers on the floor below | Style/medium: photorealistic editorial fashion still life, shot on 35mm film, Kodak Portra 400 colour, fine natural film grain | Composition/framing: wide landscape frame, subject centred and occupying the middle third of the height; calm, empty plaster wall in the top quarter and plain floor in the bottom quarter as negative space for overlaid text | Lighting/mood: soft raking window light with a long gentle shadow on the wall, warm, unhurried, expensive but understated | Materials/textures: visible wool weave and brushed nap on the coat, sheen and soft folds in the silk, mottled plaster, oak grain, creased leather | Constraints: no people, no faces, no mannequins, no text, no logos, no labels, no watermark",
+      "redistribution": true,
+      "reviewedBy": "Claude — provenance and raster review (no text, logos or faces; artefacts checked at full size), 2026-10-21",
+      "access": "premium"
+    },
+    "4c4fbadbe535f6442f0888fda04fe176b4ccff4e651655a512c5a5db325f3754": {
+      "kind": "ai-generated",
+      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
+      "access": "free"
+    },
+    "4cc64de2fa5451595ffe8912d41ae07fdd0c688b343f9a60e3fa672fce1018e6": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP baubles.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "4f20f1b6c8eff91360113e3086f417611c4797eaaa3293a9c0accdba96813bc7": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP dawn.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "5185754ed0567f4ac05d587f6e35c8791f358be7670cf9e2719442a5f629b67a": {
+      "kind": "ai-generated",
+      "source": "Original WConvert shopping-weekend prototype artwork; optimised export midnight-shopping.webp. See pilot/assets/commerce/README.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex — source provenance and export review, 2026-10-22",
+      "access": "premium"
+    },
+    "5435a71a8cbe64a4416575c60d520b0bba7b9586e2e09b24fd69693abff3c245": {
+      "kind": "original",
+      "source": "Original WConvert Everyday prototype artwork, sun. See pilot/assets/everyday/README.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
+      "access": "free"
+    },
+    "5502d8331f403564732fa46359fe55de77d47b62813232fc48e026a23c923e7e": {
+      "kind": "ai-generated",
+      "source": "Original WConvert Everyday prototype artwork, lemon. See pilot/assets/everyday/README.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
+      "access": "free"
+    },
+    "5ae3b7622809d1af6210602a9d45b7164594f2a1faf7ac22b239ba199e385441": {
+      "kind": "ai-generated",
+      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
+      "access": "free"
+    },
+    "5c5a06e4851c27314b18ca4e5fcd71af7670c7b60ffd833abab175c9011d0c0f": {
+      "kind": "original",
+      "source": "Original WConvert prototype vectors; black-friday-prototype/artwork.mjs and reference/designs.js.txt.",
+      "redistribution": true,
+      "reviewedBy": "Codex, original artwork provenance, 2026-10-24",
+      "access": "free"
+    },
+    "5c5e430ed8146b170979f18b5dd360b165ad73f9c66cb373bcff73e047370433": {
+      "kind": "ai-generated",
+      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
+      "access": "free"
+    },
+    "5ea9d2fdc48a9edb965474681867462dde501e64b06a28c2e49fe9d9e937dead": {
+      "kind": "ai-generated",
+      "source": "Original WConvert Everyday prototype artwork, fox. See pilot/assets/everyday/README.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
+      "access": "free"
+    },
+    "5f01fa56f35f67a235310ec0e36ca8042c8a10648631755fdbdabed3f1f3d5e6": {
+      "kind": "ai-generated",
+      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
+      "access": "free"
+    },
+    "5f0a2759e2c976cb0dc7f7f9176daad893e104e3a4c7eb1304790f883d23cbc5": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP ribbonBanner.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "5f12f6eebc5f2ac7951902dd639302eac7006f1659360b253d6793da69e46cbb": {
+      "kind": "ai-generated",
+      "source": "Original WConvert sample artwork ceramic-exhibition.jpg (built-in OpenAI image generation, 20 October 2026), re-saved as WebP. See pilot/assets/README.md.",
+      "redistribution": true,
+      "reviewedBy": "Claude, provenance read from pilot/assets/README.md, 2026-10-25",
+      "access": "premium"
+    },
+    "606cf8ea1082395085f26566efff4285b3191e7b688f7498be38299463d1ccd6": {
+      "redistribution": true,
+      "source": "Original WConvert fabric-swatches.svg, extracted unchanged from sample-envelope; GPL-2.0-or-later. Reviewed raster export: fabric-swatches.png. See pilot/assets/README.md.",
+      "reviewedBy": "Codex — source/provenance review, 2026-10-19",
+      "access": "premium",
+      "kind": "original"
+    },
+    "639f844c6d0918e6586800f29fddcdb4fe18d0c49479a51a2be986cfa713b151": {
+      "kind": "ai-generated",
+      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
+      "access": "free"
+    },
+    "68490491dd3966b0947ce0b1d71bcd0c1ca46bc825cb4463e662226f5b7bf8ef": {
+      "kind": "ai-generated",
+      "source": "Original WConvert Everyday prototype artwork, coffee. See pilot/assets/everyday/README.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
+      "access": "premium"
+    },
+    "68bdaa49db957c89150a3da9ae7cc5037d96e46fa2fba68d08c70dcd013169d3": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP starsBanner.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "68c32e754d49688bec1b2300742ce76107200bd762ee0ace581c5f8622e4c078": {
+      "redistribution": true,
+      "source": "Original WConvert halloween-pumpkin.svg, the Halloween prototype's geometric drawing; GPL-2.0-or-later. Reviewed 256 × 256 raster export: halloween-pumpkin.png. See pilot/assets/README.md.",
+      "reviewedBy": "Claude — provenance and raster review, 2026-10-21",
+      "access": "premium",
+      "kind": "original"
+    },
+    "69f43357381ef27d827307b0b633c7ccc1a371bb64d84458928cce4fff14f025": {
+      "kind": "ai-generated",
+      "source": "Original WConvert Everyday prototype artwork, botanical. See pilot/assets/everyday/README.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
+      "access": "free"
+    },
+    "6a3063b1bd78d97b586078b3480653bac4ec7d91dbc82207f4e8df48259871d3": {
+      "kind": "ai-generated",
+      "source": "Original WConvert Everyday prototype artwork, skincare. See pilot/assets/everyday/README.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
+      "access": "premium"
+    },
+    "6a30c81bdf01df645865730d3106f15c08ce04dd5d4f3161010e87dfae0c55bd": {
+      "kind": "ai-generated",
+      "source": "Original WConvert shopping-weekend prototype artwork; optimised export chrome-orbit.webp. See pilot/assets/commerce/README.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex — source provenance and export review, 2026-10-22",
+      "access": "premium"
+    },
+    "7152b3fe4e257cfe0e34473b75e7e75c6ae427048b4e2afba3236ae0d89e27d3": {
+      "kind": "original",
+      "source": "Original WConvert shopping-weekend prototype artwork; optimised export gift.png. See pilot/assets/commerce/README.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex — source provenance and export review, 2026-10-22",
+      "access": "premium"
+    },
+    "71a1e51a5624b0e4bc63592133c34dbbd439dd8f5509ec43daa8c5ffe59e73c8": {
+      "kind": "ai-generated",
+      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
+      "access": "free"
+    },
     "756a10829516364149341736c06d44913c34a6fcc33fc6668140132b5cfe862c": {
       "kind": "ai-generated",
       "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
@@ -556,12 +346,152 @@
       "reviewedBy": "Codex, original asset provenance, 2026-10-24",
       "access": "free"
     },
-    "724982265a90683a64dccb535746658d31d1ecb76951267d2f8883f824d55fc7": {
+    "76b4903d5955cd3bf416fd5f8ab57f9c40e93efac4b38d01ac9f80b7e0124ce7": {
+      "kind": "ai-generated",
+      "source": "Original WConvert winter prototype, optimised WebP catnap.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "7775c73e6a641df12c2b261888ad219eb7f8317c2cb3e412a11db45ade928955": {
       "kind": "ai-generated",
       "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
       "redistribution": true,
       "reviewedBy": "Codex, original asset provenance, 2026-10-24",
       "access": "free"
+    },
+    "7e1ab5b67c1f5b617557e49c1df6b77fe1f63c920282870ae957d65eb0e4c893": {
+      "kind": "ai-generated",
+      "source": "gpt-image-2 via Codex CLI $imagegen (built-in image_gen, ChatGPT plan), 2026-10-20; used by polaroid; encoded to WebP q72-74. Prompt: Use case: photorealistic-natural | Asset type: small snapshot photograph shown inside a white instant-photo style frame on a homewares shop's corner signup card | Scene/backdrop: a deep windowsill with a whitewashed wall behind, late-afternoon golden sun | Subject: three handmade stoneware vases of different heights, glazes in speckled oatmeal, deep teal and matte terracotta, one holding a single dried grass stem | Style/medium: photorealistic candid snapshot, 35mm film, slightly warm colour, gentle natural film grain, shallow depth of field | Composition/framing: landscape frame, vases grouped slightly left of centre at eye level, soft out-of-focus wall on the right | Lighting/mood: warm low sun casting long soft shadows across the sill, homely and calm | Materials/textures: glaze pooling and speckles, raw clay at the foot of each vase, flaking whitewash, dust motes in the light | Constraints: no people, no faces, no text, no logos, no labels, no watermark, no photo border (the frame is drawn by the page)",
+      "redistribution": true,
+      "reviewedBy": "Claude — provenance and raster review (no text, logos or faces; artefacts checked at full size), 2026-10-21",
+      "access": "premium"
+    },
+    "7ee0163c725eaaf084a2addfdcf69b480f94f158617ef25914739a7535b886c2": {
+      "kind": "ai-generated",
+      "source": "Original WConvert Everyday prototype artwork, headphones. See pilot/assets/everyday/README.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
+      "access": "premium"
+    },
+    "81955bc85c420cc2c9a6ab479679367d9f3914752a2d3d02c3f3d00781e45df0": {
+      "kind": "ai-generated",
+      "source": "Original WConvert sample artwork trail-window.jpg (built-in OpenAI image generation, no reference image), re-saved as WebP. See pilot/assets/README.md.",
+      "redistribution": true,
+      "reviewedBy": "Claude, provenance read from pilot/assets/README.md, 2026-10-25",
+      "access": "free"
+    },
+    "823b45a55553378e695e31fab68f15f0d97ad71b717bb34a9cbd0c4a956c8c0b": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP ribbon.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "84255ad7bf5274d6b39bd680d4578f6a6833f4140486f7666773c66fd2e3f18c": {
+      "kind": "original",
+      "source": "Original WConvert prototype vectors; black-friday-prototype/artwork.mjs and reference/designs.js.txt.",
+      "redistribution": true,
+      "reviewedBy": "Codex, original artwork provenance, 2026-10-24",
+      "access": "free"
+    },
+    "87ae853b29e300dd6319feece304c461e63ea9fa2ddcb0562d541ceaa5677632": {
+      "kind": "original",
+      "source": "Original WConvert Everyday prototype artwork, vinyl. See pilot/assets/everyday/README.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
+      "access": "premium"
+    },
+    "8a7e27c4d7d0a4abeba68654ab1feca18831e7b76c72b7d62b3329e942d67a25": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP villageBanner.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "8db1210f2c1765c8ee33c41edcceabb345fee6e912ce59d2f1bc1128e226c32f": {
+      "kind": "ai-generated",
+      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
+      "access": "free"
+    },
+    "949ce74090382ee813e8023e0d4e964ada285c1e432ad6c2d9b1150336ccebf0": {
+      "kind": "ai-generated",
+      "source": "Original Halloween prototype artwork generated with OpenAI, 2026-10-21. WebP derivative: tools/design-library/pilot/assets/halloween-engraved.webp. Prompt: Create an original Halloween decorative background illustration for an upscale popup campaign. Portrait 4:5 composition, full bleed warm vermilion orange paper, fine black antique woodcut / copperplate engraved linework of bats, a crescent moon, mushrooms, a pumpkin, moths, botanical vines and small stars concentrated at the outer edges. Center 65 percent width and 72 percent height remains plain orange negative space because a cream panel with LIVE text will be placed on top later. Sophisticated folk horror printmaking, imperfect ink, restrained paper grain, strong detailed perimeter and calm center. No words, no letters, no numbers, no typography, no UI, no border frame, no watermarks. Original composition not a copy of any existing template.",
+      "redistribution": true,
+      "reviewedBy": "Codex — prototype provenance and derivative review, 2026-10-21",
+      "access": "free"
+    },
+    "95f9364d04855fe6c5e8d9f835c1f7e076234f8ed25d0f7fa94adc5f2c1c9b5b": {
+      "kind": "ai-generated",
+      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
+      "access": "free"
+    },
+    "97a4f3a55f11cccbc9e0fb77272d75283057821379d2f81d4f797bcc60b96064": {
+      "kind": "original",
+      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
+      "access": "free"
+    },
+    "999cd9929611ad99e312d710c12b6e8a483b4792fc186624315786e215b3bb6d": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP dawnBanner.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "free"
+    },
+    "9b44ba80b11a16e7277ad3073e2f1009e463debb5ed128f0302412fba6447152": {
+      "redistribution": true,
+      "source": "Original WConvert homeware-shelf.svg, extracted unchanged from product-shelf; GPL-2.0-or-later. Raster export: homeware-shelf.png. See pilot/assets/README.md.",
+      "reviewedBy": "Codex — source/provenance review, 2026-10-01",
+      "access": "free",
+      "kind": "original"
+    },
+    "9bcc662d87e6a2f33c63f984ec9235c53058e2d23ecbcfb1451a4ca0a9b2f490": {
+      "kind": "ai-generated",
+      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
+      "access": "free"
+    },
+    "9c89c48244299b54250d51f71b8a39c21e7d514394e33cf52bdbbfea4f101c76": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP presentsBanner.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "9d3ba93a57ffdb1fec271f4067184ca378e846b3a021b96a754b94f97e07c9cf": {
+      "kind": "original",
+      "source": "Original WConvert prototype vectors; black-friday-prototype/artwork.mjs and reference/designs.js.txt.",
+      "redistribution": true,
+      "reviewedBy": "Codex, original artwork provenance, 2026-10-24",
+      "access": "free"
+    },
+    "9e4f7b300679c6a1290064f1f875d549969ffaa201a92ee1038072d3dd68fd5e": {
+      "kind": "ai-generated",
+      "source": "Original Halloween prototype artwork generated with OpenAI, 2026-10-21. WebP derivative: tools/design-library/pilot/assets/halloween-monster.webp. Prompt: Create an original Halloween monster-mouth decorative background for a playful premium sale popup. Portrait 4:5 image, flat full bleed. A mischievous midnight-purple monster face frames the canvas: two oversized expressive pale lime eyes and arched purple brows in the top 23 percent, irregular ivory fangs along upper and lower edges. Bright acid-chartreuse and lilac accents. Central 65 percent of the image is a very dark midnight purple open mouth with generous completely empty negative space, where LIVE offer text and a button will later go. Bottom 15 percent has playful lower jaw and a couple of teeth. Bold polished editorial cut-paper illustration, graphic screenprinted texture, charming rather than scary, asymmetric original character, visually crisp. No words, no lettering, no numbers, no text, no UI controls, no watermark. Keep teeth away from the central text-safe region.",
+      "redistribution": true,
+      "reviewedBy": "Codex — prototype provenance and derivative review, 2026-10-21",
+      "access": "free"
+    },
+    "a19f32821f8e346e79493a10f0d44a68d6e7af36b182a94e88fa642293a4e2f7": {
+      "kind": "original",
+      "source": "Original WConvert prototype vectors; black-friday-prototype/artwork.mjs and reference/designs.js.txt.",
+      "redistribution": true,
+      "reviewedBy": "Codex, original artwork provenance, 2026-10-24",
+      "access": "free"
+    },
+    "a1e5685d835038910eeeb4a0171806a4a31505c82210b2be0df865c5ad0cc231": {
+      "kind": "original",
+      "source": "Original WConvert shopping-weekend prototype artwork; optimised export pixel.png. See pilot/assets/commerce/README.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex — source provenance and export review, 2026-10-22",
+      "access": "premium"
     },
     "a5b2ddb136a281ade77cbff355b4af9406cf3f5ff3e8915797ebff7bb58c799e": {
       "kind": "original",
@@ -570,7 +500,91 @@
       "reviewedBy": "Codex, original asset provenance, 2026-10-24",
       "access": "free"
     },
-    "9d3ba93a57ffdb1fec271f4067184ca378e846b3a021b96a754b94f97e07c9cf": {
+    "a89a3ffb9d1096824e52915c591e4c1a19b8cf446c75f60fb6ce164a44a4c92b": {
+      "kind": "ai-generated",
+      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
+      "access": "free"
+    },
+    "aab920956f4e9f9fcb6985f573f4503533ac97b47a73bdb6dd0ab17341245855": {
+      "kind": "original",
+      "source": "Original WConvert prototype vectors; black-friday-prototype/artwork.mjs and reference/designs.js.txt.",
+      "redistribution": true,
+      "reviewedBy": "Codex, original artwork provenance, 2026-10-24",
+      "access": "free"
+    },
+    "ac1a44e1f0a06791841ab732a9cb8f2870d5eef0bc5f7011e3a8d6edcc4ac3d9": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP envelopeBanner.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "free"
+    },
+    "ad76216c8d3ae21b8f9f26016e66a8f9b090bf2fc134d6a8c3cbc88be608fe16": {
+      "kind": "ai-generated",
+      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
+      "access": "free"
+    },
+    "b0127299ae7109b62ebefa7122e021481862d16c836ff71c433260177001f5dd": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP flower.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "free"
+    },
+    "bc39288923f8b6c4f321c7d0d3acc4b9c0ba781b105ce04b3e2792bcd85c4df3": {
+      "redistribution": true,
+      "source": "Original WConvert task-lamp.svg; GPL-2.0-or-later. Reviewed 960 × 800 raster export; see pilot/assets/README.md.",
+      "reviewedBy": "Codex — provenance and raster review, 2026-10-20",
+      "access": "free",
+      "kind": "original"
+    },
+    "bd0cee03686136d05cba5f9a43a970d36b8648cb087ba4022e671726a9a5fbf6": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP villageWide.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "cbc68276bba9cbf31165a39389ccd0fb1ee69758d6a1815968c9240bf0a9c64a": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP candlesBanner.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "cbf2073065e9ec3edeb4d2e6f58fdedc7e304184d39ee641bca14b64aa78ce85": {
+      "kind": "original",
+      "source": "Original two-colour checker strip, pilot/assets/black-friday/fidelity-checker.png (added in b441bc2d), re-saved as lossless WebP. No provenance note exists; to be confirmed.",
+      "redistribution": true,
+      "reviewedBy": "Claude, 2026-10-25 — provenance not documented, needs a person to confirm",
+      "access": "premium"
+    },
+    "cfcc1de8e910d02bca2cc3d240e71eacc190ff24ec18a8236ca0d6eb7677a415": {
+      "kind": "ai-generated",
+      "source": "Original WConvert Everyday prototype artwork, chair. See pilot/assets/everyday/README.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
+      "access": "premium"
+    },
+    "d029f24505c27d873de6f3c0c7e5c5ce87595716c4e0a748cca5eacc296b101b": {
+      "kind": "original",
+      "source": "Original WConvert Everyday prototype artwork, seedling. See pilot/assets/everyday/README.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
+      "access": "premium"
+    },
+    "d0c68641f8fdfee7e271b231f48e784e57cd32638b646e2809c45311e2dc5616": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP presents.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "free"
+    },
+    "d281b0a5b4b2a2bae2673a2466ec3f5ba8f1a8f0a81b1ac9298ecaba99926e8e": {
       "kind": "original",
       "source": "Original WConvert prototype vectors; black-friday-prototype/artwork.mjs and reference/designs.js.txt.",
       "redistribution": true,
@@ -584,32 +598,32 @@
       "reviewedBy": "Codex, original artwork provenance, 2026-10-24",
       "access": "free"
     },
-    "aab920956f4e9f9fcb6985f573f4503533ac97b47a73bdb6dd0ab17341245855": {
-      "kind": "original",
-      "source": "Original WConvert prototype vectors; black-friday-prototype/artwork.mjs and reference/designs.js.txt.",
+    "d53aaf47e5cd7be5dd3ffe21ed37951a7bfa438a8ec964ec8afb0f9f4c480bf9": {
+      "kind": "ai-generated",
+      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
       "redistribution": true,
-      "reviewedBy": "Codex, original artwork provenance, 2026-10-24",
+      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
       "access": "free"
     },
-    "09c6df55156461424649e8a33412f9c033b0a98043d4c168ffc7279c108534aa": {
+    "d73183072ff5db5626b9eb46fb922a8b9228e0ea0b3f9b82e2f0596db5bf0b1e": {
       "kind": "original",
-      "source": "Original WConvert prototype vectors; black-friday-prototype/artwork.mjs and reference/designs.js.txt.",
+      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
       "redistribution": true,
-      "reviewedBy": "Codex, original artwork provenance, 2026-10-24",
+      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
       "access": "free"
     },
-    "e6886b9b5402b7e15d36e7a74bfad3fc1177db291f161b72884c7296e458a29e": {
+    "d88e3cc509a160ec5abe59552477665e7d78c019e4726499ad1382cde98fecc7": {
       "kind": "original",
-      "source": "Original WConvert prototype vectors; black-friday-prototype/artwork.mjs and reference/designs.js.txt.",
+      "source": "Original WConvert Everyday prototype artwork, tennis. See pilot/assets/everyday/README.md.",
       "redistribution": true,
-      "reviewedBy": "Codex, original artwork provenance, 2026-10-24",
+      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
       "access": "free"
     },
-    "ed27d27a27622586759da4dd3d0bef4b0b93e4c60c71055449fc275aa88cc9c8": {
+    "db4c9006572a68eed3c9a78457e6f28e107698fd472b37bebe2a02d853537938": {
       "kind": "original",
-      "source": "Original WConvert prototype vectors; black-friday-prototype/artwork.mjs and reference/designs.js.txt.",
+      "source": "Original WConvert winter prototype, optimised WebP flowerGreen.webp. See pilot/assets/winter/README.md for provenance.",
       "redistribution": true,
-      "reviewedBy": "Codex, original artwork provenance, 2026-10-24",
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
       "access": "free"
     },
     "e3a38b16326c703dc510d80a2aca8d5a29945267185979975f11834cd2fbe4a0": {
@@ -619,19 +633,103 @@
       "reviewedBy": "Codex, original artwork provenance, 2026-10-24",
       "access": "free"
     },
-    "0749750b274aba82a8fc333b85062dabf5953f341ed2fdc67b7b8e99899b2d66": {
+    "e3af8f4dec889fa40a36a1fad85ca79705bef0741784771a69181b7f4adf7585": {
+      "kind": "ai-generated",
+      "source": "gpt-image-2 via Codex CLI $imagegen (built-in image_gen, ChatGPT plan), 2026-10-20; used by glacier; encoded to WebP q72-74. Prompt: Use case: photorealistic-natural | Asset type: full-width background photograph behind a frosted signup panel embedded in a travel company's article page | Scene/backdrop: a still glacial lake in a high mountain valley at dawn, low mist on the water, snow-capped peaks and a blue-white glacier tongue in the distance | Subject: the landscape itself; a few pale icebergs floating near the far shore | Style/medium: photorealistic landscape photography, wide-angle lens, crisp but soft | Composition/framing: wide landscape frame, horizon slightly above centre, calm uncluttered water and mist across the middle where a panel will sit | Lighting/mood: cold early light, pale blue and soft pink sky, serene, quiet, airy | Color palette: glacier blue, slate, pale teal, soft dawn pink | Materials/textures: mirror-still water with faint ripples, translucent ice, granite scree, wisps of mist | Constraints: no people, no boats, no buildings, no text, no logos, no watermark",
+      "redistribution": true,
+      "reviewedBy": "Claude — provenance and raster review (no text, logos or faces; artefacts checked at full size), 2026-10-21",
+      "access": "free"
+    },
+    "e5ff2db4d9f8aae8b0a1e9cb45df1e7c5b3ea48f33274e24b8f96f72133a3d71": {
+      "kind": "ai-generated",
+      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
+      "access": "free"
+    },
+    "e657f63d993ff63088ae9693b928afcad0c8a5b1e5b73a27ca744d60a5dce92f": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP botanical.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "e6886b9b5402b7e15d36e7a74bfad3fc1177db291f161b72884c7296e458a29e": {
       "kind": "original",
       "source": "Original WConvert prototype vectors; black-friday-prototype/artwork.mjs and reference/designs.js.txt.",
       "redistribution": true,
       "reviewedBy": "Codex, original artwork provenance, 2026-10-24",
       "access": "free"
     },
-    "a20f102b6887f8deaf4893bb4b290a0af537611f71ab8b2ed761a9a8d65df7a0": {
+    "edd182ae2983ca73c2014375ab41216ba0c068d7853f79f5ee7543ed76ff61ba": {
       "kind": "original",
-      "source": "Original WConvert prototype vectors; black-friday-prototype/artwork.mjs and reference/designs.js.txt.",
+      "source": "Original WConvert winter prototype, optimised WebP bookBanner.webp. See pilot/assets/winter/README.md for provenance.",
       "redistribution": true,
-      "reviewedBy": "Codex, original artwork provenance, 2026-10-24",
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
       "access": "free"
+    },
+    "f224e239ed5371c7f378f2cc5920f880d8c8880b6429715fc7957659e943ad14": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP village.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "f316192740ff2599a224e55b58924e10a82d60142f0e60e50fa2ca72661a6f61": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP mugBanner.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "f3d1c2c7fbefd4970ffc40069f8ffb91aca11ef0fb93cadc141ce297f1a78397": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP dawnBanner.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "free"
+    },
+    "f58a322b7a9d5dee4c7f43bba783c85db4be1f7236bafb1e73c0ae6a8494c25b": {
+      "kind": "ai-generated",
+      "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, original asset provenance, 2026-10-24",
+      "access": "free"
+    },
+    "f5d6ef613a3c4589ce93f0f13fc268d767461b84e4088ad8ab96009134c64129": {
+      "kind": "ai-generated",
+      "source": "Original WConvert Everyday prototype artwork, coast. See pilot/assets/everyday/README.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex, prototype provenance review, 2026-10-24",
+      "access": "premium"
+    },
+    "f77e5f88f52eee48fc8400021fecb7b283d1e5296823d6563de16538998225d7": {
+      "kind": "original",
+      "source": "Original WConvert winter prototype, optimised WebP globeBanner.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "f8b581ff5d6215ef4903b6d2679bbb9d0605ebd41ceabada3bc1c2a9614a8a2c": {
+      "kind": "ai-generated",
+      "source": "Original Halloween prototype artwork generated with OpenAI, 2026-10-21. WebP derivative: tools/design-library/pilot/assets/halloween-forest.webp. Prompt: Create an original panoramic 3:2 Halloween campaign background illustration: a moody cinematic midnight forest, gnarled oak branches forming a natural arch at the top and sides, a tiny warm amber lantern and two small carved pumpkins near the lower right corner, soft silver mist along the ground, subtle distant crescent moon upper right. Near-black forest green and deep teal palette with warm copper highlights. Left central 55 percent should be calm dark negative space for large LIVE cream typography; right central area also relatively calm for a coupon panel. Extremely atmospheric, refined painterly realism, premium autumn editorial campaign, textured natural detail concentrated toward perimeter. No people, no writing, no letters, no numbers, no text, no watermark, no UI. Do not make it a screenshot or mockup, only background artwork.",
+      "redistribution": true,
+      "reviewedBy": "Codex — prototype provenance and derivative review, 2026-10-21",
+      "access": "free"
+    },
+    "f93832b79c18025d7ca219b4d1e4b9e245157349c64d91305c97c65c6929e74d": {
+      "kind": "ai-generated",
+      "source": "Original WConvert winter prototype, optimised WebP santaletter.webp. See pilot/assets/winter/README.md for provenance.",
+      "redistribution": true,
+      "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
+      "access": "premium"
+    },
+    "faaa69ad2fe2c84b0c4695b23d85c0e68d62180c75aeb7722640021ce61c4eeb": {
+      "kind": "ai-generated",
+      "source": "gpt-image-2 via Codex CLI $imagegen (built-in image_gen, ChatGPT plan), 2026-10-20; used by field-guide; encoded to WebP q72-74. Prompt: Use case: illustration-story | Asset type: square picture pane of a signup form for a garden and plant shop, shown beside a cream form panel and above it on phones | Scene/backdrop: plain warm cream paper with a faint deckled texture, evenly toned to all four edges, no vignette, no background scenery | Subject: a botanical plate of a single foxglove stem with pink spotted bell flowers and buds, two broad basal leaves at its foot, a small separate seed head on the left and one unfurling fern frond on the right | Style/medium: traditional botanical illustration, fine sepia ink linework with transparent watercolour washes on cold-press paper, in the manner of a 19th-century field guide plate | Composition/framing: square frame; the whole plant fits inside the frame from flower tip to leaf base, occupying about 80 percent of the height, centred, with even cream margins on every side; nothing touches or is cut by an edge | Lighting/mood: even, calm, scholarly and warm | Color palette: muted sage and moss greens, dusty rose and mauve flowers, sepia ink, cream paper | Materials/textures: visible paper tooth, soft watercolour blooms and granulation, hairline ink hatching | Constraints: no text, no labels, no numbers, no captions, no signature, no border, no logos, no watermark",
+      "redistribution": true,
+      "reviewedBy": "Claude — provenance and raster review (no text, logos or faces; artefacts checked at full size), 2026-10-21",
+      "access": "premium"
     }
   },
   "artwork_exports": {

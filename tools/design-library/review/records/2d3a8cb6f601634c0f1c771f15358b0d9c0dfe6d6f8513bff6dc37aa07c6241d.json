@@ -1,0 +1,55 @@
+{
+  "id": "halloween-midnight-offer",
+  "revision": "abd5a65760d9bd74bc8f2d31153f3a30cc73840f1c8fe22b3d037eeff26b2b23",
+  "base_id": "66a83da16fc0131d354a253b45c8eec3cb2b77270531d4ce26b30e3ac3b1493b",
+  "decision": "approved",
+  "reviewer": "Artwork files (ADR 0172)",
+  "note": "Only its photos were re-saved as optimised WebP files at the same size; every screen at 1200 and 375 px compared with main and indistinguishable (docs/reviews/artwork-files-2026-10-25). Not a new review.",
+  "at": "2026-10-25T07:31:37Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/halloween-midnight-offer-320.png",
+          "sha256": "065ee26c7a92a80b046694646c9c8652f121c83772aad278e46c9d91d7607f4e"
+        },
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/halloween-midnight-offer-1440.png",
+          "sha256": "268a3029d5698d207f1c04900c3c350cc5ca675a5f222f5d6afd3202b0c64f5c"
+        },
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/review.md",
+          "sha256": "ef35ba6c37ecb334228f59a65f5a6cc2b9d0288a28c7be3ebfbbd1b6c712aa4d"
+        },
+        {
+          "path": "docs/reviews/artwork-files-2026-10-25/review.md",
+          "sha256": "0e54364a8329f533e5cd2b242eaaea66efa597708b966208ca8fbbf4c0e84fd8"
+        },
+        {
+          "path": "docs/reviews/artwork-files-2026-10-25/metrics.json",
+          "sha256": "e904c4ea78c22461814a39d6aed271846adca8012074b2587b150456078c3809"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/results.json",
+          "sha256": "402c3d44b9b37fac483320a2b09b33b4ddf782431f7e7095c4f478614447b64b"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/results.json",
+          "sha256": "402c3d44b9b37fac483320a2b09b33b4ddf782431f7e7095c4f478614447b64b"
+        }
+      ]
+    }
+  },
+  "record_id": "2d3a8cb6f601634c0f1c771f15358b0d9c0dfe6d6f8513bff6dc37aa07c6241d"
+}

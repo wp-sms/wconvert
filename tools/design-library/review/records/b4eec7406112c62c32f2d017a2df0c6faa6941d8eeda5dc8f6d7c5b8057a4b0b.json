@@ -1,0 +1,55 @@
+{
+  "id": "new-batch-first-look",
+  "revision": "c6e1a107d19e2bc50628310203dce4ad37cf26eb446ec0ba59aadad7a449d70e",
+  "base_id": "1a89b2351e4153c97cedeaab4e83a79f913035ea6447eed54e49af2042091ffe",
+  "decision": "approved",
+  "reviewer": "Artwork files (ADR 0172)",
+  "note": "Only its photos were re-saved as optimised WebP files at the same size; every screen at 1200 and 375 px compared with main and indistinguishable (docs/reviews/artwork-files-2026-10-25). Not a new review.",
+  "at": "2026-10-25T07:31:37Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/new-batch-first-look-320.png",
+          "sha256": "02fb9fe83c34846afc1e19111abc1145c9bc120b3ab32a3045b3f2d41e53f41f"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/new-batch-first-look-1440.png",
+          "sha256": "aff35b5c203e284ea98e4a7bcf5165101a008f19c164c993727fec931a5028ce"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/review.md",
+          "sha256": "de10b9e52b18a25d1a2a2141034132a8661bb20452e5b49ab2b99129c08792ed"
+        },
+        {
+          "path": "docs/reviews/artwork-files-2026-10-25/review.md",
+          "sha256": "0e54364a8329f533e5cd2b242eaaea66efa597708b966208ca8fbbf4c0e84fd8"
+        },
+        {
+          "path": "docs/reviews/artwork-files-2026-10-25/metrics.json",
+          "sha256": "e904c4ea78c22461814a39d6aed271846adca8012074b2587b150456078c3809"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/results.json",
+          "sha256": "a7427fb3737d6699cfc42b06595915a3e9ba372ae13085006fd7b3779788327e"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/results.json",
+          "sha256": "a7427fb3737d6699cfc42b06595915a3e9ba372ae13085006fd7b3779788327e"
+        }
+      ]
+    }
+  },
+  "record_id": "b4eec7406112c62c32f2d017a2df0c6faa6941d8eeda5dc8f6d7c5b8057a4b0b"
+}

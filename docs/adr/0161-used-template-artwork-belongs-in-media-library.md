@@ -6,7 +6,10 @@ Bundled and online-gallery raster artwork becomes WordPress media when a campaig
 is created or its design is saved. Reading the library, preparing a candidate,
 previewing or installing a gallery design creates no attachment. The gallery
 continues to download JSON and separate verified image files; its cache and the
-bundled files remain the sources for future template uses.
+bundled files remain the sources for future template uses. *(Amended by
+[ADR 0172](0172-bundled-photos-are-stored-once-as-files.md): a bundled design no
+longer embeds its photo; it names the file, `artwork:<sha256>.webp`, and the
+file is its only copy.)*
 
 After normal configuration and campaign checks, the shared campaign write
 controller adopts only image URLs beneath the exact bundled Free/Pro artwork
