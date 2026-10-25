@@ -5,6 +5,7 @@ import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { readDesigns, analyseDesigns } from './inventory.mjs';
+import { inlineArtwork } from './artwork-files.mjs';
 import { validateBriefs, coverage } from './briefs.mjs';
 import { loadReviews, reviewQueue } from './reviews.mjs';
 import { campaignRevision } from './revision.mjs';
@@ -45,7 +46,8 @@ writeFileSync(resolve(out, 'maintenance.json'), JSON.stringify({ maintenance, ed
 // What the catalogue puts online, and what it holds back and why (ADR 0162).
 const derived = delivery({ entries, queue, exported: exportAuthored(root, resolve(here, '../../..')).exported });
 const online = { online: derived.published, held: derived.held.map(({ setup, reason }) => ({ setup, reason })) };
-const data = { maintenance, editorial, queue, delivery: online, entries, designs, rendererRevision, batches: collection.batches, coverage: coverage(entries) };
+// The page draws designs, so its copy carries each photo's bytes (ADR 0172).
+const data = { maintenance, editorial, queue, delivery: online, entries, designs: designs.map(design => inlineArtwork(design, root)), rendererRevision, batches: collection.batches, coverage: coverage(entries) };
 writeFileSync(resolve(out, 'coverage.json'), JSON.stringify(data.coverage, null, 2) + '\n');
 writeFileSync(resolve(out, 'inventory.json'), JSON.stringify(inventory, null, 2) + '\n');
 writeFileSync(resolve(out, 'pilot.json'), JSON.stringify(entries, null, 2) + '\n');
