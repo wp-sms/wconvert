@@ -101,6 +101,13 @@
       "reviewedBy": "Codex, original asset provenance, 2026-10-24",
       "access": "free"
     },
+    "2dd2292e6ec229ca4c79e7ae6fc213b254abfc98c7746981af7eca1841f63d67": {
+      "kind": "original",
+      "source": "Original WConvert prototype vectors; black-friday-prototype/artwork.mjs and reference/designs.js.txt.",
+      "redistribution": true,
+      "reviewedBy": "Codex, original artwork provenance, 2026-10-24",
+      "access": "free"
+    },
     "2eb1e419664c0a302e0a1b28e11fcde130ece79d9d4d818d3dc69c288f950a5a": {
       "kind": "ai-generated",
       "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
@@ -225,13 +232,6 @@
       "source": "Original WConvert campaign prototype; see black-friday-prototype/reference/ASSETS.md.",
       "redistribution": true,
       "reviewedBy": "Codex, original asset provenance, 2026-10-24",
-      "access": "free"
-    },
-    "5c5a06e4851c27314b18ca4e5fcd71af7670c7b60ffd833abab175c9011d0c0f": {
-      "kind": "original",
-      "source": "Original WConvert prototype vectors; black-friday-prototype/artwork.mjs and reference/designs.js.txt.",
-      "redistribution": true,
-      "reviewedBy": "Codex, original artwork provenance, 2026-10-24",
       "access": "free"
     },
     "5c5e430ed8146b170979f18b5dd360b165ad73f9c66cb373bcff73e047370433": {
@@ -387,13 +387,6 @@
       "redistribution": true,
       "reviewedBy": "Codex, provenance and asset review, 2026-10-23",
       "access": "premium"
-    },
-    "84255ad7bf5274d6b39bd680d4578f6a6833f4140486f7666773c66fd2e3f18c": {
-      "kind": "original",
-      "source": "Original WConvert prototype vectors; black-friday-prototype/artwork.mjs and reference/designs.js.txt.",
-      "redistribution": true,
-      "reviewedBy": "Codex, original artwork provenance, 2026-10-24",
-      "access": "free"
     },
     "87ae853b29e300dd6319feece304c461e63ea9fa2ddcb0562d541ceaa5677632": {
       "kind": "original",
@@ -558,9 +551,9 @@
     },
     "cbf2073065e9ec3edeb4d2e6f58fdedc7e304184d39ee641bca14b64aa78ce85": {
       "kind": "original",
-      "source": "Original two-colour checker strip, pilot/assets/black-friday/fidelity-checker.png (added in b441bc2d), re-saved as lossless WebP. No provenance note exists; to be confirmed.",
-      "redistribution": true,
-      "reviewedBy": "Claude, 2026-10-25 — provenance not documented, needs a person to confirm",
+      "source": "Two-colour checker strip, pilot/assets/black-friday/fidelity-checker.png (added in b441bc2d), re-saved as lossless WebP. No provenance is written down, so redistribution is not asserted: the design ships in Pro and stays out of the catalogue until a person records where it came from.",
+      "redistribution": false,
+      "reviewedBy": "Claude, 2026-10-25 — provenance not documented; needs a person",
       "access": "premium"
     },
     "cfcc1de8e910d02bca2cc3d240e71eacc190ff24ec18a8236ca0d6eb7677a415": {
@@ -655,6 +648,13 @@
       "access": "premium"
     },
     "e6886b9b5402b7e15d36e7a74bfad3fc1177db291f161b72884c7296e458a29e": {
+      "kind": "original",
+      "source": "Original WConvert prototype vectors; black-friday-prototype/artwork.mjs and reference/designs.js.txt.",
+      "redistribution": true,
+      "reviewedBy": "Codex, original artwork provenance, 2026-10-24",
+      "access": "free"
+    },
+    "ec84dc822303bee4c4aa0284c3cb0478656c0a1fce21108f0ba979eedaf93b89": {
       "kind": "original",
       "source": "Original WConvert prototype vectors; black-friday-prototype/artwork.mjs and reference/designs.js.txt.",
       "redistribution": true,

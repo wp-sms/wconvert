@@ -1285,15 +1285,15 @@
    "screens": [
     {
      "screen": "campaign-packing-perk-1200-0",
-     "mean": 0.102,
-     "max": 15,
-     "changed": 0.0446
+     "mean": 0.065,
+     "max": 7,
+     "changed": 0.0431
     },
     {
      "screen": "campaign-packing-perk-375-0",
-     "mean": 0.105,
-     "max": 13,
-     "changed": 0.0459
+     "mean": 0.067,
+     "max": 7,
+     "changed": 0.0441
     }
    ]
   },
@@ -1353,15 +1353,15 @@
    "screens": [
     {
      "screen": "campaign-anniversary-event-1200-0",
-     "mean": 0.186,
-     "max": 49,
-     "changed": 0.0539
+     "mean": 0.001,
+     "max": 1,
+     "changed": 0.0009
     },
     {
      "screen": "campaign-anniversary-event-375-0",
-     "mean": 0.049,
-     "max": 25,
-     "changed": 0.0242
+     "mean": 0.001,
+     "max": 1,
+     "changed": 0.0005
     }
    ]
   }

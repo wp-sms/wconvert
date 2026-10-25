@@ -1,13 +1,15 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { createHash } from 'node:crypto';
 import { crc32, deflateSync } from 'node:zlib';
 import { artworkReferences, inlineArtwork } from './artwork-files.mjs';
 import { extractArtwork } from './extract-artwork.mjs';
+import { exportObjects } from './catalogue.mjs';
+import { fileURLToPath } from 'node:url';
 
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 
@@ -74,4 +76,31 @@ test('extraction stores a photo once, moves its rights and deletes what nothing 
   assert.deepEqual(rights, { [name.slice(0, 64)]: record });
   assert.equal(result.converted.length, 1);
   assert.equal(extractArtwork(root).rewritten.length, 0, 'A second run changes nothing');
+});
+
+test('the exporter sends a bundled photo as its own asset, from the file its ZIP ships, Free and Pro', () => {
+  const root = fileURLToPath(new URL('../../..', import.meta.url));
+  const catalog = JSON.parse(readFileSync(join(root, 'tools/design-library/publishing/catalog.json'), 'utf8'));
+  const exported = exportObjects(root, root, { designs: [{ id: 'citrus-sunrise', revision: 1 }, { id: 'polaroid', revision: 1 }], setups: [], raster_sources: {}, image_rights: catalog.image_rights });
+  assert.deepEqual(exported.failures ?? [], []);
+  for (const [id, folder] of [['citrus-sunrise', 'resources/template-artwork'], ['polaroid', 'pro/resources/template-artwork']]) {
+    const design = exported.designs.find(item => item.id === id);
+    const [name] = artworkReferences(JSON.parse(readFileSync(join(root, folder === 'resources/template-artwork' ? 'resources/templates/library' : 'pro/modules/display-types/templates', `${id}.json`), 'utf8')));
+    const file = readFileSync(join(root, folder, name.slice('artwork:'.length)));
+    assert.equal(design.media.length, 1, id);
+    assert.equal(sha(Buffer.from(design.media[0].base64, 'base64')), sha(file), `${id} carries the file's exact bytes`);
+    assert.doesNotMatch(design.json, /artwork:|data:image/, `${id}'s object leaves its picture slot empty`);
+  }
+});
+
+test('a picture cwebp cannot read stops the run before anything is written', t => {
+  const root = plugin(t);
+  const path = join(root, 'resources/templates/library/card.json');
+  const text = JSON.stringify({ id: 'card', tier: 'free', tree: { steps: [{ content: { type: 'image', src: `data:image/png;base64,${png().toString('base64')}` } }, { content: { type: 'image', src: 'data:image/gif;base64,R0lGODlhAQABAAAAACw=' } }] } });
+  writeFileSync(path, text);
+  writeFileSync(join(root, 'tools/design-library/publishing/catalog.json'), JSON.stringify({ schema: 3, image_rights: {} }));
+  try { execFileSync('cwebp', ['-version'], { stdio: 'ignore' }); } catch { t.skip('cwebp is not installed'); return; }
+  assert.throws(() => extractArtwork(root), /re-save its GIF picture/);
+  assert.equal(readFileSync(path, 'utf8'), text);
+  assert.deepEqual(readdirSync(join(root, 'resources/template-artwork')), []);
 });

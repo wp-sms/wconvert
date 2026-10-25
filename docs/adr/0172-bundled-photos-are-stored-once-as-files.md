@@ -22,20 +22,29 @@ stored twice or not as files at all.
    `resources/template-artwork/` for Free and
    `pro/resources/template-artwork/` for Pro, the folders `TemplateMedia`
    already trusts (ADR 0161).
-3. **`BundledArtwork::forSite()` resolves the name.** On a site it is the
-   plugin URL. Without a plugin URL (the studio, the exporter, any CLI tool)
-   the file is written back as a data URI, so everything outside WordPress
-   draws exactly what it drew before. A missing file, or one whose bytes are
-   not its name, throws: a broken ZIP is not a picture to guess.
-   `tools/design-library/build/artwork-files.mjs` is the JavaScript twin.
+3. **`BundledArtwork` resolves the name.** `forSite()` makes it the plugin
+   URL; `inlined()` (and `forSite()` with no plugin URL) writes the file back
+   as a data URI, so the studio, the exporter and every CLI tool draw exactly
+   what they drew before. A missing file throws, and `BundledTemplates` and
+   `ProTemplates` leave that one design out, as they do an unreadable file;
+   the rest of the library still lists. The bytes are checked against their
+   name wherever they are read — `inlined()`, and `TemplateMedia` when a
+   campaign adopts or exports a photo — rather than hashing every photo on
+   every request that lists designs. A broken ZIP is never a picture to
+   guess. `tools/design-library/build/artwork-files.mjs` is the JavaScript
+   twin; studio tools that draw designs read them with `pictures: true`.
 4. **Photos are optimised once, at authoring time.**
    `tools/design-library/build/extract-artwork.mjs` finds every raster data
    URI in a Free or Pro design, re-saves it with `cwebp -q 75 -m 6` at the same
-   pixel size (a PNG lossless where that is smaller; a WebP kept as it was
-   where re-encoding would not shrink it), writes the file, rewrites the
-   reference, moves the `image_rights` record to the new hash and deletes the
-   artwork files nothing names. An author pastes a photo, runs it, and
-   commits. The first run took 57 photos from 4.0 MB to 1.9 MB.
+   pixel size (a PNG is a drawing, so lossless or `-q 90`, whichever is
+   smaller, since its smooth gradients band at 75; a WebP kept as it was where
+   re-encoding would not shrink it), writes the file, rewrites the
+   reference, moves the `image_rights` record (and any `artwork_exports`
+   declaration bound to that slot) to the new hash and deletes the artwork
+   files nothing names. Everything is encoded before anything is written, and
+   a GIF or AVIF stops the run with a message to re-save it. An author pastes
+   a photo, runs it, and commits. The first run took 57 photos from 4.0 MB to
+   1.9 MB.
 5. **Hosted designs are out of scope.** They never ship in a ZIP, and the
    exporter already sends their pictures as separate catalogue assets.
 6. **`BundledArtworkFilesTest` guards it**: no bundled design holds a raster
@@ -55,3 +64,10 @@ stored twice or not as files at all.
   again. Pre-release, so nothing migrates it.
 - `LibraryLintTest` measures a design as a site gets it: a URL where the photo
   was, which a page payload no longer pays for.
+- Export reads a bundled photo through `TemplateMedia`, so an unsaved draft on
+  a Pro photo design exports its bytes; it could reach only Free's folder.
+- Four photos had no rights record. Three were recorded from
+  `pilot/assets/README.md`; the checker strip in
+  `campaign-black-friday-fast-lane` has no written provenance, so its record
+  does not assert redistribution and that design stays out of the catalogue
+  until a person records where it came from.

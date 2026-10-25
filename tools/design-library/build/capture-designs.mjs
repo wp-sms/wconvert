@@ -42,6 +42,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { containerCss } from './containers.mjs';
 import { designDirectories } from './sources.mjs';
+import { inlineArtwork } from './artwork-files.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT = resolve(HERE, '../out');
@@ -59,7 +60,7 @@ const containers = containerCss();
 const designs = LIBRARIES.flatMap((library) =>
   readdirSync(library)
     .filter((file) => file.endsWith('.json'))
-    .map((file) => JSON.parse(readFileSync(resolve(library, file), 'utf8')))
+    .map((file) => inlineArtwork(JSON.parse(readFileSync(resolve(library, file), 'utf8')), PLUGIN))
     // `locked.json` is metadata for designs this tree does not hold, so there
     // is nothing to draw. A stub reaching here would render an empty card,
     // which reads as a broken design rather than as an absent one.

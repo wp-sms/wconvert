@@ -1,0 +1,63 @@
+{
+  "id": "campaign-packing-perk",
+  "revision": "3676615d00d7bead6f469b77f0180a6d81884edb9c05eddb8187342d28c8d5db",
+  "base_id": "c92c97962176d03a80baf563efc2cc3696f8f3982ae640e73ae8e59233ffec79",
+  "decision": "approved",
+  "reviewer": "Artwork files (ADR 0172)",
+  "note": "Its drawing re-saved lossless/q90 instead of q75, which banded at 2×; every screen compared with main again and indistinguishable (docs/reviews/artwork-files-2026-10-25). Not a new review.",
+  "at": "2026-10-25T11:06:03Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/23-1440-wordpress.png",
+          "sha256": "77dc115e6b894992fdd9fd9066e92fb86dbff2ad6c3564e5cb53734424ca663e"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/23-390-wordpress.png",
+          "sha256": "8f0ff90a6648df14e1bc5fea9302f698e811e7cd05508107cf58401d39caa4e8"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+        },
+        {
+          "path": "docs/reviews/artwork-files-2026-10-25/review.md",
+          "sha256": "381c4e65a08126ca85bb4604c0b731d72d94d66022559cc164d61fdf7df1148d"
+        },
+        {
+          "path": "docs/reviews/artwork-files-2026-10-25/metrics.json",
+          "sha256": "f3e4f40d1195f0bba267f5da5a00e29d281fca0036c457d398998a11d31bb047"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+        }
+      ]
+    }
+  },
+  "record_id": "f37ea2a403ec8edad85adb2d04e73f71ae6c42ffdda99ab8615ca9c7e435dbee"
+}

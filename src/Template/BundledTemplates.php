@@ -47,8 +47,12 @@ final class BundledTemplates implements TemplateSource
         foreach ($files === false ? [] : $files as $file) {
             $decoded = JsonFile::read($file);
 
-            if ($decoded !== null) {
+            if ($decoded === null) continue;
+            try {
                 $entries[] = BundledArtwork::forSite($decoded, $this->pluginDir, defined('WCONVERT_URL') ? WCONVERT_URL : '');
+            } catch (\RuntimeException) {
+                // A design whose photo is missing from the ZIP is left out, as an unreadable file is; the rest still list.
+                continue;
             }
         }
 

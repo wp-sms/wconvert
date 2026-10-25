@@ -120,8 +120,8 @@ if (($input['mode'] ?? '') === 'designs') {
         try {
             $file = source($root, 'design', $id);
             // A bundled photo is a file (ADR 0172); the catalogue still receives it as its own asset, split below.
-            $template = BundledArtwork::forSite(json_decode((string) file_get_contents($file), true, 48, JSON_THROW_ON_ERROR),
-                str_starts_with($file, $root . '/pro/') ? $root . '/pro' : $root, '');
+            $template = BundledArtwork::inlined(json_decode((string) file_get_contents($file), true, 48, JSON_THROW_ON_ERROR),
+                str_starts_with($file, $root . '/pro/') ? $root . '/pro' : $root);
             // The wire says a flow with `graph` and `v` is the vocabulary (ADR 0156).
             $template['tree']['v'] = \WConvert\Template\TemplateTree::VERSION;
             [$template, $assets, $bindings, $media] = images($template, $input);

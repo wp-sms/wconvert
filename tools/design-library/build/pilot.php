@@ -11,6 +11,7 @@ use WConvert\Storage\OptionStore;
 use WConvert\Support\SiteDependency;
 use WConvert\Support\SitePresence;
 use WConvert\Support\Tier;
+use WConvert\Template\BundledArtwork;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateSource;
 use WConvert\Template\TemplateVocabulary;
@@ -43,8 +44,8 @@ $source = new class($root) implements TemplateSource {
         $files = array_merge(glob($this->root . '/resources/templates/library/*.json') ?: [], glob($this->root . '/pro/modules/*/templates/*.json') ?: [],
             glob($this->root . '/tools/design-library/hosted/templates/*.json') ?: []);
         // A bundled photo is a file (ADR 0172): the studio draws it inline, as an export does.
-        return array_map(fn ($file) => \WConvert\Template\BundledArtwork::forSite(json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR),
-            str_starts_with($file, $this->root . '/pro/') ? $this->root . '/pro' : $this->root, ''), $files);
+        return array_map(fn ($file) => BundledArtwork::inlined(json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR),
+            str_starts_with($file, $this->root . '/pro/') ? $this->root . '/pro' : $this->root), $files);
     }
 };
 $templates = TemplateLibrary::from($vocabulary, $source);

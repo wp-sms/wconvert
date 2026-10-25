@@ -2,9 +2,13 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { designDirectories } from './sources.mjs';
 import { resolve, relative } from 'node:path';
 import { createHash } from 'node:crypto';
+import { inlineArtwork } from './artwork-files.mjs';
 
-/** Discover every module; a malformed source must fail the review build. */
-export function readDesigns(root) {
+/**
+ * Discover every module; a malformed source must fail the review build.
+ * `pictures` writes each bundled photo back as its bytes, for a tool that draws it (ADR 0172).
+ */
+export function readDesigns(root, { pictures = false } = {}) {
   const ids = new Set();
   return designDirectories(root).map(({ dir }) => dir).flatMap(dir =>
     readdirSync(resolve(root, dir)).filter(name => name.endsWith('.json')).sort().map(name => {
@@ -12,7 +16,7 @@ export function readDesigns(root) {
       const design = JSON.parse(readFileSync(path, 'utf8'));
       if (!design.id || !design.tree || ids.has(design.id)) throw new Error(`Missing or repeated design: ${path}`);
       ids.add(design.id);
-      return { ...design, source: relative(root, path) };
+      return { ...(pictures ? inlineArtwork(design, root) : design), source: relative(root, path) };
     }));
 }
 

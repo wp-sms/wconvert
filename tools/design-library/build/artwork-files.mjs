@@ -9,14 +9,16 @@ import { createHash } from 'node:crypto';
  * `template-artwork/` folder. The JavaScript twin of
  * `src/Template/BundledArtwork.php`.
  */
-export const REFERENCE = /^artwork:([a-f0-9]{64})\.(webp|png|jpg)$/;
+export const REFERENCE = /^artwork:([a-f0-9]{64})\.webp$/;
 
 /** The folder each ZIP's photos ship in. */
 export const ARTWORK_DIRECTORIES = { free: 'resources/template-artwork', pro: 'pro/resources/template-artwork' };
 
-const MIME = { webp: 'image/webp', png: 'image/png', jpg: 'image/jpeg' };
-
-/** The file one reference names, verified against its name. Free's folder first: a name is its bytes, so either copy is the same. */
+/**
+ * The file one reference names, verified against its name. Free's folder
+ * first: a name is its bytes, so either copy is the same. (PHP reads only the
+ * design's own ZIP; `BundledArtworkFilesTest` keeps every file there.)
+ */
 export function artworkBytes(root, reference) {
   const match = reference.match(REFERENCE);
   if (!match) throw new Error(`Not an artwork reference: ${reference}`);
@@ -25,7 +27,7 @@ export function artworkBytes(root, reference) {
     if (!existsSync(file)) continue;
     const bytes = readFileSync(file);
     if (createHash('sha256').update(bytes).digest('hex') !== match[1]) throw new Error(`Bundled artwork was altered: ${reference}`);
-    return { bytes, mime: MIME[match[2]] };
+    return { bytes, mime: 'image/webp' };
   }
   throw new Error(`Bundled artwork is missing: ${reference}`);
 }
@@ -55,5 +57,5 @@ export function inlineArtwork(design, root) {
 
 /** Every artwork reference in a design, as `artwork:<name>`. */
 export function artworkReferences(design) {
-  return [...new Set(JSON.stringify(design).match(/artwork:[a-f0-9]{64}\.(?:webp|png|jpg)/g) ?? [])];
+  return [...new Set(JSON.stringify(design).match(/artwork:[a-f0-9]{64}\.webp/g) ?? [])];
 }

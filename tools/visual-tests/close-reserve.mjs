@@ -19,7 +19,7 @@ import { readDesigns } from '../design-library/build/inventory.mjs';
 
 const output = process.argv[2];
 if (!output || !/^docs\/reviews\/[a-z0-9._-]+\/close-reserve\.json$/.test(output)) throw Error('Usage: node tools/visual-tests/close-reserve.mjs docs/reviews/<batch>/close-reserve.json');
-const bars = readDesigns(process.cwd()).filter(design => ['floating_bar', 'slide_in'].includes(design.display_type)).map(({ id, display_type, tree, tokens }) => ({ id, display_type, tree, tokens }));
+const bars = readDesigns(process.cwd(), { pictures: true }).filter(design => ['floating_bar', 'slide_in'].includes(design.display_type)).map(({ id, display_type, tree, tokens }) => ({ id, display_type, tree, tokens }));
 const scratch = mkdtempSync(join(tmpdir(), 'wconvert-bar-close-'));
 writeFileSync(join(scratch, 'bars.html'), `<!doctype html><meta charset="utf-8"><body style="margin:0"><script>${readFileSync('tools/design-library/out/renderer.iife.js', 'utf8')}</script>`);
 const browser = await chromium.launch();

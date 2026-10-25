@@ -9,7 +9,7 @@ if(!['127.0.0.1','localhost'].includes(new URL(base).hostname))throw Error('Loca
 const stress=process.env.WCONVERT_REVIEW_LONG_COPY==='1';
 const output=process.env.WCONVERT_LIBRARY_EVIDENCE||('/tmp/library-polish'+(stress?'-long':''));fs.mkdirSync(output,{recursive:true});
 const mode=process.argv[2]||'audit';
-const datasets=[{kind:'designs',entries:readDesigns(process.cwd())},{kind:'campaigns',entries:JSON.parse(execFileSync('php',['tools/design-library/build/pilot.php'],{encoding:'utf8',maxBuffer:64*1024*1024,env:{...process.env,WCONVERT_EXPORT_ALL:'1'}}))}];
+const datasets=[{kind:'designs',entries:readDesigns(process.cwd(),{pictures:true})},{kind:'campaigns',entries:JSON.parse(execFileSync('php',['tools/design-library/build/pilot.php'],{encoding:'utf8',maxBuffer:64*1024*1024,env:{...process.env,WCONVERT_EXPORT_ALL:'1'}}))}];
 for(const {kind,entries} of datasets)fs.writeFileSync(`tools/design-library/out/all-${kind}.json`,JSON.stringify(entries));
 const selectedIds=process.env.WCONVERT_REVIEW_IDS?.split(',');
 if(selectedIds)for(const dataset of datasets)dataset.entries=dataset.entries.filter(entry=>selectedIds.includes(entry.id));

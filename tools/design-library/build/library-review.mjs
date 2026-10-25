@@ -12,7 +12,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const plugin = process.env.WCONVERT_PLUGIN ?? resolve(here, '../../..');
 const out = resolve(here, '../out');
 containerCss(); // Fail if the shipping display geometry has changed.
-const entries = readDesigns(plugin);
+const entries = readDesigns(plugin, { pictures: true });
 const baseline = process.env.WCONVERT_REVIEW_BASELINE;
 const renderer = readFileSync(resolve(out, 'renderer.iife.js'), 'utf8');
 const decisions = visualAuditReport(JSON.parse(readFileSync(resolve(here, '../review/visual-audit.json'), 'utf8')), entries, createHash('sha256').update(renderer).digest('hex'));
