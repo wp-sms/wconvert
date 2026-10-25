@@ -1,6 +1,7 @@
 import { displayPlan } from './support/display-entry';
 import { treeFixture } from './support/journey';
 import { CAPTURE_OUTCOME } from './support/outcomes';
+import { freeDesign } from './support/designs';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
@@ -85,9 +86,7 @@ const { OptinBuilder } = await import('../../resources/admin/src/builder/OptinBu
 const ENTRY = JSON.parse(
   readFileSync(resolve(import.meta.dirname, '../../resources/templates/library/centred-card.json'), 'utf8'),
 ) as TemplateEntry;
-const ALTERNATE = JSON.parse(
-  readFileSync(resolve(import.meta.dirname, '../../resources/templates/library/split-hero.json'), 'utf8'),
-) as TemplateEntry;
+const ALTERNATE = freeDesign('split-hero') as unknown as TemplateEntry;
 
 const ID = '01JQ00000000000000000000AA';
 
