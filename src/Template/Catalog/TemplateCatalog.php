@@ -275,6 +275,7 @@ final class TemplateCatalog
                     'playbook_id' => $setup['state'] === 'ready' ? DesignArchive::setupId($setup['id'], $installed[$setup['id']]) : null];
             }
             if ($items === []) continue;
+            unset($collection['markets']);
             $collection['items'] = $items;
             $collection['online'] = $online;
             $collection['id'] = 'catalog-' . $collection['id'];

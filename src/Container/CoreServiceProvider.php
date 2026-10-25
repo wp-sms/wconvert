@@ -492,7 +492,6 @@ final class CoreServiceProvider implements ServiceProvider
                 $c->resolve(PlaybookLibrary::class),
                 $c->resolve(GoalRegistry::class),
                 $c->resolve(Prefill::class),
-                $c->resolve(\WConvert\Discovery\SetupIndex::class),
                 $c->resolve(\WConvert\Discovery\GoalGallery::class)
             )
         );

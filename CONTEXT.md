@@ -1288,8 +1288,9 @@ server. See [ADR 0154](docs/adr/0154-agents-act-through-wordpress-abilities.md).
 
 ### Picker preferences
 
-Saved canonical design identities, hidden Collections, event participation and
-market choices, held in user meta scoped to the current site. They are personal
+Saved canonical design identities, hidden Collections and whether the featured
+shelf shows, held in user meta scoped to the current site (markets, preferred
+businesses and event opt-outs went with ADR 0171). They are personal
 library preferences; Site occasions are shared by site administrators. Favorites
 follow a design id across [[Design revision]]s while exact source baselines
 retain immutable template IDs.

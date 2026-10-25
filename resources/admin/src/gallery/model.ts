@@ -10,6 +10,8 @@ export interface GalleryCard {
   /** A setup's or a design's id: what Save, Use and Inspect name. */
   key: string;
   name: string;
+  /** Everything search reads: the name, the design's name and the setup's note. */
+  words: string;
   displayType: string;
   facets: TemplateFacets | null;
   captures: string[];
@@ -34,13 +36,9 @@ export interface GalleryCard {
 }
 
 export interface MergeContext {
-  readonly installedTier: string;
-  /** `ProHints::shown()`: whether a Free site wants Pro designs pointed out. */
+  /** `ProHints::shown()`: whether a Free site wants Pro designs pointed out. Pro is one plan (ADR 0146), so nothing is locked there. */
   readonly proHints: boolean;
 }
-
-/** A locked card is a hint, so it is drawn only where hints are wanted, or on a paid site missing a higher rung. */
-const keepsLocked = ({ installedTier, proHints }: MergeContext) => proHints || installedTier !== 'free';
 
 function fromFacets(facets: TemplateFacets | null | undefined): Pick<GalleryCard, 'facets' | 'captures' | 'act'> {
   return { facets: facets ?? null, captures: facets?.captures ?? [], act: facets?.act ?? null };
@@ -48,7 +46,8 @@ function fromFacets(facets: TemplateFacets | null | undefined): Pick<GalleryCard
 
 function localSetup(entry: PlaybookEntry): GalleryCard {
   return {
-    key: entry.id, name: entry.name, displayType: entry.display_type, ...fromFacets(entry.facets), tier: 'free',
+    key: entry.id, name: entry.name, words: [entry.name, entry.notes, ...(entry.business_types ?? []).map(type => type.label)].join(' ').toLowerCase(),
+    displayType: entry.display_type, ...fromFacets(entry.facets), tier: entry.tier ?? 'free',
     availability: entry.availability ?? 'ready', recommended: entry.recommendation ?? null, newerRevision: null, source: 'local',
     thumbnail: null, template_id: entry.template_id, business_types: entry.business_types ?? [], tags: [], sha256: null, previewUrl: null,
   };
@@ -56,7 +55,8 @@ function localSetup(entry: PlaybookEntry): GalleryCard {
 
 function onlineSetup(row: OnlineSetup): GalleryCard {
   return {
-    key: row.id, name: row.name, displayType: row.display_type, ...fromFacets(row.facets), tier: row.tier,
+    key: row.id, name: row.name, words: [row.name, row.design.name, ...row.business_types.map(type => type.label)].join(' ').toLowerCase(),
+    displayType: row.display_type, ...fromFacets(row.facets), tier: row.tier,
     availability: row.state, recommended: null, newerRevision: null, source: 'online', thumbnail: row.thumbnail,
     template_id: row.design.id, business_types: row.business_types, tags: row.tags, sha256: row.sha256, previewUrl: row.preview_url,
   };
@@ -69,7 +69,8 @@ function onlineSetup(row: OnlineSetup): GalleryCard {
  * installed is one card, offering the newer one.
  */
 export function mergeSetups(gallery: GoalGallery, context: MergeContext): GalleryCard[] {
-  const replaced = new Map(gallery.online.filter(row => row.installed_playbook_id !== null).map(row => [row.installed_playbook_id, row]));
+  // Only an installable newer revision is offered as one (as the design index does).
+  const replaced = new Map(gallery.online.filter(row => row.installed_playbook_id !== null && row.state === 'install').map(row => [row.installed_playbook_id, row]));
   const local = gallery.setups.map(entry => {
     const card = localSetup(entry);
     const newer = replaced.get(entry.id);
@@ -78,7 +79,7 @@ export function mergeSetups(gallery: GoalGallery, context: MergeContext): Galler
   });
   const installed = new Set(gallery.setups.map(entry => entry.id));
   const online = gallery.online.filter(row => row.installed_playbook_id === null || !installed.has(row.installed_playbook_id)).map(onlineSetup);
-  const cards = [...local, ...online].filter(card => card.availability !== 'locked' || keepsLocked(context));
+  const cards = [...local, ...online].filter(card => card.availability !== 'locked' || context.proHints);
 
   return [...cards.filter(card => card.recommended !== null), ...cards.filter(card => card.recommended === null)];
 }
@@ -86,13 +87,14 @@ export function mergeSetups(gallery: GoalGallery, context: MergeContext): Galler
 /** The editor's cards: one per design, in the index's order. */
 export function mergeDesigns(entries: readonly TemplateIndexEntry[], context: MergeContext): GalleryCard[] {
   return entries.map((entry): GalleryCard => ({
-    key: entry.id, name: entry.name, displayType: entry.display_type, ...fromFacets(entry.facets), tier: entry.tier,
+    key: entry.id, name: entry.name, words: [entry.name, ...(entry.aliases ?? [])].join(' ').toLowerCase(),
+    displayType: entry.display_type, ...fromFacets(entry.facets), tier: entry.tier,
     availability: entry.remote?.state ?? entry.availability, recommended: null,
     newerRevision: entry.newer_revision ? { id: entry.id, ...entry.newer_revision } : null,
     source: entry.remote ? 'online' : 'local', thumbnail: entry.remote?.thumbnail ?? null,
     template_id: entry.id, business_types: [], tags: entry.tags ?? entry.remote?.tags ?? [],
     sha256: entry.remote?.sha256 ?? null, previewUrl: entry.preview_url ?? null,
-  })).filter(card => card.availability !== 'locked' || keepsLocked(context));
+  })).filter(card => card.availability !== 'locked' || context.proHints);
 }
 
 export interface GalleryFilters {
@@ -115,13 +117,26 @@ export interface GalleryFilters {
   readonly hasImage?: boolean;
 }
 
-export type GalleryFacet = 'format' | 'asks' | 'business' | 'plan' | 'stage' | 'shape';
+export type GalleryFacet = 'format' | 'asks' | 'business' | 'plan' | 'stage' | 'shape' | 'industry' | 'occasion' | 'style';
+
+/** Each facet's filter key and its "anything" value: the one table the counts read. */
+const FACETS: Record<GalleryFacet, { readonly any: string; readonly selected: (filters: GalleryFilters) => string | undefined }> = {
+  format: { any: 'all', selected: filters => filters.format },
+  asks: { any: 'any', selected: filters => filters.asks },
+  business: { any: 'any', selected: filters => filters.business },
+  plan: { any: 'all', selected: filters => filters.plan },
+  stage: { any: 'any', selected: filters => filters.stage },
+  shape: { any: '', selected: filters => filters.shape },
+  industry: { any: '', selected: filters => filters.tags?.industry },
+  occasion: { any: '', selected: filters => filters.tags?.occasion },
+  style: { any: '', selected: filters => filters.tags?.style },
+};
 
 function passes(card: GalleryCard, filters: GalleryFilters, skip?: GalleryFacet): boolean {
   const { query, format, asks, business, plan, saved, collection, stage, tags, shape, hasImage } = filters;
   const words = query?.trim().toLowerCase();
 
-  if (words && !card.name.toLowerCase().includes(words)) return false;
+  if (words && !card.words.includes(words)) return false;
   if (skip !== 'format' && format && format !== 'all' && card.displayType !== format) return false;
   if (skip !== 'asks' && asks && asks !== 'any' && !(asks === 'none' ? card.captures.length === 0 : card.captures.includes(asks))) return false;
   if (skip !== 'business' && business && business !== 'any' && !card.business_types.some(type => type.id === business)) return false;
@@ -134,7 +149,7 @@ function passes(card: GalleryCard, filters: GalleryFilters, skip?: GalleryFacet)
     if (skip !== 'stage' && stage && stage !== 'any' && at !== stage) return false;
   }
   for (const [kind, value] of Object.entries(tags ?? {})) {
-    if (value && !card.tags.includes(`${kind}:${value}`)) return false;
+    if (value && skip !== kind && !card.tags.includes(`${kind}:${value}`)) return false;
   }
   if (skip !== 'shape' && shape && card.facets?.shape !== shape) return false;
   if (hasImage && card.facets?.has_image !== true) return false;
@@ -145,6 +160,8 @@ function passes(card: GalleryCard, filters: GalleryFilters, skip?: GalleryFacet)
 export function filterCards(cards: readonly GalleryCard[], filters: GalleryFilters): GalleryCard[] {
   return cards.filter(card => passes(card, filters));
 }
+
+const tagged = (kind: string) => (card: GalleryCard) => card.tags.filter(tag => tag.startsWith(`${kind}:`)).map(tag => tag.slice(kind.length + 1));
 
 const valuesOf: Record<GalleryFacet, (card: GalleryCard, filters: GalleryFilters) => string[]> = {
   format: card => [card.displayType],
@@ -157,9 +174,10 @@ const valuesOf: Record<GalleryFacet, (card: GalleryCard, filters: GalleryFilters
     return at === undefined ? [] : [at];
   },
   shape: card => card.facets?.shape ? [card.facets.shape] : [],
+  industry: tagged('industry'),
+  occasion: tagged('occasion'),
+  style: tagged('style'),
 };
-
-const ANY: Record<GalleryFacet, string> = { format: 'all', asks: 'any', business: 'any', plan: 'all', stage: 'any', shape: '' };
 
 /**
  * How many cards each option of one facet would leave, given every other
@@ -168,16 +186,15 @@ const ANY: Record<GalleryFacet, string> = { format: 'all', asks: 'any', business
  */
 export function optionCounts(cards: readonly GalleryCard[], filters: GalleryFilters, facet: GalleryFacet): Record<string, number> {
   const pool = cards.filter(card => passes(card, filters, facet));
-  const counts: Record<string, number> = { [ANY[facet]]: pool.length };
+  const counts: Record<string, number> = { [FACETS[facet].any]: pool.length };
 
   for (const card of pool) {
     for (const value of valuesOf[facet](card, filters)) counts[value] = (counts[value] ?? 0) + 1;
   }
 
-  const selected = facet === 'shape' ? filters.shape : facet === 'format' ? filters.format : facet === 'asks' ? filters.asks
-    : facet === 'business' ? filters.business : facet === 'plan' ? filters.plan : filters.stage;
+  const selected = FACETS[facet].selected(filters);
 
-  if (selected && !(selected in counts)) counts[selected] = 0;
+  if (selected && !Object.hasOwn(counts, selected)) counts[selected] = 0;
 
   return counts;
 }

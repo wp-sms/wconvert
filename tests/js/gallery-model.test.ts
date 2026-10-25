@@ -15,7 +15,7 @@ const online = (id: string, more: Partial<OnlineSetup> = {}): OnlineSetup => ({
   thumbnail: { '1x': `https://cdn/${id}.webp`, '2x': `https://cdn/${id}@2x.webp` }, tags: [], preview_url: `https://wconvert.io/templates/${id}/`, ...more,
 });
 const gallery = (setups: PlaybookEntry[], rows: OnlineSetup[] = []): GoalGallery => ({ setups, online: rows, library: { configured: true, consent: 'yes' } });
-const free = { installedTier: 'free', proHints: true };
+const free = { proHints: true };
 const keys = (cards: GalleryCard[]) => cards.map(card => card.key);
 const NONE: GalleryFilters = {};
 
@@ -42,11 +42,22 @@ describe('merging a goal’s setups', () => {
     expect(cards[0].newerRevision).toEqual({ id: 'd', revision: 2, sha256: 'a'.repeat(64) });
   });
 
+  it('offers a newer revision only when it can be installed', () => {
+    const cards = mergeSetups(gallery([local('setup-1-d')], [online('d', { revision: 2, installed_playbook_id: 'setup-1-d', state: 'update_plugin' })]), free);
+
+    expect(keys(cards)).toEqual(['setup-1-d']);
+    expect(cards[0].newerRevision).toBeNull();
+  });
+
+  it('keeps a local setup’s own plan', () => {
+    expect(mergeSetups(gallery([local('p', { tier: 'pro' })]), free)[0].tier).toBe('pro');
+  });
+
   it('keeps locked cards where they fall, and only where Pro hints are wanted', () => {
     const response = gallery([local('a'), local('paid', { availability: 'locked' }), local('b')], [online('pro-row', { state: 'locked', tier: 'pro' })]);
 
     expect(keys(mergeSetups(response, free))).toEqual(['a', 'paid', 'b', 'pro-row']);
-    expect(keys(mergeSetups(response, { installedTier: 'free', proHints: false }))).toEqual(['a', 'b']);
+    expect(keys(mergeSetups(response, { proHints: false }))).toEqual(['a', 'b']);
   });
 });
 
@@ -85,6 +96,7 @@ describe('filtering', () => {
     expect(keys(filterCards(cards, { plan: 'free' }))).toEqual(['mail', 'text', 'both', 'button']);
     expect(keys(filterCards(cards, { saved: new Set(['both']) }))).toEqual(['both']);
     expect(keys(filterCards(cards, { query: 'TEX' }))).toEqual(['text']);
+    expect(keys(filterCards(cards, { query: 'stores' }))).toEqual(['mail']);
   });
 
   it('a collection, and a stage inside it', () => {
@@ -105,6 +117,7 @@ describe('filtering', () => {
     expect(optionCounts(cards, { format: 'slide_in', asks: 'none' }, 'asks')).toEqual({ any: 1, phone: 1, none: 0 });
     expect(optionCounts(cards, NONE, 'format')).toEqual({ all: 5, popup: 3, slide_in: 1, inline: 1 });
     expect(optionCounts(cards, NONE, 'plan')).toEqual({ all: 5, free: 4, pro: 1 });
+    expect(optionCounts(cards, { tags: { industry: 'food' } }, 'industry')).toEqual({ '': 5, retail: 1, food: 0 });
   });
 });
 

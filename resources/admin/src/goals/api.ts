@@ -58,8 +58,9 @@ export interface PlaybookEntry {
   destination_hint: Record<string, unknown>;
   /** Why it works, in the merchant's language. */
   notes: string;
-  /** The design's facets, which the gallery filters and labels by. */
+  /** The design's facets and plan, which the gallery filters and labels by. */
   facets?: TemplateFacets | null;
+  tier?: string;
   /** Optional editorial recommendation; never a Goal or design restriction. */
   recommendation?: string;
   /** Editorial examples; choosing a business never changes Goal eligibility. */
@@ -98,9 +99,6 @@ export interface Draft {
 
 export const listGoals = () => apiFetch<GoalEntry[]>({ path: '/wconvert/v1/goals' });
 
-// Filtered on Goal ONLY. Display Type is prefilled by the chosen Playbook and
-// is selectable as an override afterwards — it is never the first question
-// asked, and a second parameter here is how it would become one.
 /** A setup the hosted library has for this Goal and this site does not, as `/playbooks` sends it (ADR 0171). */
 export interface OnlineSetup {
   id: string;
@@ -129,6 +127,9 @@ export interface GoalGallery {
   library: { configured: boolean; consent: 'unanswered' | 'yes' | 'no' };
 }
 
+// Filtered on Goal ONLY. Display Type is prefilled by the chosen Playbook and
+// is selectable as an override afterwards — it is never the first question
+// asked, and a second parameter here is how it would become one.
 export const readGoalGallery = (goal: string) =>
   apiFetch<GoalGallery>({ path: `/wconvert/v1/playbooks?goal=${encodeURIComponent(goal)}` });
 

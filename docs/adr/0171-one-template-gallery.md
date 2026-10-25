@@ -1,6 +1,6 @@
 # 0171: One template gallery
 
-Accepted 2026-10-25. Amends 0112.
+Accepted 2026-10-25. Amends 0112, 0116 and 0156 §9.
 
 The approved prototype (v5, 2026-10-24, branch `prototype/template-gallery`)
 replaces the creation flow's step 2 and the editor's design picker with one
@@ -14,15 +14,17 @@ list (`src/Discovery/GoalGallery.php`):
 
 - `setups`: this site's setups for the Goal, `SetupIndex::entry` plus the
   recommendation, in `FlagshipCollection` order, each with its design's
-  `facets` so the gallery can filter and label it.
+  `facets` and `tier` so the gallery can filter and label it.
 - `online`: the catalogue's setups for the Goal that this site does not have,
   each joined to its design card for `facets`, the 600w/1200w `thumbnail`,
   `display_type`, `tags` and `preview_url`, and carrying the catalogue's
   `state` (unavailable → locked → update_plugin → install). A `locked` row is
   sent only where `ProHints::shown()`, exactly as the design index does. A row
   already installed is not sent; one installed at an older revision names the
-  Playbook it left (`installed_playbook_id`) so the gallery shows one card.
-  Nothing is sent until consent is `yes`.
+  Playbook it left (`installed_playbook_id`) so the gallery shows one card,
+  offering the newer revision only when it can be installed. Nothing is sent
+  until consent is `yes`. Pro is one plan (ADR 0146), so nothing is locked on a
+  Pro site and the gate is `ProHints::shown()` alone.
 - `library`: `{configured, consent}`, so the gallery can ask once.
 
 Online setups carry `business_types`: the publisher emits a setup's Playbook

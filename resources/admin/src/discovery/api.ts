@@ -13,7 +13,7 @@ export interface Occasion { id: string; name: string; start: string; end: string
 export interface Occasions { schema: 1; revision: number; items: Occasion[] }
 export interface Collection {
   id: string; revision: string; name: string; description: string;
-  business_types: string[]; markets: string[]; priority: number;
+  business_types: string[]; priority: number;
   cover: 'sale' | 'launch' | 'services' | 'reading';
   items: { setup_id: string; stage: 'before' | 'during' | 'after' | 'any' }[];
   online?: OnlineCollectionMember[];

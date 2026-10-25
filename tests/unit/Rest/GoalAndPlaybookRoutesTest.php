@@ -58,7 +58,7 @@ final class GoalAndPlaybookRoutesTest extends TestCase
         $goals = new GoalRegistry(new FakeProPresence(), new FakeSitePresence());
 
         (new GoalController($goals))->registerRoutes();
-        (new PlaybookController($playbooks, $goals, new Prefill($playbooks, $templates, $vocabulary, InstalledRules::free()), new SetupIndex($templates, new FakeProPresence()), new GoalGallery($playbooks, new SetupIndex($templates, new FakeProPresence()), new FakeProPresence())))
+        (new PlaybookController($playbooks, $goals, new Prefill($playbooks, $templates, $vocabulary, InstalledRules::free()), new GoalGallery($playbooks, new SetupIndex($templates, new FakeProPresence()), new FakeProPresence())))
             ->registerRoutes();
     }
 

@@ -44,9 +44,7 @@ final class PickerController implements RestController
     private function readPreferences(): array
     {
         $value = get_user_meta(get_current_user_id(), PickerDocuments::USER_KEY . get_current_blog_id(), true);
-        $defaults = PickerDocuments::preferences();
-        // Only the keys the gallery still reads; an older document's extras are not sent.
-        return is_array($value) ? array_intersect_key($value + $defaults, $defaults) : $defaults;
+        return is_array($value) ? $value : PickerDocuments::preferences();
     }
 
     /** Preserve recognizable saved entries even after retirement from discovery.

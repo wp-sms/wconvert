@@ -36,7 +36,7 @@ final class PlaybookSetupTest extends TestCase
         ];
         $playbooks = PlaybookLibrary::fromEntries($entries, $templates, $vocabulary, $rules);
         $prefill = new Prefill($playbooks, $templates, $vocabulary, InstalledRules::free());
-        $controller = new PlaybookController($playbooks, new GoalRegistry(new FakeProPresence(), new FakeSitePresence()), $prefill, new SetupIndex($templates, new FakeProPresence()), new GoalGallery($playbooks, new SetupIndex($templates, new FakeProPresence()), new FakeProPresence()));
+        $controller = new PlaybookController($playbooks, new GoalRegistry(new FakeProPresence(), new FakeSitePresence()), $prefill, new GoalGallery($playbooks, new SetupIndex($templates, new FakeProPresence()), new FakeProPresence()));
         $request = new WP_REST_Request('GET', '/wconvert/v1/playbooks');
         $request->set_param('goal', 'grow_email_list');
         $response = $controller->index($request);
@@ -73,7 +73,7 @@ final class PlaybookSetupTest extends TestCase
         $this->assertSame([], $playbooks->rejections());
         $prefill = new Prefill($playbooks, $templates, $vocabulary, InstalledRules::free());
         $controller = new PlaybookController($playbooks,
-            new GoalRegistry(new FakeProPresence(), new FakeSitePresence()), $prefill, new SetupIndex($templates, new FakeProPresence()), new GoalGallery($playbooks, new SetupIndex($templates, new FakeProPresence()), new FakeProPresence()));
+            new GoalRegistry(new FakeProPresence(), new FakeSitePresence()), $prefill, new GoalGallery($playbooks, new SetupIndex($templates, new FakeProPresence()), new FakeProPresence()));
         $request = new WP_REST_Request('GET', '/wconvert/v1/playbooks');
         $request->set_param('goal', 'grow_email_list');
         $response = $controller->index($request);

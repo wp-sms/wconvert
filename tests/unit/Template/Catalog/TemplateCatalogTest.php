@@ -396,13 +396,13 @@ final class TemplateCatalogTest extends TestCase
     {
         $playbook = require WCONVERT_DIR . 'resources/playbooks/reading-recommendation.php';
         $design = $this->service->design(self::FREE_DESIGN, $playbook['template_id']);
-        $this->service->setup('shop-note', $design, ['business_types' => ['stores', 'wizards']] + $playbook);
+        $this->service->setup('shop-note', $design, ['business_types' => ['wizards', 'gnomes', 'trolls', 'stores']] + $playbook);
         $this->service->setup('older-note', $design, array_diff_key($playbook, ['business_types' => 1]));
         $this->service->publish();
         $catalog = $this->catalog();
         $catalog->refresh();
         $rows = array_column($catalog->status()['setups'], null, 'id');
-        self::assertSame(['stores'], $rows['shop-note']['business_types'], 'Only the three known businesses are read');
+        self::assertSame(['stores'], $rows['shop-note']['business_types'], 'Unknown businesses are dropped before the list is bounded');
         self::assertSame([], $rows['older-note']['business_types'], 'A row published before businesses has none');
         self::assertNull($rows['older-note']['installed_playbook_id']);
 

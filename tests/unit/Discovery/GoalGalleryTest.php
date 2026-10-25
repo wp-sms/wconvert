@@ -88,6 +88,7 @@ final class GoalGalleryTest extends TestCase
         $setup = $this->gallery()['setups'][0];
         self::assertSame('click', $setup['facets']['act']);
         self::assertArrayHasKey('captures', $setup['facets']);
+        self::assertSame('free', $setup['tier']);
     }
 
     public function testOffersTheGoalsOnlineSetupsWithTheirPicturesAndALockedOneAsAHint(): void
