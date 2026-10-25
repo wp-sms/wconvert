@@ -31,7 +31,7 @@ import { studioPage } from './studio-theme.mjs';
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { designDirectories } from './sources.mjs';
+import { designDirectories, designSource } from './sources.mjs';
 import { inlineArtwork } from './artwork-files.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -47,11 +47,10 @@ const manifest = JSON.parse(readFileSync(resolve(PLUGIN, 'resources/templates/ma
  *
  * `split-hero` is the richest free design — two steps, a `split`, an image, a
  * field, a consent line and fine print — so the Bench opens showing every kind
- * of control it has rather than a blank page with one heading on it.
+ * of control it has rather than a blank page with one heading on it. It is
+ * hosted (ADR 0173), so it is read from wherever it is authored.
  */
-const seed = JSON.parse(
-  readFileSync(resolve(PLUGIN, 'resources/templates/library/split-hero.json'), 'utf8'),
-);
+const seed = JSON.parse(readFileSync(designSource(PLUGIN, 'split-hero'), 'utf8'));
 
 const page = template
   .replace('/*__RENDERER__*/', () => renderer)

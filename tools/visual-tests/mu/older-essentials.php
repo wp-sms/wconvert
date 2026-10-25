@@ -1,5 +1,6 @@
 <?php
-/** Disposable local WordPress: actual capture and display for the older essentials batch. */
+/** Disposable local WordPress: actual capture and display for the older essentials batch.
+ * Mount mu/hosted.php beside it: the two project-* setups are hosted (ADR 0173). */
 add_action('init', static function (): void {
     if (!isset($_GET['wconvert_older_essentials'])) return;
     if (!defined('WCONVERT_DS_SECRET') || !in_array(wp_parse_url(home_url(), PHP_URL_HOST), ['127.0.0.1', 'localhost'], true)) wp_die('Disposable local site required.');

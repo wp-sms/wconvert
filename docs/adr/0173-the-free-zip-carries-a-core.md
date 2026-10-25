@@ -14,8 +14,9 @@ has to ship to be offered.
 
 **A Free design leaves the ZIP only when the catalogue serves it and nothing
 bundled needs it.** This first cut moves 13 designs and their 16 setups to
-`hosted/`; the ZIP keeps 71 designs and 102 setups. A design stays bundled when
-any of these holds:
+`hosted/`; the ZIP keeps 71 designs and 102 setups. *(Amended: a second cut
+moved 14 more designs and 23 setups, so the ZIP keeps 57 and 79; see the note
+after rule 5.)* A design stays bundled when any of these holds:
 
 1. **It is recommended** (`FlagshipCollection`): the twelve setups the gallery
    puts first.
@@ -52,7 +53,8 @@ The list proposed on the review page (claude.ai/artifact/1oFFNK2N783q99w7AAs6sm)
 applied rules 1–4 and was approved as 41 kept; rule 3's `centred-card` and
 rule 5 were found while building and keep 30 more. A design held by rule 5
 moves in a later change, once its art or consent is reviewed for the catalogue
-or its setups are approved; nothing else needs to change.
+or its setups are approved; nothing else needs to change. *(The second cut,
+noted after rule 5, did exactly that.)*
 
 Everything else moved: `agenda-card`, `citrus-sunrise`, `colour-atlas`,
 `material-pair`, `programme-board`, `project-workboard`, `recipe-clipping`,
