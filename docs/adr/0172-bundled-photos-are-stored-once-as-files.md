@@ -67,7 +67,7 @@ stored twice or not as files at all.
 - Export reads a bundled photo through `TemplateMedia`, so an unsaved draft on
   a Pro photo design exports its bytes; it could reach only Free's folder.
 - Four photos had no rights record. Three were recorded from
-  `pilot/assets/README.md`; the checker strip in
-  `campaign-black-friday-fast-lane` has no written provenance, so its record
-  does not assert redistribution and that design stays out of the catalogue
-  until a person records where it came from.
+  `pilot/assets/README.md`. The checker strip in
+  `campaign-black-friday-fast-lane` had none written down; it was traced to the
+  Black Friday prototype's own `race-check` checkerboard and recorded as
+  original on 2026-10-25, so that design reaches the catalogue too.

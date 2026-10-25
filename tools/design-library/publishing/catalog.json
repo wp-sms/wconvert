@@ -551,9 +551,9 @@
     },
     "cbf2073065e9ec3edeb4d2e6f58fdedc7e304184d39ee641bca14b64aa78ce85": {
       "kind": "original",
-      "source": "Two-colour checker strip, pilot/assets/black-friday/fidelity-checker.png (added in b441bc2d), re-saved as lossless WebP. No provenance is written down, so redistribution is not asserted: the design ships in Pro and stays out of the catalogue until a person records where it came from.",
-      "redistribution": false,
-      "reviewedBy": "Claude, 2026-10-25 — provenance not documented; needs a person",
+      "source": "Raster of the WConvert Black Friday prototype's own race-check checkerboard (black-friday-prototype/reference/designs.js.txt, design 22 The Fast Lane), pilot/assets/black-friday/fidelity-checker.png; black-friday-prototype/core.mjs embeds it as the reference's original decorative checker artwork. Re-saved as lossless WebP.",
+      "redistribution": true,
+      "reviewedBy": "Claude, provenance traced 2026-10-25, recorded at the owner's request",
       "access": "premium"
     },
     "cfcc1de8e910d02bca2cc3d240e71eacc190ff24ec18a8236ca0d6eb7677a415": {
