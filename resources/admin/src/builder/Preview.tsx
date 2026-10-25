@@ -17,7 +17,7 @@ import { previewSurfaces } from '../previewSurfaces';
  * builder, a surface the merchant works ON rather than only looks at.
  *
  * ============================================================================
- * THERE ARE NO STATIC THUMBNAILS, ANYWHERE IN THIS FLOW.
+ * A DESIGN ON THIS SITE IS NEVER A PICTURE OF ONE (ADR 0010, ADR 0170).
  * ============================================================================
  * The renderer is a pure function of (tree, tokens) and is dependency-free
  * precisely so two bundles can share it, and the admin is the second one
@@ -25,6 +25,9 @@ import { previewSurfaces } from '../previewSurfaces';
  * template rather than a picture of one — so there is nothing to produce when
  * a design is added and nothing to let go stale when one is changed, and what
  * the merchant approves is what a visitor sees.
+ *
+ * Only a design this site does not have yet is a picture: the catalogue's,
+ * drawn by the same stage in the same slot ({@see DesignStage}).
  *
  * It mounts `inline`, because a card is a card: it wants the closed shadow
  * root that wins the CSS fight against wp-admin's own stylesheet, and none of
@@ -66,7 +69,7 @@ import { previewSurfaces } from '../previewSurfaces';
  * whatever it is handed, the moment it is rendered. A picker holding forty live
  * renders cannot afford that — forty closed shadow roots, forty stylesheets,
  * forty trees, none of which anybody has scrolled to — so
- * {@see TemplateCard} simply does not RENDER a `Preview` for a card that is far
+ * {@see DesignStage} simply does not RENDER a `Preview` for a card that is far
  * from the viewport, which is the same thing said in the one place that knows
  * whether a card is near one.
  *
@@ -166,9 +169,14 @@ export interface PreviewProps {
    * page, drawn once here rather than at every call site.
    */
   readonly onSelect?: (key: SlotKey) => void;
+  /**
+   * The anchor's inline size in pixels — the stage's render width (ADR 0170).
+   * Without one the anchor takes the design's own width token.
+   */
+  readonly width?: number;
 }
 
-export function Preview({ template, displayType = 'inline', step = 0, selected = null, onSelect, interactive = false, onAdvance, result }: PreviewProps) {
+export function Preview({ template, displayType = 'inline', step = 0, selected = null, onSelect, interactive = false, onAdvance, result, width }: PreviewProps) {
   const { deadline } = usePreviewDeadline();
   // A copy or color edit should not repeat the site-font lookup.
   const fontRequest = JSON.stringify(usedGoogleFonts(template));
@@ -512,7 +520,7 @@ export function Preview({ template, displayType = 'inline', step = 0, selected =
     <div className="wconvert-preview">
       <div
         ref={anchor}
-        style={{ inlineSize: previewSurfaces[displayType] ? '100%' : template.tokens.width ?? A_DESIGNS_OWN_WIDTH, maxInlineSize: '100%' }}
+        style={{ inlineSize: width ?? (previewSurfaces[displayType] ? '100%' : template.tokens.width ?? A_DESIGNS_OWN_WIDTH), maxInlineSize: '100%' }}
       />
     </div>
   );

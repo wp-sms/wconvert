@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, type ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
-import { Skeleton } from '../components/ui/skeleton';
 import { Description } from '../shell/Description';
-import { Preview } from './Preview';
+import { DesignStage } from '../stage/DesignStage';
 import type { Template } from '@renderer/types';
 
 /**
@@ -26,50 +25,16 @@ import type { Template } from '@renderer/types';
  * is cheap to draw (ADR 0010, #68, #79).
  *
  * ============================================================================
- * IT MOUNTS WHEN IT IS NEAR THE VIEWPORT, AND UNMOUNTS WHEN IT IS NOT.
+ * THE STAGE DRAWS IT, AND DRAWS IT ONLY NEAR THE VIEWPORT (ADR 0170).
  * ============================================================================
- * `Preview` mounts whatever it is handed the moment it is rendered, and that is
- * right for the one preview the builder pins beside its tabs. It is not right
- * for forty cards: forty closed shadow roots, forty stylesheets and forty trees
- * fetched, none of which anybody has scrolled to.
- *
- * So the gate is here, where the element that scrolls actually is, and it is
- * ONE observer doing both halves of the job — it decides when the tree is
- * WORTH FETCHING (`onNear`) and when the render is worth building (by rendering
- * `Preview` at all). Two observers, one per question, would be two answers to
- * "is this card near the viewport" that could disagree.
- *
- * **Unmounting is affordable because the render is a pure function.**
- * `Preview`'s own comment is the argument: `mount()` reads nothing ambient — no
- * network, no layout measurement — so a card that leaves and comes back
- * rebuilds from the same tree and draws the same pixels. There is nothing to
- * lose, because a card is a picture.
- *
- * **What it does cost is the card's HEIGHT, and that has to be given back.**
- * Measured in a browser: an unmounted card stood at 212px where the mounted one
- * had been 348px, so scrolling down pulled every row above it up by 136px — the
- * document shortening under the merchant's thumb, which is the failure
- * virtualization libraries spend most of their code on. So a card that has
- * rendered once keeps the height it measured and holds it while it is away.
- * `contain-intrinsic-size` in the stylesheet is the floor beneath that, for a
- * card that has never rendered at all.
- *
- * **`content-visibility: auto` is the other half, in `index.css`.** The observer
- * stops a card BUILDING; the property stops one that already exists from being
- * laid out. Neither reaches where the pair does — and neither is a
- * virtualization library, which is the third option: the grid is a responsive
- * `auto-fill` and adding a dependency to a bundle whose halves are reported per
- * build (ADR 0038) to arrive at the same place is a bad trade.
+ * The card's picture is a {@see DesignStage} at its card size: the design on a
+ * faint page, in its format's slot, 4:3. The stage owns the viewport gate this
+ * card used to — one observer deciding both when a tree is worth fetching
+ * (`onNear`) and when the render is worth building — and because a stage has
+ * a fixed shape, a card no longer changes height when its design leaves the
+ * viewport, so there is no height to hold. `content-visibility: auto` in the
+ * stylesheet is the other half: it stops a card that exists from being laid out.
  */
-
-/**
- * How far outside the viewport still counts as near.
- *
- * A screen's worth, roughly: far enough that a card is drawn before a merchant
- * scrolls it into view at any ordinary speed, near enough that a library of
- * forty is never all mounted at once.
- */
-const NEARBY = '600px';
 
 export interface TemplateCardProps {
   readonly displayType?: string;
@@ -117,12 +82,12 @@ export interface TemplateCardProps {
    * would be a card that loads forever.
    *
    * It is where the facet chips go, which is the honest substitute: with no
-   * render to look at, *"Side by side · Email · With a picture"* is what a
-   * merchant can compare. **Never a thumbnail** — ADR 0010's *no static
-   * thumbnails anywhere* is untouched, because a locked card carries no image
-   * at all.
+   * render and no picture to look at, *"Side by side · Email · With a
+   * picture"* is what a merchant can compare.
    */
   readonly absent?: ReactNode;
+  /** The catalogue's picture of a design this site does not have (ADR 0156, ADR 0170). */
+  readonly picture?: { readonly '1x': string; readonly '2x'?: string };
   /**
    * The action, handed the id of the element that NAMES this card.
    *
@@ -151,67 +116,16 @@ export function TemplateCard({
   selection,
   selected = false,
   absent,
+  picture,
   action,
   onNear,
   loadError = false,
   onRetry,
 }: TemplateCardProps) {
-  const card = useRef<HTMLLIElement>(null);
-  /*
-   * **True where nothing can observe.** jsdom has none of this and neither does
-   * a browser old enough to matter; in both cases the honest answer is to draw
-   * the card, because a picker that renders nothing is a worse failure than one
-   * that renders everything.
-   */
-  const [near, setNear] = useState(typeof IntersectionObserver === 'undefined');
-  /*
-   * The height this card stood at while it was rendered, held so leaving the
-   * viewport does not shorten the document. A ref rather than state because it
-   * is written in the same callback that calls `setNear` and read by the render
-   * that call schedules — a second `setState` would be a second render for a
-   * value the first one already has.
-   */
-  const held = useRef<number | null>(null);
-
-  useEffect(() => {
-    const node = card.current;
-
-    if (node === null || typeof IntersectionObserver === 'undefined') {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        const arriving = entry?.isIntersecting === true;
-
-        // Measured on the way OUT, while the card is still laid out. Read after
-        // the unmount it would be the skeleton's height, which is the number
-        // this exists to stop being used.
-        if (!arriving && node.offsetHeight > 0) {
-          held.current = node.offsetHeight;
-        }
-
-        setNear(arriving);
-      },
-      { rootMargin: NEARBY },
-    );
-
-    observer.observe(node);
-
-    return () => observer.disconnect();
-  }, []);
-
-  /*
-   * **Asked for as a side effect of being near, and never inside the
-   * observer's callback.** The picker coalesces these into one batched request
-   * per frame, so a merchant scrolling past ten cards makes one request rather
-   * than ten.
-   */
-  useEffect(() => {
-    if (near && template === undefined) {
-      onNear?.(id);
-    }
-  }, [near, template, id, onNear]);
+  // Asked for once the stage is near, and only while the tree is still missing.
+  const near = useCallback(() => {
+    if (template === undefined) onNear?.(id);
+  }, [template, onNear, id]);
 
   const nameId = `wconvert-design-${id}`;
   const reasonId = `wconvert-refused-${id}`;
@@ -219,7 +133,6 @@ export function TemplateCard({
 
   return (
     <li
-      ref={card}
       /*
         **`aria-current` is what says "this one" to a screen reader.** It was
         said by a `Badge` and by a border colour, neither of which is in the
@@ -230,24 +143,14 @@ export function TemplateCard({
       data-compared={selected || undefined}
       data-refused={reason !== null ? 'true' : undefined}
       className={`wconvert-gallery__card${current ? ' is-chosen' : ''}`}
-      style={!near && held.current !== null ? { minBlockSize: held.current } : undefined}
     >
       {/*
         The real design at real width, scaled down rather than reflowed:
         reflowing would show the merchant a layout no visitor gets, which is the
         one thing a live-rendered gallery exists to avoid.
-
-        **The skeleton is in the card's own shape rather than a spinner**, and
-        it is what a card shows both while its tree is arriving and while it is
-        far from the viewport — so scrolling back to a card does not make it
-        jump, and neither does its design landing (ADR 0039).
       */}
       {absent !== undefined ? (
         <div className="wconvert-gallery__absent">{absent}</div>
-      ) : near && template !== undefined ? (
-        <div className="wconvert-gallery__preview flex min-w-0 flex-1" inert aria-hidden="true">
-          <Preview template={template} displayType={displayType} />
-        </div>
       ) : loadError ? (
         <div className="wconvert-gallery__waiting wconvert-gallery__error">
           <Description>{__('Preview could not be loaded.', 'wconvert')}</Description>
@@ -255,8 +158,13 @@ export function TemplateCard({
           {onRetry !== undefined && <Button variant="outline" onClick={onRetry} aria-describedby={nameId}>{__('Try again', 'wconvert')}</Button>}
         </div>
       ) : (
-        <div className="wconvert-gallery__waiting">
-          <Skeleton aria-hidden="true" className="size-full" />
+        <div className="wconvert-gallery__preview" aria-hidden="true">
+          <DesignStage
+            displayType={displayType ?? 'inline'}
+            size="card"
+            source={picture !== undefined ? { image: picture } : template !== undefined ? { live: { template } } : undefined}
+            onNear={near}
+          />
         </div>
       )}
 

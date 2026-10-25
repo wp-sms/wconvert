@@ -432,6 +432,14 @@
    * tint how a merchant judges their own colours.
    */
   --stage: #f1f1ef;
+  /*
+   * The faint page every design stands on (ADR 0170): white, two quiet inks
+   * for its header and lines, and the dim a popup draws over it.
+   */
+  --ghost-page: #ffffff;
+  --ghost-ink: #e9e7e2;
+  --ghost-soft: #f2f1ed;
+  --ghost-dim: rgb(48 39 32 / 0.32);
 
   /*
    * `--border` draws dividers and card edges, which are decoration. `--input`
@@ -1843,7 +1851,7 @@ body:has(#wconvert-admin) #wpbody-content {
    * A CARD NOBODY HAS SCROLLED TO COSTS NO LAYOUT (ADR 0043).
    * ------------------------------------------------------------------------
    * **The other half of the deferred mount, and it is not the same half.**
-   * `TemplateCard`'s `IntersectionObserver` stops an off-screen card being
+   * The stage's `IntersectionObserver` stops an off-screen card being
    * BUILT; this stops one that already exists — the last screenful the merchant
    * scrolled past, still mounted because it is inside the observer's margin —
    * from being laid out and painted. Neither alone reaches where the pair does.
@@ -1865,19 +1873,9 @@ body:has(#wconvert-admin) #wpbody-content {
 }
 
 /*
- * The lane a card holds open for a design that has not arrived — either still
- * being fetched, or far enough from the viewport that it has been taken down.
- *
- * **A shape rather than a spinner** (ADR 0039): a skeleton in the grid's own
- * shape is what stops the row jumping when a design lands, which is the whole
- * reason `TableSkeleton` and `ChoiceSkeleton` exist one surface over.
- *
- * **The floor is for a card that has never rendered.** A card that HAS and then
- * scrolled away holds its own measured height, set inline by
- * {@see TemplateCard} — because this floor cannot be right for every design and
- * a wrong one is a scroll that jumps under the merchant's thumb. Measured in a
- * browser: an unmounted card was 212px against a mounted 348px, so scrolling
- * down pulled the row above up by 136px per card.
+ * The lane a card holds open when its design could not be loaded. A design
+ * still arriving is the stage's own waiting state (ADR 0170), in the card's
+ * shape, so nothing jumps when it lands (ADR 0039).
  */
 .wconvert-gallery__waiting {
   display: flex;
@@ -1892,10 +1890,9 @@ body:has(#wconvert-admin) #wpbody-content {
  * install and never will be**.
  *
  * Free ships the card for a premium design and never the design, because
- * shipping the tree and refusing the save is trialware (issue #7). So there is
- * nothing to render and — deliberately — nothing to render INSTEAD: no
- * thumbnail, no screenshot, no image at all, which is why ADR 0010's *no static
- * thumbnails anywhere* survives this ticket intact.
+ * shipping the tree and refusing the save is trialware (issue #7). A design the
+ * catalogue has a picture of is drawn from it on the stage (ADR 0170); this is
+ * for the one it has no picture of.
  *
  * What is here is the facets in the merchant's own words, which is the honest
  * substitute: with no render to compare, "Side by side · Email · With a
@@ -1912,23 +1909,6 @@ body:has(#wconvert-admin) #wpbody-content {
   background: var(--surface);
 }
 
-/*
- * A hosted design's card (ADR 0156, amending ADR 0010): there is no tree on
- * this site yet, so the server's thumbnail stands where the render would.
- * Contained, never cropped, on the same surface the render sits on.
- */
-.wconvert-gallery__absent:has(> .wconvert-gallery__thumbnail) {
-  padding: 0.75rem;
-}
-
-.wconvert-gallery__thumbnail {
-  display: block;
-  inline-size: 100%;
-  block-size: auto;
-  max-block-size: 16rem;
-  object-fit: contain;
-  border-radius: calc(var(--radius) - 2px);
-}
 
 /* The one-time question before any online design loads. */
 .wconvert-library-consent {
@@ -2281,101 +2261,6 @@ body:has(#wconvert-admin) #wpbody-content {
   opacity: 0.55;
 }
 
-/*
- * ---------------------------------------------------------------------------
- * `zoom`, NOT `transform: scale()`, AND THAT IS THE WHOLE OF THE FIX.
- *
- * A card is a real render at real width, so it is scaled rather than reflowed:
- * reflowing would show the merchant a layout no visitor gets, which is the one
- * thing a live-rendered gallery exists to avoid.
- *
- * **`transform` does not affect layout.** So the wrapper reserved `12rem`
- * (192px) and painted 106px, and every card in the gallery had ~86px of dead
- * white under a design clipped at the top of it. The width reciprocal
- * (`calc(100% / 0.55)`) was reasoned about carefully; the HEIGHT was never
- * reasoned about at all, because a fixed one looked deliberate.
- *
- * `zoom` does affect layout: a 448 × 300 child at `zoom: .55` renders 246 × 165
- * **and its wrapper becomes 165 tall**. Verified in the target browser on the
- * real gallery rather than reasoned about — which also has to be said the other
- * way round, because nothing in the suite can see this: Vitest runs jsdom with
- * `css: false` and computes no layout, so a passing test proves nothing here
- * either way. It is Baseline 2024 and shipped in every engine.
- *
- * With layout following the render, both of the numbers that were compensating
- * for it go: the reciprocal width and the fixed height. What is left is a cap,
- * so a tall design cannot make one card twice its neighbours.
- *
- * **What `zoom` costs, stated rather than discovered.** It RELAYOUTS at the
- * reduced size — a 16px headline is laid out at 8.8px — where `transform`
- * paints a full-size layout smaller. The gallery's invariant survives that,
- * because the scale is uniform: the container and the type shrink by the same
- * factor, so the ratio that decides a line break is unchanged and the break
- * lands in the same place. What is left is sub-pixel rounding at small sizes,
- * which is a fidelity risk and not a different layout. The other known hazard —
- * CSS `zoom` breaking Floating UI's positioning, which is what Radix's popover
- * is built on — cannot reach this: the zoom is on the gallery card's render,
- * and no Radix trigger is inside one. **Both are things to look at in a
- * browser** and neither is visible to the suite.
- *
- * `margin-inline: auto` because the design is NARROWER than the lane once it is
- * sized to itself — the experiment showed it sitting hard against the leading
- * edge with a grey band beside it, which reads as a broken float.
- *
- * It sits on `--surface` so a design with a light background still reads as a
- * picture of something rather than as part of the card holding it.
- * ------------------------------------------------------------------------- */
-/*
- * **The lane is a stage the design stands on, and it takes the card's slack.**
- *
- * Measured after the `zoom` swap: with the lane sized to its own design, the
- * three shipped designs drew 188, 138 and 244 tall, and a grid row stretches
- * every card to the tallest — so 57px of the row's height landed under the
- * SHORT card's footer. The dead space had moved rather than gone. `flex: 1`
- * puts it in the lane instead, and centring the design in it turns a gap into a
- * margin: every footer sits on the same line, and a short design reads as a
- * picture on a stage rather than as a card that failed to fill.
- *
- * `justify-content` replaces the `margin-inline: auto` this had for the same
- * reason on the other axis — the design is narrower than the lane once it is
- * sized to itself, and it sat hard against the leading edge.
- *
- * The cap is in the ZOOMED coordinate space: 44rem declared is 24.2rem drawn.
- * It was 22rem, which clipped the tallest shipped design by 50px — a cap that
- * fires on something we ship is a cap set from the wrong number.
- *
- * **And it was set from the wrong number twice.** 30rem was right for a library
- * of three and wrong the moment it was twelve: measured in a browser, *Name and
- * email* draws 349px against a 264px lane and *Photo offer* draws 276px, so two
- * of the designs we ship were clipped mid-button on the screen a merchant
- * chooses from. The tallest shipped design is 635px declared, and 44rem clears
- * it with room for the next one — which is the number this cap has to be set
- * from, because a cap that fires on our own work is not protecting anybody from
- * a third party's.
- */
-.wconvert-gallery .wconvert-preview {
-  zoom: 0.55;
-  display: flex;
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-  max-block-size: 44rem;
-  overflow: hidden;
-  pointer-events: none;
-  background: var(--surface);
-}
-
-/*
- * **The cards in a row are the same height, and `zoom` is what made that a
- * question.** With a fixed preview height every card was the same by
- * construction; sized to its own design they differ, and a grid row goes ragged
- * — the same failure the footer's own comment says the layout exists to
- * prevent, arriving from the other direction. `stretch` is the grid default and
- * is stated because it is now load-bearing.
- */
-.wconvert-gallery > .wconvert-gallery__card {
-  align-self: stretch;
-}
 
 /* ---------------------------------------------------------------------------
  * THE BUILDER: TABS BESIDE A PINNED PREVIEW.
@@ -2763,204 +2648,7 @@ body:has(#wconvert-admin) #wpbody-content {
   overflow: auto;
 }
 
-/* ---------------------------------------------------------------------------
- * THE MERCHANT'S PAGE, AS MUCH OF IT AS THE PREVIEW NEEDS TO BE HONEST.
- *
- * ============================================================================
- * A BAR CENTRED IN A BOX IS NOT A BAR.
- * ============================================================================
- * The stage was a centred surface and `Preview` mounts `inline` whatever the
- * Optin is, which is right for a gallery card and wrong here: two of the four
- * [[Display Type]]s are ABOUT where they sit. A floating bar pinned to the
- * block-end edge of a page and a slide-in tucked into its corner are the whole
- * of what makes either a different design from a popup, and neither reads as
- * anything floating in the middle of an empty pane.
- *
- * **The admin draws the page; the renderer draws the design.** Free's
- * `mount.ts` knows `inline` and `popup`; the two Pro containers live in
- * `pro/resources/renderer/src/popover.ts`. A preview that asked the renderer
- * for a bar would draw nothing on a free install or put Pro's container in
- * free's admin bundle, which `bin/verify-source-contract.sh` refuses. It is
- * also the truer division: what Pro's container adds is the top layer, the
- * anchoring and the motion, and what a merchant judges here is the design
- * against a page.
- * ------------------------------------------------------------------------- */
-.wconvert-site {
-  position: relative;
-  inline-size: 100%;
-  min-block-size: 26rem;
-  display: flex;
-  flex-direction: column;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  /* The three overlays are placed against this box, so none may escape it. */
-  overflow: hidden;
-}
 
-.wconvert-site__page {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem;
-  padding: 1.25rem;
-}
-
-/*
- * **Three grey bars and a grey block, deliberately not lorem ipsum.** Enough
- * for *"this sits over a page"* and not enough to read: anything readable
- * competes with the design being judged, and would need translating.
- */
-.wconvert-site__ghost {
-  flex: none;
-  block-size: 0.5rem;
-  border-radius: 2px;
-  background: var(--border);
-  opacity: 0.55;
-}
-
-.wconvert-site__ghost[data-ghost='head'] {
-  block-size: 1.1rem;
-  inline-size: 60%;
-}
-
-.wconvert-site__ghost[data-ghost='block'] {
-  block-size: 5rem;
-}
-
-/*
- * **The stage is the width the design is being judged at**, handed down as a
- * custom property rather than spelled here: at its own width it is the design's
- * OWN `width` token, and at narrow it is inside the renderer's own breakpoint.
- * `.wc-root` takes `min(--wc-width, 100%)` of whatever contains it, so this is
- * the `100%` — and a slot that just filled the page left the popup hard
- * against its leading edge, reading as a broken float rather than as a popup.
- */
-.wconvert-site__slot > .wconvert-preview {
-  inline-size: var(--wconvert-stage, 100%);
-  max-inline-size: 100%;
-}
-
-/*
- * `inline` is the one that stays in the flow, because that is what `inline`
- * MEANS: it renders where it was embedded and may sit far below the fold,
- * which is why its Impression is counted on entering the viewport rather than
- * on being shown (CONTEXT.md, Impression).
- */
-.wconvert-site__slot {
-  margin-block: 0.4rem;
-}
-
-/*
- * The other three take themselves out of the flow, exactly as they do on a
- * real page. Every offset is logical, so a Persian preview puts the slide-in in
- * the corner a Persian visitor would find it in (ADR 0038).
- */
-/*
- * ---------------------------------------------------------------------------
- * THE GHOSTS PAINTED OVER THE POPUP, AND `position: absolute` IS NOT ENOUGH.
- *
- * Two translucent grey bands lay across the rendered design — one over the
- * second line of the headline, one over the second line of the body — each
- * spanning the image pane and the text column together, in the admin only.
- *
- * They were the mock page's own ghosts. `.wconvert-site__ghost` carries
- * `opacity: 0.55`, and **an element with `opacity < 1` paints as if it were
- * `position: relative; z-index: 0`** (CSS Color 3 §3.2, CSS 2.1 Appendix E).
- * So a static `<span>` and this `position: absolute; z-index: auto` slot land
- * in the SAME stacking level, ties there break by tree order, and `MockPage`
- * renders two ghosts AFTER the slot — deliberately, so an `inline` Optin has
- * page content below it as well as above. Those two painted on top of the
- * backdrop, the shadow host and the opaque card inside it.
- *
- * Measured rather than reasoned about: `elementsFromPoint` at the centre of
- * each band returned the ghost above `.wconvert-site__slot`, and the two
- * offending ghosts are exactly the ones `compareDocumentPosition` reports as
- * FOLLOWING the slot.
- *
- * **`z-index` on the slot, not `isolation: isolate` on `.wconvert-site`.** The
- * ghosts are the site's own descendants, and isolation cuts a box off from its
- * ANCESTORS' stacking context — it would have changed nothing here. What is
- * wanted is the ordinary statement that the three out-of-flow containers sit
- * above the page they are drawn over, which is what they do on a real page:
- * `mount()` calls `showModal()` there and the dialog is in the top layer. The
- * preview mounts `inline` and the admin fakes the container, so the admin has
- * to say the one thing the top layer was saying for it.
- * ------------------------------------------------------------------------- */
-.wconvert-site[data-display-type='popup'] .wconvert-site__slot {
-  position: absolute;
-  inset: 0;
-  margin: 0;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.25rem;
-  overflow: auto;
-  /*
-   * The design's own `backdrop` token, which is the one thing about a popup
-   * that is not inside the shadow root — `DOCUMENT_CSS` puts it on
-   * `dialog::backdrop` for exactly that reason. The literal is this admin's
-   * fallback for a design that declares none, and matches the renderer's.
-   */
-  background: var(--wconvert-backdrop, rgba(15, 23, 42, 0.55));
-}
-
-.wconvert-site[data-display-type='fullscreen'] .wconvert-site__slot {
-  position: absolute;
-  inset: 0;
-  margin: 0;
-  z-index: 1;
-  overflow: auto;
-  background: var(--wconvert-bg, #fff);
-}
-.wconvert-site[data-display-type='fullscreen'] { min-block-size: 32rem; }
-.wconvert-site[data-display-type='fullscreen'] .wconvert-site__slot > .wconvert-preview {
-  inline-size: 100%;
-}
-.wconvert-site[data-display-type='floating_bar'] .wconvert-site__slot {
-  position: absolute;
-  inset-inline: 0;
-  inset-block-end: 0;
-  margin: 0;
-  z-index: 1;
-}
-
-.wconvert-site[data-display-type='floating_bar'][data-placement='block_start'] .wconvert-site__slot {
-  inset-block-start: 0;
-  inset-block-end: auto;
-}
-
-.wconvert-site[data-display-type='floating_bar'][data-placement='block_start'] > .wconvert-site__page:first-child {
-  padding-block-start: 5rem;
-}
-
-.wconvert-site[data-display-type='slide_in'] .wconvert-site__slot {
-  position: absolute;
-  inset-block-end: 0.9rem;
-  inset-inline-end: 0.9rem;
-  margin: 0;
-  z-index: 1;
-  max-inline-size: 26rem;
-}
-
-.wconvert-site[data-display-type='slide_in'][data-placement^='block_start'] .wconvert-site__slot {
-  inset-block-start: 0.9rem;
-  inset-block-end: auto;
-}
-
-.wconvert-site[data-display-type='slide_in'][data-placement$='inline_start'] .wconvert-site__slot {
-  inset-inline-start: 0.9rem;
-  inset-inline-end: auto;
-}
-
-/*
- * **Mobile is a WIDTH, not a scale.** The renderer draws at real size, so
- * constraining the stage is what makes a headline wrap where it would wrap on
- * a phone. Scaling it down would show the merchant a layout no visitor gets —
- * which is the one thing a live-rendered preview exists to avoid. Which width
- * is the component's, above.
- */
 
 /* ---------------------------------------------------------------------------
  * THE BLOCK TREE: A TREEGRID, INDENTED BY A CUSTOM PROPERTY.
@@ -6327,30 +6015,9 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-packs__empty :is(h3, h4) { margin: 0; font-size: var(--text-heading); }
 .wconvert-packs__empty p { max-inline-size: 48ch; margin: 0; color: var(--muted-foreground); font-size: var(--text-body); }
 .wconvert-packs__loading { display: grid; gap: 1rem; }
-/* A pack uses the same cards, search and screen explorer as the installed library. */
-.wconvert-pack-detail { display: flex; flex-direction: column; flex: 1; min-block-size: 0; min-inline-size: 0; }
-.wconvert-pack-detail__header { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; padding: .75rem 1.25rem; border-block-end: 1px solid var(--border); }
-.wconvert-pack-detail__identity { display: grid; gap: .375rem; min-inline-size: 0; }
-.wconvert-pack-detail__identity h3 { margin: 0; font-size: var(--text-heading); font-weight: 600; overflow-wrap: anywhere; }
-.wconvert-pack-detail__identity h3:focus { outline: none; }
-.wconvert-pack-detail__browse { min-block-size: 0; overflow-y: auto; flex: 1; }
-.wconvert-pack-detail__browse[hidden] { display: none; }
-.wconvert-pack-detail__browse > .wconvert-gallery { padding: 1.25rem; }
-.wconvert-pack-detail__inspection { display: flex; flex-direction: column; min-block-size: 0; flex: 1; }
-.wconvert-pack-detail__toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; padding: .75rem 1.25rem; border-block-end: 1px solid var(--border); }
-.wconvert-pack-detail__next { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; }
-.wconvert-pack-detail__next > div { flex: 1 1 22rem; max-inline-size: 65ch; }
-.wconvert-pack-detail__next p { margin: 0; }
-.wconvert-pack-detail__next p + p { margin-block-start: .375rem; }
-.wconvert-pack-detail__connection { margin: .5rem 0 0; color: var(--muted-foreground); font-size: var(--text-note); }
-.wconvert-pack-detail__starts { margin-block-end: .625rem; font-size: var(--text-note); }
-.wconvert-pack-detail__starts ul { padding-inline-start: 1.25rem; margin: 0; }
-.wconvert-pack-detail__starts p { margin: 0; color: var(--muted-foreground); }
 .wconvert-packs .wconvert-picker__controls { padding: 0 0 1rem; margin-block-end: 1.25rem; background: transparent; }
 @media (max-width: 639px) {
   .wconvert-packs__grid { grid-template-columns: minmax(0, 1fr); }
-  .wconvert-pack-detail__next { align-items: stretch; }
-  .wconvert-pack-detail__next > button { inline-size: 100%; }
 }
 
 
@@ -6554,14 +6221,11 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-setup-preview { min-inline-size: 0; }
 .wconvert-setup-preview > .wconvert-preview-frame { margin-block: 1rem; }
 /* Shared fitting is used by setup inspection, editor replacement and pack previews. */
-.wconvert-preview-frame { flex: 1; display: flex; align-items: safe center; justify-content: safe center; min-inline-size: 0; min-block-size: 16rem; padding: 1.5rem; overflow: auto; background: var(--surface); }
-.wconvert-preview-frame[data-fit="width"] { align-items: start; }
-.wconvert-preview-frame:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+/* The frame is the box an inspect-size stage fills (ADR 0170); the stage scrolls itself at actual size. */
+.wconvert-preview-frame { flex: 1; display: flex; min-inline-size: 0; min-block-size: 16rem; overflow: hidden; background: var(--stage); }
+.wconvert-preview-frame > .wconvert-stage { flex: 1; aspect-ratio: auto; block-size: auto; min-block-size: 0; }
+.wconvert-preview-frame > .wconvert-stage:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
 .wconvert-preview-frame__hint { margin: .5rem 0; color: var(--muted-foreground); font-size: var(--text-note); line-height: 1.5; }
-.wconvert-preview-frame__measure { position: relative; flex: none; }
-.wconvert-preview-frame__paper { position: absolute; inset-block-start: 0; inset-inline-start: 0; transform-origin: 0 0; }
-.wconvert-preview-frame__paper:dir(rtl) { transform-origin: 100% 0; }
-.wconvert-preview-frame__paper > .wconvert-preview { display: flex; justify-content: center; }
 .wconvert-setup-detail { --wconvert-picker-width: 72rem; padding: 1.5rem; overscroll-behavior: contain; scrollbar-gutter: stable; }
 .wconvert-setup-detail > [data-slot="dialog-header"] { margin-block-end: 0; }
 .wconvert-setup-detail [data-slot="dialog-title"]:focus { outline: none; }
@@ -6572,7 +6236,6 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   .wconvert-picker__search { flex-basis: 100%; }
   .wconvert-setup-detail { padding: 1rem; }
   .wconvert-occasion-form { grid-template-columns: minmax(0, 1fr); }
-  .wconvert-preview-frame { padding: 1rem; }
   .wconvert-picker__secondary > label { flex-basis: 100%; justify-content: space-between; }
 }
 
@@ -6627,14 +6290,14 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 @media (max-width: 639px) { .wconvert-preview-controls > .wconvert-preview-controls__screen { padding-inline-start: 0; border-inline-start: 0; } }
 /* The utility layer is necessary for shared Button/Input important sizing. */
 @layer utilities {
-  :is(#wconvert-admin, [data-slot="dialog-content"]) :is(.wconvert-picker__controls, .wconvert-preview-controls, .wconvert-setup-preview__tools, .wconvert-design-detail__header, .wconvert-design-detail__controls, .wconvert-pack-detail__toolbar, .wconvert-picker__pagination, .wconvert-comparison-tray, .wconvert-setup-detail__actions) :is([data-slot="button"], [data-slot="input"], select) { line-height: 1.4 !important; min-block-size: var(--control-height-sm) !important; block-size: auto !important; padding-block: .3125rem !important; }
-  :is(#wconvert-admin, [data-slot="dialog-content"]) :is(.wconvert-picker__controls, .wconvert-preview-controls, .wconvert-setup-preview__tools, .wconvert-design-detail__header, .wconvert-design-detail__controls, .wconvert-pack-detail__toolbar, .wconvert-picker__pagination, .wconvert-comparison-tray, .wconvert-setup-detail__actions) select { font-size: var(--text-body) !important; }
+  :is(#wconvert-admin, [data-slot="dialog-content"]) :is(.wconvert-picker__controls, .wconvert-preview-controls, .wconvert-setup-preview__tools, .wconvert-design-detail__header, .wconvert-design-detail__controls, .wconvert-picker__pagination, .wconvert-comparison-tray, .wconvert-setup-detail__actions) :is([data-slot="button"], [data-slot="input"], select) { line-height: 1.4 !important; min-block-size: var(--control-height-sm) !important; block-size: auto !important; padding-block: .3125rem !important; }
+  :is(#wconvert-admin, [data-slot="dialog-content"]) :is(.wconvert-picker__controls, .wconvert-preview-controls, .wconvert-setup-preview__tools, .wconvert-design-detail__header, .wconvert-design-detail__controls, .wconvert-picker__pagination, .wconvert-comparison-tray, .wconvert-setup-detail__actions) select { font-size: var(--text-body) !important; }
   /* A 16px phone input must not grow beyond its adjacent 32px controls. */
   :is(#wconvert-admin, [data-slot="dialog-content"]) .wconvert-picker__controls [data-slot="input"] { block-size: var(--control-height-sm) !important; line-height: 1.25 !important; }
   @media (pointer: coarse) {
     :is(#wconvert-admin, [data-slot="dialog-content"]) .wconvert-picker__controls [data-slot="input"] { block-size: 2.75rem !important; }
     :is(#wconvert-admin, [data-slot="dialog-content"]) .wconvert-picker__back[data-slot="button"] { min-block-size: 2.75rem !important; }
-    :is(#wconvert-admin, [data-slot="dialog-content"]) :is(.wconvert-picker__controls, .wconvert-preview-controls, .wconvert-setup-preview__tools, .wconvert-design-detail__header, .wconvert-design-detail__controls, .wconvert-pack-detail__toolbar, .wconvert-picker__pagination, .wconvert-comparison-tray, .wconvert-setup-detail__actions) :is([data-slot="button"], [data-slot="input"], select) { min-block-size: 2.75rem !important; }
+    :is(#wconvert-admin, [data-slot="dialog-content"]) :is(.wconvert-picker__controls, .wconvert-preview-controls, .wconvert-setup-preview__tools, .wconvert-design-detail__header, .wconvert-design-detail__controls, .wconvert-picker__pagination, .wconvert-comparison-tray, .wconvert-setup-detail__actions) :is([data-slot="button"], [data-slot="input"], select) { min-block-size: 2.75rem !important; }
   }
 }
 @media (pointer: coarse) { .wconvert-option-strip > label, .wconvert-compare-choice { min-block-size: 2.75rem; } }
@@ -6703,7 +6366,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   .wconvert-setup-inspector .wconvert-preview-frame { block-size: 20rem; }
 }
 
-.wconvert-setup-detail .wconvert-picker__body, .wconvert-design-detail__document, .wconvert-pack-detail__document { background: var(--card); }
+.wconvert-setup-detail .wconvert-picker__body, .wconvert-design-detail__document { background: var(--card); }
 .wconvert-design-detail__document { padding: 0; }
 /* As in the setup preview: the preview column fills the body and the design scrolls inside its frame. */
 .wconvert-design-detail__preview { display: flex; flex-direction: column; min-inline-size: 0; }
@@ -6717,11 +6380,6 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   .wconvert-design-detail__document .wconvert-preview-frame { flex: none; block-size: 24rem; }
 }
 @media (max-width: 639px) { .wconvert-design-detail__document .wconvert-preview-frame { block-size: 20rem; } }
-.wconvert-pack-detail__document .wconvert-pack-detail__inspection { flex: none; }
-.wconvert-pack-detail__document .wconvert-preview-frame { flex: none; min-block-size: 0; block-size: 24rem; }
-.wconvert-pack-detail__document .wconvert-pack-detail__browse { overflow: visible; }
-.wconvert-pack-detail__document .wconvert-pack-detail__browse > .wconvert-gallery { padding-inline: 0; }
-.wconvert-pack-detail__information { margin-block-start: 1rem; padding-block-start: 1rem; border-block-start: 1px solid var(--border); }
 
 
 /* A `Button` under `DialogClose asChild` keeps its own slot, so an icon close is named by its size. */

@@ -619,7 +619,7 @@ describe('the builder shell', () => {
   /** D5: the empty stage around the design is the Look's, and a screen row leaves it. */
   it('opens the Look from the empty stage and leaves it for a screen', async () => {
     await open();
-    fireEvent.click(document.querySelector('.wconvert-canvas__stage')!);
+    fireEvent.click(document.querySelector('.wconvert-canvas .wconvert-stage__page')!);
     expect(screen.getByRole('region', { name: 'Look' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /^Look/ })).toHaveAttribute('aria-current', 'true');
     await userEvent.click(within(screen.getByRole('navigation', { name: 'Campaign' })).getAllByRole('button', { name: /First screen/ })[0]);
@@ -1444,7 +1444,7 @@ describe('whole-draft Undo and Redo', () => {
 
     expect(screen.getByText(/moves the page down/)).toBeVisible();
     expect(screen.getByText(/Bar at the page edge · Top/)).toBeInTheDocument();
-    expect(document.querySelector('.wconvert-site')?.getAttribute('data-placement')).toBe('block_start');
+    expect(document.querySelector('.wconvert-canvas .wconvert-stage')?.getAttribute('data-placement')).toBe('block_start');
     expect(screen.getByRole('button', { name: /^Undo/ })).toBeEnabled();
 
     await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));

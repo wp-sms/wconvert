@@ -48,10 +48,8 @@
 #wconvert-admin .wconvert-campaign-results span + span { margin-block-start:2px; }
 #wconvert-admin .wconvert-campaign-table .wconvert-campaign-row-actions { display:flex; justify-content:flex-end; align-items:center; gap:4px; inline-size:auto; white-space:normal; }
 #wconvert-admin .wconvert-campaign-table .wconvert-table__actions-row { flex-wrap:wrap; min-inline-size:0; }
-.wconvert-campaign-thumbnail { inline-size:94px; block-size:68px; flex:none; overflow:hidden; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); }
+.wconvert-campaign-thumbnail { inline-size:84px; block-size:63px; flex:none; overflow:hidden; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); }
 #wconvert-admin .wconvert-preview-button { display:block; border:0; padding:0; border-radius:var(--radius); background:transparent; cursor:pointer; flex:none; }
-.wconvert-design-frame { display:grid; grid-template-columns:minmax(0,1fr); grid-template-rows:minmax(0,1fr); place-items:center; position:relative; inline-size:100%; block-size:100%; overflow:hidden; }
-.wconvert-design-anchor { position:relative; transform:scale(.1); transform-origin:center; pointer-events:none; }
 .wconvert-preview-placeholder { inline-size:100%; block-size:100%; display:grid; place-items:center; color:var(--muted-foreground); background:var(--surface); }
 .wconvert-preview-placeholder svg { inline-size:18px; block-size:18px; }
 /* The family toggle is the one collapsible's chevron (shell/Disclosure): trailing, 16px, turned when open. */
@@ -149,7 +147,7 @@
 }
 @media(max-width:600px) {
   #wconvert-admin :is(.wconvert-campaign-filterbar,.wconvert-campaign-toolbar,.wconvert-campaign-footer,.wconvert-campaign-table tr,.wconvert-campaign-tray,.wconvert-campaign-group-result:not(:empty)) { padding-inline:18px; }
-  #wconvert-admin .wconvert-campaign-thumbnail { inline-size:70px; block-size:54px; }
+  #wconvert-admin .wconvert-campaign-thumbnail { inline-size:72px; block-size:54px; }
 }
 /* The campaign's name heads its ⋯ menu on one line (ADR 0139). */
 .wconvert-campaign-menu .wconvert-option-menu__heading > span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }

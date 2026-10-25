@@ -116,7 +116,8 @@ failed. A reader that outgrows its 1 MiB index budget keeps the pages that fit
 **9. Free meets a Pro design only as a locked image card**, inside the picker,
 for someone who could install Pro (`ProHints::shown()`): a server thumbnail
 loaded with `referrerpolicy="no-referrer"`, the plan's name and a link to the
-design's page on wconvert.io. No Apply, no disabled control, no Pro JSON, no
+design's page on wconvert.io. *(Amended by [ADR 0170](0170-every-design-is-drawn-on-one-stage.md): the thumbnail is drawn
+on the stage a local render stands on, offered by width at 600w/1200w.)* No Apply, no disabled control, no Pro JSON, no
 "upgrade". Free sorts what it can use first. This **supersedes 0116 §1 and
 0147 rule 3 for designs only**. **Amended 22 October 2026:** hosted collection
 browsing also shows every published member, before installation and across

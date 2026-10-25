@@ -354,7 +354,7 @@ export function ReadinessDialog({
                 )}
                 <section className="wconvert-launch-review__section wconvert-launch-review__what">
                   {hasDesign
-                    ? <div className="wconvert-campaign-thumbnail"><Suspense fallback={<div className="wconvert-preview-placeholder" />}><CampaignDesign template={template} /></Suspense></div>
+                    ? <div className="wconvert-campaign-thumbnail"><Suspense fallback={<div className="wconvert-preview-placeholder" />}><CampaignDesign template={template} displayType={displayType} /></Suspense></div>
                     : <p>{__('No design selected yet.', 'wconvert')} <Button type="button" variant="link" onClick={() => jump(onGoToDesign)}>{__('Choose design', 'wconvert')}</Button></p>}
                   {/* What counts as success, said where publishing is decided, never folded away. */}
                   {outcome && goal.status === 'ready' && goal.data && (

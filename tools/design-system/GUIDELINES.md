@@ -348,6 +348,15 @@ toggle at the end — and it opens on the whole design on desktop and the width
 on a phone (ADR 0137). Dialog headers align to the start
 on every viewport; close controls have a 32px target (44px for coarse pointers).
 
+**Every design is drawn on one stage** (ADR 0170): `stage/DesignStage` at its
+card, thumb, inspect or canvas size. The design stands in its format's slot on a
+faint ghost page — a popup centred over a dim, a slide-in in the end corner, an
+inline design on a plate, a bar across the top, a fullscreen across the page —
+scaled to fill the slot and never past 1.25 (1 on the canvas). Mobile is a
+360 × 720 phone everywhere. A design on this site is drawn live through
+`Preview`; one only the catalogue has is its picture, in the same slot. Never
+write another scale-to-fit: a new surface picks a stage size.
+
 Creation cards open inspection before the draft action, except the one **Start
 here** card drawn above a list of more than three setups, which offers Use this
 setup directly (ADR 0132). A library toolbar is two rows: search, sort and a ⋯

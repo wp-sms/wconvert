@@ -243,7 +243,7 @@ export function TemplateDesignDetail({
           {backLabel}
         </Button>}>
             {converted && design && <Button type="button" variant="outline" disabled={busy} onClick={() => setExplaining(true)}>{__('What changes', 'wconvert')}</Button>}
-            {explaining && design && choice && <CaptureChangeDialog open onOpenChange={setExplaining} before={design} target={{ capture: choice }} convert={explain} mode="preview" />}
+            {explaining && design && choice && <CaptureChangeDialog open onOpenChange={setExplaining} before={design} displayType={entry.display_type} target={{ capture: choice }} convert={explain} mode="preview" />}
             <Button disabled={busy} aria-disabled={cannotApply} aria-describedby={describedBy}
               onClick={cannotApply || busy ? undefined : () => prepares ? onChoose(entry.id, { tree: template.tree, tokens: template.tokens }) : onChoose(entry.id)}>
               {busy ? __('Applying design…', 'wconvert')
