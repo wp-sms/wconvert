@@ -5935,6 +5935,11 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-option-strip > label:has(input:checked) { color: var(--primary-foreground); background: var(--action); border-color: var(--action); }
 .wconvert-option-strip > label:has(input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
 .wconvert-option-strip > label:has(input:disabled) { opacity: .5; cursor: default; }
+/* The chip's own fill says which is chosen, so the radio is kept for the keyboard and hidden. */
+:is(#wconvert-admin, [data-slot="dialog-content"]) .wconvert-option-strip > label > input {
+  position: absolute; appearance: none; inline-size: 1px; block-size: 1px; min-block-size: 0; margin: 0; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%);
+}
+:is(#wconvert-admin, [data-slot="dialog-content"]) .wconvert-option-strip > label > input::before { content: none; }
 /*
  * A one-of-N strip that scrolls INSIDE itself on a phone rather than wrapping
  * (GUIDELINES §16, amended). Leads' purpose strip left "Enquiries" a line of
@@ -5966,6 +5971,8 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 
 /* Template browsing layers share one header, scroll body and action footer. */
 .wconvert-picker__header { padding-inline: 1.25rem 3.25rem; text-align: start; }
+/* The title's line is the close button's 2rem, so the two share a centre line. */
+@layer utilities { :is(.wconvert-picker__header, .wconvert-picker__identity) > [data-slot="dialog-title"] { line-height: 2rem !important; } }
 .wconvert-picker__body { flex: 1; min-block-size: 0; min-inline-size: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; padding: 1.25rem; }
 .wconvert-picker__footer { display: flex; flex: none; flex-wrap: wrap; align-items: center; gap: .75rem; padding: .875rem 1.25rem; border-block-start: 1px solid var(--border); background: var(--card); }
 .wconvert-picker__footer > span { flex: 1; }

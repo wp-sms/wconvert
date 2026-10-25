@@ -4,7 +4,7 @@ import { Button } from '../components/ui/button';
 import { OptionStrip } from '../shell/OptionStrip';
 import { DesignStage } from '../stage/DesignStage';
 import { formatCount, siteLocale } from '../lib/format';
-import { lastDay } from '../discovery/model';
+import { daysBetween, lastDay } from '../discovery/model';
 import type { Template } from '@renderer/types';
 import type { GalleryCard, ShelfCollection } from './model';
 
@@ -13,8 +13,10 @@ import type { GalleryCard, ShelfCollection } from './model';
  * its members; pressing it again shows every template. Each tile can be
  * hidden, and the whole shelf can be.
  */
-export function CollectionShelf({ shelf, cards, trees, active, hidden, onOpen, onHide, onRestore, onHideAll, onNear, disabled = false }: {
+export function CollectionShelf({ shelf, cards, trees, today, active, hidden, onOpen, onHide, onRestore, onHideAll, onNear, disabled = false }: {
   shelf: readonly ShelfCollection[];
+  /** The site's day, `YYYY-MM-DD`: a seasonal tile counts the days to its event from it. */
+  today: string;
   cards: readonly GalleryCard[];
   /** Live trees for the covers, where they have arrived. */
   trees: ReadonlyMap<string, Template | undefined>;
@@ -56,7 +58,7 @@ export function CollectionShelf({ shelf, cards, trees, active, hidden, onOpen, o
               <div className="wconvert-shelf__text">
                 <strong>{collection.name}</strong>
                 <span>{sprintf(/* translators: %s: how many templates a collection has here. */ _n('%s template', '%s templates', members.size, 'wconvert'), formatCount(members.size))}</span>
-                {collection.event && <span data-season>{sprintf(/* translators: %s: the last day of a seasonal collection, e.g. “31 Oct”. */ __('Until %s', 'wconvert'), dayAndMonth(lastDay(collection.event.end_exclusive)))}</span>}
+                {collection.event && <span data-season>{seasonWords(collection.event, today)}</span>}
               </div>
               <button type="button" className="wconvert-shelf__hide" disabled={disabled} onClick={() => onHide(collection.id)}
                 aria-label={sprintf(/* translators: %s: a collection's name. */ __('Hide %s', 'wconvert'), collection.name)}>
@@ -69,6 +71,24 @@ export function CollectionShelf({ shelf, cards, trees, active, hidden, onOpen, o
     </section>
   );
 }
+
+/**
+ * When a seasonal collection is for: the days left while its event is near —
+ * "In 6 days", "Tomorrow" — and otherwise the day it is useful until.
+ */
+function seasonWords(event: { start: string; end_exclusive: string }, today: string): string {
+  const days = today === '' ? 0 : daysBetween(today, event.start);
+  if (days === 1) return __('Tomorrow', 'wconvert');
+  if (days > 1 && days <= SOON) {
+    return sprintf(/* translators: %s: how many days until a seasonal event, e.g. “6”. */ _n('In %s day', 'In %s days', days, 'wconvert'), formatCount(days));
+  }
+  const last = lastDay(event.end_exclusive);
+  if (last === today) return __('Ends today', 'wconvert');
+  return sprintf(/* translators: %s: the last day of a seasonal collection, e.g. “31 Oct”. */ __('Until %s', 'wconvert'), dayAndMonth(last));
+}
+
+/** How near an event is counted in days rather than named by its date: two weeks. */
+const SOON = 14;
 
 /** A day as the site's language says it, without the year: "31 Oct". */
 function dayAndMonth(day: string): string {

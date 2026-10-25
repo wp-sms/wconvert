@@ -344,7 +344,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
     {starting !== null && <RegionBody><p role="status" className="m-0 text-note">{__('Creating your draft and opening the editor…', 'wconvert')}</p></RegionBody>}
     <div className="wconvert-gallery-body">
       {!pinned && picker.data && (shelf.length > 0 || picker.data.preferences.hidden.length > 0) && (showShelf
-        ? <CollectionShelf shelf={shelf} cards={cards} trees={trees} active={collectionId}
+        ? <CollectionShelf shelf={shelf} cards={cards} trees={trees} today={today} active={collectionId}
           hidden={picker.data.preferences.hidden.length} disabled={working || picker.saving} onNear={previews.onNear}
           onOpen={id => { setCollectionId(id); setStage(id ? preferredStage(shelf.find(item => item.collection.id === id)!.collection, today, cards.map(card => ({ id: card.key })), home) : 'any'); setPage(0); }}
           onHide={id => { prefer({ hidden: [...picker.data!.preferences.hidden, id] }); if (id === collectionId) setCollectionId(null); }}
