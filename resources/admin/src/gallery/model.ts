@@ -131,6 +131,9 @@ const FACETS: Record<GalleryFacet, { readonly any: string; readonly selected: (f
   style: { any: '', selected: filters => filters.tags?.style },
 };
 
+/** A Pro card: locked, or blocked by a missing plugin while its plan is paid. */
+const isPro = (card: GalleryCard): boolean => card.availability === 'locked' || (card.availability === 'unavailable' && card.tier !== 'free');
+
 function passes(card: GalleryCard, filters: GalleryFilters, skip?: GalleryFacet): boolean {
   const { query, format, asks, business, plan, saved, collection, stage, tags, shape, hasImage } = filters;
   const words = query?.trim().toLowerCase();
@@ -139,7 +142,7 @@ function passes(card: GalleryCard, filters: GalleryFilters, skip?: GalleryFacet)
   if (skip !== 'format' && format && format !== 'all' && card.displayType !== format) return false;
   if (skip !== 'asks' && asks && asks !== 'any' && !(asks === 'none' ? card.captures.length === 0 : card.captures.includes(asks))) return false;
   if (skip !== 'business' && business && business !== 'any' && !card.business_types.some(type => type.id === business)) return false;
-  if (skip !== 'plan' && plan && plan !== 'all' && (plan === 'pro') !== (card.availability === 'locked')) return false;
+  if (skip !== 'plan' && plan && plan !== 'all' && (plan === 'pro') !== isPro(card)) return false;
   if (saved && !saved.has(card.key)) return false;
   if (collection) {
     const at = collection.members.get(card.key);
@@ -166,7 +169,7 @@ const valuesOf: Record<GalleryFacet, (card: GalleryCard, filters: GalleryFilters
   format: card => [card.displayType],
   asks: card => card.captures.length === 0 ? ['none'] : card.captures.filter(field => field === 'email' || field === 'phone'),
   business: card => card.business_types.map(type => type.id),
-  plan: card => [card.availability === 'locked' ? 'pro' : 'free'],
+  plan: card => [isPro(card) ? 'pro' : 'free'],
   stage: (card, filters) => {
     const at = filters.collection?.members.get(card.key);
 

@@ -116,9 +116,10 @@ campaigns. Open inspection does not jump away at midnight.
 Saved design identities, hidden collections, event opt-outs, preferred businesses, shelf visibility and market
 preferences are authenticated user meta, scoped to the current blog. *Amended
 by [ADR 0171](0171-one-template-gallery.md): only saved, hidden and shelf visibility remain; the document
-sends only those keys.* Markets
+sends only those keys.* ~~Markets
 are chosen by country name through the existing searchable country picker and
-read-only country vocabulary endpoint; this never writes the phone default. A favorite
+read-only country vocabulary endpoint; this never writes the phone default.~~
+*(Gone with markets, [ADR 0171](0171-one-template-gallery.md).)* A favorite
 survives installed pack version changes through `pack:<pack-id>:<logical-id>`;
 immutable template IDs still include the package digest for source baselines.
 Removed designs remain named Saved entries that can be removed by the user.

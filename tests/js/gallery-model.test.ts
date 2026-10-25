@@ -117,6 +117,8 @@ describe('filtering', () => {
     expect(optionCounts(cards, { format: 'slide_in', asks: 'none' }, 'asks')).toEqual({ any: 1, phone: 1, none: 0 });
     expect(optionCounts(cards, NONE, 'format')).toEqual({ all: 5, popup: 3, slide_in: 1, inline: 1 });
     expect(optionCounts(cards, NONE, 'plan')).toEqual({ all: 5, free: 4, pro: 1 });
+    const blocked = mergeSetups(gallery([], [online('woo', { state: 'unavailable', tier: 'pro' })]), free);
+    expect(keys(filterCards(blocked, { plan: 'pro' }))).toEqual(['woo']);
     expect(optionCounts(cards, { tags: { industry: 'food' } }, 'industry')).toEqual({ '': 5, retail: 1, food: 0 });
   });
 });

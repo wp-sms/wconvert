@@ -8,6 +8,7 @@ use WConvert\Playbook\FlagshipCollection;
 use WConvert\Playbook\Playbook;
 use WConvert\Playbook\PlaybookLibrary;
 use WConvert\Support\ProPresence;
+use WConvert\Support\Tier;
 use WConvert\Template\Catalog\TemplateCatalog;
 
 defined('ABSPATH') || exit;
@@ -75,7 +76,9 @@ final class GoalGallery
         $rows = [];
         foreach ($status['setups'] as $setup) {
             if ($setup['goal'] !== $goal->value || $setup['state'] === 'ready') continue;
-            if ($setup['state'] === 'locked' && !$hints) continue;
+            // A paid setup is a hint on a free site whatever stops it, a missing plugin included.
+            $paid = $setup['state'] === 'locked' || ($this->pro->installedTier() === Tier::Free && Tier::tryFrom((string) $setup['tier']) !== Tier::Free);
+            if ($paid && !$hints) continue;
             $design = $designs[$setup['design']['id']] ?? null;
             if ($design === null) continue;
             $rows[] = [

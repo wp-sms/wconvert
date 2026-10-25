@@ -116,6 +116,22 @@ final class GoalGalleryTest extends TestCase
         self::assertSame(['online-reading'], array_column($this->gallery(catalog: $catalog)['online'], 'id'));
     }
 
+    public function testAPaidSetupAMissingPluginBlocksIsStillAHintOnFree(): void
+    {
+        $pro = require WCONVERT_DIR . 'pro/modules/display-types/playbooks/accessible-visit-note.php';
+        $store = $this->service->design('pro/modules/display-types/templates/availability-note.json', 'store-note', 1, [], ['prerequisites' => ['woocommerce']]);
+        $this->service->setup('store-only', $store, $pro, 1, 'pro');
+        $this->service->publish();
+        $this->options->set(TemplateCatalog::CONSENT_OPTION, 'yes');
+        $catalog = $this->catalog();
+        $catalog->refresh();
+        $online = array_column($this->gallery(catalog: $catalog)['online'], null, 'id');
+        self::assertSame('unavailable', $online['store-only']['state'], 'Shown with its reason where hints are wanted');
+
+        $GLOBALS['wconvertTestCapabilities'] = [];
+        self::assertArrayNotHasKey('store-only', array_column($this->gallery(catalog: $catalog)['online'], null, 'id'));
+    }
+
     public function testAnInstalledSetupIsDrawnAsTheLocalOneItBecame(): void
     {
         $this->options->set(TemplateCatalog::CONSENT_OPTION, 'yes');
