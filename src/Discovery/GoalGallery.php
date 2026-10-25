@@ -66,18 +66,17 @@ final class GoalGallery
      * setup it became, and a row this site ships with is the bundled one.
      *
      * @param array<string, mixed> $status
-     * @param list<mixed> $local The ids of this site's own setups for the Goal.
+     * @param list<string> $local The ids of this site's own setups for the Goal.
      * @return list<array<string, mixed>>
      */
     private function online(Goal $goal, array $status, array $local): array
     {
         if ($status['consent'] !== 'yes') return [];
-        $local = array_flip(array_map('strval', $local));
         $designs = array_column($status['designs'], null, 'id');
         $hints = ProHints::shown($this->pro);
         $rows = [];
         foreach ($status['setups'] as $setup) {
-            if ($setup['goal'] !== $goal->value || $setup['state'] === 'ready' || isset($local[$setup['id']])) continue;
+            if ($setup['goal'] !== $goal->value || $setup['state'] === 'ready' || in_array($setup['id'], $local, true)) continue;
             // A paid setup is a hint on a free site whatever stops it, a missing plugin included.
             $paid = $setup['state'] === 'locked' || ($this->pro->installedTier() === Tier::Free && Tier::tryFrom((string) $setup['tier']) !== Tier::Free);
             if ($paid && !$hints) continue;

@@ -22,11 +22,11 @@ list (`src/Discovery/GoalGallery.php`):
   sent only where `ProHints::shown()`, exactly as the design index does. A row
   already installed is not sent, and nor is one whose id is a setup this site
   ships with: the bundled setup is that card, drawn live (two cards under one
-  key left the bundled one without its tree). One installed at an older revision names the
-  Playbook it left (`installed_playbook_id`) so the gallery shows one card,
-  offering the newer revision only when it can be installed. Nothing is sent
-  until consent is `yes`. Pro is one plan (ADR 0146), so nothing is locked on a
-  Pro site and the gate is `ProHints::shown()` alone.
+  key left the bundled one without its tree). One installed at an older
+  revision names the Playbook it left (`installed_playbook_id`) so the gallery
+  shows one card, offering the newer revision only when it can be installed.
+  Nothing is sent until consent is `yes`. Pro is one plan (ADR 0146), so
+  nothing is locked on a Pro site and the gate is `ProHints::shown()` alone.
 - `library`: `{configured, consent}`, so the gallery can ask once.
 
 Online setups carry `business_types`: the publisher emits a setup's Playbook

@@ -3,9 +3,10 @@ import { X } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { OptionStrip } from '../shell/OptionStrip';
 import { DesignStage } from '../stage/DesignStage';
-import { formatCount, siteLocale } from '../lib/format';
-import { daysBetween, lastDay } from '../discovery/model';
+import { daysBetween, formatCount, siteLocale } from '../lib/format';
+import { lastDay } from '../discovery/model';
 import type { Template } from '@renderer/types';
+import type { Collection } from '../discovery/api';
 import type { GalleryCard, ShelfCollection } from './model';
 
 /**
@@ -72,23 +73,23 @@ export function CollectionShelf({ shelf, cards, trees, today, active, hidden, on
   );
 }
 
+/** How near an event is counted in days rather than named by its date: two weeks. */
+const COUNTDOWN_DAYS = 14;
+
 /**
  * When a seasonal collection is for: the days left while its event is near —
  * "In 6 days", "Tomorrow" — and otherwise the day it is useful until.
  */
-function seasonWords(event: { start: string; end_exclusive: string }, today: string): string {
+function seasonWords(event: NonNullable<Collection['event']>, today: string): string {
   const days = today === '' ? 0 : daysBetween(today, event.start);
   if (days === 1) return __('Tomorrow', 'wconvert');
-  if (days > 1 && days <= SOON) {
+  if (days > 1 && days <= COUNTDOWN_DAYS) {
     return sprintf(/* translators: %s: how many days until a seasonal event, e.g. “6”. */ _n('In %s day', 'In %s days', days, 'wconvert'), formatCount(days));
   }
   const last = lastDay(event.end_exclusive);
   if (last === today) return __('Ends today', 'wconvert');
   return sprintf(/* translators: %s: the last day of a seasonal collection, e.g. “31 Oct”. */ __('Until %s', 'wconvert'), dayAndMonth(last));
 }
-
-/** How near an event is counted in days rather than named by its date: two weeks. */
-const SOON = 14;
 
 /** A day as the site's language says it, without the year: "31 Oct". */
 function dayAndMonth(day: string): string {

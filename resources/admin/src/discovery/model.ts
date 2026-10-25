@@ -18,11 +18,6 @@ export function lastDay(endExclusive: string): string {
   return [day.getUTCFullYear(), String(day.getUTCMonth() + 1).padStart(2, '0'), String(day.getUTCDate()).padStart(2, '0')].join('-');
 }
 
-/** Whole days from one `YYYY-MM-DD` to another; negative when `to` is earlier. */
-export function daysBetween(from: string, to: string): number {
-  return Math.round((Date.parse(`${to}T12:00:00Z`) - Date.parse(`${from}T12:00:00Z`)) / 86_400_000);
-}
-
 /**
  * The site's time zone as words — "Central European Time", not
  * `Europe/Berlin`. A WordPress fixed offset (`+03:30`) reads as "GMT+03:30".

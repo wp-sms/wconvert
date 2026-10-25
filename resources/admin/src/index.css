@@ -1927,7 +1927,8 @@ body:has(#wconvert-admin) #wpbody-content {
 
 .wconvert-picker__option-count { font-size: var(--text-note); opacity: 0.65; font-variant-numeric: tabular-nums; }
 
-.wconvert-creation__steps { padding: 1.5rem 1.5rem 0; }
+/* Step 1's steps sit on the region; step 2's head places its own. */
+.wconvert-creation > .wconvert-creation__steps { padding: 1.5rem 1.5rem 0; }
 .wconvert-creation__steps ol { display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem; margin: 0; padding: 0; list-style: none; }
 .wconvert-creation__steps li { display: flex; align-items: center; gap: 0.5rem; color: var(--muted-foreground); font-size: var(--text-note); }
 .wconvert-creation__steps li[aria-current='step'] { color: var(--action); font-weight: 600; }
@@ -1946,7 +1947,7 @@ body:has(#wconvert-admin) #wpbody-content {
 .wconvert-goal-card--locked .wconvert-goal-card__icon { color: var(--muted-foreground); }
 .wconvert-creation .wconvert-picker__search { min-inline-size: 0; }
 @media (max-width: 640px) {
-.wconvert-creation__steps { padding: 1rem 1rem 0; }
+.wconvert-creation > .wconvert-creation__steps { padding: 1rem 1rem 0; }
 .wconvert-creation__steps ol { gap: 1rem; }
 .wconvert-creation select.wconvert-picker__select { min-inline-size: 0; max-inline-size: 100%; }
 }
@@ -5971,8 +5972,16 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 
 /* Template browsing layers share one header, scroll body and action footer. */
 .wconvert-picker__header { padding-inline: 1.25rem 3.25rem; text-align: start; }
-/* The title's line is the close button's 2rem, so the two share a centre line. */
-@layer utilities { :is(.wconvert-picker__header, .wconvert-picker__identity) > [data-slot="dialog-title"] { line-height: 2rem !important; } }
+/* The title's line is the close button's 2rem, so the two share a centre line;
+ * in the utility layer because DialogTitle's own `leading-none` is an important utility. */
+@layer utilities {
+  :is(.wconvert-picker__header, .wconvert-picker__identity) > [data-slot="dialog-title"] { line-height: 2rem !important; }
+  /* A touch close button is 2.75rem from .5rem, so the header and title follow it. */
+  @media (pointer: coarse) {
+    .wconvert-picker__header { padding-block: .5rem !important; }
+    :is(.wconvert-picker__header, .wconvert-picker__identity) > [data-slot="dialog-title"] { line-height: 2.75rem !important; }
+  }
+}
 .wconvert-picker__body { flex: 1; min-block-size: 0; min-inline-size: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; padding: 1.25rem; }
 .wconvert-picker__footer { display: flex; flex: none; flex-wrap: wrap; align-items: center; gap: .75rem; padding: .875rem 1.25rem; border-block-start: 1px solid var(--border); background: var(--card); }
 .wconvert-picker__footer > span { flex: 1; }
@@ -5996,10 +6005,8 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-setup-optional { margin: 0; color: var(--muted-foreground); font-size: var(--text-note); }
 .wconvert-setup-optional > strong { font-weight: 500; color: var(--foreground); }
 
-/* A zero basis, so the design scrolls inside the frame rather than growing the row. */
-
 @media (max-width: 639px) {
-  .wconvert-picker__header { padding-inline: 1rem 3rem; }
+  .wconvert-picker__header { padding-inline: 1rem 3.5rem; }
   .wconvert-picker__body { padding: 1rem; }
   .wconvert-picker__footer { padding: .75rem 1rem; }
   .wconvert-picker__footer > span { display: none; }

@@ -51,6 +51,11 @@ function wallOf(value: string, timezone: string | undefined): Wall | null {
 /** A wall day and time as a UTC instant, so `timeZone: 'UTC'` prints it unshifted. */
 const instantOf = ({ day, time }: Wall) => new Date(`${day}T${time ?? '12:00'}:00Z`);
 
+/** Whole days from one `YYYY-MM-DD` to another; negative when `to` is earlier. */
+export function daysBetween(from: string, to: string): number {
+  return Math.round((Date.parse(`${to}T12:00:00Z`) - Date.parse(`${from}T12:00:00Z`)) / 86_400_000);
+}
+
 function shiftDay(day: string, days: number): string {
   const value = new Date(`${day}T12:00:00Z`);
   value.setUTCDate(value.getUTCDate() + days);
