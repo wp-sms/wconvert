@@ -214,7 +214,7 @@ async function designLook() {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
   // The design's own look is the Edit tree's pinned first row (ADR 0134).
   await userEvent.click(await screen.findByRole('button', { name: /^Look/ }));
-  await screen.findByRole('button', { name: 'Browse designs and formats' });
+  await screen.findByRole('button', { name: 'Change template' });
 }
 
 /**

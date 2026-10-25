@@ -4,11 +4,11 @@ import { resolve } from 'node:path';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import type { ComponentProps } from 'react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mounted } from '../../resources/renderer/src/mount';
 import type { Template } from '../../resources/renderer/src/types';
 import type { TemplateIndexEntry, TemplateLabelsWithFacets } from '../../resources/admin/src/templates/api';
-import type { Fit } from '../../resources/admin/src/builder/Gallery';
+import type { Fit } from '../../resources/admin/src/gallery/conversion';
 
 const mounts = vi.hoisted(() => [] as Mounted[]);
 vi.mock('@renderer/mount', async (importOriginal) => {
@@ -21,7 +21,6 @@ vi.mock('@renderer/mount', async (importOriginal) => {
 });
 
 const { TemplateDesignDetail } = await import('../../resources/admin/src/builder/TemplateDesignDetail');
-const { Gallery } = await import('../../resources/admin/src/builder/Gallery');
 
 // Stable editor fixture: its nested row is intentional; library curation can change independently.
 const FIXTURE = JSON.parse(readFileSync(resolve(import.meta.dirname, '../fixtures/templates/editor-card.json'), 'utf8')) as Template;
@@ -62,11 +61,11 @@ describe('inspecting a design before replacing the draft', () => {
   it('starts a blank draft with sample content instead of carrying an empty form', async () => {
     const onPrepare = vi.fn().mockResolvedValue(TEMPLATE);
     const { onChoose } = detail({ onPrepare, hasCurrentDesign: false });
-    expect(await screen.findByRole('radio', { name: /Use the design’s sample content/ })).toBeChecked();
+    expect(await screen.findByRole('radio', { name: /Use the template’s sample content/ })).toBeChecked();
     expect(screen.getByRole('radio', { name: /Keep my words and images/ })).toBeDisabled();
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Use this design' })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Use this template' })).toBeEnabled());
     expect(onPrepare).toHaveBeenCalledExactlyOnceWith(ENTRY.id, 'sample', TEMPLATE);
-    await userEvent.click(screen.getByRole('button', { name: 'Use this design' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Use this template' }));
     expect(onChoose).toHaveBeenCalledExactlyOnceWith(ENTRY.id, TEMPLATE);
   });
 
@@ -86,11 +85,11 @@ describe('inspecting a design before replacing the draft', () => {
     const onPrepare = vi.fn().mockResolvedValue(carried);
     const { onChoose } = detail({ onPrepare });
     expect(screen.getByRole('radio', { name: /Keep my words and images/ })).toBeChecked();
-    expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByRole('button', { name: 'Use this template' })).toHaveAttribute('aria-disabled', 'true');
     await waitFor(() => expect(within(drawn()).getByText('My own invitation')).toBeInTheDocument());
     expect(onPrepare).toHaveBeenCalledExactlyOnceWith(ENTRY.id, 'keep', TEMPLATE);
     expect(onChoose).not.toHaveBeenCalled();
-    await userEvent.click(screen.getByRole('button', { name: 'Use this design' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Use this template' }));
     expect(onChoose).toHaveBeenCalledExactlyOnceWith(ENTRY.id, carried);
   });
 
@@ -117,10 +116,10 @@ describe('inspecting a design before replacing the draft', () => {
     const { onChoose } = detail({ onPrepare });
     expect(await screen.findByText(/2 pictures have no clear matching place/)).toBeVisible();
     expect(onChoose).not.toHaveBeenCalled();
-    await userEvent.click(screen.getByRole('button', { name: 'Use this design' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Use this template' }));
     expect(onChoose).toHaveBeenCalledExactlyOnceWith(ENTRY.id, { tree: TEMPLATE.tree, tokens: TEMPLATE.tokens });
-    await userEvent.click(screen.getByRole('radio', { name: /Use the design’s sample content/ }));
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'false'));
+    await userEvent.click(screen.getByRole('radio', { name: /Use the template’s sample content/ }));
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Use this template' })).toHaveAttribute('aria-disabled', 'false'));
     expect(screen.queryByText(/pictures? (has|have) no clear/)).not.toBeInTheDocument();
   });
 
@@ -129,12 +128,12 @@ describe('inspecting a design before replacing the draft', () => {
     const onPrepare = vi.fn().mockImplementation((_id, mode) => mode === 'keep'
       ? new Promise<Template>((resolve) => { resolveKeep = resolve; }) : Promise.resolve(TEMPLATE));
     const { onChoose } = detail({ onPrepare });
-    await userEvent.click(screen.getByRole('radio', { name: /Use the design’s sample content/ }));
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'false'));
+    await userEvent.click(screen.getByRole('radio', { name: /Use the template’s sample content/ }));
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Use this template' })).toHaveAttribute('aria-disabled', 'false'));
     const stale = JSON.parse(JSON.stringify(TEMPLATE).replace('Get 10% off your first order', 'Late content')) as Template;
     await act(async () => resolveKeep(stale));
     expect(within(drawn()).queryByText('Late content')).toBeNull();
-    await userEvent.click(screen.getByRole('button', { name: 'Use this design' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Use this template' }));
     expect(onChoose).toHaveBeenCalledExactlyOnceWith(ENTRY.id, TEMPLATE);
   });
 
@@ -142,13 +141,13 @@ describe('inspecting a design before replacing the draft', () => {
     const onPrepare = vi.fn().mockResolvedValueOnce(TEMPLATE)
       .mockRejectedValueOnce(new Error('Preview service is unavailable.')).mockResolvedValueOnce(TEMPLATE);
     const { onChoose } = detail({ onPrepare });
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'false'));
-    await userEvent.click(screen.getByRole('radio', { name: /Use the design’s sample content/ }));
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Use this template' })).toHaveAttribute('aria-disabled', 'false'));
+    await userEvent.click(screen.getByRole('radio', { name: /Use the template’s sample content/ }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Preview service is unavailable.');
-    expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByRole('button', { name: 'Use this template' })).toHaveAttribute('aria-disabled', 'true');
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'false'));
-    expect(screen.getByRole('radio', { name: /Use the design’s sample content/ })).toBeChecked();
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Use this template' })).toHaveAttribute('aria-disabled', 'false'));
+    expect(screen.getByRole('radio', { name: /Use the template’s sample content/ })).toBeChecked();
     expect(onPrepare.mock.calls.map((call) => call[1])).toEqual(['keep', 'sample', 'sample']);
     expect(onChoose).not.toHaveBeenCalled();
   });
@@ -157,17 +156,17 @@ describe('inspecting a design before replacing the draft', () => {
     const onPrepare = vi.fn().mockResolvedValue(TEMPLATE);
     const { onChoose } = detail({ current: true, onPrepare });
     await waitFor(() => expect(onPrepare).toHaveBeenCalled());
-    expect(screen.getByRole('button', { name: 'Current design' })).toHaveAttribute('aria-disabled', 'true');
-    await userEvent.click(screen.getByRole('radio', { name: /Use the design’s sample content/ }));
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'false'));
-    await userEvent.click(screen.getByRole('button', { name: 'Use this design' }));
+    expect(screen.getByRole('button', { name: 'Current template' })).toHaveAttribute('aria-disabled', 'true');
+    await userEvent.click(screen.getByRole('radio', { name: /Use the template’s sample content/ }));
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Use this template' })).toHaveAttribute('aria-disabled', 'false'));
+    await userEvent.click(screen.getByRole('button', { name: 'Use this template' }));
     expect(onChoose).toHaveBeenCalledExactlyOnceWith(ENTRY.id, TEMPLATE);
   });
 
   it('allows Back during preparation and never applies a response after leaving', async () => {
     let resolvePreview!: (value: Template) => void;
     const { onChoose, onBack, unmount } = detail({ onPrepare: () => new Promise((resolve) => { resolvePreview = resolve; }) });
-    await userEvent.click(screen.getByRole('button', { name: 'Back to designs' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Back to templates' }));
     expect(onBack).toHaveBeenCalledOnce();
     unmount();
     await act(async () => resolvePreview(TEMPLATE));
@@ -199,9 +198,9 @@ describe('inspecting a design before replacing the draft', () => {
     const preview = container.querySelector('.wconvert-stage__design');
     expect(preview).toHaveAttribute('inert');
     expect(preview).toHaveAttribute('aria-hidden', 'true');
-    const apply = screen.getByRole('button', { name: 'Use this design' });
-    expect(apply).toHaveAccessibleDescription(/^Replaces this draft’s design\. You can undo\./);
-    expect(screen.getByText('Replaces this draft’s design. You can undo.').closest('footer')).not.toBeNull();
+    const apply = screen.getByRole('button', { name: 'Use this template' });
+    expect(apply).toHaveAccessibleDescription(/^Replaces this draft’s template\. You can undo\./);
+    expect(screen.getByText('Replaces this draft’s template. You can undo.').closest('footer')).not.toBeNull();
     await user.click(apply);
     expect(onChoose).toHaveBeenCalledExactlyOnceWith('centred-card');
   });
@@ -210,7 +209,7 @@ describe('inspecting a design before replacing the draft', () => {
   it('says field mappings are removed only when this design would remove some', () => {
     const removed = /Field mappings for missing fields are removed\./;
     const { unmount } = detail({ fieldMappings: { primary: { list: { 'field:interest': 'INTEREST' } } } });
-    expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAccessibleDescription(removed);
+    expect(screen.getByRole('button', { name: 'Use this template' })).toHaveAccessibleDescription(removed);
     unmount();
 
     detail({ fieldMappings: { primary: { list: {} }, gone: { list: {} } } });
@@ -219,7 +218,7 @@ describe('inspecting a design before replacing the draft', () => {
 
   it('returns to the gallery without choosing a design', async () => {
     const { onChoose, onBack } = detail();
-    await userEvent.click(screen.getByRole('button', { name: 'Back to designs' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Back to templates' }));
     expect(onBack).toHaveBeenCalledOnce();
     expect(onChoose).not.toHaveBeenCalled();
   });
@@ -227,12 +226,12 @@ describe('inspecting a design before replacing the draft', () => {
   it('offers only the screens present in a single-screen design', () => {
     detail({ template: { ...TEMPLATE, tree: treeFixture({ ...TEMPLATE.tree, steps: [TEMPLATE.tree.steps[0]] }) } });
     expect(screen.queryByRole('group', { name: 'Preview screen' })).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'false');
+    expect(screen.getByRole('button', { name: 'Use this template' })).toHaveAttribute('aria-disabled', 'false');
   });
 
   it('lets a refused design be inspected but makes its Apply reason reachable', async () => {
     const { onChoose } = detail({ fit: { ...FIT, sibling: 'click' } });
-    const apply = screen.getByRole('button', { name: 'Use this design' });
+    const apply = screen.getByRole('button', { name: 'Use this template' });
     expect(apply).toHaveAttribute('aria-disabled', 'true');
     expect(apply).not.toBeDisabled();
     expect(apply).toHaveAccessibleDescription(/other arm of this test converts on a click/);
@@ -244,7 +243,7 @@ describe('inspecting a design before replacing the draft', () => {
 
   it('announces the changed counting behavior beside Apply without refusing an allowed switch', async () => {
     const { onChoose } = detail({ fit: { ...FIT, act: 'click' } });
-    const apply = screen.getByRole('button', { name: 'Use this design' });
+    const apply = screen.getByRole('button', { name: 'Use this template' });
     expect(apply).toHaveAccessibleDescription(/Counts submissions instead of click-throughs/);
     expect(apply).toHaveAttribute('aria-disabled', 'false');
     await userEvent.click(apply);
@@ -253,9 +252,9 @@ describe('inspecting a design before replacing the draft', () => {
 
   it('does not reapply the current design', async () => {
     const { onChoose } = detail({ current: true });
-    const apply = screen.getByRole('button', { name: 'Current design' });
+    const apply = screen.getByRole('button', { name: 'Current template' });
     expect(apply).toHaveAttribute('aria-disabled', 'true');
-    expect(apply).toHaveAccessibleDescription(/current design/);
+    expect(apply).toHaveAccessibleDescription(/current template/);
     await userEvent.click(apply);
     expect(onChoose).not.toHaveBeenCalled();
   });
@@ -263,7 +262,7 @@ describe('inspecting a design before replacing the draft', () => {
   it('prevents applying while preview data is missing and offers a local retry on failure', async () => {
     const onRetry = vi.fn();
     const { onChoose } = detail({ template: undefined, loadError: true, onRetry });
-    const apply = screen.getByRole('button', { name: 'Use this design' });
+    const apply = screen.getByRole('button', { name: 'Use this template' });
     expect(apply).toHaveAttribute('aria-disabled', 'true');
     expect(apply).toHaveAccessibleDescription(/preview could not be loaded/);
     await userEvent.click(apply);
@@ -274,7 +273,7 @@ describe('inspecting a design before replacing the draft', () => {
 
   it('prevents a second application while the draft is being prepared', async () => {
     const { onChoose } = detail({ busy: true });
-    const apply = screen.getByRole('button', { name: 'Applying design…' });
+    const apply = screen.getByRole('button', { name: 'Applying template…' });
     expect(apply).toBeDisabled();
     await userEvent.click(apply);
     expect(onChoose).not.toHaveBeenCalled();
@@ -369,44 +368,5 @@ describe('fitting the preview without changing its layout width', () => {
     expect(design(container)).toHaveStyle({ inlineSize: '328px' });
     expect(screen.queryByText('Full-width layout in a sample desktop area')).not.toBeInTheDocument();
     expect(JSON.stringify(template)).toBe(before);
-  });
-});
-
-describe('gallery inspection actions', () => {
-  it('previews installed designs including current and refused cards without choosing', async () => {
-    const onChoose = vi.fn();
-    const onPreview = vi.fn();
-    const refused = { ...ENTRY, id: 'other', name: 'Other design' };
-    const { container } = render(<Gallery entries={[ENTRY, refused]} trees={new Map([[ENTRY.id, TEMPLATE], [refused.id, TEMPLATE]])}
-      labels={LABELS} chosen={ENTRY.id} fit={{ ...FIT, sibling: 'click' }} busy={false}
-      onChoose={onChoose} onNear={vi.fn()} onPreview={onPreview} />);
-    const actions = screen.getAllByRole('button', { name: 'Preview design' });
-    await userEvent.click(actions[0]);
-    await userEvent.click(actions[1]);
-    expect(onPreview.mock.calls).toEqual([[ENTRY.id], [refused.id]]);
-    expect(onChoose).not.toHaveBeenCalled();
-    expect(container.querySelectorAll('.wconvert-gallery__preview .wconvert-stage__design[inert]')).toHaveLength(2);
-  });
-
-  it('shows a local preview retry while keeping the inspection action available', async () => {
-    const onRetry = vi.fn();
-    const onPreview = vi.fn();
-    render(<Gallery entries={[ENTRY]} trees={new Map()} labels={LABELS} chosen={undefined} fit={FIT} busy={false}
-      onChoose={vi.fn()} onNear={vi.fn()} onPreview={onPreview} failed={new Set([ENTRY.id])} onRetry={onRetry} />);
-    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Preview design' }));
-    expect(onRetry).toHaveBeenCalledExactlyOnceWith(ENTRY.id);
-    expect(onPreview).toHaveBeenCalledExactlyOnceWith(ENTRY.id);
-  });
-
-  it('preserves the external link for a locked design', () => {
-    // A paid install; a free one is shown no locked design (ADR 0116).
-    window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
-    onTestFinished(() => { delete window.wconvertAdmin; });
-    render(<Gallery entries={[{ ...ENTRY, availability: 'locked', tier: 'pro', preview_url: 'https://wconvert.io/designs/example/' }]}
-      trees={new Map()} labels={LABELS} chosen={undefined} fit={FIT} busy={false}
-      onChoose={vi.fn()} onNear={vi.fn()} onPreview={vi.fn()} />);
-    expect(screen.getByRole('link', { name: 'See this design' })).toHaveAttribute('href', 'https://wconvert.io/designs/example/');
-    expect(screen.queryByRole('button', { name: 'Preview design' })).not.toBeInTheDocument();
   });
 });

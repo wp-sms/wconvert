@@ -38,7 +38,7 @@ gallery to inspect the actual collection.
 
 A design supplies structure, appearance and sample content. A Playbook supplies
 purpose, words, display rules and setup guidance. **Keep my content** is the
-editor default; **Use this design's sample content** can copy the examples into
+editor default; **Use the template’s sample content** can copy the examples into
 a real draft. Sample words can therefore reach visitors and must be honest.
 
 Every form has one primary conversion and a terminal acknowledgement. Say

@@ -25,7 +25,7 @@ export const EXPLORE_PRO_URL = 'https://wconvert.io/pro/';
 export const PLUGINS_URL = 'plugins.php';
 
 /** Which free surface a Pro link came from, as its `utm_medium` (ADR 0147). */
-export type ProMedium = 'header' | 'settings-list' | 'format-picker' | 'rule-menu' | 'flow-map' | 'destinations' | 'campaign-menu';
+export type ProMedium = 'header' | 'settings-list' | 'rule-menu' | 'flow-map' | 'destinations' | 'campaign-menu';
 
 /**
  * A Pro link, tagged with where it was. Fixed values only: never the site, the

@@ -39,8 +39,8 @@ export interface GalleryToolbarProps {
   readonly showPlan: boolean;
   /** Hidden inside a collection that has one format. */
   readonly showFormat?: boolean;
-  /** The editor's "Show" select, at the start of the row after search. */
-  readonly leading?: ReactNode;
+  /** The editor's "Show" select, after Format. */
+  readonly scope?: ReactNode;
   /** The editor's taxonomy, layout and picture filters, inside More filters. */
   readonly extras?: ReactNode;
   readonly extrasActive?: readonly ActiveFilter[];
@@ -55,7 +55,7 @@ const ASKS_CHIP = () => ({ email: __('Asks for email', 'wconvert'), phone: __('A
  * The gallery's one toolbar row (ADR 0171): search, Format, Plan, More filters
  * and the count — then, under it, a chip for each filter More filters holds.
  */
-export function GalleryToolbar({ cards, filters, choices, onChange, shown, showPlan, showFormat = true, leading, extras, extrasActive = [], onClear, disabled = false }: GalleryToolbarProps) {
+export function GalleryToolbar({ cards, filters, choices, onChange, shown, showPlan, showFormat = true, scope, extras, extrasActive = [], onClear, disabled = false }: GalleryToolbarProps) {
   const ids = useId();
   const formats = optionCounts(cards, filters, 'format');
   const offered = DISPLAY_TYPES.filter(type => (formats[type] ?? 0) > 0 || choices.format === type);
@@ -78,7 +78,6 @@ export function GalleryToolbar({ cards, filters, choices, onChange, shown, showP
       <div className="wconvert-gallery-toolbar__row">
         <PickerSearch label={__('Search templates', 'wconvert')} placeholder={__('Search a need, e.g. a guide or quote…', 'wconvert')}
           value={choices.query} disabled={disabled} onChange={query => onChange({ query })} />
-        {leading}
         {showFormat && (offered.length > 1 || choices.format !== 'all') && (
           <label className="wconvert-gallery-toolbar__field">
             <span className="sr-only">{__('Format', 'wconvert')}</span>
@@ -90,6 +89,7 @@ export function GalleryToolbar({ cards, filters, choices, onChange, shown, showP
             </select>
           </label>
         )}
+        {scope}
         {showPlan && <div className="wconvert-gallery-toolbar__field">
           <span aria-hidden="true">{__('Plan', 'wconvert')}</span>
           <OptionStrip label={__('Plan', 'wconvert')} value={choices.plan} disabled={disabled}

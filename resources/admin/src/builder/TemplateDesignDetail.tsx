@@ -12,7 +12,7 @@ import { TryAgain } from '../shell/Region';
 import { PreviewControls, usePreviewView } from '../discovery/PreviewControls';
 import { FactList, type Fact } from '../shell/FactList';
 import { PreviewFrame } from '../discovery/PreviewFrame';
-import { actChangeOf, asConverted, conversionOf, conversionWords, convertedDesign, refusalFor, type Fit } from './Gallery';
+import { actChangeOf, asConverted, conversionOf, conversionWords, convertedDesign, refusalFor, type Fit } from '../gallery/conversion';
 import { CaptureChangeDialog } from './CaptureChangeDialog';
 import { convertCapture, type CaptureTarget } from './structure/captureConversion';
 import { whatNeedsOfferAmount } from './structure/problems';
@@ -74,7 +74,7 @@ export function designMeta(entry: TemplateIndexEntry, labels: TemplateLabelsWith
  * footer's note.
  */
 export function TemplateDesignDetail({
-  entry, template: sample, labels, current, currentDisplayType, fit, goalLabel, busy, onChoose, onPrepare, onBack, backLabel = __('Back to designs', 'wconvert'), loadError = false, onRetry, active = true, hasCurrentDesign = true, contentLock = false, fieldMappings,
+  entry, template: sample, labels, current, currentDisplayType, fit, goalLabel, busy, onChoose, onPrepare, onBack, backLabel = __('Back to templates', 'wconvert'), loadError = false, onRetry, active = true, hasCurrentDesign = true, contentLock = false, fieldMappings,
 }: TemplateDesignDetailProps) {
   const { mobile, setMobile, fitHeight, setFitHeight } = usePreviewView();
   const [disableLock, setDisableLock] = useState(false);
@@ -188,12 +188,12 @@ export function TemplateDesignDetail({
             <PreviewFrame template={template} displayType={entry.display_type} mobile={mobile} step={shown} result={result} fitHeight={fitHeight}>
               {loadError || preparationError !== undefined ? (
                 <div className="wconvert-design-detail__error">
-                  <p id={`${id}-load`} role="alert">{preparationError ?? __('This design preview could not be loaded.', 'wconvert')}</p>
+                  <p id={`${id}-load`} role="alert">{preparationError ?? __('This template’s preview could not be loaded.', 'wconvert')}</p>
                   {retryPreview && <TryAgain onClick={retryPreview} />}
                 </div>
               ) : (
                 <div className="wconvert-design-detail__loading">
-                  <p id={`${id}-load`} role="status">{__('Loading design preview…', 'wconvert')}</p>
+                  <p id={`${id}-load`} role="status">{__('Loading template preview…', 'wconvert')}</p>
                   <Skeleton aria-hidden="true" className="h-64 w-full" />
                 </div>
               )}
@@ -209,7 +209,7 @@ export function TemplateDesignDetail({
                   onChange={() => setMode('keep')} label={__('Keep my words and images', 'wconvert')}
                   hint={hasCurrentDesign ? __('Fitted into this layout; check each screen.', 'wconvert') : __('This draft has no content yet.', 'wconvert')} />
                 <CheckRow type="radio" name={`${id}-content`} value="sample" checked={mode === 'sample'}
-                  onChange={() => setMode('sample')} label={__('Use the design’s sample content', 'wconvert')}
+                  onChange={() => setMode('sample')} label={__('Use the template’s sample content', 'wconvert')}
                   hint={__('Review its offers and links before publishing.', 'wconvert')} />
               </fieldset>
             )}
@@ -218,23 +218,23 @@ export function TemplateDesignDetail({
             {mode === 'keep' && candidate?.value?.transfer !== undefined && (candidate.value.transfer.unplaced > 0 || candidate.value.transfer.unverified > 0) && (
               <div role="status" className="rounded-md border border-warning p-3 text-note">
                 {candidate.value.transfer.unplaced > 0 && <p className="m-0">{sprintf(/* translators: %d: how many of the campaign's pictures cannot be moved into the new design. */ _n('%d picture has no clear matching place in this design and will not carry over. Check the preview before applying.', '%d pictures have no clear matching place in this design and will not carry over. Check the preview before applying.', candidate.value.transfer.unplaced, 'wconvert'), candidate.value.transfer.unplaced)}</p>}
-                {candidate.value.transfer.unverified > 0 && <p className="m-0">{__('The original design is unavailable, so we cannot identify your picture changes. Re-add your pictures after applying, or keep your current design.', 'wconvert')}</p>}
+                {candidate.value.transfer.unverified > 0 && <p className="m-0">{__('The original design is unavailable, so we cannot identify your picture changes. Re-add your pictures after applying, or keep your current template.', 'wconvert')}</p>}
               </div>
             )}
             <div className="wconvert-design-detail__actions">
-              {incompatibleLock && <CheckRow className="text-note" checked={disableLock} onChange={event => setDisableLock(event.target.checked)} label={__('Turn off Content lock to use this design. The selected WordPress content will remain readable.', 'wconvert')} />}
+              {incompatibleLock && <CheckRow className="text-note" checked={disableLock} onChange={event => setDisableLock(event.target.checked)} label={__('Turn off Content lock to use this template. The selected WordPress content will remain readable.', 'wconvert')} />}
               {/* A format change is information, not the site holding something back (§14). */}
               {formatNotice && <p id={`${id}-format`} className="text-note text-muted-foreground">{formatNotice}</p>}
               {refused !== null && <p id={`${id}-refusal`} className="text-note text-warning">{refused}</p>}
               {changed !== null && <p id={`${id}-change`} className="text-note text-warning">{changed}</p>}
-              {unavailable && <p id={`${id}-unavailable`} className="text-note text-muted-foreground">{__('This design is not installed here.', 'wconvert')}</p>}
+              {unavailable && <p id={`${id}-unavailable`} className="text-note text-muted-foreground">{__('This template is not installed here.', 'wconvert')}</p>}
             </div>
           </div>
         </div>
       </PickerDialogBody>
       {/* What applying does is the note beside the button that does it. */}
       <AdminDialogFooter note={<span id={`${id}-replacement`}>
-        {isCurrent ? __('This is the draft’s current design.', 'wconvert') : __('Replaces this draft’s design. You can undo.', 'wconvert')}
+        {isCurrent ? __('This is the draft’s current template.', 'wconvert') : __('Replaces this draft’s template. You can undo.', 'wconvert')}
         {converted && goalLabel && <> {/* translators: %s: the campaign's goal. */ sprintf(__('The goal stays “%s”.', 'wconvert'), goalLabel)}</>}
         {losesMappings && <> {__('Field mappings for missing fields are removed.', 'wconvert')}</>}
       </span>} back={
@@ -246,11 +246,11 @@ export function TemplateDesignDetail({
             {explaining && design && choice && <CaptureChangeDialog open onOpenChange={setExplaining} before={design} displayType={entry.display_type} target={{ capture: choice }} convert={explain} mode="preview" />}
             <Button disabled={busy} aria-disabled={cannotApply} aria-describedby={describedBy}
               onClick={cannotApply || busy ? undefined : () => prepares ? onChoose(entry.id, { tree: template.tree, tokens: template.tokens }) : onChoose(entry.id)}>
-              {busy ? __('Applying design…', 'wconvert')
-                : isCurrent ? __('Current design', 'wconvert')
+              {busy ? __('Applying template…', 'wconvert')
+                : isCurrent ? __('Current template', 'wconvert')
                 : changesFormat
                   ? sprintf(/* translators: %s: new campaign format. */ __('Switch to %s', 'wconvert'), toFormat)
-                  : converted && choice ? conversionWords(choice, fit.outcome).action : __('Use this design', 'wconvert')}
+                  : converted && choice ? conversionWords(choice, fit.outcome).action : __('Use this template', 'wconvert')}
         </Button>
       </AdminDialogFooter>
     </section>

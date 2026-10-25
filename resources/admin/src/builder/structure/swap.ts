@@ -161,14 +161,14 @@ function whyActionIsRefused(tree: TemplateTree, action: string, act: ConvertingA
       ? {
           short: __('Needs a design that links away', 'wconvert'),
           reason: __(
-            'A design that submits has a second step for what the visitor sees afterwards, and a design that links away has none. Pick a design that links away from the Look’s Browse designs and formats.',
+            'A design that submits has a second step for what the visitor sees afterwards, and a design that links away has none. Pick a template that links away from the Look’s Change template.',
             'wconvert',
           ),
         }
       : {
           short: __('Needs a design that submits', 'wconvert'),
           reason: __(
-            'A design that links away has no second step, and one that submits needs one for what the visitor sees afterwards. Pick a design that submits from the Look’s Browse designs and formats.',
+            'A design that links away has no second step, and one that submits needs one for what the visitor sees afterwards. Pick a template that submits from the Look’s Change template.',
             'wconvert',
           ),
         };

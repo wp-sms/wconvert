@@ -57,12 +57,14 @@ runtime. It fails on `main` as of `aeef6f95`.
 1. **Free installs only.** A Pro install supplies every member (ADR 0146).
 2. **Only for people who can act on it:** the user can `install_plugins`. A
    multisite site admin, or a client given `manage_options`, sees none.
-3. **Text, never a control.** *Amended by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md) for one surface: in the design picker a Pro design may be a locked image card (a picture and a link, still never a control), under rules 1, 2 and 7.* One plain line at the end of a list: no
+3. **Text, never a control.** *Amended by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md) for one surface: in the design picker a Pro design may be a locked image card (a picture and a link, still never a control), under rules 1, 2 and 7.* *Amended again by [ADR 0171](0171-one-template-gallery.md): that card is now in the one template gallery, in creation and in the editor, and a format only Pro's cards use says so in the gallery's Format select as "Slide-in · Pro" — an option's label, not a line beside it.* One plain line at the end of a list: no
    padlock, no greyed item, nothing selectable, no modal, no badge or count,
    never blocking a task.
 4. **At most one visible at a time.** A menu's hint exists while its menu is
-   open. The format picker's sits in the design browser, a modal, so it never
-   shares a viewport with the Flow map's. Never in the dashboard, the Plugins
+   open. ~~The format picker's sits in the design browser, a modal, so it never
+   shares a viewport with the Flow map's.~~ *Corrected by [ADR 0171](0171-one-template-gallery.md): the format
+   picker's line is gone; the gallery's "· Pro" option labels and locked cards
+   say it, inside the modal.* Never in the dashboard, the Plugins
    screen, the block editor, admin notices, the front end or the inspector.
 5. **Bundled copy, no remote call.** Links carry fixed UTMs only (G7).
 6. **Names come from data, not copy.** Rules from the `locked` members the
@@ -73,8 +75,9 @@ runtime. It fails on `main` as of `aeef6f95`.
    the list stays the source of names, but the Destinations hint says them as
    one general phrase — "more integrations, like Mailchimp, Brevo and
    webhooks": the first two services, then "webhooks" where Pro has the
-   webhook — because every label no longer fits a line*; formats from `DISPLAY_TYPES`
-   minus the free ones; the product from `tierProductName('pro')`; joined by
+   webhook — because every label no longer fits a line*; ~~formats from `DISPLAY_TYPES`
+   minus the free ones~~ *formats from the gallery's own cards: one whose every
+   card is locked is labelled "· Pro" ([ADR 0171](0171-one-template-gallery.md))*; the product from `tierProductName('pro')`; joined by
    `Intl.ListFormat` in the admin's locale. A feature that becomes free drops
    out without a copy edit. Two placements name one feature with no list to
    read it from — the Flow map's "Quizzes that branch on answers" and the ⋯
@@ -98,7 +101,7 @@ new tab, says so to a screen reader, and its ↗ mirrors right to left.
 | Surface | Where | `utm_medium` |
 |---|---|---|
 | Add rule menu | the list menu's `footer`, outside the arrow-key list | `rule-menu` |
-| Format picker | under the design browser's Format select | `format-picker` |
+| ~~Format picker~~ | ~~under the design browser's Format select~~ — gone; see rule 3 ([ADR 0171](0171-one-template-gallery.md)) | ~~`format-picker`~~ |
 | Flow map | after "Every visitor sees these screens in order." | `flow-map` |
 | Destinations | below the provider tiles | `destinations` |
 | Campaign ⋯ menu | the last row, an `OptionItem` link with no feature icon | `campaign-menu` |

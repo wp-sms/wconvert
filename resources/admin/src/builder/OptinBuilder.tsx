@@ -40,7 +40,7 @@ import { PageAction } from '../shell/PageActions';
 import { PageError, Region, RegionErrorState } from '../shell/Region';
 import { LOADING, failed, messageOf, read, ready, type Loadable } from '../shell/loadable';
 import { TemplatePickerDialog } from './TemplatePickerDialog';
-import { useTemplateTrees } from './TemplatePicker';
+import { useTemplateTrees } from './useTemplateTrees';
 import { DestinationsEditor } from './DestinationsEditor';
 import { CaptureModeChoice } from './CaptureModeChoice';
 import { ReadinessDialog } from './ReadinessDialog';
@@ -1063,7 +1063,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
       <div className="wconvert-workspace__body" inert={busy}>
         <TabsContent value="edit" forceMount={journeyVisited || undefined} className="wconvert-workspace__journey">
           <Activity mode={tab === 'edit' ? 'visible' : 'hidden'}>
-          {!entry && <EmptyState icon={Blocks} title={__('Choose a design', 'wconvert')} action={<Button onClick={() => setBrowsing(true)}>{__('Browse designs and formats', 'wconvert')}</Button>}>{__('Start from a ready-made design, then make it yours.', 'wconvert')}</EmptyState>}
+          {!entry && <EmptyState icon={Blocks} title={__('Choose a template', 'wconvert')} action={<Button onClick={() => setBrowsing(true)}>{__('Change template', 'wconvert')}</Button>}>{__('Start from a ready-made template, then make it yours.', 'wconvert')}</EmptyState>}
           {entry && <JourneyEditor displayType={displayTypeOf(config, templates)} onUndo={history.canUndo ? history.undo : undefined} embedded labels={gallery.labels} onResultSelect={setEditingResult}
             editorCanvas={previewPane}
             elementSelection={selection ?? undefined}

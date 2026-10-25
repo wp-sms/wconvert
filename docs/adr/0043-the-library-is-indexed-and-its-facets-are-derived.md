@@ -262,7 +262,8 @@ work to 360px.
   the grid the way `ChoiceSkeleton` pairs with `ChoiceGrid` and the chunk-level
   fallback stays in `shell/`.
 - **`TemplateCard` is shared by the picker and the creation flow's step 2**, and
-  the facet toolbar is not. A Playbook card renders that Playbook's template
+  the facet toolbar is not. *Superseded by [ADR 0171](0171-one-template-gallery.md): both are one gallery now, with
+  one card (`GalleryCard`) and one toolbar; the editor adds its extras to it.* A Playbook card renders that Playbook's template
   *with its copy in it* — a different object — composed by `Prefill` on the
   server so the chooser draws exactly what creating it stores. **Amended by
   [ADR 0072](0072-setup-choices-state-their-effect-and-scope.md):** the former

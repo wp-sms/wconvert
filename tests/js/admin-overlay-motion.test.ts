@@ -14,7 +14,7 @@ import { describe, expect, it } from 'vitest';
  * that stale frame.
  *
  * This is a shared primitive rule rather than a call-site convention. The
- * dropdown, Browse designs dialog, confirms, colour picker, verdict popover and
+ * dropdown, Change template dialog, confirms, colour picker, verdict popover and
  * lead filter all inherit it here; a future vendored layer has to make the same
  * decision explicitly instead of rediscovering the ghost one screen at a time.
  *

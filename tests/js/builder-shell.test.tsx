@@ -248,7 +248,7 @@ beforeEach(() => {
 
 /** The Look: the Edit tree's pinned first row, which holds the design library's door (ADR 0134). */
 const openLook = async () => {
-  if (screen.queryByRole('button', { name: 'Browse designs and formats' })) return;
+  if (screen.queryByRole('button', { name: 'Change template' })) return;
   await userEvent.click(await screen.findByRole('button', { name: /^Look/ }));
 };
 
@@ -497,9 +497,9 @@ describe('the builder shell', () => {
     expect(await screen.findByText('Format and position')).toBeInTheDocument();
     // Format and what it does are one fact row (ADR 0136).
     expect(within(screen.getByRole('tabpanel', { name: 'Edit' })).getByText('Popup · Centered over the page')).toBeInTheDocument();
-    expect(within(screen.getByRole('region', { name: 'Design' })).getByText('Centered card')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Browse designs and formats' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /Use this design/ })).toBeNull();
+    expect(within(screen.getByRole('region', { name: 'Template' })).getByText('Centered card')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Change template' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Use this template/ })).toBeNull();
   });
 
   it('opens a blank goal-based draft in the popup library without treating format as a new creation step', async () => {
@@ -515,8 +515,8 @@ describe('the builder shell', () => {
 
     // A draft with no design opens straight onto the library; nobody has to find it.
     const picker = within(await screen.findByRole('dialog'));
-    expect(picker.getByRole('combobox', { name: 'Format' })).toHaveValue('popup');
-    expect(picker.getByRole('combobox', { name: 'Design fit' })).toHaveDisplayValue('For “Grow my email list”');
+    expect(picker.getByRole('combobox', { name: 'Format' })).toHaveValue('all');
+    expect(picker.getByRole('combobox', { name: 'Show' })).toHaveDisplayValue('For “Grow my email list”');
     expect(builder.saveOptin).not.toHaveBeenCalled();
   });
 
@@ -532,23 +532,23 @@ describe('the builder shell', () => {
     await open();
 
     await openLook();
-    await userEvent.click(screen.getByRole('button', { name: 'Browse designs and formats' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Change template' }));
 
     const picker = within(await screen.findByRole('dialog'));
 
-    expect(picker.getByText('Browse designs')).toBeInTheDocument();
-    expect(picker.getByRole('combobox', { name: 'Format' })).toHaveValue('popup');
-    expect(picker.getByRole('combobox', { name: 'Design fit' })).toHaveDisplayValue('For “Grow my email list”');
-    expect(picker.queryByRole('button', { name: 'Use this design' })).not.toBeInTheDocument();
-    await userEvent.click(picker.getByRole('button', { name: 'Preview design' }));
+    expect(picker.getByRole('heading', { name: 'Change template' })).toBeInTheDocument();
+    expect(picker.getByRole('combobox', { name: 'Show' })).toHaveDisplayValue('For “Grow my email list”');
+    // The template in use is marked, with nothing to press but its picture.
+    expect(picker.queryByRole('button', { name: 'Use template' })).not.toBeInTheDocument();
+    await userEvent.click(picker.getByRole('button', { name: `Preview ${ENTRY.name}` }));
     expect(picker.getByRole('radio', { name: /Keep my words and images/ })).toBeChecked();
     expect(picker.queryByText(/Preview with (your|sample) content/)).toBeNull();
-    const current = picker.getByRole('button', { name: 'Current design' });
+    const current = picker.getByRole('button', { name: 'Current template' });
     expect(current).toHaveAttribute('aria-disabled', 'true');
-    expect(current).toHaveAccessibleDescription(/current design/);
-    await userEvent.click(picker.getByRole('radio', { name: /Use the design’s sample content/ }));
-    expect(await picker.findByRole('button', { name: 'Use this design' }))
-      .toHaveAccessibleDescription(/^Replaces this draft’s design\. You can undo\./);
+    expect(current).toHaveAccessibleDescription(/current template/);
+    await userEvent.click(picker.getByRole('radio', { name: /Use the template’s sample content/ }));
+    expect(await picker.findByRole('button', { name: 'Use this template' }))
+      .toHaveAccessibleDescription(/^Replaces this draft’s template\. You can undo\./);
     expect(templates.prepareTemplate).toHaveBeenCalledWith(ENTRY.id, { tree: ENTRY.tree, tokens: ENTRY.tokens }, ENTRY.id, GOAL.id);
     expect(builder.saveOptin).not.toHaveBeenCalled();
   });
@@ -1561,19 +1561,19 @@ describe('changing templates in the draft', () => {
     templates.prepareTemplate.mockResolvedValue({ tree: ALTERNATE.tree, tokens: ALTERNATE.tokens });
     await open();
     await openLook();
-    await userEvent.click(await screen.findByRole('button', { name: 'Browse designs and formats' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Change template' }));
     await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Format' }), 'inline');
     await userEvent.keyboard('{Escape}');
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
-    await userEvent.click(screen.getByRole('button', { name: 'Browse designs and formats' }));
-    expect(screen.getByRole('combobox', { name: 'Format' })).toHaveValue('floating_bar');
+    await userEvent.click(screen.getByRole('button', { name: 'Change template' }));
+    expect(screen.getByRole('combobox', { name: 'Format' })).toHaveValue('all');
     await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Format' }), 'inline');
     const picker = within(screen.getByRole('dialog'));
     await userEvent.click(within(picker.getByText(ALTERNATE.name).closest('li') as HTMLElement)
-      .getByRole('button', { name: 'Preview design' }));
+      .getByRole('button', { name: 'Use template' }));
     await userEvent.click(picker.getByRole('button', { name: 'Switch to Inline form' }));
     await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
-    expect(within(screen.getByRole('region', { name: 'Design' })).getByText(ENTRY.name)).toBeInTheDocument();
+    expect(within(screen.getByRole('region', { name: 'Template' })).getByText(ENTRY.name)).toBeInTheDocument();
     expect(screen.getByRole('radio', { name: 'Top' })).toBeChecked();
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
     await userEvent.click(screen.getByRole('button', { name: /^Redo/ }));
@@ -1600,11 +1600,11 @@ describe('changing templates in the draft', () => {
     await open();
 
     await openLook();
-    await userEvent.click(await screen.findByRole('button', { name: 'Browse designs and formats' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Change template' }));
     const picker = within(screen.getByRole('dialog'));
     await userEvent.click(within(picker.getByText(ALTERNATE.name).closest('li') as HTMLElement)
-      .getByRole('button', { name: 'Preview design' }));
-    await userEvent.click(picker.getByRole('button', { name: 'Use this design' }));
+      .getByRole('button', { name: 'Use template' }));
+    await userEvent.click(picker.getByRole('button', { name: 'Use this template' }));
     expect(screen.getByRole('radio', { name: 'Top' })).toBeChecked();
 
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
@@ -1645,26 +1645,26 @@ describe('changing templates in the draft', () => {
     templates.prepareTemplate.mockResolvedValue(prepared);
     await open();
     await openLook();
-    await userEvent.click(await screen.findByRole('button', { name: 'Browse designs and formats' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Change template' }));
     const picker = within(await screen.findByRole('dialog'));
     const alternateCard = picker.getByText(ALTERNATE.name).closest('li') as HTMLElement;
-    await userEvent.click(within(alternateCard).getByRole('button', { name: 'Preview design' }));
+    await userEvent.click(within(alternateCard).getByRole('button', { name: 'Use template' }));
     expect(picker.getByRole('heading', { name: ALTERNATE.name })).toHaveFocus();
     await userEvent.click(picker.getByRole('radio', { name: 'Mobile' }));
     await userEvent.click(picker.getByRole('radio', { name: ALTERNATE.tree.steps[1].name }));
     expect(templates.prepareTemplate).toHaveBeenCalledExactlyOnceWith(ALTERNATE.id, { tree: ENTRY.tree, tokens: ENTRY.tokens }, ENTRY.id, GOAL.id);
     expect(builder.saveOptin).not.toHaveBeenCalled();
-    await userEvent.click(picker.getByRole('button', { name: 'Use this design' }));
+    await userEvent.click(picker.getByRole('button', { name: 'Use this template' }));
     await waitFor(() => expect(templates.prepareTemplate).toHaveBeenCalledWith(ALTERNATE.id, { tree: ENTRY.tree, tokens: ENTRY.tokens }, ENTRY.id, GOAL.id));
     expect(builder.saveOptin).not.toHaveBeenCalled();
     await waitFor(() => expect(screen.getByRole('button', { name: /^Undo/ })).toBeEnabled());
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Browse designs and formats' })).toHaveFocus());
-    expect(within(screen.getByRole('region', { name: 'Design' })).getByText(ALTERNATE.name)).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Change template' })).toHaveFocus());
+    expect(within(screen.getByRole('region', { name: 'Template' })).getByText(ALTERNATE.name)).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
-    expect(within(screen.getByRole('region', { name: 'Design' })).getByText(ENTRY.name)).toBeInTheDocument();
+    expect(within(screen.getByRole('region', { name: 'Template' })).getByText(ENTRY.name)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
     await userEvent.click(screen.getByRole('button', { name: /^Redo/ }));
-    expect(within(screen.getByRole('region', { name: 'Design' })).getByText(ALTERNATE.name)).toBeInTheDocument();
+    expect(within(screen.getByRole('region', { name: 'Template' })).getByText(ALTERNATE.name)).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Advanced' }));
     await userEvent.click(screen.getByRole('button', { name: /Choose a color for Background/ }));
     await userEvent.clear(screen.getByLabelText('Background value'));
@@ -1680,15 +1680,15 @@ describe('changing templates in the draft', () => {
     templates.prepareTemplate.mockImplementation((_id, tree) => Promise.resolve(tree));
     await open();
     await openLook();
-    await userEvent.click(await screen.findByRole('button', { name: 'Browse designs and formats' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Change template' }));
     const picker = within(await screen.findByRole('dialog'));
     await userEvent.click(within(picker.getByText(ALTERNATE.name).closest('li') as HTMLElement)
-      .getByRole('button', { name: 'Preview design' }));
-    await userEvent.click(picker.getByRole('radio', { name: /Use the design’s sample content/ }));
-    await waitFor(() => expect(picker.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'false'));
+      .getByRole('button', { name: 'Use template' }));
+    await userEvent.click(picker.getByRole('radio', { name: /Use the template’s sample content/ }));
+    await waitFor(() => expect(picker.getByRole('button', { name: 'Use this template' })).toHaveAttribute('aria-disabled', 'false'));
     expect(templates.prepareTemplate).toHaveBeenLastCalledWith(ALTERNATE.id,
       { tree: ALTERNATE.tree, tokens: ALTERNATE.tokens }, ALTERNATE.id, GOAL.id);
-    await userEvent.click(picker.getByRole('button', { name: 'Use this design' }));
+    await userEvent.click(picker.getByRole('button', { name: 'Use this template' }));
     expect(templates.prepareTemplate).toHaveBeenCalledTimes(2);
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
     expect(builder.saveOptin).toHaveBeenCalledWith(ID, 'Welcome discount', {
@@ -1701,18 +1701,18 @@ describe('changing templates in the draft', () => {
     templates.prepareTemplate.mockRejectedValue(new Error('The design could not be prepared. Try again.'));
     await open();
     await openLook();
-    await userEvent.click(await screen.findByRole('button', { name: 'Browse designs and formats' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Change template' }));
     const picker = within(await screen.findByRole('dialog'));
     const alternateCard = picker.getByText(ALTERNATE.name).closest('li') as HTMLElement;
-    await userEvent.click(within(alternateCard).getByRole('button', { name: 'Preview design' }));
+    await userEvent.click(within(alternateCard).getByRole('button', { name: 'Use template' }));
     expect(await picker.findByText('The design could not be prepared. Try again.')).toBeVisible();
-    expect(picker.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'true');
+    expect(picker.getByRole('button', { name: 'Use this template' })).toHaveAttribute('aria-disabled', 'true');
     expect(picker.getByRole('button', { name: 'Try again' })).toBeEnabled();
-    await userEvent.click(picker.getByRole('button', { name: 'Back to designs' }));
-    await waitFor(() => expect(within(alternateCard).getByRole('button', { name: 'Preview design' })).toHaveFocus());
+    await userEvent.click(picker.getByRole('button', { name: 'Back to templates' }));
+    await waitFor(() => expect(within(alternateCard).getByRole('button', { name: 'Use template' })).toHaveFocus());
     await userEvent.keyboard('{Escape}');
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Browse designs and formats' })).toHaveFocus());
-    expect(within(screen.getByRole('region', { name: 'Design' })).getByText(ENTRY.name)).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Change template' })).toHaveFocus());
+    expect(within(screen.getByRole('region', { name: 'Template' })).getByText(ENTRY.name)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /^Undo/ })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
     expect(builder.saveOptin).not.toHaveBeenCalled();

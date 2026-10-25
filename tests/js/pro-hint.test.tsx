@@ -7,7 +7,6 @@ import { MoreWithPro } from '../../resources/admin/src/settings-page/MoreWithPro
 import { AddRule } from '../../resources/admin/src/builder/rules/AddRule';
 import { DropdownMenu, DropdownMenuTrigger } from '../../resources/admin/src/components/ui/dropdown-menu';
 import { OptionMenuContent } from '../../resources/admin/src/components/ui/option-menu';
-import { proDisplayTypeLabels } from '../../resources/admin/src/displayTypes';
 import { ruleTypes } from './support/rule-types';
 import { ProviderTiles, proDestinationNames, proDestinationSummary } from '../../resources/admin/src/destinations/ProviderTiles';
 import type { DestinationType } from '../../resources/admin/src/destinations/api';
@@ -23,11 +22,11 @@ afterEach(() => { cleanup(); delete window.wconvertAdmin; });
 describe('the hint line', () => {
   it('names the features and links WConvert Pro in a new tab, tagged with where it was', () => {
     free();
-    render(<ProHint medium="format-picker" features={['Floating bar', 'Slide-in', 'Fullscreen']} />);
+    render(<ProHint medium="flow-map" features={['Floating bar', 'Slide-in', 'Fullscreen']} />);
 
     expect(screen.getByText(/^Also in/)).toHaveTextContent('Also in WConvert Pro(opens in a new tab): Floating bar, Slide-in, Fullscreen.');
     const link = screen.getByRole('link', { name: 'WConvert Pro (opens in a new tab)' });
-    expect(link).toHaveAttribute('href', 'https://wconvert.io/pro/?utm_source=wconvert-free&utm_medium=format-picker&utm_campaign=explore-pro');
+    expect(link).toHaveAttribute('href', 'https://wconvert.io/pro/?utm_source=wconvert-free&utm_medium=flow-map&utm_campaign=explore-pro');
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   });
@@ -56,7 +55,7 @@ describe('the hint line', () => {
   });
 
   it('carries only fixed values in its link', () => {
-    for (const medium of ['header', 'settings-list', 'format-picker', 'rule-menu', 'flow-map', 'destinations', 'campaign-menu'] as const) {
+    for (const medium of ['header', 'settings-list', 'rule-menu', 'flow-map', 'destinations', 'campaign-menu'] as const) {
       const url = new URL(proUrl(medium));
       expect([...url.searchParams.keys()]).toEqual(['utm_source', 'utm_medium', 'utm_campaign']);
       expect(url.searchParams.get('utm_medium')).toBe(medium);
@@ -110,10 +109,6 @@ describe('where its names come from', () => {
     free({ tiers, proInstalledInactive: true });
     render(<ProviderTiles types={[mailpoet]} rule={null} suggested={[]} onChoose={vi.fn()} />);
     expect(screen.getByText(/^Also in/)).toHaveTextContent(/^Also in WConvert Pro, which is installed: more integrations, like Mailchimp, Brevo and webhooks\. Activate it$/);
-  });
-
-  it('names the formats a free install lacks', () => {
-    expect(proDisplayTypeLabels()).toEqual(['Floating bar', 'Slide-in', 'Fullscreen']);
   });
 });
 
