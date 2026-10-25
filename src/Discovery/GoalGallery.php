@@ -28,7 +28,7 @@ final class GoalGallery
     ) {
     }
 
-    /** @return array{setups: list<array<string, mixed>>, online: list<array<string, mixed>>, library: array{configured: bool, consent: string}} */
+    /** @return array{setups: list<array<string, mixed>>, online: list<array<string, mixed>>, library: array{configured: bool, consent: string, checked_at: ?string}} */
     public function of(Goal $goal): array
     {
         $setups = array_map(fn (Playbook $playbook): array => $this->setup($playbook), FlagshipCollection::prioritize($this->playbooks->servicing($goal)));
@@ -39,7 +39,9 @@ final class GoalGallery
             'setups' => $setups,
             'online' => $status === null ? [] : $this->online($goal, $status, array_column($setups, 'id')),
             // `enabled` is TemplateCatalog::configured(): switched on and given a source.
-            'library' => ['configured' => (bool) ($status['enabled'] ?? false), 'consent' => (string) ($status['consent'] ?? 'unanswered')],
+            // `checked_at` tells step 2 whether its own refresh brought a newer list.
+            'library' => ['configured' => (bool) ($status['enabled'] ?? false), 'consent' => (string) ($status['consent'] ?? 'unanswered'),
+                'checked_at' => $status['checked_at'] ?? null],
         ];
     }
 

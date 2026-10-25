@@ -1,6 +1,6 @@
 # 0171: One template gallery
 
-Accepted 2026-10-25. Amends 0026, 0039, 0043, 0069, 0085, 0086, 0087, 0112, 0116, 0132, 0134, 0137, 0147, 0156 §9 and 0163.
+Accepted 2026-10-25. Amends 0026, 0039, 0043, 0069, 0085, 0086, 0087, 0112, 0116, 0132, 0134, 0137, 0147, 0156 §8–9, 0163 and 0170.
 
 The approved prototype (v5, 2026-10-24, branch `prototype/template-gallery`)
 replaces the creation flow's step 2 and the editor's design picker with one
@@ -27,7 +27,8 @@ list (`src/Discovery/GoalGallery.php`):
   shows one card, offering the newer revision only when it can be installed.
   Nothing is sent until consent is `yes`. Pro is one plan (ADR 0146), so
   nothing is locked on a Pro site and the gate is `ProHints::shown()` alone.
-- `library`: `{configured, consent}`, so the gallery can ask once.
+- `library`: `{configured, consent, checked_at}`, so the gallery can ask once
+  and tell whether its own refresh brought a newer list.
 
 Online setups carry `business_types`: the publisher emits a setup's Playbook
 examples on its index row and `CatalogIndex::setup()` reads them, a missing
@@ -88,6 +89,21 @@ rather than a preference. Picker preferences keep `saved`, `hidden` and
 9. **The consent card** asks at the end of the grid — "See more templates from
    the WConvert library?" — with no count, because nothing is fetched before
    the answer (a departure from the prototype, which showed one).
+
+10. **Step 2 checks the library too.** Once the gallery is read with consent
+    `yes`, step 2 sends the same `refresh` with `if_stale` that opening Change
+    template does — a no-op inside twelve hours. When `checked_at` comes back
+    changed, the gallery is read once more; when it does not, nothing is. A
+    failure (the server's five-minute backoff, `WP_HTTP_BLOCK_EXTERNAL`, the
+    twenty-second budget) says nothing: the saved list stays the answer.
+11. **A page's trees are one request.** The page's local cards, and in step 2
+    the shelf's covers, are asked for together as soon as the page is drawn;
+    `useSetupPreviews` and `useTemplateTrees` batch a tick, inside the routes'
+    24-id cap (a page is 24 cards, so only covers beyond it make a second
+    request). The stage still draws only near the viewport (ADR 0170 §7).
+    Before this, each scroll moment made its own request of one to three. Only
+    the plugin's local preview routes are asked, so the catalogue's design
+    downloads, and its counts, are unchanged.
 
 Inspection is a larger look at one card: Desktop/Mobile, Fit/Actual size, its
 screens, its gist and the same one action. The setup facts list that lived

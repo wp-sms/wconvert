@@ -52,6 +52,17 @@
 .wconvert-stage__screen[data-in-flow] { padding: 4cqw 6cqw; }
 
 .wconvert-stage__waiting { position: absolute; inset: 16%; border-radius: var(--radius); opacity: 0.6; }
+/* An online design whose picture could not load: the page, and a quiet word on it. */
+.wconvert-stage__unavailable {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 12px;
+  margin: 0;
+  padding-inline: 12px;
+  color: var(--muted-foreground);
+  font-size: var(--text-note);
+  text-align: center;
+}
 
 /* ---- the ghost page ---- */
 .wconvert-ghost {

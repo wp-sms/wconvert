@@ -42,7 +42,8 @@ export interface GalleryCardProps {
  */
 export function GalleryCard({ card, template, saved, onSave, onInspect, onUse, onUpdate, busy = false, disabled = false, failed = null, onNear, previewFailed = false, onRetryPreview, conversion = null, current = false }: GalleryCardProps) {
   const nameId = useId();
-  const near = useCallback(() => onNear?.(card.key), [onNear, card.key]);
+  // An online card is the catalogue's picture: it has no tree to ask for.
+  const near = useCallback(() => { if (card.source === 'local') onNear?.(card.key); }, [onNear, card.key, card.source]);
   const source = card.thumbnail ? { image: card.thumbnail } : template ? { live: { template } } : undefined;
 
   return (

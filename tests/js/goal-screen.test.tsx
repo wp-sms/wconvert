@@ -131,7 +131,7 @@ const DRAFT = {
   },
 };
 
-const NO_LIBRARY = { configured: false, consent: 'unanswered' } as const;
+const NO_LIBRARY = { configured: false, consent: 'unanswered', checked_at: null } as const;
 function galleryOf(setups: unknown[], online: OnlineSetup[] = [], library: GoalGallery['library'] = NO_LIBRARY): GoalGallery {
   return { setups: setups as PlaybookEntry[], online, library };
 }
@@ -148,6 +148,7 @@ beforeEach(() => {
   picker.pickerData.mockResolvedValue({ schema: 1, today: '2026-11-06', timezone: 'Asia/Muscat', collections: [], preferences: { schema: 1, revision: 0, saved: [], hidden: [] }, occasions: { schema: 1, revision: 0, items: [] } });
   picker.savePreferences.mockImplementation(value => Promise.resolve({ ...value, revision: value.revision + 1 }));
   goals.previewPlaybooks.mockResolvedValue({ entries: [] });
+  catalog.refreshCatalog.mockResolvedValue({ checked_at: null });
   document.getElementById(DOCUMENT_STYLE_ID)?.remove();
   goals.listGoals.mockResolvedValue(GOALS);
   goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK]));
@@ -359,6 +360,22 @@ describe('step 2: one template gallery', () => {
     await waitFor(() => expect(goals.previewPlaybooks).toHaveBeenCalled());
     expect(goals.previewPlaybooks.mock.calls.flatMap(call => call[1])).toHaveLength(24);
   });
+
+  it('asks for a page’s previews in one request, before any card comes near', async () => {
+    // Nothing ever comes near: only the page itself asks.
+    vi.stubGlobal('IntersectionObserver', class { observe() {} disconnect() {} });
+    onTestFinished(() => { vi.unstubAllGlobals(); });
+    const metadata = Array.from({ length: 30 }, (_, at) => ({ ...PLAYBOOK, id: `start-${at}`, name: `Start ${at}`, template_id: `card-${at}`, design_key: `registered:card-${at}`, revision: `revision-${at}`, template: undefined }));
+    goals.readGoalGallery.mockResolvedValue(galleryOf(metadata));
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    await screen.findByText('Page 1 of 2');
+    await waitFor(() => expect(goals.previewPlaybooks).toHaveBeenCalledOnce());
+    expect(goals.previewPlaybooks.mock.calls[0][1]).toEqual(metadata.slice(0, 24).map(entry => entry.id));
+    await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+    await waitFor(() => expect(goals.previewPlaybooks).toHaveBeenCalledTimes(2));
+    expect(goals.previewPlaybooks.mock.calls[1][1]).toEqual(metadata.slice(24).map(entry => entry.id));
+  });
 });
 
 describe('Pro hints on a free install', () => {
@@ -366,7 +383,7 @@ describe('Pro hints on a free install', () => {
 
   it('mixes a locked template in where it falls, with its plan and a link instead of a control', async () => {
     withAdmin({ installedTier: 'free', proHints: true });
-    goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK], [locked], { configured: true, consent: 'yes' }));
+    goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK], [locked], { configured: true, consent: 'yes', checked_at: null }));
     render(<GoalScreen onCreated={vi.fn()} />);
     await pickGoal();
     const card = await cardOf('Online night-sale');
@@ -382,7 +399,7 @@ describe('Pro hints on a free install', () => {
 
   it('offers no Plan and no locked card where hints are off', async () => {
     withAdmin({ installedTier: 'free', proHints: false });
-    goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK], [locked], { configured: true, consent: 'yes' }));
+    goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK], [locked], { configured: true, consent: 'yes', checked_at: null }));
     render(<GoalScreen onCreated={vi.fn()} />);
     await pickGoal();
     await cardOf('Welcome discount');
@@ -393,7 +410,7 @@ describe('Pro hints on a free install', () => {
 
 describe('the online library', () => {
   it('asks once, at the end of the grid, and reads the gallery again when answered', async () => {
-    goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK], [], { configured: true, consent: 'unanswered' }));
+    goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK], [], { configured: true, consent: 'unanswered', checked_at: null }));
     catalog.setCatalogConsent.mockResolvedValue({});
     catalog.refreshCatalog.mockResolvedValue({});
     render(<GoalScreen onCreated={vi.fn()} />);
@@ -406,7 +423,7 @@ describe('the online library', () => {
   });
 
   it('keeps the grid when reading it again fails, and says so', async () => {
-    goals.readGoalGallery.mockResolvedValueOnce(galleryOf([PLAYBOOK], [], { configured: true, consent: 'unanswered' }))
+    goals.readGoalGallery.mockResolvedValueOnce(galleryOf([PLAYBOOK], [], { configured: true, consent: 'unanswered', checked_at: null }))
       .mockRejectedValueOnce(new Error('The library could not be reached.'));
     catalog.setCatalogConsent.mockResolvedValue({});
     catalog.refreshCatalog.mockResolvedValue({});
@@ -417,8 +434,52 @@ describe('the online library', () => {
     expect(screen.getByRole('heading', { name: 'Welcome discount' })).toBeVisible();
   });
 
+  it('checks the library for new templates once, and reads the gallery again when it brought some', async () => {
+    const metadata = { ...PLAYBOOK, revision: 'revision-1', template: undefined };
+    goals.readGoalGallery.mockResolvedValue(galleryOf([metadata], [], { configured: true, consent: 'yes', checked_at: '2026-10-20T00:00:00+00:00' }));
+    goals.previewPlaybooks.mockResolvedValue({ entries: [{ ...metadata, template: PLAYBOOK.template }] });
+    catalog.refreshCatalog.mockResolvedValue({ checked_at: '2026-10-25T00:00:00+00:00' });
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    await waitFor(() => expect(goals.readGoalGallery).toHaveBeenCalledTimes(2));
+    expect(catalog.refreshCatalog).toHaveBeenCalledExactlyOnceWith(true);
+    expect(await cardOf('Welcome discount')).toBeVisible();
+    // The setup's revision did not move, so its preview is not asked for twice.
+    expect(goals.previewPlaybooks).toHaveBeenCalledOnce();
+  });
+
+  it('reads nothing again when the check brought nothing new', async () => {
+    goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK], [], { configured: true, consent: 'yes', checked_at: '2026-10-20T00:00:00+00:00' }));
+    catalog.refreshCatalog.mockResolvedValue({ checked_at: '2026-10-20T00:00:00+00:00' });
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    await waitFor(() => expect(catalog.refreshCatalog).toHaveBeenCalledExactlyOnceWith(true));
+    await cardOf('Welcome discount');
+    expect(goals.readGoalGallery).toHaveBeenCalledOnce();
+  });
+
+  it('keeps the saved list and says nothing when the check fails', async () => {
+    goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK], [onlineSetup('welcome-online')], { configured: true, consent: 'yes', checked_at: '2026-10-20T00:00:00+00:00' }));
+    catalog.refreshCatalog.mockRejectedValue(new Error('The library could not be reached.'));
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    await waitFor(() => expect(catalog.refreshCatalog).toHaveBeenCalledOnce());
+    expect(await cardOf('Online welcome-online')).toBeVisible();
+    expect(screen.queryByText('The library could not be reached.')).toBeNull();
+    expect(screen.queryByRole('alert')).toBeNull();
+    expect(goals.readGoalGallery).toHaveBeenCalledOnce();
+  });
+
+  it('asks nothing of the library before it is allowed', async () => {
+    goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK], [], { configured: true, consent: 'no', checked_at: null }));
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    await cardOf('Welcome discount');
+    expect(catalog.refreshCatalog).not.toHaveBeenCalled();
+  });
+
   it('installs an online template silently, then creates the draft from what it became', async () => {
-    goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK], [onlineSetup('welcome-online')], { configured: true, consent: 'yes' }));
+    goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK], [onlineSetup('welcome-online')], { configured: true, consent: 'yes', checked_at: null }));
     catalog.installSetup.mockResolvedValue({ playbook_id: 'setup-1-welcome-online', template_id: 'design-1-welcome-online-design', status: {} });
     const created = vi.fn();
     render(<GoalScreen onCreated={created} />);
@@ -430,7 +491,7 @@ describe('the online library', () => {
   });
 
   it('keeps saying Adding… from the install until the draft is created', async () => {
-    goals.readGoalGallery.mockResolvedValue(galleryOf([], [onlineSetup('welcome-online')], { configured: true, consent: 'yes' }));
+    goals.readGoalGallery.mockResolvedValue(galleryOf([], [onlineSetup('welcome-online')], { configured: true, consent: 'yes', checked_at: null }));
     catalog.installSetup.mockResolvedValue({ playbook_id: 'setup-1-welcome-online', template_id: 'x', status: {} });
     goals.prefill.mockReturnValue(new Promise(() => undefined));
     render(<GoalScreen onCreated={vi.fn()} />);
@@ -441,7 +502,7 @@ describe('the online library', () => {
   });
 
   it('says on the card when adding fails, and tries again from there', async () => {
-    goals.readGoalGallery.mockResolvedValue(galleryOf([], [onlineSetup('welcome-online')], { configured: true, consent: 'yes' }));
+    goals.readGoalGallery.mockResolvedValue(galleryOf([], [onlineSetup('welcome-online')], { configured: true, consent: 'yes', checked_at: null }));
     catalog.installSetup.mockRejectedValueOnce(new Error('The library could not be reached.')).mockResolvedValue({ playbook_id: 'setup-1-welcome-online', template_id: 'x', status: {} });
     render(<GoalScreen onCreated={vi.fn()} />);
     await pickGoal();

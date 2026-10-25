@@ -222,6 +222,12 @@ export interface ShelfCollection {
   readonly members: ReadonlyMap<string, string>;
 }
 
+/** A shelf tile's covers: the first three of its members this gallery has. */
+export function shelfCovers(members: ReadonlyMap<string, string>, cards: readonly GalleryCard[]): GalleryCard[] {
+  const byKey = new Map(cards.map(card => [card.key, card]));
+  return [...members.keys()].flatMap(key => byKey.get(key) ?? []).slice(0, 3);
+}
+
 /**
  * The collections the shelf offers: in their featured window, not hidden, and
  * holding at least one card the gallery would show. A seasonal collection

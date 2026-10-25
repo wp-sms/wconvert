@@ -22,6 +22,7 @@ const picker = vi.hoisted(() => ({ pickerData: vi.fn(), savePreferences: vi.fn()
 vi.mock('../../resources/admin/src/discovery/api', () => picker);
 
 const { TemplatePickerDialog } = await import('../../resources/admin/src/builder/TemplatePickerDialog');
+const { useTemplateTrees } = await import('../../resources/admin/src/builder/useTemplateTrees');
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -198,6 +199,37 @@ describe('using a template', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Use template' }));
     expect(await screen.findByText('Nothing on this template counts as a conversion.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Use this template' })).toHaveAttribute('aria-disabled', 'true');
+  });
+});
+
+describe('the trees it draws', () => {
+  /** The dialog fed by the editor's own hook, as OptinBuilder holds it. */
+  function Fetching({ entries, fetchTrees }: { entries: TemplateIndexEntry[]; fetchTrees: (ids: readonly string[]) => Promise<{ templates: (Template & { id: string })[] }> }) {
+    const { trees, want } = useTemplateTrees(fetchTrees);
+    return <TemplatePickerDialog open onOpenChange={vi.fn()} index={{ templates: entries, labels: LABELS, facets: {}, catalog: CATALOG() }} trees={trees}
+      displayType="popup" chosen={undefined} fit={EMAIL_LIST} busy={false} onChoose={vi.fn()} onNear={want} />;
+  }
+
+  it('asks for a page’s trees in one request, before any card comes near', async () => {
+    // Nothing ever comes near: only the page itself asks.
+    vi.stubGlobal('IntersectionObserver', class { observe() {} disconnect() {} });
+    onTestFinished(() => { vi.unstubAllGlobals(); });
+    const entries = Array.from({ length: 30 }, (_, at) => local(`card-${at}`, `Card ${at}`));
+    const fetchTrees = vi.fn((ids: readonly string[]) => Promise.resolve({ templates: ids.map(id => ({ id, ...design('centred-card') })) }));
+    render(<Fetching entries={[...entries, hosted('supper', 'Supper menu', 'install')]} fetchTrees={fetchTrees} />);
+    await waitFor(() => expect(fetchTrees).toHaveBeenCalledOnce());
+    expect(fetchTrees.mock.calls[0][0]).toEqual(entries.slice(0, 24).map(entry => entry.id));
+    await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+    await waitFor(() => expect(fetchTrees).toHaveBeenCalledTimes(2));
+    expect(fetchTrees.mock.calls[1][0]).toEqual(entries.slice(24).map(entry => entry.id));
+  });
+
+  it('asks no tree for an online card, so its picture is never called a failed preview', async () => {
+    const fetchTrees = vi.fn((ids: readonly string[]) => Promise.resolve({ templates: ids.filter(id => id === 'centred-card').map(id => ({ id, ...design(id) })) }));
+    render(<Fetching entries={[local('centred-card', 'Centred card'), hosted('supper', 'Supper menu', 'install')]} fetchTrees={fetchTrees} />);
+    await waitFor(() => expect(fetchTrees).toHaveBeenCalled());
+    expect(fetchTrees.mock.calls.flatMap(([ids]) => ids)).not.toContain('remote:supper');
+    expect(within(cardFor('Supper menu')).queryByText('Preview could not be loaded.')).toBeNull();
   });
 });
 

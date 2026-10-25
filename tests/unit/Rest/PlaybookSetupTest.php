@@ -44,7 +44,7 @@ final class PlaybookSetupTest extends TestCase
         $gallery = $response->get_data();
         // One envelope: no catalogue here, so nothing online and the library is not configured.
         $this->assertSame([], $gallery['online']);
-        $this->assertSame(['configured' => false, 'consent' => 'unanswered'], $gallery['library']);
+        $this->assertSame(['configured' => false, 'consent' => 'unanswered', 'checked_at' => null], $gallery['library']);
         $cards = $gallery['setups'];
         $this->assertSame(['welcome-discount', 'read-to-the-end', 'a-extension', 'z-extension'], array_column($cards, 'id'));
         $this->assertSame('Recommended for stores', $cards[0]['recommendation']);

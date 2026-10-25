@@ -185,6 +185,12 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onLibraryCh
   const inspected = all.find(card => card.key === inspecting) ?? null;
   // Opening a design moves the caret to its name, as the setup preview does.
   useEffect(() => { if (reviewing) title.current?.focus({ preventScroll: true }); }, [reviewing]);
+  // The page's live cards are asked for at once, so a page is one trees request
+  // (useTemplateTrees batches a tick); a stage still draws only near the viewport.
+  const wanted = open && reviewed === undefined ? paged.filter(card => card.source === 'local' && !trees.has(card.key)).map(card => card.key).join(' ') : '';
+  useEffect(() => {
+    for (const key of wanted.split(' ')) if (key !== '') onNear(key);
+  }, [wanted, onNear]);
 
   return (
     <Dialog open={open} onOpenChange={(next) => {

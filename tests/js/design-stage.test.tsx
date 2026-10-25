@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { act, render } from '@testing-library/react';
+import { act, fireEvent, render } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { MountOptions } from '../../resources/renderer/src/mount';
 import type { TemplateEntry } from '../../resources/admin/src/templates/api';
@@ -79,6 +79,36 @@ describe('an online design on the stage', () => {
     expect(picture).toHaveAttribute('alt', '');
     // Until it is placed it is asked for at its own width.
     expect(picture).toHaveAttribute('sizes', '600px');
+  });
+
+  it('draws the page and says so when its picture cannot load, offline or blocked', () => {
+    const { container, getByText } = render(<DesignStage displayType="popup" size="card" lazy={false}
+      source={{ image: { '1x': 'https://cdn.example/a.webp', '2x': 'https://cdn.example/a@2x.webp' } }} />);
+
+    fireEvent.error(container.querySelector('img')!);
+
+    expect(container.querySelector('img')).toBeNull();
+    expect(container.querySelector('.wconvert-ghost')).not.toBeNull();
+    expect(container.querySelector('.wconvert-stage__waiting')).toBeNull();
+    expect(getByText('Picture unavailable offline')).toBeInTheDocument();
+  });
+
+  it('tries a new picture again', () => {
+    const { container, rerender } = render(<DesignStage displayType="popup" size="card" lazy={false} source={{ image: { '1x': 'https://cdn.example/a.webp' } }} />);
+
+    fireEvent.error(container.querySelector('img')!);
+    rerender(<DesignStage displayType="popup" size="card" lazy={false} source={{ image: { '1x': 'https://cdn.example/b.webp' } }} />);
+
+    expect(container.querySelector('img')).toHaveAttribute('src', 'https://cdn.example/b.webp');
+  });
+
+  it('keeps a thumb to the page alone, with no words at that size', () => {
+    const { container } = render(<DesignStage displayType="popup" size="thumb" lazy={false} source={{ image: { '1x': 'https://cdn.example/a.webp' } }} />);
+
+    fireEvent.error(container.querySelector('img')!);
+
+    expect(container.querySelector('.wconvert-ghost')).not.toBeNull();
+    expect(container.querySelector('.wconvert-stage__unavailable')).toBeNull();
   });
 });
 

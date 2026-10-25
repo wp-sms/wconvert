@@ -56,7 +56,11 @@ is the spec for what replaces them.
    design only the catalogue has is its 600w/1200w picture, offered with a
    `srcset` by width, `sizes` set to the pixels it is drawn at, and
    `referrerpolicy="no-referrer"`. It is laid out at 600 wide and its height
-   comes from its own aspect, so no server change was needed.
+   comes from its own aspect, so no server change was needed. A picture that
+   cannot load — a site offline, or blocking outgoing requests, still lists
+   online cards from its saved status — leaves the ghost page with a quiet
+   "Picture unavailable offline" (none on a thumb); the card's action is
+   unchanged and says its own error if it is used.
 6. **`transform`, not `zoom`.** The old gallery let the design size its card,
    so it needed the scale that moves layout. A stage has its own shape (4:3 on
    a card, 16:10 in inspection) and computes the design's place inside it, so
@@ -66,7 +70,10 @@ is the spec for what replaces them.
    feeds back into its own measurement.
 7. **Cards and thumbs mount near the viewport** (ADR 0043's gate, moved into
    the stage): one IntersectionObserver with a 600px margin decides both when
-   a tree is worth fetching and when it is worth drawing. A fixed shape means a
+   a tree is worth fetching and when it is worth drawing. *(Amended by
+   [ADR 0171](0171-one-template-gallery.md) §11: a gallery asks for its page's
+   trees at once; the observer now decides only drawing, and still asks for a
+   stage no page asked for.)* A fixed shape means a
    card no longer changes height when its design leaves, so the held height
    `TemplateCard` kept is gone; `content-visibility: auto` stays.
 8. **The ghost page is admin tokens** (`--ghost-page`, `--ghost-ink`,

@@ -124,7 +124,8 @@ export interface OnlineSetup {
 export interface GoalGallery {
   setups: PlaybookEntry[];
   online: OnlineSetup[];
-  library: { configured: boolean; consent: 'unanswered' | 'yes' | 'no' };
+  /** `checked_at` is when the library was last asked, so a refresh can tell whether it brought anything. */
+  library: { configured: boolean; consent: 'unanswered' | 'yes' | 'no'; checked_at: string | null };
 }
 
 // Filtered on Goal ONLY. Display Type is prefilled by the chosen Playbook and

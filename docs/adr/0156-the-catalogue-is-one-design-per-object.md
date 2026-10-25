@@ -106,7 +106,8 @@ and saves attachment URLs in that draft.
 in the picker, kept as an option and a Settings toggle, plus the
 `WCONVERT_TEMPLATE_CATALOG` constant and `wconvert_template_catalog` filter to
 switch it off. A refresh happens only inside an admin request that asked —
-opening the picker asks at most every twelve hours — never on activation,
+opening the picker asks at most every twelve hours *(amended by
+[ADR 0171](0171-one-template-gallery.md): so does reaching step 2's gallery)* — never on activation,
 from cron, on the dashboard or on the front end. It uses `If-None-Match` on
 the pointer, skips pages when the release is unchanged, has a twenty-second
 budget and a backoff, and names `WP_HTTP_BLOCK_EXTERNAL` when that is why it
