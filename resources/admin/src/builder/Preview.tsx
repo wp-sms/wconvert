@@ -517,7 +517,7 @@ export function Preview({ template, displayType = 'inline', step = 0, selected =
   // block a width: intrinsic flex sizing otherwise sees only the padding of
   // the size-contained .wc-root and collapses gallery/creation previews.
   return (
-    <div className="wconvert-preview">
+    <div>
       <div
         ref={anchor}
         style={{ inlineSize: width ?? (previewSurfaces[displayType] ? '100%' : template.tokens.width ?? A_DESIGNS_OWN_WIDTH), maxInlineSize: '100%' }}

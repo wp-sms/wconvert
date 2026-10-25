@@ -3,7 +3,6 @@ import {
   DISPLAY_TYPES,
   displayTypeDescription,
   displayTypeLabel,
-  displayTypeOptions,
 } from '../../resources/admin/src/displayTypes';
 
 describe('display type vocabulary', () => {
@@ -12,32 +11,7 @@ describe('display type vocabulary', () => {
   });
 
   it('keeps the supported formats in the product order', () => {
-    window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
     expect(DISPLAY_TYPES).toEqual(['popup', 'inline', 'floating_bar', 'slide_in', 'fullscreen']);
-    expect(displayTypeOptions()).toEqual([
-      { value: 'popup', label: 'Popup' },
-      { value: 'inline', label: 'Inline form' },
-      { value: 'floating_bar', label: 'Floating bar' },
-      { value: 'slide_in', label: 'Slide-in' },
-      { value: 'fullscreen', label: 'Fullscreen' },
-    ]);
-  });
-
-  /** A free install is offered only the two formats it can publish (ADR 0116). */
-  it.each([
-    ['an explicit free install', { exportUrl: '', installedTier: 'free' as const }],
-    ['absent boot data', undefined],
-  ])('offers only popup and inline for %s', (_case, settings) => {
-    window.wconvertAdmin = settings;
-    expect(displayTypeOptions()).toEqual([
-      { value: 'popup', label: 'Popup' },
-      { value: 'inline', label: 'Inline form' },
-    ]);
-  });
-
-  /** A draft saved with a Pro format keeps its value selectable after Pro is removed. */
-  it('keeps the current format on a free install', () => {
-    expect(displayTypeOptions('floating_bar').map(({ value }) => value)).toEqual(['popup', 'inline', 'floating_bar']);
   });
 
   it('explains where each format appears and preserves extension formats', () => {

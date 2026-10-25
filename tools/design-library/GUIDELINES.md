@@ -395,7 +395,7 @@ two extremes.
 
 ## 4. Placeholder copy
 
-It is shown to merchants and can reach visitors through **Use this design's
+It is shown to merchants and can reach visitors through **Use the template’s
 sample content** (ADR 0075), so it teaches the house style and must be truthful.
 
 - **British English.** *Personalise*, *colour*, *organise*.

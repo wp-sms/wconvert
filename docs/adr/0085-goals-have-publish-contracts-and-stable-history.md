@@ -33,7 +33,9 @@ optional.*
 The shared contract drives starting-point facts, fit-first browsing, readiness and
 reporting copy. The server checks the final edited tree. Incomplete pairings can
 save as drafts. Show all designs remains available, and Templates acquire no Goal
-tags. Existing unrelated structural, binding and A/B compatibility checks remain.
+tags. *Amended by [ADR 0171](0171-one-template-gallery.md): in the editor's Change
+template the choice is a "Show" select, "For “goal”" by default and "All
+templates"; creation has no fit control, since a goal's templates are its own.* Existing unrelated structural, binding and A/B compatibility checks remain.
 **Presentation amended by [ADR 0087](0087-choices-first-details-on-demand.md):**
 the Goal is a compact footer control, with metric detail on demand.
 *Amended by [ADR 0163](0163-capture-toggle.md): this said fit uses the

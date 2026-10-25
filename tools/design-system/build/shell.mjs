@@ -100,11 +100,10 @@ function nodes(css) {
 
 const kept = nodes(source).filter((node) => {
   /*
-   * The chosen state is vocabulary wherever it is written, and it is written
-   * on two selectors at once — `.wconvert-gallery__card.is-chosen` beside
-   * `.wconvert-choice.is-chosen`, because it is ONE decision about what
-   * "selected" looks like. Testing the layout list first dropped it for
-   * naming the gallery, which is exactly the rule this bundle wants to show.
+   * The chosen state is vocabulary wherever it is written —
+   * `.wconvert-choice.is-chosen` is ONE decision about what "selected" looks
+   * like. Testing the layout list first dropped it for naming a component,
+   * which is exactly the rule this bundle wants to show.
    */
   if (node.includes('.is-chosen')) {
     return true;

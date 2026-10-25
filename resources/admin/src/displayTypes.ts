@@ -1,5 +1,4 @@
 import { __ } from '@wordpress/i18n';
-import { isFreeInstall } from './goals/availability';
 import { humanize } from './lib/format';
 
 /**
@@ -31,25 +30,4 @@ export function displayTypeDescription(type?: string): string {
     slide_in: __('Panel in a page corner', 'wconvert'),
     fullscreen: __('Covers the browser viewport', 'wconvert'),
   } as Record<string, string>)[type ?? ''] ?? '';
-}
-
-/** The formats free ships; every other one arrives with Pro's display-types module. */
-const FREE_DISPLAY_TYPES: readonly string[] = ['popup', 'inline'];
-
-/**
- * The formats a picker offers. A free install is offered only the two it can
- * publish — a format it could only buy is not a choice there (ADR 0116).
- *
- * `current` keeps a saved value selectable after Pro was removed, so a select
- * never silently shows a format the draft does not have.
- */
-/** The formats a free install can't show, by name: what the format picker's Pro hint lists (ADR 0147). */
-export function proDisplayTypeLabels(): readonly string[] {
-  return DISPLAY_TYPES.filter((value) => !FREE_DISPLAY_TYPES.includes(value)).map(displayTypeLabel);
-}
-
-export function displayTypeOptions(current?: string): readonly { value: string; label: string }[] {
-  return DISPLAY_TYPES
-    .filter((value) => !isFreeInstall() || FREE_DISPLAY_TYPES.includes(value) || value === current)
-    .map((value) => ({ value, label: displayTypeLabel(value) }));
 }

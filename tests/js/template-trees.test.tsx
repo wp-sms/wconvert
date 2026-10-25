@@ -1,7 +1,7 @@
 import { treeFixture } from './support/journey';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { useTemplateTrees } from '../../resources/admin/src/builder/TemplatePicker';
+import { useTemplateTrees } from '../../resources/admin/src/builder/useTemplateTrees';
 
 const design = (id: string) => ({ id, tree: treeFixture({ steps: [] }), tokens: {} });
 

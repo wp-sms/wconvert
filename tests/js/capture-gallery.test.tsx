@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import type { Template } from '../../resources/renderer/src/types';
 import type { TemplateIndexEntry, TemplateLabelsWithFacets } from '../../resources/admin/src/templates/api';
-import { conversionOf, type Fit } from '../../resources/admin/src/builder/Gallery';
+import { conversionOf, type Fit } from '../../resources/admin/src/gallery/conversion';
 import { TemplateDesignDetail } from '../../resources/admin/src/builder/TemplateDesignDetail';
 import { conversionFor, otherSideOf } from '../../resources/admin/src/builder/structure/captureConversion';
 import { GOALS } from './support/goals';

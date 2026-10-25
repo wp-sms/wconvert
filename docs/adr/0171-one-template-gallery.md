@@ -1,11 +1,11 @@
 # 0171: One template gallery
 
-Accepted 2026-10-25. Amends 0112, 0116 and 0156 §9.
+Accepted 2026-10-25. Amends 0026, 0039, 0043, 0069, 0085, 0086, 0087, 0112, 0116, 0132, 0134, 0137, 0147, 0156 §9 and 0163.
 
 The approved prototype (v5, 2026-10-24, branch `prototype/template-gallery`)
 replaces the creation flow's step 2 and the editor's design picker with one
-gallery of templates. This ADR lands with the slices that build it; this
-section records the data the gallery stands on.
+gallery of templates. This ADR landed with the slices that built it: the data,
+step 2, then the editor.
 
 ## One answer for step 2
 
@@ -89,3 +89,38 @@ rather than a preference. Picker preferences keep `saved`, `hidden` and
 Inspection is a larger look at one card: Desktop/Mobile, Fit/Actual size, its
 screens, its gist and the same one action. The setup facts list that lived
 there is gone with the prototype; the editor shows what a draft needs.
+
+## The editor's Change template is the same gallery
+
+The editor's design browser, its own grid, card, toolbar and comparison, is
+gone. Look's **Change template** opens the gallery above, one card per design
+(`mergeDesigns` over the template index), titled "Change template" and saying
+"Your words, rules and placement stay. Only the design changes."
+
+1. **A "Show" select after Format**: "For “goal”" by default, the designs that
+   fit the campaign's Goal, or "All templates". Under All templates a design
+   the form switch would convert carries its chip and action — "Email form
+   added", "Use with email form" (ADR 0163). The fit filter is the editor's
+   alone; creation's templates are already the goal's.
+2. **The template in use comes first**, marked "Current template", with no
+   action; then the ones that fit, then the index's order. "For “goal”" is a
+   filter like the others, so the count still says how many templates there
+   are ("3 of 50"). Format starts at
+   All formats, as the prototype does; picking a template in another format
+   says "Switch to …" in its review. Each opening starts unfiltered.
+3. **More filters adds the editor's extras**: the library's Industry, Occasion
+   and Style, Layout, and With a picture, each a chip when on.
+4. **Use template opens the review** — keep my words or the sample's, what
+   changes, the refusal if this Optin cannot take it — and only the review's
+   button replaces the design, undoably. The grid stays mounted under it, so
+   Back returns to the same card and scroll. An online card installs first,
+   then opens the same review; Get the newer version does the same with the
+   newer revision; a failed install is said on the card with Try again.
+5. **A refusal is said in the review, not on the card.** The cards were
+   already preview-first: what this Optin would refuse is read beside the
+   button it disables.
+6. **The format picker's Pro hint is gone** (ADR 0147 is amended): a format
+   only locked cards use is "· Pro" in Format, and the locked cards say the rest.
+
+The UI word is "template" through the review as well: "Use this template",
+"Current template", "Back to templates".

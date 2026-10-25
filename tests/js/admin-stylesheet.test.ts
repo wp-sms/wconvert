@@ -132,7 +132,7 @@ describe('the design picker', () => {
    * ==========================================================================
    * A CARD NOBODY HAS SCROLLED TO COSTS NO LAYOUT (ADR 0043).
    * ==========================================================================
-   * `TemplateCard`'s observer stops an off-screen card being BUILT; this stops
+   * The stage's observer stops an off-screen card being BUILT; this stops
    * one that already exists — the screenful the merchant just scrolled past,
    * still mounted because it is inside the observer's margin — from being laid
    * out and painted. Neither alone reaches where the pair does, and the suite
@@ -144,7 +144,7 @@ describe('the design picker', () => {
    * forty moves the scrollbar under the merchant's thumb.
    */
   it('does not lay out a card that is off screen, and still reserves its height', () => {
-    const rule = /\.wconvert-gallery__card\s*\{([^}]*)\}/.exec(CSS)?.[1] ?? '';
+    const rule = /\.wconvert-template-card\s*\{([^}]*)\}/.exec(CSS)?.[1] ?? '';
 
     expect(rule).toMatch(/content-visibility:\s*auto/);
     expect(rule).toMatch(/contain-intrinsic-size:/);

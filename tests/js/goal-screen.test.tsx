@@ -227,7 +227,7 @@ describe('step 2: one template gallery', () => {
     const { container } = render(<GoalScreen onCreated={vi.fn()} />);
     await pickGoal();
     await cardOf('Welcome discount');
-    await waitFor(() => expect(container.querySelectorAll('.wconvert-template-card .wconvert-stage[data-display-type="popup"] .wconvert-preview')).toHaveLength(1));
+    await waitFor(() => expect(container.querySelectorAll('.wconvert-template-card .wconvert-stage[data-display-type="popup"] .wconvert-stage__design > div')).toHaveLength(1));
   });
 
   it('filters by format, offering only the formats it has', async () => {

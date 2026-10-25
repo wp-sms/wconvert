@@ -35,12 +35,12 @@ locked design to a free install, so `locked.json` stays in the ZIP but never
 reaches the payload. Surfaces that don't route through `renderingFor` (format
 picker, starting points, rule notes, the A/B item, packs, analytics, reopen and
 inline-placement fallbacks) filter on the same `isFreeInstall()`.
-*(Starting points: see the [ADR 0171](0171-one-template-gallery.md) note below.)*
+*(Starting points and the format picker: see the [ADR 0171](0171-one-template-gallery.md) note below.)*
 
 > _Amended by [ADR 0147](0147-free-names-what-pro-adds-where-it-is-wanted.md): a locked member is still never drawn, but the list where it would sit may end in one line of text naming it — "Also in WConvert Pro ↗: …" — under that ADR's eight rules. Text, never an item._
 
 > _Superseded for designs only by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md): in the design picker, where Pro hints are wanted, a free install sees a Pro design as a locked image card — thumbnail, plan name, a link to wconvert.io, no control. Every other surface keeps this rule, and `locked.json` no longer exists._
-> _Amended by [ADR 0171](0171-one-template-gallery.md): creation's step 2 is the same gallery, so a Pro setup reaches it as the same locked card under the same hint gate; every other surface still keeps this rule._
+> _Amended by [ADR 0171](0171-one-template-gallery.md): creation's step 2 is the same gallery, so a Pro setup reaches it as the same locked card under the same hint gate. The editor's design picker is that gallery too, and its format choice is the gallery's Format select, which names a format only locked cards use "· Pro" rather than filtering on `isFreeInstall()`. Every other surface still keeps this rule._
 
 > _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): "starting points" in this list were the rule panel's rule sets, which are gone. The Display rules Quick picks route through `renderingFor` and hide a locked pick the same way._
 

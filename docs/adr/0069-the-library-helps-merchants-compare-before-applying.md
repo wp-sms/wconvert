@@ -82,6 +82,7 @@ content radios themselves say which content the preview shows ("Keep my words
 and images", "Use the design's sample content"), so no separate preview label
 repeats them.* **Keep my content** remains
 the default; **Use this design's sample content** is now available under [ADR 0075](0075-draft-history-and-template-content-choices-stay-predictable.md).
+*(Worded "Use the template's sample content" and "Use this template" since [ADR 0171](0171-one-template-gallery.md).)*
 Beside **Use this design**, explain the replacement scope (*amended by
 [0137](0137-details-and-previews-read-at-a-glance.md): as the footer's one-line note, with the preview on the start side and the
 content choice and facts beside it*). Prepare the normalized

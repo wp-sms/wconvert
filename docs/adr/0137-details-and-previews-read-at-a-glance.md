@@ -89,7 +89,10 @@ and none could be read at a glance:
    content-lock, format, refusal and act-change notes. What applying does is
    the footer's note — "Replaces this draft's design. You can undo.", plus
    "Field mappings for missing fields are removed." when some would be — and
-   the Apply button is still described by it.
+   the Apply button is still described by it. *Amended by [ADR 0171](0171-one-template-gallery.md): the words are
+   "template" now — "Current template", "Use the template's sample content",
+   "Replaces this draft's template. You can undo.", "Use this template" — and
+   the library switch is the gallery's "Show" select.*
 
 ## Consequences
 

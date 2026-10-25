@@ -103,11 +103,11 @@ export function DesignSettings({
         <PlacementControl displayType={displayType} value={placement} onChange={onPlacementChange} />
       </PanelSection>
       {['popup', 'slide_in'].includes(displayType) && <ReopenSettings value={teaser} template={template} onChange={onTeaserChange} />}
-      <PanelSection title={__('Design', 'wconvert')}>
-        <FactList><FactRow label={__('Design', 'wconvert')}>{name}</FactRow></FactList>
+      <PanelSection title={__('Template', 'wconvert')}>
+        <FactList><FactRow label={__('Template', 'wconvert')}>{name}</FactRow></FactList>
         <Button ref={browseRef} variant="outline" size="sm" className="justify-self-start" onClick={onBrowse}>
           <LayoutTemplate aria-hidden="true" />
-          {__('Browse designs and formats', 'wconvert')}
+          {__('Change template', 'wconvert')}
         </Button>
       </PanelSection>
       <div className="wconvert-panel-foot">

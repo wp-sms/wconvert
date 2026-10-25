@@ -12,6 +12,7 @@
 @container wconvert-gallery (max-width: 1180px) { .wconvert-template-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @container wconvert-gallery (max-width: 620px) { .wconvert-template-grid { grid-template-columns: minmax(0, 1fr); } }
 
+/* An off-screen card costs no layout, and holds its height so the scrollbar stays put (ADR 0043). */
 .wconvert-template-card { display: flex; flex-direction: column; min-inline-size: 0; overflow: hidden; border: 1px solid var(--border); border-radius: 8px; background: var(--card); content-visibility: auto; contain-intrinsic-size: auto 420px; }
 .wconvert-template-card__stage { position: relative; border-block-end: 1px solid var(--border); }
 .wconvert-template-card__inspect { position: absolute; inset: 0; z-index: 2; border: 0; background: transparent; cursor: zoom-in; }

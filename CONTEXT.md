@@ -1016,6 +1016,11 @@ one is checked once.
 
 ### Template
 
+Shown as a **template** too: the editor's "Change template" is the same gallery
+as creation's, one card per Template (ADR 0171). A Template and a [[Playbook]]
+share the UI word because the merchant picks either the same way; in code they
+stay two concepts.
+
 A Template may declare optional decorative groups on panels/media and Google
 font requirements. The Look panel offers only each declared group's visibility;
 placement and motion remain authored. Remote font delivery is a separate,

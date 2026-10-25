@@ -159,16 +159,16 @@ function whyActionIsRefused(tree: TemplateTree, action: string, act: ConvertingA
   if ((act === 'submit' && action === 'link') || (act === 'click' && !['link', 'close'].includes(action))) {
     return act === 'submit'
       ? {
-          short: __('Needs a design that links away', 'wconvert'),
+          short: __('Needs a template that links away', 'wconvert'),
           reason: __(
-            'A design that submits has a second step for what the visitor sees afterwards, and a design that links away has none. Pick a design that links away from the Look’s Browse designs and formats.',
+            'A template that submits has a second step for what the visitor sees afterwards, and a template that links away has none. Pick a template that links away from the Look’s Change template.',
             'wconvert',
           ),
         }
       : {
-          short: __('Needs a design that submits', 'wconvert'),
+          short: __('Needs a template that submits', 'wconvert'),
           reason: __(
-            'A design that links away has no second step, and one that submits needs one for what the visitor sees afterwards. Pick a design that submits from the Look’s Browse designs and formats.',
+            'A template that links away has no second step, and one that submits needs one for what the visitor sees afterwards. Pick a template that submits from the Look’s Change template.',
             'wconvert',
           ),
         };

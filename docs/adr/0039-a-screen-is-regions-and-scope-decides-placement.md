@@ -217,7 +217,7 @@ region error, which is this rule read correctly rather than an exception to it.*
 ***And the Design tab was two concerns in one region*** (ADR 0043). *(There is
 no Design tab since [ADR 0134](0134-one-edit-tab-look-screen-element.md); its
 look is the Edit tab's **Look** panel, and choosing a design is still a dialog,
-opened from the Look's "Browse designs and formats".)* It held
+opened from the Look's "Browse designs and formats" — "Change template" since [ADR 0171](0171-one-template-gallery.md).)* It held
 *choose a design* and *adjust the look*. At three cards that was invisible; at
 forty the gallery swamps the tokens the tab is named for, and the merchant who
 came to change one colour scrolls past the whole library to reach it. Choosing a
