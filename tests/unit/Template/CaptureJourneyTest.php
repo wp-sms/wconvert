@@ -230,7 +230,7 @@ final class CaptureJourneyTest extends TestCase
         $result = $form->validate(['fields' => ['email' => 'visitor@example.com', 'interest' => 'quote']]);
         self::assertInstanceOf(\WConvert\Lead\Submission::class, $result);
         self::assertSame('quote', $result->fields['interest']);
-        $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/resources/templates/library/journey-email-then-sms.json'), true);
+        $template = \WConvert\Tests\Unit\Support\BundledJourney::design('journey-email-then-sms');
         $email = \WConvert\Lead\CaptureForm::fromTemplate($template, $vocabulary, 'email-signup')
             ->validate(['fields' => ['email' => 'visitor@example.com', 'phone' => '+12025551234'], 'consent' => true]);
         self::assertInstanceOf(\WConvert\Lead\Submission::class, $email);

@@ -26,12 +26,12 @@ return [
         'cta_label' => __('Request release texts', 'wconvert'),
         'consent_text' => [
             /* translators: %s: the label of a link to the site's privacy policy. */
-            'text' => __('Send me new-release text alerts. %s', 'wconvert'),
+            'text' => __('I agree to receive marketing texts about new releases. %s', 'wconvert'),
             'link' => ['label' => __('Privacy Policy', 'wconvert')],
         ],
         'fine_print' => [
             /* translators: %s: the label of a link to the site's privacy policy. */
-            'text' => __('Text alerts. Message rates may apply. Stop anytime. %s', 'wconvert'),
+            'text' => __('Message rates may apply. Opt out at any time. %s', 'wconvert'),
             'link' => ['label' => __('Privacy Policy', 'wconvert')],
         ],
         'success_headline' => __('Request received', 'wconvert'),

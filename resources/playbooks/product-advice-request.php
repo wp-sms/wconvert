@@ -11,7 +11,7 @@ return [
     'notes' => __('Embed on the relevant product page and tailor the choices to that product. Assign a person to reply; this form does not reserve stock.', 'wconvert'),
     'copy' => [
         'headline' => __('A little help choosing?', 'wconvert'),
-        'body' => __('Tell us which detail you need help with. We will use your email to reply.', 'wconvert'),
+        'body' => __('Choose the detail you would like help with. We will reply by email, where you can tell us more.', 'wconvert'),
         'name_label' => __('Your name (optional)', 'wconvert'),
         'name_placeholder' => __('Alex Morgan', 'wconvert'),
         'email_label' => __('Email address', 'wconvert'),
@@ -36,9 +36,9 @@ return [
         ],
         'cta_label' => __('Request product advice', 'wconvert'),
         'consent_text' => __('Use my details to reply to this product enquiry.', 'wconvert'),
-        'fine_print' => __('We use your details to respond to this request. No appointment is confirmed.', 'wconvert'),
+        'fine_print' => __('We use your details only to reply. Stock is not reserved.', 'wconvert'),
         'success_headline' => __('Request received', 'wconvert'),
-        'success_body' => __('Thank you. We have received your request.', 'wconvert')
+        'success_body' => __('Thank you. We will reply by email about the detail you chose.', 'wconvert')
     ],
     'rules' => [['type' => 'page_load']],
     'destination_hint' => ['types' => [], 'fields' => ['email']],

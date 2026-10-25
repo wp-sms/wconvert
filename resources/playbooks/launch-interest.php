@@ -18,8 +18,8 @@ return [
         'cta_label' => __('Request launch news', 'wconvert'),
         'consent_text' => __('Email me news about this launch. I can unsubscribe anytime.', 'wconvert'),
         'fine_print' => __('Launch news only. This is not a preorder.', 'wconvert'),
-        'success_headline' => __('Request received', 'wconvert'),
-        'success_body' => __('Thank you. We have received your request.', 'wconvert')
+        'success_headline' => __('Launch news requested', 'wconvert'),
+        'success_body' => __('Thank you for requesting launch news. It is not a preorder, so nothing is reserved.', 'wconvert')
     ],
     'rules' => [['type' => 'time_on_page', 'seconds' => 15]],
     'destination_hint' => ['types' => [], 'fields' => ['email']],

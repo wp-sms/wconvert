@@ -1,0 +1,47 @@
+{
+  "id": "related-essay",
+  "revision": "92f5d0a88a39c0627514ff426ce38c0835a645cec7295a0647f67405a0923c9b",
+  "base_id": "7c6e9ac338e166f2a564122500cf3a7808f96c25a30ee89c055acb7875ce8b52",
+  "decision": "approved",
+  "reviewer": "Claude",
+  "note": "Revision of the 20 October request; see review.md for what changed and why it now passes.",
+  "at": "2026-10-25T18:00:00Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/related-essay-320.png",
+          "sha256": "791fa49d470fd32e4ba4edf05a2825b31b45765182c00961085413c432964c0a"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/related-essay-1440.png",
+          "sha256": "4efdd7500fa8b182abd463d1d722b3694ff87e71ed6fa7b1865d5e8cc60a3981"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/review.md",
+          "sha256": "438777d237ee10d12f22d764d859c4d671cd876f0b72e0bcaf0afc84d211265e"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "30c7764d8e1a150bdc7441c3911f7e8da31476cf95a1c628e9b2f5185d21b79a"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "30c7764d8e1a150bdc7441c3911f7e8da31476cf95a1c628e9b2f5185d21b79a"
+        }
+      ]
+    }
+  },
+  "record_id": "0ae930bb3a9462fe71ebd860a49f136fab730e7790ad7db76714d75158d5d69b"
+}

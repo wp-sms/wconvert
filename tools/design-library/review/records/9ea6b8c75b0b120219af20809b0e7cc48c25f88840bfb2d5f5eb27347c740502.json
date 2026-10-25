@@ -1,0 +1,47 @@
+{
+  "id": "accounting-consultation",
+  "revision": "e531200ac8141cf082d3369810557d6af6e02e473edf0f136601ba131f5fc28b",
+  "base_id": "9c77a654234c16e3f07702d319d958a960b2baa151c0b815415be35f2923c080",
+  "decision": "approved",
+  "reviewer": "Claude",
+  "note": "Revision of the 20 October request; see review.md for what changed and why it now passes.",
+  "at": "2026-10-25T18:00:00Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/accounting-consultation-320.png",
+          "sha256": "e455dcdc358545811d65423d6db5a8833d29d6fe68046e7ef64c1c5ace35f738"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/accounting-consultation-1440.png",
+          "sha256": "5ebb16168da371ff6397c86c679143a86e2983b90ece3d271dc71abeebfd67d1"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/review.md",
+          "sha256": "438777d237ee10d12f22d764d859c4d671cd876f0b72e0bcaf0afc84d211265e"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "30c7764d8e1a150bdc7441c3911f7e8da31476cf95a1c628e9b2f5185d21b79a"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "30c7764d8e1a150bdc7441c3911f7e8da31476cf95a1c628e9b2f5185d21b79a"
+        }
+      ]
+    }
+  },
+  "record_id": "9ea6b8c75b0b120219af20809b0e7cc48c25f88840bfb2d5f5eb27347c740502"
+}

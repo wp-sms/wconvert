@@ -1250,6 +1250,7 @@
       ]
     },
     "makers-index": {
+      "description": "A maker's enquiry popup: a small product index card with a mug drawing beside a short note-to-the-studio form.",
       "slug": "makers-index",
       "industries": [
         "general"
@@ -1364,6 +1365,7 @@
       ]
     },
     "number-invitation": {
+      "description": "A weekly-read signup where a large numeral and a one-line promise sit beside a short email form.",
       "slug": "number-invitation",
       "industries": [
         "arts-events"
@@ -1706,6 +1708,7 @@
       ]
     },
     "reader-review": {
+      "description": "A quiet editorial signup with room for one verified reader review above the form.",
       "slug": "reader-review",
       "industries": [
         "books-publishing"
@@ -2114,6 +2117,7 @@
       ]
     },
     "split-hero": {
+      "description": "A split welcome-offer popup with a warm abstract sunrise beside a short email form.",
       "slug": "split-hero",
       "industries": [
         "general"

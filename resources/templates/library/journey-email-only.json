@@ -52,7 +52,7 @@
               "type": "consent",
               "id": "n3",
               "role": "consent_text",
-              "hidden": false,
+              "hidden": true,
               "text": "Email me news and offers."
             },
             {

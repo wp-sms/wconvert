@@ -4,7 +4,10 @@ import { bindJourney as free } from '@loader/journey';
 import { bindJourney as pro } from '../../pro/modules/journeys/loader/journey';
 import { verify } from '@loader/protection';
 import type { Template } from '@renderer/types';
-import source from '../../resources/templates/library/journey-email-then-sms.json';
+import sourceJson from '../../resources/templates/library/journey-email-then-sms.json';
+import { consentShown } from './support/designs';
+
+const source = consentShown(sourceJson);
 vi.mock('@loader/protection', async original => ({ ...await original<typeof import('@loader/protection')>(), verify: vi.fn() }));
 afterEach(() => { document.body.replaceChildren(); vi.unstubAllGlobals(); vi.mocked(verify).mockReset(); });
 const settle = async () => { for (let i = 0; i < 30; i++) await Promise.resolve(); };

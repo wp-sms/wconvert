@@ -70,3 +70,7 @@ background replacement and button colors remain editable.
 `halloween-pumpkin.png` is the pumpkin's reviewed 256 × 256 raster export for the
 catalogue download, made once in Chromium; the bundled design keeps the vector.
 See `docs/reviews/halloween-library-2026-10-21/pumpkin-export.md`.
+
+## Drawing derivatives · 25 October 2026
+
+Thirteen drawings embedded in twelve Free designs now have reviewed PNG derivatives, so the catalogue can export those designs: `collection-poster`, `inline-checklist` (Inline split), `makers-mug` (The maker's index), `garment-measurement`, `night-observatory`, `invitation-check` (The number is the invitation), `everyday-goods` (Photo offer), `portrait-study`, `workspace-before`, `workspace-after`, `reader-avatar` (Let a reader say it), `sunrise-gradient` (Split hero) and `botanical-still-life` (Studio window). Each SVG is the design's own source, extracted unchanged; each PNG is a one-time resvg-js 2.6.2 export. All are original WConvert geometric artwork under GPL-2.0-or-later with no third-party resources, and Free assets. The bundled designs keep their vectors. Source, PNG and report hashes are pinned in `publishing/catalog.json`; see `docs/reviews/drawing-exports-2026-10-25/report.md`.

@@ -5,7 +5,11 @@
     "big-number",
     "glacier",
     "kind-words",
+    "makers-index",
+    "number-invitation",
+    "reader-review",
     "ribbon-tag",
+    "split-hero",
     "ticker-line"
   ],
   "withdrawn": [],
@@ -730,6 +734,97 @@
       "redistribution": true,
       "reviewedBy": "Claude — provenance and raster review (no text, logos or faces; artefacts checked at full size), 2026-10-21",
       "access": "premium"
+    },
+    "36cd86fe2e48e7cb99db04dfab558e2b76d52a11911c3349c7e36124b992c65d": {
+      "kind": "original",
+      "source": "Original WConvert collection-poster.svg, extracted unchanged from collection-poster; GPL-2.0-or-later. Reviewed 1200 × 500 raster export: collection-poster.png. See docs/reviews/drawing-exports-2026-10-25/report.md.",
+      "redistribution": true,
+      "reviewedBy": "Claude — provenance and raster review, 2026-10-25",
+      "access": "free"
+    },
+    "84f558f81077f3fc96018b2e8e0865ccf065b66bec851939989fcad55203c77e": {
+      "kind": "original",
+      "source": "Original WConvert inline-checklist.svg, extracted unchanged from inline-split; GPL-2.0-or-later. Reviewed 1200 × 525 raster export: inline-checklist.png. See docs/reviews/drawing-exports-2026-10-25/report.md.",
+      "redistribution": true,
+      "reviewedBy": "Claude — provenance and raster review, 2026-10-25",
+      "access": "free"
+    },
+    "4d416c51f032bf1a582e094dc6a3624c7a0556ee69983e03c0fbc88a73e1416d": {
+      "kind": "original",
+      "source": "Original WConvert makers-mug.svg, extracted unchanged from makers-index; GPL-2.0-or-later. Reviewed 520 × 280 raster export: makers-mug.png. See docs/reviews/drawing-exports-2026-10-25/report.md.",
+      "redistribution": true,
+      "reviewedBy": "Claude — provenance and raster review, 2026-10-25",
+      "access": "free"
+    },
+    "80ccc21852de2f3555828a96c498cc9ece53a99d9d3df9d6e124c259ce4e65f7": {
+      "kind": "original",
+      "source": "Original WConvert garment-measurement.svg, extracted unchanged from measurement-map; GPL-2.0-or-later. Reviewed 1200 × 760 raster export: garment-measurement.png. See docs/reviews/drawing-exports-2026-10-25/report.md.",
+      "redistribution": true,
+      "reviewedBy": "Claude — provenance and raster review, 2026-10-25",
+      "access": "free"
+    },
+    "c0d75ce248fc179d99415b9a774df7402e0617183bbbf9bd57997762394e817e": {
+      "kind": "original",
+      "source": "Original WConvert night-observatory.svg, extracted unchanged from night-observatory; GPL-2.0-or-later. Reviewed 2000 × 520 raster export: night-observatory.png. See docs/reviews/drawing-exports-2026-10-25/report.md.",
+      "redistribution": true,
+      "reviewedBy": "Claude — provenance and raster review, 2026-10-25",
+      "access": "free"
+    },
+    "f66edd13d7a13236586790179885b9150f7c20e683f7143929aba7547b984896": {
+      "kind": "original",
+      "source": "Original WConvert invitation-check.svg, extracted unchanged from number-invitation; GPL-2.0-or-later. Reviewed 400 × 200 raster export: invitation-check.png. See docs/reviews/drawing-exports-2026-10-25/report.md.",
+      "redistribution": true,
+      "reviewedBy": "Claude — provenance and raster review, 2026-10-25",
+      "access": "free"
+    },
+    "310c8f6efe97ca51f2bc77e555a3f8dad7564c78644c524989c82839974e6151": {
+      "kind": "original",
+      "source": "Original WConvert everyday-goods.svg, extracted unchanged from photo-offer; GPL-2.0-or-later. Reviewed 1200 × 525 raster export: everyday-goods.png. See docs/reviews/drawing-exports-2026-10-25/report.md.",
+      "redistribution": true,
+      "reviewedBy": "Claude — provenance and raster review, 2026-10-25",
+      "access": "free"
+    },
+    "f7390525688a6814466f8babea517b52a78f5af8b359e7e8d0b7235e13dc63bf": {
+      "kind": "original",
+      "source": "Original WConvert portrait-study.svg, extracted unchanged from portrait-frame; GPL-2.0-or-later. Reviewed 1280 × 680 raster export: portrait-study.png. See docs/reviews/drawing-exports-2026-10-25/report.md.",
+      "redistribution": true,
+      "reviewedBy": "Claude — provenance and raster review, 2026-10-25",
+      "access": "free"
+    },
+    "9041ee999c3bf534557455e6b74dec8686ad38fd958702f149bccb72e6f6ac3b": {
+      "kind": "original",
+      "source": "Original WConvert workspace-before.svg, extracted unchanged from project-pair; GPL-2.0-or-later. Reviewed 960 × 600 raster export: workspace-before.png. See docs/reviews/drawing-exports-2026-10-25/report.md.",
+      "redistribution": true,
+      "reviewedBy": "Claude — provenance and raster review, 2026-10-25",
+      "access": "free"
+    },
+    "f43f16c5eadf83348e9d5abf24935b095f681155ef41e7e6653449fa01e4dbe1": {
+      "kind": "original",
+      "source": "Original WConvert workspace-after.svg, extracted unchanged from project-pair; GPL-2.0-or-later. Reviewed 960 × 600 raster export: workspace-after.png. See docs/reviews/drawing-exports-2026-10-25/report.md.",
+      "redistribution": true,
+      "reviewedBy": "Claude — provenance and raster review, 2026-10-25",
+      "access": "free"
+    },
+    "939186c57d92069e52a28e4b60e02d063508d3854a34d158b111a701048874f8": {
+      "kind": "original",
+      "source": "Original WConvert reader-avatar.svg, extracted unchanged from reader-review; GPL-2.0-or-later. Reviewed 480 × 480 raster export: reader-avatar.png. See docs/reviews/drawing-exports-2026-10-25/report.md.",
+      "redistribution": true,
+      "reviewedBy": "Claude — provenance and raster review, 2026-10-25",
+      "access": "free"
+    },
+    "011c0e7b1cddd15fe8f48ff95a11973d8052709d25cead64471ea007e923db16": {
+      "kind": "original",
+      "source": "Original WConvert sunrise-gradient.svg, extracted unchanged from split-hero; GPL-2.0-or-later. Reviewed 1200 × 600 raster export: sunrise-gradient.png. See docs/reviews/drawing-exports-2026-10-25/report.md.",
+      "redistribution": true,
+      "reviewedBy": "Claude — provenance and raster review, 2026-10-25",
+      "access": "free"
+    },
+    "c3826bc559873d5eba2658239400f7e1f719f9a4256c20c00e47115e346cf0d1": {
+      "kind": "original",
+      "source": "Original WConvert botanical-still-life.svg, extracted unchanged from studio-window; GPL-2.0-or-later. Reviewed 1000 × 960 raster export: botanical-still-life.png. See docs/reviews/drawing-exports-2026-10-25/report.md.",
+      "redistribution": true,
+      "reviewedBy": "Claude — provenance and raster review, 2026-10-25",
+      "access": "free"
     }
   },
   "artwork_exports": {
@@ -767,6 +862,123 @@
       "evidence": {
         "path": "docs/reviews/halloween-library-2026-10-21/pumpkin-export.md",
         "sha256": "71a62f1a398bfd3b5d81ac174a7c45b4f3b0fdda15d1f9d6381541d6733be116"
+      }
+    },
+    "530efb5b8b7fd78d30b7a53af09412b7950b9f6194f757bc0e5f0da65df5a4f2": {
+      "path": "tools/design-library/pilot/assets/collection-poster.png",
+      "sha256": "36cd86fe2e48e7cb99db04dfab558e2b76d52a11911c3349c7e36124b992c65d",
+      "mime": "image/png",
+      "evidence": {
+        "path": "docs/reviews/drawing-exports-2026-10-25/report.md",
+        "sha256": "3f47d0091905d979ea0ba12b4960d42a51e3396be9585e5cfb985360e2d31a61"
+      }
+    },
+    "dd6a9049cc4c13ac923d730596c2609215ab58de81f69e5acb2a22d224b63f04": {
+      "path": "tools/design-library/pilot/assets/inline-checklist.png",
+      "sha256": "84f558f81077f3fc96018b2e8e0865ccf065b66bec851939989fcad55203c77e",
+      "mime": "image/png",
+      "evidence": {
+        "path": "docs/reviews/drawing-exports-2026-10-25/report.md",
+        "sha256": "3f47d0091905d979ea0ba12b4960d42a51e3396be9585e5cfb985360e2d31a61"
+      }
+    },
+    "6ddcbdd7139f8753c95bec6980214f6454fe8a09e36a6c0a8f0c3112e3d0955d": {
+      "path": "tools/design-library/pilot/assets/makers-mug.png",
+      "sha256": "4d416c51f032bf1a582e094dc6a3624c7a0556ee69983e03c0fbc88a73e1416d",
+      "mime": "image/png",
+      "evidence": {
+        "path": "docs/reviews/drawing-exports-2026-10-25/report.md",
+        "sha256": "3f47d0091905d979ea0ba12b4960d42a51e3396be9585e5cfb985360e2d31a61"
+      }
+    },
+    "18c7e505ecd4c200e08e7aeb8b60d89d1f750da8686ca9cd984d2725744351bb": {
+      "path": "tools/design-library/pilot/assets/garment-measurement.png",
+      "sha256": "80ccc21852de2f3555828a96c498cc9ece53a99d9d3df9d6e124c259ce4e65f7",
+      "mime": "image/png",
+      "evidence": {
+        "path": "docs/reviews/drawing-exports-2026-10-25/report.md",
+        "sha256": "3f47d0091905d979ea0ba12b4960d42a51e3396be9585e5cfb985360e2d31a61"
+      }
+    },
+    "c48a47d8b5412d6ac13a41404fb22555790a643d1538a282cf0e2ad8585a1a27": {
+      "path": "tools/design-library/pilot/assets/night-observatory.png",
+      "sha256": "c0d75ce248fc179d99415b9a774df7402e0617183bbbf9bd57997762394e817e",
+      "mime": "image/png",
+      "evidence": {
+        "path": "docs/reviews/drawing-exports-2026-10-25/report.md",
+        "sha256": "3f47d0091905d979ea0ba12b4960d42a51e3396be9585e5cfb985360e2d31a61"
+      }
+    },
+    "9a1b52d7612e8f23f0a706d48650df1f15f7ffa078b091ac79be7f8fcd105922": {
+      "path": "tools/design-library/pilot/assets/invitation-check.png",
+      "sha256": "f66edd13d7a13236586790179885b9150f7c20e683f7143929aba7547b984896",
+      "mime": "image/png",
+      "evidence": {
+        "path": "docs/reviews/drawing-exports-2026-10-25/report.md",
+        "sha256": "3f47d0091905d979ea0ba12b4960d42a51e3396be9585e5cfb985360e2d31a61"
+      }
+    },
+    "1cd52bf7aca5d2f4c7c34c3005ba5024174dcff1f1891e0f31765f988a297077": {
+      "path": "tools/design-library/pilot/assets/everyday-goods.png",
+      "sha256": "310c8f6efe97ca51f2bc77e555a3f8dad7564c78644c524989c82839974e6151",
+      "mime": "image/png",
+      "evidence": {
+        "path": "docs/reviews/drawing-exports-2026-10-25/report.md",
+        "sha256": "3f47d0091905d979ea0ba12b4960d42a51e3396be9585e5cfb985360e2d31a61"
+      }
+    },
+    "78abd267073b52674f71a8d062760bdd49faa94cf03da1de92cc2ffda621c4b4": {
+      "path": "tools/design-library/pilot/assets/portrait-study.png",
+      "sha256": "f7390525688a6814466f8babea517b52a78f5af8b359e7e8d0b7235e13dc63bf",
+      "mime": "image/png",
+      "evidence": {
+        "path": "docs/reviews/drawing-exports-2026-10-25/report.md",
+        "sha256": "3f47d0091905d979ea0ba12b4960d42a51e3396be9585e5cfb985360e2d31a61"
+      }
+    },
+    "387d47f3d537db2cfc60121bace7b08a39c952b8d7b7a8f47d6956d113787321": {
+      "path": "tools/design-library/pilot/assets/workspace-before.png",
+      "sha256": "9041ee999c3bf534557455e6b74dec8686ad38fd958702f149bccb72e6f6ac3b",
+      "mime": "image/png",
+      "evidence": {
+        "path": "docs/reviews/drawing-exports-2026-10-25/report.md",
+        "sha256": "3f47d0091905d979ea0ba12b4960d42a51e3396be9585e5cfb985360e2d31a61"
+      }
+    },
+    "ac113ef4131ef2d3e3b187a5b436a6197aebadbc42485202214eda26be687924": {
+      "path": "tools/design-library/pilot/assets/workspace-after.png",
+      "sha256": "f43f16c5eadf83348e9d5abf24935b095f681155ef41e7e6653449fa01e4dbe1",
+      "mime": "image/png",
+      "evidence": {
+        "path": "docs/reviews/drawing-exports-2026-10-25/report.md",
+        "sha256": "3f47d0091905d979ea0ba12b4960d42a51e3396be9585e5cfb985360e2d31a61"
+      }
+    },
+    "fbe67c684cf87419ca810050e5756a278a79d3a49e0e5464f6335753b2334c5e": {
+      "path": "tools/design-library/pilot/assets/reader-avatar.png",
+      "sha256": "939186c57d92069e52a28e4b60e02d063508d3854a34d158b111a701048874f8",
+      "mime": "image/png",
+      "evidence": {
+        "path": "docs/reviews/drawing-exports-2026-10-25/report.md",
+        "sha256": "3f47d0091905d979ea0ba12b4960d42a51e3396be9585e5cfb985360e2d31a61"
+      }
+    },
+    "942a64db339e1f6b32c7978af1d07873c59cb2394e38e8435a50f931faecea5d": {
+      "path": "tools/design-library/pilot/assets/sunrise-gradient.png",
+      "sha256": "011c0e7b1cddd15fe8f48ff95a11973d8052709d25cead64471ea007e923db16",
+      "mime": "image/png",
+      "evidence": {
+        "path": "docs/reviews/drawing-exports-2026-10-25/report.md",
+        "sha256": "3f47d0091905d979ea0ba12b4960d42a51e3396be9585e5cfb985360e2d31a61"
+      }
+    },
+    "08b1b478c81a525149441f727a07b19cbc25fcd771d8d76978caee608ec371e7": {
+      "path": "tools/design-library/pilot/assets/botanical-still-life.png",
+      "sha256": "c3826bc559873d5eba2658239400f7e1f719f9a4256c20c00e47115e346cf0d1",
+      "mime": "image/png",
+      "evidence": {
+        "path": "docs/reviews/drawing-exports-2026-10-25/report.md",
+        "sha256": "3f47d0091905d979ea0ba12b4960d42a51e3396be9585e5cfb985360e2d31a61"
       }
     }
   }

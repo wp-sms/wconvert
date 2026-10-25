@@ -16,7 +16,7 @@ final class JourneyCaptureTest extends TestCase
     /** @return array<string, mixed> */
     private static function tree(): array
     {
-        $tree = json_decode((string) file_get_contents(WCONVERT_DIR . '/resources/templates/library/journey-email-then-sms.json'), true)['tree'];
+        $tree = \WConvert\Tests\Unit\Support\BundledJourney::tree('journey-email-then-sms');
         $tree['v'] = 2;
         $tree['steps'][0]['content']['children'][] = [
             'type' => 'question', 'id' => 'q_optional', 'label' => 'Your interest?', 'answer_type' => 'single',

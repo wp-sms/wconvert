@@ -1,0 +1,47 @@
+{
+  "id": "landscaping-enquiry",
+  "revision": "663e77b72c1c7f5c0b0872550ccf244c4fe6e7362e8c685b05dc85e7c4b97d6a",
+  "base_id": "dce45c495a3e20a4ec0f1e0c6a35fefbd2f0f57a9461ef69eed9286385a2caf2",
+  "decision": "approved",
+  "reviewer": "Claude",
+  "note": "Revision of the 20 October request; see review.md for what changed and why it now passes.",
+  "at": "2026-10-25T18:00:00Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/landscaping-enquiry-320.png",
+          "sha256": "b916a53a67d5d392caae59f7d78330a598c552a54ea5653fb353e22512259157"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/landscaping-enquiry-1440.png",
+          "sha256": "7a4a274dfc63ec8a8fb26b23f43acbbfda7e4e6ac4835ae8cf9969b0f0963d2c"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/review.md",
+          "sha256": "438777d237ee10d12f22d764d859c4d671cd876f0b72e0bcaf0afc84d211265e"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "30c7764d8e1a150bdc7441c3911f7e8da31476cf95a1c628e9b2f5185d21b79a"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "30c7764d8e1a150bdc7441c3911f7e8da31476cf95a1c628e9b2f5185d21b79a"
+        }
+      ]
+    }
+  },
+  "record_id": "dc8777a57bf094be0bec7300a840835afcf4e436446b1cc675c265862d21282c"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "care-clinic-request",
+  "revision": "c7557ff97af82c6a8e4ac4f949de3ef4d0189733214a3f54a67f99752855fcf7",
+  "base_id": "ff31b23e38f591c5498ea77b055d8e1747a4b17ea238add1f0d8efdee60bf705",
+  "decision": "approved",
+  "reviewer": "Claude",
+  "note": "Revision of the 20 October request; see review.md for what changed and why it now passes.",
+  "at": "2026-10-25T18:00:00Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/care-clinic-request-320.png",
+          "sha256": "281fb0e5c9ab0148913ec7ed9b3db17fdec072ba410e5e577cf6258fb50b1041"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/care-clinic-request-1440.png",
+          "sha256": "dcb437d5e05d2bdb9b7e236ec81a2d9edc871d3c4e4234adbae44138da99de9a"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/review.md",
+          "sha256": "438777d237ee10d12f22d764d859c4d671cd876f0b72e0bcaf0afc84d211265e"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "30c7764d8e1a150bdc7441c3911f7e8da31476cf95a1c628e9b2f5185d21b79a"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "30c7764d8e1a150bdc7441c3911f7e8da31476cf95a1c628e9b2f5185d21b79a"
+        }
+      ]
+    }
+  },
+  "record_id": "90055780c9f7e932f5974d57053192037da8696c54fca11a495a399004f31076"
+}

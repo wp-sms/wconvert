@@ -22,7 +22,7 @@ final class HeldRewardTest extends TestCase
      */
     private static function tree(): array
     {
-        $tree = json_decode((string) file_get_contents(WCONVERT_DIR . '/resources/templates/library/journey-email-then-sms.json'), true)['tree'];
+        $tree = \WConvert\Tests\Unit\Support\BundledJourney::tree('journey-email-then-sms');
         $tree['steps'][2]['content']['children'][] = self::CODE;
         $tree['steps'][2]['content']['children'][] = self::SHOP;
 

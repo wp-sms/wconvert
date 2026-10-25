@@ -130,7 +130,7 @@
               "type": "consent",
               "id": "n7",
               "role": "consent_text",
-              "hidden": false,
+              "hidden": true,
               "text": "Email me maker-session announcements. I can unsubscribe anytime.",
               "tokens": {
                 "text-size": "1.125rem"

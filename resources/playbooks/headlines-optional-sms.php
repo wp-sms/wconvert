@@ -12,7 +12,7 @@ return [
     'copy' => [
         'screens' => [
             'submission:email' => [
-                'headline' => __('Make sense of the week', 'wconvert'),
+                'headline' => __('A weekly briefing on the headlines', 'wconvert'),
                 'email_label' => __('Email address', 'wconvert'),
                 'email_placeholder' => __('you@example.com', 'wconvert'),
                 'consent_text' => __('Email me the weekly headline briefing. I can unsubscribe anytime.', 'wconvert'),
@@ -23,13 +23,13 @@ return [
                 'body' => __('Your email request is received. You can finish now or also request occasional editorial texts.', 'wconvert'),
                 'phone_label' => __('Mobile number', 'wconvert'),
                 'consent_text' => __('Text me occasional editorial headlines. I can opt out.', 'wconvert'),
-                'back_label' => __('Review email', 'wconvert'),
+                'back_label' => __('Change email', 'wconvert'),
                 'cta_label' => __('Request headline texts', 'wconvert'),
                 'skip_label' => __('Finish without texts', 'wconvert')
             ],
             'acknowledgement' => [
-                'success_headline' => __('Your requests are received', 'wconvert'),
-                'success_body' => __('Thank you. We have received the details and choices you submitted.', 'wconvert')
+                'success_headline' => __('Briefing request received', 'wconvert'),
+                'success_body' => __('Thank you. Your briefing request is received, and your text request too if you added a number.', 'wconvert')
             ]
         ]
     ],
