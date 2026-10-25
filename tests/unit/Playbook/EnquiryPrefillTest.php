@@ -185,7 +185,7 @@ final class EnquiryPrefillTest extends TestCase
             InstalledRules::free(),
             new PrivacyGuidance(new FakeOptionStore())
         );
-        $marketing = $prefill->fromPlaybook('welcome-discount');
+        $marketing = $prefill->fromPlaybook('one-line-invite');
         $request = $prefill->fromPlaybook('request-a-quote');
 
         $this->assertNotNull($marketing);

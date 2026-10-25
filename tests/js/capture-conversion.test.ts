@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import type { Template, TemplateNode, TemplateTree } from '@renderer/types';
@@ -6,11 +6,9 @@ import { captureSwitch, convertCapture, type Conversion } from '../../resources/
 import { upgradeToGraph } from '../../resources/admin/src/builder/structure/graph';
 import { walkNodes } from '../../resources/admin/src/builder/structure/journey';
 import { GOALS } from './support/goals';
+import { freeDesign } from './support/designs';
 
-// A Free design the catalogue alone serves lives under hosted/ (ADR 0157).
-const designFile = (id: string) => [`../../resources/templates/library/${id}.json`, `../../tools/design-library/hosted/templates/${id}.json`]
-  .map(path => resolve(import.meta.dirname, path)).find(existsSync) ?? id;
-const design = (id: string): Template => JSON.parse(readFileSync(designFile(id), 'utf8'));
+const design = freeDesign;
 const nodes = (tree: TemplateTree, at: number): TemplateNode[] => walkNodes(tree.steps[at].content);
 const ofType = (tree: TemplateTree, at: number, type: string) => nodes(tree, at).filter(node => node.type === type) as unknown as Record<string, unknown>[];
 /** A library design as the editor holds it: its link button already points somewhere. */

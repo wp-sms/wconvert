@@ -15,7 +15,7 @@ add_action('template_redirect', static function (): void {
     if ($action === 'seed') {
         $repo = $container->get(\WConvert\Optin\OptinRepository::class);
         $draft = $container->get(\WConvert\Playbook\Prefill::class)->fromScratch(\WConvert\Goal\Goal::PromoteOffer);
-        $draft['config']['template'] = json_decode(file_get_contents(WCONVERT_DIR . 'tools/design-library/hosted/templates/flash-offer.json'), true);
+        $draft['config']['template'] = json_decode(file_get_contents(WCONVERT_DIR . 'resources/templates/library/flash-offer.json'), true);
         $link = static function (array &$node) use (&$link): void { if (($node['action'] ?? '') === 'link') $node['href'] = home_url('/shop'); foreach ($node['children'] ?? [] as $key => $child) $link($node['children'][$key]); };
         $link($draft['config']['template']['tree']['steps'][0]['content']);
         $campaign = $repo->create('Fixture offer', $draft['goal'], $draft['config']);

@@ -14,8 +14,9 @@ and a Free site already shows one it does not bundle as `install`, then
 
 The Free ZIP is read by wp.org reviewers and downloaded by every site, so each
 bundled design costs every site its bytes whether or not it is ever used.
-*(Amended by [ADR 0173](0173-the-free-zip-carries-a-core.md): the Free ZIP now
-carries a core of 55 designs; 29 moved here.)*
+*(Completed by [ADR 0173](0173-the-free-zip-carries-a-core.md): 13 of the
+Free ZIP's 84 designs moved to `hosted/templates/`; the ZIP keeps the 71 a
+site needs offline or the catalogue cannot yet serve.)*
 
 ## Decision
 
