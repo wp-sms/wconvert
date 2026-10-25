@@ -14,6 +14,9 @@ add_action('init', static function (): void {
     $path = $quiz ? WCONVERT_PRO_DIR . 'modules/journeys/templates/journey-content-guide.json'
         : WCONVERT_DIR . 'resources/templates/library/journey-email-then-sms.json';
     $template = json_decode(file_get_contents($path), true);
+    // The library ships consent hidden; prefill reveals it for a list Goal (ADR 0099).
+    if (!$quiz) $template['tree'] = \WConvert\Bootstrap::container()->get(\WConvert\Privacy\PrivacyGuidance::class)
+        ->treeFor($template['tree'], \WConvert\Goal\Goal::GrowEmailList);
     // Library placeholders require an actual destination before contact capture.
     foreach ($template['tree']['steps'] as &$step) {
         foreach ($step['results'] ?? [] as $index => $result) $step['results'][$index]['href'] = home_url('/guide');
