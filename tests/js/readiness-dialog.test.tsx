@@ -1,7 +1,5 @@
 import { treeFixture } from './support/journey';
 import { CAPTURE_OUTCOME } from './support/outcomes';
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -11,12 +9,11 @@ import { ready } from '../../resources/admin/src/shell/loadable';
 import type { GoalEntry } from '../../resources/admin/src/goals/api';
 import type { Template } from '@renderer/types';
 import { ruleTypes } from './support/rule-types';
+import { freeDesign } from './support/designs';
 import graphFixture from '../fixtures/journey-graph-enquiry.json';
 import coffee from '../fixtures/journey-graph-coffee.json';
 
-const design = (id: string): Template => JSON.parse(readFileSync(
-  resolve(import.meta.dirname, `../../resources/templates/library/${id}.json`), 'utf8',
-));
+const design = freeDesign;
 const FORM = design('centred-card');
 const LINK = design('offer-panel');
 const GOAL: GoalEntry = {

@@ -6,8 +6,9 @@ import { captureSwitch, convertCapture, type Conversion } from '../../resources/
 import { upgradeToGraph } from '../../resources/admin/src/builder/structure/graph';
 import { walkNodes } from '../../resources/admin/src/builder/structure/journey';
 import { GOALS } from './support/goals';
+import { freeDesign } from './support/designs';
 
-const design = (id: string): Template => JSON.parse(readFileSync(resolve(import.meta.dirname, `../../resources/templates/library/${id}.json`), 'utf8'));
+const design = freeDesign;
 const nodes = (tree: TemplateTree, at: number): TemplateNode[] => walkNodes(tree.steps[at].content);
 const ofType = (tree: TemplateTree, at: number, type: string) => nodes(tree, at).filter(node => node.type === type) as unknown as Record<string, unknown>[];
 /** A library design as the editor holds it: its link button already points somewhere. */

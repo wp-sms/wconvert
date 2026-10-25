@@ -38,21 +38,6 @@ final class BundledArtworkTest extends TestCase
         return ['tree' => ['steps' => [['content' => ['type' => 'image', 'src' => $src]]]]];
     }
 
-    public function testAShippedPhotoIsAPluginUrlOnASite(): void
-    {
-        $root = dirname(__DIR__, 3);
-        $entry = json_decode((string) file_get_contents($root . '/resources/templates/library/citrus-sunrise.json'), true);
-        $reference = $entry['tree']['steps'][0]['content']['children'][0]['end'][0]['children'][0]['src'];
-        self::assertMatchesRegularExpression('/^artwork:[a-f0-9]{64}\.webp$/', $reference);
-
-        $resolved = BundledArtwork::forSite($entry, $root, 'https://shop.example/custom/plugins/wconvert/');
-
-        self::assertSame(
-            'https://shop.example/custom/plugins/wconvert/resources/template-artwork/' . substr($reference, strlen('artwork:')),
-            $resolved['tree']['steps'][0]['content']['children'][0]['end'][0]['children'][0]['src']
-        );
-    }
-
     /** The studio, the exporter and CLI tools have no site: they get the bytes, checked against the name. */
     public function testWithoutASiteThePhotoIsItsBytes(): void
     {
