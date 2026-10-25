@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode, type RefObject } from 'react';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { Dialog, DialogDescription, DialogTitle } from '../components/ui/dialog';
 import { PickerDialogBody, PickerDialogContent, PickerDialogHeader } from '../discovery/PickerDialog';
 import { OptionStrip } from '../shell/OptionStrip';
@@ -12,7 +12,7 @@ import type { GalleryCard } from './model';
  * A template at its inspect size (ADR 0171): Desktop or Mobile, Fit or Actual
  * size, its screens, the gist, and the card's one action.
  */
-export function InspectDialog({ card, template, gist, action, conversion = null, current = false, designName, onClose, returnFocusTo }: {
+export function InspectDialog({ card, template, gist, action, conversion = null, current = false, onClose, returnFocusTo }: {
   card: GalleryCard | null;
   /** The live tree, for a template on this site; an online one is its picture. */
   template?: Template;
@@ -21,8 +21,6 @@ export function InspectDialog({ card, template, gist, action, conversion = null,
   action: ReactNode;
   conversion?: { readonly chip: string } | null;
   current?: boolean;
-  /** The design's own name, said when the template's differs. */
-  designName?: string;
   onClose: () => void;
   returnFocusTo?: RefObject<HTMLElement | null>;
 }) {
@@ -44,8 +42,8 @@ export function InspectDialog({ card, template, gist, action, conversion = null,
       }}>
         <PickerDialogHeader>
           <DialogTitle>{card.name}</DialogTitle>
-          {designName && designName !== card.name
-            ? <DialogDescription>{designName}</DialogDescription>
+          {card.designName && card.designName !== card.name
+            ? <DialogDescription>{sprintf(/* translators: %s: a design's name. */ __('Design: %s', 'wconvert'), card.designName)}</DialogDescription>
             : <DialogDescription className="sr-only">{__('A larger preview of this template.', 'wconvert')}</DialogDescription>}
         </PickerDialogHeader>
         <PickerDialogBody className="p-0">

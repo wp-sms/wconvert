@@ -128,7 +128,7 @@ export function GalleryToolbar({ cards, filters, choices, onChange, shown, showP
           {sprintf(/* translators: 1: how many templates match, 2: how many there are. */ __('%1$s of %2$s', 'wconvert'), formatCount(shown), formatCount(cards.length))}
         </span>
       </div>
-      {active.length > 0 && <div className="wconvert-gallery-active" aria-label={__('Active filters', 'wconvert')}>
+      {active.length > 0 && <div className="wconvert-gallery-active" role="group" aria-label={__('Active filters', 'wconvert')}>
         {active.map(filter => <button key={filter.id} type="button" className="wconvert-gallery-active__chip" disabled={disabled} onClick={filter.remove}
           aria-label={sprintf(/* translators: %s: an active filter's label, e.g. “Asks for phone”. */ __('Remove filter: %s', 'wconvert'), filter.label)}>
           {filter.label}<X size={12} aria-hidden="true" />

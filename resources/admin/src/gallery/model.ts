@@ -2,6 +2,7 @@ import { __ } from '@wordpress/i18n';
 import type { GoalGallery, OnlineSetup, PlaybookEntry } from '../goals/api';
 import type { TemplateFacets, TemplateIndexEntry } from '../templates/api';
 import type { Collection } from '../discovery/api';
+import { designKey } from '../discovery/model';
 
 /**
  * One card in the one template gallery (ADR 0171), whatever it came from: a
@@ -28,6 +29,8 @@ export interface GalleryCard {
   thumbnail: { '1x': string; '2x': string } | null;
   /** The design: a local template id, or the hosted design's id. */
   template_id: string;
+  /** The design's own name where it differs from the template's (an online setup's). */
+  designName: string | null;
   /** What Save stores: the design, so a star means the same thing in creation and in the editor. */
   designKey: string;
   business_types: { id: string; label: string }[];
@@ -52,7 +55,7 @@ function localSetup(entry: PlaybookEntry): GalleryCard {
     key: entry.id, name: entry.name, words: [entry.name, entry.notes, ...(entry.business_types ?? []).map(type => type.label)].join(' ').toLowerCase(),
     displayType: entry.display_type, ...fromFacets(entry.facets), tier: entry.tier ?? 'free',
     availability: entry.availability ?? 'ready', recommended: entry.recommendation ?? null, newerRevision: null, source: 'local',
-    thumbnail: null, template_id: entry.template_id, designKey: entry.design_key ?? `registered:${entry.template_id}`, business_types: entry.business_types ?? [], tags: [], sha256: null, previewUrl: null,
+    thumbnail: null, template_id: entry.template_id, designName: null, designKey: designKey(entry), business_types: entry.business_types ?? [], tags: [], sha256: null, previewUrl: null,
   };
 }
 
@@ -61,7 +64,7 @@ function onlineSetup(row: OnlineSetup): GalleryCard {
     key: row.id, name: row.name, words: [row.name, row.design.name, ...row.business_types.map(type => type.label)].join(' ').toLowerCase(),
     displayType: row.display_type, ...fromFacets(row.facets), tier: row.tier,
     availability: row.state, recommended: null, newerRevision: null, source: 'online', thumbnail: row.thumbnail,
-    template_id: row.design.id, designKey: `registered:${row.design.id}`, business_types: row.business_types, tags: row.tags, sha256: row.sha256, previewUrl: row.preview_url,
+    template_id: row.design.id, designName: row.design.name, designKey: `registered:${row.design.id}`, business_types: row.business_types, tags: row.tags, sha256: row.sha256, previewUrl: row.preview_url,
   };
 }
 
@@ -95,7 +98,7 @@ export function mergeDesigns(entries: readonly TemplateIndexEntry[], context: Me
     availability: entry.remote?.state ?? entry.availability, recommended: null,
     newerRevision: entry.newer_revision ? { id: entry.id, ...entry.newer_revision } : null,
     source: entry.remote ? 'online' : 'local', thumbnail: entry.remote?.thumbnail ?? null,
-    template_id: entry.id, designKey: entry.design_key ?? `registered:${entry.id}`, business_types: [], tags: entry.tags ?? entry.remote?.tags ?? [],
+    template_id: entry.id, designName: null, designKey: designKey(entry), business_types: [], tags: entry.tags ?? entry.remote?.tags ?? [],
     sha256: entry.remote?.sha256 ?? null, previewUrl: entry.preview_url ?? null,
   })).filter(card => card.availability !== 'locked' || context.proHints);
 }

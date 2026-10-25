@@ -293,7 +293,7 @@ describe('step 2: one template gallery', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Choose: Grow my email list' }));
     await cardOf('Welcome discount');
     await userEvent.click(screen.getByRole('button', { name: 'Goal: Grow my email list' }));
-    await userEvent.click(await screen.findByRole('menuitemradio', { name: 'Collect enquiries' }));
+    await userEvent.click(await screen.findByRole('menuitemradio', { name: /^Collect enquiries/ }));
     expect(await screen.findByRole('button', { name: 'Goal: Collect enquiries' })).toBeVisible();
     expect(goals.readGoalGallery).toHaveBeenLastCalledWith('collect_enquiries');
   });
@@ -306,7 +306,7 @@ describe('step 2: one template gallery', () => {
     render(<GoalScreen onCreated={vi.fn()} />);
     await userEvent.click(await screen.findByRole('button', { name: 'Choose: Grow my email list' }));
     await userEvent.click(await screen.findByRole('button', { name: 'Goal: Grow my email list' }));
-    await userEvent.click(await screen.findByRole('menuitemradio', { name: 'Collect enquiries' }));
+    await userEvent.click(await screen.findByRole('menuitemradio', { name: /^Collect enquiries/ }));
     await cardOf('Welcome discount');
     await act(async () => old(galleryOf([{ ...PLAYBOOK, name: 'Abandoned result' }])));
     expect(screen.queryByRole('heading', { name: 'Abandoned result' })).toBeNull();
@@ -405,6 +405,18 @@ describe('the online library', () => {
     await waitFor(() => expect(goals.readGoalGallery).toHaveBeenCalledTimes(2));
   });
 
+  it('keeps the grid when reading it again fails, and says so', async () => {
+    goals.readGoalGallery.mockResolvedValueOnce(galleryOf([PLAYBOOK], [], { configured: true, consent: 'unanswered' }))
+      .mockRejectedValueOnce(new Error('The library could not be reached.'));
+    catalog.setCatalogConsent.mockResolvedValue({});
+    catalog.refreshCatalog.mockResolvedValue({});
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    await userEvent.click(await screen.findByRole('button', { name: 'Show online templates' }));
+    expect(await screen.findByText('The library could not be reached.')).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Welcome discount' })).toBeVisible();
+  });
+
   it('installs an online template silently, then creates the draft from what it became', async () => {
     goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK], [onlineSetup('welcome-online')], { configured: true, consent: 'yes' }));
     catalog.installSetup.mockResolvedValue({ playbook_id: 'setup-1-welcome-online', template_id: 'design-1-welcome-online-design', status: {} });
@@ -415,6 +427,17 @@ describe('the online library', () => {
     await waitFor(() => expect(created).toHaveBeenCalledOnce());
     expect(catalog.installSetup).toHaveBeenCalledExactlyOnceWith('welcome-online', 'a'.repeat(64));
     expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, 'setup-1-welcome-online');
+  });
+
+  it('keeps saying Adding… from the install until the draft is created', async () => {
+    goals.readGoalGallery.mockResolvedValue(galleryOf([], [onlineSetup('welcome-online')], { configured: true, consent: 'yes' }));
+    catalog.installSetup.mockResolvedValue({ playbook_id: 'setup-1-welcome-online', template_id: 'x', status: {} });
+    goals.prefill.mockReturnValue(new Promise(() => undefined));
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    await useTemplate('Online welcome-online');
+    await waitFor(() => expect(goals.prefill).toHaveBeenCalled());
+    expect(within(await cardOf('Online welcome-online')).getByRole('button', { name: 'Adding…' })).toBeDisabled();
   });
 
   it('says on the card when adding fails, and tries again from there', async () => {
@@ -452,6 +475,16 @@ describe('collections', () => {
     expect(screen.getByRole('heading', { name: 'Countdown bar' })).toBeVisible();
     await userEvent.click(screen.getByRole('button', { name: 'Show all templates' }));
     expect(await cardOf('Other')).toBeVisible();
+  });
+
+  it('opens a seasonal collection whose event overlaps the occasion even when it started first', async () => {
+    const data = await picker.pickerData();
+    picker.pickerData.mockResolvedValue({ ...data, collections: [collection],
+      occasions: { schema: 1, revision: 3, items: [{ id: 'late-sale', name: 'Late sale', start: '2026-11-29', end: '2026-12-03' }] } });
+    goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK, bar, other]));
+    render(<GoalScreen occasion="late-sale" onCreated={vi.fn()} />);
+    await pickGoal();
+    expect(await screen.findByText('Before, during and after')).toBeVisible();
   });
 
   /** ADR 0149 §3, ADR 0171: a campaign made inside an occasion starts in its collection, with its dates. */

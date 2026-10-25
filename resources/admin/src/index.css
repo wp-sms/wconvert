@@ -443,6 +443,16 @@
   /* A recommended template's chip: the brand's lime, quietened (ADR 0171). */
   --recommended-surface: #f1f8c8;
   --recommended-foreground: #485000;
+  /* A saved template's star (ADR 0171): gold, not the warning amber. */
+  --saved: #b7791f;
+  /* The open collection and its tile: the action colour, barely there. */
+  --action-surface: #f5fafb;
+  --action-border: #c6dfe6;
+  /* An ice chip's edge and hover, a step deeper than --ice. */
+  --ice-strong: #9cc7d3;
+  --ice-hover: #cfe5ec;
+  /* The inspect view's preview column, a shade off the card. */
+  --inspect-surface: #faf9f6;
 
   /*
    * `--border` draws dividers and card edges, which are decoration. `--input`

@@ -33,13 +33,13 @@ export function NewOccasionDialog({ returnFocusTo, onClose, onCreated }: {
   return (
     <AdminDialog open onOpenChange={(open) => { if (!open) onClose(); }}>
       <AdminDialogContent size="sm" dirty={name !== '' || start !== '' || end !== ''} showCloseButton={!picker.saving}
-        onCloseAutoFocus={(event) => { event.preventDefault(); returnFocusTo.current?.focus(); }}>
+        onCloseAutoFocus={(event) => { if (!returnFocusTo.current?.isConnected) return; event.preventDefault(); returnFocusTo.current.focus(); }}>
         <AdminDialogHeader title={__('New occasion', 'wconvert')} meta={zone
           ? sprintf(/* translators: %s: the site's time zone, e.g. “Central European Time”. */ __('Days follow this site’s time zone, %s. Saving one never schedules a campaign.', 'wconvert'), zone)
           : __('Saving one never schedules a campaign.', 'wconvert')} />
         <form className="flex min-h-0 flex-1 flex-col" onSubmit={(event) => {
           event.preventDefault();
-          if (full || !picker.data) return;
+          if (full || !picker.data || name.trim() === '') return;
           const occasion = { id: `occasion-${newAuthoringId()}`, name: name.trim(), start, end };
           void picker.occasions([...items, occasion]).then(saved => { if (saved) onCreated(occasion.id); });
         }}>
@@ -56,7 +56,7 @@ export function NewOccasionDialog({ returnFocusTo, onClose, onCreated }: {
             {full && <p className="m-0 text-note text-muted-foreground">{sprintf(/* translators: %s: the most occasions you can keep, e.g. “50”. */ __('You can keep up to %s occasions. Delete one to add another.', 'wconvert'), String(MAX_OCCASIONS))}</p>}
           </AdminDialogBody>
           <AdminDialogFooter error={picker.error} back={<Button type="button" variant="outline" disabled={picker.saving} onClick={onClose}>{__('Cancel', 'wconvert')}</Button>}>
-            <Button type="submit" disabled={picker.saving || !picker.data || full}>{picker.saving ? __('Saving…', 'wconvert') : __('Add occasion', 'wconvert')}</Button>
+            <Button type="submit" disabled={picker.saving || !picker.data || full || name.trim() === ''}>{picker.saving ? __('Saving…', 'wconvert') : __('Add occasion', 'wconvert')}</Button>
           </AdminDialogFooter>
         </form>
       </AdminDialogContent>

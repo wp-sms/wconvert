@@ -7,7 +7,7 @@ import type { GalleryCard } from '../../resources/admin/src/gallery/model';
 
 const collection: Collection = { id: 'useful', revision: 'r', name: 'Useful starts', description: 'Useful ideas', cover: 'reading', priority: 1, business_types: [], items: [] };
 const card = (key: string): GalleryCard => ({ key, name: key, words: key, displayType: 'popup', facets: null, captures: [], act: 'click', tier: 'free', availability: 'ready',
-  recommended: null, newerRevision: null, source: 'online', thumbnail: { '1x': `https://cdn/${key}.webp` , '2x': `https://cdn/${key}@2x.webp` }, template_id: key, designKey: `registered:${key}`,
+  recommended: null, newerRevision: null, source: 'online', thumbnail: { '1x': `https://cdn/${key}.webp` , '2x': `https://cdn/${key}@2x.webp` }, template_id: key, designName: null, designKey: `registered:${key}`,
   business_types: [], tags: [], sha256: null, previewUrl: null });
 const shelf = [{ collection, members: new Map([['a', 'before'], ['b', 'during']]) }];
 const props = { shelf, cards: [card('a'), card('b')], trees: new Map(), active: null, hidden: 0, onOpen: vi.fn(), onHide: vi.fn(), onRestore: vi.fn(), onHideAll: vi.fn() };

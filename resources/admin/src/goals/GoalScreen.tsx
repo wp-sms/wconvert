@@ -20,7 +20,7 @@ import { useSetupPreviews } from '../discovery/useSetupPreviews';
 import { preferredStage } from '../discovery/model';
 import { adminSettings } from '../settings';
 import { filterCards, mergeSetups, shelfCollections, type GalleryCard as Card, type GalleryFilters } from '../gallery/model';
-import { GalleryCard } from '../gallery/GalleryCard';
+import { GalleryCard, TemplateAction } from '../gallery/GalleryCard';
 import { GalleryGrid, GallerySkeleton, PER_PAGE } from '../gallery/GalleryGrid';
 import { GalleryToolbar, NO_CHOICES, type GalleryChoices } from '../gallery/GalleryToolbar';
 import { CollectionBar, CollectionShelf, ShelfOff } from '../gallery/CollectionShelf';
@@ -40,7 +40,7 @@ import '../gallery/gallery.css';
  */
 export interface GoalScreenProps {
   onCreated: (id: string) => void;
-  /** The occasion a new campaign is created into: its collection first, its dates prefilled (ADR 0149 §3). */
+  /** The occasion a new campaign is created into: its dates prefilled (ADR 0149 §3), its seasonal collection open (ADR 0171). */
   occasion?: string;
   onBusyChange?: (busy: boolean) => void;
   onCheckOptins?: () => void;
@@ -75,6 +75,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
   /** The card being added from the library, and the card whose install failed. */
   const [adding, setAdding] = useState<string | null>(null);
   const [installFailed, setInstallFailed] = useState<{ key: string; message: string } | null>(null);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
   const lastStart = useRef<string | undefined>(undefined);
   const preselected = useRef(false);
   const active = useRef(false);
@@ -111,9 +112,14 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
   useEffect(() => {
     if (goal === null) return;
     let current = true;
-    setGallery(LOADING);
+    setRefreshError(null);
     void readGoalGallery(goal.id).then((answer) => { if (current) setGallery(ready(answer)); })
-      .catch((cause: unknown) => { if (current) setGallery(failed(cause)); });
+      // A refresh that fails keeps what is on screen (GUIDELINES §13); a first read says it failed.
+      .catch((cause: unknown) => {
+        if (!current) return;
+        setGallery((held) => held.status === 'ready' ? held : failed(cause));
+        setRefreshError(messageOf(cause));
+      });
     return () => { current = false; };
   }, [goal, galleryRetry]);
 
@@ -122,6 +128,8 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
     operation.current += 1;
     setGoal(chosen);
     setChoices(NO_CHOICES); setCollectionId(null); setStage('any'); setPage(0); setInspected(null);
+    // A new goal's gallery opens at the occasion's collection again.
+    preselected.current = false;
     setGallery(LOADING);
     setError(null);
     setCreateUnconfirmed(false);
@@ -181,17 +189,22 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
     if (card.availability === 'ready') { void start(card.key); return; }
     if (card.availability !== 'install' || card.sha256 === null) return;
     const request = ++operation.current;
+    // The card says Adding… from the install until the editor opens.
+    busy.current = true;
     setAdding(card.key); setInstallFailed(null); setError(null);
     try {
       const installed = await installSetup(card.key, card.sha256);
+      busy.current = false;
       if (!active.current || request !== operation.current) return;
-      setAdding(null);
+      // Just installed, so nothing was previewed that could be stale: no revision to check.
       await start(installed.playbook_id);
     } catch (cause) {
+      busy.current = false;
       if (active.current && request === operation.current) {
-        setAdding(null);
         setInstallFailed({ key: card.key, message: __('Couldn’t add this template.', 'wconvert') + ' ' + messageOf(cause) });
       }
+    } finally {
+      if (active.current) setAdding(null);
     }
   };
 
@@ -221,13 +234,24 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
   const shelf = useMemo(() => picker.data ? shelfCollections(picker.data.collections, cards, today, picker.data.preferences.hidden) : [],
     [picker.data, cards, today]);
   const open = shelf.find(item => item.collection.id === collectionId) ?? null;
+  const trees = useMemo(() => new Map(cards.map(card => [card.key, card.source === 'local'
+    ? previews.previews.get(card.key)?.template ?? setups.find(entry => entry.id === card.key)?.template : undefined])), [cards, previews.previews, setups]);
+  /** One personal preference changed, the rest kept. */
+  const prefer = (next: Partial<NonNullable<typeof picker.data>['preferences']>) => {
+    if (picker.data) void picker.preferences({ ...picker.data.preferences, ...next });
+  };
+  // A template that left the gallery (a re-read, a cleared pin) is no longer being looked at.
+  useEffect(() => {
+    if (inspected !== null && gallery.status === 'ready' && !cards.some(card => card.key === inspected)) setInspected(null);
+  }, [inspected, cards, gallery.status]);
   const home = into ? picker.data?.occasions.items.find(item => item.id === into) : undefined;
 
   // Created from an occasion: its seasonal collection is open, at the stage the occasion is in.
   useEffect(() => {
     if (preselected.current || !home || shelf.length === 0) return;
     preselected.current = true;
-    const match = shelf.find(({ collection }) => collection.event && collection.event.start >= home.start && collection.event.start <= home.end);
+    // The seasonal collection whose event overlaps the occasion's days.
+    const match = shelf.find(({ collection }) => collection.event && collection.event.start <= home.end && collection.event.end_exclusive > home.start);
     if (!match) return;
     setCollectionId(match.collection.id);
     setStage(preferredStage(match.collection, today, cards.map(card => ({ id: card.key })), home));
@@ -275,19 +299,12 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
   const inspectedCard = cards.find(card => card.key === inspected) ?? null;
   const entryOf = (card: Card) => setups.find(entry => entry.id === card.key);
   // The prepared tree once it arrives, or one the index already carried.
-  const treeOf = (card: Card) => card.source === 'local' ? previews.previews.get(card.key)?.template ?? entryOf(card)?.template : undefined;
+  const treeOf = (card: Card) => trees.get(card.key);
   const unconfirmed = __('Draft creation could not be confirmed. Check your campaigns before trying again, so you don’t create a second draft.', 'wconvert');
   const checkCampaigns = onCheckOptins
     ? <Button variant="outline" onClick={onCheckOptins}>{__('Check campaigns', 'wconvert')}</Button>
     : <Button variant="outline" asChild><a href="#optins">{__('Check campaigns', 'wconvert')}</a></Button>;
   const reload = () => { previews.reset(); setGalleryRetry(value => value + 1); setError(null); };
-
-  const cardAction = (card: Card) => card.availability === 'locked' ? (card.previewUrl && <Button asChild variant="outline">
-    <a href={card.previewUrl} target="_blank" rel="noopener noreferrer">{__('See this design', 'wconvert')}</a></Button>)
-    : card.availability === 'ready' || card.availability === 'install'
-      ? <Button disabled={working} onClick={() => { void use(card); }}>
-        {starting === card.key || adding === card.key ? __('Adding…', 'wconvert') : __('Use template', 'wconvert')}</Button>
-      : <p className="wconvert-template-note m-0">{card.availability === 'update_plugin' ? __('Needs a newer version of WConvert.', 'wconvert') : __('Needs a plugin this site doesn’t have.', 'wconvert')}</p>;
 
   return <Region className="wconvert-creation wconvert-gallery-scope">
     <div className="wconvert-gallery-head">
@@ -302,7 +319,9 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" sideOffset={4}>
             <DropdownMenuRadioGroup value={goal.id} onValueChange={id => { const next = goalsHere.find(entry => entry.id === id); if (next && next.id !== goal.id) choose(next); }}>
-              {goalsHere.map(entry => <DropdownMenuRadioItem key={entry.id} value={entry.id}>{entry.label}</DropdownMenuRadioItem>)}
+              {goalsHere.map(entry => <DropdownMenuRadioItem key={entry.id} value={entry.id} className="items-start">
+                <span className="grid gap-0.5"><span className="font-semibold">{entry.label}</span>{entry.description && <span className="text-note text-muted-foreground">{entry.description}</span>}</span>
+              </DropdownMenuRadioItem>)}
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -317,20 +336,21 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
       </div>}
     </div>
     {picker.error && <RegionError message={picker.error} onRetry={() => { void picker.reload(); }} />}
+    {refreshError && gallery.status === 'ready' && <RegionError message={refreshError} onRetry={() => setGalleryRetry(value => value + 1)} />}
     {!inspected && error !== null && (createUnconfirmed
       ? <RegionError message={unconfirmed} action={checkCampaigns} />
       : staleSetup ? <RegionError message={error} action={<Button variant="outline" disabled={working} onClick={reload}>{__('Reload templates', 'wconvert')}</Button>} />
         : <RegionError message={error} onRetry={() => { void start(lastStart.current); }} />)}
     {starting !== null && <RegionBody><p role="status" className="m-0 text-note">{__('Creating your draft and opening the editor…', 'wconvert')}</p></RegionBody>}
     <div className="wconvert-gallery-body">
-      {!pinned && picker.data && (showShelf
-        ? <CollectionShelf shelf={shelf} cards={cards} trees={new Map(cards.map(card => [card.key, treeOf(card)]))} active={collectionId}
+      {!pinned && picker.data && (shelf.length > 0 || picker.data.preferences.hidden.length > 0) && (showShelf
+        ? <CollectionShelf shelf={shelf} cards={cards} trees={trees} active={collectionId}
           hidden={picker.data.preferences.hidden.length} disabled={working || picker.saving} onNear={previews.onNear}
           onOpen={id => { setCollectionId(id); setStage(id ? preferredStage(shelf.find(item => item.collection.id === id)!.collection, today, cards.map(card => ({ id: card.key })), home) : 'any'); setPage(0); }}
-          onHide={id => { if (picker.data) void picker.preferences({ ...picker.data.preferences, hidden: [...picker.data.preferences.hidden, id] }); if (id === collectionId) setCollectionId(null); }}
-          onRestore={() => { if (picker.data) void picker.preferences({ ...picker.data.preferences, hidden: [] }); }}
-          onHideAll={() => { if (picker.data) void picker.preferences({ ...picker.data.preferences, show_featured: false }); setCollectionId(null); }} />
-        : <ShelfOff disabled={picker.saving} onShow={() => { if (picker.data) void picker.preferences({ ...picker.data.preferences, show_featured: true }); }} />)}
+          onHide={id => { prefer({ hidden: [...picker.data!.preferences.hidden, id] }); if (id === collectionId) setCollectionId(null); }}
+          onRestore={() => prefer({ hidden: [] })}
+          onHideAll={() => { prefer({ show_featured: false }); setCollectionId(null); }} />
+        : <ShelfOff disabled={picker.saving} onShow={() => prefer({ show_featured: true })} />)}
       {gallery.status === 'failed' ? <RegionErrorState message={gallery.message} onRetry={() => setGalleryRetry((value) => value + 1)} />
         : gallery.status === 'loading' ? <GallerySkeleton cards={3} />
           : <>
@@ -359,9 +379,11 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
       onClose={() => setInspected(null)} returnFocusTo={inspectTrigger}
       action={inspectedCard && <>
         {error && (createUnconfirmed ? <><p role="alert" className="m-0 text-note text-destructive">{unconfirmed}</p>{checkCampaigns}</>
-          : <p role="alert" className="m-0 text-note text-destructive">{error}</p>)}
+          : <><p role="alert" className="m-0 text-note text-destructive">{error}</p>
+            {staleSetup && <Button variant="outline" disabled={working} onClick={() => { setInspected(null); reload(); }}>{__('Reload templates', 'wconvert')}</Button>}</>)}
         {installFailed?.key === inspectedCard.key && <p role="alert" className="m-0 text-note text-destructive">{installFailed.message}</p>}
-        {cardAction(inspectedCard)}
+        <TemplateAction card={inspectedCard} busy={starting === inspectedCard.key || adding === inspectedCard.key} disabled={working || createUnconfirmed}
+          onUse={() => { void use(inspectedCard); }} onUpdate={inspectedCard.newerRevision ? () => { void update(inspectedCard); } : undefined} />
       </>} />
     {cards.length > 0 && <RegionFooter className="flex flex-wrap items-center justify-end gap-3">
       <span className="text-note text-muted-foreground">{__('None of these fit?', 'wconvert')}</span>

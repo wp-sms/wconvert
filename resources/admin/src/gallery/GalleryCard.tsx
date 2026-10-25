@@ -43,33 +43,7 @@ export interface GalleryCardProps {
 export function GalleryCard({ card, template, saved, onSave, onInspect, onUse, onUpdate, busy = false, disabled = false, failed = null, onNear, previewFailed = false, onRetryPreview, conversion = null, current = false }: GalleryCardProps) {
   const nameId = useId();
   const near = useCallback(() => onNear?.(card.key), [onNear, card.key]);
-  const locked = card.availability === 'locked';
   const source = card.thumbnail ? { image: card.thumbnail } : template ? { live: { template } } : undefined;
-
-  const action = current ? null
-    : locked ? card.previewUrl && (
-      <Button asChild variant="outline" size="sm">
-        <a href={card.previewUrl} target="_blank" rel="noopener noreferrer" aria-describedby={nameId}>
-          {__('See this design', 'wconvert')}<ExternalLink aria-hidden="true" />
-        </a>
-      </Button>
-    )
-      : card.availability === 'update_plugin' || card.availability === 'unavailable' ? (
-        <p className="wconvert-template-note m-0">
-          <AlertTriangle aria-hidden="true" />
-          {card.availability === 'update_plugin' ? __('Needs a newer version of WConvert.', 'wconvert') : __('Needs a plugin this site doesn’t have.', 'wconvert')}
-        </p>
-      )
-        : failed !== null ? null
-          : card.newerRevision && onUpdate ? (
-            <Button variant="outline" size="sm" disabled={disabled || busy} aria-describedby={nameId} onClick={onUpdate}>
-              {busy ? __('Adding…', 'wconvert') : __('Get the newer version', 'wconvert')}
-            </Button>
-          ) : (
-            <Button variant="outline" size="sm" disabled={disabled || busy} aria-describedby={nameId} onClick={onUse}>
-              {busy ? __('Adding…', 'wconvert') : conversion?.action ?? __('Use template', 'wconvert')}
-            </Button>
-          );
 
   return (
     <li className="wconvert-template-card" data-card={card.key} aria-current={current || undefined}>
@@ -92,10 +66,54 @@ export function GalleryCard({ card, template, saved, onSave, onInspect, onUse, o
         </div>
         <TemplateMarks card={card} conversion={conversion} current={current} />
         {failed !== null && <div className="wconvert-template-error" role="alert"><span>{failed}</span><TryAgain onClick={onUse} /></div>}
-        {action && <div className="wconvert-template-card__action">{action}</div>}
+        {!current && failed === null && <div className="wconvert-template-card__action">
+          <TemplateAction card={card} describedBy={nameId} busy={busy} disabled={disabled} conversion={conversion} onUse={onUse} onUpdate={onUpdate} size="sm" />
+        </div>}
       </div>
     </li>
   );
+}
+
+/**
+ * A template's one action, the same on its card and in its larger look: Use
+ * template (Adding… while it works), See this design ↗ for a locked one, Get
+ * the newer version, or the reason this site cannot use it.
+ */
+export function TemplateAction({ card, describedBy, busy = false, disabled = false, conversion = null, onUse, onUpdate, size = 'default' }: {
+  card: Card;
+  describedBy?: string;
+  busy?: boolean;
+  disabled?: boolean;
+  conversion?: { readonly action: string } | null;
+  onUse: () => void;
+  onUpdate?: () => void;
+  size?: 'sm' | 'default';
+}) {
+  if (card.availability === 'locked') {
+    return card.previewUrl ? (
+      <Button asChild variant="outline" size={size}>
+        <a href={card.previewUrl} target="_blank" rel="noopener noreferrer" aria-describedby={describedBy}>
+          {__('See this design', 'wconvert')}<ExternalLink aria-hidden="true" />
+        </a>
+      </Button>
+    ) : null;
+  }
+  if (card.availability === 'update_plugin' || card.availability === 'unavailable') {
+    return (
+      <p className="wconvert-template-note m-0">
+        <AlertTriangle aria-hidden="true" />
+        {card.availability === 'update_plugin' ? __('Needs a newer version of WConvert.', 'wconvert') : __('Needs a plugin this site doesn’t have.', 'wconvert')}
+      </p>
+    );
+  }
+  if (card.newerRevision && onUpdate) {
+    return <Button variant="outline" size={size} disabled={disabled || busy} aria-describedby={describedBy} onClick={onUpdate}>
+      {busy ? __('Adding…', 'wconvert') : __('Get the newer version', 'wconvert')}
+    </Button>;
+  }
+  return <Button variant={size === 'sm' ? 'outline' : 'default'} size={size} disabled={disabled || busy} aria-describedby={describedBy} onClick={onUse}>
+    {busy ? __('Adding…', 'wconvert') : conversion?.action ?? __('Use template', 'wconvert')}
+  </Button>;
 }
 
 /** What a template is, in one row: its format, what it asks for, and its plan or recommendation. */

@@ -53,7 +53,8 @@ rather than a preference. Picker preferences keep `saved`, `hidden` and
 
 1. **One grid** holds bundled, installed, online and locked templates. Using
    an online card installs it silently, then creates the draft from the
-   Playbook it became; a failed install says so on the card with Try again.
+   Playbook it became (just installed, it was never previewed, so there is no
+   revision to hold it to); a failed install says so on the card with Try again.
    A card with a newer revision offers "Get the newer version" instead.
 2. **The UI word is "Template"**: "Choose a template", "Use template", "No
    templates match". Domain terms in the code do not change: a Playbook is
@@ -78,7 +79,9 @@ rather than a preference. Picker preferences keep `saved`, `hidden` and
    the Campaigns ⋯ menu beside Import occasion.
 8. **The goal step stays**; step 2's header carries a goal switcher. A
    campaign created from an occasion opens the seasonal collection whose event
-   falls inside the occasion, at the stage the occasion is in.
+   overlaps the occasion's days, at the stage the occasion is in. A new
+   occasion saved from the Campaigns ⋯ opens its page, where campaigns are made
+   for it.
 9. **The consent card** asks at the end of the grid — "See more templates from
    the WConvert library?" — with no count, because nothing is fetched before
    the answer (a departure from the prototype, which showed one).
