@@ -26,7 +26,7 @@ stays bundled when any of these holds:
 4. **Its Goal would fall below two popups and two inline forms** among the
    designs still bundled, where it has that many today.
 5. **The catalogue cannot serve it.** Three capture journeys (consent that does
-   not start hidden) and nine designs with inline SVG art that has no reviewed
+   not start hidden) and ten designs with inline SVG art that has no reviewed
    raster derivative cannot be exported (ADR 0156), so moved they would reach
    nobody.
 
