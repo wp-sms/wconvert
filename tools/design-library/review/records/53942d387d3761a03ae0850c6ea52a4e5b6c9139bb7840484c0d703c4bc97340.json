@@ -1,0 +1,71 @@
+{
+  "id": "collection-black-friday-cyber-monday-2026",
+  "revision": "a536dcb8fbe08ade36ab938df150829ab7c1f52939397a9a2c40a5445235e81f",
+  "base_id": "0d940649d30803c67df94948196632b1afa560ee16ea2d82c95e0e87b929bf6c",
+  "decision": "approved",
+  "reviewer": "Codex collection membership review",
+  "note": "Reviewed the expanded selection: add the 35 already approved native Black Friday campaigns to the original 20, with signup/offer stages and count-free description. All member revisions unchanged and currently approved; website candidate and shipping WordPress collection discovery verified.",
+  "at": "2026-10-26T01:34:27.990Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-membership-2026-10-26/review.md",
+          "sha256": "7edd7a107cb18d72fe6ee197002177c4dccd8eefb8951ddc4b8db07b86dcc085"
+        },
+        {
+          "path": "docs/reviews/black-friday-membership-2026-10-26/members.json",
+          "sha256": "3493dd0fdfbfe1c5345ec2dc4044828157153610146cd9c8e77f8386b04f7342"
+        },
+        {
+          "path": "docs/reviews/black-friday-membership-2026-10-26/collection.png",
+          "sha256": "c77b11ab24a2f50b0ab816fdab1518bf38bd25df6a7e77dd0877ae5ad4669e5e"
+        },
+        {
+          "path": "docs/reviews/black-friday-membership-2026-10-26/collection-department.png",
+          "sha256": "da4caeb151d80591fc33ab2c873bb1d3c72a82764c813806879ba89b2490f895"
+        },
+        {
+          "path": "docs/reviews/black-friday-membership-2026-10-26/department.png",
+          "sha256": "6ba48f888fff4cd987625084e0549adecf74c133c80616f006f736760f35bbd0"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-membership-2026-10-26/review.md",
+          "sha256": "7edd7a107cb18d72fe6ee197002177c4dccd8eefb8951ddc4b8db07b86dcc085"
+        },
+        {
+          "path": "docs/reviews/black-friday-membership-2026-10-26/members.json",
+          "sha256": "3493dd0fdfbfe1c5345ec2dc4044828157153610146cd9c8e77f8386b04f7342"
+        },
+        {
+          "path": "docs/reviews/black-friday-membership-2026-10-26/wordpress.json",
+          "sha256": "2c55691166cef4ed792e2f76fa0926a61fefe01ff9ea47dcd6feb284c3ee3114"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-membership-2026-10-26/review.md",
+          "sha256": "7edd7a107cb18d72fe6ee197002177c4dccd8eefb8951ddc4b8db07b86dcc085"
+        },
+        {
+          "path": "docs/reviews/black-friday-membership-2026-10-26/members.json",
+          "sha256": "3493dd0fdfbfe1c5345ec2dc4044828157153610146cd9c8e77f8386b04f7342"
+        },
+        {
+          "path": "docs/reviews/black-friday-membership-2026-10-26/wordpress.json",
+          "sha256": "2c55691166cef4ed792e2f76fa0926a61fefe01ff9ea47dcd6feb284c3ee3114"
+        }
+      ]
+    }
+  },
+  "record_id": "53942d387d3761a03ae0850c6ea52a4e5b6c9139bb7840484c0d703c4bc97340"
+}

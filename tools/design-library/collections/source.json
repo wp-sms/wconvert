@@ -392,7 +392,7 @@
     {
       "id": "black-friday-cyber-monday-2026",
       "name": "Black Friday & Cyber Monday",
-      "description": "Build your early-access list, reveal a sale offer or count down to closing time. Twenty designs across five formats. Set your own discount, coupon, shop link and campaign end date.",
+      "description": "Build your early-access list, reveal a sale offer or count down to closing time. Explore Black Friday and Cyber Monday designs across five formats. Set your own discount, coupon, shop link and campaign end date.",
       "cover": "sale",
       "business_types": [
         "stores"
@@ -520,6 +520,216 @@
           "stage": "during",
           "setup_hash": "49dc5c4109092a2e3a08742fac47e0797a1ea467b407e843992ee020dcfa7a87",
           "design_hash": "50af6c1fac862e6af757b746dd5139395b3f26199b0bff519b97e7b94d7a46b5"
+        },
+        {
+          "setup_id": "campaign-streetwear-poster",
+          "stage": "during",
+          "setup_hash": "d2b73a422f2b4967bc73092279c4fb20dd3ba7a17bb463f5b7c89f27f8ca3c04",
+          "design_hash": "e7b21b892c2feb204ddd7989b4a7282c464fc9652596913c4219b0c34448d6a9"
+        },
+        {
+          "setup_id": "campaign-tech-price-sheet",
+          "stage": "during",
+          "setup_hash": "3dd17726c520083e0a9fe6239e889802ba8f0f8f806c0d554a4cd6d0fc9c0077",
+          "design_hash": "bde80dab293a7012ac05d11da76933d84994bc72c9023d831ae7368947c1296e"
+        },
+        {
+          "setup_id": "campaign-fifty-fifty-poster",
+          "stage": "during",
+          "setup_hash": "33238478434088913e0ca1b169a93dc2884c61967b682793a75160ec5e29eb8b",
+          "design_hash": "d0692481d80756eb5c0aa39269654d1e922ce65a0de52fe6d5c19550029f16c9"
+        },
+        {
+          "setup_id": "campaign-black-friday-coffee-menu",
+          "stage": "during",
+          "setup_hash": "372329598f9c3a98a522c26c492867fa79596c857b2a6019c8a6d93e8db19bbe",
+          "design_hash": "bce682356bc6ce982628da6984f1a68a0d8c43fc5719997842ffd0369ab540dd"
+        },
+        {
+          "setup_id": "campaign-first-access-pass",
+          "stage": "before",
+          "setup_hash": "e094076d5cefbc531c2e2d55c37548b09f782895499a52f6a78c7ea2fb947373",
+          "design_hash": "7aaae272fe79c6cc17fcd50919e2b5e3b0c5550d1ea002307864d3a505f5d9bb"
+        },
+        {
+          "setup_id": "campaign-restock-mosaic",
+          "stage": "during",
+          "setup_hash": "84a0397da128b491384b81f79446d5961ea8a1f86eb8e5e5309690b62a2546c2",
+          "design_hash": "83c88daf0a6a33dc0d62f26f6fe5bd8d10ec63dde4ebff9acb6852809ab06ca4"
+        },
+        {
+          "setup_id": "campaign-golden-weekend-ticket",
+          "stage": "during",
+          "setup_hash": "ffbdb73f2f5d53107dcd935dd82b97ceb50b7c1ce1d2261cbcb9c2996ffa16ee",
+          "design_hash": "6271065954a4b266635689673be56d7b66de8dca1b569a487ac1bf2d32a55fe6"
+        },
+        {
+          "setup_id": "campaign-finish-line-countdown",
+          "stage": "during",
+          "setup_hash": "54e0baf96df9636fabe2bd68cb2cb93f23dc6264261659c81f8013a5262ed6c0",
+          "design_hash": "df0151b0a1d7c05cbc50ca36d5fd2ef582a14bb42b8c68b07550b3b464447aa3"
+        },
+        {
+          "setup_id": "campaign-sound-circle",
+          "stage": "during",
+          "setup_hash": "9848c06d2345718c0a0982ea8fde2f32ef1aa2350a310f49d0970366afe839d3",
+          "design_hash": "580f4a287a878339be63bb06534cf43ca5f6ae9584dab09b8591c2dcb4fc1c99"
+        },
+        {
+          "setup_id": "campaign-layer-edit",
+          "stage": "during",
+          "setup_hash": "ce895704a79596e7afe3e28d4d0f9c7bf5ac0785d5280bc0287087fc5d953864",
+          "design_hash": "beab32c05aed6546dd7df7455ebf38a473c3600cc8957f6f0215d71716bbcbdf"
+        },
+        {
+          "setup_id": "campaign-black-friday-plus-one",
+          "stage": "during",
+          "setup_hash": "53364cc31d45d54b6df8fb88a27a37daf49b1f1884500e44eb68ae4fd8b6bf30",
+          "design_hash": "9bf101bc01895b19d2f5fc77e8e75369fd407c32fe4fa4e51aa5a5bd8066fee2"
+        },
+        {
+          "setup_id": "campaign-savings-staircase",
+          "stage": "during",
+          "setup_hash": "f0f0e771c834c0636f00ebf4ec2ecc148681bcbed0113b773ba164f3c6301ceb",
+          "design_hash": "5c390288f39eac645a17cba6c1b1db172259fa9e409506b8a5c0d731e55b1877"
+        },
+        {
+          "setup_id": "campaign-twelve-month-deal",
+          "stage": "during",
+          "setup_hash": "4c7311256d0653b5d93ee6b3af9a0d14a055f35ee8232a58d5dd417527d4c644",
+          "design_hash": "8f683aed321596522bae2d231e6fb9e8e9f5290914c937b28f96f1a5e5a790ed"
+        },
+        {
+          "setup_id": "campaign-drop-alert",
+          "stage": "before",
+          "setup_hash": "ee97277faa9a4dfc6efc15a67dc4ef1c3aa063cf383f83c63eb53e7f6c2a4902",
+          "design_hash": "3ddb5f3f7b2a02f128033884955c7f700a083ad6e1e69239a2f840b086b9dc79"
+        },
+        {
+          "setup_id": "campaign-deadline-scoreboard",
+          "stage": "during",
+          "setup_hash": "3e1ce491f02ad107c5521b7d0004eef98667e209128ce3e348a2d290b6f3c10a",
+          "design_hash": "c4db46308a3aa1f80226815953a202fadaa80f3e42ca070835dc001925956d4b"
+        },
+        {
+          "setup_id": "campaign-first-dibs-signup",
+          "stage": "before",
+          "setup_hash": "fb71292ac992a9530ffd7684c412c46ef485d98bc39733da2ff006607581a52b",
+          "design_hash": "9f9dcc6b39d1b53daf81081a05c7e574562b51bd9c9a7e119d412db441a1452d"
+        },
+        {
+          "setup_id": "campaign-free-delivery-label",
+          "stage": "during",
+          "setup_hash": "54bc7469b64703714de3eaf873feb3c287a2aa2dd4617a5e437c9b4aedbc0ee3",
+          "design_hash": "1f0803d56d88818ceaec7f8cc12a2bcaf1789d29145883836aff3ce176a7506d"
+        },
+        {
+          "setup_id": "campaign-extra-ten-coupon",
+          "stage": "during",
+          "setup_hash": "48f6c83211fce482dab6e85f050699ec19dba3adc8250f1fd17e6b1547d02ccb",
+          "design_hash": "b1315df41f4a48791a18e6366c18f36e06bf236cdc6ddd7bc1466660f0b56775"
+        },
+        {
+          "setup_id": "campaign-home-edit",
+          "stage": "during",
+          "setup_hash": "5bbc30644fdfead9e5b294557028a8e954b07fe6f36244a3ff7f331902803fd0",
+          "design_hash": "cfb9cce2db507a52756e73d964de12b82af08c45ba1fffd58f0195560274add9"
+        },
+        {
+          "setup_id": "campaign-black-friday-department",
+          "stage": "during",
+          "setup_hash": "c1404a2d28084204f427b5e8fcfd99330602acbee58b9c20fcd4c609a2450cb4",
+          "design_hash": "8d98214f8ed53a001f825406d059812915473101f9b38f586b722aeb1f6fdb9c"
+        },
+        {
+          "setup_id": "campaign-friday-coupon",
+          "stage": "during",
+          "setup_hash": "8889f12b7be7f8f520703eddcb58ba837913c97b1e84e986bade7f05df711405",
+          "design_hash": "8582ce8aa52f78b5a23000beb552b005009d0719d64bf91718a977b8c7873a48"
+        },
+        {
+          "setup_id": "campaign-turn-it-up",
+          "stage": "during",
+          "setup_hash": "30d98f47eed7c1635682f5ed81c3de0e7cb2afa731503f8e9e5bbaec691143ab",
+          "design_hash": "71612c4dd8b6f5e211c82a4681c3c4257d888e0f9ae3f893e9f7a0122b954428"
+        },
+        {
+          "setup_id": "campaign-friday-comic",
+          "stage": "during",
+          "setup_hash": "0b4cd72edcc5fb66cac53f19b2db33023108345ef80d9ce79496d97a8e1ba14e",
+          "design_hash": "c65f1853c1441137cad4b41cde561129ef989fef5dfe987dc082d838d739e6b1"
+        },
+        {
+          "setup_id": "campaign-price-elevator",
+          "stage": "during",
+          "setup_hash": "a580fd115ddb47496ec1fe1911ebe7e0999bde7d4c959177b94990feb71b02b0",
+          "design_hash": "2da073ff9dd274e2602c4666a4bb5f27c199298c756e0c361476482f1403f155"
+        },
+        {
+          "setup_id": "campaign-private-preview",
+          "stage": "before",
+          "setup_hash": "0b7119d086ff730c294525da58c66cafc4c5d756f1acac5aa982c6204841e8e8",
+          "design_hash": "1434ae1e9ae689583f61533d8fc74f3b8eaed38c20ccabcd225c7bccb1a8e483"
+        },
+        {
+          "setup_id": "campaign-sneaker-edit",
+          "stage": "during",
+          "setup_hash": "6f0b35a0aa4cb273c01b6b0b52e8b30de9ba4335040c75220f0b9d5f20e71ce6",
+          "design_hash": "e5d2e2fc04ba60de7b0cab69b8b670f76e53658848dc1cfe4f5d918f7e152000"
+        },
+        {
+          "setup_id": "campaign-midnight-fragrance-edit",
+          "stage": "during",
+          "setup_hash": "627b13f3af4c52eb298b38433afa21f4a8692f6a5f22bee07a785175ed7c2920",
+          "design_hash": "aea38087feef46bf2a85a361cd11b320b97eba68bb38524fc30d70e2d4029696"
+        },
+        {
+          "setup_id": "campaign-wishlist-alert",
+          "stage": "before",
+          "setup_hash": "62f5b46ca0f184191c19a8380e78b172686ffbda83826c07adc58964e792f9fe",
+          "design_hash": "49a8089dfc4bbad4ed72a0ba9552804b237b4d47edbe61675c9531daeae18ec8"
+        },
+        {
+          "setup_id": "campaign-friday-pass",
+          "stage": "before",
+          "setup_hash": "3b8d39c173b41a4fac70bf8ace5f255a6e2f0ad09297df5cf58e8f3bdfe5bd90",
+          "design_hash": "47ae1f12818c3bb96070b7037618bd96665143e87dd51b99894b22e425e50d36"
+        },
+        {
+          "setup_id": "campaign-black-friday-archive",
+          "stage": "during",
+          "setup_hash": "9340aa382d04fced1acf77d9bd2f634479f05a5d8cb1ebb06b73e3e65ed9ec73",
+          "design_hash": "45e67e85e1a33b63561fb1d6c8f4ae94fa538ef7c38b057b9fb34ae6aec5efc4"
+        },
+        {
+          "setup_id": "campaign-friday-game-code",
+          "stage": "during",
+          "setup_hash": "88d92ad8e6566cebb9567592ea33db39ffb39304bc2b4ad0a0689e591915b8c6",
+          "design_hash": "187313d2e5ed88455eab87bd283ec738c5a38a9197a8e0445271fc8e873dec7c"
+        },
+        {
+          "setup_id": "campaign-fragrance-booth",
+          "stage": "during",
+          "setup_hash": "9bf74b08ac12d907d9c72a9bb56f4d40ca55e5dbbb6033497bcc1336e3ea6575",
+          "design_hash": "6d89b3d23a4e89d1ada5e5bb3b9e71cdd26553d6dd0bad5d5fd07d0fbc0aa970"
+        },
+        {
+          "setup_id": "campaign-black-friday-fast-lane",
+          "stage": "during",
+          "setup_hash": "64d5ea33e7e354fb01c394cace4c9693597d7d1ab6bc1d1e41e064cc437c51e4",
+          "design_hash": "ba259c5802f84b54c0c0ee278e5145c6bbd2c5825fc3a3966d6527cddf9488d1"
+        },
+        {
+          "setup_id": "campaign-friday-email-alert",
+          "stage": "before",
+          "setup_hash": "864ba3bf5ef7e8844d65c7ca7606e3c5d42442daa465d529d093eb8fe73389ac",
+          "design_hash": "2471331719b6080b1ca4146a52a684db919837d50d459f90748b7c614e896d47"
+        },
+        {
+          "setup_id": "campaign-black-friday-departments",
+          "stage": "during",
+          "setup_hash": "443d07d09076a57a47f942921b2dcf817cf7cc9dc21cba0a7c7ce6482d1de1ff",
+          "design_hash": "3e60e3a73d39d7176fe949eb28e3ad7aabb63c9a1a02a844885d4a6beba78b1e"
         }
       ],
       "event": {
