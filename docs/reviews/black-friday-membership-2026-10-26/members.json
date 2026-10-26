@@ -1,0 +1,3090 @@
+{
+  "collection": "black-friday-cyber-monday-2026",
+  "revision": "a536dcb8fbe08ade36ab938df150829ab7c1f52939397a9a2c40a5445235e81f",
+  "members": [
+    {
+      "id": "bf-midnight-atelier",
+      "design": "bf-midnight-atelier",
+      "stage": "during",
+      "revision": "59f55d138a9de446f50e2240bc2a54808d74bf15c47f859d2e6bcd7849e94d6b",
+      "review": "6cbe1dfc88dc060005968999a2b4f7ff9232d665f973d77de310c806f2dc2d87",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/bf-midnight-atelier-320.png",
+              "sha256": "57082bac47890f92925ccc5a79dba3be5d75b1d447f04c077b551bc5765c6bb5"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/bf-midnight-atelier-1440.png",
+              "sha256": "a45a91288de04d78a5fb6c748244998982e62385955f026e286df320607c1c63"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+              "sha256": "793ac07041c09fa5f4ef6eb75bb2f81031073b4a728b2227ae6f19c1c84bc844"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+              "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+              "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/packaging.json",
+              "sha256": "d78faafdae579ac76d34228c6c924a68908ca1758dc02614c83e21d9dfc5aab0"
+            },
+            {
+              "path": "docs/reviews/artwork-files-2026-10-25/review.md",
+              "sha256": "0e54364a8329f533e5cd2b242eaaea66efa597708b966208ca8fbbf4c0e84fd8"
+            },
+            {
+              "path": "docs/reviews/artwork-files-2026-10-25/metrics.json",
+              "sha256": "e904c4ea78c22461814a39d6aed271846adca8012074b2587b150456078c3809"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "1852311e7525a6798a9b3f7492b92d366e8aea9a146d429899fad6e393c41ef4"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+              "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/packaging.json",
+              "sha256": "d78faafdae579ac76d34228c6c924a68908ca1758dc02614c83e21d9dfc5aab0"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "1852311e7525a6798a9b3f7492b92d366e8aea9a146d429899fad6e393c41ef4"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/packaging.json",
+              "sha256": "d78faafdae579ac76d34228c6c924a68908ca1758dc02614c83e21d9dfc5aab0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "bf-acid-markdown",
+      "design": "bf-acid-markdown",
+      "stage": "during",
+      "revision": "dc207eb4ab0342239744a76bd5fe03b1d38e8ab975a470b7abb4d0d8b109298d",
+      "review": "0825205806663ba1a858efc6d42ab732152ed26518ec5c08720b931a4c36fdb4",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/bf-acid-markdown-320.png",
+              "sha256": "7897909b69364f8db62f3eef4331d11669430eaf459a292ff0a33e57606fb8a9"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/bf-acid-markdown-1440.png",
+              "sha256": "45f70004c07b537e7026c2101a10b6c4bca52d55bff913f06fb2d731ee1888db"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+              "sha256": "370f1d05a62db6399b17baa10a575f846744e0d0fb4ad4f8b670172ebc984447"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+              "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+              "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-alignment-2026-10-22/results.json",
+              "sha256": "7b0a67e151e8ca0b13fb2b0b4e11d41f649abbb1638aedf0111f66434fb7eaf8"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+              "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-alignment-2026-10-22/results.json",
+              "sha256": "7b0a67e151e8ca0b13fb2b0b4e11d41f649abbb1638aedf0111f66434fb7eaf8"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "bf-early-list",
+      "design": "bf-early-list",
+      "stage": "before",
+      "revision": "30580a536abf14013ea7a3892090324a556e3c2d40b8213609f5a9130044c1d9",
+      "review": "7a4fe3a6d64bdc176cf9d9e941374e9efde18595affcb720edb84b75a84ae265",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/bf-early-list-320.png",
+              "sha256": "26413adfe4fd239c34b42a572726b1bba6eab15e49c268f21ac2e7db3ba6180c"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/bf-early-list-1440.png",
+              "sha256": "7b5afb07fe079f0f120dbed5f8cb7c8e6162c9e96377a3cac6cdd5dc95cb7db3"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+              "sha256": "0e0ff47c3ce6f5b09674b3490ad24474dbb06db35ea5932f7ccce5f1d1c0b718"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+              "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+              "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+              "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "bf-good-deal-receipt",
+      "design": "bf-good-deal-receipt",
+      "stage": "during",
+      "revision": "daab132301c1f89bfba16e44ae0b48309659537ebc9cc0595222d275a6ff27ba",
+      "review": "e155c57968028141054f9d9b2d4665f0fcb61bb30a9f1e3bd2d53db832ec1616",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/bf-good-deal-receipt-320.png",
+              "sha256": "f67a27e602972092bcb16ee4c684c46c84bca2c108404be62d0cccf49851053c"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/bf-good-deal-receipt-1440.png",
+              "sha256": "04b4c86ca95a132a64ba50f074d5861169d422fa029671e88964229854c12ec8"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+              "sha256": "0e0ff47c3ce6f5b09674b3490ad24474dbb06db35ea5932f7ccce5f1d1c0b718"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+              "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+              "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+              "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "bf-blackout-strip",
+      "design": "bf-blackout-strip",
+      "stage": "during",
+      "revision": "4a3662f53d3f126cbc6004eb5c18df6ba60b68235a953a7f8b554f9c36ddf359",
+      "review": "bb6222eff2bf371d7f47c4777dc93b0200ddb2ea5ec7605e8607889cd38c024a",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/bf-blackout-strip-320.png",
+              "sha256": "49a08880d90fef32d7151322f4efb43efcc99d013dcc3a3c8da4b783aedcca82"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/bf-blackout-strip-1440.png",
+              "sha256": "dc546024c97752aa9d978676c738bedd2453c856e9ca5dc9db7277352adcc3e1"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+              "sha256": "0e0ff47c3ce6f5b09674b3490ad24474dbb06db35ea5932f7ccce5f1d1c0b718"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+              "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+              "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+              "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "bf-weekend-edition",
+      "design": "bf-weekend-edition",
+      "stage": "during",
+      "revision": "1f06c5cf56717db1afb64a2d1dbf6b7bb2bd8e358eb875eb016d2f6e5b851d20",
+      "review": "ca2bf046342299ac553803784dcbe43657bd8892c43e05793f37d15612459d16",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/bf-weekend-edition-320.png",
+              "sha256": "d70932c6c713c41d100df61c1dbe5797ae95906177c912be0310d76ee917cb26"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/bf-weekend-edition-1440.png",
+              "sha256": "0f6a99d3081eca608b1b0da1b145804b7943ac3e3ace938d13ed36649ae9d146"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+              "sha256": "0e0ff47c3ce6f5b09674b3490ad24474dbb06db35ea5932f7ccce5f1d1c0b718"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+              "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+              "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+              "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "bf-velvet-rope",
+      "design": "bf-velvet-rope",
+      "stage": "before",
+      "revision": "9f78dc984ca0a662dcadcad52fda45e9d883f76c1cf9a364ef663c9d54ae785b",
+      "review": "cd22dbb0ea10db6fd99130e9fae03281bcd2c3a9dcee730792dfe8a7e35d7a8f",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/bf-velvet-rope-320.png",
+              "sha256": "2c4d2809fa3361269daeca15f63d72b2d4bb6f93035ae52fb24c0410317dca97"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/bf-velvet-rope-1440.png",
+              "sha256": "46c6d466258522b6f9bacf1a89755c9d2b9cfb7f205d7f0c9d55ed1291c1ceb3"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+              "sha256": "370f1d05a62db6399b17baa10a575f846744e0d0fb4ad4f8b670172ebc984447"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+              "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+              "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+            },
+            {
+              "path": "docs/reviews/artwork-files-2026-10-25/review.md",
+              "sha256": "0e54364a8329f533e5cd2b242eaaea66efa597708b966208ca8fbbf4c0e84fd8"
+            },
+            {
+              "path": "docs/reviews/artwork-files-2026-10-25/metrics.json",
+              "sha256": "e904c4ea78c22461814a39d6aed271846adca8012074b2587b150456078c3809"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-alignment-2026-10-22/results.json",
+              "sha256": "7b0a67e151e8ca0b13fb2b0b4e11d41f649abbb1638aedf0111f66434fb7eaf8"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+              "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-alignment-2026-10-22/results.json",
+              "sha256": "7b0a67e151e8ca0b13fb2b0b4e11d41f649abbb1638aedf0111f66434fb7eaf8"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "bf-little-black-gift",
+      "design": "bf-little-black-gift",
+      "stage": "during",
+      "revision": "068c608b10d9057a548c1f1196238e6d29f6195e161d3abff50cd87f7a286966",
+      "review": "4174431b83dd55ac9baf61f3b0034dec4c187ab77213f80f34bd93cdc32b9172",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/bf-little-black-gift-320.png",
+              "sha256": "6c85552d9cbda7ac30badd216513fba23e560e667d55de28c4284f33762fe49f"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/bf-little-black-gift-1440.png",
+              "sha256": "73b9b386cd999179daeacfd3428c56fe30910c1cdae2d244927c14ba33fdd504"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+              "sha256": "0e0ff47c3ce6f5b09674b3490ad24474dbb06db35ea5932f7ccce5f1d1c0b718"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+              "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+              "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+              "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cm-chrome-hour",
+      "design": "cm-chrome-hour",
+      "stage": "during",
+      "revision": "6eb655f15590787712e6951f5f26a1211d6aadfe0fe77f2878d934d7c9ff40d5",
+      "review": "9c62f5ed8093c3f797527735f3345cdd3d638578870598814f9bd74f1a42e340",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/cm-chrome-hour-320.png",
+              "sha256": "eee585df36424840271f2c8b9de65feb73062764e0eff8f21efbc5d94eb45848"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/cm-chrome-hour-1440.png",
+              "sha256": "86961c79d87fd364e558597410803315adf59800213c12d01e2fd404fc52dacc"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+              "sha256": "793ac07041c09fa5f4ef6eb75bb2f81031073b4a728b2227ae6f19c1c84bc844"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+              "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+              "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/packaging.json",
+              "sha256": "d78faafdae579ac76d34228c6c924a68908ca1758dc02614c83e21d9dfc5aab0"
+            },
+            {
+              "path": "docs/reviews/artwork-files-2026-10-25/review.md",
+              "sha256": "0e54364a8329f533e5cd2b242eaaea66efa597708b966208ca8fbbf4c0e84fd8"
+            },
+            {
+              "path": "docs/reviews/artwork-files-2026-10-25/metrics.json",
+              "sha256": "e904c4ea78c22461814a39d6aed271846adca8012074b2587b150456078c3809"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "1852311e7525a6798a9b3f7492b92d366e8aea9a146d429899fad6e393c41ef4"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+              "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/packaging.json",
+              "sha256": "d78faafdae579ac76d34228c6c924a68908ca1758dc02614c83e21d9dfc5aab0"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "1852311e7525a6798a9b3f7492b92d366e8aea9a146d429899fad6e393c41ef4"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/packaging.json",
+              "sha256": "d78faafdae579ac76d34228c6c924a68908ca1758dc02614c83e21d9dfc5aab0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cm-system-upgrade",
+      "design": "cm-system-upgrade",
+      "stage": "during",
+      "revision": "86709b25324b012863459a4bfef3dac4694acbffa99fe7e86d5deeeb23bd04ba",
+      "review": "08ebb932c895cde81dd0815aebc9c9ab5244e4117ba935386da731f35b6e9b39",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/cm-system-upgrade-320.png",
+              "sha256": "4e76039fc0a8f905e2d5b91cd68f7dafd66c4a84335b865ed6b1ae39f7e7946b"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/cm-system-upgrade-1440.png",
+              "sha256": "0461a5f630ccc3f487a7b9623ce3090a4c83b8ebd4633b6e822c018db9c10713"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+              "sha256": "370f1d05a62db6399b17baa10a575f846744e0d0fb4ad4f8b670172ebc984447"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+              "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+              "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-alignment-2026-10-22/results.json",
+              "sha256": "7b0a67e151e8ca0b13fb2b0b4e11d41f649abbb1638aedf0111f66434fb7eaf8"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+              "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-alignment-2026-10-22/results.json",
+              "sha256": "7b0a67e151e8ca0b13fb2b0b4e11d41f649abbb1638aedf0111f66434fb7eaf8"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cm-command-save",
+      "design": "cm-command-save",
+      "stage": "during",
+      "revision": "a1629942dfbf941daf3b455d22d3664551f1104af93d4823bd66c9d0bd46fe69",
+      "review": "4f9f7cedd462d8043915b2a548dc23fd4711665336352712cce2973ce657135a",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/cm-command-save-320.png",
+              "sha256": "550d1ee536d40eef0a4d909777b433171258f9e18e0c3a269459ef34766cde4c"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/cm-command-save-1440.png",
+              "sha256": "68ea32fb47a5037041f1726e7a944a71d4c8d0827ccfb483d174afc7200ba09d"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+              "sha256": "0e0ff47c3ce6f5b09674b3490ad24474dbb06db35ea5932f7ccce5f1d1c0b718"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+              "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+              "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+              "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cm-pixel-drop",
+      "design": "cm-pixel-drop",
+      "stage": "before",
+      "revision": "edd8acd39621ac2734606c58440bb1aaa7f59e2759203899c23f2e3db4796b9a",
+      "review": "fc7e2f5a6311dc1eaed65aaf0783c6a6818afe0d64e7ab06fe7df6b577e0d68a",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/cm-pixel-drop-320.png",
+              "sha256": "67949a280e606a85e0e88e6eb2b620e997db4fa48478ab24e4f4d35ddc8790c0"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/cm-pixel-drop-1440.png",
+              "sha256": "4b09200dad6d7b96db856971b8a547619fb237a3326249959ebdb3fcffd4d629"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+              "sha256": "370f1d05a62db6399b17baa10a575f846744e0d0fb4ad4f8b670172ebc984447"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+              "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+              "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-alignment-2026-10-22/results.json",
+              "sha256": "7b0a67e151e8ca0b13fb2b0b4e11d41f649abbb1638aedf0111f66434fb7eaf8"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+              "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-alignment-2026-10-22/results.json",
+              "sha256": "7b0a67e151e8ca0b13fb2b0b4e11d41f649abbb1638aedf0111f66434fb7eaf8"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cm-electric-aisle",
+      "design": "cm-electric-aisle",
+      "stage": "during",
+      "revision": "19d8b184f6d9b86f61bfad2fc8205b03f9bc52dec59bcacfe03b84820cc5b35e",
+      "review": "2f987cb77179d3c798e036d3b12763ab54c1f0354f3ebb911bfbbcc6ef8e6e97",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/cm-electric-aisle-320.png",
+              "sha256": "928de5847274c9512d1be7b08b34f8eef61c2d77a2c3434c001c71e0faa4b7bc"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/cm-electric-aisle-1440.png",
+              "sha256": "44bbf331f7bcca1ee507c77cb9c20befd4b03402cbada80e4e7d771b7ff47527"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+              "sha256": "793ac07041c09fa5f4ef6eb75bb2f81031073b4a728b2227ae6f19c1c84bc844"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+              "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+              "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/packaging.json",
+              "sha256": "d78faafdae579ac76d34228c6c924a68908ca1758dc02614c83e21d9dfc5aab0"
+            },
+            {
+              "path": "docs/reviews/artwork-files-2026-10-25/review.md",
+              "sha256": "0e54364a8329f533e5cd2b242eaaea66efa597708b966208ca8fbbf4c0e84fd8"
+            },
+            {
+              "path": "docs/reviews/artwork-files-2026-10-25/metrics.json",
+              "sha256": "e904c4ea78c22461814a39d6aed271846adca8012074b2587b150456078c3809"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "1852311e7525a6798a9b3f7492b92d366e8aea9a146d429899fad6e393c41ef4"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+              "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/packaging.json",
+              "sha256": "d78faafdae579ac76d34228c6c924a68908ca1758dc02614c83e21d9dfc5aab0"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "1852311e7525a6798a9b3f7492b92d366e8aea9a146d429899fad6e393c41ef4"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/packaging.json",
+              "sha256": "d78faafdae579ac76d34228c6c924a68908ca1758dc02614c83e21d9dfc5aab0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cm-night-shift",
+      "design": "cm-night-shift",
+      "stage": "during",
+      "revision": "4b481d5f390ea03ae9079d78afc51ae544ffdc79b0e25d7257e6368adb75dfed",
+      "review": "830c9fde4e816426338d854b800bfc53147ed143130e97ded0f0ece01221353a",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/cm-night-shift-320.png",
+              "sha256": "5644ae159b899496b12c80c04c0d6626b6116a63d9ede8f0fb7eff33d04d5568"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/cm-night-shift-1440.png",
+              "sha256": "ecac24bf48ee16a855c700d6a3b6035dbbbf76e1c9d65626232f4fe9be737099"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+              "sha256": "0e0ff47c3ce6f5b09674b3490ad24474dbb06db35ea5932f7ccce5f1d1c0b718"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+              "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+              "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+              "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/countdowns.json",
+              "sha256": "f1ad213373f5f534c0d9be636c0ee434ebcd39ec0579e8bd5f19116d82b204ee"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cm-cyber-club",
+      "design": "cm-cyber-club",
+      "stage": "before",
+      "revision": "84830ff3ff241f65ecebd6a551f936ed4e0834c77da03a65a04627367485139e",
+      "review": "5a489f4b8b5e2ae3af604d48f5f9108a884375b94a89e8ea2fcf8b691a4e09cb",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/cm-cyber-club-320.png",
+              "sha256": "95fc0797c86e2567583d0bfac6b48ee73d55c4cf10ee067b3a9654423672d3a5"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/cm-cyber-club-1440.png",
+              "sha256": "13ef76e925c977417f83cb38353626f23910620328c243600f2ca3e6bc70ce7b"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+              "sha256": "370f1d05a62db6399b17baa10a575f846744e0d0fb4ad4f8b670172ebc984447"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+              "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+              "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-alignment-2026-10-22/results.json",
+              "sha256": "7b0a67e151e8ca0b13fb2b0b4e11d41f649abbb1638aedf0111f66434fb7eaf8"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+              "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-alignment-2026-10-22/results.json",
+              "sha256": "7b0a67e151e8ca0b13fb2b0b4e11d41f649abbb1638aedf0111f66434fb7eaf8"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "bf-final-markdown",
+      "design": "bf-final-markdown",
+      "stage": "during",
+      "revision": "ab1b464dffc17954c5b41e3565cba19a4f8ae7efa83c38a4312ae9a052ac8109",
+      "review": "73695d6c87a3d5dcd661b7baa0a9f15cbf39433189470efb26e9813fe3d1face",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/bf-final-markdown-320.png",
+              "sha256": "306ceb89ea6f52ea5ca91f9fc34a570b4e8d5ca18e3b148b06cba6f021358a40"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/bf-final-markdown-1440.png",
+              "sha256": "7e7995dbeadbd01c529c9979dcd1b13ffef2226b93c29562e8e57aedfd1a46a2"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+              "sha256": "793ac07041c09fa5f4ef6eb75bb2f81031073b4a728b2227ae6f19c1c84bc844"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+              "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+              "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/packaging.json",
+              "sha256": "d78faafdae579ac76d34228c6c924a68908ca1758dc02614c83e21d9dfc5aab0"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "1852311e7525a6798a9b3f7492b92d366e8aea9a146d429899fad6e393c41ef4"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+              "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/packaging.json",
+              "sha256": "d78faafdae579ac76d34228c6c924a68908ca1758dc02614c83e21d9dfc5aab0"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "1852311e7525a6798a9b3f7492b92d366e8aea9a146d429899fad6e393c41ef4"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/countdowns.json",
+              "sha256": "f1ad213373f5f534c0d9be636c0ee434ebcd39ec0579e8bd5f19116d82b204ee"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/packaging.json",
+              "sha256": "d78faafdae579ac76d34228c6c924a68908ca1758dc02614c83e21d9dfc5aab0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "bf-closing-time",
+      "design": "bf-closing-time",
+      "stage": "during",
+      "revision": "633e78afba55e6891ffe88259e4e9fc0148efa5058e7e5a5192e10963ca8900b",
+      "review": "c1c8ebbd36f6fdfa3d40699822be54fceaede9b26d4a82c643bbb919ed9a6c67",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/bf-closing-time-320.png",
+              "sha256": "05e795b2513c2635554935fae75073f1b1e9c619dbbd60ca76e0b7d872988c61"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/bf-closing-time-1440.png",
+              "sha256": "f5c00256974b771148f8690de5010f6731b99f7c58e02622056fcb8fe4cf0f61"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+              "sha256": "0e0ff47c3ce6f5b09674b3490ad24474dbb06db35ea5932f7ccce5f1d1c0b718"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+              "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+              "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+              "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/countdowns.json",
+              "sha256": "f1ad213373f5f534c0d9be636c0ee434ebcd39ec0579e8bd5f19116d82b204ee"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cm-digital-after-hours",
+      "design": "cm-digital-after-hours",
+      "stage": "during",
+      "revision": "e794c4aa53fe4cd7f44d3da8e945336badac8db69f999a02e4fc5a78e8c10ec9",
+      "review": "209f77c812cb40cf6fb7d5affdd0a064239dfaf6329e3156742f24f3353628e5",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/cm-digital-after-hours-320.png",
+              "sha256": "032844080a141eb0686c1687934eaba88843b50355f0672029558f9f4ef4a1b8"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/cm-digital-after-hours-1440.png",
+              "sha256": "b0a979b3a5a550d7405a00f94839551222fbc128c09004a70ff44f6aa5eced95"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+              "sha256": "0e0ff47c3ce6f5b09674b3490ad24474dbb06db35ea5932f7ccce5f1d1c0b718"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+              "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+              "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+              "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/countdowns.json",
+              "sha256": "f1ad213373f5f534c0d9be636c0ee434ebcd39ec0579e8bd5f19116d82b204ee"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cm-midnight-transmission",
+      "design": "cm-midnight-transmission",
+      "stage": "during",
+      "revision": "8515fb1c492b83d2d8e73a5b0176d0e583bdf8713b0cfcb4a47b2ec0bf4dee86",
+      "review": "5ebf946d04710937aba5731452a739fccd51be41806625bf57aa95fa207f58b5",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/cm-midnight-transmission-320.png",
+              "sha256": "c624be789136c12f0d9ce3bbf45aa81a7b7893f44139cb43161935803fbb79af"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/cm-midnight-transmission-1440.png",
+              "sha256": "82e1cab911e7926917f77ffdea678ee4d93d6cd7a15c1b06e7abc1f69c873a94"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+              "sha256": "0e0ff47c3ce6f5b09674b3490ad24474dbb06db35ea5932f7ccce5f1d1c0b718"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+              "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+              "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+              "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/countdowns.json",
+              "sha256": "f1ad213373f5f534c0d9be636c0ee434ebcd39ec0579e8bd5f19116d82b204ee"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "bf-weekend-curtain",
+      "design": "bf-weekend-curtain",
+      "stage": "during",
+      "revision": "a780f3ead15b39d115751ed4d2c5c002a0c576a15db7fd2d0d055a96e13fc55e",
+      "review": "2ab7c7a0edd0e4864ac6febc92dd07c33bc5b9fbb0c3592cbd8852fc27a65752",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/bf-weekend-curtain-320.png",
+              "sha256": "23ae098556f4537a1c14f0197acf0eb5de977328a6d4414e5d0669caddffee52"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/bf-weekend-curtain-1440.png",
+              "sha256": "94b757cb68537d2fe9eff9b57776efc98932f5001f1c91ab33610924635e3731"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+              "sha256": "0e0ff47c3ce6f5b09674b3490ad24474dbb06db35ea5932f7ccce5f1d1c0b718"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+              "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+              "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+              "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+              "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+            },
+            {
+              "path": "docs/reviews/shopping-weekend-2026-10-22/countdowns.json",
+              "sha256": "f1ad213373f5f534c0d9be636c0ee434ebcd39ec0579e8bd5f19116d82b204ee"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-streetwear-poster",
+      "design": "campaign-streetwear-poster",
+      "stage": "during",
+      "revision": "6fed8f3e0f5b19564644a11c323e7acfab6a38714a550b6d4400a425e0a7e210",
+      "review": "4bf75181a62e14b30d2b7abd124a06f3fb078fbf1a25d657cb96223320fca49e",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/31-1440-wordpress.png",
+              "sha256": "a3f4d963244658c2e0dcf235d2c616e233359edd4c303bc8ac6152058b6400ce"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/31-390-wordpress.png",
+              "sha256": "687436644c0f241cc39998c13cbb247b20d60eaa89e6826bb02e1b22951f594e"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-tech-price-sheet",
+      "design": "campaign-tech-price-sheet",
+      "stage": "during",
+      "revision": "803b919335eef0360a5f573c282284a0fddbebdf4e41aa81cabc13a63e0dee9a",
+      "review": "9d5896e772dfcb97b188ac69610c952d758b9c1b8ea18e278cddd1828108fe60",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/32-1440-wordpress.png",
+              "sha256": "4dde4533abf59b5fe560dee2806c358d327e0efb19a4f52ef3f1313eecf2e464"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/32-390-wordpress.png",
+              "sha256": "42be9d982d9ba126cb549117158fdd2bb4e7125c6527bdb8e78a7d59d1b4ad1f"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-fifty-fifty-poster",
+      "design": "campaign-fifty-fifty-poster",
+      "stage": "during",
+      "revision": "e05445efa9585d9feb2741fa0708b619249eff795fc5db8905de69f2a1e1e5c0",
+      "review": "195a08162811302ed1a5920d82bd3b98a32dffb1b1d664009ea270c2cbbe9cbe",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/33-1440-wordpress.png",
+              "sha256": "fd1031b9c8a50a2b528626f7f4f92ac89fd5906a92529169724ecffb7c51900c"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/33-390-wordpress.png",
+              "sha256": "41f56aafefb58beb30b956497cdfed5b20a3d6e6d8443848ee2fd2511d3a992f"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-black-friday-coffee-menu",
+      "design": "campaign-black-friday-coffee-menu",
+      "stage": "during",
+      "revision": "fd3c44653e561d2a9b67ecab5dcdede28627c71d9d27736ed7cc53de66d60d35",
+      "review": "5b089ad1dc505e7c1fa3c290c79a1c19c28403bf4010c8d63b9fd79b7bbb4be4",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/34-1440-wordpress.png",
+              "sha256": "fe523a44d51b4e21e51469ca7bf09a28386e45e16d4d2c89c42ad3d2a13d5e4f"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/34-390-wordpress.png",
+              "sha256": "954854137d970a2a11293374b9a505f449e906d6f45ddff8e77cba264e2f5da3"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-first-access-pass",
+      "design": "campaign-first-access-pass",
+      "stage": "before",
+      "revision": "76cde66c5ac8415059d654c91fd457bf478f7fd15149b1f031078b3d0fe53332",
+      "review": "0e812f7162bd8f6c2e9ed9d559a61137db75cc7e76e7dce8c415562fd3de6d63",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/35-1440-wordpress.png",
+              "sha256": "ee5dc8490f64689570397d2411e59df3cbe4c806a1e53c73e40b0fe79aa855ef"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/35-390-wordpress.png",
+              "sha256": "634b0491158363f8e2fc6b410aa3072d8f99c5dcae0f1d09110ed4577103b562"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-restock-mosaic",
+      "design": "campaign-restock-mosaic",
+      "stage": "during",
+      "revision": "ea2d3eddb3e58964af1184521267c8b8855b9737a6f46d1e161b9f273ab75a69",
+      "review": "37013b7d8c1fa93b892f73a2cb45f55b50e588fe222b7108e675219b0812d51a",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/36-1440-wordpress.png",
+              "sha256": "4c9294a5bb75329e08632f874f64f3f4a81b9574b8baf03ab2bb6a418e1745ea"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/36-390-wordpress.png",
+              "sha256": "0376946839a78509d35539b82697e46f45413495738f24b8cfc43a3c10d17979"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-golden-weekend-ticket",
+      "design": "campaign-golden-weekend-ticket",
+      "stage": "during",
+      "revision": "bd92adb5ae302f1e4c1763ced31f09a012ae38559c2577ab3237616d38df8c30",
+      "review": "b1d9b9a34325fd58b2ef010384f8f96fd9f852525b9130d1bd12ca9b4f956341",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/37-1440-wordpress.png",
+              "sha256": "fedfe444279e02b5b771b7af6a57801c2e3779be39daabc60be66cb3f9e585bb"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/37-390-wordpress.png",
+              "sha256": "b2604737e34034583b2dd9b822a1007a4dabaa040029ce164513ae0fffdc7f47"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-finish-line-countdown",
+      "design": "campaign-finish-line-countdown",
+      "stage": "during",
+      "revision": "a0cdee3a09e37de425180f0ab085fbdb128909faede382ec449be5e1ea0e3b6e",
+      "review": "394382ad0afcfb825f6f4821032838660feb573ab0131843a2a86da549e1e3ef",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/38-1440-wordpress.png",
+              "sha256": "08059b60ed9f167d405c6241a474f0bd77907874c030c9471c16331cfc16aab3"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/38-390-wordpress.png",
+              "sha256": "1bfcf57646c3ced12684d6b1e5c21087709519e18605c0fa099172363775a200"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-sound-circle",
+      "design": "campaign-sound-circle",
+      "stage": "during",
+      "revision": "74e905628768397b46dfab833978415083755e3f9e069b88bf16988b32fefc5a",
+      "review": "4c27e9d815528837b26cd1cc20ba69c32bec339a5c45cadb30de251c3024748e",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/39-1440-wordpress.png",
+              "sha256": "7ad14c21ee940770cee4cc79c9338ee48aa9b95ad02c4a3946e71fcfc13c4b01"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/39-390-wordpress.png",
+              "sha256": "f6e6a2c1260c603bb17de02feda176663c783b4ee3f8456c00b701fc4bbafff1"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-layer-edit",
+      "design": "campaign-layer-edit",
+      "stage": "during",
+      "revision": "e2ae277ce599f2c2abe5aecca52e11c33ff05349c8f1cf74278aa08f4e6f558a",
+      "review": "1e4150922ff801277e2b807ab998b94f568db7a7f7d1880e1c0fd4ce35f5690b",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/40-1440-wordpress.png",
+              "sha256": "1a01a0dd0e6febece58ef60865a09527cdd3587620af6170cbc45884a86996c1"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/40-390-wordpress.png",
+              "sha256": "e7fb82ecf4668566a0d823518191f1ab384371c696ebed04ca1d326fc6273c84"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            },
+            {
+              "path": "docs/reviews/artwork-files-2026-10-25/review.md",
+              "sha256": "0e54364a8329f533e5cd2b242eaaea66efa597708b966208ca8fbbf4c0e84fd8"
+            },
+            {
+              "path": "docs/reviews/artwork-files-2026-10-25/metrics.json",
+              "sha256": "e904c4ea78c22461814a39d6aed271846adca8012074b2587b150456078c3809"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-black-friday-plus-one",
+      "design": "campaign-black-friday-plus-one",
+      "stage": "during",
+      "revision": "c273bdc65634a0b2f81967c81f6fcaa8a5ad2d4726cee5ca6968f4e4b678ee19",
+      "review": "cba4bbc345082b79aafcaff8c8ab5bdb62d8982602ea5e0b3839bc2ad588b838",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/41-1440-wordpress.png",
+              "sha256": "4812e2ba5fce2179c06e8235894a577cd29b667020fe1f54b50994a5f4f0dbe5"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/41-390-wordpress.png",
+              "sha256": "6e5e3620e974824b68d7e1942fb00d43bb9ceb0f2a8052f4162741171289c174"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-savings-staircase",
+      "design": "campaign-savings-staircase",
+      "stage": "during",
+      "revision": "9a3ac403eaa1b80ad2866e46ee973ec6fc0a0205c92b2418fc654821d6a19937",
+      "review": "5c66afca2e3c4fe57aa514460f2bc1f74794c45e9fa196deaf268b07533a19c9",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/42-1440-wordpress.png",
+              "sha256": "284069b4506d5287551e796e7714c727ab82f4a853eaeafd11239ee04558e1b7"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/42-390-wordpress.png",
+              "sha256": "91c940ee72cc6ed9dbd0dc5d9bb21bab7a323c1f3a98cd69372967279dcc0114"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-twelve-month-deal",
+      "design": "campaign-twelve-month-deal",
+      "stage": "during",
+      "revision": "bc59113b7331175c7ce77d62954174ae57a446446c3afdc75fbf111bfab059ee",
+      "review": "9a168cd38606c040e7e888a37a41044be07a510828c00e6a01fc8bc61ae054c7",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/43-1440-wordpress.png",
+              "sha256": "7dece0bc42ce9e6ffa53d07314fd46925bdcd847e600d1555d14c1f1369570c6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/43-390-wordpress.png",
+              "sha256": "fab351cfc99ee2b8e4a5904769fc18520568345eafafb7628f962e76e647a6ba"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-drop-alert",
+      "design": "campaign-drop-alert",
+      "stage": "before",
+      "revision": "ad6a41e6a66cabd9464f44dd13cd06c02a3fba431292d5412c9b74c51afdcc32",
+      "review": "d162975b1972d7a262c8cf641e9acd776a6ff66241e24dedef7c6f29aba9ded9",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/44-1440-wordpress.png",
+              "sha256": "774afdbf475e8eff326b39d250539626a9c6b7390be61233a048e03786b7b9a9"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/44-390-wordpress.png",
+              "sha256": "51b239c8c5db566050aa7fa174dcb4e98bdc3effad9381d4474796b15f2d4726"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-deadline-scoreboard",
+      "design": "campaign-deadline-scoreboard",
+      "stage": "during",
+      "revision": "c855c5d25ab5e8d23939f1a70a8377de2bcf87eb3053a57c7ef6d38ff265e59b",
+      "review": "8e6ac595bd9ad2eae1e6fc685a09d5415b859e7e063a48698cb25ea13acd7db1",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/45-1440-wordpress.png",
+              "sha256": "19e46faa678ac61a9b5d1d9a9880c8379df823a97cbe4634a75a66195d843209"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/45-390-wordpress.png",
+              "sha256": "bd7a7d14588bf7114d6294fbc28c645c58261a160827b29f13ca48dd2693e81e"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-first-dibs-signup",
+      "design": "campaign-first-dibs-signup",
+      "stage": "before",
+      "revision": "e05e2795a1a0fbf86ee76bea9cc34c285f3893e2b3bb2798fedccb90fb842db5",
+      "review": "1379b4f4de86443a4c742c595bcd5d2f5ffbfe992ca84b3c6b728e945fa3af44",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/46-1440-wordpress.png",
+              "sha256": "b028e46cf8f37cb273395c2bf43fcdf5e103fc2086599f27d1427bc3fe21f6ed"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/46-390-wordpress.png",
+              "sha256": "be0c5c1c91fb477f57a4704d9b14f7714c4480da745662da79aacc564d42f792"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-free-delivery-label",
+      "design": "campaign-free-delivery-label",
+      "stage": "during",
+      "revision": "e34a5a3b3ffd90945b2f240e0872ac2c9489903b3c405e2429693ff3be7d797e",
+      "review": "d01f8d91d6f447558b5b5b3a79928901cd81065c58b84bc5d96ebe42c491afac",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/47-1440-wordpress.png",
+              "sha256": "fa5fab89b55dd66045cd02f8a486587f7447b185e98fa97b9efedbd78a2babbb"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/47-390-wordpress.png",
+              "sha256": "dea546410b144ffd1dcbbbbf3ebdb6efccb053884959bbbb3f2340767ea9b9ac"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "9e3ee8a59134d7cdda74319ad40454f9634ceb6e09ef0f70d3630a78f66de3b0"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "64658b330127835eb1a32c711c654a42558785445782307da4ec83bf04975457"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "612280bf7c05641759430a7fdea0aea3853f9dd4b8fd033dc1bac8c372cc6d39"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "612280bf7c05641759430a7fdea0aea3853f9dd4b8fd033dc1bac8c372cc6d39"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "9e3ee8a59134d7cdda74319ad40454f9634ceb6e09ef0f70d3630a78f66de3b0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-extra-ten-coupon",
+      "design": "campaign-extra-ten-coupon",
+      "stage": "during",
+      "revision": "189bf7074c692dc1a236cb4051e4ffcb4fdaf66c7b39f558e28d73d26b8aa9e4",
+      "review": "56de7effb8f8bf88f4bbb3502775db587adec08e284b95e03f7689a355b0ab17",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/48-1440-wordpress.png",
+              "sha256": "2962e34975c1f777bbda80ab03d380932be290c32bda84e9ff68840219dc51fd"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/48-390-wordpress.png",
+              "sha256": "95e2da2fcee9fd2bf96d15fc718407246fbdbfe39dbe850e1c4cd320678d4860"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            },
+            {
+              "path": "docs/reviews/artwork-files-2026-10-25/review.md",
+              "sha256": "0e54364a8329f533e5cd2b242eaaea66efa597708b966208ca8fbbf4c0e84fd8"
+            },
+            {
+              "path": "docs/reviews/artwork-files-2026-10-25/metrics.json",
+              "sha256": "e904c4ea78c22461814a39d6aed271846adca8012074b2587b150456078c3809"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-home-edit",
+      "design": "campaign-home-edit",
+      "stage": "during",
+      "revision": "4d5a8a24041c69063f095fe5adc4263542aea27aacedfd14fc9869c7ea6f530b",
+      "review": "72956b21aee513772171b079617423e780f7b6b8cd90844bea5a4192d30ce250",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/49-1440-wordpress.png",
+              "sha256": "b92a28c6d8c4e91d2600dd57266f938c63bbce3d5599240e85982e494b24d006"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/49-390-wordpress.png",
+              "sha256": "f92576825462bca12b5664138c6aaae4c944fbe4ea9beff9c085932fbd8dc837"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-black-friday-department",
+      "design": "campaign-black-friday-department",
+      "stage": "during",
+      "revision": "d2dd8b2be311f126978f3b515a44957794cfa562419198a7fb05df73c809cbb0",
+      "review": "e34c4890994826724f66ad68715b6e7cf19f8a5f0e8d9197739da49489b37b10",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/50-1440-wordpress.png",
+              "sha256": "eb5fdb8f39742731790b4a467b4de5d5dbeb9c75f74db8792aeb7553a8ceafe8"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/50-390-wordpress.png",
+              "sha256": "949e583b57ede832b26379f3ca5eb0c8e996870be04942b0cb3e3be212564bef"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            },
+            {
+              "path": "docs/reviews/artwork-files-2026-10-25/review.md",
+              "sha256": "0e54364a8329f533e5cd2b242eaaea66efa597708b966208ca8fbbf4c0e84fd8"
+            },
+            {
+              "path": "docs/reviews/artwork-files-2026-10-25/metrics.json",
+              "sha256": "e904c4ea78c22461814a39d6aed271846adca8012074b2587b150456078c3809"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-friday-coupon",
+      "design": "campaign-friday-coupon",
+      "stage": "during",
+      "revision": "b47d3a8c45164094f6758b05fe54a327958ccc7b509fcafc937f8dc76a342e4f",
+      "review": "d453d8df473adeefa9a217c6ceac3ee45b03e0f119d1161cfe3d1fe8829886ae",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/03-1440-wordpress.png",
+              "sha256": "c35aaf8e8ed209279b31983a222b862f7d09036941e02ee4881ef26841494d6f"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/03-390-wordpress.png",
+              "sha256": "bf94a1744364ae1c3161aa08cfc10e207a8f427f3398fe281445d7cead32dd14"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "9e3ee8a59134d7cdda74319ad40454f9634ceb6e09ef0f70d3630a78f66de3b0"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "64658b330127835eb1a32c711c654a42558785445782307da4ec83bf04975457"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "612280bf7c05641759430a7fdea0aea3853f9dd4b8fd033dc1bac8c372cc6d39"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "612280bf7c05641759430a7fdea0aea3853f9dd4b8fd033dc1bac8c372cc6d39"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "9e3ee8a59134d7cdda74319ad40454f9634ceb6e09ef0f70d3630a78f66de3b0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-turn-it-up",
+      "design": "campaign-turn-it-up",
+      "stage": "during",
+      "revision": "8e672c770dc3381c38fab7b455fccd9c654c01e2aae3c1fc49af43c8b144dbde",
+      "review": "e268fdf855aa2000273bb762ae9f7a20bcad90a4a0eb394b1e7d4f1688232dad",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/04-1440-wordpress.png",
+              "sha256": "0b21783e75d4fddeed37bca73e2fddefb7713565f07d641f1cb59f8adb779d54"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/04-390-wordpress.png",
+              "sha256": "bcd65d79aa89cf230546abfb6814365b30d30512c8d20d0007d69a7049255e3b"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-friday-comic",
+      "design": "campaign-friday-comic",
+      "stage": "during",
+      "revision": "eaf262bd2c995d23e776343af60a8de8ce8acc1f1c8d78f49bbedaa076b4b153",
+      "review": "39f8b6d69869909027d3d3049ceb5bce8413284dc8c191d152d6985d186458ce",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/05-1440-wordpress.png",
+              "sha256": "552453ccd5ffa27ae0ca2673a83e9549c6d3fd5a94a0d9f5fe26b75208c8d461"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/05-390-wordpress.png",
+              "sha256": "dc8c5165bbb9ec37eeca7a22fb10efa207b933383bf3833fa2200a78e5d49e14"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-price-elevator",
+      "design": "campaign-price-elevator",
+      "stage": "during",
+      "revision": "674a9d38af126b24e1c42f7489dfdda3eb524a87a866f04d5549390573fbbb39",
+      "review": "2e08982727ea5fc3cae656919fc2e27a31b7172f8e16b4285a1c3ae101dcb982",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/06-1440-wordpress.png",
+              "sha256": "e6b22270b83d70459f08c4f79313de022d7ea34a01490cecb27a9bd880840602"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/06-390-wordpress.png",
+              "sha256": "ca1a7a418debdf3056b9291327a8bbb4c9d43c50be13502443be30a23cdcdc4b"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "40a9a0baab1369514a1a2ba832bd281b8f0b8061ab169f657f1e584ce613a775"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "6cdb386383c8f570a85370ab0dea2eba25173a96099c0f559702273968032d43"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "e2917ee820158f48be32a8f7da55d0230afcb52d827abeaf214e06bbc2e25a57"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "e2917ee820158f48be32a8f7da55d0230afcb52d827abeaf214e06bbc2e25a57"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "40a9a0baab1369514a1a2ba832bd281b8f0b8061ab169f657f1e584ce613a775"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-private-preview",
+      "design": "campaign-private-preview",
+      "stage": "before",
+      "revision": "28a619242dbf0e1a01b71f0e713fed2fa1a0ba854d45ad0c8a24dfb96dd1c094",
+      "review": "f4c81e5305913561d1b35e2b47faba589df68b998afad3a1e250a7dcebbe992d",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/07-1440-wordpress.png",
+              "sha256": "aecec2edd442c89b513ffa4eb9979cd1e355fb7877d589bfd29f9d004794894d"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/07-390-wordpress.png",
+              "sha256": "29e9b0817e6a4f3abe381577d74cb8a6dfb23a1dcbe4afeb4bf1799ebafedc1d"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "a4c4d5319dcf9c89dd221e53d0fb752d92d8cc29794e20a8b51227b8336a0546"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "9fc7b32a864c46fd0049000abe22d772bb19dfb8e2979b35dc79d2c1fe6b65ce"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "6eea349f9df98056f69e276fc584f6967e24cb2093795e1cf2ba81bf5bef3e67"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "6eea349f9df98056f69e276fc584f6967e24cb2093795e1cf2ba81bf5bef3e67"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "a4c4d5319dcf9c89dd221e53d0fb752d92d8cc29794e20a8b51227b8336a0546"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-sneaker-edit",
+      "design": "campaign-sneaker-edit",
+      "stage": "during",
+      "revision": "ef7c8f91eecebf5e53ce8f807487690cf08c4ebafbbdfee3ec2e4c0d39d8790f",
+      "review": "fead21976b12295809626a7cf9e02151ec9ddfb7cd17e46ce2bbbefc15bd7c6f",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/11-1440-wordpress.png",
+              "sha256": "011b24741db942da91190d806424b4a1e750303a5304d6a4714c89597af42aa7"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/11-390-wordpress.png",
+              "sha256": "63b0f60ffb69ce6d70228119ed6c4240508333ebc1ed663225c89a3de6f55384"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "9e3ee8a59134d7cdda74319ad40454f9634ceb6e09ef0f70d3630a78f66de3b0"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "64658b330127835eb1a32c711c654a42558785445782307da4ec83bf04975457"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "612280bf7c05641759430a7fdea0aea3853f9dd4b8fd033dc1bac8c372cc6d39"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "612280bf7c05641759430a7fdea0aea3853f9dd4b8fd033dc1bac8c372cc6d39"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "9e3ee8a59134d7cdda74319ad40454f9634ceb6e09ef0f70d3630a78f66de3b0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-midnight-fragrance-edit",
+      "design": "campaign-midnight-fragrance-edit",
+      "stage": "during",
+      "revision": "662912e9ef30af0dab53ee15f55890fc0ba79b864557a2ffcfcff8a649dee240",
+      "review": "7659b19fa7fd9197e83dbfaaa0c1cf9ffd29a72e237c293cf25fdf8c1537fd6d",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/12-1440-wordpress.png",
+              "sha256": "dc5015b4aecbcf7ce598eb3a06ef641d3968bc4d777c2a15f70c34bc699ff4f8"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/12-390-wordpress.png",
+              "sha256": "862d94ed45c6631278801ca35ef5c9ee0413abb7cbe982f6f7283204861436c7"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-wishlist-alert",
+      "design": "campaign-wishlist-alert",
+      "stage": "before",
+      "revision": "4b3351a313ddf48eea34f6ec850df0d2fa4a0b67b59b1d38ea526da6485751fb",
+      "review": "dfdc4e0a74d995aad8bd4f7af878cc89ffa3871a78de12e1ba657f68ad0e7ea5",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/13-1440-wordpress.png",
+              "sha256": "17f5225b4e669c8dd489c03fdbbb8f42dac8e40c4dbee55ff2f14b9015aba873"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/13-390-wordpress.png",
+              "sha256": "b94e20830cb89eff918500ff97558b243e14114a705613b2e8bd08790e71f9b6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "a4c4d5319dcf9c89dd221e53d0fb752d92d8cc29794e20a8b51227b8336a0546"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "9fc7b32a864c46fd0049000abe22d772bb19dfb8e2979b35dc79d2c1fe6b65ce"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "6eea349f9df98056f69e276fc584f6967e24cb2093795e1cf2ba81bf5bef3e67"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "6eea349f9df98056f69e276fc584f6967e24cb2093795e1cf2ba81bf5bef3e67"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "a4c4d5319dcf9c89dd221e53d0fb752d92d8cc29794e20a8b51227b8336a0546"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-friday-pass",
+      "design": "campaign-friday-pass",
+      "stage": "before",
+      "revision": "e280a485cf348424ec81c0b14bc8a694a15c53c61dcdfee789d61f681778ddf5",
+      "review": "b5c82e69be0892f88d978114a4d980d5d2645f45c5ab67ae0ab44456e3628242",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/15-1440-wordpress.png",
+              "sha256": "41fd18a5bbd73ee9633a7db9ec69be35eb7c151e9f1e84a8426216421a031785"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/15-390-wordpress.png",
+              "sha256": "a9358e59b6f86edde3c9c9b2681932a9b5ea1e8209a770a15e11ae3ea5750936"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-black-friday-archive",
+      "design": "campaign-black-friday-archive",
+      "stage": "during",
+      "revision": "89d11580135794431e61e01801b0092d41c5672a1788e928348e96cf8e9a014a",
+      "review": "1e8d4cb6308c417f77e8847cb765aa89e9feef30ffc1801a6244aef2eaf9acf4",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/17-1440-wordpress.png",
+              "sha256": "6c5901002ae86b4d8d6f4fc6ab7a24eebc7c197ec07ec51b04899c2f974dd6e2"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/17-390-wordpress.png",
+              "sha256": "41124260a3dda22f93b6a97e108e0f18bdfafa6b99b9d9088c05d59ec9c5d947"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-friday-game-code",
+      "design": "campaign-friday-game-code",
+      "stage": "during",
+      "revision": "32b48f5bef5080d52b6645816fa83b3c79bbd03df025c8f30a89c7ee8c3d5d83",
+      "review": "b26d9bd797f094372ba20f9c010703196de99c4715badbf806bee1172ee79942",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/19-1440-wordpress.png",
+              "sha256": "30ff9434de9395c37329afb0656f365422702977b845c076e33ee00784cb31fa"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/19-390-wordpress.png",
+              "sha256": "15f3a13975c199711d26b8ebd87904b0309e207f15d307756c5443539d57c22a"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "9e3ee8a59134d7cdda74319ad40454f9634ceb6e09ef0f70d3630a78f66de3b0"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "64658b330127835eb1a32c711c654a42558785445782307da4ec83bf04975457"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "612280bf7c05641759430a7fdea0aea3853f9dd4b8fd033dc1bac8c372cc6d39"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "612280bf7c05641759430a7fdea0aea3853f9dd4b8fd033dc1bac8c372cc6d39"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "9e3ee8a59134d7cdda74319ad40454f9634ceb6e09ef0f70d3630a78f66de3b0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-fragrance-booth",
+      "design": "campaign-fragrance-booth",
+      "stage": "during",
+      "revision": "eb22ecc86b46e452594a55ab3de3410d6dfb4358ae9a4234ac0ca2d434fb6d78",
+      "review": "df2e3c7a338040a4dd47be94b27090404fcd1847cd7ff0a70d9b3afb5b9f9537",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/20-1440-wordpress.png",
+              "sha256": "b53ce11253e28c790c6e35ec23cdc467875ddb1d0cf5effaf13014a3eb91b2d3"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/20-390-wordpress.png",
+              "sha256": "56df56d6990ce24176dc29b95d4107a3dabef098b4a5789afbd2447de92a27e7"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-black-friday-fast-lane",
+      "design": "campaign-black-friday-fast-lane",
+      "stage": "during",
+      "revision": "1bcb715ea36719b7d130b46177f54cea7c8f64064e31611da294620ace5dd715",
+      "review": "35bfb1940449b277b8528dd8b4fcd8823005a477e40758ac36aba42fd4d5eff3",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/22-1440-wordpress.png",
+              "sha256": "4537a944abe74c8b5fa91e2a4bda4ffc5130b21e7344f5479d4bb47d0bbdb29d"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/22-390-wordpress.png",
+              "sha256": "6cfecb21473b62c890f1433fbc14ed56fb87406f91a38e898551e1829ef4589a"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            },
+            {
+              "path": "docs/reviews/artwork-files-2026-10-25/review.md",
+              "sha256": "0e54364a8329f533e5cd2b242eaaea66efa597708b966208ca8fbbf4c0e84fd8"
+            },
+            {
+              "path": "docs/reviews/artwork-files-2026-10-25/metrics.json",
+              "sha256": "e904c4ea78c22461814a39d6aed271846adca8012074b2587b150456078c3809"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-friday-email-alert",
+      "design": "campaign-friday-email-alert",
+      "stage": "before",
+      "revision": "37b1f8d6555b23a07020064ba49ad2c232dbcf32c03b6c4d4ef3cf11fdba34ca",
+      "review": "44365b3f8fc926578813ad03055d9a675978b58466252c3933df38f89346d902",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/24-1440-wordpress.png",
+              "sha256": "e601efc9b8dbe7af3b89957190c459db3f7b81c9fd8cdc806c1f157b3143bf12"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/24-390-wordpress.png",
+              "sha256": "3b58a974ee658cf0a49ec39f9a94e0035bb439ca406eaf18ac99cebd46bf77fd"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "campaign-black-friday-departments",
+      "design": "campaign-black-friday-departments",
+      "stage": "during",
+      "revision": "b97612ba5e203def89e760d1e70de40cd2219b962c3f143f926eb4abc0072ec1",
+      "review": "b454521b4b0cf576baa13ccfab4556174165779910f5463a4771ec5a935945f3",
+      "evidence": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/29-1440-wordpress.png",
+              "sha256": "d0adf1dd191db71be3450b524b182194733f2e593f3bac2701c48e540fea74d1"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/29-390-wordpress.png",
+              "sha256": "24cd8e4c205a003c2dbb5eb1bce0ecc302eb0cd1515c13f099cdfced81838f6e"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/review.md",
+              "sha256": "347aa3eac38fafe65d2c0cbd2677a59113a1933b21b62e439b07ff99b6a66cb8"
+            },
+            {
+              "path": "docs/reviews/artwork-files-2026-10-25/review.md",
+              "sha256": "0e54364a8329f533e5cd2b242eaaea66efa597708b966208ca8fbbf4c0e84fd8"
+            },
+            {
+              "path": "docs/reviews/artwork-files-2026-10-25/metrics.json",
+              "sha256": "e904c4ea78c22461814a39d6aed271846adca8012074b2587b150456078c3809"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/black-friday-wordpress/results.json",
+              "sha256": "0fde3cf92e4202aedef1518e9d09d5b08ace291aa56c104048d238bab76e26f4"
+            },
+            {
+              "path": "docs/reviews/black-friday-wordpress/visual.json",
+              "sha256": "6971bb699c10eca1742ee6ec2c05373859e80c8b460d2fbf15763ea4fdd438f6"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
