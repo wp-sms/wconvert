@@ -33,6 +33,7 @@ final class BundledArtwork
         // No plugin URL means no site: a CLI tool reading the bundled library gets the bytes.
         if ($pluginUrl === '') return self::inlined($entry, $pluginDir);
         return self::walk($entry, static function (string $name, string $file) use ($pluginUrl): string {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- a file name for a log or a CLI, never printed to a page (see broken()).
             if (!is_file($file)) throw self::broken($name);
             return rtrim($pluginUrl, '/') . '/' . self::DIRECTORY . $name;
         }, $pluginDir);
@@ -51,6 +52,7 @@ final class BundledArtwork
         return self::walk($entry, static function (string $name, string $file): string {
             // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a content-addressed file inside this plugin, never a URL.
             $bytes = is_file($file) ? file_get_contents($file) : false;
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- a file name for a log or a CLI, never printed to a page (see broken()).
             if (!is_string($bytes) || hash('sha256', $bytes) !== substr($name, 0, 64)) throw self::broken($name);
             return 'data:image/webp;base64,' . base64_encode($bytes);
         }, $pluginDir);
