@@ -353,6 +353,83 @@ final class SlotRoles
         return $bindings;
     }
 
+    /** Roles whose sample words would be facts about the merchant's business ({@see self::fillBlanks()}). */
+    private const NEVER_SAMPLED = ['offer_amount', 'code_value', 'rating_text', 'wordmark'];
+
+    /**
+     * **The design's own words, wherever the carried ones left a slot empty.**
+     *
+     * `$bound` is `$sample` with its copy stripped and the carried copy bound
+     * back, so the two trees have the same shape node for node. For each node,
+     * a Role the carried copy filled is kept whole, even where it is shorter
+     * than the sample. A Role it did not fill, and any copy key no Role
+     * covers, gets the sample's words back (#372).
+     *
+     * Except where the sample's words would be a claim about this merchant's
+     * business: a discount figure, a coupon code, a rating, a brand name, a
+     * link's address. Those stay empty, so readiness asks for them instead
+     * of publishing the design's invented ones.
+     *
+     * @param array{v: int, steps: list<array<string, mixed>>, submissions: list<array<string, mixed>>, fonts?: list<array{family: string, faces: list<array{weight: int, italic: bool}>}>} $bound What {@see self::bind()} returned.
+     * @param array<string, mixed> $sample
+     * @return array{v: int, steps: list<array<string, mixed>>, submissions: list<array<string, mixed>>, fonts?: list<array{family: string, faces: list<array{weight: int, italic: bool}>}>}
+     */
+    public static function fillBlanks(array $bound, array $sample, TemplateVocabulary $vocabulary): array
+    {
+        foreach ($bound['steps'] as $index => $step) {
+            $own = $sample['steps'][$index]['content'] ?? null;
+            if (is_array($step['content'] ?? null) && is_array($own)) {
+                $bound['steps'][$index]['content'] = self::filled($step['content'], $own, $vocabulary);
+            }
+        }
+
+        return $bound;
+    }
+
+    /**
+     * @param array<string, mixed> $node
+     * @param array<string, mixed> $own
+     * @return array<string, mixed>
+     */
+    private static function filled(array $node, array $own, TemplateVocabulary $vocabulary): array
+    {
+        if (($node['type'] ?? null) !== ($own['type'] ?? null)) {
+            return $node;
+        }
+
+        $bindings = self::bindingsOf($own, $vocabulary);
+        $groups = array_values(array_diff_key($bindings, array_flip(self::NEVER_SAMPLED)));
+        foreach (array_diff($vocabulary->copyKeysOf((string) $own['type']), array_merge([], ...array_values($bindings))) as $key) {
+            if ($key !== 'href') {
+                $groups[] = [$key];
+            }
+        }
+
+        foreach ($groups as $keys) {
+            if (array_intersect($keys, array_keys($node)) !== []) {
+                continue;
+            }
+            foreach ($keys as $key) {
+                if (array_key_exists($key, $own)) {
+                    $node[$key] = $own[$key];
+                }
+            }
+        }
+
+        foreach (TemplateTree::CHILD_KEYS as $key) {
+            if (!is_array($node[$key] ?? null) || !is_array($own[$key] ?? null)) {
+                continue;
+            }
+            foreach ($node[$key] as $at => $child) {
+                if (is_array($child) && is_array($own[$key][$at] ?? null)) {
+                    $node[$key][$at] = self::filled($child, $own[$key][$at], $vocabulary);
+                }
+            }
+        }
+
+        return $node;
+    }
+
     /**
      * One Role's words, written against the keys it fills.
      *

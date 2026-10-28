@@ -370,3 +370,40 @@ describe('fitting the preview without changing its layout width', () => {
     expect(JSON.stringify(template)).toBe(before);
   });
 });
+
+describe('a design that converts without a form or link (#375)', () => {
+  it.each([
+    ['match', 'Shows a matching result'],
+    ['add_to_cart', 'Adds to the basket'],
+  ] as const)('names %s as its visitor action, in the facts and the meta line', async (act, words) => {
+    const { designMeta } = await import('../../resources/admin/src/builder/TemplateDesignDetail');
+    const entry: TemplateIndexEntry = { ...ENTRY, facets: { ...ENTRY.facets, act, captures: [] } };
+    render(<TemplateDesignDetail entry={entry} template={TEMPLATE} labels={LABELS}
+      current={false} fit={{ ...FIT, act }} busy={false} onChoose={vi.fn()} onBack={vi.fn()} />);
+    expect(screen.getByText(words)).toBeInTheDocument();
+    expect(screen.queryByText('No conversion action')).toBeNull();
+    expect(designMeta(entry, LABELS)).toBe(`Popup · ${words}`);
+  });
+});
+
+describe('a quiz replaced under Keep my words (#372)', () => {
+  const quiz: Template = { tokens: {}, tree: treeFixture({ steps: [
+    { type: 'question', id: 'q1', text: 'Where will you use it?', options: [{ value: 'garden', label: 'Garden' }] },
+    { type: 'stack', children: [{ type: 'heading', role: 'headline', text: 'Your match' }] },
+  ] }) };
+  const view = (asksQuestions: boolean, template: Template = quiz) => render(<TemplateDesignDetail entry={ENTRY} template={template} labels={LABELS}
+    current={false} fit={FIT} busy={false} onChoose={vi.fn()} onBack={vi.fn()} asksQuestions={asksQuestions} />);
+  const NOTE = /This template brings its own questions\. Yours will be replaced\./;
+
+  it('says the questions are the template’s when both designs ask them', () => {
+    view(true);
+    expect(screen.getByText(NOTE)).toBeInTheDocument();
+  });
+
+  it('says nothing when the draft asks none, or the template brings none', () => {
+    view(false);
+    expect(screen.queryByText(NOTE)).toBeNull();
+    view(true, TEMPLATE);
+    expect(screen.queryByText(NOTE)).toBeNull();
+  });
+});

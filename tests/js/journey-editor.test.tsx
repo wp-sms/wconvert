@@ -321,9 +321,20 @@ it('adds and removes an optional SMS signup without changing the primary field o
   expect(tree.submissions[1].fields).toHaveLength(1);
   expect(tree.submissions[1].consents).toHaveLength(1);
   expect(screen.getByLabelText('Screen name')).toHaveValue('Optional SMS signup');
+  expect(walkNodes(draft().steps.find(step => step.name === 'Optional SMS signup')!.content).find(node => node.type === 'heading')).toMatchObject({ text: 'Your signup was received' });
   await action(user, 'Delete screen');
   expect(draft().submissions).toHaveLength(1);
   expect(draft().steps).toHaveLength(2);
+});
+it('invites, rather than thanks, when the optional signup is the first one (#357)', async () => {
+  const user = userEvent.setup();
+  render(<Editor initial={{ v: 1, steps: structuredClone(rules.steps), submissions: [] } as unknown as TemplateTree} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByRole('button', { name: 'More screen options' }));
+  await user.click(screen.getByRole('menuitem', { name: 'Add optional signup' }));
+  const added = draft().steps.find(step => step.name === 'Optional email signup')!;
+  const headings = walkNodes(added.content).filter(node => node.type === 'heading').map(node => 'text' in node && node.text);
+  expect(headings).toEqual(['Want updates about your result?']);
 });
 it('keeps an explicit forward path connected when adding an optional signup', async () => {
   const user = userEvent.setup();

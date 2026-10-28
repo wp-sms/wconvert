@@ -68,15 +68,23 @@ export function settingsProblems(requirements: DestinationRequirements | null | 
   return problems;
 }
 
+/** One submission's `integration_mappings`: destination id → mapping source → destination field. */
+export type MappingsByDestination = Readonly<Record<string, Readonly<Record<string, string>>>>;
+
 /** Settings problems plus {@see captureProblems}, each prefixed with the route's name for a list that mixes routes. */
-export function compatibilityProblems(destination: Destination, captures: readonly CapturedField[]): string[] {
+export function compatibilityProblems(destination: Destination, captures: readonly CapturedField[], mappings: MappingsByDestination = {}): string[] {
   if (!destination.requirements) return [];
-  return [...settingsProblems(destination.requirements, destination.settings), ...captureProblems(destination, captures)]
+  return [...settingsProblems(destination.requirements, destination.settings), ...captureProblems(destination, captures, mappings[destination.id])]
     .map((problem) => sprintf(/* translators: 1: a destination's name, e.g. “Mailchimp”, 2: a problem with it, a full sentence. */ __('%1$s: %2$s', 'wconvert'), destination.label, problem));
 }
 
-/** Where this form and this route disagree: missing or optional identifiers, unsent fields, broken mappings. */
-export function captureProblems(destination: Destination, captures: readonly CapturedField[]): string[] {
+/**
+ * Where this form and this route disagree: missing or optional identifiers, unsent fields, broken mappings.
+ *
+ * `campaignMapping` is this campaign's own mapping for this route (source → field).
+ * A field it maps IS sent, so it is never "not sent" (#365).
+ */
+export function captureProblems(destination: Destination, captures: readonly CapturedField[], campaignMapping: Readonly<Record<string, string>> = {}): string[] {
   const requirements = destination.requirements;
   if (!requirements) return [];
   const problems = [...(destination.mapping_issues ?? [])];
@@ -97,6 +105,12 @@ export function captureProblems(destination: Destination, captures: readonly Cap
     const mapping = requirements.mapped_fields[field.name];
     if (mapping && present(destination.settings[mapping.setting], 'text')) {
       problems.push(sprintf(/* translators: 1: an answer the form collects, e.g. “Interest”, 2: which contacts receive it, e.g. “New subscribers only; existing subscriber fields stay unchanged.”. */ __('%1$s: %2$s', 'wconvert'), mapping.label, mapping.scope));
+    } else if (present(campaignMapping[`field:${field.name}`], 'text')) {
+      // Mapped in this campaign. Only a route set to update existing contacts
+      // writes it for them; MailPoet has no such setting and never does.
+      if (destination.settings.existing_contact !== 'update') {
+        problems.push(sprintf(/* translators: %s: a form field, e.g. “interest answer”. */ __('The %s is sent for new contacts only. Existing contacts keep their current details.', 'wconvert'), named(field.name)));
+      }
     } else {
       problems.push(sprintf(/* translators: %s: a form field, e.g. “phone number”. */ __('The %s is saved in WConvert but is not sent by this destination.', 'wconvert'), named(field.name)));
     }

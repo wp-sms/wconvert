@@ -330,11 +330,19 @@ final class TemplateLibrary
             $pickedBefore === null ? [] : ($this->find($pickedBefore)['tree'] ?? null)
         );
 
+        $bound = SlotRoles::bind($this->vocabulary->withoutCopy($entry['tree']), $carried, $this->vocabulary);
+
+        // A switch from a held design keeps the merchant's words where a slot
+        // matches and the new design's own words where none does (#372).
+        // Screens are matched by identity, so a quiz's screens rarely match
+        // another's, and stripping without refilling left them blank. A first
+        // pick holds no words to keep: a Playbook writes them next.
+        if ($heldTemplate !== []) {
+            $bound = SlotRoles::fillBlanks($bound, $entry['tree'], $this->vocabulary);
+        }
+
         $config['template'] = [
-            'tree' => MerchantsOwn::writeInto(
-                SlotRoles::bind($this->vocabulary->withoutCopy($entry['tree']), $carried, $this->vocabulary),
-                $mine
-            ),
+            'tree' => MerchantsOwn::writeInto($bound, $mine),
             'tokens' => $entry['tokens'],
         ];
 

@@ -18,6 +18,7 @@ import { campaignFacts, factAct, linksIn } from '../optins/campaignFacts';
 import { formatCount, humanize, labelOf } from '../lib/format';
 import { messageOf, type Loadable } from '../shell/loadable';
 import { destinationsSaid } from './destinations';
+import type { MappingsByDestination } from '../destinations/requirements';
 import { capturedFields } from '../destinations/requirements';
 import { type JourneyRepair } from './structure/journeyReadiness';
 import { capturesTaken } from './structure/tree';
@@ -74,6 +75,8 @@ export interface ReadinessDialogProps {
   readonly bound: readonly string[];
   readonly template: Template | undefined;
   readonly destinations: readonly Destination[] | null;
+  /** The first signup's field mappings: a mapped field is sent, not "saved only" (#365). */
+  readonly mappings?: MappingsByDestination;
   readonly fieldLabels: Readonly<Record<string, string>>;
   readonly privacyGuidance?: boolean;
   readonly onGoTo: (path: Path) => void;
@@ -117,6 +120,7 @@ export function ReadinessDialog({
   bound,
   template,
   destinations,
+  mappings,
   fieldLabels,
   privacyGuidance = false,
   onGoTo,
@@ -142,7 +146,7 @@ export function ReadinessDialog({
   const trigger = useRef<HTMLButtonElement>(null);
   const reasonId = useId();
   const afterClose = useRef<(() => void) | null>(null);
-  const where = destinationsSaid(bound, destinations, capturedFields(template));
+  const where = destinationsSaid(bound, destinations, capturedFields(template), mappings);
   const overlay = displayType !== 'inline';
   const position = physicalPlacementLabel(displayType, placement, direction);
   const summaries = summarise(rules, vocabulary);

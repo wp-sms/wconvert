@@ -25,6 +25,7 @@ use WConvert\Tests\Unit\Support\FakeProPresence;
 use WConvert\Tests\Unit\Support\FakeSitePresence;
 use WConvert\Tests\Unit\Support\InstalledRules;
 use WP_Error;
+use WP_REST_Response;
 use WP_REST_Request;
 
 /**
@@ -1257,6 +1258,70 @@ final class OptinWriteTest extends TestCase
         $this->assertNotNull($updated->get_data()['published_at']);
     }
 
+    /**
+     * #369: publishing writes the phone field's site country into the
+     * snapshot, so the draft is compared as it would publish. A later change
+     * to the site country is a real change, applied on republish (ADR 0105).
+     */
+    public function testAPublishedPhoneCampaignHasNoChangesUntilTheSiteCountryChanges(): void
+    {
+        update_option('wconvert_phone_default_country', 'US');
+        try {
+            $sms = $this->destinations->save(null, 'wsms', 'SMS subscribers', null, []);
+            $config = \WConvert\Template\TemplateTree::rewrittenIn($this->withPhoneCountry(['template_id' => 'stacked-signup', 'destinations' => [$sms->id]]),
+                static function (array $node): array { unset($node['phone_country']); return $node; });
+            $draft = $this->create(Goal::GrowSmsList, $config);
+            self::assertIsArray($draft);
+            $request = new WP_REST_Request();
+            $request->set_param('id', $draft['id']);
+
+            $published = $this->controller->publish($request);
+            self::assertNotInstanceOf(WP_Error::class, $published, $published instanceof WP_Error ? $published->get_error_message() : '');
+            self::assertStringContainsString('"phone_country":"US"', (string) wp_json_encode($published->get_data()['published_config']));
+            self::assertFalse($published->get_data()['has_unpublished_changes']);
+            self::assertFalse($this->changed($this->controller->show($request)));
+
+            update_option('wconvert_phone_default_country', 'GB');
+            self::assertTrue($this->changed($this->controller->show($request)));
+
+            self::assertFalse($this->changed($this->controller->publish($request)));
+        } finally {
+            delete_option('wconvert_phone_default_country');
+        }
+    }
+
+    private function changed(WP_REST_Response|WP_Error $response): bool
+    {
+        self::assertInstanceOf(WP_REST_Response::class, $response);
+
+        return (bool) $response->get_data()['has_unpublished_changes'];
+    }
+
+    /** The list's SQL flag is a prefilter: a flagged row is resolved and compared again (#369). */
+    public function testTheListClearsAFlagThatOnlyThePhoneCountryRaised(): void
+    {
+        update_option('wconvert_phone_default_country', 'US');
+        try {
+            $config = ['template' => ['tree' => ['steps' => [['content' => ['type' => 'field', 'name' => 'phone']]]]]];
+            $published = \WConvert\Optin\PhoneCountry::resolved($config);
+            $row = ['id' => 'PHONE', 'name' => 'Texts', 'goal' => 'grow_sms_list', 'parent_id' => null,
+                'published_at' => '2026-10-27 10:00:00', 'deleted_at' => null, 'has_unpublished_changes' => '1'];
+            $this->db->answers = [
+                [$row, array_replace($row, ['id' => 'EDITED'])],
+                [
+                    ['id' => 'PHONE', 'config' => (string) wp_json_encode($config), 'published_config' => (string) wp_json_encode($published)],
+                    ['id' => 'EDITED', 'config' => (string) wp_json_encode($config), 'published_config' => '{"template":{}}'],
+                ],
+                [],
+            ];
+            $listed = array_column($this->controller->index(new WP_REST_Request())->get_data(), 'has_unpublished_changes', 'id');
+
+            self::assertSame(['PHONE' => false, 'EDITED' => true], $listed);
+        } finally {
+            delete_option('wconvert_phone_default_country');
+        }
+    }
+
     public function testTheListReturnsBooleanChangeFlagsForParentsAndArmsWithoutConfigBlobs(): void
     {
         $row = [
@@ -1275,6 +1340,8 @@ final class OptinWriteTest extends TestCase
         $this->assertArrayNotHasKey('config', $listed[0]);
         $this->assertArrayNotHasKey('published_config', $listed[0]);
         $this->assertArrayNotHasKey('config', $listed[0]['arms'][0]);
+        // An arm row is handed to the same dialogs as a parent (#370).
+        $this->assertSame([], $listed[0]['arms'][0]['arms']);
     }
 
     /**

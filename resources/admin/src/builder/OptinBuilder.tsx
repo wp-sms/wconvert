@@ -40,6 +40,7 @@ import { PageAction } from '../shell/PageActions';
 import { PageError, Region, RegionErrorState } from '../shell/Region';
 import { LOADING, failed, messageOf, read, ready, type Loadable } from '../shell/loadable';
 import { TemplatePickerDialog } from './TemplatePickerDialog';
+import { asksQuestionsIn } from './TemplateDesignDetail';
 import { useTemplateTrees } from './useTemplateTrees';
 import { DestinationsEditor } from './DestinationsEditor';
 import { CaptureModeChoice } from './CaptureModeChoice';
@@ -55,7 +56,7 @@ import { CaptureChangeDialog } from './CaptureChangeDialog';
 import { captureState, captureSwitch, convertCapture, type CaptureTarget, type Conversion } from './structure/captureConversion';
 import { destinationsSaid } from './destinations';
 import { capturedFields } from '../destinations/requirements';
-import { fieldMappingsKept, hintIn, type FieldMappings } from './destinations';
+import { fieldMappingsKept, hintIn, primaryMappings, type FieldMappings } from './destinations';
 import { planFrom } from './rules/plan';
 import { summarise, summaryOf } from './rules/summaries';
 import { DisplayRules, type DisplayRulesValue } from './rules/DisplayRules';
@@ -826,7 +827,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
     contentLock: config.content_lock, inlinePlacement: config.inline_placement,
     outcome: readinessGoal.status === 'loading' ? undefined : readinessGoal.status === 'ready' ? readinessGoal.data?.outcome ?? null : null,
     bound, destinations: read(destinations)?.destinations ?? null, captureMode,
-    submissionSettings: config.submission_settings, uncheckedLinks: config.unchecked_links,
+    submissionSettings: config.submission_settings, uncheckedLinks: config.unchecked_links, integrationMappings: config.integration_mappings,
     privacyGuidance, policyUrl: adminSettings()?.policyUrl });
   // A blocker answered inside the review (a failed goal read) belongs to no tab.
   const blockedTabs = new Set(issues.flatMap(issue => issue.blocks && issue.tab !== null ? [issue.tab] : []));
@@ -1036,6 +1037,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             bound={bound}
             template={template}
             destinations={read(destinations)?.destinations ?? null}
+            mappings={primaryMappings(config.integration_mappings, template)}
             fieldLabels={gallery.labels.fields}
             privacyGuidance={privacyGuidance}
             onPublish={publish}
@@ -1159,7 +1161,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
                 rules: displayAxes,
                 where: displayTypeOf(config, templates) === 'inline' ? { text: config.content_lock == null && config.inline_placement == null ? __('Where you place its block or shortcode', 'wconvert') : inlineSummary } : undefined,
                 act: factAct(template, entryOfGoal?.outcome),
-                forwarding: destinationsSaid(bound, read(destinations)?.destinations ?? null, capturedFields(template)),
+                forwarding: destinationsSaid(bound, read(destinations)?.destinations ?? null, capturedFields(template), primaryMappings(config.integration_mappings, template)),
                 links: linksIn(template),
                 counts: entryOfGoal?.headline_label ?? null,
               })} />}
@@ -1206,7 +1208,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           }} />
       </Suspense>}
 
-      <TemplatePickerDialog fieldMappings={config.integration_mappings}
+      <TemplatePickerDialog fieldMappings={config.integration_mappings} asksQuestions={asksQuestionsIn(template)}
         open={browsing}
         onOpenChange={setBrowsing}
         onClosed={() => browse.current?.focus()}

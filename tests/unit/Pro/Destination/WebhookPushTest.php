@@ -157,6 +157,9 @@ final class WebhookPushTest extends TestCase
             $result = self::type()->push(self::captured(), $this->context());
             $actual = $result->outcome === PushOutcome::Success ? 'success' : ($result->needsAttention ? 'attention' : ($result->retryable ? 'retry' : 'terminal'));
             self::assertSame($expected, $actual, "HTTP {$status}");
+            // A test send is never retried, and a queued one says so in its
+            // own status; the reason is the same words for both (#358).
+            self::assertStringNotContainsString('retry', strtolower((string) $result->reason), "HTTP {$status}");
         }
     }
 

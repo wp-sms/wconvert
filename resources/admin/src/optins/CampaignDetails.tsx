@@ -7,7 +7,7 @@ import { summarise, summaryOf, type DisplayRulesValue } from '../builder/rules/s
 import { derive } from '../builder/rules/picks';
 import { namedPages, whereReading } from '../builder/rules/sentence';
 import { resolveObjects } from '../builder/rules/objects';
-import { destinationsSaid } from '../builder/destinations';
+import { destinationsSaid, primaryMappings } from '../builder/destinations';
 import { capturedFields } from '../destinations/requirements';
 import { readDestinations } from '../destinations/api';
 import { listGoals } from '../goals/api';
@@ -72,7 +72,7 @@ async function readContext(id: string) {
     ? await pageNames(include, vocabulary.targeting) : null;
   const where = names ? whereReading(pick, targeting, vocabulary.targeting, namedPages(names, include.length)).answer : summaryOf(rules, 'where');
   const bound = Array.isArray(config.destinations) ? (config.destinations as string[]) : [];
-  const forwarding = destinationsSaid(bound, destinations.destinations, capturedFields(template));
+  const forwarding = destinationsSaid(bound, destinations.destinations, capturedFields(template), primaryMappings(config.integration_mappings, template));
   return {
     rules,
     where,

@@ -259,9 +259,14 @@ final class OptinController implements RestController
             // key that appears only on the interesting rows is a key the client
             // tests for existence, and "absent" and "not suspended" — or
             // "absent" and "running no test" — would then be one thing that the
-            // day a request half-fails become two.
+            // day a request half-fails become two. An arm carries the key too,
+            // as an empty list: arms do not nest, and the dialogs it is handed
+            // to read `arms.length` without asking which level the row is (#370).
             static fn (array $row): array => $describe($row) + [
-                'arms' => array_map($describe, $arms[(string) ($row['id'] ?? '')] ?? []),
+                'arms' => array_map(
+                    static fn (array $arm): array => $describe($arm) + ['arms' => []],
+                    $arms[(string) ($row['id'] ?? '')] ?? []
+                ),
             ],
             $summaries
         ));

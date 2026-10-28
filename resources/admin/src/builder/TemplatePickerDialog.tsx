@@ -44,6 +44,8 @@ export interface TemplatePickerDialogProps {
   readonly onRetry?: (id: string) => void;
   /** The draft's `integration_mappings`, so a design's detail can say a swap would remove some. */
   readonly fieldMappings?: unknown;
+  /** The draft's design asks quiz questions. */
+  readonly asksQuestions?: boolean;
   /** The hosted library added or refreshed designs; reload the index (ADR 0156). */
   readonly onLibraryChanged?: () => Promise<void>;
 }
@@ -66,7 +68,7 @@ const NO_EXTRAS: EditorFilters = { industry: '', occasion: '', style: '', shape:
  * Using a card opens its review — keep my words or the sample's, what changes
  * — and applying there replaces the draft's design.
  */
-export function TemplatePickerDialog({ open, onOpenChange, onClosed, onLibraryChanged, index, trees, displayType, chosen, hasCurrentDesign = true, contentLock = false, fit, goalLabel, busy: pickerBusy, onChoose, onPrepare, onNear, failed, onRetry, fieldMappings }: TemplatePickerDialogProps) {
+export function TemplatePickerDialog({ open, onOpenChange, onClosed, onLibraryChanged, index, trees, displayType, chosen, hasCurrentDesign = true, contentLock = false, fit, goalLabel, busy: pickerBusy, onChoose, onPrepare, onNear, failed, onRetry, fieldMappings, asksQuestions }: TemplatePickerDialogProps) {
   const catalog = index.catalog;
   const picker = usePicker();
   const [choices, setChoices] = useState<GalleryChoices>(NO_CHOICES);
@@ -209,7 +211,7 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onLibraryCh
             currentDisplayType={displayType} hasCurrentDesign={hasCurrentDesign} contentLock={contentLock}
             labels={index.labels} current={reviewed.id === chosen} active={open} fit={fit} goalLabel={goalLabel} busy={busy}
             loadError={failed?.has(reviewed.id)} onRetry={onRetry ? () => onRetry(reviewed.id) : undefined}
-            backLabel={__('Back to templates', 'wconvert')} fieldMappings={fieldMappings}
+            backLabel={__('Back to templates', 'wconvert')} fieldMappings={fieldMappings} asksQuestions={asksQuestions}
             onChoose={(id, prepared) => { setReviewing(null); onChoose(id, prepared); }} onPrepare={onPrepare} onBack={back} />
         )}
         <PickerDialogBody className="wconvert-gallery-scope" hidden={reviewed !== undefined}>

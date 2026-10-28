@@ -157,8 +157,8 @@ export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
       parts.push(<ValuePill key={param} label={declared.label} text={valueText(declared, shown[param])}>
         {field(param)}
         {qualifier !== undefined && <label className="wconvert-rule-row__check">
-          {/* Unticked is unset, as the old Yes/No field left it, not a stored false. */}
-          <input type="checkbox" checked={shown[qualifier] === true} onChange={event => write(qualifier, event.target.checked || undefined)} />
+          {/* Unticked is a stored false: the rule needs a yes or a no (#362). */}
+          <input type="checkbox" checked={shown[qualifier] === true} onChange={event => write(qualifier, event.target.checked)} />
           {type.params[qualifier].label}
         </label>}
       </ValuePill>);
