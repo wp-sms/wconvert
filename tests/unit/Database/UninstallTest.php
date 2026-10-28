@@ -90,6 +90,28 @@ final class UninstallTest extends TestCase
         return array_values(array_unique($options));
     }
 
+    /**
+     * Pro's modules keep options too, and Pro's own uninstall deletes them.
+     * Free deletes them as well, for a Pro whose files went first (#374).
+     */
+    public function testEveryOptionAProModuleStoresIsDeleted(): void
+    {
+        $options = [];
+        foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(self::root() . '/pro/modules')) as $file) {
+            if ($file instanceof \SplFileInfo && $file->getExtension() === 'php'
+                && preg_match_all("/(?:public|private|protected) const (?:[A-Z_]+_)?OPTION = '([a-z0-9_]+)'/", (string) file_get_contents($file->getPathname()), $matches)) {
+                array_push($options, ...$matches[1]);
+            }
+        }
+        $pro = (string) file_get_contents(self::root() . '/pro/uninstall.php');
+
+        $this->assertNotEmpty($options);
+        foreach ($options as $option) {
+            $this->assertStringContainsString("'{$option}'", $pro, "pro/uninstall.php never deletes {$option}");
+            $this->assertStringContainsString("'{$option}'", self::contents(), "uninstall.php never deletes {$option}");
+        }
+    }
+
     public function testTheFileExistsAndRefusesToRunOnItsOwn(): void
     {
         $this->assertFileExists(self::uninstallFile());

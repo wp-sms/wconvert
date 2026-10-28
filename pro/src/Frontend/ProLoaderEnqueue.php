@@ -2,8 +2,11 @@
 
 namespace WConvert\Pro\Frontend;
 
+use WConvert\Admin\AdminNotices;
 use WConvert\Assets\BuiltAsset;
 use WConvert\Frontend\LoaderEnqueue;
+use WConvert\Optin\PublishedSet;
+use WConvert\Support\Docs;
 
 defined('ABSPATH') || exit;
 
@@ -104,9 +107,9 @@ final class ProLoaderEnqueue
         // pointing at a bundle that is not there would 404 on every page and
         // leave every Optin dead. So the dequeue is conditional on the
         // replacement existing.
+        // Said in the admin, by {@see self::checkBundle()}: no notice
+        // registered on a front-end request is ever drawn (#361).
         if (!is_file($dist)) {
-            self::noticeMissingLoaderBundle();
-
             return;
         }
 
@@ -130,21 +133,40 @@ final class ProLoaderEnqueue
     }
 
     /**
+     * **The missing-bundle notice, where an administrator can see it.**
+     *
      * A Pro that quietly does nothing is indistinguishable from a Pro that is
      * working, so the merchant reads the missing premium features as a bug in
-     * the product rather than as something they can fix — the same reasoning
-     * as {@see \WConvert\Pro\Boot\BootGuard::noticeRefusal()}, and the same
-     * shape as free's own missing-bundle notice.
+     * the product rather than as something they can fix. It once hung off
+     * {@see self::replace()}, which runs on front-end requests only, where
+     * `admin_notices` never fires: nobody could ever see it (#361). It now
+     * runs on admin page loads and goes through free's notices object, the
+     * one path that survives on WConvert's own screens (ADR 0035), exactly as
+     * free's {@see AdminNotices::checkLoaderBundle()} does.
+     *
+     * Same order and same cost: one `is_file()` on a healthy install, and the
+     * published set read only once the bundle is known to be missing. With
+     * nothing published there is nothing failing to display.
      */
-    private static function noticeMissingLoaderBundle(): void
+    public function adminHooks(AdminNotices $notices, PublishedSet $published): void
     {
-        add_action('admin_notices', static function (): void {
-            echo '<div class="notice notice-error"><p>';
-            echo esc_html__(
-                'WConvert Pro could not load its front-end script, so its premium Triggers are not running. WConvert is still displaying your Optins. Reinstall WConvert Pro to restore them.',
-                'wconvert-pro'
-            );
-            echo '</p></div>';
+        add_action('admin_enqueue_scripts', function () use ($notices, $published): void {
+            $this->checkBundle($notices, $published);
         });
+    }
+
+    public function checkBundle(AdminNotices $notices, PublishedSet $published): void
+    {
+        if (is_file($this->pluginDir . self::DIST) || $published->all() === []) {
+            return;
+        }
+
+        $notices->add(__(
+            'WConvert Pro’s front-end script is missing, so its premium triggers and rules are not running. Your campaigns still display. Reinstall WConvert Pro to restore it.',
+            'wconvert-pro'
+        ), [
+            'url' => Docs::url(Docs::UPDATE, 'update-the-files'),
+            'label' => __('How to reinstall', 'wconvert-pro'),
+        ]);
     }
 }

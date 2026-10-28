@@ -4,8 +4,11 @@ namespace WConvert\Tests\Unit\Pro\Frontend;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use WConvert\Admin\AdminNotices;
 use WConvert\Frontend\LoaderEnqueue;
+use WConvert\Optin\PublishedSet;
 use WConvert\Pro\Frontend\ProLoaderEnqueue;
+use WConvert\Tests\Unit\Support\FakeOptionStore;
 
 /**
  * =============================================================================
@@ -190,12 +193,45 @@ final class LoaderReplacementTest extends TestCase
      */
     public function testAMissingProBundleIsReportedRatherThanSwallowed(): void
     {
-        self::freeEnqueuesItsLoader();
-        self::pro(self::PRO_TREE_WITHOUT_A_BUILD)->hooks();
+        // On an admin page load, through free's notices object: a notice added
+        // on a front-end request is never drawn (#361).
+        $this->assertSame('', self::adminNotice(self::PRO_TREE_WITHOUT_A_BUILD, [['id' => 'A']]));
+        $this->assertStringContainsString('WConvert Pro’s front-end script is missing', self::adminNotice(self::PRO_TREE_WITHOUT_A_BUILD, [['id' => 'A']], true));
+    }
 
-        do_action('wp_enqueue_scripts');
+    /** Nothing published is nothing failing to display, and a built Pro has nothing to say. */
+    public function testOnlyAMissingBundleWithSomethingPublishedIsReported(): void
+    {
+        $this->assertSame('', self::adminNotice(self::PRO_TREE_WITHOUT_A_BUILD, [], true));
+        $this->assertSame('', self::adminNotice(self::PRO_TREE, [['id' => 'A']], true));
+    }
 
-        $this->assertArrayHasKey('admin_notices', $GLOBALS['wconvertTestActions']);
+    /**
+     * What an administrator would see after one page load.
+     *
+     * @param list<array<string, mixed>> $published
+     */
+    private static function adminNotice(string $tree, array $published, bool $admin = false): string
+    {
+        $options = new FakeOptionStore();
+        $options->set(PublishedSet::OPTION, $published);
+        $notices = new AdminNotices(new PublishedSet($options));
+        $pro = self::pro($tree);
+
+        if ($admin) {
+            $pro->adminHooks($notices, new PublishedSet($options));
+            do_action('admin_enqueue_scripts');
+        } else {
+            self::freeEnqueuesItsLoader();
+            $pro->hooks();
+            do_action('wp_enqueue_scripts');
+        }
+
+        ob_start();
+        $notices->render();
+        $GLOBALS['wconvertTestActions'] = [];
+
+        return (string) ob_get_clean();
     }
 
     /**

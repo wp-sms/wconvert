@@ -364,6 +364,7 @@ final class ProServiceProvider implements ServiceProvider
             // front-end request, so registering it there would be a listener
             // for an event that cannot happen.
             $container->resolve(ProAdminEnqueue::class)->hooks();
+            $container->resolve(ProLoaderEnqueue::class)->adminHooks($container->resolve(AdminNotices::class), $container->resolve(PublishedSet::class));
 
             return;
         }

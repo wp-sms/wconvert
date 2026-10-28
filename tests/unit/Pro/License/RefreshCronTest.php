@@ -85,12 +85,22 @@ final class RefreshCronTest extends TestCase
         $this->assertSame([], $this->nexusCalls);
     }
 
+    /** Not before `init`: WooCommerce's schedule labels would translate too early (#373). */
+    public function testBootingSchedulesNothingBeforeInit(): void
+    {
+        (new RefreshCron($this->freshSdk()->licenseManager(), $this->freshSdk()->store()))->hooks();
+
+        $this->assertFalse(wp_next_scheduled(RefreshCron::HOOK));
+    }
+
     public function testItSchedulesItselfOnceAndUnschedules(): void
     {
         $cron = new RefreshCron($this->freshSdk()->licenseManager(), $this->freshSdk()->store());
         $cron->hooks();
+        do_action('init');
         $first = wp_next_scheduled(RefreshCron::HOOK);
         $cron->hooks();
+        do_action('init');
 
         $this->assertNotFalse($first);
         $this->assertSame($first, wp_next_scheduled(RefreshCron::HOOK));
