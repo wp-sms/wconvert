@@ -56,13 +56,18 @@ export function SwitchSetting({
   const [saving, setSaving] = useState(false);
   const status = useSaveStatus();
   const [retry, setRetry] = useState(0);
+  // Read once per mount or retry, never per render: a caller passing an
+  // inline function would otherwise refetch on every toggle and put the
+  // switch back to the saved answer before Save could be pressed (#359).
+  const reader = useRef(read);
+  reader.current = read;
 
   useEffect(() => {
     let active = true;
     setSaved(null);
     setDraft(null);
     setLoadingError(null);
-    void read()
+    void reader.current()
       .then(({ enabled }) => {
         if (!active) return;
         setSaved(enabled);
@@ -72,7 +77,7 @@ export function SwitchSetting({
         if (active) setLoadingError(messageOf(cause));
       });
     return () => { active = false; };
-  }, [retry, read]);
+  }, [retry]);
 
   const dirty = saved !== null && draft !== null && saved !== draft;
   useSettingsEditing(dirty, saving, onEditingStateChange);

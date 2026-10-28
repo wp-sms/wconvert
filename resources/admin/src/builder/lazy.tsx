@@ -1,8 +1,8 @@
-import { Suspense, lazy } from 'react';
+import { Component, Suspense, lazy, type ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
-import { BuilderSkeleton } from '../shell/BuilderSkeleton';
+import { BackLink, BuilderSkeleton } from '../shell/BuilderSkeleton';
 import { ChoiceSkeleton } from '../shell/ChoiceGrid';
-import { Region, RegionBody, RegionHeader } from '../shell/Region';
+import { Region, RegionBody, RegionErrorState, RegionHeader } from '../shell/Region';
 import type { OptinBuilderProps } from './OptinBuilder';
 import type { GoalScreenProps } from '../goals/GoalScreen';
 
@@ -58,9 +58,11 @@ const Creation = lazy(() => deferred().then((module) => ({ default: module.GoalS
  */
 export function OptinBuilder(props: OptinBuilderProps) {
   return (
-    <Suspense fallback={<BuilderSkeleton onClose={props.onClose} backLabel={props.backLabel} />}>
-      <Builder {...props} />
-    </Suspense>
+    <ChunkBoundary way={<BackLink className="wconvert-builder-skeleton__back" onClose={props.onClose} label={props.backLabel} />}>
+      <Suspense fallback={<BuilderSkeleton onClose={props.onClose} backLabel={props.backLabel} />}>
+        <Builder {...props} />
+      </Suspense>
+    </ChunkBoundary>
   );
 }
 
@@ -81,9 +83,11 @@ export function OptinBuilder(props: OptinBuilderProps) {
  */
 export function GoalScreen(props: GoalScreenProps) {
   return (
-    <Suspense fallback={<CreationSkeleton />}>
-      <Creation {...props} />
-    </Suspense>
+    <ChunkBoundary>
+      <Suspense fallback={<CreationSkeleton />}>
+        <Creation {...props} />
+      </Suspense>
+    </ChunkBoundary>
   );
 }
 
@@ -100,4 +104,35 @@ function CreationSkeleton() {
       </RegionBody>
     </Region>
   );
+}
+
+/**
+ * The chunk that never came (#363). A missing or partly copied `deferred` file
+ * rejects the import, and without this the screen went blank with the reason
+ * only in the console. A browser remembers a failed module for the life of the
+ * page, so there is no "Try again" here, as in {@see FlowMapBoundary}: only a
+ * reload, or a reinstall when the file is truly gone, fetches it again.
+ *
+ * `way` is the way out. The builder draws its own back link, so it brings one;
+ * creation's sits above it in {@see App} and still works.
+ */
+class ChunkBoundary extends Component<{ children: ReactNode; way?: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+
+  static getDerivedStateFromError(): { failed: boolean } {
+    return { failed: true };
+  }
+
+  render() {
+    if (!this.state.failed) return this.props.children;
+    const failed = <Region>
+      <RegionErrorState message={__('Part of WConvert didn’t load.', 'wconvert')}
+        hint={__('Reload the page. If it keeps happening, reinstall the plugin.', 'wconvert')} />
+    </Region>;
+    // The builder's own frame, so the way out sits where the skeleton put it.
+    return this.props.way === undefined ? failed : <div className="wconvert-builder-skeleton">
+      <div className="wconvert-builder-skeleton__header">{this.props.way}</div>
+      <div className="p-6">{failed}</div>
+    </div>;
+  }
 }

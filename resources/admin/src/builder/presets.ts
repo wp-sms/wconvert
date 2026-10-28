@@ -50,12 +50,18 @@ export function toRule(
   negate = false,
 ): Rule {
   const rule: Rule = { type: type.type };
+  // A yes/no that qualifies a set (cart categories' "Include subcategories")
+  // is a checkbox, and an unticked checkbox is a real `false`: the validator
+  // requires a boolean, so leaving it unset is an invalid rule (#362).
+  const qualifies = Object.values(type.params).some(param => ['product_set', 'category_set'].includes(param.control));
 
   for (const param of Object.keys(type.params)) {
     const value = preset !== null && param in preset.fixed ? preset.fixed[param] : filled[param];
 
     if (value !== undefined) {
       rule[param] = value;
+    } else if (qualifies && type.params[param].control === 'boolean') {
+      rule[param] = false;
     }
   }
 

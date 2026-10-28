@@ -169,13 +169,16 @@ describe('each kind of pill', () => {
     expect(groups()[0].rules[0]).toMatchObject({ seconds: 45 });
   });
 
-  it('keeps Include subcategories with the categories, and unticked as unset', async () => {
+  it('keeps Include subcategories with the categories, and unticked as a stored false (#362)', async () => {
     const groups = setup([{ type: 'cart_categories', operator: 'any', ids: [3], descendants: true }]);
 
     expect(screen.queryByRole('combobox', { name: 'descendants' })).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: 'ids: 1 category' }));
-    await userEvent.click(within(screen.getByRole('dialog', { name: 'ids' })).getByRole('checkbox', { name: 'descendants' }));
-    expect(groups()[0].rules[0]).not.toHaveProperty('descendants');
+    const box = within(screen.getByRole('dialog', { name: 'ids' })).getByRole('checkbox', { name: 'descendants' });
+    await userEvent.click(box);
+    expect(groups()[0].rules[0]).toMatchObject({ descendants: false });
+    await userEvent.click(box);
+    expect(groups()[0].rules[0]).toMatchObject({ descendants: true });
   });
 
   it('offers its own key under the URL parameter’s Custom…', async () => {
