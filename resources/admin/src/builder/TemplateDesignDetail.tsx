@@ -17,6 +17,7 @@ import { CaptureChangeDialog } from './CaptureChangeDialog';
 import { convertCapture, type CaptureTarget } from './structure/captureConversion';
 import { whatNeedsOfferAmount } from './structure/problems';
 import { dropsFieldMappings } from './destinations';
+import { actWords } from '../optins/campaignFacts';
 import type { PreparedTemplate, TemplateIndexEntry, TemplateLabelsWithFacets } from '../templates/api';
 import type { Template } from '@renderer/types';
 
@@ -61,7 +62,7 @@ export function designMeta(entry: TemplateIndexEntry, labels: TemplateLabelsWith
   const names = fieldNamesOf(entry, labels);
   const does = names.length > 0
     ? sprintf(/* translators: %s: the fields a design collects, e.g. “Email address, Name”. */ __('Collects %s', 'wconvert'), names.join(', '))
-    : entry.facets.act === 'click' ? __('Follows a link', 'wconvert') : null;
+    : entry.facets.act !== null && entry.facets.act !== 'submit' ? actWords(entry.facets.act) : null;
   return [displayTypeLabel(entry.display_type), does].filter(Boolean).join(' · ');
 }
 
@@ -163,7 +164,7 @@ export function TemplateDesignDetail({
   const fieldNames = fieldNamesOf(described, labels);
   const facts: Fact[] = [
     { icon: ClipboardList, label: __('Collects', 'wconvert'), text: fieldNames.length > 0 ? fieldNames.join(', ') : __('No form fields', 'wconvert') },
-    { icon: MousePointerClick, label: __('Visitor action', 'wconvert'), text: described.facets.act === 'submit' ? __('Submits a form', 'wconvert') : described.facets.act === 'click' ? __('Follows a link', 'wconvert') : __('No conversion action', 'wconvert') },
+    { icon: MousePointerClick, label: __('Visitor action', 'wconvert'), text: described.facets.act !== null ? actWords(described.facets.act) : __('No conversion action', 'wconvert') },
     ...(described.facets.asks_consent ? [{ icon: ShieldCheck, label: __('Consent', 'wconvert'), text: __('Includes a consent checkbox', 'wconvert') }] : []),
   ];
   const describedBy = [

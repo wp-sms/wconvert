@@ -1,9 +1,9 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { listWithAnd } from './rules/sentence';
 import type { Destination } from '../destinations/api';
-import { compatibilityProblems, type CapturedField } from '../destinations/requirements';
+import { compatibilityProblems, type CapturedField, type MappingsByDestination } from '../destinations/requirements';
 import { walkNodes } from './structure/journey';
-import type { TemplateTree } from '@renderer/types';
+import type { Template, TemplateTree } from '@renderer/types';
 
 /**
  * What the builder says about this [[Optin]]'s [[Destination]]s: where the
@@ -102,6 +102,8 @@ export function destinationsSaid(
   bound: readonly string[],
   destinations: readonly Destination[] | null,
   captures?: readonly CapturedField[],
+  /** The first signup's field mappings ({@see primaryMappings}): a mapped field is sent. */
+  mappings?: MappingsByDestination,
 ): DestinationsSaid {
   if (bound.length === 0) {
     return {
@@ -128,7 +130,7 @@ export function destinationsSaid(
   const problems: string[] = [];
 
   for (const destination of found) {
-    if (captures !== undefined) problems.push(...compatibilityProblems(destination, captures));
+    if (captures !== undefined) problems.push(...compatibilityProblems(destination, captures, mappings));
     if (destination.availability !== 'ready') {
       problems.push(
         sprintf(
@@ -231,6 +233,16 @@ export function fieldMappingsKept(maps: FieldMappings, tree: TemplateTree): Fiel
   return Object.fromEntries(Object.entries(maps).filter(([submission]) => kept.has(submission)).map(([submission, byDestination]) =>
     [submission, Object.fromEntries(Object.entries(byDestination).map(([id, mapping]) =>
       [id, Object.fromEntries(Object.entries(mapping).filter(([source]) => sources.has(source)))]))]));
+}
+
+/**
+ * The first signup's mappings out of `config.integration_mappings`: the
+ * submission {@see capturedFields} reads by default, so the two agree.
+ */
+export function primaryMappings(maps: unknown, template: Template | undefined): MappingsByDestination {
+  const submission = template?.tree.submissions[0]?.id;
+  if (submission === undefined || maps === null || typeof maps !== 'object') return {};
+  return (maps as FieldMappings)[submission] ?? {};
 }
 
 const mappedFields = (maps: FieldMappings): number =>

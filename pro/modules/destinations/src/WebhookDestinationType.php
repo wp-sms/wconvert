@@ -123,7 +123,7 @@ final class WebhookDestinationType implements DestinationType, DeclaresRetrySche
         $url = (string) ($context->credentials['url'] ?? '');
         $secret = (string) ($context->credentials['signing_secret'] ?? '');
         $refusal = $this->guard->refusal($url, self::allowsPrivate());
-        if ($refusal === WebhookUrlGuard::UNRESOLVED) return PushResult::retryable(__('The webhook’s host could not be found. Sending will retry.', 'wconvert-pro'));
+        if ($refusal === WebhookUrlGuard::UNRESOLVED) return PushResult::retryable(__('The webhook’s host could not be found.', 'wconvert-pro'));
         if ($refusal !== null) return PushResult::attention((string) self::refusalMessage($refusal));
         if (!WebhookSignature::isSecret($secret)) return PushResult::attention(__('This webhook has no valid signing secret. Generate a new one.', 'wconvert-pro'));
         if ($subject->deliveryId === '') return PushResult::terminal(__('This submission has no delivery id.', 'wconvert-pro'));
@@ -162,7 +162,7 @@ final class WebhookDestinationType implements DestinationType, DeclaresRetrySche
         if ($status === 401) return PushResult::attention(__('The receiver refused the request. Check the webhook’s key or headers.', 'wconvert-pro'));
         if ($status === 403) return PushResult::attention(__('The receiver or its firewall blocked the request. Check its key, headers or bot protection.', 'wconvert-pro'));
         if ($status === 404 || $status === 410) return PushResult::attention(__('The receiver no longer accepts this URL. The Zap or scenario may be off or deleted.', 'wconvert-pro'));
-        if ($status === 408 || $status === 429 || $status >= 500) return PushResult::retryable(__('The receiver is temporarily unavailable. Sending will retry.', 'wconvert-pro'));
+        if ($status === 408 || $status === 429 || $status >= 500) return PushResult::retryable(__('The receiver is temporarily unavailable.', 'wconvert-pro'));
         return PushResult::terminal(__('The receiver rejected this submission.', 'wconvert-pro'));
     }
 

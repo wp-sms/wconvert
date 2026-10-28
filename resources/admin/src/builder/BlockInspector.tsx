@@ -184,7 +184,11 @@ export function BlockInspector({
   const advancedToggle = <AdvancedToggle advanced={advanced} onToggle={() => setAdvanced((value) => !value)} />;
   const shownStyleSettings = styleSettings.filter((setting) => advanced || !ADVANCED_PARAMS.includes(setting.param));
   // The element's own looks (Size, Heading level) lead the Style tab under their own labels (ADR 0136).
+  // They live on the element, not in a width's bag, so editing mobile changes
+  // desktop too; under Mobile that is said rather than discovered (#367).
+  const narrow = isValidElement<{ width?: string }>(look) && look.props.width === 'narrow';
   const ownStyle = slot !== null && shownStyleSettings.length > 0 ? <PanelSection label={sprintf(/* translators: %s: an element's name, e.g. “Headline”. */ __('%s style', 'wconvert'), name)}>
+    {narrow && <PanelHint>{__('Same on desktop and mobile.', 'wconvert')}</PanelHint>}
     {shownStyleSettings.map((setting) => (
       <ParamChoice
         key={setting.param}

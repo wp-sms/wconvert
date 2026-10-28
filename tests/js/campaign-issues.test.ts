@@ -70,9 +70,23 @@ describe('a campaign’s issues', () => {
       .some(issue => issue.said.startsWith('Check where'))).toBe(false);
   });
 
-  it('still blocks an offer whose address the merchant cleared', () => {
-    const issues = campaignIssues(inputs({ template: OFFER, outcome: CLICK_OUTCOME }));
-    expect(issues.filter(issue => issue.blocks).map(issue => issue.said)).toEqual([CLICK_OUTCOME.requirement]);
+  /** #368: the fix is the button's address, so the review names it and goes to it. */
+  it('still blocks an offer whose address the merchant cleared, and sends the merchant to that button', () => {
+    for (const template of [OFFER, withHref(OFFER, 'n3', '#')]) {
+      const issues = campaignIssues(inputs({ template, outcome: CLICK_OUTCOME }));
+      expect(issues.filter(issue => issue.blocks)).toEqual([expect.objectContaining({
+        said: 'Add a web address for “Shop the sale”.', tab: 'edit', go: { to: 'element', path: [0, 'children', 2] }, screenId: OFFER.tree.steps[0].id,
+      })]);
+    }
+  });
+
+  it('keeps the Goal’s sentence when the design has no link button to fix', () => {
+    const noButton = JSON.parse(JSON.stringify(OFFER)) as Template;
+    const content = noButton.tree.steps[0].content as unknown as { children: { type: string }[] };
+    content.children = content.children.filter(child => child.type !== 'button');
+    const said = campaignIssues(inputs({ template: noButton, outcome: CLICK_OUTCOME })).filter(issue => issue.blocks).map(issue => issue.said);
+    expect(said).toContain(CLICK_OUTCOME.requirement);
+    expect(said.some(words => words.startsWith('Add a web address'))).toBe(false);
   });
 
   /** Only consent wording and fine print take the policy; anywhere else an empty link is unfinished. */
