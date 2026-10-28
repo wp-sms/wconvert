@@ -272,8 +272,11 @@ final class PrefillSnapshotTest extends TestCase
         // email and `stacked-signup` a phone, so the email's label has nowhere
         // to go. A field's Roles are named for what it captures, which is what
         // makes the field kind part of the DESIGN (CONTEXT.md, Slot Role).
+        // The phone field keeps the new design's own label, not a blank (#372).
         $this->assertSame('phone', $children[2]['name']);
-        $this->assertArrayNotHasKey('label', $children[2]);
+        $own = $templates->find('stacked-signup')['tree']['steps'][0]['content']['children'][2];
+        $this->assertSame($own['label'] ?? null, $children[2]['label'] ?? null);
+        $this->assertNotSame($config['template']['tree']['steps'][0]['content']['children'][2]['label'] ?? null, $children[2]['label'] ?? null);
     }
 
     /**
