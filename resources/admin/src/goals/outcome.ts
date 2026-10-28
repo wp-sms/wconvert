@@ -45,6 +45,27 @@ function hasLink(node: TemplateNode | undefined): boolean {
   return childKeysOf(node.type).some((key) => (branches[key] ?? []).some(hasLink));
 }
 
+/**
+ * Step one's shown link buttons with no address (#368), read the way
+ * {@link hasLink} reads them. When the Goal needs a link and these are why it
+ * has none, the fix is an address on one of them, not another design.
+ */
+export function addresslessLinks(template: Template): { label: string; path: readonly (string | number)[] }[] {
+  const found: { label: string; path: readonly (string | number)[] }[] = [];
+  const walk = (node: TemplateNode | undefined, path: readonly (string | number)[]): void => {
+    if (!node || ('hidden' in node && node.hidden === true)) return;
+    if (node.type === 'button' && 'action' in node && node.action === 'link') {
+      const href = 'href' in node && typeof node.href === 'string' ? node.href.trim() : '';
+      if (href === '' || href === '#') found.push({ label: ('label' in node && typeof node.label === 'string' ? node.label : '').trim(), path });
+      return;
+    }
+    const branches = node as unknown as Record<string, readonly TemplateNode[]>;
+    for (const key of childKeysOf(node.type)) (branches[key] ?? []).forEach((child, index) => walk(child, [...path, key, index]));
+  };
+  walk(template.tree.steps[0]?.content, [0]);
+  return found;
+}
+
 /** A library facet suggests a fit; the edited form is checked again at publication. */
 export function fitsOutcome(outcome: OutcomeContract, facets: { act: string | null; captures: readonly string[] }): boolean {
   // A click design fits too: taken for a message, it leaves its counted link behind (ADR 0163).

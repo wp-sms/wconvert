@@ -370,3 +370,18 @@ describe('fitting the preview without changing its layout width', () => {
     expect(JSON.stringify(template)).toBe(before);
   });
 });
+
+describe('a design that converts without a form or link (#375)', () => {
+  it.each([
+    ['match', 'Shows a matching result'],
+    ['add_to_cart', 'Adds to the basket'],
+  ] as const)('names %s as its visitor action, in the facts and the meta line', async (act, words) => {
+    const { designMeta } = await import('../../resources/admin/src/builder/TemplateDesignDetail');
+    const entry: TemplateIndexEntry = { ...ENTRY, facets: { ...ENTRY.facets, act, captures: [] } };
+    render(<TemplateDesignDetail entry={entry} template={TEMPLATE} labels={LABELS}
+      current={false} fit={{ ...FIT, act }} busy={false} onChoose={vi.fn()} onBack={vi.fn()} />);
+    expect(screen.getByText(words)).toBeInTheDocument();
+    expect(screen.queryByText('No conversion action')).toBeNull();
+    expect(designMeta(entry, LABELS)).toBe(`Popup · ${words}`);
+  });
+});

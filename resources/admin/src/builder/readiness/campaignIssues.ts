@@ -8,9 +8,9 @@ import { convertingActOf } from '../structure/guards';
 import { submissionScreen } from '../structure/journey';
 import { summarise } from '../rules/summaries';
 import { inlinePlacementLabel } from '../../inlinePlacement';
-import { destinationsSaid } from '../destinations';
+import { destinationsSaid, primaryMappings } from '../destinations';
 import { asksForPolicy } from '../policy';
-import { countsNothing, outcomeDesignIssue, outcomeHandoffIssue, type OutcomeContract } from '../../goals/outcome';
+import { addresslessLinks, countsNothing, outcomeDesignIssue, outcomeHandoffIssue, type OutcomeContract } from '../../goals/outcome';
 import type { CaptureMode } from '../captureMode';
 import type { JourneyRepair } from '../structure/journeyReadiness';
 import type { Path } from '../panel';
@@ -101,6 +101,8 @@ export interface CampaignIssueInputs {
   readonly submissionSettings?: unknown;
   /** `config.unchecked_links`: link addresses a fresh setup guessed (ADR 0133). */
   readonly uncheckedLinks?: unknown;
+  /** `config.integration_mappings`: a field mapped to a route is sent there. */
+  readonly integrationMappings?: unknown;
   readonly privacyGuidance?: boolean;
   readonly policyUrl?: string;
 }
@@ -118,7 +120,12 @@ export function campaignIssues(inputs: CampaignIssueInputs): CampaignIssue[] {
   // Goal's "needs a link" would be the same missing choice, said twice.
   const choosingProducts = hasDesign && problems.some(problem => problem.blocksPublish && problem.path !== null
     && nodeAt(template.tree, problem.path)?.type === 'products');
-  const goalIssue = outcome && hasDesign && !choosingProducts ? outcomeDesignIssue(outcome, template) : null;
+  const designIssue = outcome && hasDesign && !choosingProducts ? outcomeDesignIssue(outcome, template) : null;
+  // The Goal's link is missing because a button has no address: the fix is
+  // that button, so it is named and the Goal's "use a design" is not (#368).
+  const addressless = designIssue && outcome?.link_required && convertingActOf(template!.tree)[0] === outcome.action
+    ? addresslessLinks(template!) : [];
+  const goalIssue = addressless.length > 0 ? null : designIssue;
   const handoffIssue = outcome ? outcomeHandoffIssue(outcome, bound, destinations, captureMode) : null;
   const inlineTriggerIssue = !overlay && (inlinePlacement != null || contentLock != null) && rules.display_rules?.opening.mode !== 'immediate';
   const issue = (key: string, said: string, tab: BlockedTab | null, go: IssueGo, blocks: boolean, more: Partial<CampaignIssue> = {}): CampaignIssue =>
@@ -134,6 +141,9 @@ export function campaignIssues(inputs: CampaignIssueInputs): CampaignIssue[] {
     ...(inlineTriggerIssue ? [issue('inline-trigger', __('This placement needs “When does it open?” set to Right away. Change it, or use manual placement.', 'wconvert'), 'rules', { to: 'rules', section: 'when' }, true)] : []),
     // A failed read is retried in place: reloading the page would cost unsaved edits.
     ...(outcome === null ? [issue('goal-unread', __('The goal’s requirements could not be checked.', 'wconvert'), null, { to: 'retry-goal' }, true, { offersRetry: true })] : []),
+    ...addressless.map(link => issue(`address:${link.path.join('.')}`,
+      /* translators: %s: a button's words, e.g. “Shop the sale”. */
+      link.label ? sprintf(__('Add a web address for “%s”.', 'wconvert'), link.label) : __('Add a web address for this button.', 'wconvert'), 'edit', { to: 'element', path: link.path }, true, { screenId: screenOf(link.path) })),
     ...(goalIssue ? [issue('goal', goalIssue, 'edit', template && convertingActOf(template.tree)[0] === outcome?.action ? { to: 'edit-design' } : { to: 'library' }, true)] : []),
     // The commonest first-campaign blocker gets its answer beside it, not a tab away (ADR 0132).
     ...(handoffIssue ? [issue(ISSUE.handoff, handoffIssue, 'destinations', { to: 'destinations' }, true, { offersKeepLocal: true })] : []),
@@ -148,7 +158,7 @@ export function campaignIssues(inputs: CampaignIssueInputs): CampaignIssue[] {
       ? [issue('no-fields', __('This campaign needs a form field to collect leads. Choose a design with a form.', 'wconvert'), 'edit', { to: 'library' }, true)] : []),
   ];
 
-  const where = destinationsSaid(bound, destinations, capturedFields(template));
+  const where = destinationsSaid(bound, destinations, capturedFields(template), primaryMappings(inputs.integrationMappings, template));
   const reviewsPrivacy = inputs.privacyGuidance === true && captures.length > 0;
   const expectsConsent = reviewsPrivacy && outcome?.audience_channel != null;
   const hiddenConsent = template ? consentIn(template) : null;

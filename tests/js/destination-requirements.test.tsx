@@ -145,6 +145,17 @@ describe('provider-declared destination requirements', () => {
     expect(compatibilityProblems(route, captures).join(' ')).toContain('saved in WConvert but is not sent');
     expect(compatibilityProblems({ ...route, settings: { ...route.settings, interest_field: 'cf_7' } }, captures).join(' ')).toContain('New subscribers only');
   });
+  /** #365: the campaign's own mapping sends the answer, so it is never "not sent". */
+  it('counts a field this campaign maps as sent, and says which contacts get it', () => {
+    const mailpoet = { ...route, requirements: { ...route.requirements!, mapped_fields: {} } };
+    const captures = [{ name: 'email', required: true }, { name: 'interest', required: false }];
+    const mapped = { [mailpoet.id]: { 'field:interest': 'cf_1' } };
+    const said = compatibilityProblems(mailpoet, captures, mapped).join(' ');
+    expect(said).not.toContain('not sent');
+    expect(said).toContain('The interest answer is sent for new contacts only. Existing contacts keep their current details.');
+    expect(compatibilityProblems({ ...mailpoet, settings: { ...mailpoet.settings, existing_contact: 'update' } }, captures, mapped).join(' ')).not.toContain('interest');
+    expect(compatibilityProblems(mailpoet, captures, { other: { 'field:interest': 'cf_1' } }).join(' ')).toContain('saved in WConvert but is not sent');
+  });
   it('reads actual fields and requiredness across nested layout branches', () => {
     const template: Template = { tokens: {}, tree: treeFixture({ steps: [{ type: 'split', start: [
       { type: 'field', name: 'email', required: true },

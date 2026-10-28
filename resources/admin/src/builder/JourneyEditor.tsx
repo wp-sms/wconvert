@@ -342,7 +342,9 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
       .filter(node => ['code', 'followup'].includes(node.type) && !('hidden' in node && node.hidden))
       .map(node => { const copy = { ...node } as Record<string, unknown>; delete copy.id; return copy as unknown as TemplateNode; });
     const screen = { ...freshScreen(tree, 'input'), name: channel === 'email' ? __('Optional email signup', 'wconvert') : __('Optional SMS signup', 'wconvert'), content: { type: 'stack', children: [
-      { type: 'heading', text: __('Your signup was received', 'wconvert'), role: 'headline' },
+      // Before any signup the visitor has only seen their result, so the
+      // screen invites; a received signup is said only after one (#357).
+      { type: 'heading', text: tree.submissions.length === 0 ? __('Want updates about your result?', 'wconvert') : __('Your signup was received', 'wconvert'), role: 'headline' },
       ...rewards,
       { type: 'text', text: channel === 'email' ? __('Would you also like email updates?', 'wconvert') : __('Would you also like text updates?', 'wconvert'), role: 'body' },
       { type: 'field', name: channel, required: true, label: contactWording(channel).label },

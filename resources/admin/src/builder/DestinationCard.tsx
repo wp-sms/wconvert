@@ -54,7 +54,7 @@ export function DestinationCard({
   const problems = setupProblems(destination, type, connections);
   const status = destinationStatus(destination, type, problems, true);
   const captures = capturedFields(template, submissionId);
-  const fit = template ? captureProblems(destination, captures) : [];
+  const fit = template ? captureProblems(destination, captures, mapping) : [];
   const names = contactFieldNames();
   const automatic = captures
     .filter((field) => field.name in names && destination.requirements?.fields.includes(field.name))

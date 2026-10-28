@@ -85,7 +85,7 @@ export function campaignFacts({ rules, where, act, forwarding, links, counts, pl
     facts.push({
       icon: act === 'match' ? ListChecks : ShoppingBasket,
       label: __('Visitor action', 'wconvert'),
-      text: <>{act === 'match' ? __('Shows a matching result', 'wconvert') : __('Adds to the basket', 'wconvert')}{counted}</>,
+      text: <>{actWords(act)}{counted}</>,
     });
   } else if (act === 'none') {
     facts.push({ icon: Megaphone, label: __('Visitor action', 'wconvert'), text: <>{__('Reads the message', 'wconvert')}{counted}</> });
@@ -94,6 +94,16 @@ export function campaignFacts({ rules, where, act, forwarding, links, counts, pl
   }
   if (consent) facts.push(fact(ShieldCheck, __('Consent', 'wconvert'), consent));
   return facts;
+}
+
+/** What a visitor does to convert, in the words every fact list uses for it (#375). */
+export function actWords(act: ConvertingAct): string {
+  switch (act) {
+    case 'submit': return __('Submits a form', 'wconvert');
+    case 'click': return __('Follows a link', 'wconvert');
+    case 'match': return __('Shows a matching result', 'wconvert');
+    case 'add_to_cart': return __('Adds to the basket', 'wconvert');
+  }
 }
 
 /** The act a design offers; a design offering none is a message when its Goal counts nothing (ADR 0163). */

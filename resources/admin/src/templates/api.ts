@@ -1,6 +1,7 @@
 import apiFetch from '@wordpress/api-fetch';
 import type { Template } from '@renderer/types';
 import type { Availability } from '../goals/availability';
+import type { ConvertingAct } from '../builder/structure/catalogue';
 
 export type PreparedTemplate = Template & { transfer?: { unplaced: number; unverified: number } };
 
@@ -32,7 +33,7 @@ export const prepareTemplate = (id: string, template: Template, source?: string,
  */
 export interface TemplateFacets {
   /**
-   * `submit` or `click` — the one act this design converts on, singular by
+   * `submit`, `click`, `match` or `add_to_cart` — the one act this design converts on, singular by
    * construction because an entry offering two or none is refused at
    * registration (ADR 0020).
    *
@@ -41,7 +42,7 @@ export interface TemplateFacets {
    * the edited design and A/B siblings must still agree (ADR 0059). Null on a locked card,
    * whose design is not available for inspection or compatibility checks.
    */
-  act: 'submit' | 'click' | null;
+  act: ConvertingAct | null;
   /** What a visitor is asked for, in manifest order. Gallery selections require every chosen field. */
   captures: string[];
   /** Step 0's root layout, from the manifest's layout vocabulary. */
