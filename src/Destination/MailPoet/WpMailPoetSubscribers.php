@@ -340,12 +340,14 @@ final class WpMailPoetSubscribers implements MailPoetSubscribers
             // sniff leaves them alone; `$id` here is one of this class's own
             // constants, and every path through `service()` is reached from
             // `push()`, which catches `\Throwable`.
-            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- caught by push() and stored as operator text; $id is a constant of this class.
+            // A block, not one line: the sniff reports the arguments on their own lines.
+            // phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped -- caught by push() and stored as operator text; $id is a constant of this class.
             throw new \RuntimeException(sprintf(
                 /* translators: %s: the name of a MailPoet service WConvert asked for. */
                 __('MailPoet did not supply %s.', 'wconvert'),
                 $id
             ));
+            // phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped
         }
 
         return $service;
