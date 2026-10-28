@@ -92,6 +92,11 @@ $wconvertOptions = [
     'wconvert_phone_default_country',
     // Agent\AgentPublishing::OPTION — "Let AI agents publish".
     'wconvert_agents_publish',
+    // Pro's analytics module, Analytics\{Settings,RevenueHooks}::OPTION. Pro
+    // deletes them itself; these lines are for a Pro whose files were removed
+    // before WConvert was uninstalled, which never runs its own (#374).
+    'wconvert_analytics',
+    'wconvert_revenue',
 ];
 
 foreach ($wconvertOptions as $wconvertOption) {

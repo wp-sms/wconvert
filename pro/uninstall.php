@@ -9,6 +9,8 @@ require_once __DIR__ . '/src/autoload.php';
 WConvert\Pro\License\Uninstall::run();
 
 delete_option('wconvert_revenue');
+// Analytics\Settings::OPTION — the tracking IDs and switches (#374).
+delete_option('wconvert_analytics');
 wp_unschedule_hook('wconvert_claims_sweep');
 delete_option('wconvert_claims_mark');
 global $wpdb;

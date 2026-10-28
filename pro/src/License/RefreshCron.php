@@ -47,6 +47,15 @@ final class RefreshCron
     {
         add_action(self::HOOK, [$this, 'run']);
 
+        // On `init`, as free's `LeadPruner` does: hooks() runs on
+        // `plugins_loaded`, and wp_schedule_event() reads wp_get_schedules(),
+        // whose `cron_schedules` filter makes WooCommerce load its
+        // translations too early (#373).
+        add_action('init', [$this, 'schedule']);
+    }
+
+    public function schedule(): void
+    {
         if (wp_next_scheduled(self::HOOK) === false) {
             wp_schedule_event(time() + HOUR_IN_SECONDS, 'daily', self::HOOK);
         }
