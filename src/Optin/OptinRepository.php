@@ -43,6 +43,9 @@ final class OptinRepository
      * The database compares the existing snapshots and returns one boolean.
      * BINARY matters: a case-only copy edit must not disappear under the site's
      * case-insensitive collation. Drafts and deleted rows have no live update.
+     * It is a prefilter: publishing resolves the phone country into the
+     * snapshot, so a row it flags is checked again in PHP
+     * ({@see self::withResolvedChanges()}, #369).
      *
      * **`parent_id` is here, and it is the reason it is a column at all.**
      * ADR 0045 says the Optins list shows parentless Optins only and nests
@@ -249,10 +252,49 @@ final class OptinRepository
     {
         $where = $includeDeleted ? 'parent_id IS NULL' : 'parent_id IS NULL AND deleted_at IS NULL';
 
-        return self::unquoted($this->db->results(
+        return $this->withResolvedChanges(self::unquoted($this->db->results(
             Connection::TABLE_OPTINS,
             'SELECT ' . self::SUMMARY_COLUMNS . ' FROM %i WHERE ' . $where . ' ORDER BY id DESC LIMIT 500'
-        ));
+        )));
+    }
+
+    /**
+     * The list's change flag, checked again where the SQL prefilter raised it.
+     *
+     * The SQL compares stored text, and a published phone campaign's snapshot
+     * holds the resolved country where the draft says `site`. So every row it
+     * flags is read again, both snapshots, **in one statement for all of
+     * them**, and asked {@see Optin::snapshotsDiffer()}. A healthy list with
+     * nothing changed runs no second query, and the LONGTEXT read is limited
+     * to the rows already flagged.
+     *
+     * @param list<array<string, string|null>> $rows
+     * @return list<array<string, string|null>>
+     */
+    private function withResolvedChanges(array $rows): array
+    {
+        if (!array_filter($rows, static fn (array $row): bool => (bool) ($row['has_unpublished_changes'] ?? false))) {
+            return $rows;
+        }
+
+        $clean = [];
+        foreach ($this->db->results(
+            Connection::TABLE_OPTINS,
+            'SELECT id, config, published_config FROM %i WHERE published_at IS NOT NULL AND deleted_at IS NULL '
+            . 'AND config IS NOT NULL AND published_config IS NOT NULL AND BINARY config <> BINARY published_config'
+        ) as $stored) {
+            if (!Optin::snapshotsDiffer($stored['config'] ?? null, $stored['published_config'] ?? null)) {
+                $clean[(string) ($stored['id'] ?? '')] = true;
+            }
+        }
+
+        foreach ($rows as &$row) {
+            if (isset($clean[(string) ($row['id'] ?? '')])) {
+                $row['has_unpublished_changes'] = '0';
+            }
+        }
+
+        return $rows;
     }
 
     /**
@@ -345,10 +387,10 @@ final class OptinRepository
      */
     public function armsByParent(bool $includeDeleted = false): array
     {
-        $rows = self::unquoted($this->db->results(
+        $rows = $this->withResolvedChanges(self::unquoted($this->db->results(
             Connection::TABLE_OPTINS,
             'SELECT ' . self::SUMMARY_COLUMNS . ' FROM %i WHERE parent_id IS NOT NULL ORDER BY id ASC'
-        ));
+        )));
 
         $arms = [];
 

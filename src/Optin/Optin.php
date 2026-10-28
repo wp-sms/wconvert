@@ -41,7 +41,7 @@ final class Optin
          * test.
          */
         public readonly ?string $parentId = null,
-        /** Raw stored JSON comparison, supplied by reads to match the SQL list projection. */
+        /** {@see self::snapshotsDiffer()} on the stored JSON, supplied by reads to match the list. */
         private readonly ?bool $snapshotsDiffer = null,
         /** Computed from the existing Variant rows, not a stored flag. */
         private readonly bool $hasVariants = false,
@@ -65,7 +65,7 @@ final class Optin
             // driver that hands back `''` for it must not produce an Optin
             // claiming to be an arm of a test with no id.
             ($row['parent_id'] ?? '') === '' ? null : (string) $row['parent_id'],
-            ($row['config'] ?? null) !== ($row['published_config'] ?? null),
+            self::snapshotsDiffer($row['config'] ?? null, $row['published_config'] ?? null),
             $hasVariants,
         );
     }
@@ -96,13 +96,40 @@ final class Optin
 
     /**
      * Saved changes awaiting promotion, never an additional stored state.
-     * Compare the stored representation, including case and key order, just
-     * like the list's BINARY comparison. Repository writes use wp_json_encode;
-     * carrying the raw comparison also keeps hand-edited JSON consistent.
+     * The draft is compared as it would publish ({@see self::snapshotsDiffer()}).
      */
     public function hasUnpublishedChanges(): bool
     {
-        return $this->isPublished() && ($this->snapshotsDiffer ?? $this->config !== $this->publishedConfig);
+        return $this->isPublished() && ($this->snapshotsDiffer
+            ?? (PhoneCountry::resolved($this->config) ?? $this->config) !== $this->publishedConfig);
+    }
+
+    /**
+     * **Whether publishing the stored draft would change what is live (#369).**
+     *
+     * Publishing resolves a phone field's `site` country into the snapshot
+     * (ADR 0105), so a raw comparison called every published phone campaign
+     * changed the moment it went live. The draft is resolved the way
+     * {@see OptinRepository::publish()} resolves it, with today's site
+     * country, and encoded the way it writes it. A site country changed since
+     * publishing therefore does show here, which is right: it applies only on
+     * republish.
+     *
+     * Equal stored text is the cheap answer and the common one. The rest is
+     * compared as stored, case and key order included, like the list's BINARY
+     * comparison. A draft that cannot resolve (a phone field with no country)
+     * would not publish, so it differs.
+     */
+    public static function snapshotsDiffer(?string $config, ?string $published): bool
+    {
+        if ($config === $published) {
+            return false;
+        }
+
+        $draft = self::decode($config);
+        $resolved = $draft === null || $published === null ? null : PhoneCountry::resolved($draft);
+
+        return $resolved === null || (string) wp_json_encode($resolved) !== $published;
     }
 
     /**
