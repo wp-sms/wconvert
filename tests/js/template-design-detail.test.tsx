@@ -385,3 +385,25 @@ describe('a design that converts without a form or link (#375)', () => {
     expect(designMeta(entry, LABELS)).toBe(`Popup · ${words}`);
   });
 });
+
+describe('a quiz replaced under Keep my words (#372)', () => {
+  const quiz: Template = { tokens: {}, tree: treeFixture({ steps: [
+    { type: 'question', id: 'q1', text: 'Where will you use it?', options: [{ value: 'garden', label: 'Garden' }] },
+    { type: 'stack', children: [{ type: 'heading', role: 'headline', text: 'Your match' }] },
+  ] }) };
+  const view = (asksQuestions: boolean, template: Template = quiz) => render(<TemplateDesignDetail entry={ENTRY} template={template} labels={LABELS}
+    current={false} fit={FIT} busy={false} onChoose={vi.fn()} onBack={vi.fn()} asksQuestions={asksQuestions} />);
+  const NOTE = /This template brings its own questions\. Yours will be replaced\./;
+
+  it('says the questions are the template’s when both designs ask them', () => {
+    view(true);
+    expect(screen.getByText(NOTE)).toBeInTheDocument();
+  });
+
+  it('says nothing when the draft asks none, or the template brings none', () => {
+    view(false);
+    expect(screen.queryByText(NOTE)).toBeNull();
+    view(true, TEMPLATE);
+    expect(screen.queryByText(NOTE)).toBeNull();
+  });
+});

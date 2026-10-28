@@ -18,6 +18,7 @@ import { convertCapture, type CaptureTarget } from './structure/captureConversio
 import { whatNeedsOfferAmount } from './structure/problems';
 import { dropsFieldMappings } from './destinations';
 import { actWords } from '../optins/campaignFacts';
+import { walkNodes } from './structure/journey';
 import type { PreparedTemplate, TemplateIndexEntry, TemplateLabelsWithFacets } from '../templates/api';
 import type { Template } from '@renderer/types';
 
@@ -48,7 +49,13 @@ export interface TemplateDesignDetailProps {
    * one would remove some.
    */
   readonly fieldMappings?: unknown;
+  /** The draft's design asks quiz questions, which Keep my words cannot carry (ADR 0171, #372). */
+  readonly asksQuestions?: boolean;
 }
+
+/** Whether a design asks quiz questions anywhere. */
+export const asksQuestionsIn = (template: Template | undefined): boolean =>
+  template?.tree.steps.some(step => walkNodes(step.content).some(node => node.type === 'question')) ?? false;
 
 /** The fields a design collects, in the merchant's words. */
 export function fieldNamesOf(entry: TemplateIndexEntry, labels: TemplateLabelsWithFacets): string[] {
@@ -75,7 +82,7 @@ export function designMeta(entry: TemplateIndexEntry, labels: TemplateLabelsWith
  * footer's note.
  */
 export function TemplateDesignDetail({
-  entry, template: sample, labels, current, currentDisplayType, fit, goalLabel, busy, onChoose, onPrepare, onBack, backLabel = __('Back to templates', 'wconvert'), loadError = false, onRetry, active = true, hasCurrentDesign = true, contentLock = false, fieldMappings,
+  entry, template: sample, labels, current, currentDisplayType, fit, goalLabel, busy, onChoose, onPrepare, onBack, backLabel = __('Back to templates', 'wconvert'), loadError = false, onRetry, active = true, hasCurrentDesign = true, contentLock = false, fieldMappings, asksQuestions = false,
 }: TemplateDesignDetailProps) {
   const { mobile, setMobile, fitHeight, setFitHeight } = usePreviewView();
   const [disableLock, setDisableLock] = useState(false);
@@ -159,6 +166,8 @@ export function TemplateDesignDetail({
           fromFormat, toFormat,
         );
   const losesMappings = template !== undefined && !isCurrent && dropsFieldMappings(fieldMappings, template.tree);
+  // Keep carries words by Slot Role; a quiz's questions are the design's own (ADR 0171).
+  const replacesQuestions = asksQuestions && mode === 'keep' && !isCurrent && asksQuestionsIn(sample);
   // Facts about the design as it will be applied, converted or not.
   const described = converted ? asConverted(entry, fit, design) : entry;
   const fieldNames = fieldNamesOf(described, labels);
@@ -238,6 +247,7 @@ export function TemplateDesignDetail({
         {isCurrent ? __('This is the draft’s current template.', 'wconvert') : __('Replaces this draft’s template. You can undo.', 'wconvert')}
         {converted && goalLabel && <> {/* translators: %s: the campaign's goal. */ sprintf(__('The goal stays “%s”.', 'wconvert'), goalLabel)}</>}
         {losesMappings && <> {__('Field mappings for missing fields are removed.', 'wconvert')}</>}
+        {replacesQuestions && <> {__('This template brings its own questions. Yours will be replaced.', 'wconvert')}</>}
       </span>} back={
         <Button className="wconvert-picker__back" variant="outline" disabled={busy} onClick={onBack}>
           <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />

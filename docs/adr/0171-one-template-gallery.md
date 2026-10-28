@@ -144,7 +144,13 @@ gone. Look's **Change template** opens the gallery above, one card per design
    and Style, Layout, and With a picture, each a chip when on.
 4. **Use template opens the review** — keep my words or the sample's, what
    changes, the refusal if this Optin cannot take it — and only the review's
-   button replaces the design, undoably. The grid stays mounted under it, so
+   button replaces the design, undoably. *Clarified by #372: Keep keeps your
+   words where the new design's screens match yours and fills every other
+   slot with the design's own words, except a figure, code, rating, brand or
+   address, which stays for you to add (`SlotRoles::fillBlanks()`). Quiz
+   questions, answers and result rules come from the template; when both
+   designs ask questions the review says "This template brings its own
+   questions. Yours will be replaced."* The grid stays mounted under it, so
    Back returns to the same card and scroll. An online card installs first,
    then opens the same review; Get the newer version does the same with the
    newer revision; a failed install is said on the card with Try again.

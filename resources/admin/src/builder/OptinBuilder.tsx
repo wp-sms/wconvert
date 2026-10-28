@@ -40,6 +40,7 @@ import { PageAction } from '../shell/PageActions';
 import { PageError, Region, RegionErrorState } from '../shell/Region';
 import { LOADING, failed, messageOf, read, ready, type Loadable } from '../shell/loadable';
 import { TemplatePickerDialog } from './TemplatePickerDialog';
+import { asksQuestionsIn } from './TemplateDesignDetail';
 import { useTemplateTrees } from './useTemplateTrees';
 import { DestinationsEditor } from './DestinationsEditor';
 import { CaptureModeChoice } from './CaptureModeChoice';
@@ -1207,7 +1208,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           }} />
       </Suspense>}
 
-      <TemplatePickerDialog fieldMappings={config.integration_mappings}
+      <TemplatePickerDialog fieldMappings={config.integration_mappings} asksQuestions={asksQuestionsIn(template)}
         open={browsing}
         onOpenChange={setBrowsing}
         onClosed={() => browse.current?.focus()}
