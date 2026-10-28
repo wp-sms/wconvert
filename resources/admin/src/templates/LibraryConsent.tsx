@@ -55,6 +55,9 @@ export function LibraryConsent({ onAnswered, title = __('See more designs from t
   );
 }
 
+const readConsent = async () => ({ enabled: (await catalogStatus()).consent === 'yes' });
+const saveConsent = async (enabled: boolean) => ({ enabled: (await setCatalogConsent(enabled)).consent === 'yes' });
+
 /** The same answer, kept in Settings → Data & privacy. */
 export function LibrarySettings({ onEditingStateChange }: { onEditingStateChange?: SettingsEditing } = {}) {
   return (
@@ -64,8 +67,8 @@ export function LibrarySettings({ onEditingStateChange }: { onEditingStateChange
       hint={disclosure()}
       setting="template-library"
       saveLabel={__('Save template library', 'wconvert')}
-      read={async () => ({ enabled: (await catalogStatus()).consent === 'yes' })}
-      save={async (enabled) => ({ enabled: (await setCatalogConsent(enabled)).consent === 'yes' })}
+      read={readConsent}
+      save={saveConsent}
       onEditingStateChange={onEditingStateChange}
     />
   );

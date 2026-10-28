@@ -1275,6 +1275,8 @@ final class OptinWriteTest extends TestCase
         $this->assertArrayNotHasKey('config', $listed[0]);
         $this->assertArrayNotHasKey('published_config', $listed[0]);
         $this->assertArrayNotHasKey('config', $listed[0]['arms'][0]);
+        // An arm row is handed to the same dialogs as a parent (#370).
+        $this->assertSame([], $listed[0]['arms'][0]['arms']);
     }
 
     /**

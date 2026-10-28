@@ -184,3 +184,12 @@ describe('a negated rule', () => {
     expect(fromRule({ type: 'query_param', key: 'utm_source' }, [queryParam])?.negate).toBe(false);
   });
 });
+
+describe('a rule, freshly added', () => {
+  it('starts a set’s yes/no qualifier as a real no, and leaves a lone yes/no for the merchant (#362)', () => {
+    const type = (name: string) => allRuleTypes().find(each => each.type === name)!;
+
+    expect(toRule(type('cart_categories'), null, {})).toEqual({ type: 'cart_categories', descendants: false });
+    expect(toRule(type('logged_in'), null, {})).toEqual({ type: 'logged_in' });
+  });
+});
