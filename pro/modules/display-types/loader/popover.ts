@@ -306,9 +306,12 @@ function reserveTopBar(element: HTMLElement): () => void {
   document.body.prepend(spacer);
 
   const update = (): void => {
-    // `bottom` includes the top safe-area offset as well as the rendered bar,
-    // which is the whole viewport strip normal page content must stay below.
-    const value = `${Math.max(0, element.getBoundingClientRect().bottom)}px`;
+    // Where the bar settles, not where it is drawn: this runs as it opens,
+    // while `@starting-style` still holds it at `translate: 0 -100%`, and a
+    // translate never resizes it, so the observer would never measure again
+    // (#371). Offsets ignore transforms. The top includes the safe-area inset,
+    // so this is the whole strip page content must stay below.
+    const value = `${Math.max(0, element.offsetTop + element.offsetHeight)}px`;
 
     spacer.style.setProperty('block-size', value, 'important');
     root.style.setProperty(TOP_BAR_OFFSET, value, 'important');
