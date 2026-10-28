@@ -3,9 +3,10 @@
 /**
  * verify-schedule.php — the schedule, against a real WordPress clock.
  *
- *     wp eval-file bin/verify-schedule.php
+ *     wp eval-file bin/verify-schedule.php --use-include
  *
- * Exit 0 = every check passed, 1 = a check failed, 2 = it declined to run.
+ * Exit 0 = every check passed, 1 = a check failed or a fixture campaign could
+ * not be published, 2 = it declined to run.
  *
  * ============================================================================
  * WHY THIS EXISTS AND A UNIT TEST DOES NOT DO IT.
@@ -55,6 +56,7 @@ use WConvert\Optin\Schedule;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Storage\WpOptionStore;
 use WConvert\Template\TemplateLibrary;
+use WConvert\Template\TemplateTree;
 use WConvert\Template\TemplateVocabulary;
 
 if (!defined('ABSPATH')) {
@@ -102,7 +104,14 @@ global $wpdb;
 $options = new WpOptionStore();
 $db = new WpdbConnection($wpdb);
 $optins = new OptinRepository($db, new PublishedSet($options), RuleVocabulary::fromManifest(), new MilestoneStore($options));
-$design = TemplateLibrary::fromDirectory(TemplateVocabulary::fromManifest())->snapshotInto(['template_id' => 'offer-panel']);
+// Promote an offer refuses publication until the button links somewhere
+// (OutcomeContract's `linkRequired`), and the library ships the link empty.
+$design = TemplateTree::rewrittenIn(
+    TemplateLibrary::fromDirectory(TemplateVocabulary::fromManifest())->snapshotInto(['template_id' => 'offer-panel']),
+    static fn (array $node): array => ($node['type'] ?? null) === 'button' && ($node['action'] ?? null) === 'link'
+        ? ['href' => home_url('/offer')] + $node
+        : $node
+);
 
 (new Installer($options, $optins))->install();
 
@@ -116,6 +125,20 @@ if ((int) $wpdb->get_var("SELECT COUNT(*) FROM `{$optinTable}`") !== 0) {
 }
 
 $set = new PublishedSet($options);
+
+/**
+ * Publish, or stop. Every later check reads the published set, so a refused
+ * publication would turn into a page of misleading schedule failures.
+ */
+$publishOrStop = static function (string $id) use ($optins): void {
+    if ($optins->publish($id) === null) {
+        fwrite(STDERR, "Could not publish fixture Optin {$id}: the design or config no longer meets the publication "
+            . "contract. Fix the fixture before reading any schedule result.\n");
+
+        exit(1);
+    }
+};
+
 $originalZone = get_option('timezone_string');
 $originalOffset = get_option('gmt_offset');
 
@@ -161,7 +184,7 @@ $sale = $optins->create('Black Friday', 'promote_offer', [
     'ends_at' => '2099-11-30 23:59',
 ]);
 
-$optins->publish($sale->id);
+$publishOrStop($sale->id);
 
 $kolkata = $entryFor($sale->id);
 
@@ -219,7 +242,7 @@ $over = $optins->create('Last summer', 'promote_offer', [
     'ends_at' => '2020-09-01 00:00',
 ]);
 
-$optins->publish($over->id);
+$publishOrStop($over->id);
 
 $verify->check(
     'stays in the published set until it is unpublished (ADR 0050)',
@@ -237,7 +260,7 @@ $verify->check(
 
 echo "\nThe inspector's words, from the real human_time_diff()\n";
 
-$optins->publish($over->id);
+$publishOrStop($over->id);
 
 $schedules = InspectorSchedules::forSet($set->all(), (int) strtotime('2020-08-25 00:00:00 UTC'));
 
@@ -315,13 +338,19 @@ $verify->check(
 echo "\nThe two doors of the normaliser\n";
 
 // The reader's door is TOTAL, and a rebuild is what would fatal without it.
+// Only the window is hand-edited: the blob keeps its design and a canonical
+// display plan, because a published config without `display_rules` is refused
+// by the projection for its own reason (ADR 0104) and would prove nothing here.
+$handEdited = [
+    'template' => $design['template'],
+    'display_rules' => \WConvert\Rules\DisplayPlan::immediate(),
+    'display_type' => 'popup',
+    'starts_at' => '2099-11-30 09:00',
+    'ends_at' => '2099-11-27 09:00',
+];
 $wpdb->query($wpdb->prepare(
     "UPDATE `{$optinTable}` SET published_config = %s WHERE id = %s",
-    (string) json_encode([
-        'display_type' => 'popup',
-        'starts_at' => '2099-11-30 09:00',
-        'ends_at' => '2099-11-27 09:00',
-    ]),
+    (string) json_encode($handEdited),
     $sale->id
 ));
 

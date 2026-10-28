@@ -522,14 +522,19 @@ replay can approach a vendor's limit. The window is a range over the ULID
 primary key, so it costs **no new index**.
 
 ```bash
-wp eval-file bin/verify-destinations.php   # the plugin boots, AS loads, a capture queues two ids
+wp eval-file bin/verify-destinations.php --use-include   # the plugin boots, AS loads, a capture queues ids only
 ```
 
 A green suite is not the same as a plugin that runs: that script asserts
 `as_enqueue_async_action()` is genuinely defined by the time a capture fires,
-and reads the arguments back out of Action Scheduler's own table to check that
-no captured value is in them. **It refuses to run on an install that has
-Leads.**
+captures through the visitor's route so the accepted submission is handed off
+the way a real one is, and reads the job's four arguments (Lead, Destination,
+attempt, submission) back out of Action Scheduler's own table to check that no
+captured value is in them. It runs the lead-magnet email through `wp_mail()`,
+proves a test send goes only to the address given and writes no Lead or
+counter, and asserts whichever MailPoet shape it is booted into. **It refuses
+to run on an install that has Leads.** CI runs it on every pull request that
+touches PHP.
 
 With WSMS deactivated the install is [[Standalone]] and fully working: capture,
 the lead log, CSV export and the lead-magnet delivery email all run, and the
@@ -684,7 +689,7 @@ where dropping it would read as *never scheduled* and show a finished sale
 forever.
 
 ```bash
-wp eval-file bin/verify-schedule.php   # against a real WordPress; runs on Playground's SQLite
+wp eval-file bin/verify-schedule.php --use-include   # against a real WordPress; runs on Playground's SQLite
 ```
 
 It sets a real `timezone_string` to a half-hour offset zone and then to another,
@@ -692,8 +697,11 @@ asserting the published option's instants move; asserts a not-yet-started Optin
 and a finished one are both in it; proves a bare `gmt_offset` site resolves as
 well as a named zone; dispatches a backwards schedule through
 `rest_do_request()` for its 400; and rebuilds over a hand-edited backwards blob
-to prove the reader's door is total. **It refuses to run on a site that already
-has Optins**, because it rebuilds the published set.
+to prove the reader's door is total. It stops with exit 1 if a fixture
+campaign is refused publication, rather than reporting schedule failures
+against a campaign that never went live. **It refuses to run on a site that
+already has Optins**, because it rebuilds the published set. CI runs it on
+every pull request that touches PHP.
 
 ### Clearing the page cache
 

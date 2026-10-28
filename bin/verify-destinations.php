@@ -1,19 +1,30 @@
 <?php
 
 /**
- * verify-destinations.php — the [[Destination]] dispatch, on a real WordPress.
+ * verify-destinations.php — the [[Destination]] handoff, on a real WordPress.
  *
- *     wp eval-file bin/verify-destinations.php
+ *     wp eval-file bin/verify-destinations.php --use-include
  *
- * Exit 0 = every check passed, 1 = a check failed, 2 = it declined to run.
+ * Exit 0 = every check passed, 1 = a check failed or its fixtures could not be
+ * set up, 2 = it declined to run.
  *
  * WHY THIS EXISTS AND THE UNIT SUITE DOES NOT DO IT. `tests/unit/Destination/`
  * proves the failure split, the payload shape and the fill-empty rule against
  * fakes, which is where those belong. What it cannot prove is that the plugin
  * BOOTS with Action Scheduler bundled beside it, that `as_enqueue_async_action()`
  * is actually defined by the time a capture fires, and that a real capture
- * really does put a job on a real queue carrying two ids and no personal data.
+ * really does put a job on a real queue carrying ids and no personal data.
  * A green suite is not the same as a plugin that runs (AGENTS.md).
+ *
+ * Captures go through the visitor's path: `CaptureController` saves the
+ * accepted submission, `JourneyCapture::ACCEPTED` fires, and
+ * `SubmissionDispatcher` queues one job per bound route. `PushWorker` then reads
+ * the accepted submission snapshot the job names. Nothing here calls
+ * `LeadCapture::record()`, which is not how a visitor's submission arrives.
+ *
+ * It runs on SQLite, so Playground is enough. See README's *Running a
+ * `bin/verify-*.php` script under Playground*, and *Booting with MailPoet, and
+ * without it* for the second shape.
  *
  * IT REFUSES TO RUN ON AN INSTALL THAT HAS LEADS. It captures and then deletes,
  * and it writes to the Destination options. Boot a throwaway WordPress —
@@ -23,6 +34,8 @@
 declare(strict_types=1);
 
 use WConvert\Bootstrap;
+use WConvert\Database\Installer;
+use WConvert\Destination\DestinationRegistry;
 use WConvert\Destination\DestinationStore;
 use WConvert\Destination\HealthStore;
 use WConvert\Destination\LeadMagnet\LeadMagnetDestinationType;
@@ -30,17 +43,20 @@ use WConvert\Destination\MailPoet\MailPoetDestinationType;
 use WConvert\Destination\MailPoet\WpMailPoetSubscribers;
 use WConvert\Destination\OptinBinding;
 use WConvert\Destination\PushJob;
+use WConvert\Destination\PushWorker;
 use WConvert\Destination\Wsms\WsmsDestinationType;
 use WConvert\Goal\Goal;
-use WConvert\Lead\LeadCapture;
-use WConvert\Lead\Submission;
+use WConvert\Lead\LeadRepository;
+use WConvert\Optin\Optin;
 use WConvert\Optin\OptinRepository;
+use WConvert\Privacy\PrivacyGuidance;
 use WConvert\Queue\ActionSchedulerQueue;
-use WConvert\Template\TemplateLibrary;
-use WConvert\Template\TemplateVocabulary;
+use WConvert\Rest\CaptureController;
+use WConvert\Rules\DisplayPlan;
+use WConvert\Template\CaptureContract;
 
 if (!defined('ABSPATH')) {
-    fwrite(STDERR, "Run this through WordPress: wp eval-file bin/verify-destinations.php\n");
+    fwrite(STDERR, "Run this through WordPress: wp eval-file bin/verify-destinations.php --use-include\n");
 
     exit(2);
 }
@@ -68,18 +84,47 @@ final class DestinationVerification
         echo '       expected: ' . var_export($expected, true) . "\n";
         echo '       actual:   ' . var_export($actual, true) . "\n";
     }
+
+    /**
+     * A fixture this script needs could not be set up. Every later check
+     * would be about the missing fixture rather than the thing under test, so
+     * stop here and say which one.
+     */
+    public static function stop(string $why): never
+    {
+        fwrite(STDERR, "Setup failed: {$why}\n");
+
+        exit(1);
+    }
 }
 
 global $wpdb;
 
 $verify = new DestinationVerification();
+$container = Bootstrap::container();
+
+// Loading is not activating: on Playground nothing ran the activation hook.
+$container->resolve(Installer::class)->install();
+
 $leadTable = $wpdb->prefix . 'wconvert_leads';
+$statsTable = $wpdb->prefix . 'wconvert_stats';
 
 if ((int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`") > 0) {
     fwrite(STDERR, "This install already has Leads. Run it on a throwaway WordPress.\n");
 
     exit(2);
 }
+
+// Capture receipts and lead-magnet send reservations are options, written by
+// the capture and the delivery. Whatever is new at the end is this script's.
+$ownOptions = static function () use ($wpdb): array {
+    return $wpdb->get_col($wpdb->prepare(
+        "SELECT option_name FROM `{$wpdb->options}` WHERE option_name LIKE %s OR option_name LIKE %s",
+        $wpdb->esc_like('wconvert_capture_') . '%',
+        $wpdb->esc_like('wconvert_mail_') . '%'
+    ));
+};
+$optionsAtStart = $ownOptions();
 
 // ============================================================================
 // THE PROMISE readme.txt PRINTS IN BOLD: no account, no phone-home.
@@ -119,25 +164,158 @@ $verify->check(
 
 echo "\nThe registry\n";
 
-$container = Bootstrap::container();
-
-/** @var \WConvert\Destination\DestinationRegistry $registry */
-$registry = $container->get(\WConvert\Destination\DestinationRegistry::class);
+/** @var DestinationRegistry $registry */
+$registry = $container->resolve(DestinationRegistry::class);
 
 $verify->check('the WSMS type is registered by free', true, $registry->find(WsmsDestinationType::ID) !== null);
 
 // `unavailable` on a site with no WP SMS, and `ready` where it is loaded —
-// either is correct, and both must be a real answer rather than a fatal.
-echo '  note the WSMS Destination is "' . $registry->availabilityOf(WsmsDestinationType::ID)->value . "\" here\n";
+// either is correct, and both must be a real answer rather than a fatal. What
+// it must never be is `locked`: a missing plugin is not something we can sell.
+$wsmsAvailability = $registry->availabilityOf(WsmsDestinationType::ID)->value;
 
-echo "\nA capture dispatches\n";
+echo '  note the WSMS Destination is "' . $wsmsAvailability . "\" here\n";
+
+$verify->check('the WSMS Destination is ready or unavailable, never locked', true, in_array($wsmsAvailability, ['ready', 'unavailable'], true));
+$verify->check(
+    'and is dispatchable only where WP SMS is loaded',
+    $wsmsAvailability === 'ready',
+    $registry->isDispatchable(WsmsDestinationType::ID)
+);
 
 /** @var DestinationStore $destinations */
-$destinations = $container->get(DestinationStore::class);
+$destinations = $container->resolve(DestinationStore::class);
 /** @var OptinRepository $optins */
-$optins = $container->get(OptinRepository::class);
+$optins = $container->resolve(OptinRepository::class);
+/** @var LeadRepository $leads */
+$leads = $container->resolve(LeadRepository::class);
+/** @var PushWorker $worker */
+$worker = $container->resolve(PushWorker::class);
+/** @var HealthStore $health */
+$health = $container->resolve(HealthStore::class);
 
-// A type that is always dispatchable, so the dispatch is exercised whether or
+// ============================================================================
+// FIXTURES: A CURRENT CAMPAIGN, AND THE VISITOR'S OWN CAPTURE PATH.
+// ============================================================================
+// A name-and-email form, so a captured value other than the address exists to
+// look for in the job arguments. The library ships consent hidden; a Goal
+// that grows a list has it revealed at prefill (ADR 0099), which is the shape a
+// merchant publishes.
+$library = json_decode(
+    (string) file_get_contents(dirname(__DIR__) . '/resources/templates/library/name-and-email.json'),
+    true,
+    64,
+    JSON_THROW_ON_ERROR
+);
+
+if (!is_array($library) || !is_array($library['tree'] ?? null)) {
+    DestinationVerification::stop('resources/templates/library/name-and-email.json is not a design.');
+}
+
+/** @var PrivacyGuidance $privacy */
+$privacy = $container->resolve(PrivacyGuidance::class);
+
+/** @var list<string> $created */
+$created = [];
+
+/**
+ * Create and publish a current campaign bound to these Destinations, or stop.
+ *
+ * @param list<string> $destinationIds
+ */
+$campaign = static function (string $name, Goal $goal, array $destinationIds) use ($optins, $library, $privacy, &$created): Optin {
+    $template = $library;
+    $template['tree'] = $privacy->treeFor($library['tree'], $goal);
+
+    $optin = $optins->create($name, $goal->value, [
+        'template' => $template,
+        'display_type' => 'popup',
+        'display_rules' => DisplayPlan::immediate(),
+        OptinBinding::KEY => $destinationIds,
+    ]);
+    $created[] = $optin->id;
+
+    $published = $optins->publish($optin->id);
+
+    if ($published === null) {
+        DestinationVerification::stop("the {$goal->value} campaign \"{$name}\" was refused publication.");
+    }
+
+    return $published;
+};
+
+/**
+ * Submit the campaign's first form through the capture route, as a visitor's
+ * browser does: start a grant, then send the fields against the published
+ * contract. Returns the accepted Lead id, or stops.
+ *
+ * @param array<string, string> $fields
+ */
+$capture = static function (Optin $optin, array $fields) use ($container): string {
+    $config = $optin->publishedConfig ?? [];
+    $base = [
+        'optin_id' => $optin->id,
+        'contract' => CaptureContract::fingerprint($config, $optin->goal, get_privacy_policy_url()),
+    ];
+
+    $request = static function (array $body) use ($container): array {
+        $request = new WP_REST_Request('POST', '/wconvert/v1/capture');
+        $request->set_header('Content-Type', 'application/json');
+        $request->set_body((string) wp_json_encode($body));
+
+        $result = $container->resolve(CaptureController::class)->capture($request);
+
+        if ($result instanceof WP_Error) {
+            return ['error' => $result->get_error_code() . ': ' . $result->get_error_message()];
+        }
+
+        $data = $result->get_data();
+
+        return is_array($data) ? $data : [];
+    };
+
+    $start = $request($base + ['phase' => 'start']);
+
+    if (!is_string($start['grant'] ?? null)) {
+        DestinationVerification::stop("no capture grant for {$optin->name}: " . wp_json_encode($start));
+    }
+
+    $submission = (string) ($config['template']['tree']['submissions'][0]['id'] ?? '');
+    $accepted = $request($base + [
+        'grant' => $start['grant'],
+        'submission' => $submission,
+        'fields' => $fields,
+        'consent' => true,
+    ]);
+
+    if (!is_string($accepted['id'] ?? null)) {
+        DestinationVerification::stop("the capture for {$optin->name} was not accepted: " . wp_json_encode($accepted));
+    }
+
+    return $accepted['id'];
+};
+
+/** The jobs on the queue right now, as their stored argument arrays. */
+$queuedJobs = static function (): array {
+    $jobs = [];
+
+    foreach (as_get_scheduled_actions(['hook' => PushJob::HOOK, 'group' => ActionSchedulerQueue::GROUP, 'per_page' => 50], OBJECT) as $action) {
+        /** @var array<int, array<string, mixed>> $enqueued */
+        $enqueued = $action->get_args();
+        $jobs[] = $enqueued[0] ?? [];
+    }
+
+    return $jobs;
+};
+
+/** The handoff state the accepted submission carries. */
+$handoffOf = static function (string $leadId, string $submission = 'primary') use ($leads): mixed {
+    return $leads->find($leadId)?->capture['submissions'][$submission]['handoff'] ?? null;
+};
+
+echo "\nA capture hands off\n";
+
+// A type that is always dispatchable, so the handoff is exercised whether or
 // not this install has WP SMS. Registered here rather than shipped: it is the
 // test double, and it lives for the length of this script.
 $registry->register(new class () implements \WConvert\Destination\DestinationType {
@@ -211,40 +389,24 @@ $registry->register(new class () implements \WConvert\Destination\DestinationTyp
 });
 
 $destination = $destinations->save(null, 'verify', 'Verification', null, []);
-$design = TemplateLibrary::fromDirectory(TemplateVocabulary::fromManifest())->snapshotInto(['template_id' => 'centred-card']);
+$optin = $campaign('Verification optin', Goal::GrowEmailList, [$destination->id]);
 
-$optin = $optins->create('Verification optin', 'grow_list', [
-    'template' => $design['template'],
-    OptinBinding::KEY => [$destination->id],
-]);
-$optins->publish($optin->id);
-
-/** @var LeadCapture $capture */
-$capture = $container->get(LeadCapture::class);
-
-$lead = $capture->record($optin->id, new Submission('verify@example.com', null, ['name' => 'Verify Person']));
+$leadId = $capture($optin, ['email' => 'verify@example.com', 'name' => 'Verify Person']);
 
 // Through the documented `as_*()` API rather than `ActionScheduler::store()`:
 // the functions are the supported surface, and reading the store directly is
 // the kind of coupling that breaks on an AS release we do not control.
-$queued = as_get_scheduled_actions(
-    ['hook' => PushJob::HOOK, 'group' => ActionSchedulerQueue::GROUP, 'per_page' => 50],
-    OBJECT
-);
+$queued = $queuedJobs();
 
 $verify->check('a capture put exactly one job on the queue', 1, count($queued));
 
-$args = [];
+$args = $queued[0] ?? [];
 
-foreach ($queued as $action) {
-    /** @var array<int, array<string, mixed>> $enqueued */
-    $enqueued = $action->get_args();
-    $args = $enqueued[0] ?? [];
-}
-
-$verify->check('the job carries the Lead id', $lead->id, $args['lead'] ?? null);
+$verify->check('the job carries the Lead id', $leadId, $args['lead'] ?? null);
 $verify->check('and the Destination id', $destination->id, $args['destination'] ?? null);
-$verify->check('and nothing else', ['lead', 'destination', 'attempt'], array_keys($args));
+$verify->check('and the accepted submission it hands off', 'primary', $args['submission'] ?? null);
+$verify->check('and nothing else', ['lead', 'destination', 'attempt', 'submission'], array_keys($args));
+$verify->check('the accepted submission records its handoff as complete', 'complete', $handoffOf($leadId));
 
 // The claim ADR 0008 rests on, checked against what is genuinely in another
 // plugin's table rather than against a fake.
@@ -257,12 +419,7 @@ $verify->check(
 
 echo "\nThe worker\n";
 
-/** @var \WConvert\Destination\PushWorker $worker */
-$worker = $container->get(\WConvert\Destination\PushWorker::class);
 $worker->run($args);
-
-/** @var HealthStore $health */
-$health = $container->get(HealthStore::class);
 
 $verify->check(
     'a successful push stamps the Destination health',
@@ -270,6 +427,8 @@ $verify->check(
     $health->of($destination->id)->lastSuccessAt !== null
 );
 $verify->check('and leaves no failures behind it', 0, $health->of($destination->id)->consecutiveFailures);
+
+as_unschedule_all_actions(PushJob::HOOK, [$args], ActionSchedulerQueue::GROUP);
 
 echo "\nThe lead-magnet delivery\n";
 
@@ -287,14 +446,15 @@ add_filter('pre_wp_mail', static function ($short, array $atts) use (&$mail) {
     return true;
 }, 10, 2);
 
-$statsTable = $wpdb->prefix . 'wconvert_stats';
-
 $deliveries = static function (string $optinId) use ($wpdb, $statsTable): int {
     return (int) $wpdb->get_var($wpdb->prepare(
         "SELECT COALESCE(SUM(`count`), 0) FROM `{$statsTable}` WHERE optin_id = %s AND kind = %s",
         $optinId,
         \WConvert\Stats\StatKind::LeadMagnetDelivered->value
     ));
+};
+$counters = static function () use ($wpdb, $statsTable): int {
+    return (int) $wpdb->get_var("SELECT COALESCE(SUM(`count`), 0) FROM `{$statsTable}`");
 };
 
 $delivery = $destinations->save(null, LeadMagnetDestinationType::ID, 'Lead magnet email', null, [
@@ -310,25 +470,31 @@ $verify->check(
 );
 
 // It needs nothing of the site, so it is `ready` on every install — including
-// this one, which has no WP SMS.
+// one with no WP SMS.
 $verify->check(
     'and is ready on a Standalone install',
     'ready',
     $registry->availabilityOf(LeadMagnetDestinationType::ID)->value
 );
 
-$magnetOptin = $optins->create('Guide download', Goal::DeliverLeadMagnet->value, [
-    'template' => $design['template'],
-    OptinBinding::KEY => [$delivery->id],
-]);
-$optins->publish($magnetOptin->id);
+$magnetOptin = $campaign('Guide download', Goal::DeliverLeadMagnet, [$delivery->id]);
+$magnetLeadId = $capture($magnetOptin, ['email' => 'magnet@example.com', 'name' => 'Magnet Person']);
 
-$magnetLead = $capture->record(
-    $magnetOptin->id,
-    new Submission('magnet@example.com', null, ['name' => 'Magnet Person'])
+// The real handoff first: the delivery runs from the job the capture queued,
+// not from one this script built.
+$magnetJobs = array_values(array_filter(
+    $queuedJobs(),
+    static fn (array $job): bool => ($job['lead'] ?? null) === $magnetLeadId
+));
+
+$verify->check(
+    'the capture queued the delivery for its accepted submission',
+    [(new PushJob($magnetLeadId, $delivery->id, 1, 'primary'))->toArgs()],
+    $magnetJobs
 );
 
-$worker->run((new PushJob($magnetLead->id, $delivery->id, 1))->toArgs());
+$worker->run($magnetJobs[0] ?? []);
+as_unschedule_all_actions(PushJob::HOOK, [$magnetJobs[0] ?? []], ActionSchedulerQueue::GROUP);
 
 $verify->check('the delivery sent exactly one email', 1, count($mail));
 $verify->check('to the Lead', 'magnet@example.com', $mail[0]['to'] ?? null);
@@ -345,15 +511,15 @@ $verify->check('it counted exactly one delivery', 1, $deliveries($magnetOptin->i
 
 echo "\n  scoping\n";
 
-// **Type scoping.** The same lead-magnet Optin, pushed to a Destination that is
+// **Type scoping.** The same lead-magnet Lead, pushed to a Destination that is
 // not the delivery email. A merchant binding both to one Optin is ordinary, and
 // counting this would report two deliveries per Conversion and drive the
 // failure count negative.
 //
-// The worker takes the two ids directly, so this needs no rebinding: the
-// Optin's Destination list decides what gets DISPATCHED, and what is under test
-// here is what the worker counts once a job exists.
-$worker->run((new PushJob($magnetLead->id, $destination->id, 1))->toArgs());
+// The worker reads the accepted submission by id, so this needs no rebinding:
+// the Optin's routes decide what gets QUEUED, and what is under test here is
+// what the worker counts once a job exists.
+$worker->run((new PushJob($magnetLeadId, $destination->id, 1, 'primary'))->toArgs());
 
 $verify->check(
     'a non-delivery type succeeding on a lead-magnet Optin counts nothing',
@@ -364,9 +530,13 @@ $verify->check(
 // **Goal scoping.** The delivery Destination, on an Optin whose Goal is not
 // measured in deliveries. The email goes out — the merchant asked for it — and
 // no counter moves, because no card would read the row.
-$otherLead = $capture->record($optin->id, new Submission('other@example.com', null, []));
+$otherLeadId = $capture($optin, ['email' => 'other@example.com']);
 
-$worker->run((new PushJob($otherLead->id, $delivery->id, 1))->toArgs());
+foreach ($queuedJobs() as $job) {
+    as_unschedule_all_actions(PushJob::HOOK, [$job], ActionSchedulerQueue::GROUP);
+}
+
+$worker->run((new PushJob($otherLeadId, $delivery->id, 1, 'primary'))->toArgs());
 
 $verify->check('a delivery on another Goal still sends', 2, count($mail));
 $verify->check('and counts nothing', 0, $deliveries($optin->id));
@@ -378,47 +548,38 @@ echo "\nThe test send\n";
 // origin, so a merchant proving their credentials work must leave
 // `wconvert_leads` exactly as they found it — and a fake that models the table
 // cannot prove that about the table.
-$leadsBefore = (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`");
-$queuedBefore = count(as_get_scheduled_actions(
-    ['hook' => PushJob::HOOK, 'group' => ActionSchedulerQueue::GROUP, 'per_page' => 50],
-    OBJECT
-));
+$leadCount = static function () use ($wpdb, $leadTable): int {
+    return (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`");
+};
+$leadsBefore = $leadCount();
+$queuedBefore = count($queuedJobs());
+$countersBefore = $counters();
 $countedBefore = $deliveries($magnetOptin->id);
 
 /** @var \WConvert\Destination\PushDispatcher $dispatcher */
-$dispatcher = $container->get(\WConvert\Destination\PushDispatcher::class);
+$dispatcher = $container->resolve(\WConvert\Destination\PushDispatcher::class);
 
+// The recipient is explicit: a test send goes where the merchant says, and
+// only there.
 $sent = $dispatcher->test($delivery->id, ['email' => 'merchant@example.com', 'nickname' => 'Dropped']);
 
 $verify->check('a test send reaches the Destination', 'success', $sent->outcome->value);
 $verify->check('and sent a third email', 3, count($mail));
 $verify->check('and it went to the merchant, not to a Lead', 'merchant@example.com', $mail[2]['to'] ?? null);
-$verify->check(
-    'a test send writes no Lead row',
-    $leadsBefore,
-    (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`")
-);
-$verify->check(
-    'and queues nothing',
-    $queuedBefore,
-    count(as_get_scheduled_actions(
-        ['hook' => PushJob::HOOK, 'group' => ActionSchedulerQueue::GROUP, 'per_page' => 50],
-        OBJECT
-    ))
-);
+$verify->check('a test send writes no Lead row', $leadsBefore, $leadCount());
+$verify->check('and queues nothing', $queuedBefore, count($queuedJobs()));
 $verify->check('and moves no delivery counter', $countedBefore, $deliveries($magnetOptin->id));
+$verify->check('nor any other counter', $countersBefore, $counters());
 
 echo "\n  from the screen\n";
 
 // **The routes, not the dispatcher.** The unit suite proves the two negatives
 // against fakes; what it cannot prove is that the routes register on a real
-// WordPress and that `wp_get_current_user()` really answers with an address —
-// the default a test send goes to, and a fatal if the controller reached for
-// something WordPress does not have on a REST request (#88).
+// WordPress and answer through them.
 /** @var \WConvert\Rest\DestinationController $controller */
-$controller = $container->get(\WConvert\Rest\DestinationController::class);
+$controller = $container->resolve(\WConvert\Rest\DestinationController::class);
 
-$asked = static function (string $method, string $destinationId, ?string $email = null) use ($controller) {
+$asked = static function (string $method, string $destinationId, ?string $email = null) use ($controller): array {
     $request = new WP_REST_Request('POST');
     $request->set_param('id', $destinationId);
 
@@ -427,26 +588,34 @@ $asked = static function (string $method, string $destinationId, ?string $email 
     }
 
     $answer = $controller->{$method}($request);
+    $data = $answer instanceof WP_REST_Response ? $answer->get_data() : null;
 
-    return $answer instanceof WP_REST_Response ? $answer->get_data() : ['outcome' => 'error'];
+    return is_array($data) ? $data : ['outcome' => 'error'];
 };
 
 $optionsBefore = [
-    'health' => get_option(\WConvert\Destination\HealthStore::OPTION),
+    'health' => get_option(HealthStore::OPTION),
     'failures' => get_option(\WConvert\Destination\DeliveryFailures::OPTION),
 ];
-$leadsBeforeTest = (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`");
+$leadsBeforeTest = $leadCount();
 
-// **No logged-in user, which is exactly what a CLI request is.** The address
-// defaults to the merchant's own and there is nobody to ask, so the route says
-// so in its own words. That sentence is the whole reason this branch is
-// guarded: unguarded, the merchant reads the lead-magnet type's *"the Lead
-// carries no email address"*, which is true, internal, and no help to somebody
-// who pressed a button (ADR 0042). A REST request from wp-admin always has a
-// user, so this is the path only a script and a cron run take.
+// **There is no implicit recipient.** The profile address is a suggestion the
+// screen shows, never somewhere the route sends on its own: with no address
+// the route refuses in its own words and sends nothing — logged in or not.
+wp_set_current_user(0);
+
 $verify->check(
-    'with nobody logged in the route says it has nowhere to send',
-    'skipped',
+    'with no address the route refuses rather than guessing one',
+    'failed',
+    $asked('testSend', $delivery->id)['outcome'] ?? null
+);
+
+$administrators = get_users(['role' => 'administrator', 'number' => 1, 'fields' => 'ID']);
+wp_set_current_user($administrators === [] ? 0 : (int) $administrators[0]);
+
+$verify->check(
+    'and refuses for a logged-in merchant too, whose profile has an address',
+    'failed',
     $asked('testSend', $delivery->id)['outcome'] ?? null
 );
 $verify->check('and sent nothing', 3, count($mail));
@@ -469,20 +638,19 @@ $connected = $asked('testConnection', $delivery->id);
 // that this button means "this works".
 $verify->check('the test-connection route says there is nothing to check', 'skipped', $connected['outcome'] ?? null);
 
+wp_set_current_user(0);
+
 // ============================================================================
 // THE RULE MOST LIKELY TO BE BROKEN BY A CARELESS CONTROLLER.
 // ============================================================================
 // Delivery state is about Leads that were captured (ADR 0008), and a test
 // captured none. Read against the real options rather than a fake that models
 // them.
-$verify->check('a test from the screen writes no health', $optionsBefore['health'], get_option(\WConvert\Destination\HealthStore::OPTION));
+$verify->check('a test from the screen writes no health', $optionsBefore['health'], get_option(HealthStore::OPTION));
 $verify->check('no delivery failure', $optionsBefore['failures'], get_option(\WConvert\Destination\DeliveryFailures::OPTION));
 $verify->check('no delivery counter', $countedBefore, $deliveries($magnetOptin->id));
-$verify->check(
-    'and no Lead row',
-    $leadsBeforeTest,
-    (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`")
-);
+$verify->check('no counter of any kind', $countersBefore, $counters());
+$verify->check('and no Lead row', $leadsBeforeTest, $leadCount());
 
 echo "\nThe MailPoet push\n";
 
@@ -517,6 +685,24 @@ if ($mailPoetAvailability !== 'ready') {
     $verify->check('its schema still answers with MailPoet absent', true, isset($schema['lists']));
     $verify->check('and offers no lists to choose from', false, isset($schema['lists']['options']));
     $verify->check('and it is skipped rather than dispatchable', false, $registry->isDispatchable(MailPoetDestinationType::ID));
+
+    // And a capture bound to it still saves, queues nothing for it, and says
+    // which route it could not hand to.
+    $absent = $destinations->save(null, MailPoetDestinationType::ID, 'MailPoet', null, [MailPoetDestinationType::LISTS => []]);
+    $absentOptin = $campaign('MailPoet absent', Goal::GrowEmailList, [$absent->id]);
+    $absentLeadId = $capture($absentOptin, ['email' => 'mailpoet-absent@example.com']);
+    $absentSnapshot = $leads->find($absentLeadId)?->capture['submissions']['primary'] ?? [];
+
+    $verify->check(
+        'a capture bound to it queues nothing',
+        [],
+        array_values(array_filter($queuedJobs(), static fn (array $job): bool => ($job['lead'] ?? null) === $absentLeadId))
+    );
+    $verify->check('and still completes its handoff', 'complete', $absentSnapshot['handoff'] ?? null);
+    $verify->check('naming the route it skipped', [$absent->id], $absentSnapshot['unavailable_routes'] ?? null);
+
+    $destinations->delete($absent->id);
+    $health->forget($absent->id);
 } else {
     // One call into MailPoet, by NAME rather than as a literal method — the
     // same reason `WpMailPoetSubscribers::call()` gives: the class this would
@@ -567,7 +753,9 @@ if ($mailPoetAvailability !== 'ready') {
         MailPoetDestinationType::LISTS => [(string) $listA['id'], (string) $listB['id']],
     ]);
 
-    // One push, and what it reported.
+    $mailPoetOptin = $campaign('MailPoet optin', Goal::GrowEmailList, [$mailPoetDestination->id]);
+
+    // One push of the job the capture queued, and what it reported.
     //
     // `PushWorker::run()` returns nothing — health is where an outcome lands,
     // and it is what a merchant would be looking at. `landed()` clears
@@ -576,27 +764,27 @@ if ($mailPoetAvailability !== 'ready') {
     // MailPoet's rows would pass just as well if every push had failed
     // retryably and healed itself on the next attempt, which is the shape
     // nobody investigates because the data looks right.
-    $pushed = static function (string $leadId) use ($worker, $health, &$mailPoetDestination): ?string {
-        $worker->run((new PushJob($leadId, $mailPoetDestination->id, 1))->toArgs());
+    $pushed = static function (string $leadId) use ($worker, $health, $mailPoetDestination, $queuedJobs, $verify): ?string {
+        $jobs = array_values(array_filter($queuedJobs(), static fn (array $job): bool => ($job['lead'] ?? null) === $leadId));
+        $job = $jobs[0] ?? (new PushJob($leadId, $mailPoetDestination->id, 1, 'primary'))->toArgs();
+
+        $verify->check(
+            'the capture queued its MailPoet handoff',
+            (new PushJob($leadId, $mailPoetDestination->id, 1, 'primary'))->toArgs(),
+            $job
+        );
+
+        $worker->run($job);
 
         return $health->of($mailPoetDestination->id)->lastError;
     };
 
-    $mailPoetOptin = $optins->create('MailPoet optin', 'grow_list', [
-        'template' => $design['template'],
-        OptinBinding::KEY => [$mailPoetDestination->id],
-    ]);
-    $optins->publish($mailPoetOptin->id);
-
     // ------------------------------------------------------------------
     // 1. Somebody MailPoet has never heard of.
     // ------------------------------------------------------------------
-    $newLead = $capture->record(
-        $mailPoetOptin->id,
-        new Submission('mailpoet-new@example.com', null, ['name' => 'New Person'])
-    );
+    $newLeadId = $capture($mailPoetOptin, ['email' => 'mailpoet-new@example.com', 'name' => 'New Person']);
 
-    $verify->check('a capture lands rather than going back on the queue', null, $pushed($newLead->id));
+    $verify->check('a capture lands rather than going back on the queue', null, $pushed($newLeadId));
 
     $created = $mailpoet('getSubscriber', 'mailpoet-new@example.com');
 
@@ -616,7 +804,7 @@ if ($mailPoetAvailability !== 'ready') {
 
     // **Idempotency, against a real unique index.** A retry re-runs the whole
     // of push(); MailPoet's `mailpoet_subscribers.email` is unique, so a second
-    // create collides and the push finishes by list instead (ADR 0008).
+    // create would collide and the push finishes by list instead (ADR 0008).
     // **An ordinary retry never reaches `SubscriberExists` at all**, and that
     // is worth knowing rather than assuming: `push()` matches first, so the
     // second attempt finds the subscriber the first one made and finishes by
@@ -624,7 +812,9 @@ if ($mailPoetAvailability !== 'ready') {
     // between our read and our write — which is why the code behind it is
     // pinned against MailPoet's own class above rather than left to a
     // scenario this script cannot stage.
-    $verify->check('and a retry lands too', null, $pushed($newLead->id));
+    $worker->run((new PushJob($newLeadId, $mailPoetDestination->id, 2, 'primary'))->toArgs());
+
+    $verify->check('and a retry lands too', null, $health->of($mailPoetDestination->id)->lastError);
 
     $retried = $mailpoet('getSubscriber', 'mailpoet-new@example.com');
 
@@ -661,12 +851,9 @@ if ($mailPoetAvailability !== 'ready') {
 
     $verify->check('a subscriber who unsubscribed starts unsubscribed', 'unsubscribed', $before['status'] ?? null);
 
-    $leftLead = $capture->record(
-        $mailPoetOptin->id,
-        new Submission('mailpoet-left@example.com', null, ['name' => 'Typo Name'])
-    );
+    $leftLeadId = $capture($mailPoetOptin, ['email' => 'mailpoet-left@example.com', 'name' => 'Typo Name']);
 
-    $verify->check('a capture for someone MailPoet already holds lands', null, $pushed($leftLead->id));
+    $verify->check('a capture for someone MailPoet already holds lands', null, $pushed($leftLeadId));
 
     $after = $mailpoet('getSubscriber', 'mailpoet-left@example.com');
     $memberships = [];
@@ -715,15 +902,11 @@ if ($mailPoetAvailability !== 'ready') {
 
     $destinations->delete($mailPoetDestination->id);
     $health->forget($mailPoetDestination->id);
-    $wpdb->query($wpdb->prepare(
-        "DELETE FROM `{$wpdb->prefix}wconvert_optins` WHERE id = %s",
-        $mailPoetOptin->id
-    ));
 }
 
 echo "\nNo account, no phone-home\n";
 
-// Everything above ran: a real capture, a real dispatch, a real worker, the
+// Everything above ran: a real capture, a real handoff, a real worker, the
 // lead-magnet delivery, a test send and — where MailPoet is installed — a real
 // subscriber write. If free's capture path reaches the network at all, it
 // reached it inside that.
@@ -733,18 +916,33 @@ echo "\nCleaning up\n";
 
 as_unschedule_all_actions(PushJob::HOOK, [], ActionSchedulerQueue::GROUP);
 
+foreach ($queuedJobs() as $job) {
+    as_unschedule_all_actions(PushJob::HOOK, [$job], ActionSchedulerQueue::GROUP);
+}
+
 $destinations->delete($destination->id);
 $destinations->delete($delivery->id);
 $health->forget($destination->id);
 $health->forget($delivery->id);
 delete_option(\WConvert\Destination\DeliveryFailures::OPTION);
 $wpdb->query("DELETE FROM `{$leadTable}`");
-$wpdb->query($wpdb->prepare("DELETE FROM `{$statsTable}` WHERE optin_id IN (%s, %s)", $optin->id, $magnetOptin->id));
-$wpdb->query($wpdb->prepare(
-    "DELETE FROM `{$wpdb->prefix}wconvert_optins` WHERE id IN (%s, %s)",
-    $optin->id,
-    $magnetOptin->id
-));
+
+foreach ($created as $id) {
+    $wpdb->query($wpdb->prepare("DELETE FROM `{$statsTable}` WHERE optin_id = %s", $id));
+    $wpdb->query($wpdb->prepare("DELETE FROM `{$wpdb->prefix}wconvert_optins` WHERE id = %s", $id));
+    $wpdb->query($wpdb->prepare(
+        "DELETE FROM `{$wpdb->options}` WHERE option_name LIKE %s",
+        $wpdb->esc_like('wconvert_flow_' . $id . '_') . '%'
+    ));
+}
+
+foreach (array_diff($ownOptions(), $optionsAtStart) as $name) {
+    delete_option((string) $name);
+}
+
+// The published set is derived state rebuilt on write, so it has to be told
+// that the campaigns it points at have just stopped existing (ADR 0003).
+$optins->rebuildForInstall();
 
 echo "\n";
 

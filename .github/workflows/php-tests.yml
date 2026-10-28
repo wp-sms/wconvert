@@ -193,6 +193,14 @@ jobs:
           wp eval-file "$GITHUB_WORKSPACE/bin/verify-lead-log.php" --use-include --path="$WP_PATH"
           wp eval-file "$GITHUB_WORKSPACE/bin/verify-lead-search.php" --use-include --path="$WP_PATH"
 
+          # After the three above and before anything that leaves campaigns or
+          # Leads behind: the schedule verifier refuses a site with any Optin
+          # row, and the destination verifier one with any Lead. Both delete
+          # what they create. Stats runs first because it expects a site that
+          # has never published.
+          wp eval-file "$GITHUB_WORKSPACE/bin/verify-schedule.php" --use-include --path="$WP_PATH"
+          wp eval-file "$GITHUB_WORKSPACE/bin/verify-destinations.php" --use-include --path="$WP_PATH"
+
           WCONVERT_VERIFY_BOOTSTRAP="$WP_PATH/wp-load.php" php "$GITHUB_WORKSPACE/bin/verify-capture-journeys.php"
           wp eval-file "$GITHUB_WORKSPACE/bin/verify-template-media.php" --use-include --path="$WP_PATH"
 
