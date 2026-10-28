@@ -703,19 +703,11 @@ describe('a top bar page reservation', () => {
     let changed: ResizeObserverCallback | undefined;
     const disconnect = vi.fn();
 
-    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function () {
-      return {
-        x: 0,
-        y: 0,
-        top: 0,
-        right: 0,
-        bottom,
-        left: 0,
-        width: 0,
-        height: bottom,
-        toJSON: () => ({}),
-      };
-    });
+    // Where the bar settles. Mid-entry its drawn rectangle is translated out
+    // of view and ends at 0, which is what the reservation once read (#371).
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue(new DOMRect(0, -56, 0, 56));
+    vi.spyOn(HTMLElement.prototype, 'offsetTop', 'get').mockReturnValue(0);
+    vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockImplementation(() => bottom);
     vi.stubGlobal(
       'ResizeObserver',
       class {

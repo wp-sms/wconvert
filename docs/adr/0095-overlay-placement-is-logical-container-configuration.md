@@ -43,7 +43,10 @@ box remains protected above it.
 
 The reservation follows the bar with `ResizeObserver`, including responsive
 wrapping and screen changes, and is removed idempotently on every normal close
-path. `--wconvert-top-bar-offset` exposes the same measured value for a theme's
+path. *Corrected by #371: it measures where the bar settles
+(`offsetTop + offsetHeight`), not its drawn rectangle. The first measurement
+happens mid-entry, while `@starting-style` translates the bar out of view, and
+a translate never resizes it, so the drawn rectangle reserved 0px for good.* `--wconvert-top-bar-offset` exposes the same measured value for a theme's
 fixed chrome. Pre-existing inline values are restored. If reservation cannot be
 established, the campaign remains a visible fixed overlay; placement failure
 must not become campaign disappearance.
