@@ -58,7 +58,7 @@ const Creation = lazy(() => deferred().then((module) => ({ default: module.GoalS
  */
 export function OptinBuilder(props: OptinBuilderProps) {
   return (
-    <ChunkBoundary way={<BackLink className="mb-4" onClose={props.onClose} label={props.backLabel} />}>
+    <ChunkBoundary way={<BackLink className="wconvert-builder-skeleton__back" onClose={props.onClose} label={props.backLabel} />}>
       <Suspense fallback={<BuilderSkeleton onClose={props.onClose} backLabel={props.backLabel} />}>
         <Builder {...props} />
       </Suspense>
@@ -125,12 +125,14 @@ class ChunkBoundary extends Component<{ children: ReactNode; way?: ReactNode }, 
 
   render() {
     if (!this.state.failed) return this.props.children;
-    return <>
-      {this.props.way}
-      <Region>
-        <RegionErrorState message={__('Part of WConvert didn’t load.', 'wconvert')}
-          hint={__('Reload the page. If it keeps happening, reinstall the plugin.', 'wconvert')} />
-      </Region>
-    </>;
+    const failed = <Region>
+      <RegionErrorState message={__('Part of WConvert didn’t load.', 'wconvert')}
+        hint={__('Reload the page. If it keeps happening, reinstall the plugin.', 'wconvert')} />
+    </Region>;
+    // The builder's own frame, so the way out sits where the skeleton put it.
+    return this.props.way === undefined ? failed : <div className="wconvert-builder-skeleton">
+      <div className="wconvert-builder-skeleton__header">{this.props.way}</div>
+      <div className="p-6">{failed}</div>
+    </div>;
   }
 }
