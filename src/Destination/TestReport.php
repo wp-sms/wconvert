@@ -22,8 +22,8 @@ defined('ABSPATH') || exit;
  * THREE OUTCOMES, NOT A BOOLEAN.
  * ========================================================================
  * A [[Destination]] whose type is not available here **cannot run and has not
- * failed**. Collapsing that into `ok: false` would tell a merchant with no WP
- * SMS that their WP SMS Destination is broken, when what is true is that the
+ * failed**. Collapsing that into `ok: false` would tell a merchant with no
+ * MailPoet that their MailPoet Destination is broken, when what is true is that the
  * plugin is not installed — the same distinction [[Availability]] draws
  * between `locked` and `unavailable`, and the same reason it is not one word
  * (ADR 0026). So the three states travel, and the screen renders each
@@ -118,8 +118,8 @@ final class TestReport
      * **A type with no [[Connection]] has nothing to check, and saying so is
      * the honest answer rather than a green tick.**
      *
-     * Every free type is in this state: the WSMS push, the MailPoet push and
-     * the lead-magnet email all authenticate against nothing, because there is
+     * Every free type is in this state: the MailPoet push and the lead-magnet
+     * email both authenticate against nothing, because there is
      * no key to paste. Reporting success there would teach a merchant that the
      * button means *"this works"*, which is what the other button is for.
      */

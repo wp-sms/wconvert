@@ -102,12 +102,12 @@ it('summarizes grouped deletion before exposing alternate continuations', async 
 it('lists phone-capable providers for optional SMS instead of treating sms as a provider channel', async () => {
   const { SubmissionSettings } = await import('../../resources/admin/src/builder/SubmissionSettings');
   const { default: source } = await import('../../resources/templates/library/journey-email-then-sms.json');
-  const types = [{ id: 'wsms', label: 'WP SMS', icon: 'phone', tier: 'free' as const, requires: 'wp-sms', requires_label: 'WP SMS', availability: 'unavailable' as const, needs_connection: false, settings_schema: {}, requirements: { audience_channels: ['email', 'phone'], capture_any_of: ['email', 'phone'], fields: [], mapped_fields: {}, settings: {} } }];
+  const types = [{ id: 'sms_plugin', label: 'SMS plugin', icon: 'phone', tier: 'free' as const, requires: 'sms-plugin', requires_label: 'SMS plugin', availability: 'unavailable' as const, needs_connection: false, settings_schema: {}, requirements: { audience_channels: ['email', 'phone'], capture_any_of: ['email', 'phone'], fields: [], mapped_fields: {}, settings: {} } }];
   const change = vi.fn();
   const { ready } = await import('../../resources/admin/src/shell/loadable');
   render(<SubmissionSettings template={source as unknown as Template} primaryChannel="email" config={{}} available={ready([])} types={types} onChange={change} onSaved={() => {}} onRefresh={() => {}} />);
   expect(screen.getByRole('heading', { name: 'Optional SMS signup' })).toBeVisible();
-  expect(screen.getByRole('button', { name: /WP SMS/ })).toHaveAccessibleDescription('Needs WP SMS on this site.');
+  expect(screen.getByRole('button', { name: /SMS plugin/ })).toHaveAccessibleDescription('Needs SMS plugin on this site.');
   expect(screen.queryByText('No destination providers are available on this site.')).toBeNull();
   expect(change).not.toHaveBeenCalled();
 });

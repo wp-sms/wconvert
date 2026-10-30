@@ -14,11 +14,9 @@ defined('ABSPATH') || exit;
  * The other side of {@see LeadCapture::CAPTURED}: a [[Lead]] is in the table,
  * so now the [[Destination]]s bound to its [[Optin]] get a job each.
  *
- * **Everything is queued, including the WSMS push.** #5 had that one as an
- * in-process post-write side effect and queueing it is a refinement rather
- * than a contradiction: WSMS disclaims back-compatibility and may break
- * without notice, so a fatal inside its contact repository must not be able to
- * take down the capture request. One dispatch path, uniform partial-failure
+ * **Everything is queued, including the in-process pushes.** A sibling
+ * plugin's API may break without notice, so a fatal inside it must not be able
+ * to take down the capture request. One dispatch path, uniform partial-failure
  * semantics, and the isolation #5 asked for (#4).
  *
  * **A Destination whose type is not `ready` is skipped and RECORDED, never
@@ -175,9 +173,9 @@ final class PushDispatcher
 
         return $type->push(PushSubject::test($values, $mapped, 'email_marketing', $answers), new PushContext(
             // Null unless a campaign editor named its campaign to a type that
-            // forwards it, and deliberately so. `optinName` becomes `source_ref` on the WSMS push, and a test
-            // send from the Destinations screen has no [[Optin]] — writing one
-            // would assert provenance that does not exist, which is the case
+            // forwards it, and deliberately so. A test send from the
+            // Destinations screen has no [[Optin]] — naming one would assert
+            // provenance that does not exist, which is the case
             // {@see PushContext} already documents null for (ADR 0023).
             $optin?->name,
             $destination->settings,

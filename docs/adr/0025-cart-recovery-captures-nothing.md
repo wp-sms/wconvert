@@ -103,6 +103,10 @@ The original Free bundled library did not pair cart conditions with other Goals.
 
 ## What this buys against WSMS
 
+*Superseded by [ADR 0174](0174-wsms-integration-removed-before-1-0.md): WConvert no longer integrates with WSMS, so there is no
+boundary to decide against. The analysis below records why cart recovery captures
+nothing; it does not describe a live integration.*
+
 WSMS premium ships a complete cart-recovery product —
 `premium/modules/woo-commerce/src/AbandonedCart/` — with a consent guard, signed
 recovery tokens, a sequence compiler and per-currency recovered-revenue reporting.
@@ -210,7 +214,7 @@ the wheel for needing a code PER VISITOR.*
 *Asserted rather than argued as of [#36](https://github.com/navidkashani/wconvert/issues/36):
 `tests/unit/Pro/WooCommerce/NoWriteIntoWooCommerceTest.php` reads both plugin trees
 and rejects coupon creation and cart mutation. **Amended by [ADR 0119](0119-actionable-reports-use-local-evidence-and-order-provenance.md):** optional consented analytics may store a pending campaign reference in the WooCommerce session and provenance on the order. It may not alter cart contents, prices, payment, coupons or order status. *Amended by [ADR 0152](0152-a-coupon-link-applies-a-code-a-published-campaign-shows.md): except the coupon link, which applies an existing code a published campaign shows.* The older scan covers the original trees; runtime attribution checks cover the analytics module. This is the same posture, and the same tokenised scan, that ADR 0024's own test
-takes over `wsms_engagements`. The failure either exists to catch is a line
+took over `wsms_engagements` *(deleted by [ADR 0174](0174-wsms-integration-removed-before-1-0.md))*. The failure either exists to catch is a line
 somebody ADDS, which no assertion about output can see.*
 
 ## Consequences

@@ -54,7 +54,7 @@ final class OptinBindingTest extends TestCase
     {
         self::assertSame([], OptinBinding::ids(null));
         self::assertSame([], OptinBinding::ids([]));
-        self::assertSame([], OptinBinding::ids(['destinations' => 'wsms']));
+        self::assertSame([], OptinBinding::ids(['destinations' => 'mailpoet']));
         self::assertFalse(OptinBinding::binds(null, Ulid::generate()));
     }
 

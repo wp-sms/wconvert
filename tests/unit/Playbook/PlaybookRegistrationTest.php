@@ -269,7 +269,7 @@ final class PlaybookRegistrationTest extends TestCase
     public function testAPlaybookNamingADestinationIdIsRejected(): void
     {
         $this->assertRejected(
-            self::entry(['destination_hint' => ['types' => ['wsms'], 'id' => '01JQ00000000000000000000AA']]),
+            self::entry(['destination_hint' => ['types' => ['mailpoet'], 'id' => '01JQ00000000000000000000AA']]),
             RejectionReason::SiteLocalReference
         );
     }

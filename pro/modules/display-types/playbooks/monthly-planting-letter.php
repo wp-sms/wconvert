@@ -34,5 +34,5 @@ the monthly planting notes.', 'wconvert-pro'),
     'rules' => [
         ['type' => 'scroll_depth', 'percent' => 50],
     ],
-    'destination_hint' => ['types' => ['wsms', 'email_service_provider'], 'fields' => ['email']],
+    'destination_hint' => ['types' => ['email_service_provider'], 'fields' => ['email']],
 ];

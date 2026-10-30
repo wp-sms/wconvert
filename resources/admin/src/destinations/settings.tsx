@@ -40,8 +40,8 @@ import type { Connection, Destination, DestinationType, SettingsField } from './
  * **Every value here is a string except `ids`.** The whole draft is held as
  * text while it is being edited, and {@see fromDraft} is the one place that
  * turns it back into what the server stores. `ids` is the exception because
- * WSMS's `tags` is a list — the shape that shipped, and it round-trips
- * unchanged.
+ * a target selection is a list — MailPoet's lists, Mailchimp's audience — and
+ * it round-trips unchanged.
  *
  * A `select` names one provider field; its stable id stays independent of its label.
  */
@@ -72,10 +72,8 @@ export function SettingsControl({
      * `string[]` either way, so {@see toDraft} and {@see fromDraft} stay one
      * code path and the draft stays the comma-separated string they round-trip.
      *
-     * WSMS's `tags` has always been the second of those: the ids are the
-     * merchant's own and the admin has no list to offer. MailPoet's are
-     * integers nobody could be asked to find, so its schema carries the names
-     * and this draws them (#87). A provider that could not be reached sends no
+     * MailPoet's ids are integers nobody could be asked to find, so its schema
+     * carries the names and this draws them (#87). A provider that could not be reached sends no
      * options and lands back on the text input, which is a degraded control
      * rather than an invisible one.
      *
@@ -209,7 +207,7 @@ function ChoiceList({
  * One place rather than two `=== 'ids'` checks that have to stay in step:
  * {@see toDraft} and {@see fromDraft} are the two halves of one round trip, and
  * a kind added to one but not the other would read back as a different shape
- * than it was saved as. WSMS's `tags` is the only member today.
+ * than it was saved as. `ids` is the only member today.
  *
  * **It is also the kind that SELECTS a target**, which is the same list PHP's
  * `ConfiguredTarget::SELECTS` names — a Destination points at a set of things,

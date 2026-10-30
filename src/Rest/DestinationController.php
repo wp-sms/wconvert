@@ -194,7 +194,7 @@ final class DestinationController implements RestController
                     'connection_schema' => $type->connectionSchema(),
                     'requirements' => $type->requirements()->toArray(),
                     // What a merchant is missing, in words. The enum's value
-                    // is a slug — interpolating `wsms` into "Needs %s on this
+                    // is a slug — interpolating `mailpoet` into "Needs %s on this
                     // site" produces copy no merchant can act on, and a
                     // translator cannot fix it from their end either.
                     'requires_label' => $type->requires()?->label(),
@@ -644,7 +644,7 @@ final class DestinationController implements RestController
 
         if ($type === null || !$this->registry->isDispatchable($destination->type)) {
             // The same sentence a test send gets for the same situation, and
-            // the same object producing it, so a merchant with no WP SMS reads
+            // the same object producing it, so a merchant with no MailPoet reads
             // one answer from both buttons rather than two.
             return $this->reported(TestReport::unavailable());
         }
@@ -660,7 +660,7 @@ final class DestinationController implements RestController
         } catch (\Throwable $refused) {
             // Keep the provider's actionable wording. `reported()` removes
             // configured secrets before React renders the answer.
-            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rendered through React, which escapes; see WpWsmsContacts::call().
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rendered through React, which escapes; see WpMailPoetSubscribers::add().
             return $this->reported(TestReport::failed($refused->getMessage()), [], $credentials);
         }
 
@@ -696,7 +696,7 @@ final class DestinationController implements RestController
 
         // **Asked before the address**, because a type this install cannot run
         // has nothing to send wherever the address came from — and telling a
-        // merchant with no WP SMS to check their WordPress profile would send
+        // merchant with no MailPoet to check their WordPress profile would send
         // them to fix the wrong thing.
         if (!$this->registry->isDispatchable($destination->type)) {
             return $this->reported(TestReport::unavailable());

@@ -34,7 +34,8 @@ already has a ready service of the Goal's channel; otherwise creation writes
 in WConvert for now" beside the remaining blocker. Publication requires a selected,
 available audience Destination with completed required settings and a matching
 `audience_channels` capability. MailPoet supports email; WSMS supports email and
-phone. Transactional lead-magnet email does not qualify as an audience service.
+phone *(Amended by [ADR 0174](0174-wsms-integration-removed-before-1-0.md): WSMS is no longer a Destination; on free an SMS campaign
+keeps its Leads in WConvert, and Pro's webhook can send them on)*. Transactional lead-magnet email does not qualify as an audience service.
 
 **Collect only in WConvert** (*renamed **Keep in WConvert only** by [ADR 0131](0131-one-way-to-show-each-thing-in-the-admin.md)*) is explicit `config.capture_mode = local`. Selecting
 it removes draft Destination ids in one undoable edit and explains manual export,

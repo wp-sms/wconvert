@@ -27,8 +27,7 @@ defined('ABSPATH') || exit;
  * push performs none of them: matching a subscriber means meeting a system
  * that already holds an opinion about that person, and the owner's opinion
  * wins — including the opinion that they left. A method absent from this
- * interface is a thing the adapter cannot do by accident, which is exactly
- * what {@see \WConvert\Destination\Wsms\WsmsContacts} says one file over.
+ * interface is a thing the adapter cannot do by accident.
  *
  * **{@see self::join()} is the one that is easy to get wrong**, and
  * {@see WpMailPoetSubscribers} is where the argument lives: MailPoet's own

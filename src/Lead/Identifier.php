@@ -19,8 +19,8 @@ defined('ABSPATH') || exit;
  * class is where that is decided. Both methods return null rather than a
  * best-effort value, because the caller is handling a request the visitor is
  * still in and null is the only answer they can act on while they are there to
- * fix it. Refusing later — inside a queued push, where WSMS's `assertE164()`
- * throws — is a capture that looked successful to everyone involved.
+ * fix it. Refusing later — inside a queued push, where the provider rejects
+ * it — is a capture that looked successful to everyone involved.
  *
  * The rule is TOTAL. It rests on every identifier arriving from a visitor who
  * is still on the page, which holds because a Lead has exactly one origin: no
@@ -47,9 +47,8 @@ final class Identifier
      *
      * Lowercased WHOLE, local part included. RFC 5321 makes the local part
      * case-sensitive in theory; in practice no mail host WConvert will meet
-     * treats it that way, and WSMS's `ContactRepository::create()` lowercases
-     * the whole address on the way in — so a row canonicalised any other way
-     * cannot find the Contact it created itself on the next submission.
+     * treats it that way — so a row canonicalised any other way would split
+     * one person into two identities on their next submission.
      *
      * Storing both raw and canonical was rejected in ADR 0021: nothing needs
      * to know how the visitor capitalised their address.

@@ -83,7 +83,8 @@ publication proves delivery. The destination tab also identifies missing account
 providers now declare identifier alternatives, required settings and fields they
 use. Review distinguishes a missing required-by-route field from an optional
 one, and shares the provider's setting presence rules. WSMS accepts email or
-phone and its tags remain optional; MailPoet needs email and a list; lead-magnet
+phone and its tags remain optional *(Amended by [ADR 0174](0174-wsms-integration-removed-before-1-0.md): WSMS is no longer a
+Destination)*; MailPoet needs email and a list; lead-magnet
 email needs email and a file URL. These are advisory compatibility checks, not
 evidence of delivery. Shared-settings setup also names saved draft and live
 Optins affected by its independently saved changes.

@@ -41,7 +41,7 @@ return [
         ['type' => 'time_on_page', 'seconds' => 12],
     ],
     'destination_hint' => [
-        'types' => ['wsms'],
+        'types' => [],
         'fields' => ['phone'],
     ],
 ];

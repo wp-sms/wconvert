@@ -1,0 +1,75 @@
+{
+  "id": "early-access-launch",
+  "revision": "a956cdffac905cd67eb6f842d66a32f5a676972320ef1fd631bb22a8a177b77c",
+  "base_id": "ceedbe7f122d7558173f903021fdc7b735049c380ff612a2de9a7ec401a51a35",
+  "decision": "approved",
+  "reviewer": "Content carry (ADR 0174)",
+  "note": "Only destination_hint.types changed ('wsms' removed with the WSMS integration). Restoring it reproduces the approved revision under the same rendered identity, so visitors and the editor get the same screens. Not a new review.",
+  "at": "2026-10-30T08:05:40Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/early-access-launch-320.png",
+          "sha256": "afd40bdbe08cf505deec4c44eb09c8c6626034b4182ac4a48134a97d682746bc"
+        },
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/early-access-launch-1440.png",
+          "sha256": "d5cd094f5fa3afc0514d245ca7f17c30b2c909b46b9537c85e6548d0103a5cb9"
+        },
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/review.md",
+          "sha256": "e7c08ae50a19a4e33968879273468ff16ee71a16b3945ae3cffbfa1bbcb1135b"
+        },
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/designs/results.json",
+          "sha256": "c56e8792fa0161e92bb86016923dfeff54e672e577b24e98ee52560d4e84576d"
+        },
+        {
+          "path": "docs/reviews/artwork-files-2026-10-25/review.md",
+          "sha256": "0e54364a8329f533e5cd2b242eaaea66efa597708b966208ca8fbbf4c0e84fd8"
+        },
+        {
+          "path": "docs/reviews/artwork-files-2026-10-25/metrics.json",
+          "sha256": "e904c4ea78c22461814a39d6aed271846adca8012074b2587b150456078c3809"
+        },
+        {
+          "path": "docs/reviews/wsms-hint-carry-2026-10-30/carry.json",
+          "sha256": "ba50106b0dac1720a3628a306987781fd7e61bdc737e0ac05f679444becdc23a"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/results.json",
+          "sha256": "b6bd565e28976921f8f73e46ecab6e7f021bda9c004fc0d7fea33edf35743771"
+        },
+        {
+          "path": "docs/reviews/wsms-hint-carry-2026-10-30/carry.json",
+          "sha256": "ba50106b0dac1720a3628a306987781fd7e61bdc737e0ac05f679444becdc23a"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/results.json",
+          "sha256": "b6bd565e28976921f8f73e46ecab6e7f021bda9c004fc0d7fea33edf35743771"
+        },
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/designs/results.json",
+          "sha256": "c56e8792fa0161e92bb86016923dfeff54e672e577b24e98ee52560d4e84576d"
+        },
+        {
+          "path": "docs/reviews/wsms-hint-carry-2026-10-30/carry.json",
+          "sha256": "ba50106b0dac1720a3628a306987781fd7e61bdc737e0ac05f679444becdc23a"
+        }
+      ]
+    }
+  },
+  "record_id": "74750cb25c59fb943c004e989405e882262df8efa2dc5b5096d4dc64980d9ca9"
+}

@@ -200,8 +200,7 @@ final class LeadMagnetDeliveryTest extends TestCase
      * `DestinationController::store()` validates nothing in `settings`, so a
      * non-string where a string belongs is a shape that can reach here — and
      * reading it as one would be a `TypeError` inside a queued job rather than
-     * a failure anyone can see. The same posture
-     * `WsmsDestinationType::applyTags()` takes over the same bag.
+     * a failure anyone can see.
      */
     public function testASettingStoredAsTheWrongShapeReadsAsAbsent(): void
     {

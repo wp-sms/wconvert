@@ -155,8 +155,8 @@ final class CaptureForm
             $canonical = $name === 'email' ? Identifier::email($raw) : Identifier::phone($raw);
 
             // Refused synchronously, against the input that caused it. The
-            // alternative is a row WSMS's `assertE164()` throws on inside a
-            // queued job minutes later, with nothing on screen having failed
+            // alternative is a row a provider rejects inside a queued job
+            // minutes later, with nothing on screen having failed
             // (ADR 0021).
             if ($canonical === null) {
                 return new Refusal(RefusalCode::NotCanonical, $name);
@@ -165,9 +165,8 @@ final class CaptureForm
             $identifiers[$name] = $canonical;
         }
 
-        // WSMS's `ContactRepository::create()` hard-requires one of the two,
-        // and a Lead carrying neither can never be grouped by identifier,
-        // which is the only identity this system has (ADR 0002, ADR 0021).
+        // A Lead carrying neither can never be grouped by identifier, which
+        // is the only identity this system has (ADR 0002, ADR 0021).
         if ($identifiers['email'] === null && $identifiers['phone'] === null) {
             return new Refusal(RefusalCode::NoIdentifier);
         }

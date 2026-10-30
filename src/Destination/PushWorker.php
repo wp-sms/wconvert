@@ -163,7 +163,7 @@ final class PushWorker
      * `$optinId` and `$destinationType` travel here rather than being looked
      * up again, because the only thing that reads them is
      * {@see DeliveryCount::landed()} — and it needs BOTH: a lead-magnet Optin
-     * may be bound to the WSMS push as well, and counting that success as a
+     * may be bound to the MailPoet push as well, and counting that success as a
      * delivery would report two deliveries per Conversion (#31).
      *
      * @param array<string, string> $personal

@@ -18,6 +18,10 @@ would be a different conversation with the wp.org review team.
 Free therefore registers exactly three types, and each is free for one reason
 repeated:
 
+*Amended by [ADR 0174](0174-wsms-integration-removed-before-1-0.md): the WSMS push was removed before 1.0, so free registers the
+last two rows only. The criterion and the rest of this ADR stand; mentions of
+WSMS below compare against code that is now in git history only.*
+
 | Type | Why it costs nothing free has promised not to spend |
 |---|---|
 | The WSMS push | WP SMS is a sibling plugin in this process |

@@ -19,10 +19,9 @@
  * so the declaration is empty; three exceptions earn a body, and each of them
  * is a call WConvert really makes:
  *
- * - WSMS's container accessor, which the WSMS [[Destination]] reaches and
- *   which `WpWsmsContacts` resolves by name for exactly the reason this file
- *   exists.
- * - MailPoet's two static entry points, for the same reason one file over.
+ * - MailPoet's two static entry points, which the MailPoet [[Destination]]
+ *   reaches and `WpMailPoetSubscribers` resolves by name for exactly the
+ *   reason this file exists.
  *   Both return `mixed`, deliberately: everything past them is reached
  *   through `WpMailPoetSubscribers::call()` on a variable method name, which
  *   is the honest position when the classes that would be checked are not on
@@ -185,29 +184,6 @@ namespace {
             bool $secure = false,
             bool $httponly = false
         ): void {
-        }
-    }
-}
-
-namespace WSms {
-    if (!class_exists('WSms\\Bootstrap')) {
-        class Bootstrap
-        {
-            /**
-             * @return mixed
-             */
-            public static function get(string $id)
-            {
-                return null;
-            }
-        }
-    }
-}
-
-namespace WSms\Exception {
-    if (!class_exists('WSms\\Exception\\ConflictException')) {
-        class ConflictException extends \RuntimeException
-        {
         }
     }
 }

@@ -112,8 +112,8 @@ final class ConfiguredTargetTest extends TestCase
     }
 
     /**
-     * **WSMS's tags, which the provider cannot enumerate**, because they are
-     * the merchant's own strings and the admin has no list to offer. The
+     * **Free-text tags, which the provider cannot enumerate**, because they
+     * are the merchant's own strings and the admin has no list to offer. The
      * stored ids ARE the words the merchant typed, so they stand as the
      * answer rather than being dropped for want of a label.
      */

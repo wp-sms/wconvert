@@ -34,5 +34,5 @@ before it reaches the shop', 'wconvert-pro'),
     'rules' => [
         ['type' => 'scroll_depth', 'percent' => 40],
     ],
-    'destination_hint' => ['types' => ['wsms', 'email_service_provider'], 'fields' => ['email']],
+    'destination_hint' => ['types' => ['email_service_provider'], 'fields' => ['email']],
 ];

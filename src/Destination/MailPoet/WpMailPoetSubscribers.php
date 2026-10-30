@@ -18,10 +18,9 @@ defined('ABSPATH') || exit;
  * `DestinationController::index()` calls {@see self::lists()} for every
  * registered type whatever its Availability.
  *
- * It is the same shape {@see \WConvert\Destination\Wsms\WpWsmsContacts} takes
- * over WSMS, down to {@see self::call()}: a method invoked through a variable
- * is a method PHPStan cannot check, which is the honest position when the
- * class it would check against is not on this machine.
+ * {@see self::call()} is how it reaches MailPoet: a method invoked through a
+ * variable is a method PHPStan cannot check, which is the honest position
+ * when the class it would check against is not on this machine.
  *
  * ========================================================================
  * WHY THIS DOES NOT CALL MailPoet's OWN `subscribeToLists()`.
@@ -35,7 +34,7 @@ defined('ABSPATH') || exit;
  * so adding a list to somebody who unsubscribed moves them back out of
  * `unsubscribed` on the way past. That is the silent cross-plugin
  * resurrection ADR 0022 exists to refuse, and MailPoet gates on status at
- * SEND time exactly as WSMS does — so declining to write one costs nothing,
+ * SEND time — so declining to write one costs nothing,
  * and asserting one revives a person who left.
  *
  * The status-preserving write is `SubscriberSegmentRepository`, a
@@ -64,8 +63,7 @@ defined('ABSPATH') || exit;
  * {@see \WConvert\Tests\Unit\Contract\TheFreeCapturePathStaysInProcessTest}.
  *
  * Named `WpMailPoetSubscribers` on the repo's own convention —
- * `WpWsmsContacts implements WsmsContacts`, `WpSitePresence implements
- * SitePresence`.
+ * `WpMailer implements Mailer`, `WpSitePresence implements SitePresence`.
  *
  * @since 0.1.0
  */
@@ -90,8 +88,7 @@ final class WpMailPoetSubscribers implements MailPoetSubscribers
      * `getLists()` offers `default` segments alone, so anything else reaching
      * {@see self::join()} is a stored id that has since become a dynamic
      * segment or the WordPress-users list — a query, or somebody else's
-     * membership rule, and neither has a row to insert. It is the same reading
-     * ADR 0023 takes of `wsms_lists`.
+     * membership rule, and neither has a row to insert.
      */
     private const LIST_SEGMENT = 'default';
 
@@ -203,13 +200,18 @@ final class WpMailPoetSubscribers implements MailPoetSubscribers
             $code = $failure->getCode();
 
             if ($code === self::CODE_SUBSCRIBER_EXISTS) {
-                // NOT escaped, and for the reason `WpWsmsContacts::call()`
-                // spells out one directory over: every path through this class
-                // runs inside {@see MailPoetDestinationType::push()}'s
-                // `catch (\Throwable)`, so this cannot reach a page — what the
-                // message becomes is `PushResult::reason`, which is stored and
-                // rendered through React as operator text. `esc_html()` here
-                // would be corruption rather than safety.
+                // NOT escaped. Every path through this class runs inside
+                // {@see MailPoetDestinationType::push()}'s `catch (\Throwable)`,
+                // so this cannot reach a page — what the message becomes is
+                // `PushResult::reason`, which is stored and rendered through
+                // React as operator text.
+                //
+                // esc_html() here is corruption rather than safety three ways
+                // over: an apostrophe in MailPoet's message is stored as
+                // `&#039;`, `DeliveryFailures::record()` truncates with
+                // mb_substr() and can cut an entity in half, and the admin
+                // renders the string through React, which escapes it again on
+                // the way to the DOM.
                 // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- caught by push() and stored as operator text; see above.
                 throw new SubscriberExists($failure->getMessage(), 0, $failure);
             }

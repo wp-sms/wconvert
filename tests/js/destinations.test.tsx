@@ -46,22 +46,24 @@ vi.mock('../../resources/admin/src/optins/api', async (original) => ({ ...(await
 
 const { Destinations } = await import('../../resources/admin/src/destinations/Destinations');
 
-const WSMS_READY = {
-  id: 'wsms',
-  label: 'WP SMS contacts',
-  icon: 'users',
+// MailPoet as it answers when its lists could not be read: the same `ids`
+// field, with no options, so the screen falls back to the text input.
+const MAILPOET_UNLISTED = {
+  id: 'mailpoet',
+  label: 'MailPoet subscribers',
+  icon: 'mail-plus',
   tier: 'free' as const,
-  requires: 'wsms',
-  requires_label: 'WP SMS',
+  requires: 'mailpoet',
+  requires_label: 'MailPoet',
   availability: 'ready' as const,
   needs_connection: false,
   settings_schema: {
-    tags: { type: 'ids', label: 'Tags to add', description: 'Added, never removed.' },
+    lists: { type: 'ids', label: 'Lists to add to', description: 'Added, never removed.' },
   },
 };
 
 const MAILCHIMP_LOCKED = {
-  ...WSMS_READY,
+  ...MAILPOET_UNLISTED,
   id: 'mailchimp',
   label: 'Mailchimp',
   tier: 'pro' as const,
@@ -110,13 +112,13 @@ const LEAD_MAGNET = {
 
 const HEALTHY = {
   id: '01J0000000AAAAAAAAAAAAAAAA',
-  type: 'wsms',
-  label: 'WP SMS contacts',
+  type: 'mailpoet',
+  label: 'MailPoet subscribers',
   connection: null,
-  settings: { tags: ['tag-7'] },
-  // Resolved on the server, per Destination. WSMS's tags are the merchant's
-  // own strings, so they come back as themselves.
-  target: 'tag-7',
+  settings: { lists: ['7'] },
+  // Resolved on the server, per Destination. Lists it could not name come
+  // back as the stored ids.
+  target: '7',
   availability: 'ready' as const,
   health: {
     last_success_at: '2026-08-25 10:00:00',
@@ -189,7 +191,7 @@ const choose = async (route: string, item: string | RegExp, scope: HTMLElement =
 };
 
 const TWO_DESTINATIONS = {
-  types: [WSMS_READY, LEAD_MAGNET],
+  types: [MAILPOET_UNLISTED, LEAD_MAGNET],
   destinations: [HEALTHY, LEAD_MAGNET_BOUND],
   connections: [],
   failures: [],
@@ -200,7 +202,7 @@ describe('the destinations screen', () => {
     vi.clearAllMocks();
 
     api.readDestinations.mockResolvedValue({
-      types: [WSMS_READY],
+      types: [MAILPOET_UNLISTED],
       destinations: [HEALTHY],
       connections: [],
       failures: [],
@@ -217,7 +219,7 @@ describe('the destinations screen', () => {
 
   it('reports consecutive failures as an outage, with the error', async () => {
     api.readDestinations.mockResolvedValue({
-      types: [WSMS_READY],
+      types: [MAILPOET_UNLISTED],
       destinations: [
         {
           ...HEALTHY,
@@ -247,7 +249,7 @@ describe('the destinations screen', () => {
    */
   it('lists terminal failures separately from health', async () => {
     api.readDestinations.mockResolvedValue({
-      types: [WSMS_READY],
+      types: [MAILPOET_UNLISTED],
       destinations: [HEALTHY],
       connections: [],
       failures: [
@@ -265,7 +267,7 @@ describe('the destinations screen', () => {
     expect(await screen.findByText('That address does not exist.')).toBeInTheDocument();
     // Health is still clean, and says so, beside a Lead that will never land.
     expect(screen.getByText(/Last sent/)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'WP SMS contacts' })).toHaveAttribute('href', destinationHref(HEALTHY.id));
+    expect(screen.getByRole('link', { name: 'MailPoet subscribers' })).toHaveAttribute('href', destinationHref(HEALTHY.id));
     // A verdict first, and a count on the route that rejected it.
     expect(screen.getByText(/1 submission not sent since/)).toBeInTheDocument();
     expect(screen.getByText(/1 not sent/)).toBeInTheDocument();
@@ -286,7 +288,7 @@ describe('the destinations screen', () => {
     window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
     onTestFinished(() => { delete window.wconvertAdmin; });
     api.readDestinations.mockResolvedValue({
-      types: [{ ...WSMS_READY, availability: 'unavailable' as const }, MAILCHIMP_LOCKED],
+      types: [{ ...MAILPOET_UNLISTED, availability: 'unavailable' as const }, MAILCHIMP_LOCKED],
       destinations: [],
       connections: [],
       failures: [],
@@ -294,14 +296,14 @@ describe('the destinations screen', () => {
 
     render(<Destinations />);
 
-    // The LABEL, never the slug: "Needs wsms on this site" is copy no
+    // The LABEL, never the slug: "Needs mailpoet on this site" is copy no
     // merchant can act on and no translator can repair from their end.
     await waitFor(() => expect(screen.getByRole('button', { name: 'Add a destination' })).toBeEnabled());
     await userEvent.click(screen.getByRole('button', { name: 'Add a destination' }));
-    expect(await screen.findByText('Needs WP SMS on this site.')).toBeInTheDocument();
+    expect(await screen.findByText('Needs MailPoet on this site.')).toBeInTheDocument();
 
     // And the two absent states stay apart. Collapsing them is what shows a
-    // paying customer an advertisement for Pro, and offers a merchant a WP SMS
+    // paying customer an advertisement for Pro, and offers a merchant a MailPoet
     // licence we do not sell (ADR 0026).
     //
     // The product is named by the tier manifest rather than by a literal —
@@ -316,7 +318,7 @@ describe('the destinations screen', () => {
   /** A free install lists only what it can set up, and explains the rest (ADR 0116). */
   it('lists no type a free install would have to buy', async () => {
     api.readDestinations.mockResolvedValue({
-      types: [{ ...WSMS_READY, availability: 'unavailable' as const }, MAILCHIMP_LOCKED],
+      types: [{ ...MAILPOET_UNLISTED, availability: 'unavailable' as const }, MAILCHIMP_LOCKED],
       destinations: [],
       connections: [],
       failures: [],
@@ -326,7 +328,7 @@ describe('the destinations screen', () => {
 
     await waitFor(() => expect(screen.getByRole('button', { name: 'Add a destination' })).toBeEnabled());
     await userEvent.click(screen.getByRole('button', { name: 'Add a destination' }));
-    expect(await screen.findByText('Needs WP SMS on this site.')).toBeInTheDocument();
+    expect(await screen.findByText('Needs MailPoet on this site.')).toBeInTheDocument();
     expect(screen.queryByText('Mailchimp')).not.toBeInTheDocument();
     expect(screen.queryByText(/Included with/)).not.toBeInTheDocument();
   });
@@ -373,12 +375,12 @@ describe('the destinations screen', () => {
 
   /**
    * The "recorded" half of "skipped and recorded, never enqueued". Without it
-   * a deactivated WP SMS drops every push with nothing anywhere saying so —
+   * a deactivated MailPoet drops every push with nothing anywhere saying so —
    * the Optin keeps converting and the Leads keep landing (#4).
    */
   it('reports captures that were never sent, separately from outages', async () => {
     api.readDestinations.mockResolvedValue({
-      types: [{ ...WSMS_READY, availability: 'unavailable' as const }],
+      types: [{ ...MAILPOET_UNLISTED, availability: 'unavailable' as const }],
       destinations: [
         {
           ...HEALTHY,
@@ -405,16 +407,16 @@ describe('the destinations screen', () => {
    */
   it('labels a setting from the schema its type declares', async () => {
     api.readDestinations.mockResolvedValue({
-      types: [{ ...WSMS_READY, settings_schema: { tags: { type: 'ids', label: 'Which tags', description: 'Added, never removed.' } } }],
+      types: [{ ...MAILPOET_UNLISTED, settings_schema: { lists: { type: 'ids', label: 'Which lists', description: 'Added, never removed.' } } }],
       destinations: [HEALTHY],
       connections: [],
       failures: [],
     });
 
     render(<Destinations />);
-    await edit('WP SMS contacts');
+    await edit('MailPoet subscribers');
 
-    expect(await screen.findByText(/Which tags/)).toBeInTheDocument();
+    expect(await screen.findByText(/Which lists/)).toBeInTheDocument();
     expect(screen.getByText(/Added, never removed\./)).toBeInTheDocument();
   });
 
@@ -487,30 +489,6 @@ describe('the destinations screen', () => {
             body: 'Here you go: {link}',
           },
         })
-      );
-    });
-  });
-
-  /**
-   * **WSMS's round-trip survives byte for byte**, which is the one thing the
-   * generalisation could break: `tags` is a LIST, and the comma-separated text
-   * input that has always edited it must still split back into one.
-   */
-  it('still round-trips the WSMS tag list as a list of ids', async () => {
-    render(<Destinations />);
-    await edit('WP SMS contacts');
-
-    const input = await screen.findByLabelText(/Tags to add/);
-
-    expect(input).toHaveValue('tag-7');
-
-    await userEvent.clear(input);
-    await userEvent.type(input, 'tag-7, tag-9 ,');
-    await userEvent.click(screen.getByRole('button', { name: 'Save destination' }));
-
-    await waitFor(() => {
-      expect(api.saveDestination).toHaveBeenCalledWith(
-        expect.objectContaining({ settings: { tags: ['tag-7', 'tag-9'] } })
       );
     });
   });
@@ -688,7 +666,7 @@ describe('the destinations screen', () => {
     api.readDestinations.mockResolvedValue({
       types: [
         {
-          ...WSMS_READY,
+          ...MAILPOET_UNLISTED,
           settings_schema: { whatever: { type: 'a_kind_from_pro', label: 'Something new' } },
         },
       ],
@@ -698,7 +676,7 @@ describe('the destinations screen', () => {
     });
 
     render(<Destinations />);
-    await edit('WP SMS contacts');
+    await edit('MailPoet subscribers');
 
     expect(await screen.findByLabelText(/Something new/)).toHaveAttribute('type', 'text');
   });
@@ -710,21 +688,21 @@ describe('the destinations screen', () => {
    */
   it('leaves a stored setting it cannot draw untouched on save', async () => {
     api.readDestinations.mockResolvedValue({
-      types: [WSMS_READY],
-      destinations: [{ ...HEALTHY, settings: { tags: ['tag-7'], from_an_older_version: 'keep me' } }],
+      types: [MAILPOET_UNLISTED],
+      destinations: [{ ...HEALTHY, settings: { lists: ['7'], from_an_older_version: 'keep me' } }],
       connections: [],
       failures: [],
     });
 
     render(<Destinations />);
-    await edit('WP SMS contacts');
+    await edit('MailPoet subscribers');
 
     await userEvent.click(await screen.findByRole('button', { name: 'Save destination' }));
 
     await waitFor(() => {
       expect(api.saveDestination).toHaveBeenCalledWith(
         expect.objectContaining({
-          settings: { tags: ['tag-7'], from_an_older_version: 'keep me' },
+          settings: { lists: ['7'], from_an_older_version: 'keep me' },
         })
       );
     });
@@ -739,7 +717,7 @@ describe('the destinations screen', () => {
 
     render(<Destinations />);
 
-    await choose('WP SMS contacts', 'Send stored submissions again');
+    await choose('MailPoet subscribers', 'Send stored submissions again');
     await userEvent.click(screen.getByRole('button', { name: 'Send again' }));
 
     await waitFor(() => {
@@ -752,7 +730,7 @@ describe('the destinations screen', () => {
 
   /**
    * **Busy is per row.** One screen-wide boolean was handed to every region
-   * and to the types list, so a merchant saving the tags on one integration
+   * and to the types list, so a merchant saving the lists on one integration
    * watched Save, Send again, Remove and every Add button on the screen go dead
    * for the length of that one request — with nothing saying why, because the
    * request was four regions away (#78, ADR 0039).
@@ -764,9 +742,9 @@ describe('the destinations screen', () => {
 
     render(<Destinations />);
 
-    const wsms = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
+    const subscribers = regionFor(await screen.findByRole('heading', { name: 'MailPoet subscribers' }));
     const magnet = regionFor(screen.getByRole('heading', { name: 'Lead magnet email' }));
-    const dialog = within(await edit('WP SMS contacts'));
+    const dialog = within(await edit('MailPoet subscribers'));
 
     await userEvent.click(dialog.getByRole('button', { name: 'Save destination' }));
 
@@ -775,10 +753,10 @@ describe('the destinations screen', () => {
     });
     // Escape cannot drop a save in flight.
     await userEvent.keyboard('{Escape}');
-    expect(screen.getByRole('dialog', { name: 'WP SMS contacts' })).toBeInTheDocument();
+    expect(screen.getByRole('dialog', { name: 'MailPoet subscribers' })).toBeInTheDocument();
     // The modal hides the page from the accessibility tree, hence `hidden`.
-    expect(within(wsms).getByRole('button', { name: 'Actions for WP SMS contacts', hidden: true })).toBeDisabled();
-    expect(within(wsms).getByRole('button', { name: 'Edit', hidden: true })).toBeDisabled();
+    expect(within(subscribers).getByRole('button', { name: 'Actions for MailPoet subscribers', hidden: true })).toBeDisabled();
+    expect(within(subscribers).getByRole('button', { name: 'Edit', hidden: true })).toBeDisabled();
 
     // The other Destination is untouched — its Edit and its ⋯ still work.
     expect(within(magnet).getByRole('button', { name: 'Edit', hidden: true })).toBeEnabled();
@@ -797,19 +775,19 @@ describe('the destinations screen', () => {
     api.saveDestination.mockImplementation(() => new Promise<void>((resolve) => { finish = resolve; }));
     const editing = vi.fn();
     render(<Destinations onEditingStateChange={editing} />);
-    const dialog = within(await edit('WP SMS contacts'));
+    const dialog = within(await edit('MailPoet subscribers'));
     await userEvent.type(dialog.getByRole('textbox', { name: 'Name' }), ' edited');
     await waitFor(() => expect(editing).toHaveBeenLastCalledWith(expect.objectContaining({ dirty: true })));
     await userEvent.click(dialog.getByRole('button', { name: 'Save destination' }));
     await waitFor(() => expect(editing).toHaveBeenLastCalledWith(expect.objectContaining({ busy: true })));
     await act(async () => finish());
     expect(await dialog.findByText('Saved just now')).toBeVisible();
-    expect(api.saveDestination).toHaveBeenCalledWith(expect.objectContaining({ id: HEALTHY.id, label: 'WP SMS contacts edited' }));
+    expect(api.saveDestination).toHaveBeenCalledWith(expect.objectContaining({ id: HEALTHY.id, label: 'MailPoet subscribers edited' }));
     expect(dialog.getByRole('button', { name: 'Done' })).toBeVisible();
     await waitFor(() => expect(editing).toHaveBeenLastCalledWith(expect.objectContaining({ busy: false, dirty: false })));
 
     // Nothing unsaved, so Escape just closes — no "Discard changes?".
-    await userEvent.type(dialog.getByRole('textbox', { name: 'Tags to add' }), ', more');
+    await userEvent.type(dialog.getByRole('textbox', { name: 'Lists to add to' }), ', more');
     expect(dialog.queryByText('Saved just now')).toBeNull();
     await userEvent.keyboard('{Escape}');
     expect(dialog.getByText('Discard changes?')).toBeVisible();
@@ -856,12 +834,12 @@ describe('the destinations screen', () => {
 
     render(<Destinations />);
 
-    const wsms = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
+    const subscribers = regionFor(await screen.findByRole('heading', { name: 'MailPoet subscribers' }));
 
-    await choose('WP SMS contacts', 'Send stored submissions again', wsms);
+    await choose('MailPoet subscribers', 'Send stored submissions again', subscribers);
     await userEvent.click(screen.getByRole('button', { name: 'Send again' }));
 
-    expect(await within(wsms).findByText(/4 submissions queued to send again/)).toBeInTheDocument();
+    expect(await within(subscribers).findByText(/4 submissions queued to send again/)).toBeInTheDocument();
 
     // Saving anything at all re-reads the payload, and the report is a fact
     // about the moment before that read.
@@ -1120,7 +1098,7 @@ describe('what a never-used destination says', () => {
     vi.clearAllMocks();
 
     api.readDestinations.mockResolvedValue({
-      types: [WSMS_READY],
+      types: [MAILPOET_UNLISTED],
       destinations: [HEALTHY],
       connections: [],
       failures: [],
@@ -1129,7 +1107,7 @@ describe('what a never-used destination says', () => {
 
   it('shows the badge and not the sentence that repeats it', async () => {
     api.readDestinations.mockResolvedValue({
-      types: [WSMS_READY],
+      types: [MAILPOET_UNLISTED],
       destinations: [{ ...HEALTHY, health: { ...HEALTHY.health, last_success_at: null } }],
       connections: [],
       failures: [],
@@ -1149,7 +1127,7 @@ describe('what a never-used destination says', () => {
    */
   it('says a route no campaign uses is not in a campaign, and where to choose it', async () => {
     api.readDestinations.mockResolvedValue({
-      types: [WSMS_READY],
+      types: [MAILPOET_UNLISTED],
       destinations: [{ ...HEALTHY, usage: [], health: { ...HEALTHY.health, last_success_at: null } }],
       connections: [],
       failures: [],
@@ -1196,8 +1174,8 @@ describe('what a never-used destination says', () => {
  * ============================================================================
  * Two verbs, three outcomes, and one rendering rule that is a decision rather
  * than styling: a Destination whose type this install cannot run has **not
- * failed**. Drawing that in red tells a merchant with no WP SMS that their WP
- * SMS Destination is broken when the plugin is simply not installed — the same
+ * failed**. Drawing that in red tells a merchant with no MailPoet that their
+ * MailPoet Destination is broken when the plugin is simply not installed — the same
  * collapse ADR 0026 refuses one layer up.
  */
 describe('testing a destination', () => {
@@ -1205,7 +1183,7 @@ describe('testing a destination', () => {
     vi.clearAllMocks();
     api.testSend.mockReset();
     api.readDestinations.mockResolvedValue({
-      types: [WSMS_READY],
+      types: [MAILPOET_UNLISTED],
       destinations: [HEALTHY],
       connections: [],
       failures: [],
@@ -1222,7 +1200,7 @@ describe('testing a destination', () => {
   it('offers only Send a test where the type has no credentials', async () => {
     render(<Destinations />);
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Actions for WP SMS contacts' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Actions for MailPoet subscribers' }));
     expect(screen.getByRole('menuitem', { name: 'Send a test' })).toBeInTheDocument();
 
     // Every free type is in this state. An item whose only possible answer is
@@ -1232,22 +1210,22 @@ describe('testing a destination', () => {
 
   it('offers both verbs where there are credentials to check', async () => {
     api.readDestinations.mockResolvedValue({
-      types: [{ ...WSMS_READY, needs_connection: true }],
+      types: [{ ...MAILPOET_UNLISTED, needs_connection: true }],
       destinations: [{ ...HEALTHY, connection: 'account-1' }],
-      connections: [{ id: 'account-1', type: 'wsms', label: 'Main', credentials: {} }],
+      connections: [{ id: 'account-1', type: 'mailpoet', label: 'Main', credentials: {} }],
       failures: [],
     });
 
     render(<Destinations />);
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Actions for WP SMS contacts' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Actions for MailPoet subscribers' }));
     expect(screen.getByRole('menuitem', { name: 'Test connection' })).not.toHaveAttribute('aria-disabled');
     expect(screen.getByRole('menuitem', { name: 'Send a test' })).not.toHaveAttribute('aria-disabled');
   });
 
   it('refuses both on a Destination this install cannot run, and says why', async () => {
     api.readDestinations.mockResolvedValue({
-      types: [{ ...WSMS_READY, availability: 'unavailable' as const, needs_connection: true }],
+      types: [{ ...MAILPOET_UNLISTED, availability: 'unavailable' as const, needs_connection: true }],
       destinations: [{ ...HEALTHY, availability: 'unavailable' as const }],
       connections: [],
       failures: [],
@@ -1255,7 +1233,7 @@ describe('testing a destination', () => {
 
     render(<Destinations />);
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Actions for WP SMS contacts' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Actions for MailPoet subscribers' }));
     const send = screen.getByRole('menuitem', { name: /Send a test/ });
     expect(send).toHaveAttribute('aria-disabled', 'true');
     expect(send).toHaveAccessibleDescription('Not running on this site.');
@@ -1286,7 +1264,7 @@ describe('testing a destination', () => {
 
     render(<Destinations />);
 
-    await choose('WP SMS contacts', 'Send a test');
+    await choose('MailPoet subscribers', 'Send a test');
     const dialog = within(screen.getByRole('dialog'));
     expect(api.testSend).not.toHaveBeenCalled();
     await userEvent.click(dialog.getByRole('button', { name: 'Send test' }));
@@ -1303,18 +1281,18 @@ describe('testing a destination', () => {
    * button for.
    */
   it('does not re-read the screen after a test', async () => {
-    api.testSend.mockResolvedValue({ outcome: 'success', message: 'The test reached WP SMS contacts.' });
+    api.testSend.mockResolvedValue({ outcome: 'success', message: 'The test reached MailPoet subscribers.' });
 
     render(<Destinations />);
 
-    await screen.findByRole('button', { name: 'Actions for WP SMS contacts' });
+    await screen.findByRole('button', { name: 'Actions for MailPoet subscribers' });
 
     const readsBefore = api.readDestinations.mock.calls.length;
 
-    await choose('WP SMS contacts', 'Send a test');
+    await choose('MailPoet subscribers', 'Send a test');
     const dialog = within(screen.getByRole('dialog'));
     await userEvent.click(dialog.getByRole('button', { name: 'Send test' }));
-    await dialog.findByText('The test reached WP SMS contacts.');
+    await dialog.findByText('The test reached MailPoet subscribers.');
 
     expect(api.readDestinations).toHaveBeenCalledTimes(readsBefore);
   });
@@ -1327,7 +1305,7 @@ describe('testing a destination', () => {
 
     render(<Destinations />);
 
-    await choose('WP SMS contacts', 'Send a test');
+    await choose('MailPoet subscribers', 'Send a test');
     const dialog = within(screen.getByRole('dialog'));
     await userEvent.click(dialog.getByRole('button', { name: 'Send test' }));
 
@@ -1345,16 +1323,16 @@ describe('testing a destination', () => {
   it('keeps the card to health and edits in a dialog that Cancel discards', async () => {
     api.readDestinations.mockResolvedValue(TWO_DESTINATIONS);
     render(<Destinations />);
-    const region = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
+    const region = regionFor(await screen.findByRole('heading', { name: 'MailPoet subscribers' }));
     expect(within(region).queryByRole('textbox', { name: 'Name' })).toBeNull();
     expect(within(region).queryByRole('button', { name: 'Send again' })).toBeNull();
     expect(within(region).getByText(/Last sent/)).toBeVisible();
     const editButton = within(region).getByRole('button', { name: 'Edit' });
-    expect(editButton).toHaveAccessibleDescription('WP SMS contacts');
+    expect(editButton).toHaveAccessibleDescription('MailPoet subscribers');
     await userEvent.click(editButton);
-    const dialog = screen.getByRole('dialog', { name: 'WP SMS contacts' });
+    const dialog = screen.getByRole('dialog', { name: 'MailPoet subscribers' });
     // The meta line is the type; the usage notice says who else is affected.
-    expect(dialog).toHaveAccessibleDescription('WP SMS contacts');
+    expect(dialog).toHaveAccessibleDescription('MailPoet subscribers');
     expect(within(dialog).getByText('Working')).toBeVisible();
     expect(within(dialog).getByText('Campaigns using this destination')).toBeVisible();
     const name = within(dialog).getByRole('textbox', { name: 'Name' });
@@ -1364,18 +1342,18 @@ describe('testing a destination', () => {
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
     expect(editButton).toHaveFocus();
     await userEvent.click(editButton);
-    expect(within(screen.getByRole('dialog')).getByRole('textbox', { name: 'Name' })).toHaveValue('WP SMS contacts');
+    expect(within(screen.getByRole('dialog')).getByRole('textbox', { name: 'Name' })).toHaveValue('MailPoet subscribers');
     expect(api.saveDestination).not.toHaveBeenCalled();
   });
 
   it('shows the suggested address and saved route before sending, and allows cancellation', async () => {
     render(<Destinations />);
-    const trigger = await screen.findByRole('button', { name: 'Actions for WP SMS contacts' });
-    await choose('WP SMS contacts', 'Send a test');
+    const trigger = await screen.findByRole('button', { name: 'Actions for MailPoet subscribers' });
+    await choose('MailPoet subscribers', 'Send a test');
     const dialog = within(screen.getByRole('dialog'));
     // The subject is the title; what it is and where it lands is the meta line.
-    expect(dialog.getByRole('heading', { name: 'WP SMS contacts' })).toBeVisible();
-    expect(screen.getByRole('dialog')).toHaveAccessibleDescription('WP SMS contacts · tag-7');
+    expect(dialog.getByRole('heading', { name: 'MailPoet subscribers' })).toBeVisible();
+    expect(screen.getByRole('dialog')).toHaveAccessibleDescription('MailPoet subscribers · 7');
     expect(dialog.getByRole('textbox', { name: 'Test email address' })).toHaveValue('merchant@example.com');
     // One sentence of effect; what a success does not prove is the result's to say.
     expect(dialog.getByRole('button', { name: 'Send test' })).toHaveAccessibleDescription(/^Only this email address.*Use an address you own\. The test really sends — it may add a contact or send an email — but creates no lead\.$/);
@@ -1390,7 +1368,7 @@ describe('testing a destination', () => {
 
   it('asks before Escape throws a typed address away', async () => {
     render(<Destinations />);
-    await choose('WP SMS contacts', 'Send a test');
+    await choose('MailPoet subscribers', 'Send a test');
     const dialog = within(screen.getByRole('dialog'));
     await userEvent.type(dialog.getByRole('textbox', { name: 'Test email address' }), 'x');
     await userEvent.keyboard('{Escape}');
@@ -1401,7 +1379,7 @@ describe('testing a destination', () => {
   it('sends only the explicitly confirmed sample and requires another preparation before a repeat', async () => {
     api.testSend.mockResolvedValue({ outcome: 'success', message: 'The provider accepted this sample.' });
     render(<Destinations />);
-    await choose('WP SMS contacts', 'Send a test');
+    await choose('MailPoet subscribers', 'Send a test');
     const dialog = within(screen.getByRole('dialog'));
     const address = dialog.getByRole('textbox', { name: 'Test email address' });
     await userEvent.clear(address);
@@ -1419,7 +1397,7 @@ describe('testing a destination', () => {
   it('does not silently send a blank sample when profile metadata is absent', async () => {
     api.readDestinations.mockResolvedValue({ ...TWO_DESTINATIONS, destinations: [HEALTHY] });
     render(<Destinations />);
-    await choose('WP SMS contacts', 'Send a test');
+    await choose('MailPoet subscribers', 'Send a test');
     const dialog = within(screen.getByRole('dialog'));
     expect(dialog.getByRole('textbox', { name: 'Test email address' })).toHaveValue('');
     await userEvent.click(dialog.getByRole('button', { name: 'Send test' }));
@@ -1429,7 +1407,7 @@ describe('testing a destination', () => {
   it('preserves the sample on transport failure', async () => {
     api.testSend.mockRejectedValueOnce({ message: 'The request failed. Try again.' });
     render(<Destinations />);
-    await choose('WP SMS contacts', 'Send a test');
+    await choose('MailPoet subscribers', 'Send a test');
     const dialog = within(screen.getByRole('dialog'));
     // Settings are edited in a modal of their own, so a test from the card
     // can only ever be of the saved route — there is no unsaved draft to warn of.
@@ -1445,7 +1423,7 @@ describe('testing a destination', () => {
     let finish!: (report: { outcome: string; message: string }) => void;
     api.testSend.mockReturnValue(new Promise((resolve) => { finish = resolve; }));
     render(<Destinations />);
-    await choose('WP SMS contacts', 'Send a test');
+    await choose('MailPoet subscribers', 'Send a test');
     const dialog = within(screen.getByRole('dialog'));
     await userEvent.click(dialog.getByRole('button', { name: 'Send test' }));
     const sending = dialog.getByRole('button', { name: 'Sending test…' });
@@ -1463,15 +1441,15 @@ describe('testing a destination', () => {
     api.testSend.mockResolvedValue({ outcome: 'success', message: 'The saved route accepted the sample.' });
     api.readDestinations.mockResolvedValue({ ...TWO_DESTINATIONS, test_sample: { email: 'merchant@example.com', fields: ['email'] } });
     render(<Destinations />);
-    const card = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
-    await choose('WP SMS contacts', 'Send a test', card);
+    const card = regionFor(await screen.findByRole('heading', { name: 'MailPoet subscribers' }));
+    await choose('MailPoet subscribers', 'Send a test', card);
     const dialog = within(screen.getByRole('dialog'));
     await userEvent.click(dialog.getByRole('button', { name: 'Send test' }));
     await userEvent.click(await dialog.findByRole('button', { name: 'Done' }));
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
     expect(within(card).getByText('The saved route accepted the sample.')).toBeVisible();
     expect(within(regionFor(screen.getByRole('heading', { name: 'Lead magnet email' }))).queryByText('The saved route accepted the sample.')).toBeNull();
-    expect(within(card).getByRole('button', { name: 'Actions for WP SMS contacts' })).toHaveFocus();
+    expect(within(card).getByRole('button', { name: 'Actions for MailPoet subscribers' })).toHaveFocus();
   });
 
 });
@@ -1485,7 +1463,7 @@ describe('destination recovery entry points', () => {
     }] });
     api.rePush.mockResolvedValue({ jobs: 12, capped: false, since: HEALTHY.health.last_success_at });
     render(<Destinations />);
-    const region = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
+    const region = regionFor(await screen.findByRole('heading', { name: 'MailPoet subscribers' }));
     expect(screen.queryByRole('dialog')).toBeNull();
     const replay = within(region).getByRole('button', { name: 'Send again' });
     expect(replay).toHaveAccessibleDescription(/since its last success/);
@@ -1502,11 +1480,11 @@ describe('destination recovery entry points', () => {
   });
 
   it('refuses Send again beside skipped submissions while the route cannot run, and says why', async () => {
-    api.readDestinations.mockResolvedValue({ ...TWO_DESTINATIONS, types: [{ ...WSMS_READY, availability: 'unavailable' as const }], destinations: [{
+    api.readDestinations.mockResolvedValue({ ...TWO_DESTINATIONS, types: [{ ...MAILPOET_UNLISTED, availability: 'unavailable' as const }], destinations: [{
       ...HEALTHY, availability: 'unavailable' as const, health: { ...HEALTHY.health, skipped_captures: 3, last_skipped_at: '2026-08-25 12:00:00' },
     }] });
     render(<Destinations />);
-    const region = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
+    const region = regionFor(await screen.findByRole('heading', { name: 'MailPoet subscribers' }));
     const replay = within(region).getByRole('button', { name: 'Send again' });
     expect(replay).toHaveAttribute('aria-disabled', 'true');
     expect(replay).toHaveAccessibleDescription(/Not running on this site\./);
@@ -1563,10 +1541,10 @@ describe('destination recovery entry points', () => {
     api.readRecentAttempts.mockRejectedValueOnce({ message: 'Recent sends could not be read.' })
       .mockResolvedValueOnce({ attempts: [{ id: 1, lead: '01J0000000BBBBBBBBBBBBBBBB', submission: 's', attempt: 2, at: '2026-08-25 12:00:00', status: 'done', outcome: 'retry_scheduled' }] });
     render(<Destinations />);
-    const region = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
+    const region = regionFor(await screen.findByRole('heading', { name: 'MailPoet subscribers' }));
     expect(api.readRecentAttempts).not.toHaveBeenCalled();
-    await choose('WP SMS contacts', 'Recent sends', region);
-    const dialog = within(await screen.findByRole('dialog', { name: 'WP SMS contacts' }));
+    await choose('MailPoet subscribers', 'Recent sends', region);
+    const dialog = within(await screen.findByRole('dialog', { name: 'MailPoet subscribers' }));
     expect(await dialog.findByText('Recent sends could not be read.')).toBeVisible();
     await userEvent.click(dialog.getByRole('button', { name: 'Try again' }));
     expect(await dialog.findByText('Will retry')).toBeVisible();
@@ -1576,7 +1554,7 @@ describe('destination recovery entry points', () => {
     expect(screen.queryByText(/01J0000000BBBBBBBBBBBBBBBB/)).toBeNull();
     await userEvent.click(dialog.getByRole('button', { name: 'Done' }));
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
-    expect(within(region).getByRole('button', { name: 'Actions for WP SMS contacts' })).toHaveFocus();
+    expect(within(region).getByRole('button', { name: 'Actions for MailPoet subscribers' })).toHaveFocus();
   });
 
   it('retries an initial read failure without issuing a recovery or test action', async () => {
@@ -1584,7 +1562,7 @@ describe('destination recovery entry points', () => {
     render(<Destinations />);
     expect(await screen.findByText('Destinations could not be loaded.')).toBeVisible();
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
-    expect(await screen.findByRole('heading', { name: 'WP SMS contacts' })).toBeVisible();
+    expect(await screen.findByRole('heading', { name: 'MailPoet subscribers' })).toBeVisible();
     expect(api.rePush).not.toHaveBeenCalled();
     expect(api.testSend).not.toHaveBeenCalled();
     expect(api.testConnection).not.toHaveBeenCalled();
@@ -1728,7 +1706,7 @@ describe('the order of the screen', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    api.readDestinations.mockResolvedValue({ types: [WSMS_READY, REMOTE, BREVO], destinations: [HEALTHY], connections: [], failures: [] });
+    api.readDestinations.mockResolvedValue({ types: [MAILPOET_UNLISTED, REMOTE, BREVO], destinations: [HEALTHY], connections: [], failures: [] });
   });
 
   it('draws destinations before accounts, with Add on the destinations heading and no Refresh', async () => {
@@ -1738,7 +1716,7 @@ describe('the order of the screen', () => {
     expect(destinations.compareDocumentPosition(accounts) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(screen.getByText('Sign in once per service. Destinations above use these accounts.')).toBeVisible();
     const add = screen.getByRole('button', { name: 'Add a destination' });
-    expect(add.compareDocumentPosition(screen.getByRole('heading', { name: 'WP SMS contacts' })) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(add.compareDocumentPosition(screen.getByRole('heading', { name: 'MailPoet subscribers' })) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(screen.queryByRole('button', { name: /^Refresh/ })).toBeNull();
     // Nothing wrong, so nothing to check.
     expect(screen.queryByRole('link', { name: /sending issue/ })).toBeNull();
@@ -1747,7 +1725,7 @@ describe('the order of the screen', () => {
   });
 
   it('links to the sending issues only when there are some, and counts them', async () => {
-    api.readDestinations.mockResolvedValue({ types: [WSMS_READY], destinations: [
+    api.readDestinations.mockResolvedValue({ types: [MAILPOET_UNLISTED], destinations: [
       { ...HEALTHY, health: { ...HEALTHY.health, consecutive_failures: 2, last_error: 'Timeout' } },
     ], connections: [], failures: [] });
     render(<Destinations />);
@@ -1760,7 +1738,7 @@ describe('the order of the screen', () => {
     render(<Destinations mode="issues" />);
     expect(screen.getByRole('button', { name: 'Refresh' })).toBeDisabled();
     expect(screen.queryByText('Refreshing…')).toBeNull();
-    await act(async () => answer({ types: [WSMS_READY], destinations: [HEALTHY], connections: [], failures: [] }));
+    await act(async () => answer({ types: [MAILPOET_UNLISTED], destinations: [HEALTHY], connections: [], failures: [] }));
     expect(await screen.findByRole('button', { name: 'Refresh' })).toBeEnabled();
   });
 
@@ -1775,7 +1753,7 @@ describe('the order of the screen', () => {
     render(<Destinations />);
     await userEvent.click(await screen.findByRole('button', { name: 'Connect an account' }));
     expect(screen.getByRole('menuitem', { name: 'Brevo' })).toBeInTheDocument();
-    api.readDestinations.mockResolvedValue({ types: [WSMS_READY, REMOTE, BREVO], destinations: [HEALTHY], connections: [ACCOUNT], failures: [] });
+    api.readDestinations.mockResolvedValue({ types: [MAILPOET_UNLISTED, REMOTE, BREVO], destinations: [HEALTHY], connections: [ACCOUNT], failures: [] });
     await userEvent.click(screen.getByRole('menuitem', { name: 'Mailchimp' }));
     const connect = within(screen.getByRole('dialog', { name: 'Connect Mailchimp' }));
     await userEvent.type(connect.getByLabelText('API key'), 'key');

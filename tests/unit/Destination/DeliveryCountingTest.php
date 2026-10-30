@@ -11,10 +11,10 @@ use WConvert\Destination\DestinationStore;
 use WConvert\Destination\HealthStore;
 use WConvert\Destination\LeadMagnet\DeliveryCount;
 use WConvert\Destination\LeadMagnet\LeadMagnetDestinationType;
+use WConvert\Destination\MailPoet\MailPoetDestinationType;
 use WConvert\Destination\PushJob;
 use WConvert\Destination\PushResult;
 use WConvert\Destination\PushWorker;
-use WConvert\Destination\Wsms\WsmsDestinationType;
 use WConvert\Lead\LeadRepository;
 use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
@@ -57,9 +57,9 @@ use WConvert\Tests\Unit\Support\FakeSitePresence;
  * BOTH SCOPES, BECAUSE ONE OF THEM IS EASY TO MISS.
  * ============================================================================
  * By [[Goal]] is the acceptance criterion and sounds complete on its own. It is
- * not: a merchant can bind the WSMS push *and* the delivery email to one
+ * not: a merchant can bind the MailPoet push *and* the delivery email to one
  * lead-magnet Optin, which is an entirely ordinary configuration, and counting
- * the WSMS success as a delivery would report two deliveries per Conversion and
+ * the MailPoet success as a delivery would report two deliveries per Conversion and
  * a negative failure count on the card.
  */
 #[CoversClass(DeliveryCount::class)]
@@ -247,15 +247,15 @@ final class DeliveryCountingTest extends TestCase
     }
 
     /**
-     * **Type scoping — the trap.** The same lead-magnet Optin, pushed to WSMS.
+     * **Type scoping — the trap.** The same lead-magnet Optin, pushed to MailPoet.
      * A merchant binding both to one Optin is ordinary, and counting this would
      * double the number on the card and drive the failure count negative.
      */
-    public function testAWsmsSuccessOnALeadMagnetOptinCountsNothing(): void
+    public function testAMailPoetSuccessOnALeadMagnetOptinCountsNothing(): void
     {
         $this->optinHolds('deliver_lead_magnet');
 
-        $this->push(WsmsDestinationType::ID);
+        $this->push(MailPoetDestinationType::ID);
 
         $this->assertSame([], $this->deliveryUpserts());
     }

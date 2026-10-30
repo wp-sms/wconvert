@@ -200,7 +200,7 @@ final class PublishedProjectionTest extends TestCase
             // Everything below is authoring state. None of it renders.
             'template_id' => 'centred-card',
             'playbook_id' => 'welcome-discount',
-            'destination_hint' => ['types' => ['wsms'], 'fields' => ['email']],
+            'destination_hint' => ['types' => ['mailpoet'], 'fields' => ['email']],
             // **The key this fixture was missing**, and the reason the pinning
             // test passed while the projection shipped it. See
             // `testTheDestinationsAnOptinBindsNeverReachTheBrowser()`.

@@ -21,8 +21,8 @@ defined('ABSPATH') || exit;
  * the form captured is in the `fields` JSON (ADR 0002).
  *
  * **`consent` is reserved and no v1 Destination writes it.** What a Lead
- * carries is the [[Consent Record]] — the sentence exactly as shown — and the
- * WSMS push never writes lifecycle state of any kind (ADR 0022). It is named
+ * carries is the [[Consent Record]] — the sentence exactly as shown — and no
+ * push writes lifecycle state of any kind (ADR 0022). It is named
  * here so that the reservation is visible rather than forgotten, and so the
  * next implementer does not read its absence as room.
  *

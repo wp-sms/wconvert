@@ -34,9 +34,8 @@ enum RefusalCode: string
     case NotCanonical = 'wconvert_uncanonicalisable_identifier';
 
     /**
-     * Neither identity key. WSMS's `ContactRepository::create()` hard-requires
-     * one of the two, and a Lead carrying neither can never be grouped by the
-     * only identity this system has (ADR 0002, ADR 0021).
+     * Neither identity key. A Lead carrying neither can never be grouped by
+     * the only identity this system has (ADR 0002, ADR 0021).
      */
     case NoIdentifier = 'wconvert_no_identifier';
 

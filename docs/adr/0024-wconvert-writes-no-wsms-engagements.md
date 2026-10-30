@@ -1,5 +1,7 @@
 # WConvert writes no WSMS engagements
 
+**Superseded by [ADR 0174](0174-wsms-integration-removed-before-1-0.md): the WSMS integration was removed before 1.0, because WSMS 8 has not shipped. Nothing in WConvert pushes to WSMS now. This ADR records what the push did, for whoever reinstates it.**
+
 WSMS ships `wsms_engagements` — a **core**, polymorphic, [[Contact]]-linked store
 for *pending things about a person*, with an open producer registry. WConvert
 neither writes to it nor reads from it, and this is a scope boundary rather than a

@@ -14,8 +14,7 @@ defined('ABSPATH') || exit;
  * push finishes by adding the list rather than by creating anything
  * ({@see MailPoetDestinationType::create()}).
  *
- * The sibling of {@see \WConvert\Destination\Wsms\ContactConflict}, and named
- * for MailPoet's own `APIException::SUBSCRIBER_EXISTS` rather than for the
+ * Named for MailPoet's own `APIException::SUBSCRIBER_EXISTS` rather than for the
  * word "conflict": MailPoet has one identifier and one index, so there is no
  * both-identifiers case here and nothing to call ambiguous.
  *

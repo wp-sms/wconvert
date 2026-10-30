@@ -25,6 +25,9 @@ check while failing the push.
 
 The three shipped adapters declare these facts:
 
+*Amended by [ADR 0174](0174-wsms-integration-removed-before-1-0.md): the WSMS row is history. The integration was removed before
+1.0, and free ships the other two.*
+
 | Destination | Capture prerequisite | Required settings | Values used |
 | --- | --- | --- | --- |
 | WSMS | Email **or** phone | None; tags are optional | Email, phone, name |

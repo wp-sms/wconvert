@@ -117,15 +117,15 @@ final class IdentifierTest extends TestCase
     }
 
     /**
-     * WSMS's `ContactRepository::create()` runs `PhoneValidator::assertE164()`
-     * on the way in, and that method THROWS. Every push is queued (#4), so a
-     * phone WConvert accepted but could not canonicalise becomes an exception
-     * inside an Action Scheduler job minutes later, with the visitor gone.
+     * A receiving system that asserts E.164 on the way in THROWS on anything
+     * else. Every push is queued (#4), so a phone WConvert accepted but could
+     * not canonicalise becomes an exception inside an Action Scheduler job
+     * minutes later, with the visitor gone.
      *
      * Which is why this holds on a Standalone install too: it is a WConvert
-     * rule that exists because WSMS has one (ADR 0021).
+     * rule, not a provider's (ADR 0021).
      */
-    public function testWhateverThisAcceptsSatisfiesTheE164PatternWsmsAssertsOn(): void
+    public function testWhateverThisAcceptsSatisfiesTheE164Pattern(): void
     {
         foreach (self::canonicalPhones() as [$raw]) {
             $canonical = Identifier::phone($raw);

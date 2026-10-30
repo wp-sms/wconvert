@@ -1,5 +1,7 @@
 # The WSMS push fills blanks and never mutates Contact state
 
+**Superseded by [ADR 0174](0174-wsms-integration-removed-before-1-0.md): the WSMS integration was removed before 1.0, because WSMS 8 has not shipped. Nothing in WConvert pushes to WSMS now. This ADR records what the push did, for whoever reinstates it. Its rule that a push never writes lifecycle state still governs the MailPoet push, through [ADR 0049](0049-the-mailpoet-push-adds-membership-without-touching-status.md).**
+
 When a pushed [[Lead]] matches an existing WSMS [[Contact]], the adapter:
 
 - fills only fields the Contact left **empty**, never overwriting a stored value;

@@ -85,15 +85,15 @@ final class OptinWriteTest extends TestCase
     }
 
     /**
-     * **An SMS signup subscribes the `phone` channel** — the word WP SMS
-     * declares and `CaptureContract` checks. Publish spelled it `sms`, which
-     * no Destination type declares, so every SMS signup bound to WP SMS was
-     * refused as "does not support its channel".
+     * **An SMS signup subscribes the `phone` channel** — the word a
+     * phone-capable type declares and `CaptureContract` checks. Publish
+     * spelled it `sms`, which no Destination type declares, so every SMS
+     * signup bound to one was refused as "does not support its channel".
      */
     public function testAnOptionalSmsSignupPublishesToARouteThatTakesPhoneNumbers(): void
     {
         $email = $this->destinations->save(null, 'mailpoet', 'Newsletter', null, ['lists' => ['3']]);
-        $sms = $this->destinations->save(null, 'wsms', 'SMS subscribers', null, []);
+        $sms = $this->destinations->save(null, 'sms', 'SMS subscribers', null, []);
         $draft = $this->create(Goal::GrowEmailList, $this->withPhoneCountry(['template_id' => 'journey-email-then-sms',
             'destinations' => [$email->id], 'submission_settings' => ['sms-signup' => ['destination_ids' => [$sms->id]]]]));
         self::assertIsArray($draft);
@@ -104,10 +104,10 @@ final class OptinWriteTest extends TestCase
         self::assertNotNull($this->optins->find($draft['id'])?->publishedAt);
     }
 
-    /** The same spelling decides the main signup of an SMS list, which WP SMS must be able to receive. */
-    public function testAnSmsListPublishesToWpSms(): void
+    /** The same spelling decides the main signup of an SMS list, which a phone-capable route must be able to receive. */
+    public function testAnSmsListPublishesToAPhoneCapableRoute(): void
     {
-        $sms = $this->destinations->save(null, 'wsms', 'SMS subscribers', null, []);
+        $sms = $this->destinations->save(null, 'sms', 'SMS subscribers', null, []);
         $draft = $this->create(Goal::GrowSmsList, $this->withPhoneCountry(['template_id' => 'stacked-signup', 'destinations' => [$sms->id]]));
         self::assertIsArray($draft);
         $request = new WP_REST_Request();
@@ -286,7 +286,7 @@ final class OptinWriteTest extends TestCase
         // A Pro install with a store, so the cart [[Goal]] is settable and the
         // refusals below are about the DESIGN rather than about availability.
         $pro = new FakeProPresence(Tier::Pro);
-        $site = new FakeSitePresence([SiteDependency::WooCommerce, SiteDependency::MailPoet, SiteDependency::Wsms]);
+        $site = new FakeSitePresence([SiteDependency::WooCommerce, SiteDependency::MailPoet]);
 
         $this->milestones = new FakeOptionStore();
 
@@ -312,7 +312,7 @@ final class OptinWriteTest extends TestCase
             (new \WConvert\Destination\DestinationRegistry($pro, $site))->register(
                 new \WConvert\Destination\LeadMagnet\LeadMagnetDestinationType(new \WConvert\Tests\Unit\Support\FakeMailer())
             )->register(new \WConvert\Destination\MailPoet\MailPoetDestinationType(new \WConvert\Tests\Unit\Support\FakeMailPoetSubscribers()))
-                ->register(new \WConvert\Destination\Wsms\WsmsDestinationType(new \WConvert\Tests\Unit\Support\FakeWsmsContacts())),
+                ->register(\WConvert\Tests\Unit\Support\FakeDestinationType::phoneCapable()),
             new \WConvert\Discovery\OccasionStore()
         );
     }
@@ -1267,7 +1267,7 @@ final class OptinWriteTest extends TestCase
     {
         update_option('wconvert_phone_default_country', 'US');
         try {
-            $sms = $this->destinations->save(null, 'wsms', 'SMS subscribers', null, []);
+            $sms = $this->destinations->save(null, 'sms', 'SMS subscribers', null, []);
             $config = \WConvert\Template\TemplateTree::rewrittenIn($this->withPhoneCountry(['template_id' => 'stacked-signup', 'destinations' => [$sms->id]]),
                 static function (array $node): array { unset($node['phone_country']); return $node; });
             $draft = $this->create(Goal::GrowSmsList, $config);

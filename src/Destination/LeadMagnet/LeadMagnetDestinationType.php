@@ -17,7 +17,7 @@ defined('ABSPATH') || exit;
  * The lead-magnet delivery — **the one [[Destination]] type that works on a
  * [[Standalone]] install.**
  *
- * Every other type reaches something: WSMS reaches a plugin that may not be
+ * Every other type reaches something: MailPoet is a plugin that may not be
  * installed, and Pro's ESPs reach the network. This one reaches `wp_mail()`,
  * which every WordPress has. That is what makes the **Deliver a lead magnet**
  * [[Goal]] a Goal a merchant can actually complete out of the box rather than
@@ -44,9 +44,8 @@ defined('ABSPATH') || exit;
  * merchant can get wrong — a body that never mentions the token still arrives
  * with the download in it. That matters because there is nothing to validate
  * it against on the way in: `DestinationController::store()` stores settings
- * opaquely, so this class defends itself at push time the way
- * {@see \WConvert\Destination\Wsms\WsmsDestinationType::applyTags()} re-checks
- * `is_array`/`is_string` over the same opaque bag.
+ * opaquely, so this class defends itself at push time, re-checking
+ * `is_array`/`is_string` over the opaque bag.
  *
  * **No `__()` in the constructor**, which is a rule about WHEN rather than
  * about whether. `CoreServiceProvider::boot()` runs on `plugins_loaded` and
@@ -127,11 +126,10 @@ final class LeadMagnetDestinationType implements DestinationType
     /**
      * Three fields, and none of their options comes off the wire.
      *
-     * That is the one place this type differs from an ESP's schema and it is
-     * the same difference the WSMS push has: there is no remote system to ask.
-     * The method still earns its place — it is what tells the admin these
-     * fields exist at all, which is the collapse that removes WSMS's five
-     * `Supports*` capability interfaces (#4).
+     * That is the one place this type differs from an ESP's schema: there is
+     * no remote system to ask. The method still earns its place — it is what
+     * tells the admin these fields exist at all, which is the collapse that
+     * removes WSMS's five `Supports*` capability interfaces (#4).
      *
      * `multiline` is a new control kind, and `resources/admin/src/destinations`
      * renders the schema rather than one hard-coded field as of #31. An

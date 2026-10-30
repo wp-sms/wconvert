@@ -10,7 +10,6 @@ use WConvert\Destination\HealthStore;
 use WConvert\Destination\MailPoet\MailPoetDestinationType;
 use WConvert\Destination\MailPoet\WpMailPoetSubscribers;
 use WConvert\Destination\PushDispatcher;
-use WConvert\Destination\Wsms\WsmsDestinationType;
 use WConvert\Lead\LeadCapture;
 use WConvert\Lead\LeadCsv;
 use WConvert\Lead\LeadLog;
@@ -29,16 +28,15 @@ use WConvert\Tests\Unit\Support\FakeOptionStore;
 use WConvert\Tests\Unit\Support\FakeProPresence;
 use WConvert\Tests\Unit\Support\FakeQueue;
 use WConvert\Tests\Unit\Support\FakeSitePresence;
-use WConvert\Tests\Unit\Support\FakeWsmsContacts;
 
 /**
  * **[[Standalone]] is a fully working install** — capture, the [[Lead]] log
- * and CSV export all work with no WSMS anywhere.
+ * and CSV export all work with no MailPoet anywhere.
  *
- * WSMS is never a runtime requirement of the capture path (CONTEXT.md,
- * Standalone), and this is where that is held rather than assumed. The failure
- * it guards against is not subtle — it is a fatal on a site that never had
- * WSMS installed — but it is invisible to every other test in this suite,
+ * A sibling plugin is never a runtime requirement of the capture path
+ * (CONTEXT.md, Standalone), and this is where that is held rather than
+ * assumed. The failure it guards against is not subtle — it is a fatal on a
+ * site that never had MailPoet installed — but it is invisible to every other test in this suite,
  * because the rest of them pass a fake in.
  */
 final class StandaloneTest extends TestCase
@@ -62,7 +60,7 @@ final class StandaloneTest extends TestCase
         $this->optinId = Ulid::generate();
 
         $this->destinationId = (new DestinationStore($this->options))
-            ->save(null, WsmsDestinationType::ID, 'WP SMS', null, [])->id;
+            ->save(null, MailPoetDestinationType::ID, 'MailPoet', null, [])->id;
 
         $this->db->rows[$this->optinId] = [
             'id' => $this->optinId,
@@ -76,29 +74,12 @@ final class StandaloneTest extends TestCase
     }
 
     /**
-     * The site has no WSMS, so the WSMS [[Destination]] type is
+     * The site has no MailPoet, so the MailPoet [[Destination]] type is
      * **`unavailable`** — not `locked`. A missing plugin is not something we
      * can sell, and collapsing the two would offer a merchant a Pro licence
      * for a feature Pro would not give them either (ADR 0026).
-     */
-    public function testWithoutWsmsTheTypeIsUnavailableRatherThanLocked(): void
-    {
-        $registry = (new DestinationRegistry(new FakeProPresence(), new FakeSitePresence()))
-            ->register(new WsmsDestinationType(new FakeWsmsContacts()));
-
-        self::assertSame(Availability::Unavailable, $registry->availabilityOf(WsmsDestinationType::ID));
-
-        $withWsms = (new DestinationRegistry(
-            new FakeProPresence(),
-            new FakeSitePresence([SiteDependency::Wsms])
-        ))->register(new WsmsDestinationType(new FakeWsmsContacts()));
-
-        self::assertSame(Availability::Ready, $withWsms->availabilityOf(WsmsDestinationType::ID));
-    }
-
-    /**
-     * The same reading for MailPoet, and **it is asserted against the REAL
-     * adapter** rather than against a fake.
+     *
+     * **It is asserted against the REAL adapter** rather than against a fake.
      *
      * The failure this guards is not subtle and no fake can see it: the unit
      * suite has no MailPoet, so {@see WpMailPoetSubscribers} here is looking
@@ -149,7 +130,7 @@ final class StandaloneTest extends TestCase
     public function testCaptureStillLandsALeadAndQueuesNothing(): void
     {
         $registry = (new DestinationRegistry(new FakeProPresence(), new FakeSitePresence()))
-            ->register(new WsmsDestinationType(new FakeWsmsContacts()));
+            ->register(new MailPoetDestinationType(new WpMailPoetSubscribers()));
 
         $optins = new OptinRepository(
             $this->db,

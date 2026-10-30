@@ -114,11 +114,11 @@ describe('provider-declared destination requirements', () => {
     expect(compatibilityProblems(route, [{ name: 'email', required: false }])).toEqual([]);
     expect(compatibilityProblems(route, [{ name: 'email', required: true }])).toEqual([]);
   });
-  it('accepts either WSMS identifier and keeps local-only capture valid', () => {
-    const wsms = { ...route, requirements: { capture_any_of: ['email', 'phone'], settings: {}, fields: ['email', 'phone', 'name'], mapped_fields: {} } };
-    expect(compatibilityProblems(wsms, [{ name: 'phone', required: true }])).toEqual([]);
-    expect(compatibilityProblems(wsms, [{ name: 'email', required: true }])).toEqual([]);
-    expect(compatibilityProblems(wsms, [{ name: 'email', required: false }, { name: 'phone', required: false }])).toEqual([]);
+  it('accepts either identifier on a phone-capable route and keeps local-only capture valid', () => {
+    const phoneRoute = { ...route, requirements: { capture_any_of: ['email', 'phone'], settings: {}, fields: ['email', 'phone', 'name'], mapped_fields: {} } };
+    expect(compatibilityProblems(phoneRoute, [{ name: 'phone', required: true }])).toEqual([]);
+    expect(compatibilityProblems(phoneRoute, [{ name: 'email', required: true }])).toEqual([]);
+    expect(compatibilityProblems(phoneRoute, [{ name: 'email', required: false }, { name: 'phone', required: false }])).toEqual([]);
     expect(destinationsSaid([], [route], [{ name: 'phone', required: true }]).problems).toEqual([]);
   });
   it('uses saved setting requirements without accepting whitespace or numeric list IDs', () => {

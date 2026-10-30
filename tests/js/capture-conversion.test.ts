@@ -94,7 +94,7 @@ describe('removing a form with no link to carry back (R2)', () => {
 describe('removing every form from a longer campaign (R3–R5)', () => {
   const DESTINATIONS = [
     { id: 'mc', label: 'Mailchimp · Newsletter', channels: ['email'] },
-    { id: 'wsms', label: 'WP SMS · Coffee texts', channels: ['phone'] },
+    { id: 'sms', label: 'SMS webhook · Coffee texts', channels: ['phone'] },
   ];
   const journey = () => {
     const template = consentShown(design('journey-email-then-sms'));
@@ -104,7 +104,7 @@ describe('removing every form from a longer campaign (R3–R5)', () => {
     ] } };
     return { template_id: 'journey-email-then-sms', template: { ...template, tree: { ...template.tree, steps: [intro, ...template.tree.steps] } },
       destinations: ['mc'], capture_mode: 'connected',
-      submission_settings: { 'sms-signup': { destination_ids: ['wsms'] } },
+      submission_settings: { 'sms-signup': { destination_ids: ['sms'] } },
       integration_mappings: { 'email-signup': { mc: { 'field:interest': 'INTEREST' } } } };
   };
 
@@ -124,7 +124,7 @@ describe('removing every form from a longer campaign (R3–R5)', () => {
       { name: 'Optional SMS signup', words: ['Would you also like text updates?', 'Your email signup request was received. This next step is optional.'] },
       { name: 'Acknowledgement', words: ['Details received', 'Thank you. We have received the details you submitted.'] },
     ] });
-    expect(result.changes).toContainEqual({ kind: 'stops-sending', destinations: ['Mailchimp · Newsletter', 'WP SMS · Coffee texts'], mappings: true });
+    expect(result.changes).toContainEqual({ kind: 'stops-sending', destinations: ['Mailchimp · Newsletter', 'SMS webhook · Coffee texts'], mappings: true });
     expect(result.changes).toContainEqual({ kind: 'leads-stay' });
   });
 });
@@ -175,7 +175,7 @@ describe('which goal a new form serves', () => {
 });
 
 describe('switching between email and phone (S1)', () => {
-  const DESTINATIONS = [{ id: 'mc', label: 'Mailchimp · Black Friday list', channels: ['email'] }, { id: 'wsms', label: 'WP SMS', channels: ['phone'] }];
+  const DESTINATIONS = [{ id: 'mc', label: 'Mailchimp · Black Friday list', channels: ['email'] }, { id: 'sms', label: 'SMS webhook', channels: ['phone'] }];
   const signup = () => ({ template_id: 'centred-card', template: design('centred-card'), destinations: ['mc'], capture_mode: 'connected',
     integration_mappings: { primary: { mc: { 'field:interest': 'INTEREST' } } } });
 

@@ -28,7 +28,7 @@ defined('ABSPATH') || exit;
  *
  * **`skippedCaptures` is the third thing that can go wrong, and it is neither
  * of the other two.** A Destination bound to an Optin whose TYPE is not
- * `ready` — a deactivated WSMS, a lapsed licence — is never enqueued at all,
+ * `ready` — a deactivated MailPoet, a lapsed licence — is never enqueued at all,
  * because an Action Scheduler job whose handler cannot succeed retries against
  * nothing forever. That is the right behaviour and it is also completely
  * silent, so #4's "skipped and recorded" needs somewhere to record it. A

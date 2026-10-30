@@ -9,7 +9,7 @@ defined('ABSPATH') || exit;
  * underneath it where its type has one.
  *
  * **Configured once, site-wide**, and it *includes whatever selects the target
- * inside the remote system* — the Mailchimp audience, the WSMS tags. That is
+ * inside the remote system* — the Mailchimp audience, the MailPoet lists. That is
  * what collapses two concepts into one: two Optins feeding one audience
  * reference one Destination. Optional extra-answer maps live in Campaign
  * configuration and accepted submissions (ADR 0110).
@@ -25,7 +25,7 @@ defined('ABSPATH') || exit;
 final class Destination
 {
     /**
-     * @param string $type The {@see DestinationType} id — `wsms`, `mailchimp`.
+     * @param string $type The {@see DestinationType} id — `mailpoet`, `mailchimp`.
      * @param string|null $connectionId The Connection holding its credentials, or null where the type needs none.
      * @param array<string, mixed> $settings
      */

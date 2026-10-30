@@ -310,9 +310,8 @@ final class CaptureFormTest extends TestCase
     }
 
     /**
-     * WSMS's `ContactRepository::create()` hard-requires one of the two
-     * (ADR 0002), and a Lead carrying neither can never be grouped, exported
-     * usefully or pushed anywhere.
+     * A Lead carrying neither can never be grouped, exported usefully or
+     * pushed anywhere (ADR 0002).
      */
     public function testASubmissionCarryingNeitherIdentifierIsRefused(): void
     {

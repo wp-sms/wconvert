@@ -9,7 +9,8 @@ defined('ABSPATH') || exit;
  *
  * Named for what it is over rather than for what it does — the arrangement
  * {@see \WConvert\Storage\WpOptionStore} has with `OptionStore` and
- * {@see \WConvert\Destination\Wsms\WpWsmsContacts} has with `WsmsContacts`.
+ * {@see \WConvert\Destination\MailPoet\WpMailPoetSubscribers} has with
+ * `MailPoetSubscribers`.
  *
  * **This is the whole of the coupling to `wp_mail()`.** Whatever the site has
  * done to it — SMTP plugins, a transactional-mail service, a filter that

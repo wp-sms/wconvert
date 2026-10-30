@@ -13,7 +13,7 @@ export type { Availability } from '../goals/availability';
  * One field a Destination type offers, from its `settingsSchema()`.
  *
  * **`type` picks the control**, as of #31. It was documentation until then —
- * declared here and read nowhere, while the screen hard-coded WSMS's one field
+ * declared here and read nowhere, while the screen hard-coded the first type's one field
  * — which meant the second type to declare a field would have rendered none of
  * them. `Destinations.tsx` switches on it and falls back to a text input, so
  * a kind this bundle does not know is a degraded control rather than an
@@ -69,7 +69,7 @@ export interface DestinationUsage {
   live: boolean;
 }
 
-/** A kind of [[Destination]] this install can reach — WSMS, MailPoet or lead-magnet email. */
+/** A kind of [[Destination]] this install can reach — MailPoet, lead-magnet email or one of Pro's. */
 export interface DestinationType {
   id: string;
   label: string;
@@ -310,7 +310,7 @@ export const rePush = (id: string) =>
  *
  * `skipped` is the one that earns the third state: a Destination whose type
  * this install cannot run has not FAILED, and rendering that in red tells a
- * merchant with no WP SMS that their WP SMS Destination is broken when the
+ * merchant with no MailPoet that their MailPoet Destination is broken when the
  * plugin is simply not installed. It is the `locked`/`unavailable`
  * distinction one layer up, and the same reason it is not one word (ADR 0026).
  *

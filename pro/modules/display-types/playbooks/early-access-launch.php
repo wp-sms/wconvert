@@ -33,5 +33,5 @@ the autumn edit is in.', 'wconvert-pro'),
     'rules' => [
         ['type' => 'time_on_page', 'seconds' => 8],
     ],
-    'destination_hint' => ['types' => ['wsms', 'email_service_provider'], 'fields' => ['email']],
+    'destination_hint' => ['types' => ['email_service_provider'], 'fields' => ['email']],
 ];

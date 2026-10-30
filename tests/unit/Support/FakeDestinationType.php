@@ -64,6 +64,21 @@ class FakeDestinationType implements DestinationType
     /** @var list<array<string, mixed>> The credentials each schema read arrived with, in order. */
     public array $schemaCredentials = [];
 
+    /**
+     * A type that takes phone numbers as well as addresses.
+     *
+     * Free ships none since the WSMS push went (ADR 0174) — Pro's webhook is
+     * the real one — so the SMS [[Goal]]'s publish rules are exercised against
+     * this stand-in.
+     */
+    public static function phoneCapable(string $id = 'sms'): self
+    {
+        $type = new self($id);
+        $type->declaredRequirements = new DestinationRequirements(['email', 'phone'], [], ['email', 'phone', 'name'], audienceChannels: ['email', 'phone']);
+
+        return $type;
+    }
+
     public function __construct(
         private readonly string $id = 'fake',
         private readonly Tier $tier = Tier::Free,

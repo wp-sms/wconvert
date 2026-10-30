@@ -34,7 +34,8 @@ therefore the same size as the body it explained._
 
 The two halves of the sibling relationship pull opposite ways. Family
 resemblance is worth having — same publisher, and WP SMS integration is a
-headline feature, so a merchant may well run both side by side and should not
+headline feature *(Amended by [ADR 0174](0174-wsms-integration-removed-before-1-0.md): it
+was removed before 1.0; same publisher still holds)*, so a merchant may well run both side by side and should not
 feel handed to a different company halfway through. But WConvert reskinned as
 WP SMS is not a family, it is a suffix.
 

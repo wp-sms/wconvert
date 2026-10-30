@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
  * audiences are two Destinations over one Connection and the merchant pastes
  * the key once. A webhook's URL, signing secret and headers are a Connection
  * too, because a Zapier URL is itself a secret (ADR 0148). Not every
- * Destination has one: the WSMS push authenticates against nothing
+ * Destination has one: the MailPoet push authenticates against nothing
  * (CONTEXT.md, Connection).
  *
  * **The credentials sit in the clear**, and that is the honest answer rather

@@ -57,7 +57,7 @@ final class PrefillSnapshotTest extends TestCase
                 'success_headline' => 'You are on the list',
             ],
             'rules' => [['type' => 'page_load']],
-            'destination_hint' => ['types' => ['wsms'], 'fields' => ['email']],
+            'destination_hint' => ['types' => ['mailpoet'], 'fields' => ['email']],
         ], $overrides);
     }
 
@@ -303,7 +303,7 @@ final class PrefillSnapshotTest extends TestCase
     {
         $config = $this->draft()['config'];
 
-        $this->assertSame(['types' => ['wsms'], 'fields' => ['email']], $config['destination_hint']);
+        $this->assertSame(['types' => ['mailpoet'], 'fields' => ['email']], $config['destination_hint']);
         $this->assertArrayNotHasKey('destinations', $config);
     }
 

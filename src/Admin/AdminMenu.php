@@ -390,7 +390,7 @@ final class AdminMenu
         $tier = $manifest->tierThatShips(self::VARIANT_MODULE);
 
         return [
-            // `true` for the site half, always. A test needs no store, no WSMS
+            // `true` for the site half, always. A test needs no store, no MailPoet
             // and no other plugin — so `unavailable` is unreachable here, and
             // `Availability::of()` is still what answers rather than a boolean
             // this file recombines (ADR 0026).

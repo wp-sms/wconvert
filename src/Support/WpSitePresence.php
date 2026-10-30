@@ -45,14 +45,8 @@ final class WpSitePresence implements SitePresence
     {
         $class = match ($dependency) {
             SiteDependency::WooCommerce => 'WooCommerce',
-            // WSMS's own bootstrap, which is what "WP SMS is loaded" means. Its
-            // container is what the push reaches through, so the class that OWNS
-            // the container is the honest thing to ask about — a plugin whose
-            // files are present but which fataled before booting has no container
-            // to hand out.
-            SiteDependency::Wsms => 'WSms\\Bootstrap',
-            // MailPoet's own container wrapper, for the same reason: it is the
-            // class that owns the container the push reaches through, and
+            // MailPoet's own container wrapper: it is the class that owns the
+            // container the push reaches through, and
             // `mailpoet_initializer.php` calls `getInstance()` on it while the
             // plugin file is still loading. A MailPoet whose files are present
             // but whose requirements check bailed never touches it, which is

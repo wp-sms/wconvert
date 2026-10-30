@@ -1,8 +1,8 @@
 # WConvert
 
 WordPress lead-capture plugin — popups, floating bars, slide-ins, and inline
-forms, with goal-first creation. Runs standalone; integrates with WP SMS (WSMS)
-when present.
+forms, with goal-first creation. Runs standalone; Pro adds email service
+providers and a webhook.
 
 Read [`CONTEXT.md`](CONTEXT.md) before using any domain term. The glossary is
 load-bearing: several terms exist specifically to avoid collisions with WSMS's
@@ -87,9 +87,9 @@ WSMS 8 lives at
 `/Users/navidkashani/Local Sites/wsms8/app/public/wp-content/plugins/wp-sms-premium`.
 
 It is the **convention source** (PHP 8.1+, DI container, service providers,
-Vite + React admin, PHPStan, PHPUnit, Playwright, premium build split) and the
-**integration target** — but no code is shared and neither release cycle
-constrains the other. Read it; never modify it.
+Vite + React admin, PHPStan, PHPUnit, Playwright, premium build split). No code
+is shared and neither release cycle constrains the other. WConvert no longer
+integrates with it (ADR 0174). Read it; never modify it.
 
 ## Shipping changes
 

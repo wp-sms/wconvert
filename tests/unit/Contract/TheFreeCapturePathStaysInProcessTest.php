@@ -17,9 +17,9 @@ use WConvert\Tests\Unit\Support\PhpSource;
  * **The first is what `readme.txt` prints in bold** — *"no account, no
  * phone-home"* — and it is ADR 0007's tier line drawn as code rather than as
  * policy: a Destination that calls out over HTTP is [[Pro]]'s, and free
- * therefore registers exactly three types that are each in-process for the
- * same reason. WSMS is a sibling plugin in this process, `wp_mail()` is
- * WordPress's own, and MailPoet stores its subscribers in this database. That
+ * therefore registers exactly two types that are each in-process for the
+ * same reason. `wp_mail()` is WordPress's own, and MailPoet is a sibling
+ * plugin in this process that stores its subscribers in this database. That
  * is the whole argument that admits MailPoet to free (#87), so it deserves an
  * assertion rather than a code review.
  *

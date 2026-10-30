@@ -42,7 +42,7 @@ return [
     'copy' => [ /* Slot Role => words */ ],
     'rules' => [ ['type' => 'time_on_page', 'seconds' => 8] ],
     'targeting' => [ 'include' => [], 'exclude' => [] ],
-    'destination_hint' => ['types' => ['wsms'], 'fields' => ['email']],
+    'destination_hint' => ['types' => ['mailpoet'], 'fields' => ['email']],
 ];
 ```
 
@@ -213,7 +213,7 @@ It records a request; it does not manage quotes, replies or jobs.
 Destination notes must describe shipped support, not planned integrations.
 MailPoet can send the stable interest value to an existing custom text field
 chosen under **Save interest in MailPoet**, for **new subscribers only**.
-Existing subscriber fields remain unchanged. WSMS and lead-magnet email do not
+Existing subscriber fields remain unchanged. Lead-magnet email does not
 forward the choice; the answer remains in WConvert capture history and export.
 Never suggest that selecting a Playbook already picks a shared route or mapping.
 
