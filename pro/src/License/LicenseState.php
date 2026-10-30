@@ -18,7 +18,7 @@ final class LicenseState
     /** The states in which this site gets no update (ADR 0143); `UpdateGate` reads the same list. */
     public const NO_UPDATES = ['none', 'key_unreadable', 'moved', 'copy', 'disabled', 'expired', 'trial_ended', 'not_activated_here'];
 
-    private const CHECKOUT = 'https://wconvert.io/pro/';
+    private const CHECKOUT = 'https://wconvert.io/pricing/';
 
     private const SUPPORT = 'https://wconvert.io/support/';
 

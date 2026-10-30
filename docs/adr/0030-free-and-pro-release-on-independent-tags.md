@@ -57,7 +57,8 @@ published there is no version any install can be running, so there is no
 `WCONVERT_MIN_CORE` a Pro release could satisfy. This is a consequence of the
 condition rather than a limitation of the script, and it is worth stating because it
 is not visible from the sentence above — until free 0.1.0 is live on wp.org, no Pro
-release can pass its own guard. A wp.org outage blocks a Pro hotfix for the same
+release can pass its own guard. *(Corrected 2026-10-30: there was never a free
+0.1.0. The first free release is 1.0.0, so Pro 1.0.0 waits on free 1.0.0.)* A wp.org outage blocks a Pro hotfix for the same
 reason, and that is the trade: a blocked hotfix is a cost, while a hotfix that
 shipped because nobody could reach wp.org to say no is the failure the whole gate is
 about.*

@@ -5,7 +5,7 @@ defined('ABSPATH') || exit;
 $wconvertProPluginDir = dirname(__DIR__);
 
 if (!defined('WCONVERT_PRO_VERSION')) {
-    define('WCONVERT_PRO_VERSION', '0.1.0');
+    define('WCONVERT_PRO_VERSION', '1.0.0');
 }
 
 /*

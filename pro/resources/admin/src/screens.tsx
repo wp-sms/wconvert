@@ -18,7 +18,7 @@
  * shapes available are replacement (Pro's bundle, free's dequeued) or runtime
  * React injection into free's running app. The second needs the two scripts to
  * agree about load order, which is the failure ADR 0004 catalogues. Choosing
- * that after free 0.1.0 is on wp.org means changing free to grow an injection
+ * that after free 1.0.0 is on wp.org means changing free to grow an injection
  * seam, in a release every existing install downloads (ADR 0056).
  *
  * A/B testing was the first thing expected to land here, and **it did not.**

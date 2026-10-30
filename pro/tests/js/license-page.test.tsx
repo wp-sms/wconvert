@@ -12,7 +12,7 @@ const none: LicensePayload = {
   key: { masked: null, source: null }, buyer: null, domain_change: null,
   updates: { installed: '1.4.2', latest: '1.4.2', file_mods: true, update_url: null, checked_at: null },
   last_checked_at: null, last_success_at: null, reach: 'ok',
-  urls: { account: 'https://my.wconvert.io/account', checkout: 'https://wconvert.io/pro/', support: 'https://wconvert.io/support/' },
+  urls: { account: 'https://my.wconvert.io/account', checkout: 'https://wconvert.io/pricing/', support: 'https://wconvert.io/support/' },
   managed: null, notice: { dot: null, title: null, row: null },
   badge: { href: '#license', label: 'Activate Pro', prompt: true, tone: null, reason: null },
 };

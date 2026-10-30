@@ -64,6 +64,10 @@ and that string has a `pro/` segment in it, so the PHP check qualifies a path by
 where it is used — inside a require/include, or ending in `.php` — rather than
 by the segment alone.
 
+*(Corrected 2026-10-30: free's Pro link now goes to `wconvert.io/pricing/`,
+which has no `pro/` segment, because `wconvert.io/pro/` never existed. The rule
+stands for any Pro URL that does carry one; the scanner's fixture keeps that case.)*
+
 Check (b) reads its identifier list from the rule manifest of
 [ADR 0005](0005-the-rule-model-is-three-flat-closed-axes.md), so it cannot drift
 from what the manifest calls premium.

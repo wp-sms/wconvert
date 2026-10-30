@@ -465,7 +465,7 @@ final class LicenseStateTest extends TestCase
         $this->assertSame('https://my.wconvert.io/account/licenses/7', $urls['renew'], 'no renewal link from the store: the licence page');
         $this->assertSame('https://my.wconvert.io/account/billing', $urls['payment']);
         $this->assertSame('https://my.wconvert.io/account/downloads', $urls['downloads']);
-        $this->assertSame('https://wconvert.io/pro/', $urls['checkout']);
+        $this->assertSame('https://wconvert.io/pricing/', $urls['checkout']);
         $this->assertSame('https://wconvert.io/support/', $urls['support']);
     }
 
@@ -474,7 +474,7 @@ final class LicenseStateTest extends TestCase
         $urls = $this->payload(null)['urls'];
 
         $this->assertSame('https://my.wconvert.io/account', $urls['account']);
-        $this->assertSame('https://wconvert.io/pro/', $urls['checkout']);
+        $this->assertSame('https://wconvert.io/pricing/', $urls['checkout']);
     }
 
     /**

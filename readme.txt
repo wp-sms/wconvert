@@ -62,7 +62,7 @@ Every setup comes with copy written for that goal. You fill in your own brand an
 = 150+ ready-made designs =
 
 * **Over 150 designs** cover newsletters, coupons, lead magnets, enquiries, bookings and announcements. All the artwork is original and drawn in the page, so no image is loaded from another site.
-* **More than 80 designs ship inside the plugin** and work offline from day one.
+* **More than 50 designs ship inside the plugin** and work offline from day one.
 * **The rest come from the online [WConvert library](https://wconvert.io/templates/?utm_source=wordpress.org&utm_medium=plugin-directory&utm_campaign=wconvert-free&utm_content=designs)**, once you allow it. Add a design with a click, and it then works offline like the rest. Some designs need WConvert Pro.
 * **Click any part of a design to change it**: words, colours, fields and buttons, right beside a live preview.
 * **Move designs between sites.** Export a design to a file and import it on another site.

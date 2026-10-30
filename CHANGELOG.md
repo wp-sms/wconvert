@@ -12,8 +12,26 @@ the full record for the team.
 
 ## [Unreleased]
 
+## [1.0.0] - Free 1.0.0 and Pro 1.0.0, not yet released
+
 ### Added
 
+- First public release: popups and inline forms created goal-first, 57
+  designs built in and more than 150 in the online library, design import and
+  export, a lead log with consent records and CSV export, analytics by goal
+  with monthly targets, and a MailPoet integration.
+- Pro: a License page (WConvert → License, and the header's plan badge) to
+  activate by signing in to your account or with a key, see your sites and free
+  one, swap or remove the key, and see whether updates and support are on. A
+  licence never changes what Pro does: every problem state says Pro features keep
+  working. Updates are offered only while the licence covers this site, and
+  deleting Pro frees its site. A key in `WCONVERT_LICENSE_KEY` (optionally with
+  `WCONVERT_LICENSE_CONTACT`) shows the site's owner only whether updates are on
+  and who manages the licence. Pro refuses network activation, as free does.
+- Pro: the Plugins screen shows a License link and one line when the licence
+  needs something; Site Health gains a WConvert Pro license section.
+- Free: "Already bought Pro?" links to the account's downloads, beside Explore Pro
+  and under More with Pro.
 - Pro: the signed webhook destination (ADR 0148). Each accepted submission is
   posted as one documented JSON shape, signed by Standard Webhooks, to Zapier,
   Make, n8n or your own code. Setup asks which tool first, then only what that
@@ -53,6 +71,8 @@ the full record for the team.
 
 ### Fixed
 
+- "Explore Pro", Pro's buy link on the License page and Pro's Plugin URI go to
+  wconvert.io/pricing/. They pointed at wconvert.io/pro/, which does not exist.
 - Leads: when the server fails while the list is loading, the page shows
   one "Try again", and it reloads the list. The line saying how long
   submissions are kept now loads after the list, and a campaign-names error
@@ -98,24 +118,3 @@ the full record for the team.
   that moves to an older PHP or a WP-CLI run on one.
 - The design library build stubs `home_url()`, so `bin/build.sh` runs outside
   WordPress again.
-
-## [1.0.0] - not yet released (in WordPress.org review)
-
-### Added
-
-- Pro: a License page (WConvert → License, and the header's plan badge) to
-  activate by signing in to your account or with a key, see your sites and free
-  one, swap or remove the key, and see whether updates and support are on. A
-  licence never changes what Pro does: every problem state says Pro features keep
-  working. Updates are offered only while the licence covers this site, and
-  deleting Pro frees its site. A key in `WCONVERT_LICENSE_KEY` (optionally with
-  `WCONVERT_LICENSE_CONTACT`) shows the site's owner only whether updates are on
-  and who manages the licence. Pro refuses network activation, as free does.
-- Pro: the Plugins screen shows a License link and one line when the licence
-  needs something; Site Health gains a WConvert Pro license section.
-- Free: "Already bought Pro?" links to the account's downloads, beside Explore Pro
-  and under More with Pro.
-- First public release: popups and inline forms created goal-first, a library
-  of 68 designs, design import and export, a lead log with consent records and
-  CSV export, analytics by goal with monthly targets, and a MailPoet
-  integration.
