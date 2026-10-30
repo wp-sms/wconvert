@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dd50f1b6873362b0c2cbcaf48406ed88",
+    "content-hash": "37e9e68b04d161920b6f2175eeaf997f",
     "packages": [
         {
             "name": "veronalabs/wp-premium-sdk",
-            "version": "v1.0.0-beta.10",
+            "version": "v1.0.0-beta.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/veronalabs/wp-premium-sdk.git",
-                "reference": "95770415c4c9d657e7aed7a5eb9e6f9876361194"
+                "reference": "13d9bf0f870966a2331940e10fed89e74cd643e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/veronalabs/wp-premium-sdk/zipball/95770415c4c9d657e7aed7a5eb9e6f9876361194",
-                "reference": "95770415c4c9d657e7aed7a5eb9e6f9876361194",
+                "url": "https://api.github.com/repos/veronalabs/wp-premium-sdk/zipball/13d9bf0f870966a2331940e10fed89e74cd643e7",
+                "reference": "13d9bf0f870966a2331940e10fed89e74cd643e7",
                 "shasum": ""
             },
             "require": {
@@ -69,10 +69,10 @@
                 "wordpress"
             ],
             "support": {
-                "source": "https://github.com/veronalabs/wp-premium-sdk/tree/v1.0.0-beta.10",
+                "source": "https://github.com/veronalabs/wp-premium-sdk/tree/v1.0.0-beta.11",
                 "issues": "https://github.com/veronalabs/wp-premium-sdk/issues"
             },
-            "time": "2026-10-14T06:45:26+00:00"
+            "time": "2026-10-30T14:33:44+00:00"
         }
     ],
     "packages-dev": [
