@@ -68,6 +68,9 @@ the full record for the team.
     build to a site its licence does not cover.
   - A cancelled licence reads as turned off, not invalid.
   - Activating a subscription licence stores its current expiry date.
+- Pro: the licence SDK moves on to 1.0.0-beta.11. A site removed from the
+  licence in the store account now says "This site isn’t on your license" and
+  stops getting updates; before, it kept reading as active.
 
 ### Fixed
 

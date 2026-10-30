@@ -32,11 +32,12 @@ nothing, and asserts no file on the front-end read path touches it.
 ## Decisions
 
 1. **The SDK is in Pro only, scoped.** `pro/composer.json` (Pro's first) pins
-   `veronalabs/wp-premium-sdk` to **exactly `1.0.0-beta.10`** (raised from
+   `veronalabs/wp-premium-sdk` to **exactly `1.0.0-beta.11`** (raised from
    beta.8 to beta.9, which needs Nexus v2.3.1 to read the key from the
    `X-License-Key` header; *then to beta.10, which needs Nexus v2.4.1 for the
-   PKCE sign-in and sends this site's domain with the update check — see
-   "Status at beta.10" below*) — the gaps below are worked around against that
+   PKCE sign-in and sends this site's domain with the update check, and to
+   beta.11, which stores a removed site's `domain_not_allowed` — see "Status
+   at beta.10" and "Status at beta.11" below*) — the gaps below are worked around against that
    version, so a newer beta is a deliberate upgrade. The package is public and fetched over HTTPS; ADR 0015's "private
    repository" blocker is gone. wp-scoper copies it to `pro/packages/` under
    `WConvert\Pro\Deps`, and `pro/src/autoload.php` requires that classmap
@@ -177,7 +178,12 @@ store's choice, not a gap here. The page's `not_activated_here` is still not
 reached by the scheduled refresh or `?check=1`: `refreshSites()` discards the
 `domain_not_allowed` that would set `site.active` false (wp-premium-sdk#53,
 open). Until that ships, a site removed from the account reads as active on
-the page.
+the page. *Fixed in beta.11 — see below.*
+
+**Status at beta.11.** `refreshSites()` now stores `domain_not_allowed`
+(wp-premium-sdk#53), so the scheduled refresh and `?check=1` reach
+`not_activated_here`: a site removed in the account shows "This site isn’t on
+your license" and gets no updates, with no change on WConvert's side.
 
 ## Consequences
 
