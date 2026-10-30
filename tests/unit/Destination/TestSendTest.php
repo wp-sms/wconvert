@@ -192,8 +192,7 @@ final class TestSendTest extends TestCase
     /**
      * No [[Optin]] means no provenance to assert. `optinName` is null, which is
      * the case {@see \WConvert\Destination\PushContext} already documents:
-     * writing an empty `source_ref` would claim the push came from somewhere
-     * (ADR 0023).
+     * an empty name would claim the push came from somewhere (ADR 0148).
      */
     public function testItCarriesNoOptinNameAndTheDestinationsOwnSettings(): void
     {

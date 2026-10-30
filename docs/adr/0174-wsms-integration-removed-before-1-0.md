@@ -1,8 +1,8 @@
 # 0174: The WSMS integration is removed before 1.0
 
 Accepted 2026-10-30. Supersedes 0022, 0023 and 0024, the WSMS sections of 0016
-and 0025. Amends 0007, 0008, 0021, 0031, 0037, 0049, 0070, 0074, 0076,
-0086, 0110 and 0148 where they name WSMS as a shipped [[Destination]].
+and 0025. Amends 0002, 0007, 0008, 0015, 0021, 0031, 0037, 0049, 0070, 0074,
+0076, 0086, 0110 and 0148 where they name WSMS as a shipped [[Destination]].
 
 The WSMS [[Destination]] pushed a [[Lead]] into WP SMS 8's contacts, in process.
 WP SMS 8 has not shipped. WConvert 1.0 cannot release a Destination type whose

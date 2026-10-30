@@ -129,11 +129,12 @@ $optionsAtStart = $ownOptions();
 // THE PROMISE readme.txt PRINTS IN BOLD: no account, no phone-home.
 // ============================================================================
 // ADR 0007 makes a [[Destination]] that calls out over HTTP a [[Pro]] feature,
-// which is why free registers exactly two types and both are in-process. `tests/unit/Contract/TheFreeCapturePathStaysInProcessTest.php`
-// proves that at the SOURCE, which is the assertion that catches a line
-// somebody adds — and this is the other half: the whole of a real capture, a
-// real dispatch and a real MailPoet push, watched for a request that actually
-// leaves the machine.
+// which is why free registers exactly two types and both are in-process.
+// `tests/unit/Contract/TheFreeCapturePathStaysInProcessTest.php` proves that
+// at the SOURCE, which is the assertion that catches a line somebody adds —
+// and this is the other half: the whole of a real capture, a real dispatch
+// and a real MailPoet push, watched for a request that actually leaves the
+// machine.
 //
 // `pre_http_request` is the first filter in `WP_Http::request()`, so short-
 // circuiting here means nothing is sent and every caller is recorded.

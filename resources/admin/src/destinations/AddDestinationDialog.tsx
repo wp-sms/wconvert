@@ -138,8 +138,8 @@ export function AddDestinationDialog({
         />
 
         {/*
-          Keyed by the type, so opening MailPoet after lead-magnet email seeds a fresh
-          draft rather than editing the last one's.
+          Keyed by the type, so opening MailPoet after lead-magnet email seeds
+          a fresh draft rather than editing the last one's.
         */}
         {type === null ? <>
           <AdminDialogBody>

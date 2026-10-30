@@ -176,7 +176,7 @@ final class PushDispatcher
             // forwards it, and deliberately so. A test send from the
             // Destinations screen has no [[Optin]] — naming one would assert
             // provenance that does not exist, which is the case
-            // {@see PushContext} already documents null for (ADR 0023).
+            // {@see PushContext} already documents null for (ADR 0148).
             $optin?->name,
             $destination->settings,
             $this->connections->credentialsFor($destination),

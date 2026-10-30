@@ -22,7 +22,7 @@ defined('ABSPATH') || exit;
  *
  * **`consent` is reserved and no v1 Destination writes it.** What a Lead
  * carries is the [[Consent Record]] — the sentence exactly as shown — and no
- * push writes lifecycle state of any kind (ADR 0022). It is named
+ * push writes lifecycle state of any kind (ADR 0022, ADR 0049). It is named
  * here so that the reservation is visible rather than forgotten, and so the
  * next implementer does not read its absence as room.
  *

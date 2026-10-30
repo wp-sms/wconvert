@@ -53,8 +53,8 @@ defined('ABSPATH') || exit;
  * lifecycle state, and the seam has no way to report one
  * ({@see MailPoetSubscribers}).
  *
- * **Nothing is filled in on a match.** MailPoet's only public update path rewrites `source` and
- * `subscribed_ip` on every call, so filling an empty `first_name` would also
+ * **Nothing is filled in on a match.** MailPoet's only public update path
+ * rewrites `source` and `subscribed_ip` on every call, so filling an empty `first_name` would also
  * restamp the provenance of somebody MailPoet already knows — with an IP
  * WConvert does not have and would not store if it did (ADR 0017), taken from
  * whatever request happened to run the queue. A captured name lands where it
@@ -259,10 +259,11 @@ final class MailPoetDestinationType implements DestinationType
      *
      * Nothing here rate-limits — this is read only by
      * {@see \WConvert\Destination\BulkRePush}'s stagger, and organic capture
-     * cannot approach it (ADR 0008). It is that low because creating a
+     * cannot approach it (ADR 0008). It is held to thirty because creating a
      * subscriber can hand MailPoet a confirmation email to send synchronously
-     * through the site's own transport, and above the lead-magnet email's 6 because a re-push replays Leads that are already
-     * subscribers, which sends nothing at all.
+     * through the site's own transport, and it sits above the lead-magnet
+     * email's 6 because a re-push replays Leads that are already subscribers, which
+     * sends nothing at all.
      */
     public function throughput(): int
     {

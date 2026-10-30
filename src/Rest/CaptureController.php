@@ -34,8 +34,8 @@ defined('ABSPATH') || exit;
  *
  * The refusal happens **in the request the visitor is still in**, never in a
  * queued job. Every push is queued, so an uncanonicalisable phone accepted
- * here becomes an exception inside a job minutes later with the visitor gone and nothing on screen having failed
- * (ADR 0021). The form is the only place they can fix it.
+ * here becomes an exception inside a job minutes later with the visitor gone
+ * and nothing on screen having failed (ADR 0021). The form is the only place they can fix it.
  *
  * @since 0.1.0
  */

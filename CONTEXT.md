@@ -33,7 +33,8 @@ screen. See [ADR 0106](docs/adr/0106-question-journeys-extend-the-paid-loader.md
 gets wrong: **WConvert has no double opt-in and never will.** Confirming an
 opt-in means reading and mutating [[Contact]] state, which the [[Destination]]
 contract forbids outright. Where double opt-in is wanted it belongs to whoever
-owns the Contact — WSMS's own subscription form, or the ESP's audience setting.
+owns the Contact — MailPoet's own subscription form, or the ESP's audience
+setting.
 
 Not every [[Conversion]] is a Lead. A click-through or an anonymous quiz result
 produces a Conversion without a Lead.

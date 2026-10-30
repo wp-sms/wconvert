@@ -14,10 +14,10 @@ defined('ABSPATH') || exit;
  * one [[Connection]] and a stateful type could only ever be one of them. So
  * configuration is passed per call and the type holds none (#4).
  *
- * **`optinName` rides along rather than being looked up**, because a
- * receiving system reads the Optin's NAME at push time: it can never resolve a
- * WConvert ULID — it never calls into WConvert — so an id alone is
- * permanently unreadable text (ADR 0023). It is a snapshot in the same sense
+ * **`optinName` rides along rather than being looked up**, because the
+ * webhook's receiver reads the Optin's NAME at push time: it can never resolve
+ * a WConvert ULID — it never calls into WConvert — so an id alone is
+ * permanently unreadable text (ADR 0148; first argued in ADR 0023). It is a snapshot in the same sense
  * `playbook_id` and the consent sentence are.
  *
  * It is **nullable**, and null is not the same as empty. An Optin is never

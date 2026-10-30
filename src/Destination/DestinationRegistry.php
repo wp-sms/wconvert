@@ -13,8 +13,8 @@ defined('ABSPATH') || exit;
  * The [[Destination]] types this install can reach, and which
  * [[Availability]] state each is in.
  *
- * Free registers the MailPoet push and the lead-magnet email. **Pro registers its own types into this same
- * registry** by pulling it out of the shared container from its service
+ * Free registers the MailPoet push and the lead-magnet email. **Pro registers
+ * its own types into this same registry** by pulling it out of the shared container from its service
  * provider's `boot()` — the seam is a core-fired lifecycle action plus a
  * shared container, not a filter passing a registry around (ADR 0015).
  *

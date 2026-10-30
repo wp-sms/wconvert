@@ -58,6 +58,8 @@ for Action Scheduler jobs.
   identifier that cannot be canonicalised is rejected at submit. Grouping the log
   by identifier is a lie otherwise, and WSMS's `create()` normalises on the way
   in, so an un-canonicalised row cannot find the Contact it created itself.*
+  *Amended by [ADR 0174](0174-wsms-integration-removed-before-1-0.md): the WSMS
+  push is gone. Canonical form stands on the grouping argument alone.*
 - **Removing a [[Lead]] is a `DELETE`, and that is not an exception to this
   ADR.** `WConvert\Database\Connection` gained a `delete()` for the personal-data
   eraser and the retention prune, and it refuses any SQL that does not begin
