@@ -32,9 +32,11 @@ nothing, and asserts no file on the front-end read path touches it.
 ## Decisions
 
 1. **The SDK is in Pro only, scoped.** `pro/composer.json` (Pro's first) pins
-   `veronalabs/wp-premium-sdk` to **exactly `1.0.0-beta.9`** (raised from
-   beta.8; beta.9 needs Nexus v2.3.1, which reads the key from the
-   `X-License-Key` header) — the gaps below are worked around against that
+   `veronalabs/wp-premium-sdk` to **exactly `1.0.0-beta.10`** (raised from
+   beta.8 to beta.9, which needs Nexus v2.3.1 to read the key from the
+   `X-License-Key` header; *then to beta.10, which needs Nexus v2.4.1 for the
+   PKCE sign-in and sends this site's domain with the update check — see
+   "Status at beta.10" below*) — the gaps below are worked around against that
    version, so a newer beta is a deliberate upgrade. The package is public and fetched over HTTPS; ADR 0015's "private
    repository" blocker is gone. wp-scoper copies it to `pro/packages/` under
    `WConvert\Pro\Deps`, and `pro/src/autoload.php` requires that classmap
@@ -166,6 +168,16 @@ the code shown for an unknown one);
 `forbidden` comes only from the SDK's admin-ajax endpoints, which stay
 unhooked, and `manifest_auth_missing` only from the updater's background
 fetch, which records it rather than throwing.
+
+**Status at beta.10.** The update check now sends this site's domain
+(wp-premium-sdk#48), so Nexus refuses the build to a domain its licence does
+not cover. It covers any domain while a seat is free (`License::coversDomain()`),
+so a site removed from a licence that still has room keeps its updates — the
+store's choice, not a gap here. The page's `not_activated_here` is still not
+reached by the scheduled refresh or `?check=1`: `refreshSites()` discards the
+`domain_not_allowed` that would set `site.active` false (wp-premium-sdk#53,
+open). Until that ships, a site removed from the account reads as active on
+the page.
 
 ## Consequences
 

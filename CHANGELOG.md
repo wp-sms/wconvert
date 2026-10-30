@@ -44,6 +44,12 @@ the full record for the team.
     the seat it just took.
   - A sign-in error, such as an account with no licences (`no_licenses`),
     comes back to the License page with its code.
+- Pro: the licence SDK moves on to 1.0.0-beta.10, which needs Nexus v2.4.1 or
+  later (account sign-in uses PKCE).
+  - The update check sends this site's address, so the store can refuse the
+    build to a site its licence does not cover.
+  - A cancelled licence reads as turned off, not invalid.
+  - Activating a subscription licence stores its current expiry date.
 
 ### Fixed
 
