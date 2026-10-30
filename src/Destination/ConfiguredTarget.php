@@ -26,9 +26,9 @@ defined('ABSPATH') || exit;
  * the other is the shape of a settings schema. A field kind added to
  * `SettingsField` is an edit here and nowhere near a sentence.
  *
- * A field whose options the provider could not enumerate — WSMS's tags, which
- * are the merchant's own strings — falls back to the stored ids, which is what
- * the merchant typed and therefore still reads as their words.
+ * A field whose options the provider could not enumerate — because it was
+ * unreachable, or because the values are free text — falls back to the stored
+ * ids: less readable than a name, and still the honest answer.
  *
  * ========================================================================
  * THREE STATES, BECAUSE AN EMPTY ANSWER MEANS THREE DIFFERENT THINGS.

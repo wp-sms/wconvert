@@ -82,7 +82,7 @@ final class HealthStore
      * type is not `ready` here.
      *
      * **This is the "recorded" half of "skipped and recorded, never
-     * enqueued"** (#4). Without it a deactivated WSMS or a lapsed licence
+     * enqueued"** (#4). Without it a deactivated MailPoet or a lapsed licence
      * drops every push with no trace anywhere — the Optin keeps converting,
      * the Leads keep landing, and nothing says the pushes stopped, which is
      * precisely the support case Destination health exists for.

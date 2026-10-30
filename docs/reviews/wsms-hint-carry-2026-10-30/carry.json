@@ -1,0 +1,179 @@
+{
+  "schema": 1,
+  "reason": "ADR 0174 drops 'wsms' from destination_hint.types; nothing else in these setups changed.",
+  "method": "For each setup, the branch's pilot entry with 'wsms' put back at the head of destination_hint.types, hashed by campaignRevision() with the branch's rendered identity, reproduces the approved revision exactly. Same rendered identity = same visitor output; the only shipped difference is the hint.",
+  "setups": [
+    {
+      "id": "drop-alerts",
+      "rendered_identity": "cb45fdfa8d8a92c254d17c11f0c4d33bce227a729dbb25f6f563b9fdf64a1e14",
+      "approved_revision": "e095f076835af90b5ca5c0b9defda47dd1bdf0a50b6dd29f46d7ebe20a3bd749",
+      "main_revision_recomputed": "e095f076835af90b5ca5c0b9defda47dd1bdf0a50b6dd29f46d7ebe20a3bd749",
+      "branch_revision": "e5f84d605d0f744af339aae4ecf6d515fc0546cb62c2d22c9b0b15ecb2e20d53",
+      "decision": "approved",
+      "hint_before": {
+        "types": [
+          "wsms"
+        ],
+        "fields": [
+          "phone"
+        ]
+      },
+      "hint_after": {
+        "types": [],
+        "fields": [
+          "phone"
+        ]
+      }
+    },
+    {
+      "id": "final-hours-sale",
+      "rendered_identity": "69020e64003d518bc8f0fd58e1c868564d15b0e9ba502a794add055ad707e369",
+      "approved_revision": "817e48597d084347a78b94427ae7cc1d703aa775e488d4fa2c1d379f9f379b32",
+      "main_revision_recomputed": "817e48597d084347a78b94427ae7cc1d703aa775e488d4fa2c1d379f9f379b32",
+      "branch_revision": "36ccde30c4f68a647c5f23b75cf3ea75fb8374c14494a8d72f4cf99d2c16795d",
+      "decision": "approved",
+      "hint_before": {
+        "types": [
+          "wsms",
+          "email_service_provider"
+        ],
+        "fields": [
+          "email"
+        ]
+      },
+      "hint_after": {
+        "types": [
+          "email_service_provider"
+        ],
+        "fields": [
+          "email"
+        ]
+      }
+    },
+    {
+      "id": "early-access-launch",
+      "rendered_identity": "6c0fe59a653fc0be096383c6dbd19272d45ce11122ac392e5f69fce4a895ba9a",
+      "approved_revision": "eea8cea2e1e2c0a464528cb3e418c91aea64cf709d0f9b768e162ecac4f657ed",
+      "main_revision_recomputed": "eea8cea2e1e2c0a464528cb3e418c91aea64cf709d0f9b768e162ecac4f657ed",
+      "branch_revision": "a956cdffac905cd67eb6f842d66a32f5a676972320ef1fd631bb22a8a177b77c",
+      "decision": "approved",
+      "hint_before": {
+        "types": [
+          "wsms",
+          "email_service_provider"
+        ],
+        "fields": [
+          "email"
+        ]
+      },
+      "hint_after": {
+        "types": [
+          "email_service_provider"
+        ],
+        "fields": [
+          "email"
+        ]
+      }
+    },
+    {
+      "id": "monthly-planting-letter",
+      "rendered_identity": "f5a0dabb5ce4b01b8b01abf12ba7b2ec2364e8a4ddabcbf0306703a837b83445",
+      "approved_revision": "7b66af0e236b0d97abfd0b2bcd606d80539df4d1700699852134ce7ea15542e6",
+      "main_revision_recomputed": "7b66af0e236b0d97abfd0b2bcd606d80539df4d1700699852134ce7ea15542e6",
+      "branch_revision": "38d33c472af5d5f8f3a5056ac4ef016cfdfc364f00f4c6634226da8549f64a56",
+      "decision": "approved",
+      "hint_before": {
+        "types": [
+          "wsms",
+          "email_service_provider"
+        ],
+        "fields": [
+          "email"
+        ]
+      },
+      "hint_after": {
+        "types": [
+          "email_service_provider"
+        ],
+        "fields": [
+          "email"
+        ]
+      }
+    },
+    {
+      "id": "new-batch-first-look",
+      "rendered_identity": "fff6c138e053f4f90f3c41373b95403b6599a1cc71be1400f687c23638a53071",
+      "approved_revision": "c6e1a107d19e2bc50628310203dce4ad37cf26eb446ec0ba59aadad7a449d70e",
+      "main_revision_recomputed": "c6e1a107d19e2bc50628310203dce4ad37cf26eb446ec0ba59aadad7a449d70e",
+      "branch_revision": "1e199452fea40a8ac77584de82bdc3e5229010618aea44a637148f2438ac2562",
+      "decision": "approved",
+      "hint_before": {
+        "types": [
+          "wsms",
+          "email_service_provider"
+        ],
+        "fields": [
+          "email"
+        ]
+      },
+      "hint_after": {
+        "types": [
+          "email_service_provider"
+        ],
+        "fields": [
+          "email"
+        ]
+      }
+    },
+    {
+      "id": "release-notes-signup",
+      "rendered_identity": "a16389eb0a1a3fe456365aff0de7948dd3e8681ae94aa7b8584a49d25cb1b044",
+      "approved_revision": "0a67dfc8ae7d2c0e7674dea8266f38962f84252e7b3effcb62d9659ba9f996ce",
+      "main_revision_recomputed": "0a67dfc8ae7d2c0e7674dea8266f38962f84252e7b3effcb62d9659ba9f996ce",
+      "branch_revision": "9b9eda6f20249450e3fa29560129f3869e8996dbbb02e5553136209ec70ed22a",
+      "decision": "approved",
+      "hint_before": {
+        "types": [
+          "wsms",
+          "email_service_provider"
+        ],
+        "fields": [
+          "email"
+        ]
+      },
+      "hint_after": {
+        "types": [
+          "email_service_provider"
+        ],
+        "fields": [
+          "email"
+        ]
+      }
+    },
+    {
+      "id": "bakery-first-loaf",
+      "rendered_identity": "54a9a38498145d9ada600986dfc07ac3c0ac6cd7cc29852d586314f8570ac417",
+      "approved_revision": "40e2cab24c5e45b6d56c3810da5e3bc0194848e804d77a9501c2b2a0f1fc6adf",
+      "main_revision_recomputed": "40e2cab24c5e45b6d56c3810da5e3bc0194848e804d77a9501c2b2a0f1fc6adf",
+      "branch_revision": "a12f11c8ffd748f95624e6941d976cbf37c7439434f595400723c4a06a48208e",
+      "decision": "approved",
+      "hint_before": {
+        "types": [
+          "wsms",
+          "email_service_provider"
+        ],
+        "fields": [
+          "email"
+        ]
+      },
+      "hint_after": {
+        "types": [
+          "email_service_provider"
+        ],
+        "fields": [
+          "email"
+        ]
+      }
+    }
+  ]
+}

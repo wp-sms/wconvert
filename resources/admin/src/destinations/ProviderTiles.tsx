@@ -40,7 +40,7 @@ export function channelRefusal(accepted: readonly string[], rule: ChannelRule | 
 export function providerRefusal(type: DestinationType, rule: ChannelRule | null): string | null {
   const rendering = renderingFor(type.availability, 'settings_list');
   if (rendering === 'upsell') return sprintf(/* translators: %s: the product that supplies it, e.g. “WConvert Pro”. */ __('Included with %s.', 'wconvert'), tierProductName(type.tier));
-  if (rendering !== 'offer') return sprintf(/* translators: %s: the plugin or platform it needs, e.g. “WP SMS”. */ __('Needs %s on this site.', 'wconvert'), type.requires_label ?? __('something this site does not have', 'wconvert'));
+  if (rendering !== 'offer') return sprintf(/* translators: %s: the plugin or platform it needs, e.g. “MailPoet”. */ __('Needs %s on this site.', 'wconvert'), type.requires_label ?? __('something this site does not have', 'wconvert'));
   return channelRefusal(channels(type.requirements), rule);
 }
 

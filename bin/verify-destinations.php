@@ -44,7 +44,6 @@ use WConvert\Destination\MailPoet\WpMailPoetSubscribers;
 use WConvert\Destination\OptinBinding;
 use WConvert\Destination\PushJob;
 use WConvert\Destination\PushWorker;
-use WConvert\Destination\Wsms\WsmsDestinationType;
 use WConvert\Goal\Goal;
 use WConvert\Lead\LeadRepository;
 use WConvert\Optin\Optin;
@@ -130,12 +129,12 @@ $optionsAtStart = $ownOptions();
 // THE PROMISE readme.txt PRINTS IN BOLD: no account, no phone-home.
 // ============================================================================
 // ADR 0007 makes a [[Destination]] that calls out over HTTP a [[Pro]] feature,
-// which is why free registers exactly three types and every one of them is
-// in-process. `tests/unit/Contract/TheFreeCapturePathStaysInProcessTest.php`
-// proves that at the SOURCE, which is the assertion that catches a line
-// somebody adds — and this is the other half: the whole of a real capture, a
-// real dispatch and a real MailPoet push, watched for a request that actually
-// leaves the machine.
+// which is why free registers exactly two types and both are in-process.
+// `tests/unit/Contract/TheFreeCapturePathStaysInProcessTest.php` proves that
+// at the SOURCE, which is the assertion that catches a line somebody adds —
+// and this is the other half: the whole of a real capture, a real dispatch
+// and a real MailPoet push, watched for a request that actually leaves the
+// machine.
 //
 // `pre_http_request` is the first filter in `WP_Http::request()`, so short-
 // circuiting here means nothing is sent and every caller is recorded.
@@ -167,21 +166,11 @@ echo "\nThe registry\n";
 /** @var DestinationRegistry $registry */
 $registry = $container->resolve(DestinationRegistry::class);
 
-$verify->check('the WSMS type is registered by free', true, $registry->find(WsmsDestinationType::ID) !== null);
-
-// `unavailable` on a site with no WP SMS, and `ready` where it is loaded —
-// either is correct, and both must be a real answer rather than a fatal. What
-// it must never be is `locked`: a missing plugin is not something we can sell.
-$wsmsAvailability = $registry->availabilityOf(WsmsDestinationType::ID)->value;
-
-echo '  note the WSMS Destination is "' . $wsmsAvailability . "\" here\n";
-
-$verify->check('the WSMS Destination is ready or unavailable, never locked', true, in_array($wsmsAvailability, ['ready', 'unavailable'], true));
-$verify->check(
-    'and is dispatchable only where WP SMS is loaded',
-    $wsmsAvailability === 'ready',
-    $registry->isDispatchable(WsmsDestinationType::ID)
-);
+// Free's own types, whatever Pro adds beside them: the lead-magnet email and
+// MailPoet, and nothing else (ADR 0174).
+$freeTypes = array_keys(array_filter($registry->all(), static fn ($type): bool => $type->tier() === \WConvert\Support\Tier::Free));
+sort($freeTypes);
+$verify->check('free registers exactly the lead-magnet email and MailPoet', [LeadMagnetDestinationType::ID, MailPoetDestinationType::ID], $freeTypes);
 
 /** @var DestinationStore $destinations */
 $destinations = $container->resolve(DestinationStore::class);
@@ -316,7 +305,7 @@ $handoffOf = static function (string $leadId, string $submission = 'primary') us
 echo "\nA capture hands off\n";
 
 // A type that is always dispatchable, so the handoff is exercised whether or
-// not this install has WP SMS. Registered here rather than shipped: it is the
+// not this install has MailPoet. Registered here rather than shipped: it is the
 // test double, and it lives for the length of this script.
 $registry->register(new class () implements \WConvert\Destination\DestinationType {
     public function id(): string
@@ -470,7 +459,7 @@ $verify->check(
 );
 
 // It needs nothing of the site, so it is `ready` on every install — including
-// one with no WP SMS.
+// one with no MailPoet.
 $verify->check(
     'and is ready on a Standalone install',
     'ready',

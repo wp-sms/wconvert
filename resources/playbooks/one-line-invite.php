@@ -49,7 +49,7 @@ return [
         ['type' => 'scroll_depth', 'percent' => 60],
     ],
     'destination_hint' => [
-        'types' => ['wsms', 'email_service_provider'],
+        'types' => ['email_service_provider'],
         'fields' => ['email'],
     ],
 ];

@@ -13,8 +13,8 @@ defined('ABSPATH') || exit;
  * The [[Destination]] types this install can reach, and which
  * [[Availability]] state each is in.
  *
- * Free registers the WSMS push. **Pro registers its own types into this same
- * registry** by pulling it out of the shared container from its service
+ * Free registers the MailPoet push and the lead-magnet email. **Pro registers
+ * its own types into this same registry** by pulling it out of the shared container from its service
  * provider's `boot()` — the seam is a core-fired lifecycle action plus a
  * shared container, not a filter passing a registry around (ADR 0015).
  *
@@ -25,7 +25,7 @@ defined('ABSPATH') || exit;
  *
  * The three states are resolved here rather than by each type, because
  * `unavailable` beating `locked` is arithmetic that must not be re-derived per
- * surface — a merchant with no WSMS is never sold Pro for a feature Pro would
+ * surface — a merchant with no MailPoet is never sold Pro for a feature Pro would
  * not give them either (ADR 0026).
  *
  * @since 0.1.0

@@ -82,10 +82,10 @@ require_once $wconvertAutoloader;
 |--------------------------------------------------------------------------
 | Action Scheduler, bundled — a CORE dependency, not a premium one
 |--------------------------------------------------------------------------
-| Every [[Destination]] push is queued, including the in-process WSMS one, so
-| the free plugin needs a scheduler with no ESP in sight (#4, ADR 0008). WSMS's
-| own build stages Action Scheduler into its FREE tier for the same reason, and
-| WooCommerce has shipped it that way for years.
+| Every [[Destination]] push is queued, including the in-process MailPoet and
+| lead-magnet ones, so the free plugin needs a scheduler with no ESP in sight
+| (#4, ADR 0008). WSMS's own build stages Action Scheduler into its FREE tier
+| for the same reason, and WooCommerce has shipped it that way for years.
 |
 | Loaded HERE rather than on `plugins_loaded`, because Action Scheduler
 | version-negotiates at load time so the newest copy on the site wins — and a

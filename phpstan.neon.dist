@@ -27,7 +27,7 @@ parameters:
         # autoloads (#4). Scanned rather than stubbed: the real signatures are
         # right there.
         - vendor/woocommerce/action-scheduler/functions.php
-        # WooCommerce and WSMS, which WpSitePresence asks about and never
+        # WooCommerce and MailPoet, which WpSitePresence asks about and never
         # calls. See the header of the file itself.
         - phpstan-stubs/site-dependencies.php
         # The MCP Adapter, which WConvert uses only where it is loaded.

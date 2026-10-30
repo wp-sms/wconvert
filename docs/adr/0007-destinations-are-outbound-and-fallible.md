@@ -45,6 +45,8 @@ nothing to read.
 > registers three types and each is free for one reason repeated: WP SMS is a
 > sibling plugin in this process, `wp_mail()` is WordPress's own, and MailPoet
 > stores its subscribers in this database and hands other plugins a PHP API.
+> *Amended by [ADR 0174](0174-wsms-integration-removed-before-1-0.md): the WSMS push was removed before 1.0, so free registers two
+> types, lead-magnet email and MailPoet. The criterion is unchanged.*
 > See [ADR 0049](0049-the-mailpoet-push-adds-membership-without-touching-status.md),
 > which also makes free's *"no outbound HTTP at all"* an assertion rather than
 > a claim: `tests/unit/Contract/TheFreeCapturePathStaysInProcessTest.php` reads

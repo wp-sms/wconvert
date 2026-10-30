@@ -75,7 +75,7 @@ final class TestADestinationTest extends TestCase
         $this->options = new FakeOptionStore();
         $this->queue = new FakeQueue();
         // A type that forwards submissions whole, so a campaign's draft test carries its questions.
-        $this->type = new class ('fake', requires: SiteDependency::Wsms) extends FakeDestinationType implements \WConvert\Destination\ForwardsWholeSubmission {};
+        $this->type = new class ('fake', requires: SiteDependency::MailPoet) extends FakeDestinationType implements \WConvert\Destination\ForwardsWholeSubmission {};
 
         $this->db = new FakeConnection();
         $db = $this->db;
@@ -87,7 +87,7 @@ final class TestADestinationTest extends TestCase
 
         $registry = (new DestinationRegistry(
             new FakeProPresence(),
-            new FakeSitePresence([SiteDependency::Wsms])
+            new FakeSitePresence([SiteDependency::MailPoet])
         ))->register($this->type);
 
         $optins = new OptinRepository(
@@ -218,8 +218,8 @@ final class TestADestinationTest extends TestCase
      * **A provider's own words reach the screen.**
      *
      * ADR 0042: the admin speaks only when it changes what you do next, and a
-     * generic *"the test failed"* changes nothing. The WSMS push already
-     * stores failure text exactly as WSMS wrote it, and the same posture
+     * generic *"the test failed"* changes nothing. The MailPoet push already
+     * stores failure text exactly as MailPoet wrote it, and the same posture
      * applies here — including the punctuation, because `DeliveryFailures`
      * truncates with `mb_substr()` and an HTML entity cut in half is what
      * escaping on the way through produces.
@@ -245,7 +245,7 @@ final class TestADestinationTest extends TestCase
 
     /**
      * **A type this install cannot run is not a failure**, and collapsing that
-     * into one would tell a merchant with no WP SMS that their WP SMS
+     * into one would tell a merchant with no MailPoet that their MailPoet
      * Destination is broken when the truth is that the plugin is not
      * installed. It is the `locked`/`unavailable` distinction one layer up
      * (ADR 0026).
@@ -348,8 +348,8 @@ final class TestADestinationTest extends TestCase
     /**
      * **A type with no [[Connection]] has nothing to check, and says so.**
      *
-     * Every free type is in this state — the WSMS push, the MailPoet push and
-     * the lead-magnet email all authenticate against nothing. A green tick
+     * Every free type is in this state — the MailPoet push and the
+     * lead-magnet email both authenticate against nothing. A green tick
      * here would teach a merchant that this button means *"this works"*, which
      * is what the other button is for.
      */
@@ -467,7 +467,7 @@ final class TestADestinationTest extends TestCase
     /**
      * **The unavailable answer comes before the address**, because a type this
      * install cannot run has nothing to send wherever the address came from —
-     * and telling a merchant with no WP SMS to check their WordPress profile
+     * and telling a merchant with no MailPoet to check their WordPress profile
      * sends them to fix the wrong thing.
      */
     public function testAnUnavailableTypeAnswersThatFirstEvenWithNoAddress(): void

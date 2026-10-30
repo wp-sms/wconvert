@@ -111,5 +111,5 @@ the full record for the team.
   and under More with Pro.
 - First public release: popups and inline forms created goal-first, a library
   of 68 designs, design import and export, a lead log with consent records and
-  CSV export, analytics by goal with monthly targets, and MailPoet and WP SMS
-  integrations.
+  CSV export, analytics by goal with monthly targets, and a MailPoet
+  integration.

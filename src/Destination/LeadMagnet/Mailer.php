@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
  * bootstrap's own header states the rule — *"a class that needs more of
  * WordPress than this is a class whose WordPress touchpoints should have been
  * passed in"* — and this is the same shape
- * {@see \WConvert\Destination\Wsms\WsmsContacts} has over WSMS.
+ * {@see \WConvert\Destination\MailPoet\MailPoetSubscribers} has over MailPoet.
  *
  * **{@see self::accepts()} is here rather than inside `send()`**, and that is
  * the design rather than a convenience. The two answers are different KINDS of
@@ -39,8 +39,7 @@ interface Mailer
      * anything `filter_var` rejects — and it is the STRICTER of the two
      * checks, so an address that reached storage passes this one in practice.
      * What it buys is that the one Lead-specific terminal branch is expressed
-     * rather than assumed, exactly as
-     * {@see \WConvert\Destination\Wsms\WsmsDestinationType} documents its own.
+     * rather than assumed.
      */
     public function accepts(string $address): bool;
 

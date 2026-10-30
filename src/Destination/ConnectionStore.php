@@ -16,8 +16,8 @@ defined('ABSPATH') || exit;
  * underneath it, and two Destinations sharing that key must share one copy of
  * it or the merchant has two places to rotate it.
  *
- * **A free install writes nothing here.** The WSMS push authenticates against
- * nothing and the lead-magnet email has no account; every Destination type
+ * **A free install writes nothing here.** The MailPoet push authenticates
+ * against nothing and the lead-magnet email has no account; every Destination type
  * with credentials is Pro's (#4). The store exists in free anyway because the
  * shape of the contract is free's — Pro supplies types, never plumbing.
  *

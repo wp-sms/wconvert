@@ -112,10 +112,9 @@ final class ConfiguredTargetTest extends TestCase
     }
 
     /**
-     * **WSMS's tags, which the provider cannot enumerate**, because they are
-     * the merchant's own strings and the admin has no list to offer. The
-     * stored ids ARE the words the merchant typed, so they stand as the
-     * answer rather than being dropped for want of a label.
+     * **A field the provider cannot enumerate** — free text here, or a
+     * provider that could not be reached. The stored ids stand as the answer
+     * rather than being dropped for want of a label.
      */
     public function testAnUnenumerableFieldFallsBackToTheStoredIds(): void
     {

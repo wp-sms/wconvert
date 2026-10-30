@@ -2,8 +2,8 @@
 
 WConvert is a WordPress lead-capture plugin: it displays conversion campaigns
 (popups, bars, slide-ins, inline forms), decides who sees them and when, and
-pushes captured leads onward. It runs standalone and integrates with WP SMS
-(WSMS) when present.
+pushes captured leads onward. It runs standalone, and Pro adds email service
+providers and a webhook.
 
 It serves subscriber collection and enquiries. A quote request is a captured
 Lead that another plugin or service can act on, not an inbox thread, contact
@@ -33,7 +33,8 @@ screen. See [ADR 0106](docs/adr/0106-question-journeys-extend-the-paid-loader.md
 gets wrong: **WConvert has no double opt-in and never will.** Confirming an
 opt-in means reading and mutating [[Contact]] state, which the [[Destination]]
 contract forbids outright. Where double opt-in is wanted it belongs to whoever
-owns the Contact — WSMS's own subscription form, or the ESP's audience setting.
+owns the Contact — MailPoet's own subscription form, or the ESP's audience
+setting.
 
 Not every [[Conversion]] is a Lead. A click-through or an anonymous quiz result
 produces a Conversion without a Lead.
@@ -269,8 +270,8 @@ on "closed with Escape" than on "clicked the X".
 A person as a **managed entity**, with a consent lifecycle (opted in, opted out,
 bounced, complained), list membership, tags, and segment membership.
 
-WConvert never owns Contacts. WSMS and external ESPs (Mailchimp, EmailOctopus,
-…) own them. A Lead becomes a Contact only by crossing into one of those systems
+WConvert never owns Contacts. MailPoet and external ESPs (Mailchimp,
+EmailOctopus, …) own them. A Lead becomes a Contact only by crossing into one of those systems
 via a [[Destination]].
 
 > **The line to hold:** a Lead is an event, a Contact is an entity. Any feature
@@ -288,8 +289,8 @@ state at all: not the subscription status, not an opt-out, not on a re-subscribe
 > adds a per-Destination choice to update eligible mapped **non-identity** values
 > on adapters with a verified safe write path. Keep existing details is the
 > default. The existing prohibition on identifier replacement, merging and
-> subscription/suppression changes remains. WSMS and MailPoet retain their current
-> behavior until their individual adapter support is verified.
+> subscription/suppression changes remains. MailPoet retains its current
+> behavior until its adapter support is verified.
 
 That asymmetry is deliberate. Creating a Contact is a claim about someone the owning
 system has never heard of, where the form the visitor filled in is the only evidence
@@ -1539,7 +1540,7 @@ field kind remains part of the *design*; its labels and options are content.
 
 ### Destination
 
-A configured endpoint a captured [[Lead]] is pushed to — WSMS, MailPoet, an email
+A configured endpoint a captured [[Lead]] is pushed to — MailPoet, an email
 service provider, a webhook, or the lead-magnet delivery email.
 
 A Destination is **outbound and fallible**: it is configured, it is optional, it
@@ -1561,8 +1562,8 @@ declare `audience_channels` separately from captured fields; transactional email
 is not audience subscription. See ADR 0086. No Contact state is added to WConvert.
 
 A Destination is configured once, site-wide, and *includes whatever selects the
-target inside the remote system* — the Mailchimp audience, the WSMS tag. So a
-Destination is a **named route**, and the name is the merchant's own: two
+target inside the remote system* — the Mailchimp audience, the MailPoet list.
+So a Destination is a **named route**, and the name is the merchant's own: two
 Destinations of one type over one [[Connection]] differ only in what they point
 at, so *"Newsletter signups"* and *"Product updates"* are two MailPoet
 Destinations and the name is what tells them apart on the [[Optin]] that binds
@@ -1594,11 +1595,11 @@ independently of saving or undoing one Optin. Unknown usage is not presented as
 an unused route (ADR 0074).
 
 Each shipped adapter declares its identifiers, required settings and values it
-uses. WSMS accepts email or phone; MailPoet and lead-magnet email need email.
+uses. MailPoet and lead-magnet email need email; a webhook accepts email or phone.
 MailPoet additionally needs a list and can receive optional campaign-mapped
 answers in an existing custom text field, for new subscribers only.
-Existing subscriber fields remain unchanged. Neither WSMS nor lead-magnet email
-forwards extra answers; without a compatible mapping they remain local. The editor
+Existing subscriber fields remain unchanged. Lead-magnet email does not
+forward extra answers; without a compatible mapping they remain local. The editor
 distinguishes an absent required identifier from an optional one and explains
 unsupported answers without claiming provider delivery. See
 [ADR 0074](docs/adr/0074-destinations-declare-requirements-and-show-shared-usage.md).
@@ -1699,25 +1700,27 @@ A webhook has one too, and its URL is part of it: a Zapier or Make URL is a
 secret, so it is a credential rather than a setting. The Connection also holds
 the webhook's signing secret and custom headers (ADR 0148).
 
-Not every Destination has one. The lead-magnet delivery email, the WSMS push and
-the MailPoet push authenticate against nothing — the last two because they are the same site, where there is no
-key to paste.
+Not every Destination has one. The lead-magnet delivery email and the MailPoet
+push authenticate against nothing, because they run on the same site, where
+there is no key to paste.
 
 ### Standalone
 
 WConvert running with no [[Destination]] that depends on another system — no
-WSMS, no MailPoet, no email service provider, no webhook. Capture works,
+MailPoet, no email service provider, no webhook. Capture works,
 [[Lead]]s are recorded, CSV export works, and the lead-magnet delivery email
 still sends, because none of that leaves the WordPress install.
 
-**Free's three Destination types are the three that never leave it**, and that
-is one rule rather than three exceptions: a Destination that calls out over HTTP
+**Free's two Destination types are the two that never leave it**, and that
+is one rule rather than two exceptions: a Destination that calls out over HTTP
 is [[Pro]]'s, so what free may register is whatever is already in this process —
-the WSMS push, the lead-magnet email, and the MailPoet push
+the lead-magnet email and the MailPoet push
 ([ADR 0049](docs/adr/0049-the-mailpoet-push-adds-membership-without-touching-status.md)).
+The WSMS push was the third until it was removed before 1.0
+([ADR 0174](docs/adr/0174-wsms-integration-removed-before-1-0.md)).
 
-This must be a fully working install. WSMS is never a runtime requirement of the
-capture path.
+This must be a fully working install. No other plugin is a runtime requirement
+of the capture path.
 
 A Standalone install has no double opt-in — not as a gap, but because nothing in
 it ever sends marketing to a [[Lead]]. The log is a log. The one thing that does
@@ -1812,7 +1815,7 @@ load-bearing:
   only upsell is its header link and one static "More with Pro" list, each with
   a plain "Already bought?" link to the account's downloads (ADR 0143).
 - **`unavailable`** — absent because something the *site* would need is missing: no
-  WooCommerce, no WSMS, no MailPoet. Not buyable from us.
+  WooCommerce, no MailPoet. Not buyable from us.
 
 Where both reasons apply at once, **`unavailable` wins** — a merchant with no store is
 never sold Pro for a feature Pro would not give them either.
@@ -1893,24 +1896,7 @@ A Milestone that has been reached changes nothing a merchant does next, so the
 screen draws only the first one *not* reached, with the door that fixes it — and
 nothing at all once a site is converting.
 
-## Boundary with WSMS
-
-WSMS already owns contacts, lists, tags, segments, subscription forms, ESP
-integrations, campaigns (batch sends), and a flow engine. WConvert deliberately
-owns none of these.
-
-WConvert owns what WSMS lacks: the **display layer** — what to show, to whom,
-when, and where — plus the conversion analytics of that display.
-
-When both plugins are active:
-
-- WConvert registers itself with WSMS's `ExtensionRegistry` for discovery and
-  admin presence.
-- WConvert pushes Leads to WSMS as a Destination.
-- WSMS never calls into WConvert, and WConvert degrades cleanly to Standalone if
-  WSMS is deactivated.
-
-### External analytics integration
+## External analytics integration
 
 The optional paid analytics integration exports campaign observations through one
 selected existing Google tag, GTM container or Plausible script. It is separate from native WConvert statistics

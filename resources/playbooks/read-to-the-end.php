@@ -68,7 +68,6 @@ is in.', 'wconvert'),
     ],
     'destination_hint' => [
         'types' => [
-            'wsms',
             'email_service_provider',
         ],
         'fields' => [

@@ -11,8 +11,8 @@ use WConvert\Destination\DestinationRegistry;
 use WConvert\Destination\DestinationRequirements;
 use WConvert\Destination\DestinationStore;
 use WConvert\Destination\HealthStore;
+use WConvert\Destination\MailPoet\MailPoetDestinationType;
 use WConvert\Destination\PushDispatcher;
-use WConvert\Destination\Wsms\WsmsDestinationType;
 use WConvert\Lead\LeadRepository;
 use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
@@ -23,11 +23,11 @@ use WConvert\Rules\RuleVocabulary;
 use WConvert\Support\SiteDependency;
 use WConvert\Tests\Unit\Support\FakeConnection;
 use WConvert\Tests\Unit\Support\FakeDestinationType;
+use WConvert\Tests\Unit\Support\FakeMailPoetSubscribers;
 use WConvert\Tests\Unit\Support\FakeOptionStore;
 use WConvert\Tests\Unit\Support\FakeProPresence;
 use WConvert\Tests\Unit\Support\FakeQueue;
 use WConvert\Tests\Unit\Support\FakeSitePresence;
-use WConvert\Tests\Unit\Support\FakeWsmsContacts;
 
 /**
  * The [[Destination]] routes, and the guarantee that lives in the response
@@ -60,8 +60,8 @@ final class DestinationRoutesTest extends TestCase
 
         $registry = (new DestinationRegistry(
             new FakeProPresence(),
-            new FakeSitePresence([SiteDependency::Wsms])
-        ))->register(new WsmsDestinationType(new FakeWsmsContacts()));
+            new FakeSitePresence([SiteDependency::MailPoet])
+        ))->register(new MailPoetDestinationType(new FakeMailPoetSubscribers()));
 
         $optins = new OptinRepository(
             $db,
@@ -122,10 +122,10 @@ final class DestinationRoutesTest extends TestCase
 
     public function testProviderRequirementsTravelWithTypesAndConfiguredRoutes(): void
     {
-        (new DestinationStore($this->options))->save(null, 'wsms', 'WP SMS', null, []);
+        (new DestinationStore($this->options))->save(null, 'mailpoet', 'MailPoet', null, []);
         $payload = $this->controller->index()->get_data();
-        $expected = (new WsmsDestinationType(new FakeWsmsContacts()))->requirements()->toArray();
-        self::assertSame(['email', 'phone'], $expected['capture_any_of']);
+        $expected = (new MailPoetDestinationType(new FakeMailPoetSubscribers()))->requirements()->toArray();
+        self::assertSame(['email'], $expected['capture_any_of']);
         self::assertSame($expected, $payload['types'][0]['requirements']);
         self::assertSame($expected, $payload['destinations'][0]['requirements']);
     }
@@ -165,7 +165,7 @@ final class DestinationRoutesTest extends TestCase
 
     public function testHealthTravelsBesideEachConfiguredDestination(): void
     {
-        $id = (new DestinationStore($this->options))->save(null, 'wsms', 'WP SMS', null, [])->id;
+        $id = (new DestinationStore($this->options))->save(null, 'mailpoet', 'MailPoet', null, [])->id;
         (new HealthStore($this->options))->failed($id, 'Gateway timeout', '2026-08-25 10:00:00');
 
         $payload = $this->controller->index()->get_data();
@@ -391,9 +391,8 @@ final class DestinationRoutesTest extends TestCase
      * A controller over one registered type, sharing this test's option store
      * unless another is given.
      *
-     * {@see FakeDestinationType} is what makes the schema staged and counted —
-     * `WsmsDestinationType` declares one field it cannot enumerate, which is
-     * the right subject for one of these cases and none of the others.
+     * {@see FakeDestinationType} is what makes the schema staged and counted,
+     * which none of the real types can.
      */
     private function controllerFor(
         FakeDestinationType $type,
@@ -408,7 +407,7 @@ final class DestinationRoutesTest extends TestCase
 
         $registry = (new DestinationRegistry(
             new FakeProPresence(),
-            new FakeSitePresence([SiteDependency::Wsms])
+            new FakeSitePresence([SiteDependency::MailPoet])
         ))->register($type);
 
         $optins = new OptinRepository(

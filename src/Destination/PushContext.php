@@ -14,19 +14,19 @@ defined('ABSPATH') || exit;
  * one [[Connection]] and a stateful type could only ever be one of them. So
  * configuration is passed per call and the type holds none (#4).
  *
- * **`optinName` rides along rather than being looked up**, because the WSMS
- * push sets `source_ref` to the Optin's NAME at push time: WSMS can never
- * resolve a WConvert ULID — it never calls into WConvert — so an id there is
- * permanently unreadable text (ADR 0023). It is a snapshot in the same sense
+ * **`optinName` rides along rather than being looked up**, because the
+ * webhook's receiver reads the Optin's NAME at push time: it can never resolve
+ * a WConvert ULID — it never calls into WConvert — so an id alone is
+ * permanently unreadable text (ADR 0148; first argued in ADR 0023). It is a snapshot in the same sense
  * `playbook_id` and the consent sentence are.
  *
  * It is **nullable**, and null is not the same as empty. An Optin is never
  * hard-deleted, so a missing name means a row was removed that nothing should
- * remove — and writing `source_ref = ''` there would assert provenance that
- * does not exist, where leaving the column unset says so honestly.
+ * remove — and sending an empty name there would assert provenance that
+ * does not exist, where null says so honestly.
  *
  * `credentials` is empty for a Destination whose type has no Connection. The
- * WSMS push authenticates against nothing: it is an in-process PHP call.
+ * MailPoet push authenticates against nothing: it is an in-process PHP call.
  *
  * @since 0.1.0
  */

@@ -12,7 +12,7 @@ use WConvert\Support\Availability;
  * Availability names **why** a registry member is absent, never how it
  * renders: `ready` is present and usable, `locked` is absent because the
  * install has no [[Pro]], and `unavailable` is absent because something the
- * *site* would need is missing — no WooCommerce, no WSMS (CONTEXT.md,
+ * *site* would need is missing — no WooCommerce, no MailPoet (CONTEXT.md,
  * Availability).
  *
  * **Where both reasons apply, `unavailable` wins.** That is the whole of the

@@ -92,7 +92,7 @@ export function destinationStatus(destination: Destination, type: DestinationTyp
       state: 'paused',
       badge: <Badge variant="warning">{__('Paused', 'wconvert')}</Badge>,
       issue: sprintf(
-        /* translators: %s: the plugin or platform it needs, e.g. “WP SMS”. */
+        /* translators: %s: the plugin or platform it needs, e.g. “MailPoet”. */
         __('Needs %s on this site, so submissions are kept in WConvert and not sent until it runs.', 'wconvert'),
         type?.requires_label ?? __('something this site does not have', 'wconvert'),
       ),
@@ -137,7 +137,7 @@ export function sendRefusal(destination: Destination, problems: readonly string[
  * report three ways, and only one of them used colour.
  *
  * `skipped` is NEUTRAL: a route whose type this install cannot run has not
- * failed, and red would tell a merchant with no WP SMS that their WP SMS route
+ * failed, and red would tell a merchant with no MailPoet that their MailPoet route
  * is broken when the plugin is simply not installed (ADR 0026). The message is
  * the provider's own words where it supplied any; React escapes it.
  */

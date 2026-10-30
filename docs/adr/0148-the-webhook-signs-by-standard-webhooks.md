@@ -104,7 +104,9 @@ mapping (`settingsSchema()` is empty), and it is JSON only.
   Optin id and goal. Other types ignore them. A type that forwards the
   submission whole implements the marker `ForwardsWholeSubmission`; only such a
   type receives a campaign editor's questions and campaign on a test, so the
-  WSMS push never writes a test's campaign name as `source_ref`. A test send carries a full
+  WSMS push never writes a test's campaign name as `source_ref` *(Amended by [ADR 0174](0174-wsms-integration-removed-before-1-0.md):
+  the WSMS push is gone; MailPoet and the lead-magnet email take no
+  questions either)*. A test send carries a full
   sample with `test: true`. From the campaign editor, the draft test carries
   that campaign's question ids and labels with the merchant's sample answers
   and its campaign, so a receiver can map them before the first real Lead.

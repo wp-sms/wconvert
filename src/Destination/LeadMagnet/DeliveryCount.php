@@ -20,9 +20,9 @@ defined('ABSPATH') || exit;
  *   to count. Counting elsewhere would put rows on a card that never reads
  *   them and would make `conversions − lead_magnet_delivered` meaningless on
  *   the Goal that does.
- * - **By [[Destination]] type.** A merchant can bind the WSMS push *and* the
- *   delivery email to one lead-magnet Optin — an entirely ordinary
- *   configuration — and counting the WSMS success as a delivery would report
+ * - **By [[Destination]] type.** A merchant can bind the MailPoet push *and*
+ *   the delivery email to one lead-magnet Optin — an entirely ordinary
+ *   configuration — and counting the MailPoet success as a delivery would report
  *   two deliveries per Conversion and a negative failure count.
  *
  * The second is the one that is easy to miss, because the first sounds

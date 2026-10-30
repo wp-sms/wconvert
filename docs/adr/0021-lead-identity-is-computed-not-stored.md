@@ -130,7 +130,8 @@ so the rule needs no second branch.*
 - The lead log gains a grouping view; nothing else in the product gains a person.
 - E.164 is enforced on a [[Standalone]] install where WSMS is absent — **a
   WConvert-side rule that exists because WSMS has one.** Cheap, real, and recorded
-  here rather than discovered later.
+  here rather than discovered later. *Amended by [ADR 0174](0174-wsms-integration-removed-before-1-0.md): the WSMS push is gone and
+  the rule stays. E.164 is a standard, and the Lead log groups by it.*
 - Two Leads sharing no identifier value are two strangers, permanently. See
   [ADR 0022](0022-the-wsms-push-fills-blanks-and-never-mutates-state.md).
 - Reversing this is a migration plus a backfill that cannot recover what was never

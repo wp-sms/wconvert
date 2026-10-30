@@ -102,7 +102,8 @@ Three requests, all of which will arrive:
 **Import my old list from OptinMonster / Thrive Leads.** The competitor's list is
 a set of contacts, not a set of capture events. It has no Optin, no page, no
 impression, and no consent wording. Where the merchant genuinely wants those
-people reachable, the destination is WSMS or the ESP — systems that own
+people reachable, the destination is WSMS or the ESP *(Amended by [ADR 0174](0174-wsms-integration-removed-before-1-0.md): WSMS is no longer a
+Destination; an ESP, through Pro, is)* — systems that own
 [[Contact]]s and have a lifecycle to receive them. WConvert declining is not a
 missing feature; it is the [[Destination]] boundary working.
 
@@ -113,7 +114,8 @@ never observed. A log you can append to by hand is not a log.
 
 **An admin "add lead" button**, for the phone order or the trade-show card. Same
 defect in miniature, and the honest answer is that this person is a Contact —
-they belong in WSMS, entered through the surface that asks about consent
+they belong in WSMS *(Amended by [ADR 0174](0174-wsms-integration-removed-before-1-0.md): or any system
+that owns Contacts)*, entered through the surface that asks about consent
 properly.
 
 ## Consequences

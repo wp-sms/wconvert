@@ -1,0 +1,59 @@
+{
+  "id": "bakery-first-loaf",
+  "revision": "a12f11c8ffd748f95624e6941d976cbf37c7439434f595400723c4a06a48208e",
+  "base_id": "7cdb52cacb4d9add06e95d24872fee3a1574fb8101766f9829d8bd1197637b1a",
+  "decision": "approved",
+  "reviewer": "Content carry (ADR 0174)",
+  "note": "Only destination_hint.types changed ('wsms' removed with the WSMS integration). Restoring it reproduces the approved revision under the same rendered identity, so visitors and the editor get the same screens. Not a new review.",
+  "at": "2026-10-30T08:05:40Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/bakery-first-loaf-320.png",
+          "sha256": "e18d53207810948b2784751cd85e5b4d371f34cc7ed30923a3c4cc56f315e1f3"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/bakery-first-loaf-1440.png",
+          "sha256": "176a655ad23cbd61d7e3e3d92e779af49605b75fc070eff679312a759591a9f7"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/review.md",
+          "sha256": "de10b9e52b18a25d1a2a2141034132a8661bb20452e5b49ab2b99129c08792ed"
+        },
+        {
+          "path": "docs/reviews/wsms-hint-carry-2026-10-30/carry.json",
+          "sha256": "ba50106b0dac1720a3628a306987781fd7e61bdc737e0ac05f679444becdc23a"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/results.json",
+          "sha256": "a7427fb3737d6699cfc42b06595915a3e9ba372ae13085006fd7b3779788327e"
+        },
+        {
+          "path": "docs/reviews/wsms-hint-carry-2026-10-30/carry.json",
+          "sha256": "ba50106b0dac1720a3628a306987781fd7e61bdc737e0ac05f679444becdc23a"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/results.json",
+          "sha256": "a7427fb3737d6699cfc42b06595915a3e9ba372ae13085006fd7b3779788327e"
+        },
+        {
+          "path": "docs/reviews/wsms-hint-carry-2026-10-30/carry.json",
+          "sha256": "ba50106b0dac1720a3628a306987781fd7e61bdc737e0ac05f679444becdc23a"
+        }
+      ]
+    }
+  },
+  "record_id": "3787130a5a10892ddf9a600ab9f482cdc87bc63d8f7d1813ca43abc55667c9d8"
+}

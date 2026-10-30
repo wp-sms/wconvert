@@ -14,11 +14,9 @@ defined('ABSPATH') || exit;
  * and offers a merchant a WooCommerce licence we do not have (ADR 0026).
  *
  * A closed enum rather than a string on each member, so "no WooCommerce" has
- * one spelling and {@see SitePresence} has one thing to answer about. One case
- * in v1: CONTEXT.md's [[Availability]] entry also names WSMS, but nothing in
- * v1 needs it — a Standalone install captures phone numbers into the [[Lead]]
- * log like any other capture, and WSMS is a [[Destination]], which is optional
- * by definition.
+ * one spelling and {@see SitePresence} has one thing to answer about. A
+ * Standalone install captures phone numbers into the [[Lead]] log like any
+ * other capture, so the SMS [[Goal]] needs nothing here.
  *
  * @since 0.1.0
  */
@@ -31,24 +29,10 @@ enum SiteDependency: string
     case WooCommerce = 'woocommerce';
 
     /**
-     * WP SMS, which the WSMS [[Destination]] pushes into.
-     *
-     * **`unavailable` and never `locked`.** The WSMS push ships in the free
-     * plugin, so a site without it is not missing a tier we sell — it is
-     * missing a plugin, and the two are the whole of ADR 0026's distinction.
-     *
-     * This case arrived with the push (#30) and not before. The comment that
-     * used to stand here said nothing in v1 needed it, and was right at the
-     * time: a Standalone install captures phone numbers into the [[Lead]] log
-     * like any other capture, and needs no Destination to do it.
-     */
-    case Wsms = 'wsms';
-
-    /**
      * MailPoet, which the MailPoet [[Destination]] pushes into.
      *
-     * **`unavailable` and never `locked`**, on the same reading as the case
-     * above: the MailPoet push ships in the free plugin, so a site without it
+     * **`unavailable` and never `locked`.** The MailPoet push ships in the
+     * free plugin, so a site without it
      * is not missing a tier we sell — it is missing a plugin, and we do not
      * sell those either (ADR 0026).
      *
@@ -63,7 +47,7 @@ enum SiteDependency: string
      * What to call it on screen.
      *
      * Here rather than in the admin bundle because the slug is not copy: a
-     * surface interpolating `wsms` into "Needs %s on this site" produces a
+     * surface interpolating `mailpoet` into "Needs %s on this site" produces a
      * sentence no merchant can act on, and one built in TypeScript would be a
      * second spelling of this list that `make-pot` cannot see.
      */
@@ -71,7 +55,6 @@ enum SiteDependency: string
     {
         return match ($this) {
             self::WooCommerce => __('WooCommerce', 'wconvert'),
-            self::Wsms => __('WP SMS', 'wconvert'),
             self::MailPoet => __('MailPoet', 'wconvert'),
         };
     }

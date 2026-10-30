@@ -46,7 +46,7 @@ return [
         ['type' => 'page_load'],
     ],
     'destination_hint' => [
-        'types' => ['wsms'],
+        'types' => [],
         'fields' => ['phone'],
     ],
 ];

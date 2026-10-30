@@ -395,7 +395,7 @@ A [[Destination]] is **outbound and fallible** — configured, optional, one of
 several, and able to fail without the capture failing
 ([ADR 0007](docs/adr/0007-destinations-are-outbound-and-fallible.md)). **The
 Lead log is not one**: it is the Lead store, written first and always. Free
-ships the WSMS push, MailPoet push when MailPoet is installed, and lead-magnet
+ships the MailPoet push when MailPoet is installed and the lead-magnet
 delivery email over `wp_mail()`. The Pro `destinations` module adds Mailchimp,
 Brevo and Mailtrap email-contact adapters.
 
@@ -423,11 +423,11 @@ is a Mailtrap Contact on no list. WConvert never sends a subscription status
 or removes a list, and Mailtrap's API has no double opt-in, so a new marketing
 Contact lands subscribed.
 
-**Everything is queued, including the WSMS push.** Action Scheduler is a core
-dependency bundled in the free plugin — three free features want a scheduler
-with no ESP in sight — and it is loaded from `wconvert.php` rather than through
-Composer's autoloader, because it version-negotiates at load and the newest
-copy on the site must win.
+**Everything is queued, including the in-process pushes.** Action Scheduler is
+a core dependency bundled in the free plugin — the MailPoet push and the
+lead-magnet email want a scheduler with no ESP in sight — and it is loaded
+from `wconvert.php` rather than through Composer's autoloader, because it
+version-negotiates at load and the newest copy on the site must win.
 
 **A job carries a Lead id and a Destination id, and nothing else.** Job
 arguments live in `actionscheduler_actions` for that plugin's whole retention
@@ -472,7 +472,7 @@ hundred consecutive outages. They are covered instead by a bounded ring of the
 last ~200 terminal failures, holding a Lead id and an error string.
 
 The last row is the third thing that goes wrong and is neither of the other
-two. A Destination whose type is not `ready` — a deactivated WP SMS, a lapsed
+two. A Destination whose type is not `ready` — a deactivated MailPoet, a lapsed
 licence — is **skipped and recorded, never enqueued**: an Action Scheduler job
 whose handler is unregistered retries against nothing forever. Nothing was
 attempted, so it is not an outage; and one ring entry per capture would fill
@@ -507,9 +507,9 @@ terminal, and that is near-vacuous — capture already refuses anything
 `filter_var` rejects.
 
 A successful delivery writes one `lead_magnet_delivered` counter, scoped **both
-by Goal and by Destination type**: a merchant can bind the WSMS push *and* the
-delivery email to one lead-magnet Optin, and counting the WSMS success as a
-delivery would report two deliveries per conversion. `conversions −
+by Goal and by Destination type**: a merchant can bind the MailPoet push
+*and* the delivery email to one lead-magnet Optin, and counting the MailPoet
+success as a delivery would report two deliveries per conversion. `conversions −
 lead_magnet_delivered`, clamped at zero, is then the *conversions with no
 delivery yet* figure on the Goal's card. Exactly-once is a property of the job
 chain — it re-queues only on a retryable failure and stops at success — rather
@@ -536,10 +536,10 @@ counter, and asserts whichever MailPoet shape it is booted into. **It refuses
 to run on an install that has Leads.** CI runs it on every pull request that
 touches PHP.
 
-With WSMS deactivated the install is [[Standalone]] and fully working: capture,
-the lead log, CSV export and the lead-magnet delivery email all run, and the
-WSMS Destination reads as `unavailable` rather than `locked` — a missing plugin
-is not something we can sell. The delivery email never reads `unavailable`,
+With MailPoet deactivated the install is [[Standalone]] and fully working:
+capture, the lead log, CSV export and the lead-magnet delivery email all run,
+and the MailPoet Destination reads as `unavailable` rather than `locked` — a
+missing plugin is not something we can sell. The delivery email never reads `unavailable`,
 because `wp_mail()` is WordPress's and there is nothing for it to be missing.
 
 ## Analytics

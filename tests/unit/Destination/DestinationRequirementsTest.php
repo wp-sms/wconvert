@@ -13,7 +13,7 @@ use WConvert\Tests\Unit\Support\FakeMailPoetSubscribers;
  *
  * Mailchimp, Brevo and Mailtrap add a Contact to exactly one list. A
  * Destination saved with two used to read as ready and then fail every push
- * (#223). MailPoet's lists and WSMS tags take several, so `ids` alone still
+ * (#223). MailPoet's lists take several, so `ids` alone still
  * means "one or more".
  */
 #[CoversClass(DestinationRequirements::class)]

@@ -48,7 +48,6 @@ return [
     ],
     'destination_hint' => [
         'types' => [
-            'wsms',
             'email_service_provider',
         ],
         'fields' => [

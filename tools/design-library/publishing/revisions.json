@@ -1864,23 +1864,23 @@
       "added": 173
     },
     "final-hours-sale": {
-      "revision": 3,
-      "content": "0c6a7b84994f80396091078a4892b0ae3044699965538a6f2a2b27e63bd6f56e",
+      "revision": 4,
+      "content": "429b15cffac7be25a2ba276474bc35f50bbf857998af1964e8b980695e1d4c67",
       "added": 186
     },
     "early-access-launch": {
-      "revision": 4,
-      "content": "ba8c3ed518ed16670b8cf4101fd85fef7d19d69538fc97f5106bf60185cad684",
+      "revision": 5,
+      "content": "efc6e393ad0d6114068c9988e4394f4097a226b3f1f3900f60bdd52451083615",
       "added": 187
     },
     "monthly-planting-letter": {
-      "revision": 3,
-      "content": "b40246fbf41479efe3a3f6b84d3a2f9165a051634750dd8f3f4afd9d2ef5dcea",
+      "revision": 4,
+      "content": "21d19d7002740b4cf9703062bfb01018a49adf1db47c87f7d389ff1d1d26dcc4",
       "added": 188
     },
     "new-batch-first-look": {
-      "revision": 3,
-      "content": "a4c1d0a53c14b899ab2389092c6582708baff65fce87ba2b3175c1d0b22db23c",
+      "revision": 4,
+      "content": "88e3b01556c87b41dae37584fe027f9afdf256bfc210df6b5f9ed45ff71cd5cc",
       "added": 189
     },
     "finish-the-set": {
@@ -1889,13 +1889,13 @@
       "added": 190
     },
     "release-notes-signup": {
-      "revision": 3,
-      "content": "87c2842540438b6dac1d685665035f35f92a7ba5f5f5e012cdc94d5301a7b83f",
+      "revision": 4,
+      "content": "68e3c52554c0ef9fb6b17b1da0dc97f9ea52adabe876052f4e529f5b859b8f14",
       "added": 191
     },
     "bakery-first-loaf": {
-      "revision": 2,
-      "content": "3f1e5d795037f0300b4adbed50e1a2588cc12e2ca220f44bd0a5141885e2c7f7",
+      "revision": 3,
+      "content": "1d2fbbbd897d897d0401f8d005bdb4fb8abd048aef51a774cf16e67173928abf",
       "added": 192
     },
     "announcement-bar": {
@@ -1904,8 +1904,8 @@
       "added": 193
     },
     "article-end-newsletter": {
-      "revision": 2,
-      "content": "0d967ff3197aa0ea865601ef19040385e1ffecb54e6595bcba2913d7b0a27dbe",
+      "revision": 3,
+      "content": "33c032ec781f8ff4a94d2288a73582d2d5d86c60c8d6ca5464dd627db42838e8",
       "added": 194
     },
     "assembly-guidance": {
@@ -1939,13 +1939,13 @@
       "added": 200
     },
     "coupon-ticket": {
-      "revision": 2,
-      "content": "e34950334f59947da3ecd31c1e08cc337b4d4828def4d9d5bdb13be4c1bf55f4",
+      "revision": 3,
+      "content": "beaf220c043b7fe6c50b744eca4b3565979990a427be6a27b3515b62554059c8",
       "added": 201
     },
     "drop-alerts": {
-      "revision": 3,
-      "content": "513170335b4c1b3c433d45e8e573b0237f97d706d4d08a75b9d8c77ae62b6438",
+      "revision": 4,
+      "content": "3b0402fe496fde6fabf70a696b858a0643da1cda0b07dbec7603eab54c97177d",
       "added": 202
     },
     "experience-kit-finder": {
@@ -1959,8 +1959,8 @@
       "added": 204
     },
     "fullscreen-newsletter": {
-      "revision": 2,
-      "content": "6f3dc89e4a174367a746e25441cefa97a8d5bd7cfce8814d2856f6dbd1b8dfa5",
+      "revision": 3,
+      "content": "66977e4d44199051e5badd7d81c2b705a14a9c4ca3988157f8893955e80c705e",
       "added": 205
     },
     "gift-finder": {
@@ -2004,8 +2004,8 @@
       "added": 213
     },
     "one-line-invite": {
-      "revision": 2,
-      "content": "edc84af467fedcdccc516fed1f5655096ffbfb4a630631c4f304db845b166a8d",
+      "revision": 3,
+      "content": "1096a380de1f9bdaa316b868fd9a32648adcd16a5dbb9738eef704bbadc70e8a",
       "added": 214
     },
     "portfolio-feedback-request": {
@@ -2034,8 +2034,8 @@
       "added": 219
     },
     "read-to-the-end": {
-      "revision": 2,
-      "content": "ede6edef3b5a7dc170ab1aa9384fc406b7e78612690bc6adbe39f0fa4dbba420",
+      "revision": 3,
+      "content": "666315b963a2eca45362a76cbcd2d01e3cb32cd3baebc93b23118dfe8135ef6e",
       "added": 220
     },
     "reading-path-finder": {
@@ -2119,8 +2119,8 @@
       "added": 236
     },
     "vip-early-access": {
-      "revision": 2,
-      "content": "499e788cf9f2760c855d5560d2188b1271aa2bfc3119f72bf14d2c2904c529c6",
+      "revision": 3,
+      "content": "add1740271fef10d045fd3f78641d43402e8810af5b8e6c258f5f0f044432197",
       "added": 237
     },
     "visiting-details": {
@@ -2129,8 +2129,8 @@
       "added": 238
     },
     "welcome-discount": {
-      "revision": 2,
-      "content": "2e985398cdd8d181d060bf8d8e323890817223c3fe2a1368fa392ab27973575a",
+      "revision": 3,
+      "content": "1ba4f30b54b5be33070921d760ea555d398850d62063764a860d88a4b527efc6",
       "added": 239
     },
     "halloween-after-dark-offer": {

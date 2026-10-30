@@ -47,5 +47,5 @@ before the timer runs out.', 'wconvert-pro'),
     'rules' => [
         ['type' => 'exit_intent'],
     ],
-    'destination_hint' => ['types' => ['wsms', 'email_service_provider'], 'fields' => ['email']],
+    'destination_hint' => ['types' => ['email_service_provider'], 'fields' => ['email']],
 ];

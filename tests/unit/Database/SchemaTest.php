@@ -200,8 +200,7 @@ final class SchemaTest extends TestCase
 
     /**
      * The identity keys are real indexed columns because grouping the log
-     * pivots on them, and WSMS's `ContactRepository::create()` hard-requires
-     * one of the two (ADR 0002). Everything else the Optin captured goes in
+     * pivots on them, and a Lead must carry one of the two (ADR 0002). Everything else the Optin captured goes in
      * one `fields` JSON.
      */
     public function testTheIdentityKeysAreIndexedAndEverythingElseIsOneJsonColumn(): void

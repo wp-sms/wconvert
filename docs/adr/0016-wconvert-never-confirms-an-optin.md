@@ -32,6 +32,9 @@ mistake.
 
 ## Delegating to WSMS was investigated and does not work
 
+*Superseded by [ADR 0174](0174-wsms-integration-removed-before-1-0.md): there is no WSMS push any more, so this section and the next
+are history. The decision above stands without them.*
+
 WSMS's double opt-in is a **code-entry verification bound to a live form
 session**, not a link click: `SubscriptionHandler::sendVerification()` calls
 `VerificationService::sendCode()`, stashes the contact id in a transient keyed by
@@ -67,7 +70,7 @@ own single-opt-in forms act on.
   log. The one thing that does send, the lead-magnet delivery email, is
   transactional fulfilment of a request the visitor just made.
 - **A merchant who requires confirmed opt-in on WSMS uses WSMS's own
-  subscription form.** Say this in the docs. Half-building a confirmation flow
+  subscription form.** *(Superseded by [ADR 0174](0174-wsms-integration-removed-before-1-0.md): WConvert no longer pushes to WSMS.)* Say this in the docs. Half-building a confirmation flow
   that only works on one Destination is worse than not having one.
 - **Do not add a "resend confirmation" admin action.** It is the same feature
   wearing a hat.

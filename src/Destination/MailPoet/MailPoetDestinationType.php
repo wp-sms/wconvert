@@ -23,11 +23,11 @@ defined('ABSPATH') || exit;
  * ========================================================================
  * ADR 0007 makes a Destination that calls out over HTTP a [[Pro]] feature, and
  * free's capture path therefore makes **no outbound HTTP request at all** —
- * which is what `readme.txt` prints in bold. Free registers exactly three
- * types, and each is free for one reason repeated: the WSMS push because WP
- * SMS is a sibling plugin in the same process, the lead-magnet delivery
- * because `wp_mail()` is WordPress's own, and this one because MailPoet stores
- * its subscribers in the same database and hands other plugins a PHP API.
+ * which is what `readme.txt` prints in bold. Free registers exactly two
+ * types, and each is free for one reason repeated: the lead-magnet delivery
+ * because `wp_mail()` is WordPress's own, and this one because MailPoet is a
+ * sibling plugin in the same process — it stores its subscribers in the same
+ * database and hands other plugins a PHP API.
  * Registering it spends nothing free has promised not to spend (#87).
  *
  * That promise is asserted rather than reviewed, in
@@ -53,9 +53,8 @@ defined('ABSPATH') || exit;
  * lifecycle state, and the seam has no way to report one
  * ({@see MailPoetSubscribers}).
  *
- * **Nothing is filled in on a match**, and that is the one place this differs
- * from the WSMS push. MailPoet's only public update path rewrites `source` and
- * `subscribed_ip` on every call, so filling an empty `first_name` would also
+ * **Nothing is filled in on a match.** MailPoet's only public update path
+ * rewrites `source` and `subscribed_ip` on every call, so filling an empty `first_name` would also
  * restamp the provenance of somebody MailPoet already knows — with an IP
  * WConvert does not have and would not store if it did (ADR 0017), taken from
  * whatever request happened to run the queue. A captured name lands where it
@@ -142,10 +141,9 @@ final class MailPoetDestinationType implements DestinationType
     /**
      * One field: the lists to add to, **named rather than numbered.**
      *
-     * The options DO come off the provider here, which is the one place this
-     * type differs from the WSMS push: WSMS's tags are read by the admin
-     * itself, and MailPoet's segment ids are integers a merchant has no way to
-     * discover except by reading a URL. It is an admin-time read of the
+     * The options DO come off the provider here, because MailPoet's segment
+     * ids are integers a merchant has no way to discover except by reading a
+     * URL. It is an admin-time read of the
      * provider's SHAPE — a list of names reveals nothing about any person
      * (ADR 0007) — and it is the read that stops the merchant pasting `3`.
      *
@@ -261,11 +259,11 @@ final class MailPoetDestinationType implements DestinationType
      *
      * Nothing here rate-limits — this is read only by
      * {@see \WConvert\Destination\BulkRePush}'s stagger, and organic capture
-     * cannot approach it (ADR 0008). It sits below the WSMS push's 60 because
-     * creating a subscriber can hand MailPoet a confirmation email to send
-     * synchronously through the site's own transport, and above the
-     * lead-magnet email's 6 because a re-push replays Leads that are already
-     * subscribers, which sends nothing at all.
+     * cannot approach it (ADR 0008). It is held to thirty because creating a
+     * subscriber can hand MailPoet a confirmation email to send synchronously
+     * through the site's own transport, and it sits above the lead-magnet
+     * email's 6 because a re-push replays Leads that are already subscribers, which
+     * sends nothing at all.
      */
     public function throughput(): int
     {

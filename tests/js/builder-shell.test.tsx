@@ -202,7 +202,7 @@ const PLAYBOOK = {
   copy: {},
   rules: [],
   targeting: {},
-  destination_hint: { types: ['wsms', 'email_service_provider'], fields: ['email'] },
+  destination_hint: { types: ['mailpoet', 'email_service_provider'], fields: ['email'] },
   notes: '',
 };
 
@@ -1244,8 +1244,8 @@ describe('the summary', () => {
       destinations: [],
       types: [
         {
-          id: 'wsms',
-          label: 'WP SMS',
+          id: 'mailpoet',
+          label: 'MailPoet',
           icon: 'send',
           tier: 'free',
           requires: null,
@@ -1261,7 +1261,7 @@ describe('the summary', () => {
         config: { display_rules: displayPlan([{ type: 'page_load' }]),
           template_id: 'centred-card',
           playbook_id: 'welcome-discount',
-          destination_hint: { types: ['wsms', 'email_service_provider'], fields: ['email'] },
+          destination_hint: { types: ['mailpoet', 'email_service_provider'], fields: ['email'] },
           template: { tree: ENTRY.tree, tokens: ENTRY.tokens },
         },
       }),
@@ -1275,7 +1275,7 @@ describe('the summary', () => {
     // of no registered type on any install, and an unresolved key is our own
     // vocabulary rather than a merchant's word.
     expect(
-      await screen.findByRole('button', { name: /WP SMS/ }),
+      await screen.findByRole('button', { name: /MailPoet/ }),
     ).toHaveAccessibleDescription('Suggested');
     expect(screen.queryByText(/email_service_provider/)).toBeNull();
   });
@@ -1290,8 +1290,8 @@ describe('the summary', () => {
       destinations: [
         {
           id: 'd1',
-          type: 'wsms',
-          label: 'WP SMS contacts',
+          type: 'mailpoet',
+          label: 'MailPoet subscribers',
           connection: null,
           settings: {},
           target: null,
@@ -1313,7 +1313,7 @@ describe('the summary', () => {
         config: { display_rules: displayPlan([{ type: 'page_load' }]),
           template_id: 'centred-card',
           destinations: ['d1'],
-          destination_hint: { types: ['wsms'], fields: ['email'] },
+          destination_hint: { types: ['mailpoet'], fields: ['email'] },
           template: { tree: ENTRY.tree, tokens: ENTRY.tokens },
         },
       }),
@@ -1323,13 +1323,13 @@ describe('the summary', () => {
 
     await summary();
 
-    await waitFor(() => expect(fact('Leads go to')).toHaveTextContent('WP SMS contacts'));
+    await waitFor(() => expect(fact('Leads go to')).toHaveTextContent('MailPoet subscribers'));
 
     // Out of the modal before touching the screen behind it.
     await userEvent.keyboard('{Escape}');
     await userEvent.click(await screen.findByRole('tab', { name: 'Destinations' }));
 
-    expect(await screen.findByRole('article', { name: 'WP SMS contacts' })).toBeInTheDocument();
+    expect(await screen.findByRole('article', { name: 'MailPoet subscribers' })).toBeInTheDocument();
     expect(screen.queryByText('Suggested by your campaign setup')).toBeNull();
   });
 
@@ -1338,7 +1338,7 @@ describe('the summary', () => {
    * reset the screen to loading, so the picker opened onto nothing at all.
    */
   it('keeps the routes in the Add picker while it re-reads them', async () => {
-    const route = { id: 'd1', type: 'wsms', label: 'WP SMS contacts', connection: null, settings: {}, target: null, availability: 'ready',
+    const route = { id: 'd1', type: 'mailpoet', label: 'MailPoet subscribers', connection: null, settings: {}, target: null, availability: 'ready',
       health: { last_success_at: null, last_error: null, last_error_at: null, consecutive_failures: 0, skipped_captures: 0, last_skipped_at: null } };
     destinations.readDestinations
       .mockResolvedValueOnce({ destinations: [route], types: [] })
@@ -1348,12 +1348,12 @@ describe('the summary', () => {
     await userEvent.click(await screen.findByRole('tab', { name: 'Destinations' }));
     await userEvent.click(await screen.findByRole('button', { name: 'Add destination' }));
     expect(destinations.readDestinations).toHaveBeenCalledTimes(2);
-    expect(within(screen.getByRole('dialog', { name: 'Add a destination' })).getByRole('button', { name: /WP SMS contacts/ })).toBeVisible();
+    expect(within(screen.getByRole('dialog', { name: 'Add a destination' })).getByRole('button', { name: /MailPoet subscribers/ })).toBeVisible();
   });
 
   /** A failed re-read keeps the routes on screen and says so, with Retry (ADR 0060). */
   it('says a re-read failed without dropping the routes on screen', async () => {
-    const route = { id: 'd1', type: 'wsms', label: 'WP SMS contacts', connection: null, settings: {}, target: null, availability: 'ready',
+    const route = { id: 'd1', type: 'mailpoet', label: 'MailPoet subscribers', connection: null, settings: {}, target: null, availability: 'ready',
       health: { last_success_at: null, last_error: null, last_error_at: null, consecutive_failures: 0, skipped_captures: 0, last_skipped_at: null } };
     destinations.readDestinations
       .mockResolvedValueOnce({ destinations: [route], types: [] })
@@ -1365,7 +1365,7 @@ describe('the summary', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Add destination' }));
     await userEvent.keyboard('{Escape}');
     expect(await screen.findByText('The site did not answer.')).toBeVisible();
-    expect(screen.getByRole('article', { name: 'WP SMS contacts' })).toBeInTheDocument();
+    expect(screen.getByRole('article', { name: 'MailPoet subscribers' })).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     await waitFor(() => expect(screen.queryByText('The site did not answer.')).toBeNull());
     expect(destinations.readDestinations).toHaveBeenCalledTimes(3);
@@ -1486,7 +1486,7 @@ describe('whole-draft Undo and Redo', () => {
 
   it('walks back through destination selections, rules and name, then redoes and saves the same draft', async () => {
     destinations.readDestinations.mockResolvedValue({ destinations: [{
-      id: 'd1', type: 'wsms', label: 'Selected contacts', connection: null, settings: {}, target: null,
+      id: 'd1', type: 'mailpoet', label: 'Selected contacts', connection: null, settings: {}, target: null,
       availability: 'ready', health: { last_success_at: null, last_error: null, last_error_at: null,
         consecutive_failures: 0, skipped_captures: 0, last_skipped_at: null },
     }], types: [] });

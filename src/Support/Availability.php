@@ -37,7 +37,7 @@ enum Availability: string
 
     /**
      * Absent because something the *site* would need is missing: no
-     * WooCommerce, no WSMS. Not buyable from us.
+     * WooCommerce, no MailPoet. Not buyable from us.
      */
     case Unavailable = 'unavailable';
 

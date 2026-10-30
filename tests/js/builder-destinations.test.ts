@@ -18,7 +18,7 @@ import type { Destination } from '../../resources/admin/src/destinations/api';
  */
 
 const destination = (over: Partial<Destination> & { id: string; label: string }): Destination => ({
-  type: 'wsms',
+  type: 'mailpoet',
   connection: null,
   settings: {},
   target: null,
@@ -36,8 +36,8 @@ const destination = (over: Partial<Destination> & { id: string; label: string })
 
 describe('the playbook’s destination hint', () => {
   it('is read out of a config that has one', () => {
-    expect(hintIn({ destination_hint: { types: ['wsms'], fields: ['email'] } })).toEqual({
-      types: ['wsms'],
+    expect(hintIn({ destination_hint: { types: ['mailpoet'], fields: ['email'] } })).toEqual({
+      types: ['mailpoet'],
       fields: ['email'],
     });
   });
@@ -53,7 +53,7 @@ describe('the playbook’s destination hint', () => {
    * m, s"*.
    */
   it('keeps only the strings out of a hint that is not the shape it should be', () => {
-    expect(hintIn({ destination_hint: { types: 'wsms', fields: ['email', 7, null] } })).toEqual({
+    expect(hintIn({ destination_hint: { types: 'mailpoet', fields: ['email', 7, null] } })).toEqual({
       types: [],
       fields: ['email'],
     });
@@ -78,10 +78,10 @@ describe('where the leads go', () => {
   it('names what is bound', () => {
     const said = destinationsSaid(
       ['a', 'b'],
-      [destination({ id: 'a', label: 'WP SMS' }), destination({ id: 'b', label: 'Newsletter' })],
+      [destination({ id: 'a', label: 'MailPoet' }), destination({ id: 'b', label: 'Newsletter' })],
     );
 
-    expect(said.said).toBe('WP SMS and Newsletter');
+    expect(said.said).toBe('MailPoet and Newsletter');
     expect(said.problems).toEqual([]);
   });
 
@@ -94,13 +94,13 @@ describe('where the leads go', () => {
     const said = destinationsSaid(
       ['a', 'b'],
       [
-        destination({ id: 'a', label: 'WP SMS', availability: 'unavailable' }),
+        destination({ id: 'a', label: 'MailPoet', availability: 'unavailable' }),
         destination({ id: 'b', label: 'Newsletter' }),
       ],
     );
 
     expect(said.problems).toHaveLength(1);
-    expect(said.problems[0]).toContain('WP SMS');
+    expect(said.problems[0]).toContain('MailPoet');
     expect(said.problems[0]).not.toContain('Newsletter');
   });
 
@@ -110,7 +110,7 @@ describe('where the leads go', () => {
       [
         destination({
           id: 'a',
-          label: 'WP SMS',
+          label: 'MailPoet',
           health: {
             last_success_at: null,
             last_error: 'nope',
@@ -123,7 +123,7 @@ describe('where the leads go', () => {
       ],
     );
 
-    expect(said.problems[0]).toBe('WP SMS has failed 3 times in a row.');
+    expect(said.problems[0]).toBe('MailPoet has failed 3 times in a row.');
   });
 
   /**
@@ -133,9 +133,9 @@ describe('where the leads go', () => {
    * simply pushes to one fewer place than the merchant believes.
    */
   it('reports a binding whose destination is gone', () => {
-    const said = destinationsSaid(['a', 'gone'], [destination({ id: 'a', label: 'WP SMS' })]);
+    const said = destinationsSaid(['a', 'gone'], [destination({ id: 'a', label: 'MailPoet' })]);
 
-    expect(said.said).toBe('WP SMS');
+    expect(said.said).toBe('MailPoet');
     expect(said.problems).toHaveLength(1);
     expect(said.problems[0]).toContain('deleted');
   });

@@ -1,5 +1,7 @@
 # The WSMS push fires WSMS's contact events
 
+**Superseded by [ADR 0174](0174-wsms-integration-removed-before-1-0.md): the WSMS integration was removed before 1.0, because WSMS 8 has not shipped. Nothing in WConvert pushes to WSMS now. This ADR records what the push did, for whoever reinstates it.**
+
 The adapter calls `ContactRepository::create()` with events **enabled** —
 `$suppressEvents` stays `false` — and applies its [[Destination]]'s tags through
 `addTag()`, which fires its own event. No setting controls this.

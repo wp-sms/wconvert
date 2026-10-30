@@ -1,0 +1,67 @@
+{
+  "id": "new-batch-first-look",
+  "revision": "1e199452fea40a8ac77584de82bdc3e5229010618aea44a637148f2438ac2562",
+  "base_id": "b4eec7406112c62c32f2d017a2df0c6faa6941d8eeda5dc8f6d7c5b8057a4b0b",
+  "decision": "approved",
+  "reviewer": "Content carry (ADR 0174)",
+  "note": "Only destination_hint.types changed ('wsms' removed with the WSMS integration). Restoring it reproduces the approved revision under the same rendered identity, so visitors and the editor get the same screens. Not a new review.",
+  "at": "2026-10-30T08:05:40Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/new-batch-first-look-320.png",
+          "sha256": "02fb9fe83c34846afc1e19111abc1145c9bc120b3ab32a3045b3f2d41e53f41f"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/new-batch-first-look-1440.png",
+          "sha256": "aff35b5c203e284ea98e4a7bcf5165101a008f19c164c993727fec931a5028ce"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/review.md",
+          "sha256": "de10b9e52b18a25d1a2a2141034132a8661bb20452e5b49ab2b99129c08792ed"
+        },
+        {
+          "path": "docs/reviews/artwork-files-2026-10-25/review.md",
+          "sha256": "0e54364a8329f533e5cd2b242eaaea66efa597708b966208ca8fbbf4c0e84fd8"
+        },
+        {
+          "path": "docs/reviews/artwork-files-2026-10-25/metrics.json",
+          "sha256": "e904c4ea78c22461814a39d6aed271846adca8012074b2587b150456078c3809"
+        },
+        {
+          "path": "docs/reviews/wsms-hint-carry-2026-10-30/carry.json",
+          "sha256": "ba50106b0dac1720a3628a306987781fd7e61bdc737e0ac05f679444becdc23a"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/results.json",
+          "sha256": "a7427fb3737d6699cfc42b06595915a3e9ba372ae13085006fd7b3779788327e"
+        },
+        {
+          "path": "docs/reviews/wsms-hint-carry-2026-10-30/carry.json",
+          "sha256": "ba50106b0dac1720a3628a306987781fd7e61bdc737e0ac05f679444becdc23a"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/results.json",
+          "sha256": "a7427fb3737d6699cfc42b06595915a3e9ba372ae13085006fd7b3779788327e"
+        },
+        {
+          "path": "docs/reviews/wsms-hint-carry-2026-10-30/carry.json",
+          "sha256": "ba50106b0dac1720a3628a306987781fd7e61bdc737e0ac05f679444becdc23a"
+        }
+      ]
+    }
+  },
+  "record_id": "7086567e117c96a5e3a45f6f8d13dcafeca04f56a927f5dac854218c05aeb922"
+}

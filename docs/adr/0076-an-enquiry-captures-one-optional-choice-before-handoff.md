@@ -121,7 +121,8 @@ interest in MailPoet** setting selects an existing custom text field. It sends
 the stable `interest` value, not `interest_label`, on new-subscriber creation
 only. Existing subscribers and create-race matches retain all existing fields.
 An unavailable configured mapping with an answer fails for retry; it is not
-silently discarded. WSMS and lead-magnet email do not forward interest. Local
+silently discarded. WSMS and lead-magnet email do not forward interest *(Amended by [ADR 0174](0174-wsms-integration-removed-before-1-0.md): WSMS is no
+longer a Destination)*. Local
 capture and its export remain available regardless of destination support.
 
 A test send may contain an optional stable interest value explicitly typed by

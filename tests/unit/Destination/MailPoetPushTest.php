@@ -39,7 +39,7 @@ final class MailPoetPushTest extends TestCase
      * subscriber, on the configured list.
      *
      * The name lands **whole and unsplit** in `first_name`, for the reason
-     * ADR 0022 gives about WSMS's identical pair: splitting on a space files
+     * ADR 0022 gives about first and last names: splitting on a space files
      * "van der Berg" and "Maria Elena" wrong in opposite directions, and the
      * wrong half then becomes a stored value nothing corrects.
      */
@@ -233,8 +233,8 @@ final class MailPoetPushTest extends TestCase
      * or gone, which is an outage — and re-running the whole of `push()` is
      * what fixes it, because `push()` is idempotent.
      *
-     * Its message arrives **verbatim**, for the reason the WSMS pair
-     * documents: `reason` is not a page. It is stored for an operator and
+     * Its message arrives **verbatim**, for the reason
+     * `WpMailPoetSubscribers::add()` documents: `reason` is not a page. It is stored for an operator and
      * rendered through React, which escapes on the way to the DOM, so escaping
      * it here would be corruption rather than safety.
      */
@@ -259,8 +259,7 @@ final class MailPoetPushTest extends TestCase
      *
      * That is an admin-time read of the provider's SHAPE — a list of names
      * reveals nothing about any person — which is the read ADR 0007 permits
-     * and expects, and the one place this type differs from the WSMS push,
-     * whose tags the admin can read for itself.
+     * and expects.
      */
     public function testTheSettingsSchemaOffersTheSitesListsByName(): void
     {

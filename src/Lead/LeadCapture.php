@@ -18,7 +18,7 @@ defined('ABSPATH') || exit;
  * capture failed.
  *
  * A Destination is the mirror image, and {@see self::CAPTURED} is where they
- * meet. Everything downstream — the WSMS push, the ESP pushes, the lead-magnet
+ * meet. Everything downstream — the MailPoet push, the ESP pushes, the lead-magnet
  * delivery email — attaches to that hook and is queued through Action
  * Scheduler behind it (#30). None of it can reach a Lead that is not already
  * written, because the hook does not fire until it is.

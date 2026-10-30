@@ -137,7 +137,7 @@ export interface AdminSettings {
    * ONE FACT ABOUT THE INSTALL, RESOLVED ON THE SERVER.
    * ==========================================================================
    * It is `ready` or `locked` and **never `unavailable`** — a test needs no
-   * store, no WSMS and nothing else the site would have to supply, so the one
+   * store, no MailPoet and nothing else the site would have to supply, so the one
    * state that is not buyable from us is unreachable here (ADR 0026).
    *
    * It sits beside the bundle rather than on the list route because it is a

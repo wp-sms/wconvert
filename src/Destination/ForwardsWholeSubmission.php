@@ -11,8 +11,9 @@ defined('ABSPATH') || exit;
  *
  * It is what lets a campaign editor's test carry that campaign's own questions
  * and name ({@see PushDispatcher::test()}). Every other type is tested with no
- * [[Optin]] behind it, because the WSMS push would write a test's campaign name
- * as `source_ref` (ADR 0023, ADR 0148).
+ * [[Optin]] behind it: it maps fields into a vendor's and forwards neither the
+ * campaign's questions nor its name, so a campaign has nothing of its own for
+ * that test to carry (ADR 0148).
  *
  * @since 0.1.0
  */

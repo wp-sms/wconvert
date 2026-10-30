@@ -71,7 +71,8 @@ Destination and exact capture without adding a delivery ledger.*
 > more fields, `skipped_captures` and `last_skipped_at`.** The four above cover
 > a Destination that was *tried*. They cannot describe the third thing that
 > goes wrong, which #4 named and this ADR did not carry over: a Destination
-> whose TYPE is not `ready` — a deactivated WSMS, a lapsed licence — is
+> whose TYPE is not `ready` — a deactivated WSMS, a lapsed licence *(Amended by [ADR 0174](0174-wsms-integration-removed-before-1-0.md):
+> there is no WSMS type now; a deactivated MailPoet is the free case)* — is
 > "skipped and recorded, never enqueued", because an Action Scheduler job whose
 > handler is unregistered retries against nothing forever.
 >

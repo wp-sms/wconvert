@@ -215,14 +215,14 @@ describe('health, on the card that has it', () => {
     listed(
       [
         destination({ id: 'a', type: 'paid', label: 'Paid route', availability: 'locked' }),
-        destination({ id: 'b', type: 'wsms', label: 'Plugin route', target: 'Newsletter', availability: 'unavailable' }),
+        destination({ id: 'b', type: 'mailpoet', label: 'Plugin route', target: 'Newsletter', availability: 'unavailable' }),
       ],
       ['a', 'b'],
-      [type({ id: 'paid', label: 'Paid', tier: 'pro' }), type({ id: 'wsms', label: 'WP SMS', requires: 'wp-sms', requires_label: 'WP SMS' })],
+      [type({ id: 'paid', label: 'Paid', tier: 'pro' }), type({ id: 'mailpoet', label: 'MailPoet', requires: 'mailpoet', requires_label: 'MailPoet' })],
     );
     expect(within(card('Paid route')).getByText(/Needs WConvert Pro,/)).toBeVisible();
     expect(within(card('Plugin route')).getByText('Paused')).toBeVisible();
-    expect(within(card('Plugin route')).getByText(/Needs WP SMS on this site/)).toBeVisible();
+    expect(within(card('Plugin route')).getByText(/Needs MailPoet on this site/)).toBeVisible();
     expect(within(card('Plugin route')).getByText('Newsletter')).toBeVisible();
   });
 
@@ -338,7 +338,7 @@ describe('adding a route', () => {
     editor(ready([
       destination({ id: 'a', label: 'Newsletter signups', requirements: requirements({}, ['email']) }),
       destination({ id: 'b', label: 'Email only list', requirements: requirements({}, ['email']) }),
-      destination({ id: 'c', type: 'wsms', label: 'SMS subscribers', requirements: requirements({}, ['email', 'phone']) }),
+      destination({ id: 'c', type: 'webhook', label: 'SMS subscribers', requirements: requirements({}, ['email', 'phone']) }),
     ]), ['a'], [provider], { onChange, channel: { channel: 'phone', strict: true }, title: 'Optional SMS signup', primary: false });
     await userEvent.click(screen.getByRole('button', { name: 'Add destination' }));
     const dialog = within(screen.getByRole('dialog'));
@@ -450,20 +450,20 @@ describe('adding a route', () => {
     window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
     onTestFinished(() => { delete window.wconvertAdmin; });
     editor(ready([]), [], [type({ id: 'paid', tier: 'pro', label: 'Paid service', availability: 'locked' }),
-      type({ id: 'wsms', label: 'WP SMS', availability: 'unavailable', requires_label: 'WP SMS' })]);
+      type({ id: 'mailpoet', label: 'MailPoet', availability: 'unavailable', requires_label: 'MailPoet' })]);
     const paid = screen.getByRole('button', { name: /Paid service/ });
     expect(paid).toHaveAccessibleDescription('Included with WConvert Pro.');
-    expect(screen.getByRole('button', { name: /WP SMS/ })).toHaveAccessibleDescription('Needs WP SMS on this site.');
+    expect(screen.getByRole('button', { name: /MailPoet/ })).toHaveAccessibleDescription('Needs MailPoet on this site.');
     await userEvent.click(paid);
     expect(screen.queryByRole('dialog')).toBeNull();
   });
 
   it('lists no provider a free install would have to buy', () => {
     editor(ready([]), [], [type({ id: 'paid', tier: 'pro', label: 'Paid service', availability: 'locked' }),
-      type({ id: 'wsms', label: 'WP SMS', availability: 'unavailable', requires_label: 'WP SMS' })]);
+      type({ id: 'mailpoet', label: 'MailPoet', availability: 'unavailable', requires_label: 'MailPoet' })]);
     expect(screen.queryByText('Paid service')).not.toBeInTheDocument();
     expect(screen.queryByText(/Included with/)).not.toBeInTheDocument();
-    expect(screen.getByText('Needs WP SMS on this site.')).toBeVisible();
+    expect(screen.getByText('Needs MailPoet on this site.')).toBeVisible();
   });
 });
 
