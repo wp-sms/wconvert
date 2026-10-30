@@ -5,7 +5,6 @@ import { Button } from '../components/ui/button';
 import { Dialog, DialogDescription, DialogTitle } from '../components/ui/dialog';
 import { PickerDialogBody, PickerDialogContent, PickerDialogHeader } from '../discovery/PickerDialog';
 import { RegionError } from '../shell/Region';
-import { LibraryConsent } from '../templates/LibraryConsent';
 import { installDesign, refreshCatalog } from '../templates/catalog';
 import { messageOf } from '../shell/loadable';
 import { usePicker } from '../discovery/usePicker';
@@ -242,10 +241,7 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onLibraryCh
               empty={goalOnly && all.length > 0
                 ? { title: __('No templates for this goal yet', 'wconvert'), body: __('Show all templates to choose from every one this site has.', 'wconvert'),
                   action: <Button variant="outline" onClick={() => { setGoalOnly(false); setPage(0); }}>{__('All templates', 'wconvert')}</Button> }
-                : { title: __('No templates yet', 'wconvert'), body: __('Templates this site has will appear here.', 'wconvert'), action: null }}
-              consent={onLibraryChanged && catalog?.enabled && catalog.consent === 'unanswered' && <LibraryConsent
-                title={__('See more templates from the WConvert library?', 'wconvert')} allow={__('Show online templates', 'wconvert')}
-                onAnswered={() => { void onLibraryChanged(); }} />}>
+                : { title: __('No templates yet', 'wconvert'), body: __('Templates this site has will appear here.', 'wconvert'), action: null }}>
               {paged.map(card => {
                 const words = conversion(card);
                 return <GalleryCard key={card.key} card={card} template={trees.get(card.key)} onNear={onNear}

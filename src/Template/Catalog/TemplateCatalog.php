@@ -96,11 +96,15 @@ final class TemplateCatalog
         return self::enabled($options);
     }
 
-    /** @return 'unanswered'|'yes'|'no' */
+    /**
+     * On unless an admin turned it off in Settings (ADR 0175): the library is
+     * the plugin's own service, fetched only when an admin opens a gallery.
+     *
+     * @return 'yes'|'no'
+     */
     public function consent(): string
     {
-        $value = $this->options->get(self::CONSENT_OPTION, '');
-        return in_array($value, ['yes', 'no'], true) ? $value : 'unanswered';
+        return $this->options->get(self::CONSENT_OPTION, '') === 'no' ? 'no' : 'yes';
     }
 
     /** @return array<string, mixed> */
@@ -149,7 +153,7 @@ final class TemplateCatalog
 
     /**
      * Refresh the local index. `$ifStale` is what opening the picker sends:
-     * it does nothing inside the twelve-hour window or without consent.
+     * it does nothing inside the twelve-hour window or once turned off.
      *
      * @return array<string, mixed>
      */
@@ -159,7 +163,7 @@ final class TemplateCatalog
         if ($ifStale && ($this->consent() !== 'yes' || !self::enabled($this->options)
             || ($this->now() - strtotime((string) ($cache['checked_at'] ?? '@0'))) < self::REFRESH_INTERVAL)) return $this->status();
         PackValidator::check(self::enabled($this->options), __('The online template library is switched off on this site.', 'wconvert'));
-        PackValidator::check($this->consent() === 'yes', __('Allow online designs first. Your local library has not changed.', 'wconvert'));
+        PackValidator::check($this->consent() === 'yes', __('The online template library is turned off in Settings. Your local library has not changed.', 'wconvert'));
         $retry = (int) get_transient(self::BACKOFF_TRANSIENT);
         PackValidator::check($retry <= $this->now(), sprintf(/* translators: %d: seconds */ __('The template library was unreachable a moment ago. Try again in %d seconds. Installed designs are still available.', 'wconvert'), max(1, $retry - $this->now())));
         $started = $this->now();

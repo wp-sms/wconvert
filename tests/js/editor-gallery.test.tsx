@@ -45,7 +45,7 @@ const hosted = (id: string, name: string, state: 'install' | 'locked', extra: Pa
   remote: { id, revision: 1, sha256: 'b'.repeat(64), state, thumbnail: { '1x': `https://templates.example/thumbs/${id}.webp`, '2x': `https://templates.example/thumbs/${id}@2x.webp` }, tags: ['industry:food-drink'], family: null, popularity: null, prerequisites: [] },
   ...(state === 'locked' ? { preview_url: `https://wconvert.io/templates/${id}/` } : {}), ...extra,
 });
-const CATALOG = (consent: 'unanswered' | 'yes' | 'no' = 'yes'): TemplateIndex['catalog'] => ({
+const CATALOG = (consent: 'yes' | 'no' = 'yes'): TemplateIndex['catalog'] => ({
   enabled: true, consent, checked_at: '2026-10-20T00:00:00+00:00', update_required: false,
   taxonomy: { industry: [{ id: 'food-drink', label: 'Food & drink' }, { id: 'retail', label: 'Retail' }] },
 });
@@ -59,7 +59,7 @@ interface Props {
   readonly entries: TemplateIndexEntry[];
   readonly chosen?: string;
   readonly fit?: Fit;
-  readonly consent?: 'unanswered' | 'yes' | 'no';
+  readonly consent?: 'yes' | 'no';
   readonly onChoose?: (id: string) => void;
   readonly onNear?: (id: string) => void;
   /** What the index holds once the library changed it. */
@@ -234,16 +234,6 @@ describe('the trees it draws', () => {
 });
 
 describe('the online library', () => {
-  it('asks once, at the end of the grid, before any online template loads', async () => {
-    catalog.setCatalogConsent.mockResolvedValue({ consent: 'no' });
-    render(<Editor entries={[CENTRED]} consent="unanswered" />);
-    expect(screen.getByRole('heading', { name: 'See more templates from the WConvert library?' })).toBeInTheDocument();
-    expect(catalog.refreshCatalog).not.toHaveBeenCalled();
-    await userEvent.click(screen.getByRole('button', { name: 'Not now' }));
-    expect(catalog.setCatalogConsent).toHaveBeenCalledWith(false);
-    expect(catalog.refreshCatalog).not.toHaveBeenCalled();
-  });
-
   it('checks for new templates when it opens, once, and reloads only when the library changed', async () => {
     const onLibraryChanged = vi.fn().mockResolvedValue(undefined);
     const dialog = (catalogCheckedAt: string) => <TemplatePickerDialog open onOpenChange={vi.fn()} onLibraryChanged={onLibraryChanged}

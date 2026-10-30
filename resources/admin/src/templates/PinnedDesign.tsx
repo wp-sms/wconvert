@@ -6,7 +6,6 @@ import { RegionError } from '../shell/Region';
 import { messageOf } from '../shell/loadable';
 import { designIdOf, listTemplates, type TemplateIndex, type TemplateIndexEntry } from './api';
 import { installDesign, refreshCatalog } from './catalog';
-import { LibraryConsent } from './LibraryConsent';
 import { createHref, settingsHref } from '../nav';
 import { tierProductName } from '../goals/availability';
 
@@ -14,9 +13,8 @@ import { tierProductName } from '../goals/availability';
  * Where a "Use this template" link stands on this site (ADR 0156).
  *
  * `ready` is a local design new campaigns can start from; `install` is in the
- * hosted library and one explicit click away; `consent` cannot be looked up
- * until the library is allowed; `off` is a library this site declined or
- * switched off; `locked`, `update_plugin` and `unavailable` explain, offering
+ * hosted library and one explicit click away; `off` is a library turned off
+ * in Settings or switched off; `locked`, `update_plugin` and `unavailable` explain, offering
  * close designs this site can use; `missing` is an id nothing here or online
  * knows any more. A link to an earlier id (an alias) finds the design.
  */
@@ -25,7 +23,6 @@ export type Pinned =
   | { state: 'failed'; message: string }
   | { state: 'ready' | 'install'; entry: TemplateIndexEntry }
   | { state: 'locked' | 'update_plugin' | 'unavailable'; entry: TemplateIndexEntry; related: TemplateIndexEntry[] }
-  | { state: 'consent' }
   | { state: 'off' }
   | { state: 'missing'; related: TemplateIndexEntry[] };
 
@@ -61,7 +58,6 @@ function resolve(index: TemplateIndex, design: string): Pinned {
   if (entry?.remote && entry.remote.state !== 'install') return { state: entry.remote.state, entry, related: closest(index, entry.name, usable) };
   if (entry?.remote) return { state: 'install', entry };
   if (entry) return entry.availability === 'ready' ? { state: 'ready', entry } : { state: 'locked', entry, related: closest(index, entry.name, usable) };
-  if (index.catalog?.enabled && index.catalog.consent === 'unanswered') return { state: 'consent' };
   if (!index.catalog?.enabled || index.catalog.consent === 'no') return { state: 'off' };
   // Unknown here and online: offer what is closest by name, never a guess applied.
   return { state: 'missing', related: closest(index, design, usable) };
@@ -96,7 +92,6 @@ export function PinnedDesignNotice({ pinned, onReload, onInstalled, onClear }: {
   const [error, setError] = useState<string | null>(null);
   if (pinned.state === 'loading') return <p className="wconvert-picker__notice text-note">{__('Finding the design you chose…', 'wconvert')}</p>;
   if (pinned.state === 'failed') return <RegionError message={pinned.message} onRetry={onReload} />;
-  if (pinned.state === 'consent') return <LibraryConsent onAnswered={onReload} />;
   const clear = <Button variant="link" onClick={onClear}>{__('Start without it', 'wconvert')}</Button>;
   if (pinned.state === 'off') {
     return <div className="wconvert-picker__notice" role="status">

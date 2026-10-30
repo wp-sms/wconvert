@@ -10,10 +10,10 @@ import { useShownAfterDelay } from '../shell/skeletonDelay';
 export const PER_PAGE = 24;
 
 /**
- * The grid of template cards, its two empty states, the library's consent
- * card at the end of the last page, and the page position under it.
+ * The grid of template cards, its two empty states, and the page position
+ * under it.
  */
-export function GalleryGrid({ children, total, shown, page, pages, onPage, onClear, empty, consent, disabled = false }: {
+export function GalleryGrid({ children, total, shown, page, pages, onPage, onClear, empty, disabled = false }: {
   /** This page's cards. */
   children: ReactNode;
   /** Every card before filtering, and how many the filters leave. */
@@ -25,8 +25,6 @@ export function GalleryGrid({ children, total, shown, page, pages, onPage, onCle
   onClear: () => void;
   /** What there is to do when the goal has no templates at all. */
   empty: { title: string; body: string; action: ReactNode };
-  /** The library's question, drawn at the end of the last page. */
-  consent?: ReactNode;
   disabled?: boolean;
 }) {
   return (
@@ -36,7 +34,6 @@ export function GalleryGrid({ children, total, shown, page, pages, onPage, onCle
           : shown === 0 ? <Empty title={__('No templates match', 'wconvert')} body={__('Try fewer filters or another word.', 'wconvert')}
             action={<Button variant="outline" disabled={disabled} onClick={onClear}>{__('Clear filters', 'wconvert')}</Button>} />
             : children}
-        {page === pages - 1 && consent && <li className="contents">{consent}</li>}
       </ul>
       {pages > 1 && <PickerPagination label={__('Template pages', 'wconvert')} page={page} pages={pages} disabled={disabled} onChange={onPage} />}
     </>

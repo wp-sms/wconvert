@@ -7,7 +7,7 @@ import type { TemplateEntry } from './api';
  * administrator action.
  */
 export type CatalogState = 'unavailable' | 'locked' | 'update_plugin' | 'install' | 'ready';
-export type CatalogConsent = 'unanswered' | 'yes' | 'no';
+export type CatalogConsent = 'yes' | 'no';
 
 export interface CatalogDesign {
   id: string;
@@ -51,7 +51,7 @@ export interface CatalogStatus {
 
 const path = '/wconvert/v1/template-catalog';
 export const catalogStatus = () => apiFetch<CatalogStatus>({ path });
-/** `ifStale` is what opening the picker sends: nothing happens inside twelve hours or without consent. */
+/** `ifStale` is what opening the picker sends: nothing happens inside twelve hours or once turned off. */
 export const refreshCatalog = (ifStale = false) => apiFetch<CatalogStatus>({ path: `${path}/refresh`, method: 'POST', data: { if_stale: ifStale } });
 export const setCatalogConsent = (allowed: boolean) => apiFetch<CatalogStatus>({ path: `${path}/consent`, method: 'POST', data: { allowed } });
 export const previewDesign = (id: string) =>

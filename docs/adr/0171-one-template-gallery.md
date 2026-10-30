@@ -1,6 +1,6 @@
 # 0171: One template gallery
 
-Accepted 2026-10-25. Amends 0026, 0039, 0043, 0069, 0085, 0086, 0087, 0112, 0116, 0132, 0134, 0137, 0147, 0156 §8–9, 0163 and 0170.
+Accepted 2026-10-25. Amended by [0175](0175-the-online-library-loads-without-asking.md) (§9). Amends 0026, 0039, 0043, 0069, 0085, 0086, 0087, 0112, 0116, 0132, 0134, 0137, 0147, 0156 §8–9, 0163 and 0170.
 
 The approved prototype (v5, 2026-10-24, branch `prototype/template-gallery`)
 replaces the creation flow's step 2 and the editor's design picker with one
@@ -25,10 +25,11 @@ list (`src/Discovery/GoalGallery.php`):
   key left the bundled one without its tree). One installed at an older
   revision names the Playbook it left (`installed_playbook_id`) so the gallery
   shows one card, offering the newer revision only when it can be installed.
-  Nothing is sent until consent is `yes`. Pro is one plan (ADR 0146), so
+  Nothing is sent until consent is `yes` *(amended by [ADR 0175](0175-the-online-library-loads-without-asking.md): consent is
+  `yes` unless Settings turned the library off)*. Pro is one plan (ADR 0146), so
   nothing is locked on a Pro site and the gate is `ProHints::shown()` alone.
 - `library`: `{configured, consent, checked_at}`, so the gallery can ask once
-  and tell whether its own refresh brought a newer list.
+  *(no longer — [ADR 0175](0175-the-online-library-loads-without-asking.md))* and tell whether its own refresh brought a newer list.
 
 Online setups carry `business_types`: the publisher emits a setup's Playbook
 examples on its index row and `CatalogIndex::setup()` reads them, a missing
@@ -88,7 +89,8 @@ rather than a preference. Picker preferences keep `saved`, `hidden` and
    for it.
 9. **The consent card** asks at the end of the grid — "See more templates from
    the WConvert library?" — with no count, because nothing is fetched before
-   the answer (a departure from the prototype, which showed one).
+   the answer (a departure from the prototype, which showed one). *Removed by
+   [ADR 0175](0175-the-online-library-loads-without-asking.md): the library is on by default and the first open fetches.*
 
 10. **Step 2 checks the library too.** Once the gallery is read with consent
     `yes`, step 2 sends the same `refresh` with `if_stale` that opening Change

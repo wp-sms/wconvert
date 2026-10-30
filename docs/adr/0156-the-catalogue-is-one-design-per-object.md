@@ -13,7 +13,8 @@ Amends [0010](0010-templates-are-configuration-not-documents.md),
 [0116](0116-free-shows-nothing-it-cannot-run.md) §1 and
 [0147](0147-free-names-what-pro-adds-where-it-is-wanted.md) rule 3. The wire
 contract is [docs/template-discovery-api.md](../template-discovery-api.md).
-Amended by [0157](0157-free-designs-may-be-served-without-being-bundled.md) (§5).
+Amended by [0157](0157-free-designs-may-be-served-without-being-bundled.md) (§5)
+and [0175](0175-the-online-library-loads-without-asking.md) (§8, §14).
 
 ## Context
 
@@ -103,7 +104,9 @@ copies the artwork actually used into Media Library, reuses existing copies,
 and saves attachment URLs in that draft.
 
 **8. Fetching.** The library is on by default and asks first: a one-time card
-in the picker, kept as an option and a Settings toggle, plus the
+in the picker, kept as an option and a Settings toggle *(corrected by
+[ADR 0175](0175-the-online-library-loads-without-asking.md): it no longer asks — the card is gone, the option reads `yes` unless
+Settings set it to `no`, and the first gallery open fetches)*, plus the
 `WCONVERT_TEMPLATE_CATALOG` constant and `wconvert_template_catalog` filter to
 switch it off. A refresh happens only inside an admin request that asked —
 opening the picker asks at most every twelve hours *(amended by
@@ -164,7 +167,8 @@ later Brand setting can restyle designs through their tokens.
 **14. A "Use this template" link** is `admin.php?page=wconvert&design=<id>`,
 a query string because the login screen keeps one. It opens Goal-first
 creation with the design pinned and only the Goals it can serve; asks for
-consent where the design is not cached; says "no longer available" with close
+consent where the design is not cached *(amended by [ADR 0175](0175-the-online-library-loads-without-asking.md): it refreshes
+the stale cache instead, and says the library is off only when Settings turned it off)*; says "no longer available" with close
 alternatives for an unknown id. Nothing installs on page load.
 
 **15. Automated checks, never a new human gate.** Approval stays agent review;

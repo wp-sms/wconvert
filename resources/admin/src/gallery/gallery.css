@@ -97,13 +97,11 @@
 .wconvert-collection-bar__text strong { font-weight: 600; }
 .wconvert-collection-bar__text span { color: var(--muted-foreground); font-size: var(--text-note); }
 
-/* ---- empty states and the consent card, inside the grid ---- */
-.wconvert-template-grid > .wconvert-template-empty,
-.wconvert-template-grid > .wconvert-library-consent { grid-column: 1 / -1; }
+/* ---- empty states, inside the grid ---- */
+.wconvert-template-grid > .wconvert-template-empty { grid-column: 1 / -1; }
 .wconvert-template-empty { display: grid; justify-items: center; gap: 8px; padding: 48px 16px; text-align: center; }
 .wconvert-template-empty__icon { display: grid; place-items: center; inline-size: 44px; block-size: 44px; border-radius: 50%; background: var(--surface); color: var(--muted-foreground); }
 .wconvert-template-empty h3 { margin: 0; font-size: var(--text-heading); font-weight: 600; }
-.wconvert-template-grid > .wconvert-library-consent { margin: 0; border-style: dashed; border-color: var(--input); }
 
 /* ---- the step 2 header: steps, title and the goal switcher ---- */
 .wconvert-gallery-head { display: grid; gap: 20px; padding: 24px; border-block-end: 1px solid var(--border); }

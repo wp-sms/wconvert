@@ -14,7 +14,7 @@ import { SpamProtection } from './SpamProtection';
 import { SitePhoneCountry } from './SitePhoneCountry';
 import { LeadRetention } from '../leads/LeadRetention';
 import { PrivacyDataMap } from '../privacy/PrivacyDataMap';
-import { LibrarySettings } from '../templates/LibraryConsent';
+import { LibrarySettings } from '../templates/LibrarySettings';
 import { catalogConfigured } from '../settings';
 import { PrivacyGuidanceSettings } from '../privacy/PrivacyGuidanceSettings';
 import { Destinations } from '../destinations/Destinations';

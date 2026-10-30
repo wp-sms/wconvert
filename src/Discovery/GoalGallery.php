@@ -42,7 +42,7 @@ final class GoalGallery
             // `checked_at` tells step 2 whether its own refresh brought a newer list.
             'library' => [
                 'configured' => (bool) ($status['enabled'] ?? false),
-                'consent' => (string) ($status['consent'] ?? 'unanswered'),
+                'consent' => (string) ($status['consent'] ?? 'yes'),
                 'checked_at' => is_string($status['checked_at'] ?? null) ? $status['checked_at'] : null,
             ],
         ];
@@ -65,8 +65,8 @@ final class GoalGallery
     /**
      * The library's setups for this Goal that this site does not have yet.
      *
-     * Nothing without consent — the catalogue's own status already holds that
-     * line. A locked row is a hint, so it follows `ProHints::shown()` exactly as
+     * Nothing once the library is turned off — the catalogue's own status
+     * already holds that line. A locked row is a hint, so it follows `ProHints::shown()` exactly as
      * the design index does; a row already installed is drawn as the local
      * setup it became, and a row this site ships with is the bundled one.
      *

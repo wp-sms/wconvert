@@ -171,7 +171,7 @@ Yes, it's free, and no, it isn't a trial. The free plugin is complete on its own
 
 = Do I need an account or another service? =
 
-No. Everything works inside WordPress, with nothing else installed. MailPoet is used only if you already have it. The online design library is optional and asks before it loads anything; see External services.
+No. Everything works inside WordPress, with nothing else installed. MailPoet is used only if you already have it. The online design library loads when you open the design picker and can be turned off in Settings; see External services.
 
 = How is WConvert different from OptinMonster or Popup Maker? =
 
@@ -256,15 +256,15 @@ Guide: [Deactivate or uninstall WConvert](https://wconvert.io/docs/deactivate-or
 
 == External services ==
 
-WConvert works without an account or any external service. Nothing below is contacted unless an administrator turns it on.
+WConvert works without an account or any external service. The online design library below is WConvert's own service and is on by default; it is contacted only when an administrator opens the design picker. Nothing else below is contacted unless an administrator turns it on.
 
 **Online design library.** The designs included in the plugin work offline and
 need nothing else. The online WConvert library at https://templates.wconvert.io
-is on by default but **asks first**: before anything is fetched, the design
-picker shows a one-time question, and the answer is kept in Settings → Data &
-privacy, where it can be changed at any time. Nothing is fetched on activation,
-from cron, on the dashboard or on your site's pages. While the picker is open,
-WConvert checks for new designs at most twice a day.
+is on by default. It is contacted when an administrator opens the design
+picker, and can be turned off at any time in Settings → Data & privacy, after
+which nothing is fetched. Nothing is fetched on activation, from cron, on the
+dashboard or on your site's pages. While the picker is open, WConvert checks
+for new designs at most twice a day.
 
 What is fetched: JSON design and setup data and PNG, JPEG or WebP images. Every
 file is checked against a SHA-256 checksum, and nothing executable or any font
