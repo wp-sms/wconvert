@@ -8,7 +8,7 @@
  * reference there. Analysis-only, like its free counterpart.
  */
 
-defined('WCONVERT_PRO_VERSION') || define('WCONVERT_PRO_VERSION', '0.1.0');
+defined('WCONVERT_PRO_VERSION') || define('WCONVERT_PRO_VERSION', '1.0.0');
 defined('WCONVERT_PRO_DIR') || define('WCONVERT_PRO_DIR', __DIR__ . '/');
 defined('WCONVERT_PRO_URL') || define('WCONVERT_PRO_URL', 'https://example.test/wp-content/plugins/wconvert-pro/');
 defined('WCONVERT_PRO_MAIN_FILE') || define('WCONVERT_PRO_MAIN_FILE', __DIR__ . '/wconvert-pro.php');

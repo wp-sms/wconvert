@@ -3,7 +3,7 @@
  * Plugin Name: WConvert Pro
  * Plugin URI: https://wconvert.io/pricing/
  * Description: Supplies WConvert's premium capabilities — the exit-intent and scroll-up Triggers, the advanced Conditions, floating bars and slide-ins, A/B testing, and the ESP Destinations.
- * Version: 0.1.0
+ * Version: 1.0.0
  * Author: VeronaLabs
  * Author URI: https://veronalabs.com/
  * Text Domain: wconvert-pro
