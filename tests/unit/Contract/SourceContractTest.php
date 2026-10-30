@@ -112,9 +112,9 @@ final class SourceContractTest extends TestCase
     }
 
     /**
-     * But a Pro URL is not a Pro path. Free links to the Pro landing page to
-     * render a `locked` Availability state (ADR 0015), and that string has a
-     * pro/ segment in it. Flagging it would mean free could not sell Pro
+     * But a Pro URL is not a Pro path. Free links to a Pro page to render a
+     * `locked` Availability state (ADR 0015), and such a URL may have a pro/
+     * segment in it. Flagging it would mean free could not sell Pro
      * without an exception list.
      */
     public function testDoesNotFlagALinkToTheProLandingPage(): void

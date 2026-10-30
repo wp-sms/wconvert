@@ -85,9 +85,9 @@ function unquoteStringToken(string $text): string
  *   - it ends in .php, which catches the path built on one line and required
  *     on another.
  *
- * The gate matters as much as the match. Free links to the Pro landing page to
- * render a `locked` Availability state (ADR 0015), and 'https://wconvert.io/pro/'
- * has a `pro/` segment in it. Flagging every string with one would mean free
+ * The gate matters as much as the match. Free links to a Pro page to render a
+ * `locked` Availability state (ADR 0015), and a URL such as
+ * 'https://wconvert.io/pro/' has a `pro/` segment in it. Flagging every string with one would mean free
  * could not sell Pro without an exception list.
  */
 function isProSourcePath(string $value, bool $insideInclude): bool

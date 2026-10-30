@@ -16,6 +16,10 @@ the full record for the team.
 
 ### Added
 
+- First public release: popups and inline forms created goal-first, 57
+  designs built in and more than 150 in the online library, design import and
+  export, a lead log with consent records and CSV export, analytics by goal
+  with monthly targets, and a MailPoet integration.
 - Pro: a License page (WConvert → License, and the header's plan badge) to
   activate by signing in to your account or with a key, see your sites and free
   one, swap or remove the key, and see whether updates and support are on. A
@@ -28,11 +32,6 @@ the full record for the team.
   needs something; Site Health gains a WConvert Pro license section.
 - Free: "Already bought Pro?" links to the account's downloads, beside Explore Pro
   and under More with Pro.
-- First public release: popups and inline forms created goal-first, 57
-  designs built in and more than 150 in the online library, design import and
-  export, a lead log with consent records and
-  CSV export, analytics by goal with monthly targets, and a MailPoet
-  integration.
 - Pro: the signed webhook destination (ADR 0148). Each accepted submission is
   posted as one documented JSON shape, signed by Standard Webhooks, to Zapier,
   Make, n8n or your own code. Setup asks which tool first, then only what that
