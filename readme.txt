@@ -376,12 +376,13 @@ logos.
 
 == Screenshots ==
 
-1. Popup and signup form that look like your site, on desktop and on a phone.
-2. Start from a goal: grow your email list, collect enquiries, deliver a lead magnet, and more.
-3. Change any word, colour or field beside a live preview, with no code.
-4. Inline optin forms inside your posts, added with the WConvert block or a shortcode.
-5. See leads, clicks and views for each campaign, compared with the previous period.
-6. Every lead in one log, with the consent wording the visitor saw and CSV export.
+1. Forms that feel like your site. A Daybreak newsletter invitation and a Studio Notes design enquiry show two complete, real WConvert forms with meaningful fictional content.
+2. Goal-first setup for email signups, phone numbers, enquiries, lead magnets and offers. Suggested designs, copy and settings give you a useful starting point.
+3. The visual form builder. Edit words, fields and styling while seeing the form beside you.
+4. Display rules for thoughtful timing. This example targets blog posts after 50% scroll, limits repeat displays to once every seven days, and stops after signup.
+5. Leads and enquiries in WordPress. Review submitted details, the source campaign and the visitor's message, then export when needed. Fictional demo records shown.
+6. A lead record with answers, source page and consent history. See the exact wording agreed to and when it was recorded; this is not a current subscription status. Fictional contact shown.
+7. Campaign analytics with submissions, views and daily trends for October 7–20, 2026. The demo records 189 submissions from 2,520 views, a 7.5% submission rate. These are fictional form submissions, not confirmed email subscribers.
 
 == Changelog ==
 
