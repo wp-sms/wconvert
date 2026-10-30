@@ -88,8 +88,8 @@ add_action('init', static function (): void {
 // WP-ADMIN: WConvert's screen, and the three doors it needs
 // ============================================================================
 
-/** admin-ajax actions WConvert's screen uses: the session ping and the image picker's library. */
-const AJAX_ACTIONS = ['heartbeat', 'query-attachments', 'get-attachment'];
+/** admin-ajax actions WConvert's screen uses: the session ping, the image picker's library, and core's compression probe. */
+const AJAX_ACTIONS = ['heartbeat', 'query-attachments', 'get-attachment', 'wp-compression-test'];
 
 /** admin-post actions: the Leads CSV export. */
 const POST_ACTIONS = ['wconvert_export_leads'];

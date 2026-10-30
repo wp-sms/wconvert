@@ -37,6 +37,8 @@ defined('ABSPATH') || exit;
 const DAYS = 60;
 const DEMO_LOGIN = 'demo';
 const DEMO_ROLE = 'wconvert_demo';
+/** The exit popup reveals it, and it really works in the cart. */
+const COUPON = 'FIRSTBAG10';
 
 function fail(string $message): void
 {
@@ -275,6 +277,60 @@ foreach ($posts as [$slug, $title, $daysAgo, $paragraphs]) {
 }
 say(sprintf('Posts: %d.', count($posts)));
 
+// The code the exit popup reveals, real enough to apply in the cart.
+$coupon = new \WC_Coupon(wc_get_coupon_id_by_code(COUPON));
+$coupon->set_code(COUPON);
+$coupon->set_discount_type('percent');
+$coupon->set_amount(10);
+$coupon->set_usage_limit_per_user(1);
+$coupon->set_description('Demo: revealed by the exit-intent popup.');
+$coupon->save();
+
+// Consent and fine print link to the privacy policy, and render no link at
+// all while WordPress's own policy page is still the draft it installs.
+$privacy = get_page_by_path('privacy-policy');
+$privacyId = wp_insert_post([
+    'ID' => $privacy !== null ? $privacy->ID : 0,
+    'post_type' => 'page',
+    'post_status' => 'publish',
+    'post_name' => 'privacy-policy',
+    'post_title' => 'Privacy Policy',
+    'post_content' => "<!-- wp:paragraph -->\n<p>Northbeam Coffee is a demo shop for WConvert. Nothing is sold, no email is sent, and everything typed here is erased within the hour.</p>\n<!-- /wp:paragraph -->",
+]);
+update_option('wp_page_for_privacy_policy', (int) $privacyId);
+
+// The theme's header lists every page (Checkout, My account, the policy) and
+// its footer carries placeholder links. A shop's own menu and footer instead.
+foreach (get_posts(['post_type' => 'wp_navigation', 'post_status' => 'any', 'numberposts' => -1]) as $navigation) {
+    wp_delete_post($navigation->ID, true);
+}
+$link = static fn (string $label, string $url): string => '<!-- wp:navigation-link ' . wp_json_encode(['label' => $label, 'url' => $url, 'kind' => 'custom']) . ' /-->';
+wp_insert_post([
+    'post_type' => 'wp_navigation',
+    'post_status' => 'publish',
+    'post_title' => 'Header',
+    'post_content' => $link('Shop', (string) wc_get_page_permalink('shop')) . $link('Journal', (string) get_permalink((int) $journalId)),
+]);
+
+$footer = get_posts(['post_type' => 'wp_template_part', 'name' => 'footer', 'post_status' => 'any', 'numberposts' => 1, 'tax_query' => [['taxonomy' => 'wp_theme', 'field' => 'name', 'terms' => get_stylesheet()]]]);
+$footerId = wp_insert_post([
+    'ID' => $footer !== [] ? $footer[0]->ID : 0,
+    'post_type' => 'wp_template_part',
+    'post_status' => 'publish',
+    'post_name' => 'footer',
+    'post_title' => 'Footer',
+    // Wide, like the theme's header, rather than the narrow column of a post.
+    'post_content' => '<!-- wp:group {"align":"full","className":"has-global-padding","layout":{"type":"constrained"}} --><div class="wp-block-group alignfull has-global-padding">'
+        . '<!-- wp:group {"align":"wide","layout":{"type":"default"}} --><div class="wp-block-group alignwide">'
+        . '<!-- wp:separator {"className":"is-style-wide"} --><hr class="wp-block-separator has-alpha-channel-opacity is-style-wide"/><!-- /wp:separator -->'
+        . '<!-- wp:site-title {"level":0} /-->'
+        . '<!-- wp:paragraph --><p>Small-batch coffee, roasted every Tuesday. A demo shop for WConvert: nothing here is for sale.</p><!-- /wp:paragraph -->'
+        . '<!-- wp:spacer {"height":"48px"} --><div style="height:48px" aria-hidden="true" class="wp-block-spacer"></div><!-- /wp:spacer -->'
+        . '</div><!-- /wp:group --></div><!-- /wp:group -->',
+]);
+wp_set_object_terms((int) $footerId, get_stylesheet(), 'wp_theme');
+wp_set_object_terms((int) $footerId, 'footer', 'wp_template_part_area');
+
 // Set on the live rewrite object too, or the flush writes the old structure's rules.
 global $wp_rewrite;
 $wp_rewrite->set_permalink_structure('/%postname%/');
@@ -317,6 +373,8 @@ foreach (['wconvert_optins', 'wconvert_leads', 'wconvert_stats'] as $table) {
     $wpdb->query('TRUNCATE TABLE ' . $wpdb->prefix . $table); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 }
 delete_option('wconvert_destinations');
+// One flow definition per published revision; they would pile up run on run.
+$wpdb->query($wpdb->prepare('DELETE FROM %i WHERE option_name LIKE %s', $wpdb->options, $wpdb->esc_like('wconvert_flow_') . '%'));
 $container->get(OptinRepository::class)->rebuildForInstall();
 
 // The site-wide allowance off, so nothing but each Optin's own cap applies.
@@ -346,6 +404,9 @@ function optin(array $spec, TemplateVocabulary $vocabulary, Degradation $degrada
             $config[$key] = $spec[$key];
         }
     }
+    // Prefill guesses the shop for a link button and asks the merchant to
+    // check it. Here the shop IS the front page, so the guess is the answer.
+    unset($config['unchecked_links']);
     if (($config['display_type'] ?? '') === 'inline') {
         unset($config['frequency']);
     }
@@ -363,6 +424,7 @@ $specs = [
             'headline' => "Pour a cup.\nStay a while.",
             'body' => ['text' => 'One email a month: what we are roasting, a recipe worth trying and first dibs on small lots.'],
             'cta_label' => 'Send me the letter',
+            'consent_text' => ['text' => 'Send me the monthly brew letter. %s', 'link' => ['label' => 'Privacy Policy']],
             'success_headline' => 'See you on Sunday.',
             'success_body' => ['text' => 'The next letter is on its way to your inbox.'],
         ],
@@ -373,6 +435,7 @@ $specs = [
         'goal' => 'grow_email_list',
         'name' => 'First bag 10% off (exit intent)',
         'copy' => [
+            'wordmark' => ['Northbeam Coffee', 'Northbeam Coffee'],
             'eyebrow' => 'Before you go',
             'headline' => "10% off.\nYour first bag.",
             'body' => 'Join the Sunday brew letter and take 10% off your first order of beans.',
@@ -380,6 +443,11 @@ $specs = [
             'cta_label' => 'Join and reveal my code',
             'success_headline' => "Freshly roasted,\nfor less.",
             'success_body' => 'Use the code below for 10% off your first order.',
+            'code_value' => COUPON,
+            'fine_print' => [
+                ['text' => 'Monthly emails. Unsubscribe anytime. First order only. %s', 'link' => ['label' => 'Privacy Policy']],
+                'Apply at checkout. First order only, one use per customer.',
+            ],
         ],
         'rules' => [['type' => 'exit_intent']],
     ],
@@ -432,18 +500,28 @@ foreach ($specs as $key => $spec) {
     $optins[$key] = optin($spec, $vocabulary, $degradation);
 }
 
-// The A/B test: the letter against a variant that leads with the discount.
+// The A/B test: the letter against a variant that leads with first dibs.
 $variant = rest('POST', '/wconvert/v1/optins/' . $optins['newsletter']['id'] . '/variants');
 $variantConfig = $variant['config'];
 $variantConfig['template']['tree'] = SlotRoles::bind($variantConfig['template']['tree'], [
-    'headline' => "Fresh beans.\n10% off the first bag.",
-    'body' => ['text' => 'Join the monthly brew letter and we will send a code for your first order.'],
-    'cta_label' => 'Get 10% off',
+    'headline' => "Small lots.\nFirst dibs.",
+    'body' => ['text' => 'Our rarest coffees sell out in days. Letter readers hear about them first.'],
+    'cta_label' => 'Tell me first',
 ], $vocabulary);
 $optins['newsletter_b'] = rest('PUT', '/wconvert/v1/optins/' . $variant['id'], ['config' => $variantConfig]);
 
 foreach ($optins as $optin) {
     rest('POST', '/wconvert/v1/optins/' . $optin['id'] . '/publish');
+}
+
+// Each Optin's screens as published — what "Signup and screen activity" is
+// keyed by: `screen:<flow hash>:<screen id>`.
+$screens = [];
+foreach ((array) get_option('wconvert_published_set', []) as $entry) {
+    $contract = $entry['payload']['capture_contract'] ?? null;
+    if (is_string($contract)) {
+        $screens[$entry['id']] = array_map(static fn (array $step): string => 'screen:' . $contract . ':' . $step['id'], $entry['payload']['template']['tree']['steps'] ?? []);
+    }
 }
 
 // Live for the whole window the counters cover, not since a minute ago.
@@ -516,6 +594,17 @@ for ($ago = DAYS - 1; $ago >= 0; $ago--) {
         if ($isLead) {
             $stats[] = [$id, $date, 'capture', $conversions];
         }
+        // First screen: shown, then submitted or closed; the thank-you screen follows each submission.
+        if (count($screens[$id] ?? []) >= 2) {
+            [$form, $thanks] = $screens[$id];
+            array_push(
+                $stats,
+                [$id, $date, 'screen_shown', $impressions, $form],
+                [$id, $date, 'screen_advanced', $conversions, $form],
+                [$id, $date, 'screen_dismissed', $dismissals, $form],
+                [$id, $date, 'screen_shown', $conversions, $thanks],
+            );
+        }
 
         for ($i = 0; $isLead && $i < $conversions; $i++) {
             $at = $ago === 0 ? mt_rand($day, max($day, $now - 60)) : $day + mt_rand(7 * 3600, 23 * 3600);
@@ -532,7 +621,7 @@ for ($ago = DAYS - 1; $ago >= 0; $ago--) {
 }
 
 foreach (array_chunk($stats, 200) as $chunk) {
-    $rows = implode(',', array_map(static fn (array $r): string => $wpdb->prepare('(%s, %s, %s, %s, %d)', $r[0], $r[1], $r[2], '', $r[3]), $chunk));
+    $rows = implode(',', array_map(static fn (array $r): string => $wpdb->prepare('(%s, %s, %s, %s, %d)', $r[0], $r[1], $r[2], $r[4] ?? '', $r[3]), $chunk));
     $wpdb->query('INSERT INTO ' . $wpdb->prefix . 'wconvert_stats (optin_id, stat_date, kind, scope, `count`) VALUES ' . $rows); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 }
 
