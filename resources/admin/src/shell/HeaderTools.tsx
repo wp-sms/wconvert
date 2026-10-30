@@ -19,7 +19,7 @@ import { PlanBadge } from './Brand';
 import { DOCS_URL, GUIDES, docsUrl } from './docs';
 
 /** Where every "Explore Pro" link on a free install goes. */
-export const EXPLORE_PRO_URL = 'https://wconvert.io/pro/';
+export const EXPLORE_PRO_URL = 'https://wconvert.io/pricing/';
 
 /** WordPress's Plugins screen, where an installed but inactive Pro is activated (ADR 0147). */
 export const PLUGINS_URL = 'plugins.php';

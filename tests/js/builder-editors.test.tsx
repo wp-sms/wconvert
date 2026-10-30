@@ -184,7 +184,7 @@ describe('When', () => {
     expect(changed).not.toHaveBeenCalled();
     expect(pick('When does it open?', /After 15 seconds/)).toBeChecked();
     expect(document.querySelector('.wconvert-quick-picks__reason')).toHaveTextContent('“When they try to leave” is part of WConvert Pro. Compare plans');
-    expect(screen.getByRole('link', { name: 'Compare plans' })).toHaveAttribute('href', 'https://wconvert.io/pro/');
+    expect(screen.getByRole('link', { name: 'Compare plans' })).toHaveAttribute('href', 'https://wconvert.io/pricing/');
     expect(leave).toHaveAccessibleDescription('“When they try to leave” is part of WConvert Pro. Compare plans');
   });
 

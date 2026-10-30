@@ -26,7 +26,7 @@ describe('the hint line', () => {
 
     expect(screen.getByText(/^Also in/)).toHaveTextContent('Also in WConvert Pro(opens in a new tab): Floating bar, Slide-in, Fullscreen.');
     const link = screen.getByRole('link', { name: 'WConvert Pro (opens in a new tab)' });
-    expect(link).toHaveAttribute('href', 'https://wconvert.io/pro/?utm_source=wconvert-free&utm_medium=flow-map&utm_campaign=explore-pro');
+    expect(link).toHaveAttribute('href', 'https://wconvert.io/pricing/?utm_source=wconvert-free&utm_medium=flow-map&utm_campaign=explore-pro');
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   });
