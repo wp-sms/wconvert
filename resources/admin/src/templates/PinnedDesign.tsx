@@ -14,8 +14,9 @@ import { tierProductName } from '../goals/availability';
  *
  * `ready` is a local design new campaigns can start from; `install` is in the
  * hosted library and one explicit click away; `off` is a library turned off
- * in Settings or switched off; `locked`, `update_plugin` and `unavailable` explain, offering
- * close designs this site can use; `missing` is an id nothing here or online
+ * in Settings or switched off by the site (constant, filter or empty address);
+ * `locked`, `update_plugin` and `unavailable` explain, offering close designs
+ * this site can use; `missing` is an id nothing here or online
  * knows any more. A link to an earlier id (an alias) finds the design.
  */
 export type Pinned =

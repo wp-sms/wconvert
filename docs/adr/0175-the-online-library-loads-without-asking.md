@@ -1,8 +1,9 @@
 # 0175: The online library loads without asking
 
 Accepted 2026-10-30. Amends [0156](0156-the-catalogue-is-one-design-per-object.md)
-§8 and §14, and [0171](0171-one-template-gallery.md) §9 and its `online` /
-`library` fields.
+§8 and §14, [0171](0171-one-template-gallery.md) §9 and its `online` /
+`library` fields, and [0127](0127-free-keeps-product-seams-not-product-reads.md)'s
+note on the hosted library.
 
 ## Context
 
@@ -38,8 +39,8 @@ online resolves to `install` after that same stale refresh.
 - `WCONVERT_TEMPLATE_CATALOG` and the `wconvert_template_catalog` filter, which
   switch the library off entirely.
 - Nothing is fetched on activation, from cron, on the dashboard or on the front
-  end — only inside an admin request that opened a gallery, at most every twelve
-  hours.
+  end — only inside an admin request that opened a gallery or followed a
+  `?design=` link, at most every twelve hours.
 - `POST /template-catalog/consent`, which the Settings switch uses.
 
 **4. Disclosure moves to Settings and the readme.** What is sent and to whom —

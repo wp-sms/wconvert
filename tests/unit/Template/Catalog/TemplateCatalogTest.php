@@ -79,7 +79,8 @@ final class TemplateCatalogTest extends TestCase
     {
         $this->service->design(self::FREE_DESIGN, 'reading');
         $this->service->publish();
-        $this->options->set(TemplateCatalog::CONSENT_OPTION, ''); // Never set: a fresh site.
+        $this->options = new FakeOptionStore(); // A fresh site: the consent option was never written.
+        $this->options->set(TemplateCatalog::SOURCE_OPTION, CatalogFixture::SOURCE);
         $catalog = $this->catalog();
         self::assertSame('yes', $catalog->status()['consent'], 'On by default (ADR 0175)');
         self::assertSame([], $this->http->requests, 'Reading status never fetches');

@@ -63,7 +63,7 @@ Every setup comes with copy written for that goal. You fill in your own brand an
 
 * **Over 150 designs** cover newsletters, coupons, lead magnets, enquiries, bookings and announcements. All the artwork is original and drawn in the page, so no image is loaded from another site.
 * **More than 50 designs ship inside the plugin** and work offline from day one.
-* **The rest come from the online [WConvert library](https://wconvert.io/templates/?utm_source=wordpress.org&utm_medium=plugin-directory&utm_campaign=wconvert-free&utm_content=designs)**, once you allow it. Add a design with a click, and it then works offline like the rest. Some designs need WConvert Pro.
+* **The rest come from the online [WConvert library](https://wconvert.io/templates/?utm_source=wordpress.org&utm_medium=plugin-directory&utm_campaign=wconvert-free&utm_content=designs)**, which you can turn off in Settings. Add a design with a click, and it then works offline like the rest. Some designs need WConvert Pro.
 * **Click any part of a design to change it**: words, colours, fields and buttons, right beside a live preview.
 * **Move designs between sites.** Export a design to a file and import it on another site.
 
@@ -261,7 +261,7 @@ WConvert works without an account or any external service. The online design lib
 **Online design library.** The designs included in the plugin work offline and
 need nothing else. The online WConvert library at https://templates.wconvert.io
 is on by default. It is contacted when an administrator opens the design
-picker, and can be turned off at any time in Settings → Data & privacy, after
+picker or follows a link to a design, and can be turned off at any time in Settings → Data & privacy, after
 which nothing is fetched. Nothing is fetched on activation, from cron, on the
 dashboard or on your site's pages. While the picker is open, WConvert checks
 for new designs at most twice a day.

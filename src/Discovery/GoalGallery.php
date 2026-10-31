@@ -66,8 +66,8 @@ final class GoalGallery
      * The library's setups for this Goal that this site does not have yet.
      *
      * Nothing once the library is turned off — the catalogue's own status
-     * already holds that line. A locked row is a hint, so it follows `ProHints::shown()` exactly as
-     * the design index does; a row already installed is drawn as the local
+     * already holds that line. A locked row is a hint, so it follows
+     * `ProHints::shown()` exactly as the design index does; a row already installed is drawn as the local
      * setup it became, and a row this site ships with is the bundled one.
      *
      * @param array<string, mixed> $status

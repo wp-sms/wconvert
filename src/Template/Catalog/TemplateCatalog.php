@@ -12,14 +12,14 @@ defined('ABSPATH') || exit;
  * The hosted template library, read one design at a time (ADR 0156).
  *
  * ============================================================================
- * NOTHING IS FETCHED UNTIL AN ADMINISTRATOR SAYS YES.
+ * NOTHING IS FETCHED OUTSIDE AN ADMIN REQUEST THAT ASKED.
  * ============================================================================
- * The library is on by default, and gated twice before it touches the network
- * (wp.org Guideline 7). The site can switch it off entirely — the
- * `WCONVERT_TEMPLATE_CATALOG` constant, the `wconvert_template_catalog` filter
- * or an empty catalogue address — and an administrator must have answered
- * the one-time question in the picker (or turned it on in Settings). Then a
- * refresh happens only inside an admin request that asked for one, at most
+ * The library is on by default — it is the plugin's own service (wp.org
+ * Guideline 7, ADR 0175) — and gated twice before it touches the network. The
+ * site can switch it off entirely — the `WCONVERT_TEMPLATE_CATALOG` constant,
+ * the `wconvert_template_catalog` filter or an empty catalogue address — and an
+ * administrator can turn it off in Settings. Otherwise a refresh happens only
+ * inside an admin request that asked for one, at most
  * every twelve hours: never on activation, from cron, on the dashboard or on
  * the front end. Normal library reads use local copies only.
  *

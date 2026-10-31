@@ -104,7 +104,7 @@ copies the artwork actually used into Media Library, reuses existing copies,
 and saves attachment URLs in that draft.
 
 **8. Fetching.** The library is on by default and asks first: a one-time card
-in the picker, kept as an option and a Settings toggle *(corrected by
+in the picker, kept as an option and a Settings toggle *(amended by
 [ADR 0175](0175-the-online-library-loads-without-asking.md): it no longer asks — the card is gone, the option reads `yes` unless
 Settings set it to `no`, and the first gallery open fetches)*, plus the
 `WCONVERT_TEMPLATE_CATALOG` constant and `wconvert_template_catalog` filter to
@@ -168,7 +168,7 @@ later Brand setting can restyle designs through their tokens.
 a query string because the login screen keeps one. It opens Goal-first
 creation with the design pinned and only the Goals it can serve; asks for
 consent where the design is not cached *(amended by [ADR 0175](0175-the-online-library-loads-without-asking.md): it refreshes
-the stale cache instead, and says the library is off only when Settings turned it off)*; says "no longer available" with close
+the stale cache instead, and says the library is off only when Settings, the constant, the filter or an empty address turned it off)*; says "no longer available" with close
 alternatives for an unknown id. Nothing installs on page load.
 
 **15. Automated checks, never a new human gate.** Approval stays agent review;
