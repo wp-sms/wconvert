@@ -3,7 +3,6 @@ import { __, sprintf } from '@wordpress/i18n';
 import { Check, ChevronDown, Sparkles } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
 import { PinnedDesignNotice, usePinnedDesign } from '../templates/PinnedDesign';
-import { LibraryConsent } from '../templates/LibraryConsent';
 import { installSetup, refreshCatalog } from '../templates/catalog';
 import { fitsOutcome } from './outcome';
 import { Button } from '../components/ui/button';
@@ -315,7 +314,6 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
   const clear = () => { setChoices(NO_CHOICES); setPage(0); };
   // A collection with one format needs no Format choice.
   const collectionFormats = open ? new Set(filterCards(cards, { ...filters, format: 'all' }).map(card => card.displayType)) : null;
-  const asking = library?.configured === true && library.consent === 'unanswered' && open === null;
   const goalsHere = goals.status === 'ready'
     ? offerableGoals(goals.data, 'creation_flow').filter(entry => entry.availability === 'ready' && (!pinned || fitsOutcome(entry.outcome, pinned.facets)))
     : [goal];
@@ -384,9 +382,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
               onClose={() => { setCollectionId(null); setStage('any'); setPage(0); }} />}
             <GalleryGrid total={cards.length} shown={shown.length} page={shownPage} pages={pages} onPage={setPage} onClear={clear} disabled={working}
               empty={{ title: __('No templates for this goal yet', 'wconvert'), body: __('Start from a blank design instead.', 'wconvert'),
-                action: <Button disabled={working} onClick={() => { void start(); }}>{__('Choose a design myself', 'wconvert')}</Button> }}
-              consent={asking && <LibraryConsent title={__('See more templates from the WConvert library?', 'wconvert')} allow={__('Show online templates', 'wconvert')}
-                onAnswered={() => setGalleryRetry(value => value + 1)} />}>
+                action: <Button disabled={working} onClick={() => { void start(); }}>{__('Choose a design myself', 'wconvert')}</Button> }}>
               {paged.map(card => <GalleryCard key={card.key} card={card} template={treeOf(card)} onNear={previews.onNear}
                 previewFailed={previews.failed.has(card.key)} onRetryPreview={() => previews.retry(card.key)}
                 saved={saved.includes(card.designKey)} onSave={picker.data ? () => picker.toggleSaved(card.designKey) : undefined}

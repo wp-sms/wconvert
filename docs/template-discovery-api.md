@@ -114,7 +114,7 @@ their canonical `setup_id`, and adds `online` members containing `setup`
 `stage`, and nullable `playbook_id` (a usable archived or bundled setup).
 Neither a design tree nor a Playbook body is included. Withdrawn or missing
 dependencies are omitted; locked and uninstalled members remain discoverable.
-Reading this projection uses the consented local catalogue cache only.
+Reading this projection uses the enabled local catalogue cache only.
 
 Install uses the existing setup endpoint and current setup digest. Use passes
 the returned or bundled `playbook_id` and the member's Goal to prefill; only
@@ -126,11 +126,12 @@ depend on installation or the previously selected Goal.
 `GET /wconvert/v1/playbooks?goal=<goal>` returns
 `{setups, online, library}` (ADR 0171). `setups` are this site's setups for the
 Goal, recommended first, each with its design's `facets`. `online` are the
-consented catalogue's setups for the Goal that this site does not have: setup
+enabled catalogue's setups for the Goal that this site does not have: setup
 identity and `state`, `installed_playbook_id` (an earlier revision already
 here), labelled `business_types`, the design's `display_type`, `facets`,
 `thumbnail` and `tags`, and `preview_url`. A `locked` row is sent only where
-`ProHints::shown()`; nothing is sent until consent is `yes`. `library` is
+`ProHints::shown()`; nothing is sent once Settings turns the library off
+(consent `no`; it reads `yes` otherwise, ADR 0175). `library` is
 `{configured, consent}`.
 
 ### Index page — `v3/index/<sha>.json`

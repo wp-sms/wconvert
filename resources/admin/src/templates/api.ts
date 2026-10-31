@@ -284,7 +284,7 @@ export interface TemplateIndex {
   /** The hosted library's state on this site; null where it is switched off. */
   catalog?: {
     enabled: boolean;
-    consent: 'unanswered' | 'yes' | 'no';
+    consent: 'yes' | 'no';
     checked_at: string | null;
     update_required: boolean;
     taxonomy: Record<string, { id: string; label: string }[]>;

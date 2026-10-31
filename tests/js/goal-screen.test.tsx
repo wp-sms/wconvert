@@ -131,7 +131,7 @@ const DRAFT = {
   },
 };
 
-const NO_LIBRARY = { configured: false, consent: 'unanswered', checked_at: null } as const;
+const NO_LIBRARY = { configured: false, consent: 'yes', checked_at: null } as const;
 function galleryOf(setups: unknown[], online: OnlineSetup[] = [], library: GoalGallery['library'] = NO_LIBRARY): GoalGallery {
   return { setups: setups as PlaybookEntry[], online, library };
 }
@@ -409,27 +409,23 @@ describe('Pro hints on a free install', () => {
 });
 
 describe('the online library', () => {
-  it('asks once, at the end of the grid, and reads the gallery again when answered', async () => {
-    goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK], [], { configured: true, consent: 'unanswered', checked_at: null }));
-    catalog.setCatalogConsent.mockResolvedValue({});
-    catalog.refreshCatalog.mockResolvedValue({});
+  it('loads online templates on a fresh site without asking first (ADR 0175)', async () => {
+    goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK], [], { configured: true, consent: 'yes', checked_at: null }));
+    catalog.refreshCatalog.mockResolvedValue({ checked_at: '2026-10-25T00:00:00+00:00' });
     render(<GoalScreen onCreated={vi.fn()} />);
     await pickGoal();
-    expect(await screen.findByRole('heading', { name: 'See more templates from the WConvert library?' })).toBeVisible();
-    expect(catalog.refreshCatalog).not.toHaveBeenCalled();
-    await userEvent.click(screen.getByRole('button', { name: 'Show online templates' }));
-    expect(catalog.setCatalogConsent).toHaveBeenCalledWith(true);
+    await waitFor(() => expect(catalog.refreshCatalog).toHaveBeenCalledExactlyOnceWith(true));
     await waitFor(() => expect(goals.readGoalGallery).toHaveBeenCalledTimes(2));
+    expect(screen.queryByRole('heading', { name: /WConvert library/ })).toBeNull();
+    expect(catalog.setCatalogConsent).not.toHaveBeenCalled();
   });
 
   it('keeps the grid when reading it again fails, and says so', async () => {
-    goals.readGoalGallery.mockResolvedValueOnce(galleryOf([PLAYBOOK], [], { configured: true, consent: 'unanswered', checked_at: null }))
+    goals.readGoalGallery.mockResolvedValueOnce(galleryOf([PLAYBOOK], [], { configured: true, consent: 'yes', checked_at: null }))
       .mockRejectedValueOnce(new Error('The library could not be reached.'));
-    catalog.setCatalogConsent.mockResolvedValue({});
-    catalog.refreshCatalog.mockResolvedValue({});
+    catalog.refreshCatalog.mockResolvedValue({ checked_at: '2026-10-25T00:00:00+00:00' });
     render(<GoalScreen onCreated={vi.fn()} />);
     await pickGoal();
-    await userEvent.click(await screen.findByRole('button', { name: 'Show online templates' }));
     expect(await screen.findByText('The library could not be reached.')).toBeVisible();
     expect(screen.getByRole('heading', { name: 'Welcome discount' })).toBeVisible();
   });
@@ -471,7 +467,7 @@ describe('the online library', () => {
     expect(goals.readGoalGallery).toHaveBeenCalledOnce();
   });
 
-  it('asks nothing of the library before it is allowed', async () => {
+  it('asks nothing of the library once it is turned off', async () => {
     goals.readGoalGallery.mockResolvedValue(galleryOf([PLAYBOOK], [], { configured: true, consent: 'no', checked_at: null }));
     render(<GoalScreen onCreated={vi.fn()} />);
     await pickGoal();

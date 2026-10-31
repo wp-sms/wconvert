@@ -75,15 +75,28 @@ final class TemplateCatalogTest extends TestCase
         return array_column($catalog->status()['designs'], null, 'id');
     }
 
-    public function testNothingIsFetchedWithoutConsentOrWhenTheLibraryIsSwitchedOff(): void
+    public function testAFreshSiteHasTheLibraryOnAndTheFirstOpenFetchesIt(): void
     {
         $this->service->design(self::FREE_DESIGN, 'reading');
         $this->service->publish();
-        $this->options->set(TemplateCatalog::CONSENT_OPTION, '');
+        $this->options = new FakeOptionStore(); // A fresh site: the consent option was never written.
+        $this->options->set(TemplateCatalog::SOURCE_OPTION, CatalogFixture::SOURCE);
         $catalog = $this->catalog();
-        self::assertSame('unanswered', $catalog->status()['consent']);
-        self::assertSame([], $catalog->refresh(true)['designs'], 'Opening the picker before consent is a no-op');
-        try { $catalog->refresh(); self::fail('Refreshed without consent'); } catch (RuntimeException $error) { self::assertStringContainsString('Allow online designs', $error->getMessage()); }
+        self::assertSame('yes', $catalog->status()['consent'], 'On by default (ADR 0175)');
+        self::assertSame([], $this->http->requests, 'Reading status never fetches');
+        self::assertCount(1, $catalog->refresh(true)['designs'], 'Never checked counts as stale, so the first open fetches');
+        self::assertNotSame([], $this->http->requests);
+    }
+
+    public function testNothingIsFetchedOnceTurnedOffOrWhenTheLibraryIsSwitchedOff(): void
+    {
+        $this->service->design(self::FREE_DESIGN, 'reading');
+        $this->service->publish();
+        $catalog = $this->catalog();
+        $catalog->setConsent(false);
+        self::assertSame('no', $catalog->status()['consent']);
+        self::assertSame([], $catalog->refresh(true)['designs'], 'Opening the picker once turned off is a no-op');
+        try { $catalog->refresh(); self::fail('Refreshed while turned off'); } catch (RuntimeException $error) { self::assertStringContainsString('turned off in Settings', $error->getMessage()); }
         self::assertSame([], $this->http->requests);
 
         $catalog->setConsent(true);

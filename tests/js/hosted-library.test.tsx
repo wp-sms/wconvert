@@ -4,8 +4,8 @@ import type { TemplateIndex, TemplateIndexEntry } from '../../resources/admin/sr
 
 /**
  * A "Use this template" link from the website (ADR 0156): a design this site
- * has, one the library has, one behind the unanswered question, and one that
- * is gone. The gallery's own hosted cards are in editor-gallery.test.tsx.
+ * has, one the library has, one only online that a fresh site has never
+ * fetched, and one that is gone. The gallery's own hosted cards are in editor-gallery.test.tsx.
  */
 const catalog = vi.hoisted(() => ({
   catalogStatus: vi.fn(), refreshCatalog: vi.fn(), setCatalogConsent: vi.fn(), installDesign: vi.fn(), installSetup: vi.fn(), previewDesign: vi.fn(),
@@ -30,7 +30,7 @@ const hosted = (id: string, name: string, state: 'install' | 'locked' | 'update_
   remote: { id, revision: 1, sha256: 'b'.repeat(64), state, thumbnail: { '1x': `https://templates.example/v3/thumbs/${id}.webp`, '2x': `https://templates.example/v3/thumbs/${id}@2x.webp` }, tags: ['industry:food-drink'], family: null, popularity: null, prerequisites: [] },
   ...(state === 'locked' ? { preview_url: `https://wconvert.io/templates/${id}/` } : {}), ...extra,
 });
-const CATALOG = (consent: 'unanswered' | 'yes' | 'no' = 'yes'): TemplateIndex['catalog'] => ({
+const CATALOG = (consent: 'yes' | 'no' = 'yes'): TemplateIndex['catalog'] => ({
   enabled: true, consent, checked_at: '2026-10-20T00:00:00+00:00', update_required: false,
   taxonomy: { industry: [{ id: 'food-drink', label: 'Food & drink' }, { id: 'retail', label: 'Retail' }] },
 });
@@ -41,7 +41,7 @@ function Pinned({ design }: { design: string }) {
   return pinned ? <PinnedDesignNotice pinned={pinned} onReload={reload} onInstalled={reload} onClear={vi.fn()} /> : null;
 }
 
-it('resolves a "Use this template" link: local, hosted, unanswered and gone', async () => {
+it('resolves a "Use this template" link: local, hosted, not yet fetched and gone', async () => {
   templates.listTemplates.mockResolvedValueOnce({ templates: [local('reading', 'Reading slip')], labels: LABELS, facets: FACETS, catalog: CATALOG() });
   const first = render(<Pinned design="reading" />);
   expect(await screen.findByText('Starting from “Reading slip”')).toBeInTheDocument();
@@ -53,10 +53,15 @@ it('resolves a "Use this template" link: local, hosted, unanswered and gone', as
   expect(catalog.installDesign).not.toHaveBeenCalled();
   second.unmount();
 
-  templates.listTemplates.mockResolvedValueOnce({ templates: [], labels: LABELS, facets: FACETS, catalog: CATALOG('unanswered') });
+  // A fresh site has never fetched the library: the link fetches it, no question first.
+  catalog.refreshCatalog.mockResolvedValueOnce({});
+  templates.listTemplates.mockResolvedValueOnce({ templates: [], labels: LABELS, facets: FACETS, catalog: { ...CATALOG()!, checked_at: null } })
+    .mockResolvedValueOnce({ templates: [hosted('supper', 'Supper menu', 'install')], labels: LABELS, facets: FACETS, catalog: CATALOG() });
   const third = render(<Pinned design="supper" />);
-  expect(await screen.findByRole('heading', { name: 'See more designs from the WConvert library?' })).toBeInTheDocument();
+  expect(await screen.findByRole('button', { name: 'Add to my designs' })).toBeInTheDocument();
+  expect(catalog.refreshCatalog).toHaveBeenCalledExactlyOnceWith(true);
   third.unmount();
+  catalog.refreshCatalog.mockClear();
 
   // Unknown to the cache: one refresh (if stale) before saying it is gone.
   catalog.refreshCatalog.mockResolvedValue({});

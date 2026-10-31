@@ -1210,9 +1210,10 @@ The online catalogue at `templates.wconvert.io`, read **one design at a time**:
 each design and each setup is its own immutable object, listed in a compact
 index under a mutable pointer ([ADR 0156](docs/adr/0156-the-catalogue-is-one-design-per-object.md),
 wire contract in `docs/template-discovery-api.md`). It supplies no renderer
-code, site-local destinations, product IDs or links. Nothing is fetched until
-an administrator allows it — once, in the picker or in Settings — and a site
-can switch it off entirely (`WCONVERT_TEMPLATE_CATALOG`). Installing a design
+code, site-local destinations, product IDs or links. It is on by default and
+fetched only when an administrator opens the picker or follows a design link
+([ADR 0175](docs/adr/0175-the-online-library-loads-without-asking.md)); Settings
+turns it off, and a site can switch it off entirely (`WCONVERT_TEMPLATE_CATALOG`). Installing a design
 or a setup is an explicit action; installed copies are local, keep working
 offline, and never change an existing Optin's snapshot. Some Free designs exist
 only here: authored in the repository but bundled in neither ZIP, so a Free

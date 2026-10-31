@@ -75,12 +75,22 @@ final class GoalGalleryTest extends TestCase
         return (new GoalGallery($playbooks, new SetupIndex($templates, $pro), $pro, $catalog ?? $this->catalog($tier)))->of(Goal::PromoteOffer);
     }
 
-    public function testSendsNothingOnlineUntilTheLibraryIsAllowed(): void
+    public function testAFreshSiteHasTheLibraryOnButNothingFetchedYet(): void
     {
         $gallery = $this->gallery();
         self::assertSame(['reading-recommendation'], array_column($gallery['setups'], 'id'));
+        self::assertSame([], $gallery['online'], 'Reading the gallery never fetches; step 2 refreshes on open');
+        self::assertSame(['configured' => true, 'consent' => 'yes', 'checked_at' => null], $gallery['library']);
+    }
+
+    public function testOffersNothingOnlineOnceTheLibraryIsTurnedOff(): void
+    {
+        $catalog = $this->catalog();
+        $catalog->refresh();
+        $catalog->setConsent(false);
+        $gallery = $this->gallery(catalog: $catalog);
         self::assertSame([], $gallery['online']);
-        self::assertSame(['configured' => true, 'consent' => 'unanswered', 'checked_at' => null], $gallery['library']);
+        self::assertSame('no', $gallery['library']['consent']);
     }
 
     public function testSaysWhenTheLibraryWasLastChecked(): void

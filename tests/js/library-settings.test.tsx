@@ -2,7 +2,7 @@ import { expect, it, vi } from 'vitest';
 import { useState } from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { LibrarySettings } from '../../resources/admin/src/templates/LibraryConsent';
+import { LibrarySettings } from '../../resources/admin/src/templates/LibrarySettings';
 import { SwitchSetting } from '../../resources/admin/src/shell/SwitchSetting';
 
 const catalog = vi.hoisted(() => ({
