@@ -137,7 +137,7 @@ final class UninstallTest extends TestCase
         $options = self::everyOptionInTheSource();
         $contents = self::contents();
 
-        $this->assertCount(18, $options, 'every new option needs an uninstall entry');
+        $this->assertCount(19, $options, 'every new option needs an uninstall entry');
 
         foreach ($options as $option) {
             $this->assertStringContainsString(
@@ -265,7 +265,7 @@ final class UninstallTest extends TestCase
             $this->assertDirectoryDoesNotExist($images . '/sets');
             $this->assertFileExists($images . '/free/keep.txt');
             $this->assertSame(
-                ['wconvert_prune_leads', 'wconvert_recover_submissions', 'wconvert_transfer_cleanup'],
+                ['wconvert_prune_leads', 'wconvert_recover_submissions', 'wconvert_transfer_cleanup', 'wconvert_weekly_summary'],
                 explode("\n", (string) file_get_contents($log))
             );
         } finally {

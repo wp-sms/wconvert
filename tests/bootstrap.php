@@ -2510,3 +2510,40 @@ if (!function_exists('wp_safe_remote_get')) {
      * @return array<string, mixed>|WP_Error */
     function wp_safe_remote_get(string $url, array $args = []) { return wp_safe_remote_request($url, ['method' => 'GET'] + $args); }
 }
+
+// User meta, recorded per user: the getting-started checklist's hidden flag (ADR 0176).
+$GLOBALS['wconvertTestUserMeta'] = [];
+
+if (!function_exists('get_user_meta')) {
+    /** @return mixed */
+    function get_user_meta(int $userId, string $key = '', bool $single = false)
+    {
+        $value = $GLOBALS['wconvertTestUserMeta'][$userId][$key] ?? null;
+
+        return $single ? ($value ?? '') : ($value === null ? [] : [$value]);
+    }
+}
+
+if (!function_exists('update_user_meta')) {
+    /** @param mixed $value */
+    function update_user_meta(int $userId, string $key, $value): bool
+    {
+        $GLOBALS['wconvertTestUserMeta'][$userId][$key] = $value;
+
+        return true;
+    }
+}
+
+if (!function_exists('wp_doing_ajax')) {
+    function wp_doing_ajax(): bool
+    {
+        return (bool) ($GLOBALS['wconvertTestDoingAjax'] ?? false);
+    }
+}
+
+if (!function_exists('is_email')) {
+    function is_email(string $email): string|false
+    {
+        return filter_var($email, FILTER_VALIDATE_EMAIL) === false ? false : $email;
+    }
+}

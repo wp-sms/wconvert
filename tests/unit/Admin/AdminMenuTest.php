@@ -20,13 +20,16 @@ final class AdminMenuTest extends TestCase
         $GLOBALS['wconvertTestSubmenu'] = [];
     }
 
-    /** The automatic first item is renamed Campaigns; Help links to the same page at #help. */
-    public function testTheSubmenuIsCampaignsThenHelp(): void
+    /** The automatic first item is renamed Campaigns; the sections and Help link to the same page's hash routes (ADR 0176). */
+    public function testTheSubmenuIsEverySectionThenHelp(): void
     {
         (new AdminMenu(new AdminNotices(new PublishedSet(new FakeOptionStore()))))->registerSubmenu();
 
         $this->assertSame([
             ['Campaigns', 'manage_options', 'wconvert'],
+            ['Analytics', 'manage_options', 'admin.php?page=wconvert#analytics'],
+            ['Leads', 'manage_options', 'admin.php?page=wconvert#leads'],
+            ['Settings', 'manage_options', 'admin.php?page=wconvert#settings'],
             ['Help', 'manage_options', 'admin.php?page=wconvert#help'],
         ], $GLOBALS['wconvertTestSubmenu']['wconvert']);
     }

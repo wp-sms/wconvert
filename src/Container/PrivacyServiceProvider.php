@@ -54,7 +54,8 @@ final class PrivacyServiceProvider implements ServiceProvider
                 $c->resolve(DestinationStore::class),
                 $c->resolve(DestinationRegistry::class),
                 $c->resolve(\WConvert\Optin\OptinRepository::class),
-                $c->resolve(\WConvert\Protection\Settings::class)
+                $c->resolve(\WConvert\Protection\Settings::class),
+                $c->resolve(\WConvert\Report\WeeklySummarySettings::class)
             )
         );
 

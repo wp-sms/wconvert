@@ -131,6 +131,10 @@ final class Bootstrap
             );
         }
 
+        // Once, to Campaigns and its checklist (ADR 0176). Read-only use of the request.
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        \WConvert\Onboarding\FirstRunRedirect::arm($networkWide, $_REQUEST);
+
         $options = new WpOptionStore();
 
         (new Installer($options, new OptinRepository(
@@ -168,6 +172,7 @@ final class Bootstrap
         wp_clear_scheduled_hook(\WConvert\Destination\SubmissionDispatcher::RECOVER);
         wp_unschedule_hook(\WConvert\Rest\TemplateTransferController::CLEANUP);
         wp_clear_scheduled_hook(\WConvert\Stats\ProductStats::HOOK);
+        wp_clear_scheduled_hook(\WConvert\Report\WeeklySummaryJob::HOOK);
     }
 
     /**

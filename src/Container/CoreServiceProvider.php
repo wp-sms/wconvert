@@ -144,6 +144,8 @@ final class CoreServiceProvider implements ServiceProvider
         DashboardController::class,
         MonthlyTargetsController::class,
         MilestoneController::class,
+        \WConvert\Rest\ReportController::class,
+        \WConvert\Rest\GettingStartedController::class,
         DestinationController::class,
         PrivacyController::class,
         \WConvert\Rest\ProtectionController::class,
@@ -704,6 +706,30 @@ final class CoreServiceProvider implements ServiceProvider
             $c->resolve(MonthlyTargets::class)
         ));
 
+        // The weekly summary email reads the same report as Analytics (ADR 0176).
+        $container->register(\WConvert\Report\WeeklySummarySettings::class, static fn (ServiceContainer $c) => new \WConvert\Report\WeeklySummarySettings($c->resolve(OptionStore::class)));
+        $container->register(\WConvert\Report\SummaryMailer::class, static fn () => new \WConvert\Report\WpSummaryMailer());
+        $container->register(\WConvert\Report\WeeklySummaryJob::class, static fn (ServiceContainer $c) => new \WConvert\Report\WeeklySummaryJob(
+            $c->resolve(Dashboard::class),
+            $c->resolve(MilestoneStore::class),
+            $c->resolve(\WConvert\Report\WeeklySummarySettings::class),
+            $c->resolve(\WConvert\Report\SummaryMailer::class)
+        ));
+        $container->register(\WConvert\Rest\ReportController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\ReportController(
+            $c->resolve(\WConvert\Report\WeeklySummarySettings::class),
+            $c->resolve(\WConvert\Report\WeeklySummaryJob::class),
+            $c->resolve(MilestoneStore::class)
+        ));
+
+        // The getting-started checklist and the one redirect after activation (ADR 0176).
+        $container->register(\WConvert\Onboarding\ChecklistDismissal::class, static fn () => new \WConvert\Onboarding\ChecklistDismissal());
+        $container->register(\WConvert\Rest\GettingStartedController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\GettingStartedController(
+            $c->resolve(\WConvert\Onboarding\ChecklistDismissal::class)
+        ));
+        $container->register(\WConvert\Onboarding\FirstRunRedirect::class, static fn (ServiceContainer $c) => new \WConvert\Onboarding\FirstRunRedirect(
+            static fn (): bool => $c->resolve(OptinRepository::class)->names() !== []
+        ));
+
         $container->register(
             RateLimit::class,
             static fn (ServiceContainer $c): RateLimit => new RateLimit($c->resolve(TransientStore::class))
@@ -914,11 +940,17 @@ final class CoreServiceProvider implements ServiceProvider
         // visitor's page; the worker attaches to an Action Scheduler hook,
         // which fires from a loopback request that is neither (#4).
         $container->resolve(PushWorker::class)->hooks();
+        // Every request: the send fires from a WP-Cron request, which is not admin.
+        $container->resolve(\WConvert\Report\WeeklySummaryJob::class)->hooks();
         \WConvert\Queue\RecentPushHistory::hooks();
         (new \WConvert\Destination\SubmissionDispatcher(
             $container->resolve(Connection::class), $container->resolve(\WConvert\Queue\Queue::class),
             $container->resolve(DestinationStore::class), $container->resolve(DestinationRegistry::class), $container->resolve(HealthStore::class)
         ))->hooks();
+
+        if (is_admin()) {
+            $container->resolve(\WConvert\Onboarding\FirstRunRedirect::class)->hooks();
+        }
 
         if (!is_admin()) {
             $container->resolve(LoaderEnqueue::class)->hooks();

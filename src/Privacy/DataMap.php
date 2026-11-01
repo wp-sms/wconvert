@@ -30,6 +30,7 @@ final class DataMap
         private readonly DestinationRegistry $types,
         private readonly ?\WConvert\Optin\OptinRepository $optins = null,
         private readonly ?\WConvert\Protection\Settings $protection = null,
+        private readonly ?\WConvert\Report\WeeklySummarySettings $summary = null,
     ) {
     }
 
@@ -43,7 +44,8 @@ final class DataMap
      *   beacon_rate_limit_seconds: int,
      *   protection_provider: string,
      *   resource_send_limit_seconds: int,
-     *   capture_rate_limit_seconds: int
+     *   capture_rate_limit_seconds: int,
+     *   weekly_summary: array{recipients: list<string>}|null
      * }
      */
     public function summary(): array
@@ -61,6 +63,8 @@ final class DataMap
             'capture_rate_limit_seconds' => CaptureRateLimit::WINDOW,
             'protection_provider' => $this->protection?->read()['provider'] ?? 'none',
             'resource_send_limit_seconds' => \WConvert\Protection\ResourceSendGuard::WINDOW,
+            // Counts and campaign names to the owner's inbox; listed while it is on (ADR 0176).
+            'weekly_summary' => $this->summary?->enabled() ? ['recipients' => $this->summary->recipients()] : null,
         ];
     }
 

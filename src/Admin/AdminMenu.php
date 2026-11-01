@@ -123,17 +123,22 @@ final class AdminMenu
     }
 
     /**
-     * WConvert → Campaigns, then WConvert → Help.
+     * WConvert → Campaigns, Analytics, Leads, Settings, Help.
      *
      * The first entry repeats the top level's slug, which is how WordPress
      * renames the submenu's automatic first item: without it the list would
-     * open on a second "WConvert". Help's slug is a URL, so WordPress links it
-     * as written. Both entries are one page, so which is `current` is decided
-     * in the browser from the hash (`shell/menuHighlight.ts`).
+     * open on a second "WConvert". The others are URLs to the same screen's
+     * hash routes (`nav.ts`), so WordPress links them as written and a new
+     * user finds every section from the sidebar too (ADR 0176). All five are
+     * one page, so which is `current` is decided in the browser from the hash
+     * (`shell/menuHighlight.ts`).
      */
     public function registerSubmenu(): void
     {
         add_submenu_page(self::SLUG, __('Campaigns', 'wconvert'), __('Campaigns', 'wconvert'), 'manage_options', self::SLUG);
+        add_submenu_page(self::SLUG, __('Analytics', 'wconvert'), __('Analytics', 'wconvert'), 'manage_options', 'admin.php?page=' . self::SLUG . '#analytics');
+        add_submenu_page(self::SLUG, __('Leads', 'wconvert'), __('Leads', 'wconvert'), 'manage_options', 'admin.php?page=' . self::SLUG . '#leads');
+        add_submenu_page(self::SLUG, __('Settings', 'wconvert'), __('Settings', 'wconvert'), 'manage_options', 'admin.php?page=' . self::SLUG . '#settings');
         add_submenu_page(self::SLUG, __('Help', 'wconvert'), __('Help', 'wconvert'), 'manage_options', self::HELP_HREF);
     }
 
@@ -345,6 +350,8 @@ final class AdminMenu
             // test impossible, so this is `ready` or `locked` and the `locked`
             // card names {@see self::VARIANT_MODULE}'s tier.
             'variants' => self::whetherTestsCanRun($manifest, $pro),
+            // The getting-started checklist's one stored fact (ADR 0176).
+            'checklistHidden' => (new \WConvert\Onboarding\ChecklistDismissal())->hidden(get_current_user_id()),
         ];
     }
 

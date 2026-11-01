@@ -55,6 +55,7 @@ final class DataMapTest extends TestCase
             'capture_rate_limit_seconds' => 600,
             'protection_provider' => 'none',
             'resource_send_limit_seconds' => 600,
+            'weekly_summary' => null,
         ], $map->summary());
     }
 
@@ -133,5 +134,19 @@ final class DataMapTest extends TestCase
         $this->assertSame('wconvert_cart', $summary['browser']['cart_recovery']['key']);
         $this->assertFalse($summary['browser']['cart_recovery']['contains_contact_details']);
         $this->assertSame('wcv1', $summary['browser']['key']);
+    }
+
+    /** The weekly summary is listed while it is on, with who receives it (ADR 0176). */
+    public function testTheWeeklySummaryIsListedWhileItIsOn(): void
+    {
+        $options = new FakeOptionStore();
+        $options->set('admin_email', 'owner@example.com');
+        $summary = new \WConvert\Report\WeeklySummarySettings($options);
+        $map = new DataMap(new RetentionPeriod($options), new DestinationStore($options), new DestinationRegistry(new FakeProPresence(), new FakeSitePresence()), null, null, $summary);
+
+        $this->assertSame(['recipients' => ['owner@example.com']], $map->summary()['weekly_summary']);
+
+        $summary->save(false, []);
+        $this->assertNull($map->summary()['weekly_summary']);
     }
 }
