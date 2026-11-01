@@ -57,24 +57,22 @@ on:
         type: boolean
         default: true
 
-concurrency:
-  group: frontend-tests-${{ github.ref }}
-  cancel-in-progress: true
-
 permissions:
   contents: read
 
 jobs:
+  # Vitest covers free's tree and Pro's; Pro's loader tests live under pro/ so
+  # no test importing a Pro module lands in resources/, a source-contract scan
+  # root. The same run dumps every converted design for the PHP verifier (ADR
+  # 0163). tsc and ESLint (--max-warnings=0, no backlog) ride along.
   test:
-    name: 'Vitest'
+    name: 'Vitest, TypeScript and ESLint'
     if: inputs.tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      # The form switch's output against the PHP rules a publish applies (ADR
-      # 0163). The verifier boots the unit suite's bootstrap, which loads Pro's
-      # autoloader.
+      # The verifier boots the unit suite's bootstrap, which loads Pro's autoloader.
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.1'
@@ -86,32 +84,24 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-      - run: npm ci
-      - run: WCONVERT_DUMP_CONVERSIONS="$RUNNER_TEMP/conversions.json" npm test
-      - name: Converted designs
-        run: php bin/verify-converted-designs.php "$RUNNER_TEMP/conversions.json"
-
-  static:
-    name: 'TypeScript and ESLint'
-    if: inputs.tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
-      - run: npm ci
+      - id: install
+        run: npm ci
       - run: npm run typecheck
       - run: npm run lint
+      # Runs even when tsc or ESLint failed, so one push reports all three.
+      - id: vitest
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: WCONVERT_DUMP_CONVERSIONS="$RUNNER_TEMP/conversions.json" npm test
+      - name: Converted designs
+        if: ${{ !cancelled() && steps.vitest.outcome == 'success' }}
+        run: php bin/verify-converted-designs.php "$RUNNER_TEMP/conversions.json"
 
   # THE ONE BUILD (ADR 0029). Every bundle, free and Pro, built once; then
   # the asserts that read build output — the loader contract and byte budgets,
   # the admin contract, POT coverage — and the hand-off to [visual]. Always
   # runs: the contracts are fail-closed, so no diff may opt out of them.
   build:
-    name: 'Build + loader, admin and POT contracts'
+    name: 'Build + contracts'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     outputs:
@@ -130,6 +120,10 @@ jobs:
           php-version: '8.1'
           coverage: none
           tools: wp-cli
+      # The free contract at the source (ADR 0029, check a): no build needed,
+      # so it goes first.
+      - name: Source contract (free carries no Pro)
+        run: bash bin/verify-source-contract.sh
       - run: composer dist --no-progress
       # Pro's scoped licence SDK (ADR 0143): Playground fatals without
       # pro/packages/, and wp-scoper, which writes it, is a dev dependency.

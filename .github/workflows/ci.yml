@@ -61,32 +61,6 @@ permissions:
   pull-requests: read
 
 jobs:
-  # ---------------------------------------------------------------------------
-  # THE FREE CONTRACT, PROVEN AT THE SOURCE (ADR 0029, check a).
-  #
-  # No build, no npm install, no composer install — PHP and a shell, because
-  # the invariant is a property of the source text. That is what makes running
-  # it on every pull request cheap enough to be unconditional, and it is why a
-  # stray premium import is caught by whoever wrote it rather than by whoever
-  # cuts the release. WSMS finds one only at release time, because its guard
-  # lives inside build.sh.
-  # ---------------------------------------------------------------------------
-  source-contract:
-    name: 'Source contract (free carries no Pro)'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.1'
-          coverage: none
-
-      - name: Verify the source contract
-        run: bash bin/verify-source-contract.sh
-
   changes:
     name: 'Changed paths'
     runs-on: ubuntu-latest
@@ -253,7 +227,7 @@ jobs:
   required-checks:
     name: 'Required checks'
     if: always()
-    needs: [source-contract, changes, php-tests, frontend-tests, template-service]
+    needs: [changes, php-tests, frontend-tests, template-service]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
