@@ -87,14 +87,10 @@ jobs:
       # The container tag for [visual], from the lockfile's @playwright/test.
       - id: playwright
         run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
-      - run: npm run build
-      - name: Loader contract (budgets + no premium in free)
-        run: npm run assert:loader
-      - name: Admin contract (no Pro admin code, no "upgrade")
-        run: npm run assert:admin
-      - name: POT coverage (every string extracted)
-        run: npm run check:pot
-      # A draft skips the visual suites; a manual dispatch always runs them.
+      - id: build
+        run: npm run build
+      # Uploaded before the asserts, so a failing contract still lets [visual]
+      # report. A draft skips [visual]; a manual dispatch always runs it.
       - id: visual
         run: echo "run=${{ inputs.tests && (github.event_name != 'pull_request' || !github.event.pull_request.draft) }}" >> "$GITHUB_OUTPUT"
       - if: steps.visual.outputs.run == 'true'
@@ -107,11 +103,20 @@ jobs:
             pro/packages/
             vendor/
           retention-days: 1
+      - name: Loader contract (budgets + no premium in free)
+        run: npm run assert:loader
+      # Each assert runs even when the one before it failed.
+      - name: Admin contract (no Pro admin code, no "upgrade")
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: npm run assert:admin
+      - name: POT coverage (every string extracted)
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: npm run check:pot
 
   visual:
     name: 'Visual contracts: ${{ matrix.leg }}'
     needs: build
-    if: needs.build.outputs.visual == 'true'
+    if: ${{ !cancelled() && needs.build.outputs.visual == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     container:
