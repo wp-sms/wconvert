@@ -4,7 +4,8 @@ import { isFreeInstall } from '../goals/availability';
 import { MoreWithPro } from './MoreWithPro';
 import { Fragment, useEffect, useId, useState } from 'react';
 import { __ } from '@wordpress/i18n';
-import { ArrowRight, ChartColumn, Database, Eye, Plug, Search, Shield } from 'lucide-react';
+import { ArrowRight, ChartColumn, Database, Eye, Mail, Plug, Search, Shield } from 'lucide-react';
+import { EmailReports } from './EmailReports';
 import { Input } from '../components/ui/input';
 import { NativeSelect } from '../components/ui/native-select';
 import { clearRequestedSetting, focusSetting, matchSettings, requestedSetting, requestSetting, settingsIndex, type SettingEntry } from './settingsIndex';
@@ -54,6 +55,7 @@ export function Settings({
     { id: 'experience', label: __('Visitor experience', 'wconvert'), description: __('Site-wide display and phone settings', 'wconvert'), icon: Eye },
     { id: 'protection', label: __('Spam protection', 'wconvert'), description: __('Bot verification and form filters', 'wconvert'), icon: Shield },
     { id: 'data', label: __('Data & privacy', 'wconvert'), description: __('Retention and personal data', 'wconvert'), icon: Database },
+    { id: 'reports', label: __('Email reports', 'wconvert'), description: __('A weekly summary for you', 'wconvert'), icon: Mail },
     { id: 'integrations', label: __('Analytics integrations', 'wconvert'), description: __('Google Analytics, GTM and Plausible', 'wconvert'), icon: ChartColumn },
   ].filter((category) => !(free && category.id === 'integrations')) as { id: SettingsGroup; label: string; description: string; icon: typeof Plug }[];
   const groupLabel = (of: SettingsGroup) => categories.find((category) => category.id === of)?.label ?? '';
@@ -160,6 +162,7 @@ export function Settings({
         {group === 'data' && (
           <DataPrivacySettings onEditingStateChange={onEditingStateChange} />
         )}
+        {group === 'reports' && <EmailReports onEditingStateChange={onEditingStateChange} />}
         {group === 'integrations' && <AnalyticsIntegrationSettings onEditingStateChange={onEditingStateChange} />}
       </div>
     </div>

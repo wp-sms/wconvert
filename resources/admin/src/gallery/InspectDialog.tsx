@@ -43,7 +43,7 @@ export function InspectDialog({ card, template, gist, action, conversion = null,
         <PickerDialogHeader>
           <DialogTitle>{card.name}</DialogTitle>
           {card.designName && card.designName !== card.name
-            ? <DialogDescription>{sprintf(/* translators: %s: a design's name. */ __('Design: %s', 'wconvert'), card.designName)}</DialogDescription>
+            ? <DialogDescription>{sprintf(/* translators: %s: a design's name. */ __('Layout: %s', 'wconvert'), card.designName)}</DialogDescription>
             : <DialogDescription className="sr-only">{__('A larger preview of this template.', 'wconvert')}</DialogDescription>}
         </PickerDialogHeader>
         <PickerDialogBody className="p-0">

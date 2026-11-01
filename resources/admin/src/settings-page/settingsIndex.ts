@@ -81,6 +81,10 @@ export function settingsIndex(): SettingEntry[] {
     { key: 'template-library', group: 'data', label: __('Online template library', 'wconvert'), terms: __('templates designs library online cloudflare download gallery consent', 'wconvert'), find: [setting('template-library')] },
     { key: 'privacy-guidance', group: 'data', label: __('Privacy guidance in the editor', 'wconvert'), terms: __('privacy notice consent campaign editor', 'wconvert'), find: [setting('privacy-guidance')] },
 
+    { key: 'weekly-summary', group: 'reports', label: __('Send me a weekly summary', 'wconvert'), terms: __('email report weekly summary digest monday notifications', 'wconvert'), find: [setting('weekly-summary')] },
+    { key: 'weekly-summary-recipients', group: 'reports', label: __('Weekly summary recipients', 'wconvert'), terms: __('email report send to address admin', 'wconvert'), find: [setting('weekly-summary-recipients'), setting('weekly-summary')] },
+    { key: 'weekly-summary-test', group: 'reports', label: __('Send a test email', 'wconvert'), terms: __('email report weekly summary test preview', 'wconvert'), find: [setting('weekly-summary-test'), setting('weekly-summary')] },
+
     { key: 'analytics-enabled', group: 'integrations', pro: true, label: __('Enable analytics integration', 'wconvert'), terms: __('ga4 google analytics gtm plausible tracking events', 'wconvert'), find: [analyticsOn] },
     { key: 'analytics-measurement', group: 'integrations', pro: true, label: __('Measurement ID', 'wconvert'), terms: __('ga4 google analytics tag stream g-', 'wconvert'), find: [setting('analytics-measurement'), analyticsOn] },
     { key: 'analytics-method', group: 'integrations', pro: true, label: __('Connection method', 'wconvert'), terms: __('google tag manager gtm plausible gtag', 'wconvert'), find: [setting('analytics-method'), analyticsOn] },

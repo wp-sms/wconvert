@@ -203,3 +203,52 @@
   .wconvert-dateline__axis span:last-child { transform:none; inset-inline-start:auto !important; inset-inline-end:0; }
   #wconvert-admin .wconvert-occasion-notice { padding-inline:18px; }
 }
+
+/* The getting-started checklist (ADR 0176; approved prototype
+ * claude.ai/artifact/7kfMUDZUzGU3rbrxADFEcs). A card of its own above the
+ * sheet: a head with the progress, three steps in a row (stacked on phones),
+ * and a foot with the walkthrough and the guide. Only the current step acts. */
+#wconvert-admin .wconvert-checklist { background:var(--card); border:1px solid var(--border); border-radius:calc(var(--radius) + 2px); overflow:clip; }
+#wconvert-admin .wconvert-checklist__head { display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:start; gap:6px 20px; padding:18px 20px 16px; border-block-end:1px solid var(--border); }
+#wconvert-admin .wconvert-checklist__title { display:flex; align-items:center; gap:8px; margin:0; font-size:var(--text-heading); line-height:1.3; font-weight:600; letter-spacing:-0.01em; color:var(--foreground); text-wrap:balance; }
+#wconvert-admin .wconvert-checklist__lede { margin:4px 0 0; font-size:var(--text-note); color:var(--muted-foreground); max-inline-size:60ch; }
+#wconvert-admin .wconvert-checklist__badge { display:inline-grid; place-items:center; inline-size:22px; block-size:22px; border-radius:999px; background:var(--success); color:#fff; }
+#wconvert-admin .wconvert-checklist__badge svg { inline-size:14px; block-size:14px; stroke-width:3; }
+#wconvert-admin .wconvert-checklist__meter { display:grid; justify-items:end; gap:6px; padding-block-start:3px; }
+#wconvert-admin .wconvert-checklist__count { font-size:var(--text-micro); font-weight:600; letter-spacing:.02em; color:var(--muted-foreground); font-variant-numeric:tabular-nums; white-space:nowrap; }
+#wconvert-admin .wconvert-checklist__bar { display:flex; gap:4px; }
+#wconvert-admin .wconvert-checklist__bar i { inline-size:28px; block-size:6px; border-radius:999px; background:var(--muted); box-shadow:inset 0 0 0 1px rgb(48 39 32 / .08); }
+#wconvert-admin .wconvert-checklist__bar i[data-on] { background:var(--success); box-shadow:none; }
+#wconvert-admin .wconvert-checklist__close { margin-block-start:-4px; margin-inline-end:-8px; color:var(--muted-foreground); }
+#wconvert-admin .wconvert-checklist__close svg { inline-size:18px; block-size:18px; }
+#wconvert-admin .wconvert-checklist__steps { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); }
+#wconvert-admin .wconvert-checklist__step { display:flex; gap:12px; margin:0; padding:18px 20px 20px; border-inline-start:1px solid var(--border); }
+#wconvert-admin .wconvert-checklist__step:first-child { border-inline-start:0; }
+#wconvert-admin .wconvert-checklist__step[data-state="current"] { background:color-mix(in srgb, var(--brand) 22%, var(--card)); box-shadow:inset 0 3px 0 color-mix(in srgb, var(--brand) 70%, var(--foreground) 12%); }
+#wconvert-admin .wconvert-checklist__mark { flex:none; inline-size:26px; block-size:26px; border-radius:999px; display:grid; place-items:center; font-size:var(--text-note); font-weight:600; font-variant-numeric:tabular-nums; border:1.5px solid color-mix(in srgb, var(--input) 45%, var(--card)); color:var(--muted-foreground); background:var(--card); }
+#wconvert-admin .wconvert-checklist__step[data-state="current"] .wconvert-checklist__mark { border-color:var(--primary); background:var(--primary); color:var(--primary-foreground); }
+#wconvert-admin .wconvert-checklist__step[data-state="done"] .wconvert-checklist__mark { border-color:var(--success); background:var(--success); color:#fff; }
+#wconvert-admin .wconvert-checklist__mark svg { inline-size:15px; block-size:15px; stroke-width:3; }
+#wconvert-admin .wconvert-checklist__step-title { margin:2px 0 0; font-size:var(--text-body); font-weight:600; color:var(--foreground); }
+#wconvert-admin .wconvert-checklist__step[data-state="done"] .wconvert-checklist__step-title { color:var(--muted-foreground); }
+#wconvert-admin .wconvert-checklist__text { margin:4px 0 0; font-size:var(--text-note); color:var(--muted-foreground); text-wrap:pretty; }
+#wconvert-admin .wconvert-checklist__text a,
+#wconvert-admin .wconvert-checklist__foot a { color:var(--link); text-decoration:underline; text-underline-offset:2px; }
+#wconvert-admin .wconvert-checklist__action { margin-block-start:12px; }
+#wconvert-admin .wconvert-checklist__foot { display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; padding:11px 20px; border-block-start:1px solid var(--border); background:var(--background); font-size:var(--text-note); color:var(--muted-foreground); }
+#wconvert-admin .wconvert-checklist__foot a { display:inline-flex; align-items:center; gap:5px; }
+#wconvert-admin .wconvert-checklist__play { inline-size:16px; block-size:16px; }
+#wconvert-admin .wconvert-checklist__ext { inline-size:12px; block-size:12px; }
+#wconvert-admin .wconvert-checklist__action .wconvert-checklist__ext { inline-size:14px; block-size:14px; }
+@media (max-width: 760px) {
+  #wconvert-admin .wconvert-checklist__head { grid-template-columns:minmax(0,1fr) auto; padding:16px; }
+  #wconvert-admin .wconvert-checklist__meter { grid-column:1 / -1; grid-row:2; justify-items:start; }
+  #wconvert-admin .wconvert-checklist__close { grid-column:2; grid-row:1; }
+  #wconvert-admin .wconvert-checklist__steps { grid-template-columns:1fr; }
+  #wconvert-admin .wconvert-checklist__step { border-inline-start:0; border-block-start:1px solid var(--border); padding:14px 16px 16px; }
+  #wconvert-admin .wconvert-checklist__step:first-child { border-block-start:0; }
+  #wconvert-admin .wconvert-checklist__step[data-state="current"] { box-shadow:inset 3px 0 0 color-mix(in srgb, var(--brand) 70%, var(--foreground) 12%); }
+  /* box-shadow has no logical form: the stripe moves to the start edge itself. */
+  #wconvert-admin .wconvert-checklist__step[data-state="current"]:dir(rtl) { box-shadow:inset -3px 0 0 color-mix(in srgb, var(--brand) 70%, var(--foreground) 12%); }
+  #wconvert-admin .wconvert-checklist__foot { padding:11px 16px; }
+}

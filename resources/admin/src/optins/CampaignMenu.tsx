@@ -60,7 +60,7 @@ export function CampaignMenu({
       name={__('Publish saved draft', 'wconvert')}
       // The one action whose result is not in its name (ADR 0139).
       hint={replaces ? __('Replaces the live version', 'wconvert') : null}
-      refused={missingDesign ? refusal(__('Add a design first', 'wconvert'), __('Add a design in the editor before publishing.', 'wconvert')) : null}
+      refused={missingDesign ? refusal(__('Choose a template first', 'wconvert'), __('Choose a template in the editor before publishing.', 'wconvert')) : null}
       onSelect={() => onDecision('publish', trigger.current)}
     />
   );
@@ -82,7 +82,7 @@ export function CampaignMenu({
           {onDetails && <OptionItem icon={Info} name={__('Details', 'wconvert')} onSelect={() => onDetails(trigger.current)} />}
           {preview !== null && (
             <OptionItem icon={MonitorPlay} name={__('Preview on site', 'wconvert')} href={preview} newTab
-              refused={missingDesign ? refusal(__('Add a design first', 'wconvert'), __('Add a design in the editor before previewing it on your site.', 'wconvert')) : null} />
+              refused={missingDesign ? refusal(__('Choose a template first', 'wconvert'), __('Choose a template in the editor before previewing it on your site.', 'wconvert')) : null} />
           )}
           <OptionItem icon={ChartNoAxesCombined} name={__('View report', 'wconvert')} href={reportHref({ optinId: row.id, days })} />
           {reportReady && result?.capture && (

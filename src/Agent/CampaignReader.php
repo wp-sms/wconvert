@@ -183,7 +183,7 @@ final class CampaignReader
         if (!is_array($config['template'] ?? null)) return null;
         $id = is_string($config['template_id'] ?? null) ? $config['template_id'] : null;
         $entry = $id === null ? null : $this->library->find($id);
-        return $entry === null ? ['design_id' => 'custom', 'name' => __('Custom design', 'wconvert')] : ['design_id' => (string) $id, 'name' => (string) $entry['name']];
+        return $entry === null ? ['design_id' => 'custom', 'name' => __('Custom template', 'wconvert')] : ['design_id' => (string) $id, 'name' => (string) $entry['name']];
     }
 
     /**

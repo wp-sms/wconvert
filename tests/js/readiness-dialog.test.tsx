@@ -143,7 +143,7 @@ describe('reviewing before publishing', () => {
     expect(trigger).toHaveAccessibleDescription('2 items block publishing');
     expect(new Set(issuesFor(supplied).filter(issue => issue.blocks).map(issue => issue.tab))).toEqual(new Set(['edit', 'destinations']));
     await userEvent.click(trigger);
-    await userEvent.click(fixFor('Choose a design before publishing.'));
+    await userEvent.click(fixFor('Choose a template before publishing.'));
     expect(screen.queryByRole('dialog')).toBeNull();
     await userEvent.click(await screen.findByRole('button', { name: 'Back to review · 2 left' }));
     expect(screen.getByRole('dialog')).toBeInTheDocument();
@@ -161,8 +161,8 @@ describe('reviewing before publishing', () => {
   it.each([undefined, { tree: treeFixture({ steps: [] }), tokens: {} } as Template])('blocks a missing or empty design and routes to choosing one', async (template) => {
     const { supplied } = await open({ template });
     expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
-    expect(screen.getByText('Choose a design before publishing.')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Choose design' }));
+    expect(screen.getByText('Choose a template before publishing.')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Choose a template' }));
     expect(supplied.onGoToDesign).toHaveBeenCalledOnce();
     expect(screen.queryByRole('dialog')).toBeNull();
     expect(supplied.onPublish).not.toHaveBeenCalled();

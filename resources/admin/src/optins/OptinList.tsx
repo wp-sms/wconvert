@@ -31,6 +31,8 @@ import { leadsHref, occasionHref, reportHref } from '../nav';
 import type { Occasion } from '../discovery/api';
 import { readOccasions, type OccasionNotice } from '../occasions/api';
 import { OccasionNoticeView } from '../occasions/Notice';
+import { GettingStarted, useChecklist } from './GettingStarted';
+import { RegionSkeleton } from '../shell/RegionSkeleton';
 import { readDashboard, type DashboardPayload } from '../stats/api';
 import { rowResultOf, shownLine } from './rowResult';
 import { formatCount, formatRange, labelOf } from '../lib/format';
@@ -429,7 +431,7 @@ export function OptinList({
             previewError
               ? __('Preview unavailable', 'wconvert')
               : previews[row.id]
-                ? __('No saved design', 'wconvert')
+                ? __('No template', 'wconvert')
                 : __('Loading preview', 'wconvert')
           }
         >
@@ -573,9 +575,20 @@ export function OptinList({
   };
   const empty = list.status === 'ready' && all.length === 0;
   useEffect(() => onEmptyChange?.(empty), [empty, onEmptyChange]);
+  // The getting-started card (ADR 0176). On an empty site it replaces the
+  // bare empty state; until its milestones arrive, the sheet waits with it.
+  const checklist = useChecklist(list.status === 'ready' ? list.data : null, goalEntries);
+  const card = checklist.status === 'shown'
+    ? <GettingStarted checklist={checklist.checklist} onCreate={onCreate} onEdit={onEdit} onHide={checklist.hide} />
+    : null;
+  if (empty && checklist.status !== 'hidden') {
+    return card ?? <RegionSkeleton label={__('Campaigns', 'wconvert')} lines={3} />;
+  }
   const decisionWords = decision ? decisionCopy(decision.kind, decision.row.parent_id !== null, nameOf(decision.row), decision.row.arms.length) : null;
   const groupWords = groupConfirm ? groupConfirmCopy(groupConfirm.action, groupConfirm.plan) : null;
   return (
+    <>
+    {card}
     <div className="wconvert-campaign-workspace" data-layout={layout}>
       {/*
         One sheet (GUIDELINES §1): the filters, the rows, the pager and the
@@ -721,7 +734,7 @@ export function OptinList({
                   )
                 }
               >
-                {__('Choose a goal, pick a ready-made setup, and publish when you’re ready.', 'wconvert')}
+                {__('Choose a goal, pick a template, and publish when you’re ready.', 'wconvert')}
               </EmptyState>
             ) : list.status === 'ready' && visible.length === 0 ? (
               <EmptyState
@@ -908,6 +921,7 @@ export function OptinList({
         }}
       />
     </div>
+    </>
   );
 }
 

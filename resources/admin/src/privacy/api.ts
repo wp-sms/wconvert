@@ -11,6 +11,8 @@ export interface PrivacyDestination {
 
 export interface PrivacyDataMap {
   google_fonts?: boolean;
+  /** Present while the weekly summary email is on (ADR 0176). */
+  weekly_summary?: { recipients: string[] } | null;
   analytics_integration?: { configured: boolean; route: string; consent: string } | null;
   retention_days: number | null;
   destinations: PrivacyDestination[];

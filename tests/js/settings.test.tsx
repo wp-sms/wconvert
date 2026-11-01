@@ -146,8 +146,8 @@ it('orders the rail as setup happens, Connections first', async () => {
   render(<Settings group="connections" />);
   await screen.findByLabelText(/Let AI agents publish/);
   const rail = screen.getByRole('navigation', { name: 'Settings categories' });
-  expect(within(rail).getAllByRole('link').slice(0, 5).map((link) => link.querySelector('.font-medium')?.textContent)).toEqual([
-    'Connections & destinations', 'Visitor experience', 'Spam protection', 'Data & privacy', 'Analytics integrations',
+  expect(within(rail).getAllByRole('link').slice(0, 6).map((link) => link.querySelector('.font-medium')?.textContent)).toEqual([
+    'Connections & destinations', 'Visitor experience', 'Spam protection', 'Data & privacy', 'Email reports', 'Analytics integrations',
   ]);
   expect(within(rail).getByRole('link', { name: /Connections & destinations/ })).toHaveAttribute('aria-current', 'page');
 });
@@ -159,7 +159,7 @@ it('gives phones a compact category select and hides the rail’s reference ther
   expect(select).toHaveValue('experience');
   expect(select).toHaveClass('lg:hidden');
   expect(within(select).getAllByRole('option').map((option) => option.textContent)).toEqual([
-    'Connections & destinations', 'Visitor experience', 'Spam protection', 'Data & privacy',
+    'Connections & destinations', 'Visitor experience', 'Spam protection', 'Data & privacy', 'Email reports',
   ]);
   expect(screen.getByRole('link', { name: /Visitor experience/ })).toHaveClass('max-lg:hidden');
   expect(screen.getByRole('heading', { name: 'More with Pro' }).closest('.max-lg\\:hidden')).not.toBeNull();

@@ -77,7 +77,7 @@ export function GalleryCard({ card, template, saved, onSave, onInspect, onUse, o
 
 /**
  * A template's one action, the same on its card and in its larger look: Use
- * template (Adding… while it works), See this design ↗ for a locked one, Get
+ * template (Adding… while it works), See this template ↗ for a locked one, Get
  * the newer version, or the reason this site cannot use it.
  */
 export function TemplateAction({ card, describedBy, busy = false, disabled = false, conversion = null, onUse, onUpdate, size = 'default' }: {
@@ -94,7 +94,7 @@ export function TemplateAction({ card, describedBy, busy = false, disabled = fal
     return card.previewUrl ? (
       <Button asChild variant="outline" size={size}>
         <a href={card.previewUrl} target="_blank" rel="noopener noreferrer" aria-describedby={describedBy}>
-          {__('See this design', 'wconvert')}<ExternalLink aria-hidden="true" />
+          {__('See this template', 'wconvert')}<ExternalLink aria-hidden="true" />
         </a>
       </Button>
     ) : null;

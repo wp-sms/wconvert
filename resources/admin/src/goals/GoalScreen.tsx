@@ -349,9 +349,9 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
       </div>
       {pinned && <div className="wconvert-picker__notice" role="status">
         <strong>{sprintf(/* translators: %s: a design name. */ __('Starting from “%s”', 'wconvert'), pinned.name)}</strong>
-        <p>{__('Start with this design and your own words, or pick a template below that uses it.', 'wconvert')}</p>
+        <p>{__('Use this template with your own words, or pick a version below with words written for your goal.', 'wconvert')}</p>
         <div className="flex flex-wrap gap-2">
-          <Button disabled={working} onClick={() => { void start(); }}>{starting === 'scratch' ? __('Starting…', 'wconvert') : __('Start with this design', 'wconvert')}</Button>
+          <Button disabled={working} onClick={() => { void start(); }}>{starting === 'scratch' ? __('Starting…', 'wconvert') : __('Use this template', 'wconvert')}</Button>
           <Button variant="outline" disabled={working} onClick={() => setUnpinned(true)}>{__('Show every template', 'wconvert')}</Button>
         </div>
       </div>}
@@ -381,8 +381,8 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
             {open && <CollectionBar shelf={open} stage={stage} disabled={working} onStage={value => { setStage(value); setPage(0); }}
               onClose={() => { setCollectionId(null); setStage('any'); setPage(0); }} />}
             <GalleryGrid total={cards.length} shown={shown.length} page={shownPage} pages={pages} onPage={setPage} onClear={clear} disabled={working}
-              empty={{ title: __('No templates for this goal yet', 'wconvert'), body: __('Start from a blank design instead.', 'wconvert'),
-                action: <Button disabled={working} onClick={() => { void start(); }}>{__('Choose a design myself', 'wconvert')}</Button> }}>
+              empty={{ title: __('No templates for this goal yet', 'wconvert'), body: __('Start from a blank template instead.', 'wconvert'),
+                action: <Button disabled={working} onClick={() => { void start(); }}>{__('Start from a blank template', 'wconvert')}</Button> }}>
               {paged.map(card => <GalleryCard key={card.key} card={card} template={treeOf(card)} onNear={previews.onNear}
                 previewFailed={previews.failed.has(card.key)} onRetryPreview={() => previews.retry(card.key)}
                 saved={saved.includes(card.designKey)} onSave={picker.data ? () => picker.toggleSaved(card.designKey) : undefined}
@@ -406,7 +406,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
       </>} />
     {cards.length > 0 && <RegionFooter className="flex flex-wrap items-center justify-end gap-3">
       <span className="text-note text-muted-foreground">{__('None of these fit?', 'wconvert')}</span>
-      <Button variant="outline" disabled={working} onClick={() => { void start(); }}>{starting === 'scratch' ? __('Creating draft…', 'wconvert') : __('Choose a design myself', 'wconvert')}</Button>
+      <Button variant="outline" disabled={working} onClick={() => { void start(); }}>{starting === 'scratch' ? __('Creating draft…', 'wconvert') : __('Start from a blank template', 'wconvert')}</Button>
     </RegionFooter>}
   </Region>;
 }

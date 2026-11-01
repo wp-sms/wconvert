@@ -39,6 +39,12 @@ export const GUIDES = {
 
 export type Guide = (typeof GUIDES)[keyof typeof GUIDES];
 
+/**
+ * The 2-minute-50 walkthrough video: a section of the first-campaign guide on
+ * wconvert.io, so it plays there with its captions and transcript (ADR 0176).
+ */
+export const WALKTHROUGH_VIDEO = { guide: GUIDES.firstCampaign, section: 'watch-the-walkthrough' } as const;
+
 /** A guide's address, optionally at one of its section ids. */
 export function docsUrl(guide?: Guide, section?: string): string {
   return `${DOCS_URL}${guide ? `${guide}/` : ''}${section ? `#${section}` : ''}`;

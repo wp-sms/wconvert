@@ -148,7 +148,7 @@ export function campaignIssues(inputs: CampaignIssueInputs): CampaignIssue[] {
     // The commonest first-campaign blocker gets its answer beside it, not a tab away (ADR 0132).
     ...(handoffIssue ? [issue(ISSUE.handoff, handoffIssue, 'destinations', { to: 'destinations' }, true, { offersKeepLocal: true })] : []),
     ...signupRouteIssues(inputs),
-    ...(!hasDesign ? [issue('no-design', __('Choose a design before publishing.', 'wconvert'), 'edit', { to: 'library' }, true)] : []),
+    ...(!hasDesign ? [issue('no-design', __('Choose a template before publishing.', 'wconvert'), 'edit', { to: 'library' }, true)] : []),
     ...(template ? journeyIssues(template.tree, outcome?.action) : []).map(found =>
       issue(`journey:${found.key}`, found.said, 'edit', { to: 'journey', repair: found.repair }, true, { screenId: found.repair.screenId })),
     ...problems.filter(problem => problem.check === 'converts' || problem.blocksPublish).map((problem, index) =>

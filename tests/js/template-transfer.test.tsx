@@ -33,7 +33,7 @@ it('writes the size limit and link uses in the site’s digits', async () => {
   const user = userEvent.setup();
   render(<TemplateTransferDialog action="import" design={{ ...fixture, name: 'Current', display_type: 'popup' }} config={config} optin="campaign" onClose={vi.fn()} onApply={vi.fn()} />);
   expect(await screen.findByText(/Up to ۲۳ MB/)).toBeInTheDocument();
-  await user.upload(await screen.findByLabelText('Choose a WConvert design file'), file());
+  await user.upload(await screen.findByLabelText('Choose a WConvert template file'), file());
   expect(await screen.findByText('Used in ۲ places')).toBeInTheDocument();
 });
 
@@ -41,7 +41,7 @@ it('writes the size limit and link uses in the site’s digits', async () => {
 it('shows a refused apply inside the dialog and stays open', async () => {
   const onApply = vi.fn(() => 'Your draft changed during import.'); const onClose = vi.fn(); const user = userEvent.setup();
   render(<TemplateTransferDialog action="import" design={{ ...fixture, name: 'Current', display_type: 'popup' }} config={config} optin="campaign" onClose={onClose} onApply={onApply} />);
-  await user.upload(await screen.findByLabelText('Choose a WConvert design file'), file());
+  await user.upload(await screen.findByLabelText('Choose a WConvert template file'), file());
   await user.click(await screen.findByRole('checkbox', { name: 'Keep these links and apply the reviewed changes' }));
   await user.click(screen.getByRole('button', { name: 'Apply to draft' }));
   expect(await screen.findByRole('alert')).toHaveTextContent('Your draft changed during import.');
@@ -52,7 +52,7 @@ it('shows a refused apply inside the dialog and stays open', async () => {
 it('previews file content before one explicit reviewed Apply and leaves persistence to the editor', async () => {
   const onApply = vi.fn(); const user = userEvent.setup();
   render(<TemplateTransferDialog action="import" design={{ ...fixture, name: 'Current', display_type: 'popup' }} config={config} optin="campaign" onClose={vi.fn()} onApply={onApply} />);
-  await user.upload(await screen.findByLabelText('Choose a WConvert design file'), file());
+  await user.upload(await screen.findByLabelText('Choose a WConvert template file'), file());
   await screen.findByText('Review links');
   expect(transfer.prepareImport).toHaveBeenCalledWith('session', 'campaign', config, 'file', {});
   expect(onApply).not.toHaveBeenCalled();
@@ -66,7 +66,7 @@ it('previews file content before one explicit reviewed Apply and leaves persiste
 it('requires another preview after changing a link and does not apply on cancellation', async () => {
   const onApply = vi.fn(); const onClose = vi.fn(); const user = userEvent.setup();
   render(<TemplateTransferDialog action="import" design={{ ...fixture, name: 'Current', display_type: 'popup' }} config={config} optin="campaign" onClose={onClose} onApply={onApply} />);
-  await user.upload(await screen.findByLabelText('Choose a WConvert design file'), file());
+  await user.upload(await screen.findByLabelText('Choose a WConvert template file'), file());
   const link = await screen.findByRole('textbox', { name: 'Link: https://old.example/offer' });
   await user.clear(link); await user.type(link, 'https://new.example/offer');
   expect(screen.getByRole('button', { name: 'Apply to draft' })).toHaveAttribute('aria-disabled', 'true');
@@ -80,7 +80,7 @@ it('keeps the current draft untouched when a file is refused', async () => {
   vi.mocked(transfer.uploadDesign).mockRejectedValue({ message: 'This journey needs Pro.' });
   const onApply = vi.fn(); const user = userEvent.setup();
   render(<TemplateTransferDialog action="import" design={{ ...fixture, name: 'Current', display_type: 'popup' }} config={config} optin="campaign" onClose={vi.fn()} onApply={onApply} />);
-  await user.upload(await screen.findByLabelText('Choose a WConvert design file'), file());
+  await user.upload(await screen.findByLabelText('Choose a WConvert template file'), file());
   expect(await screen.findByRole('alert')).toHaveTextContent('This journey needs Pro.');
   expect(transfer.prepareImport).not.toHaveBeenCalled(); expect(onApply).not.toHaveBeenCalled();
 });
@@ -89,7 +89,7 @@ it('keeps successive link edits anchored to the file and resets them when switch
   vi.mocked(transfer.prepareImport).mockImplementation(async (_id, _optin, _config, _mode, links) => ({ ...preview, links: [{ url: links['https://old.example/offer'] ?? 'https://old.example/offer', uses: 2 }] }));
   const user = userEvent.setup();
   render(<TemplateTransferDialog action="import" design={{ ...fixture, name: 'Current', display_type: 'popup' }} config={config} optin="campaign" onClose={vi.fn()} onApply={vi.fn()} />);
-  await user.upload(await screen.findByLabelText('Choose a WConvert design file'), file());
+  await user.upload(await screen.findByLabelText('Choose a WConvert template file'), file());
   for (const [from, to] of [['old', 'new'], ['new', 'final']]) {
     const link = await screen.findByRole('textbox', { name: `Link: https://${from}.example/offer` });
     await user.clear(link); await user.type(link, `https://${to}.example/offer`);
@@ -106,7 +106,7 @@ it('asks for an explicit second download when unsupported images must be omitted
   const design = { ...fixture, name: 'Current', display_type: 'popup' };
   vi.mocked(transfer.downloadDesign).mockRejectedValueOnce({ message: 'Some images cannot be exported.', data: { problems: { hero: 'Replace the remote hero image.' } } }).mockResolvedValueOnce(undefined);
   render(<TemplateTransferDialog action="export" design={design} config={config} optin="campaign" onClose={onClose} onApply={vi.fn()} />);
-  const download = await screen.findByRole('button', { name: 'Download design' });
+  const download = await screen.findByRole('button', { name: 'Download template' });
   await waitFor(() => expect(download).toBeEnabled());
   await user.click(download);
   expect(await screen.findByText('Some images can’t be included')).toBeVisible();
@@ -120,10 +120,10 @@ it('asks for an explicit second download when unsupported images must be omitted
 it('returns to file selection when a replacement file is refused instead of retrying a cancelled session', async () => {
   const user = userEvent.setup();
   render(<TemplateTransferDialog action="import" design={{ ...fixture, name: 'Current', display_type: 'popup' }} config={config} optin="campaign" onClose={vi.fn()} onApply={vi.fn()} />);
-  await user.upload(await screen.findByLabelText('Choose a WConvert design file'), file());
+  await user.upload(await screen.findByLabelText('Choose a WConvert template file'), file());
   await screen.findByRole('button', { name: 'Change file' });
   vi.mocked(transfer.uploadDesign).mockRejectedValueOnce({ message: 'This file is not a WConvert design.' });
-  await user.upload(screen.getByLabelText('Choose a WConvert design file'), new File(['bad'], 'other.zip', { type: 'application/zip' }));
+  await user.upload(screen.getByLabelText('Choose a WConvert template file'), new File(['bad'], 'other.zip', { type: 'application/zip' }));
   expect(await screen.findByRole('alert')).toHaveTextContent('This file is not a WConvert design.');
   expect(transfer.cancelImport).toHaveBeenCalledWith('session');
   expect(screen.getByRole('button', { name: 'Choose file' })).toBeEnabled();

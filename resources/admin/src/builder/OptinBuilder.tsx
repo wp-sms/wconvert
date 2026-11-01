@@ -976,7 +976,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             {busy
               ? publishing ? __('Publishing…', 'wconvert') : __('Saving…', 'wconvert')
               : dirty
-                ? imported ? __('Design imported, not saved', 'wconvert') : __('Unsaved changes', 'wconvert')
+                ? imported ? __('Template imported, not saved', 'wconvert') : __('Unsaved changes', 'wconvert')
                 : unpublishedChanges
                   ? __('Unpublished changes', 'wconvert')
                   : saved
@@ -1050,11 +1050,11 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             <DropdownMenuContent align="end" className="wconvert-campaign-actions">
               {small && <><DropdownMenuItem disabled={busy || !history.canUndo} onSelect={history.undo}><Undo2 aria-hidden="true" className="rtl:-scale-x-100" />{history.labels.undo}</DropdownMenuItem>
               <DropdownMenuItem disabled={busy || !history.canRedo} onSelect={history.redo}><Redo2 aria-hidden="true" className="rtl:-scale-x-100" />{history.labels.redo}</DropdownMenuItem></>}
-              <DropdownMenuItem disabled={busy} onSelect={() => setTransfer({ action: 'import', config, name })}><ArrowUpFromLine aria-hidden="true" />{__('Import design', 'wconvert')}</DropdownMenuItem>
-              <DropdownMenuItem disabled={busy || !template} onSelect={() => setTransfer({ action: 'export', config, name })}><ArrowDownToLine aria-hidden="true" />{__('Export design', 'wconvert')}</DropdownMenuItem>
+              <DropdownMenuItem disabled={busy} onSelect={() => setTransfer({ action: 'import', config, name })}><ArrowUpFromLine aria-hidden="true" />{__('Import template', 'wconvert')}</DropdownMenuItem>
+              <DropdownMenuItem disabled={busy || !template} onSelect={() => setTransfer({ action: 'export', config, name })}><ArrowDownToLine aria-hidden="true" />{__('Export as template', 'wconvert')}</DropdownMenuItem>
               {/* The SAVED draft is what the site shows, so unsaved edits ask for a save first (ADR 0151). */}
               {sitePreview !== null && (dirty || !template
-                ? <DropdownMenuItem aria-disabled="true" onSelect={(event) => event.preventDefault()}><MonitorPlay aria-hidden="true" />{!template ? __('Add a design to preview on site', 'wconvert') : __('Save draft to preview on site', 'wconvert')}</DropdownMenuItem>
+                ? <DropdownMenuItem aria-disabled="true" onSelect={(event) => event.preventDefault()}><MonitorPlay aria-hidden="true" />{!template ? __('Choose a template to preview on site', 'wconvert') : __('Save draft to preview on site', 'wconvert')}</DropdownMenuItem>
                 : <DropdownMenuItem asChild disabled={busy}><a href={sitePreview} target="_blank" rel="noopener noreferrer"><MonitorPlay aria-hidden="true" />{__('Preview on site', 'wconvert')}<span className="sr-only">{__('(opens in a new tab)', 'wconvert')}</span></a></DropdownMenuItem>)}
               <DropdownMenuItem disabled={busy} onSelect={() => { detailsTrigger.current = campaignActions.current; setDetails(true); }}><Info aria-hidden="true" />{__('Campaign details', 'wconvert')}</DropdownMenuItem>
             </DropdownMenuContent>
@@ -1362,11 +1362,11 @@ function chosenName(
   templates: readonly TemplateIndexEntry[] | undefined,
 ): string {
   if (templateId === undefined) {
-    return __('Custom design', 'wconvert');
+    return __('Custom template', 'wconvert');
   }
 
   // Never the stored ID on screen (ADR 0131): a design no longer installed is named as such.
-  return templates?.find((each) => each.id === templateId)?.name ?? __('Removed design', 'wconvert');
+  return templates?.find((each) => each.id === templateId)?.name ?? __('Removed template', 'wconvert');
 }
 
 function entryFor(
@@ -1401,7 +1401,7 @@ function AttentionDot() {
  */
 function withdrawnNote(reason: string | undefined): string | null {
   if (reason === undefined) return null;
-  if (reason === 'rights') return __('This campaign’s design was withdrawn from the WConvert library over image or content rights. Your campaign keeps its copy; choose another design to replace it.', 'wconvert');
-  if (reason === 'broken') return __('This campaign’s design was withdrawn from the WConvert library because of a problem with it. Your campaign keeps its copy; choose another design to replace it.', 'wconvert');
-  return __('This campaign’s design was withdrawn from the WConvert library. Your campaign keeps its copy and keeps working.', 'wconvert');
+  if (reason === 'rights') return __('This campaign’s template was withdrawn from the WConvert library over image or content rights. Your campaign keeps its copy; choose another template to replace it.', 'wconvert');
+  if (reason === 'broken') return __('This campaign’s template was withdrawn from the WConvert library because of a problem with it. Your campaign keeps its copy; choose another template to replace it.', 'wconvert');
+  return __('This campaign’s template was withdrawn from the WConvert library. Your campaign keeps its copy and keeps working.', 'wconvert');
 }

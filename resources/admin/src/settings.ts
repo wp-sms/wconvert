@@ -159,6 +159,8 @@ export interface AdminSettings {
     readonly availability: 'ready' | 'locked' | 'unavailable';
     readonly tier: string | null;
   };
+  /** This user put the getting-started checklist away, with × or by finishing it (ADR 0176). */
+  readonly checklistHidden?: boolean;
   /**
    * The header's plan badge as a link, when another bundle supplies one: where
    * it goes, words other than the plan's name, whether it is a prompt, and a
