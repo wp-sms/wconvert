@@ -29,9 +29,10 @@ const DELAY_MS = 160;
  * was a blank frame at the chunk's end and another at the read's start.
  *
  * **A re-read over content the merchant was already reading waits** — `wait`
- * true. A Leads filter change, a second [[Goal]] picked in creation, a
- * Settings group re-read: a local REST call lands in tens of milliseconds, and
+ * true. A second [[Goal]] picked in creation, a Settings category switch: a local REST call lands in tens of milliseconds, and
  * a placeholder that appears and vanishes inside one is a screen that blinks.
+ * Leads' filters are not this case: their re-read keeps the rows on screen,
+ * dimmed, and draws no skeleton.
  */
 export function useShownAfterDelay(asked = false): boolean {
   const inherited = useContext(Reread);

@@ -8,7 +8,7 @@
 .wconvert-analytics {
   font-size: var(--text-body);
   color: var(--foreground);
-  min-width: 0;
+  min-inline-size: 0;
 }
 .wconvert-analytics h3 {
   font-size: var(--text-body);
@@ -32,7 +32,7 @@
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) + 2px);
   padding: 20px;
-  min-height: 185px;
+  min-block-size: 185px;
 }
 /* Linked sales jumps within the page, so it is a button dressed as its neighbours. */
 button.wa-impact {
@@ -54,8 +54,8 @@ button.wa-impact {
   font-weight: 500;
 }
 .wa-impact-label svg {
-  width: 18px;
-  height: 18px;
+  inline-size: 18px;
+  block-size: 18px;
   color: var(--muted-foreground);
   flex-shrink: 0;
 }
@@ -71,7 +71,7 @@ button.wa-impact {
   font-size: var(--text-note);
   line-height: 1.5;
   color: var(--muted-foreground);
-  margin-top: 14px;
+  margin-block-start: 14px;
 }
 .wa-impact-primary {
   background: var(--card);
@@ -116,13 +116,13 @@ button.wa-impact {
   background: var(--secondary);
   color: var(--action);
   border-radius: calc(var(--radius) + 2px);
-  width: 38px;
-  height: 38px;
+  inline-size: 38px;
+  block-size: 38px;
   flex-shrink: 0;
 }
 .wa-goal-icon svg {
-  width: 20px;
-  height: 20px;
+  inline-size: 20px;
+  block-size: 20px;
 }
 .wa-goal-card > span:nth-child(2) {
   display: flex;
@@ -149,8 +149,8 @@ button.wa-impact {
 }
 .wa-goal-arrow {
   margin-inline-start: auto;
-  width: 16px;
-  height: 16px;
+  inline-size: 16px;
+  block-size: 16px;
   flex-shrink: 0;
   color: var(--muted-foreground);
 }
@@ -171,7 +171,7 @@ button.wa-impact {
 @media (max-width: 600px) {
   .wa-impact {
     padding: 16px;
-    min-height: 175px;
+    min-block-size: 175px;
   }
   .wa-impact strong {
     font-size: var(--text-metric);

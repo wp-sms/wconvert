@@ -10,6 +10,7 @@ import { RegionSkeleton } from '@/shell/RegionSkeleton';
  */
 export function LicenseSkeleton() {
   return (
+    // `.wconvert-license--narrow`'s width, stated here: license.css arrives with the page's chunk.
     <div style={{ maxInlineSize: '44rem' }}>
       <RegionSkeleton label={__('License', 'wconvert-pro')} description lines={3} footer />
     </div>

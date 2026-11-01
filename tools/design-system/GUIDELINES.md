@@ -476,9 +476,12 @@ the placeholder replaces, and the caller is the one who knows, so it is a flag:
   `wait` to `TableSkeleton`, `ChoiceSkeleton`, `GallerySkeleton` or
   `CampaignSkeleton`. A local REST call lands in tens of milliseconds, and a
   placeholder that appears and vanishes inside one is a screen that blinks: a
-  second Goal picked in creation, a Leads re-read. Where a whole column swaps
+  second Goal picked in creation is the case today. Where a whole column swaps
   over what was being read — Settings' category switch — the screen wraps it in
-  `Reread` and every skeleton inside waits.
+  `Reread`, and every skeleton that draws through `useShownAfterDelay`
+  (`RegionSkeleton` and the four above) waits. A re-read that keeps its rows
+  on screen, as Leads' filters do, dims them under *Updating…* and draws no
+  skeleton at all.
 
 `shell/skeletonDelay.ts` is where that line lives, so a new skeleton chooses
 rather than copies.

@@ -73,10 +73,10 @@ let lastNotices: Notices | null = null;
 export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
   const tier = adminSettings()?.installedTier ?? 'free';
   const proInactive = adminSettings()?.proInstalledInactive === true;
-  const [notices, setHeld] = useState<Notices | null>(() => lastNotices);
+  const [notices, setShownNotices] = useState<Notices | null>(() => lastNotices);
   const setNotices = useCallback((next: Notices) => {
     lastNotices = next;
-    setHeld(next);
+    setShownNotices(next);
   }, []);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);

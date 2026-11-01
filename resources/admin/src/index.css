@@ -6203,25 +6203,25 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   --wconvert-gutter: 18px;
   display: flex;
   flex-direction: column;
-  height: calc(100dvh - var(--wp-admin--admin-bar--height, 32px));
-  min-height: 560px;
+  block-size: calc(100dvh - var(--wp-admin--admin-bar--height, 32px));
+  min-block-size: 560px;
   gap: 0;
   overflow: hidden;
   background: #fff;
   font-size: var(--text-note);
 }
 body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
-  height: 100dvh;
+  block-size: 100dvh;
 }
 #wconvert-admin .wconvert-workspace__header {
   display: flex;
   align-items: center;
   flex: none;
-  min-height: 65px;
+  min-block-size: 65px;
   padding: 10px 18px;
   gap: 10px;
-  border-top: 3px solid var(--primary);
-  border-bottom: 1px solid var(--editor-rule);
+  border-block-start: 3px solid var(--primary);
+  border-block-end: 1px solid var(--editor-rule);
 }
 #wconvert-admin .wconvert-workspace__brand-mark {
   flex: 0 0 32px;
@@ -6243,18 +6243,16 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   min-inline-size: 0;
   gap: 6px;
 }
+/* From 1350px down the band tightens and the tabs take a row of their own. */
 @media (max-width: 1350px) {
   #wconvert-admin .wconvert-workspace__header {
+    flex-wrap: wrap;
     padding-inline: 12px;
     gap: 5px;
   }
   #wconvert-admin .wconvert-workspace__actions {
     gap: 4px;
   }
-}
-/* From 1350px down the tabs take a row of their own. */
-@media (max-width: 1350px) {
-  #wconvert-admin .wconvert-workspace__header { flex-wrap: wrap; }
   #wconvert-admin .wconvert-workspace__navigation { order: 3; flex-basis: 100%; inline-size: 100%; }
 }
 @media (max-width: 1000px) {

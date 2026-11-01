@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { Skeleton } from '../components/ui/skeleton';
-import { DataTableActions, DataTableBody, DataTableCell, DataTableRow } from './DataTable';
+import { DataTableBody, DataTableCell, DataTableRow } from './DataTable';
 import { useShownAfterDelay } from './skeletonDelay';
 
 /**
@@ -15,17 +15,11 @@ import { useShownAfterDelay } from './skeletonDelay';
  * announced placeholders — a screen reader has nothing to gain from seven empty
  * cells and everything to gain from the word "Loading".
  *
- * `wait` is for a re-read over rows the merchant was already reading — a Leads
- * filter change — and nothing else: a first fill paints at once, because a
+ * `wait` is for a re-read over rows the merchant was already reading, and
+ * nothing else: a first fill paints at once, because a
  * blank region has nothing to flicker against ({@see useShownAfterDelay}).
  */
-export function TableSkeleton({ columns, rows = 4, wait = false, actions = false }: {
-  columns: number;
-  rows?: number;
-  wait?: boolean;
-  /** The last column is a {@see DataTableActionsColumn}: its cell is the actions cell, with a button's height. */
-  actions?: boolean;
-}) {
+export function TableSkeleton({ columns, rows = 4, wait = false }: { columns: number; rows?: number; wait?: boolean }) {
   const shown = useShownAfterDelay(wait);
 
   if (!shown) {
@@ -36,11 +30,7 @@ export function TableSkeleton({ columns, rows = 4, wait = false, actions = false
     <DataTableBody>
       {Array.from({ length: rows }, (_, row) => (
         <DataTableRow key={row}>
-          {Array.from({ length: columns }, (_, column) => actions && column === columns - 1 ? (
-            <DataTableActions key={column}>
-              <Skeleton aria-hidden="true" className="w-16" style={{ blockSize: 'var(--control-height)' }} />
-            </DataTableActions>
-          ) : (
+          {Array.from({ length: columns }, (_, column) => (
             <DataTableCell key={column} label="">
               {/*
                 One announcement for the whole table, on the first cell of the

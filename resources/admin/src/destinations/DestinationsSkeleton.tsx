@@ -44,6 +44,7 @@ export function DestinationCardsSkeleton() {
   </span>;
   return <>
     {[0, 1].map((card) => (
+      // An empty icon tile: the provider's mark is not known until the read lands.
       <RegionSkeleton key={card} label={__('Destinations', 'wconvert')} announce={card === 0}
         icon={<span />} description trailing={actions}>
         {/* The card's health line: one sentence of body text. */}

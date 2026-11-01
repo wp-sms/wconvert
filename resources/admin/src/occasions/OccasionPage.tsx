@@ -223,7 +223,7 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
             } />
             <RegionBody>
               {report?.status === 'failed' ? <RegionError message={report.message} onRetry={() => setAttempt((n) => n + 1)} />
-                : (report?.status === 'loading' || (report === null && queryKey !== '')) ? <StatRowSkeleton stats={3} />
+                : (report?.status === 'loading' || (report === null && queryKey !== '')) ? <StatRowSkeleton stats={3} status={__('Loading results…', 'wconvert')} />
                 : totals === null || totals.shown === 0
                   ? <p className="m-0 text-note text-muted-foreground">{__('Totals appear once a campaign here is published and shown.', 'wconvert')}</p>
                   : <StatRow>

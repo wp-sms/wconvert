@@ -152,9 +152,8 @@ export function ChoiceCard({
  */
 export function ChoiceSkeleton({ cards = 4, wait = false }: { cards?: number; wait?: boolean }) {
   /*
-    `wait` when a filled step goes back into `loading` — picking a different
-    [[Goal]] — which is the flicker case {@see useShownAfterDelay} describes.
-    Step one's first read paints at once, so the chunk's fallback and the
+    `wait` when a filled grid goes back into `loading`, the flicker case
+    {@see useShownAfterDelay} describes. Step one's first read paints at once, so the chunk's fallback and the
     step's own loading state are one unbroken shape.
   */
   if (!useShownAfterDelay(wait)) {
