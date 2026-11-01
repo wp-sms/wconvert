@@ -346,8 +346,10 @@ changes            path filters (bin/preflight.mjs reads the same block)
 - **Small checks ride in jobs that already paid for setup.** tsc and ESLint share the
   Vitest job; PHPStan shares the MySQL job's PHP 8.2 and install. Each later step
   runs even when an earlier check failed, so one push reports all of them.
-- **`node_modules` is cached whole**, keyed on the lockfile and exact Node version
-  (`.github/actions/npm-install`); `npm ci` runs only on a miss.
+- **`node_modules` is cached whole** on the bare runner, keyed on the lockfile and
+  exact Node version (`.github/actions/npm-install`); `npm ci` runs only on a miss.
+  The container legs skip the cache: its version differs there, so it never hit,
+  and the save cost ~30 s a leg against an 8–15 s install.
 
 ## Consequences
 

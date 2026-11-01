@@ -127,16 +127,18 @@ jobs:
       # Every suite reports; any failed leg still fails Required checks.
       fail-fast: false
       matrix:
-        # Packed by measured duration, ~6–7 minutes a leg; re-balance from
-        # the per-suite timings in each leg's log.
+        # Packed by measured suite time (run 41282659564): admin 305 s,
+        # a 256 s, b 282 s. Re-balance from the "took" lines in each log.
         include:
           - { leg: admin, scripts: 'test:visual' }
-          - { leg: storefront-a, scripts: 'test:visual:inline test:visual:reopen test:visual:content-lock' }
-          - { leg: storefront-b, scripts: 'test:visual:popup test:visual:analytics test:visual:fullscreen test:visual:events' }
+          - { leg: storefront-a, scripts: 'test:visual:reopen test:visual:content-lock' }
+          - { leg: storefront-b, scripts: 'test:visual:inline test:visual:popup test:visual:analytics test:visual:fullscreen test:visual:events' }
     steps:
       - uses: actions/checkout@v4
       # No PHP here: vendor/ comes from [build], PHP runs inside Playground.
       - uses: ./.github/actions/npm-install
+        with:
+          cache: 'false'
       - uses: actions/download-artifact@v4
         with:
           name: visual-build

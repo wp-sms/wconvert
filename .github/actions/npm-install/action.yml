@@ -6,6 +6,12 @@ inputs:
   directory:
     description: The directory holding package-lock.json
     default: .
+  cache:
+    description: >-
+      Restore and save node_modules. Off in a container job: the cache
+      version differs there, so it never hits, and the save costs more than
+      the install.
+    default: 'true'
 runs:
   using: composite
   steps:
@@ -14,6 +20,7 @@ runs:
       with:
         node-version: '22'
     - id: cache
+      if: inputs.cache == 'true'
       uses: actions/cache@v4
       with:
         path: ${{ inputs.directory }}/node_modules
