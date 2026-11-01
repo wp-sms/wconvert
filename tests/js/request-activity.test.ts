@@ -128,6 +128,16 @@ describe('sharedRead', () => {
     expect(fake.handler).toHaveBeenCalledTimes(3);
   });
 
+  it('keeps shared reads through a POST that only reads', async () => {
+    const read = sharedRead(readOptins);
+    await read();
+    await fake.apiFetch({ path: '/wconvert/v1/leads/query', method: 'POST' });
+    await fake.apiFetch({ path: `${OPTINS}/01JQ00000000000000000000AA/draft-preview`, method: 'POST' });
+    await read.recent();
+
+    expect(fake.handler).toHaveBeenCalledTimes(3);
+  });
+
   it('does not remember a read that was running while something changed', async () => {
     const read = sharedRead(readOptins);
     const before = deferred();

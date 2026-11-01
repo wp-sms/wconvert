@@ -23,8 +23,6 @@ const fake = vi.hoisted(() => {
   return { apiFetch, handler };
 });
 vi.mock('@wordpress/api-fetch', () => ({ default: fake.apiFetch }));
-const log = vi.hoisted(() => ({ readLog: vi.fn(), readRetention: vi.fn(), saveRetention: vi.fn(), eraseIdentifier: vi.fn(), canExport: vi.fn(), exportLeads: vi.fn() }));
-vi.mock('../../resources/admin/src/leads/api', () => log);
 
 const { HeaderTools } = await import('../../resources/admin/src/shell/HeaderTools');
 const { App } = await import('../../resources/admin/src/App');
@@ -41,6 +39,9 @@ const DESTINATIONS = { types: [], destinations: [], connections: [], failures: [
 const requests = (path: string) => fake.handler.mock.calls.filter(([options]) => (options.path ?? '').split('?')[0] === path);
 const route = (options: Options): Promise<unknown> => {
   const path = (options.path ?? '').split('?')[0];
+  // The lead log reads by POST, so its filters stay out of URLs: that is a read, not a change.
+  if (path === '/wconvert/v1/leads/query') return Promise.resolve({ submissions: 0, grouped: false, leads: [], groups: [], next_cursor: null, snapshot: '01J99999990000000000000000' });
+  if (path === '/wconvert/v1/leads/retention') return Promise.resolve({ days: null, max_days: 3650 });
   if (options.method && options.method !== 'GET') return Promise.resolve({});
   if (path === '/wconvert/v1/optins') return Promise.resolve([SUSPENDED]);
   if (path === '/wconvert/v1/destinations') return Promise.resolve(DESTINATIONS);
@@ -88,10 +89,7 @@ it('reads again once anything has changed', async () => {
   await waitFor(() => expect(requests('/wconvert/v1/optins')).toHaveLength(2));
 });
 
-it('reads destinations and the list once on Leads, for the bell, the count and the log', async () => {
-  log.readLog.mockResolvedValue({ submissions: 0, grouped: false, leads: [], groups: [], next_cursor: null, snapshot: '01J99999990000000000000000' });
-  log.readRetention.mockResolvedValue({ days: null, max_days: 3650 });
-  log.canExport.mockReturnValue(true);
+it('reads destinations and the list once on Leads, for the bell, the count and the log’s own POST query', async () => {
   window.history.replaceState({}, '', '#leads');
   render(<App />);
 

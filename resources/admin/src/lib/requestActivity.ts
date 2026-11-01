@@ -8,8 +8,9 @@ import apiFetch, { type APIFetchMiddleware, type APIFetchOptions } from '@wordpr
  *
  * - **When the screen has settled**, so a side widget (the header's bell) can
  *   wait its turn instead of queueing three reads ahead of the screen's own.
- * - **When anything changed.** Any non-GET forgets every shared read, so a
- *   publish, a delete or a saved destination is never followed by stale news.
+ * - **When anything changed.** Any non-GET but the few POSTs that only read
+ *   ({@link READS_BY_POST}) forgets every shared read, so a publish, a delete
+ *   or a saved destination is never followed by stale news.
  *
  * `apiFetch` here is WordPress's own `wp.apiFetch` (see `vite.admin-config.mjs`),
  * so another plugin's script on the page goes through it too. Only requests to
@@ -29,7 +30,17 @@ let generation = 0;
 const reads = new Set<{ forget(): void }>();
 let installed = false;
 
-const ours = (options: APIFetchOptions) => `${options.path ?? options.url ?? ''}`.includes(NAMESPACE);
+/**
+ * POSTs that only read: the lead log's query (its filters stay out of URLs),
+ * the builder's previews and a template export. Anything else that is not a
+ * GET counts as a change, which is the safe side to be wrong on.
+ */
+const READS_BY_POST = /\/wconvert\/v1\/(?:leads\/query|.*preview|.*\/export)(?:[?#]|$)/;
+
+const target = (options: APIFetchOptions) => `${options.path ?? options.url ?? ''}`;
+const ours = (options: APIFetchOptions) => target(options).includes(NAMESPACE);
+const changes = (options: APIFetchOptions) =>
+  (options.method ?? 'GET').toUpperCase() !== 'GET' && !READS_BY_POST.test(target(options));
 
 function forgetAll() {
   generation += 1;
@@ -38,14 +49,14 @@ function forgetAll() {
 
 const middleware: APIFetchMiddleware = (options, next) => {
   if (!ours(options)) return next(options);
-  const changes = (options.method ?? 'GET').toUpperCase() !== 'GET';
-  if (changes) forgetAll();
+  const change = changes(options);
+  if (change) forgetAll();
   inFlight += 1;
   const settle = () => {
     inFlight -= 1;
     lastSettled = Date.now();
     // Again on the way out: a read that started while this ran may hold the old state.
-    if (changes) forgetAll();
+    if (change) forgetAll();
   };
   return next(options).then(
     (value) => { settle(); return value; },
