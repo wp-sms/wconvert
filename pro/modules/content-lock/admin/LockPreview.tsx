@@ -2,7 +2,7 @@ import { useId } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Preview } from '@/builder/Preview';
 import { NativeSelect } from '@/components/ui/native-select';
-import type { ContentLockPreviewProps, ContentLockPreviewState } from '@/inlinePlacement';
+import type { ContentLockPreviewProps, ContentLockPreviewState } from '@/inlinePlacementSlots';
 import '../../inline-placement/admin/placement.css';
 
 export function LockPreviewControls({ state, onStateChange }: ContentLockPreviewProps) {

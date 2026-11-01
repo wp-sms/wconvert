@@ -1,8 +1,9 @@
-import { Component, Suspense, type ReactNode } from 'react';
+import { Suspense } from 'react';
 import { __ } from '@wordpress/i18n';
 import { BackLink, BuilderSkeleton } from '../shell/BuilderSkeleton';
 import { ChoiceSkeleton } from '../shell/ChoiceGrid';
-import { Region, RegionBody, RegionErrorState, RegionHeader } from '../shell/Region';
+import { ChunkBoundary } from '../shell/ChunkBoundary';
+import { Region, RegionBody, RegionHeader } from '../shell/Region';
 import type { OptinBuilderProps } from './OptinBuilder';
 import type { GoalScreenProps } from '../goals/GoalScreen';
 import { lazyScreen } from '../lib/requestActivity';
@@ -108,41 +109,4 @@ function CreationSkeleton() {
       </RegionBody>
     </Region>
   );
-}
-
-/**
- * The chunk that never came (#363). A missing or partly copied `deferred` file
- * rejects the import, and without this the screen went blank with the reason
- * only in the console. A browser remembers a failed module for the life of the
- * page, so there is no "Try again" here, as in {@see FlowMapBoundary}: only a
- * reload, or a reinstall when the file is truly gone, fetches it again.
- *
- * `way` is the way out. The builder draws its own back link, so it brings one;
- * creation's sits above it in {@see App} and still works. A section sits inside
- * the frame and needs neither; a page that draws its own frame, as the occasion
- * page does, passes `frame` to keep the nav around the message.
- *
- * Shared by every lazy section (`sections.tsx`), so a tab left open across an
- * update that deleted its chunk says what happened instead of going blank.
- */
-export class ChunkBoundary extends Component<{ children: ReactNode; way?: ReactNode; frame?: (content: ReactNode) => ReactNode }, { failed: boolean }> {
-  state = { failed: false };
-
-  static getDerivedStateFromError(): { failed: boolean } {
-    return { failed: true };
-  }
-
-  render() {
-    if (!this.state.failed) return this.props.children;
-    const failed = <Region>
-      <RegionErrorState message={__('Part of WConvert didn’t load.', 'wconvert')}
-        hint={__('Reload the page. If it keeps happening, reinstall the plugin.', 'wconvert')} />
-    </Region>;
-    if (this.props.frame) return this.props.frame(failed);
-    // The builder's own frame, so the way out sits where the skeleton put it.
-    return this.props.way === undefined ? failed : <div className="wconvert-builder-skeleton">
-      <div className="wconvert-builder-skeleton__header">{this.props.way}</div>
-      <div className="p-6">{failed}</div>
-    </div>;
-  }
 }

@@ -99,26 +99,20 @@ const MOUNT_MS = 1000;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function lazyScreen<T extends ComponentType<any>>(load: () => Promise<{ default: T }>): LazyExoticComponent<ComponentType<ComponentProps<T>>> {
   return lazy(() => {
-    let held = true;
-    const release = () => {
-      if (!held) return;
-      held = false;
-      settleOne();
-    };
-    inFlight += 1;
-    return load().then(({ default: Loaded }) => {
-      const timer = setTimeout(release, MOUNT_MS);
+    let mounted!: () => void;
+    const shown = new Promise<void>((done) => { mounted = done; });
+    const loaded = load();
+    // In flight from the download to the mount, or MOUNT_MS after the file
+    // lands if it never mounts; a failed download releases at once. Its
+    // failure is the boundary's to report, not this count's.
+    void track(loaded.then(() => Promise.race([shown, new Promise<void>((done) => { setTimeout(done, MOUNT_MS); })])))
+      .catch(() => undefined);
+    return loaded.then(({ default: Loaded }) => {
       function Mounted(props: ComponentProps<T>) {
-        useEffect(() => {
-          clearTimeout(timer);
-          release();
-        }, []);
+        useEffect(mounted, []);
         return createElement(Loaded, props);
       }
       return { default: Mounted };
-    }, (cause: unknown) => {
-      release();
-      throw cause;
     });
   });
 }

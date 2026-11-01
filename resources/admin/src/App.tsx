@@ -1,9 +1,10 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { ArrowLeft, Plus, TriangleAlert } from 'lucide-react';
-import { ChunkBoundary, GoalScreen, OptinBuilder } from './builder/lazy';
+import { GoalScreen, OptinBuilder } from './builder/lazy';
+import { ChunkBoundary } from './shell/ChunkBoundary';
 import { OptinList } from './optins/OptinList';
-import { Dashboard, Destinations, LeadLog, OccasionPage, Settings } from './sections';
+import { AnalyticsSection, LeadsSection, OccasionSection, SendingIssuesSection, SettingsSection } from './sections';
 import { destinationsAfter } from './destinations/api';
 import { issueCount } from './destinations/issueCount';
 import { Badge } from './components/ui/badge';
@@ -116,7 +117,7 @@ export function App() {
   }
 
   if (route.occasionId !== undefined) {
-    return <OccasionPage key={route.occasionId} id={route.occasionId}
+    return <OccasionSection key={route.occasionId} id={route.occasionId}
       notice={notice?.kind === 'copy' && notice.occasion === route.occasionId ? notice : null}
       onNotice={setNotice} onDismissNotice={() => setNotice(null)} navigate={navigate}
       onEdit={(id) => navigation.requestNavigation(editorHref(id, navigation.hash))} />;
@@ -160,8 +161,8 @@ export function App() {
             </a></Button>
             : undefined
         : undefined}>
-      {/* Campaigns is in the main file, but its thumbnails are a chunk; a
-          failed one is the reload message rather than a blank admin. */}
+      {/* A backstop: each chunk Campaigns loads has its own boundary (a
+          thumbnail falls back to its box), but nothing here may blank the admin. */}
       {section === 'optins' && <ChunkBoundary>
         <OptinsSection
           key={listVersion}
@@ -181,11 +182,11 @@ export function App() {
           onEdit={(id) => navigation.requestNavigation(editorHref(id, creating ? hashFor('optins') : navigation.hash || hashFor('optins')))}
         />
       </ChunkBoundary>}
-      {section === 'analytics' && <Dashboard query={route.report} onQueryChange={(query) => navigate(reportHref(query))} />}
+      {section === 'analytics' && <AnalyticsSection query={route.report} onQueryChange={(query) => navigate(reportHref(query))} />}
       {section === 'leads' && <>
-        {route.leadsView === 'issues' ? <Destinations mode="issues" onIssueCount={setSendingCount} onEditingStateChange={navigation.onEditingStateChange} /> : <LeadLog query={route.leads} onRefresh={() => setSendingRefresh((value) => value + 1)} onQueryChange={(query) => navigate(leadsHref(query))} />}
+        {route.leadsView === 'issues' ? <SendingIssuesSection mode="issues" onIssueCount={setSendingCount} onEditingStateChange={navigation.onEditingStateChange} /> : <LeadsSection query={route.leads} onRefresh={() => setSendingRefresh((value) => value + 1)} onQueryChange={(query) => navigate(leadsHref(query))} />}
       </>}
-      {section === 'settings' && <Settings key={navigation.hash} group={route.settingsGroup} destinationId={route.destinationId} onEditingStateChange={navigation.onEditingStateChange} />}
+      {section === 'settings' && <SettingsSection key={navigation.hash} group={route.settingsGroup} destinationId={route.destinationId} onEditingStateChange={navigation.onEditingStateChange} />}
       <ConfirmDialog open={navigation.pending} onOpenChange={(open) => { if (!open) navigation.stay(); }}
         title={__('Leave without saving?', 'wconvert')} description={__('Changes since your last save will be lost. What you saved stays as it is.', 'wconvert')}
         confirmLabel={__('Discard changes', 'wconvert')} cancelLabel={__('Keep editing', 'wconvert')}

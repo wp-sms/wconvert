@@ -7,7 +7,6 @@ import { Button } from './components/ui/button';
 import { ManualPlacement } from './builder/ManualPlacement';
 import { RegionSkeleton } from './shell/RegionSkeleton';
 
-export { inlinePlacementControls, type ContentLockPreviewProps, type ContentLockPreviewState, type InlinePlacementProps } from './inlinePlacementSlots';
 import { inlinePlacementControls, type ContentLockPreviewProps, type InlinePlacementProps } from './inlinePlacementSlots';
 
 export function ContentLockPreview(props: ContentLockPreviewProps & { controls?: boolean }) {

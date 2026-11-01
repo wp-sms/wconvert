@@ -1,4 +1,4 @@
-import { lazy, Suspense, useId, useRef, useState, type ReactNode } from 'react';
+import { useId, useRef, useState, type ReactNode } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { ArrowLeft, Check, Eye, Target, TriangleAlert } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -36,9 +36,8 @@ import type { Destination } from '../destinations/api';
 import { goalSaid } from '../goals/said';
 import type { GoalEntry } from '../goals/api';
 import type { Template } from '@renderer/types';
-import { withRenderExtensions } from '../renderExtensions';
+import { CampaignThumbnail } from '../optins/designChunks';
 
-const CampaignDesign = lazy(() => withRenderExtensions(import('../optins/CampaignDesign')));
 const handoffIssueOf = (issues: readonly CampaignIssue[]) => issues.some(issue => issue.key === ISSUE.handoff);
 
 /** A blocker's fix, named for where it takes the merchant. */
@@ -359,7 +358,7 @@ export function ReadinessDialog({
                 )}
                 <section className="wconvert-launch-review__section wconvert-launch-review__what">
                   {hasDesign
-                    ? <div className="wconvert-campaign-thumbnail"><Suspense fallback={<div className="wconvert-preview-placeholder" />}><CampaignDesign template={template} displayType={displayType} /></Suspense></div>
+                    ? <div className="wconvert-campaign-thumbnail"><CampaignThumbnail template={template} displayType={displayType} /></div>
                     : <p>{__('No template chosen yet.', 'wconvert')} <Button type="button" variant="link" onClick={() => jump(onGoToDesign)}>{__('Browse templates', 'wconvert')}</Button></p>}
                   {/* What counts as success, said where publishing is decided, never folded away. */}
                   {outcome && goal.status === 'ready' && goal.data && (

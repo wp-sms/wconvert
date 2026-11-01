@@ -107,10 +107,12 @@ final class ViteHelper
         $entry = self::built($distDir, self::ENTRY);
 
         // An incomplete build renders as a blank <div> with nothing in any log.
-        // Say so instead. **Both files, since #73 split the bundle in two**: the
-        // entry alone booting is not the screen working, because the builder
-        // lives in a chunk the entry fetches at the moment a merchant opens it
-        // — which is the one moment nobody is reading a build log.
+        // Say so instead. **The entry and its chunks, since #73 split the
+        // bundle**: the entry alone booting is not the screen working, because
+        // the builder and every section but Campaigns live in chunks the entry
+        // fetches when a merchant opens them — the one moment nobody is reading
+        // a build log. This proves chunks shipped, not each one; the artifact
+        // contract and a section's reload message cover the rest.
         if ($entry === null || self::built($distDir, self::CHUNK) === null) {
             if ($notices !== null) {
                 self::noticeMissingAdminBundle($notices);

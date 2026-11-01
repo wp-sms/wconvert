@@ -30,7 +30,12 @@ never drawn, and adds one line of text where the missing feature would sit.
 screens editor calls with a `JourneyEditorContext` — the draft, where the
 panel is, and the editor's own moves. Pro's `pro/modules/journeys/admin/`
 fills both from its admin entry, eagerly (a repair focuses a condition on the
-next frame; a lazy chunk would leave nothing there). Free renders none of it.
+next frame; a lazy chunk would leave nothing there). *Amended by
+[#397](https://github.com/wp-sms/wconvert/pull/397): no longer at entry load.
+The entry registers a `renderExtensions` loader that fills both slots, and the
+builder's boundary awaits it before its first render. The slots are still set
+before anything reads them, which is what "eagerly" was for, and the journey
+editor is off Pro's main file.* Free renders none of it.
 `journeysSupported()` and `wconvert_journeys` stay the server's word on whether
 the module shipped. An empty slot while the flag is true is a build bug, and
 `pro/tests/js/journey-authoring.test.ts` catches it.

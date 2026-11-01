@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { CalendarDays, Copy, Download, Megaphone, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -30,11 +30,10 @@ import { readReport, type DashboardPayload, type PeriodQuery } from '../stats/ap
 import { copyOccasion, download, exportOccasion, readOccasions, type OccasionNotice } from './api';
 import { DateLine } from './DateLine';
 import { OccasionNoticeView } from './Notice';
-import { OccasionBack, OccasionSkeleton } from './OccasionFrame';
-import { withRenderExtensions } from '../renderExtensions';
+import { OccasionBack, OccasionSkeleton } from './OccasionSkeleton';
+import { CampaignThumbnail } from '../optins/designChunks';
 import '../optins/campaigns.css';
 
-const Design = lazy(() => withRenderExtensions(import('../optins/CampaignDesign')));
 
 /**
  * One occasion's own screen, at `#occasions/<id>` (#277, layout B of the
@@ -258,7 +257,7 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
                       <DataTableCell label={__('Campaign', 'wconvert')} className="wconvert-campaign-identity">
                         <div className="wconvert-campaign-thumbnail" aria-hidden="true">
                           {previews[row.id]?.template
-                            ? <Suspense fallback={<div className="wconvert-preview-placeholder" />}><Design template={previews[row.id].template!} displayType={previews[row.id].display_type} /></Suspense>
+                            ? <CampaignThumbnail template={previews[row.id].template!} displayType={previews[row.id].display_type} />
                             : <div className="wconvert-preview-placeholder"><Megaphone aria-hidden="true" /></div>}
                         </div>
                         <div className="min-w-0">

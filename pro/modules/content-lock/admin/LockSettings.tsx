@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import type { InlinePlacementProps } from '@/inlinePlacement';
+import type { InlinePlacementProps } from '@/inlinePlacementSlots';
 import { ShortcodeCopy } from '@/builder/ManualPlacement';
 
 /**

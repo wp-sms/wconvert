@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import {
   ArrowLeft,
@@ -67,9 +67,8 @@ import { groupConfirmCopy, plan, reduceResult, resultSentence, startResult, type
 import './campaigns.css';
 
 import { productHealthLabel, ProductHealthDetails, useProductHealth } from './ProductHealth';
-import { withRenderExtensions } from '../renderExtensions';
+import { CampaignThumbnail } from './designChunks';
 
-const Design = lazy(() => withRenderExtensions(import('./CampaignDesign')));
 const PAGE_SIZE = 12;
 type Decision = {
   kind: DecisionKind;
@@ -422,9 +421,7 @@ export function OptinList({
   const preview = (row: OptinSummary) => (
     <div className="wconvert-campaign-thumbnail">
       {previews[row.id]?.template ? (
-        <Suspense fallback={<div className="wconvert-preview-placeholder" />}>
-          <Design template={previews[row.id].template!} displayType={previews[row.id].display_type} />
-        </Suspense>
+        <CampaignThumbnail template={previews[row.id].template!} displayType={previews[row.id].display_type} />
       ) : (
         <div
           className="wconvert-preview-placeholder"
