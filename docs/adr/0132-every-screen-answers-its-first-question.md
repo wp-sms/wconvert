@@ -25,7 +25,9 @@ is the thing they came for the most visible thing, with one way forward?
    menus; after review the owner removed the list's door to it too, and the
    list's foot is one line: the count, the dates and the pages (amends
    [0048](0048-the-eligibility-inspector-runs-on-the-real-page.md)).
-5. The owner chose not to add a "Today" line to Campaigns.
+5. The owner chose not to add a "Today" line to Campaigns. *(Amended by
+   [0177](0177-reports-include-today.md): there is still no Today line, but the
+   cards' "Last 7/30 days" now include today.)*
 
 ### Create a campaign
 *Decisions 6 and 7 are replaced by [ADR 0171](0171-one-template-gallery.md): no Start here, one toolbar row
@@ -98,6 +100,8 @@ collections shelf above the grid.*
 22. Analytics accepts a custom `from`/`to` window (validated, ≤366 days, never
     past the site's today) and a labelled live Today; every other preset stays
     complete-day (amends [0089](0089-analytics-starts-with-impact-and-keeps-history-inspectable.md)).
+    *Amended by [0177](0177-reports-include-today.md): every preset but
+    Yesterday and Last month now includes today.*
     A custom range is complete only when it ends before today and is compared
     with the same number of days before; every report route (`ReportWindow`)
     reads the same window, and the dashboard payload carries the site's
@@ -111,7 +115,9 @@ collections shelf above the grid.*
     card with no goal, count or previous count is not drawn, on any site
     (generalises [0127](0127-free-keeps-product-seams-not-product-reads.md)'s
     cart rule); "Sending needs attention" comes before the numbers; "Today’s
-    activity appears tomorrow." is the one wording of that fact.
+    activity appears tomorrow." is the one wording of that fact. *(Amended by
+    [0177](0177-reports-include-today.md): that sentence is retired, because
+    the presets now include today.)*
 
 ### Shell and blocks
 25. **Polish after review:** inline disclosures keep their chevron beside the

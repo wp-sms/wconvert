@@ -75,6 +75,36 @@ final class ReportWindowTest extends TestCase
         self::assertTrue(ReportWindow::complete($month, ReportWindow::read($month)));
     }
 
+    /** Only one live day is Today: the one window without a comparison (ADR 0177). */
+    public function testTodayIsOnlyOneLiveDay(): void
+    {
+        $month = substr(StatDay::today(), 0, 7);
+        $cases = [
+            'today' => [['days' => 1], true],
+            'yesterday' => [['days' => 1, 'complete' => true], false],
+            'last 7 days' => [['days' => 7], false],
+            'this month' => [['month' => $month], false],
+            'custom today' => [['from' => StatDay::today(), 'to' => StatDay::today()], false],
+        ];
+        foreach ($cases as $name => [$params, $today]) {
+            $request = self::request($params);
+            self::assertSame($today, ReportWindow::today($request, ReportWindow::read($request)), $name);
+        }
+    }
+
+    /** This month without `complete` runs through today; with it, it ends yesterday as monthly targets read it. */
+    public function testThisMonthIncludesTodayUnlessItAsksForCompleteDays(): void
+    {
+        $month = substr(StatDay::today(), 0, 7);
+        $live = self::request(['month' => $month]);
+        $complete = self::request(['month' => $month, 'complete' => true]);
+
+        self::assertSame(StatDay::today(), ReportWindow::read($live)->to);
+        self::assertFalse(ReportWindow::complete($live, ReportWindow::read($live)));
+        self::assertEquals(StatRange::calendarMonth($month, StatDay::today()), ReportWindow::read($complete));
+        self::assertTrue(ReportWindow::complete($complete, ReportWindow::read($complete)));
+    }
+
     /** @return iterable<string, array{int, string}> */
     public static function refusals(): iterable
     {

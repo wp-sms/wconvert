@@ -12,9 +12,11 @@ defined('ABSPATH') || exit;
  *
  * A window is named one of three ways, in this order of precedence: two days
  * the merchant typed (`from` and `to`, ADR 0132), a calendar month (ADR 0090),
- * or a number of days ending today or — with `complete` — yesterday
- * (ADR 0089). Every one of them is capped by {@see StatDay::today()}, read
- * here on the server; no parameter carries the browser's idea of today.
+ * or a number of days. A month or a number of days ends today, or — with
+ * `complete` — yesterday (ADR 0089); Analytics asks for today included on
+ * every preset but Yesterday (ADR 0177). Every one of them is capped by
+ * {@see StatDay::today()}, read here on the server; no parameter carries the
+ * browser's idea of today.
  */
 final class ReportWindow
 {
@@ -38,7 +40,7 @@ final class ReportWindow
             return StatRange::between((string) $request->get_param('from'), (string) $request->get_param('to'), StatDay::today());
         }
         $month = $request->get_param('month');
-        if (is_string($month) && $month !== '') return StatRange::calendarMonth($month, StatDay::today());
+        if (is_string($month) && $month !== '') return StatRange::calendarMonth($month, StatDay::today(), !$request->get_param('complete'));
         $days = $request->get_param('days') ?? StatRange::DEFAULT_DAYS;
         return $request->get_param('complete') ? StatRange::completeDays((int) $days, StatDay::today()) : StatRange::lastDays((int) $days, StatDay::today());
     }
@@ -53,15 +55,30 @@ final class ReportWindow
     }
 
     /**
-     * A custom range counts complete days only when it ends before today:
-     * ending on today makes it live, like the Today choice (ADR 0132).
+     * A window counts complete days only when it ends before today: ending on
+     * today makes it live, like the Today choice (ADR 0132). A past month or a
+     * custom range that ends yesterday is complete whatever it asked for;
+     * This month and the day counts are live unless they asked for `complete`
+     * (ADR 0177).
      */
     public static function complete(WP_REST_Request $request, StatRange $range): bool
     {
         if (self::custom($request)) return $range->to < StatDay::today();
+
+        return (bool) $request->get_param('complete') || $range->to < StatDay::today();
+    }
+
+    /**
+     * Today alone: the one window with no comparison, because the day is still
+     * in progress and its counterpart is a whole day (ADR 0089). Every longer
+     * window compares, today so far included (ADR 0177).
+     */
+    public static function today(WP_REST_Request $request, StatRange $range): bool
+    {
         $month = $request->get_param('month');
 
-        return (bool) $request->get_param('complete') || (is_string($month) && $month !== '');
+        return !self::custom($request) && !(is_string($month) && $month !== '')
+            && $range->days() === 1 && !self::complete($request, $range);
     }
 
     /** One refusal for every report route, in the words the date picker uses. */

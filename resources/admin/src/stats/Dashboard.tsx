@@ -40,7 +40,7 @@ import { formatMoney } from '../lib/format';
 import { periodOf, readReport, type DashboardPayload, type GoalReport, type PeriodQuery } from './api';
 import { formatCount, formatRate } from './format';
 import { countsNothing } from '../goals/countsNothing';
-import { chooseToday, families, rangeLabel, reportCSV, todayAppearsTomorrow } from './reporting';
+import { families, rangeLabel, reportCSV } from './reporting';
 import { CampaignTable, Change, changeOf, Experiment, GoalDetail } from './ReportDetails';
 import './analytics.css';
 import {
@@ -50,15 +50,16 @@ import {
 } from './MonthlyTargets';
 
 /**
- * Analytics opens on the last 30 complete days, and asks for them by name: the
- * picker shows the window being read, so the bundle cannot leave the length
- * to a server default it would then have to guess (ADR 0132).
+ * Analytics opens on the last 30 days, today so far included (ADR 0177), and
+ * asks for them by name: the picker shows the window being read, so the
+ * bundle cannot leave the length to a server default it would then have to
+ * guess (ADR 0132).
  */
 const DEFAULT_DAYS = 30;
 /** `StatRange::MAX_DAYS`, the longest custom range the server reads. */
 const MAX_DAYS = 366;
 const PRESETS: readonly DatePreset[] = ['today', 'yesterday', '7', '30', '90', 'this_month', 'last_month'];
-/** Every preset but Today, This month and Last month is a count of complete days. */
+/** The presets that are a count of days: Yesterday's one complete day, and the last 7/30/90 days through today. */
 const ROLLING: Partial<Record<DatePreset, number>> = { yesterday: 1, '7': 7, '30': 30, '90': 90 };
 
 const monthOf = (day: string) => day.slice(0, 7);
@@ -120,7 +121,7 @@ const periodLabel = (days: number) =>
   days === 1
     ? __('Yesterday', 'wconvert')
     : sprintf(
-        /* translators: %s: how many complete days the report covers, e.g. “30”. */ _n('Last %s complete day', 'Last %s complete days', days, 'wconvert'),
+        /* translators: %s: how many days the report covers, today included, e.g. “30”. */ _n('Last %s day', 'Last %s days', days, 'wconvert'),
         formatCount(days),
       );
 
@@ -217,9 +218,7 @@ function DashboardContent({
   const summary =
     !payload || updating
       ? null
-      : payload.days === 0
-        ? __('No complete days yet this month', 'wconvert')
-        : live
+      : live
           ? sprintf(/* translators: %s: the report's date range, e.g. “Oct 1 – 23, 2026”. */ __('%s so far', 'wconvert'), rangeLabel(payload.from, payload.to))
           : rangeLabel(payload.from, payload.to);
   const exportReport = () => {
@@ -291,10 +290,7 @@ function DashboardContent({
             <Button
               variant="outline"
               disabled={!payload || updating}
-              // No complete day yet is a fact of the calendar, so it refuses with its reason (§14).
-              aria-disabled={payload?.days === 0 || undefined}
-              title={payload?.days === 0 ? __('Nothing to export until this month has a complete day.', 'wconvert') : undefined}
-              onClick={() => { if (payload?.days !== 0) exportReport(); }}
+              onClick={exportReport}
             >
               <Download aria-hidden="true" />
               {__('Export CSV', 'wconvert')}
@@ -332,6 +328,10 @@ function DashboardContent({
         <RegionSkeleton label={__('Analytics', 'wconvert')}>
           <StatRowSkeleton stats={4} />
         </RegionSkeleton>
+      )}
+      {/* A window through today is compared while today is still running, so its changes read a little low (ADR 0177). */}
+      {payload && previous && payload.complete_days === false && payload.goals.length > 0 && (
+        <p className="wa-muted wa-compare-note">{__('Includes today so far', 'wconvert')}</p>
       )}
       {payload && compare && payload.previous && !comparable && payload.goals.length > 0 && (
         <p className="wa-muted wa-compare-note">
@@ -414,9 +414,7 @@ function DashboardContent({
             <p className="wa-notice">
               {live
                 ? __('Nothing has been shown yet today.', 'wconvert')
-                : payload.complete_days === false
-                  ? __('Nothing was shown in this period.', 'wconvert')
-                  : `${__('Nothing was shown in this period.', 'wconvert')} ${todayAppearsTomorrow()} ${chooseToday()}`}
+                : __('Nothing was shown in this period.', 'wconvert')}
             </p>
           )}
           <Insights items={insights} query={accepted} />

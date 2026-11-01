@@ -29,8 +29,8 @@ export const GROUP_WIDTH = 272;
 const RANK_GAP = 36;
 
 /** Room for a line's label and its "+": generous, so the real pill always fits inside it. */
-export function pillSize(line: Pick<FlowLine, 'label' | 'color' | 'insertEdgeId'>, coarse = false): { width: number; height: number } | null {
-  const plus = line.insertEdgeId ? (coarse ? 44 : 26) + 4 : 0;
+export function pillSize(line: Pick<FlowLine, 'label' | 'color' | 'insertAt'>, coarse = false): { width: number; height: number } | null {
+  const plus = line.insertAt ? (coarse ? 44 : 26) + 4 : 0;
   // A label wraps at 220px rather than cutting a condition short (GUIDELINES §21).
   const text = line.label ? line.label.length * 7.2 + (line.color ? 13 : 0) : 0;
   const rows = Math.max(1, Math.ceil(text / 196));

@@ -217,9 +217,17 @@ export function useJourneyAuthoring(ctx: JourneyEditorContext): JourneyAuthoring
       const at = displayOrder.find(index => walkNodes(tree.steps[index].content).some(node => node.type === 'question' && 'answer_type' in node && node.answer_type !== 'text'));
       if (at !== undefined) branchFrom(at);
     }} />,
-    flowAdd: tree.graph ? (index, edgeId) => {
+    // "+" on a line, branching or straight (ADR 0179): the same add dialog as
+    // Add screen, opened on that line. A straight campaign's line is the
+    // continue edge its screens get as a graph, so the dialog's own rules
+    // decide what fits there; at the 7-screen cap a straight one offers none.
+    flowAdd: tree.graph || !capRefusal ? (index, at) => {
+      const location = at.startsWith('after:')
+        ? insertionTree.graph?.edges.find(edge => edge.from === at.slice(6) && edge.kind === 'default')?.id
+        : at.slice(5);
+      if (!location) return;
       contextAddTrigger.current = document.activeElement as HTMLElement;
-      select(index); setFollowupAnswer(undefined); setInsertLocation(`edge:${edgeId}`); insertedScreen.current = false; setInsertIntent(undefined); setAddKind('input');
+      select(index); setFollowupAnswer(undefined); setInsertLocation(`edge:${location}`); insertedScreen.current = false; setInsertIntent(undefined); setAddKind('input');
     } : undefined,
     screenItems: tree.graph && <OptionItem icon={Workflow} name={__('Move to another line…', 'wconvert-pro')} onSelect={() => setMoving(value => !value)} />,
     screenPanel: moving && tree.graph && <PanelSection><GraphScreenActions key={`actions:${current.id}`} tree={tree} step={step} onChange={(next, selected) => { setMoving(false); write(next, selected); requestAnimationFrame(() => settingsHeading.current?.focus()); }} /></PanelSection>,

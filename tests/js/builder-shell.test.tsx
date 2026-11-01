@@ -1220,9 +1220,10 @@ describe('the summary', () => {
 
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
     // How it runs, the list's own words (ADR 0138); each answer opens its section.
-    expect(fact('Where')?.textContent).toBe('Entire site');
+    // A value still on WConvert's starting setting is tagged Default (ADR 0178).
+    expect(fact('Where')?.textContent).toBe('Entire site Default');
     expect(fact('Opens')?.textContent).toBe('After 8 seconds');
-    expect(fact('Who')?.textContent).toBe('Everyone');
+    expect(fact('Who')?.textContent).toBe('Everyone Default');
     expect(fact('How often')?.textContent).toBe('Every page they see');
     expect(fact('Runs')?.textContent).toBe('Runs until you unpublish it');
   });
@@ -1804,4 +1805,43 @@ it('starts on the campaign itself and offers Flow even for a straight line (ADR 
   expect(screen.getByRole('navigation', { name: 'Campaign' })).toBeInTheDocument();
   expect(screen.getByRole('radio', { name: 'Flow' })).not.toBeChecked();
   expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
+});
+
+/** Until the site's first publish, the header leads through the two tabs a new merchant otherwise never opens (ADR 0178). */
+describe('the first campaign’s header', () => {
+  const guided = () => {
+    window.wconvertAdmin = { exportUrl: '', firstPublished: false };
+    onTestFinished(() => { delete window.wconvertAdmin; });
+  };
+  const selected = (name: RegExp) => expect(screen.getByRole('tab', { name })).toHaveAttribute('aria-selected', 'true');
+
+  it('goes Next: Display rules, Next: Destinations, then Review & publish, and the tabs stay free', async () => {
+    guided();
+    render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+    await userEvent.click(await screen.findByRole('button', { name: 'Next: Display rules' }));
+    selected(/^Display rules/);
+    await userEvent.click(screen.getByRole('tab', { name: /^Edit/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Next: Destinations' }));
+    selected(/^Destinations/);
+    expect(screen.getByRole('button', { name: 'Review & publish' })).toBeInTheDocument();
+  });
+
+  it('skips a tab the draft was opened on', async () => {
+    guided();
+    render(<OptinBuilder id={ID} onClose={vi.fn()} initialTab="rules" />);
+    expect(await screen.findByRole('button', { name: 'Next: Destinations' })).toBeInTheDocument();
+  });
+
+  it('keeps the plain button once the site has published, and on a published campaign', async () => {
+    window.wconvertAdmin = { exportUrl: '', firstPublished: true };
+    onTestFinished(() => { delete window.wconvertAdmin; });
+    const view = render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+    expect(await screen.findByRole('button', { name: 'Review & publish' })).toBeInTheDocument();
+    view.unmount();
+    window.wconvertAdmin = { exportUrl: '', firstPublished: false };
+    builder.getOptin.mockResolvedValue(optin({ published_at: '2026-08-01 09:00:00' }));
+    render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+    expect(await screen.findByRole('button', { name: 'Review & publish' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Next:/ })).toBeNull();
+  });
 });

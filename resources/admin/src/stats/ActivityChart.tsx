@@ -9,15 +9,24 @@ import { formatCount, formatRate } from './format';
 
 type Metric = 'results' | 'rate' | 'shown';
 
-/** A missing denominator is a gap, not a zero-percent result. */
+/**
+ * A missing denominator is a gap, not a zero-percent result.
+ *
+ * A window through today ends on a day still running (ADR 0177). Drawn like
+ * the others, its point would dip and read as a drop, so the last segment is
+ * dashed, the point hollow, and the day says "Today so far".
+ */
 export function ActivityChart({
   label,
   numbers,
   previous,
+  partialDay,
 }: {
   label: string;
   numbers: Numbers;
   previous?: Numbers;
+  /** The site day still in progress, when the window ends on it. */
+  partialDay?: string;
 }) {
   const [metric, setMetric] = useState<Metric>('results');
   const series = (n: Numbers) =>
@@ -48,24 +57,37 @@ export function ActivityChart({
     metric === 'results' ? label : metric === 'shown' ? __('Shown', 'wconvert') : __('Rate', 'wconvert');
   const format = (n: number | null) =>
     n === null ? '—' : metric === 'rate' ? formatRate(n) : formatCount(n);
-  const path = (days: typeof current) =>
+  const x = (index: number, count: number) => 20 + (index / Math.max(1, count - 1)) * 920;
+  const y = (value: number) => 160 - (value / peak) * 140;
+  const path = (days: typeof current, count = days.length) =>
     days
       .map((d, index) =>
         d.value === null
           ? ''
-          : `${index === 0 || days[index - 1].value === null ? 'M' : 'L'}${20 + (index / Math.max(1, days.length - 1)) * 920},${160 - (d.value / peak) * 140}`,
+          : `${index === 0 || days[index - 1].value === null ? 'M' : 'L'}${x(index, count)},${y(d.value)}`,
       )
       .join(' ');
-  const isolatedPoints = (days: typeof current, previousPeriod = false) =>
+  const last = current.at(-1);
+  const partial = partialDay !== undefined && last?.day === partialDay && last.value !== null ? last : undefined;
+  const beforeLast = partial ? current.at(-2) : undefined;
+  // The solid line stops at the last whole day; the running day hangs off it, dashed.
+  const solid = partial ? current.slice(0, -1) : current;
+  const partialLine = partial && beforeLast?.value != null
+    ? `M${x(current.length - 2, current.length)},${y(beforeLast.value)} L${x(current.length - 1, current.length)},${y(partial.value!)}`
+    : null;
+  const todaySoFar = __('Today so far', 'wconvert');
+  // `days` is a series drawn on the whole period's axis; a point counts as
+  // isolated against the whole series, so the dashed running day is a neighbour.
+  const isolatedPoints = (days: typeof current, whole: typeof current, previousPeriod = false) =>
     days.map((d, i) =>
       d.value !== null &&
-      days[i - 1]?.value == null &&
-      days[i + 1]?.value == null ? (
+      whole[i - 1]?.value == null &&
+      whole[i + 1]?.value == null ? (
         <circle
           key={d.day}
           className={previousPeriod ? 'wa-prior-point' : undefined}
-          cx={20 + (i / Math.max(1, days.length - 1)) * 920}
-          cy={160 - (d.value / peak) * 140}
+          cx={x(i, whole.length)}
+          cy={y(d.value)}
           r="3"
         />
       ) : null,
@@ -111,9 +133,15 @@ export function ActivityChart({
           </g>
         ))}
         {previous && <path className="wa-prior-line" d={path(prior)} />}
-        <path className="wa-current-line" d={path(current)} />
-        {isolatedPoints(prior, true)}
-        {isolatedPoints(current)}
+        <path className="wa-current-line" d={path(solid, current.length)} />
+        {partialLine && <path className="wa-current-line wa-partial-line" d={partialLine} />}
+        {isolatedPoints(prior, prior, true)}
+        {isolatedPoints(solid, current)}
+        {partial && (
+          <circle className="wa-partial-point" cx={x(current.length - 1, current.length)} cy={y(partial.value!)} r="4">
+            <title>{todaySoFar}</title>
+          </circle>
+        )}
       </svg>
       <div className="wa-chart-dates">
         <span>{current[0] && formatDay(current[0].day)}</span>
@@ -134,7 +162,10 @@ export function ActivityChart({
           <DataTableBody>
             {current.map((d, i) => (
               <DataTableRow key={d.day}>
-                <DataTableCell label={__('Date', 'wconvert')}>{formatDay(d.day)}</DataTableCell>
+                <DataTableCell label={__('Date', 'wconvert')}>
+                  {formatDay(d.day)}
+                  {d.day === partial?.day && <span className="wa-muted"> · {todaySoFar}</span>}
+                </DataTableCell>
                 <DataTableCell label={metricName} numeric>{format(d.value)}</DataTableCell>
                 {previous && (
                   <>

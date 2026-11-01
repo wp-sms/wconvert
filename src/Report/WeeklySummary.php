@@ -133,7 +133,9 @@ final class WeeklySummary
             /* translators: %s: a date range, e.g. “26 Oct – 1 Nov”. */
             : sprintf(__('Weekly summary · %s', 'wconvert'), $range);
 
-        $actions = [['label' => __('Open WConvert', 'wconvert'), 'url' => $adminUrl . '#analytics?days=7']];
+        // The email's own seven complete days, by date: Analytics' "Last 7 days"
+        // now includes today, and would not show the numbers above (ADR 0177).
+        $actions = [['label' => __('Open WConvert', 'wconvert'), 'url' => $adminUrl . self::analyticsRoute($report)]];
 
         if ($group === 'leads') {
             $actions[] = ['label' => __('View leads', 'wconvert'), 'url' => $adminUrl . '#leads'];
@@ -433,6 +435,22 @@ final class WeeklySummary
     private static function tone(float $change): string
     {
         return $change > 0 ? 'up' : ($change < 0 ? 'down' : 'flat');
+    }
+
+    /**
+     * Analytics at the report's own dates, or its 7 days when they are unreadable.
+     *
+     * @param array<string, mixed> $report
+     */
+    private static function analyticsRoute(array $report): string
+    {
+        $from = (string) ($report['from'] ?? '');
+        $to = (string) ($report['to'] ?? '');
+        $day = '/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/D';
+
+        return preg_match($day, $from) && preg_match($day, $to)
+            ? '#analytics?from=' . $from . '&to=' . $to
+            : '#analytics?days=7';
     }
 
     /** @param array<string, mixed> $report */

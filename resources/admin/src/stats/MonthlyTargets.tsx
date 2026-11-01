@@ -98,7 +98,7 @@ export function paceOf(
   return { short: Math.max(0, Math.round(expected - actual)) };
 }
 
-/** What the loaded report counted, to set a target against: "Last 30 complete days: 105". */
+/** What the loaded report counted, to set a target against: "Last 30 days: 105". */
 export interface TargetReference {
   label: string;
   counts: Record<string, number>;
@@ -438,7 +438,7 @@ function TargetEditor({
                     {reference?.counts[metric.id] !== undefined && (
                       <span className="block">
                         {sprintf(
-                          /* translators: 1: the report's dates, e.g. "Last 30 complete days", 2: a count. */
+                          /* translators: 1: the report's dates, e.g. "Last 30 days", 2: a count. */
                           __('%1$s: %2$s', 'wconvert'),
                           reference.label,
                           formatCount(reference.counts[metric.id]),

@@ -59,13 +59,14 @@ async function resultAction(user: User, name: string) {
 
 vi.mock('../../resources/admin/src/builder/Preview', () => ({ Preview: () => <div /> }));
 vi.mock('../../resources/admin/src/builder/JourneyMap', () => ({ JourneyMap: ({ onSelect, onAdd }: {
-  onSelect(index: number): void; onAdd(index: number, edgeId?: string): void;
+  onSelect(index: number): void; onAdd(index: number, insertAt?: string): void;
 }) => <div aria-label="Journey map">
   <button onClick={() => onSelect(0)}>Select first screen</button>
   <button onClick={() => onSelect(2)}>Select interests</button>
   <button onClick={() => onSelect(4)}>Select balcony</button>
-  <button onClick={() => onAdd(0, 'saved')}>Insert after save</button>
-  <button onClick={() => onAdd(2, 'start')}>Insert test screen</button>
+  <button onClick={() => onAdd(0, 'edge:saved')}>Insert after save</button>
+  <button onClick={() => onAdd(2, 'edge:start')}>Insert test screen</button>
+  <button onClick={() => onAdd(0, 'after:email')}>Insert after the straight signup</button>
 </div> }));
 // Journey authoring is Pro's: its `journeys` module sets the flag and fills the slots (ADR 0147).
 registerJourneyAuthoring();
@@ -149,6 +150,24 @@ it('requires a chosen answer before inserting a relevant follow-up from the tool
   await user.click(screen.getByRole('checkbox', { name: 'Balcony' }));
   await user.click(screen.getByRole('button', { name: 'Add screen here' }));
   expect(draft().steps.at(-1)?.when?.clauses[0]).toEqual({ question: 'n1', operator: 'includes_any', values: ['balcony'] });
+});
+
+it('inserts on a straight campaign’s line from the Flow map, after that screen (ADR 0179)', async () => {
+  const user = userEvent.setup();
+  render(<Editor />);
+  expect(draft().graph).toBeUndefined();
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(await screen.findByRole('button', { name: 'Insert after the straight signup' }));
+  const dialog = screen.getByRole('dialog', { name: 'Add a screen' });
+  // It opens on that line: the new screen sits between the signup and its ending.
+  expect(dialog.textContent).toMatch(/Email signup.*New message.*Acknowledgement/);
+  await user.click(within(dialog).getByRole('radio', { name: /Show a message/ }));
+  await user.click(within(dialog).getByRole('button', { name: 'Add screen here' }));
+  const next = draft(), added = next.steps.at(-1)!;
+  expect(next.steps).toHaveLength(3);
+  expect(next.graph!.edges.filter(edge => edge.kind === 'answer')).toEqual([]);
+  expect(next.graph!.edges.find(edge => edge.from === 'email')?.to).toBe(added.id);
+  expect(next.graph!.edges.find(edge => edge.from === added.id)?.to).toBe('received');
 });
 
 it('clears stale branch instructions when Undo restores the prior draft', async () => {

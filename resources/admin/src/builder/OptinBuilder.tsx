@@ -45,6 +45,7 @@ import { useTemplateTrees } from './useTemplateTrees';
 import { DestinationsEditor } from './DestinationsEditor';
 import { CaptureModeChoice } from './CaptureModeChoice';
 import { ReadinessDialog } from './ReadinessDialog';
+import { notePublished, sitePublishedBefore } from './firstPublish';
 import { captureModeOf, routedMode } from './captureMode';
 import { campaignIssues, followIssue, type IssueRoutes } from './readiness/campaignIssues';
 import { ForDevelopers } from '../optins/DetailsDialog';
@@ -199,6 +200,12 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const [previewFromRules, setPreviewFromRules] = useState(false);
   const [journeyTestRequest, setJourneyTestRequest] = useState(0);
   useEffect(() => { if (tab === 'edit') setJourneyVisited(true); }, [tab]);
+  // Every tab opened in any way — a click, an issue's route, `?tab=rules` —
+  // for this draft. Until the site's first publish, the header's primary
+  // action leads to the tabs not yet seen before Review (ADR 0178).
+  const [visitedTabs, setVisitedTabs] = useState<ReadonlySet<TabId>>(() => new Set([tab]));
+  useEffect(() => { setVisitedTabs(visited => visited.has(tab) ? visited : new Set([...visited, tab])); }, [tab]);
+  const [firstCampaign, setFirstCampaign] = useState(() => !sitePublishedBefore());
   const [journeyRepair, setJourneyRepair] = useState<(JourneyRepair & { serial: number }) | null>(null);
   const journeyRepairSerial = useRef(0);
 
@@ -583,6 +590,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
       // A refused save must never promote the previously saved draft.
       if (dirty) await persistDraft();
       const accepted = await publishOptin(id);
+      notePublished();
+      setFirstCampaign(false);
       setPublishedAt(accepted.published_at);
       setCanChangeGoal(false);
       setUnpublishedChanges(accepted.has_unpublished_changes);
@@ -846,6 +855,13 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
     onRetryGoal: loadGoals,
   };
 
+  // The first campaign is led through the two tabs a new merchant otherwise
+  // never opens; the tabs stay free, and this only changes where the button goes.
+  const nextTab = firstCampaign && publishedAt === null ? (['rules', 'destinations'] as const).find(id => !visitedTabs.has(id)) : undefined;
+  const nextStep = nextTab === undefined ? undefined : nextTab === 'rules'
+    ? { label: __('Next: Display rules', 'wconvert'), onGo: () => setTab('rules') }
+    : { label: __('Next: Destinations', 'wconvert'), onGo: () => setTab('destinations') };
+
   const displayEditor = () => <DisplayRules
               reopenEnabled={canPreviewReopen}
               audienceRequirement={entryOfGoal?.audience_requirement}
@@ -1017,6 +1033,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               : __('Save draft', 'wconvert')}
           </Button>
           <ReadinessDialog
+            next={nextStep}
             name={name}
             captureMode={captureMode}
             issues={issues}
@@ -1123,12 +1140,12 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             onGoToRules={() => setTab('rules')} onGoToDestinations={() => { setTab('destinations'); destinationsTab.current?.focus(); }} />}
           </Activity>
         </TabsContent>
-        <TabsContent value="rules" className="wconvert-workspace__secondary wconvert-workspace__display" data-content-lock={showingLock || undefined}>
+        <TabsContent value="rules" className="wconvert-workspace__secondary">
           <div className="wconvert-workspace__settings">
             {displayEditor()}
           </div>
         </TabsContent>
-        <TabsContent value="destinations" className="wconvert-workspace__secondary wconvert-workspace__destinations">
+        <TabsContent value="destinations" className="wconvert-workspace__secondary">
           <div className="wconvert-workspace__settings">
             {destinationEditor}
           </div>

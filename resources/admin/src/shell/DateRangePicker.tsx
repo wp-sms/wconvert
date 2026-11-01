@@ -6,8 +6,8 @@ import { Input } from '../components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 
 /**
- * A named window of days. What each preset covers is the caller's to resolve:
- * Leads counts today in "Last 7 days", Analytics reads complete days.
+ * A named window of days. What each preset covers is the caller's to resolve;
+ * Leads and Analytics both count today in "Last 7 days" (ADR 0177).
  */
 export type DatePreset = 'all' | 'today' | 'yesterday' | '7' | '30' | '90' | 'this_month' | 'last_month' | 'occasion';
 export type DateRange = { preset: DatePreset } | { preset: 'custom'; from: string; to: string };

@@ -54,7 +54,7 @@ final class WeeklySummaryTest extends TestCase
         $this->assertSame(['eyebrow' => 'Best campaign', 'title' => 'Welcome discount', 'body' => '61 submissions from 2,540 times shown (2.4%)'], $m['best']);
         $this->assertSame(['eyebrow' => 'Worth a look', 'title' => 'Spring sale bar', 'body' => 'Shown less often. Fewer results, with a similar rate. Check display rules and site traffic.'], $m['insight']);
         $this->assertSame([
-            ['label' => 'Open WConvert', 'url' => self::ADMIN . '#analytics?days=7'],
+            ['label' => 'Open WConvert', 'url' => self::ADMIN . '#analytics?from=2026-10-26&to=2026-11-01'],
             ['label' => 'View leads', 'url' => self::ADMIN . '#leads'],
         ], $m['actions']);
         $this->assertSame(self::ADMIN . '#settings?group=reports', $m['footer']['url']);
@@ -138,7 +138,7 @@ final class WeeklySummaryTest extends TestCase
         $this->assertStringNotContainsString('<b>Bold</b>', $html);
         $this->assertStringNotContainsString('<img', $html, 'No images: it must read the same with images blocked.');
         $this->assertStringContainsString('prefers-color-scheme:dark', $html);
-        $this->assertStringContainsString('Open WConvert: ' . self::ADMIN . '#analytics?days=7', $text);
+        $this->assertStringContainsString('Open WConvert: ' . self::ADMIN . '#analytics?from=2026-10-26&to=2026-11-01', $text);
         $this->assertStringContainsString('Turn off weekly summaries: ' . self::ADMIN . '#settings?group=reports', $text);
     }
 

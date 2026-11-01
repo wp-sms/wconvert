@@ -36,6 +36,11 @@ missing rate denominators are gaps, not zero-percent points.
 
 ## Complete windows and explicit scope
 
+**Amended by [0177](0177-reports-include-today.md): every window but Yesterday,
+Last month and custom dates ending before today now includes today so far,
+and keeps its comparison; Today alone has none. The text below describes the
+complete-day design it replaced.**
+
 Analytics requests `complete=true` from the existing read-only dashboard route.
 The selected window ends yesterday in the site's calendar. Its comparison is
 the adjacent preceding window of the same length. The server resolves both;

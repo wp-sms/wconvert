@@ -25,8 +25,19 @@ describe('a straight campaign', () => {
   });
 
   it('lets every line take a new screen where the campaign is a graph', () => {
-    expect(flowModel(straight).lines.map(line => line.insertEdgeId)).toEqual(['continue', 'saved']);
-    expect(flowModel(v2).lines.every(line => line.insertEdgeId === undefined)).toBe(true);
+    expect(flowModel(straight).lines.map(line => line.insertAt)).toEqual(['edge:continue', 'edge:saved']);
+  });
+
+  it('lets a straight campaign take a new screen after each screen a plain line leaves (ADR 0179)', () => {
+    // The same three screens stored one after another, with no graph: a straight campaign.
+    const order = ['details', 'save', 'thanks'];
+    const linear = { v: 2, submissions: straight.submissions, steps: order.map(id => straight.steps.find(screen => screen.id === id)!) } as unknown as TemplateTree;
+    expect(flowModel(linear).lines.map(line => line.insertAt)).toEqual(['after:details', 'after:save']);
+    // With "Only if" screens: a continue line takes a "+" after the screen it leaves; a skip or around line takes none.
+    const lines = flowModel(v2).lines;
+    for (const line of lines) expect([undefined, `after:${line.from}`]).toContain(line.insertAt);
+    expect(lines.filter(line => line.style === 'around' || line.style === 'skipped').every(line => line.insertAt === undefined)).toBe(true);
+    expect(lines.some(line => line.insertAt !== undefined)).toBe(true);
   });
 });
 
@@ -78,7 +89,7 @@ describe('“Only if” splits the line (ADR 0142)', () => {
     const model = flowModel(tree);
     expect(model.straight).toBe(false);
     expect(model.cards.find(card => card.id === 'interests')?.linesText).toBe('2 lines · Includes Garden, Without Garden');
-    expect(model.lines.find(line => line.style === 'around')).toMatchObject({ insertEdgeId: undefined, select: { index: 1, priority: 'hidden' } });
+    expect(model.lines.find(line => line.style === 'around')).toMatchObject({ insertAt: undefined, select: { index: 1, priority: 'hidden' } });
   });
 
   it('reads the answer / All other answers after a choose-one question', () => {
@@ -101,7 +112,7 @@ describe('“Only if” splits the line (ADR 0142)', () => {
     const model = flowModel(tree);
     expect(summary(tree)).toEqual(['interests>followups:garden “Any of these” plain', 'interests>contact “None of these” around', 'followups:garden>contact plain', 'contact>received plain']);
     expect(model.groups[0].members.map(member => member.answer)).toEqual(['Garden', 'Indoors', 'Balcony']);
-    expect(model.lines.find(line => line.label === 'None of these')?.insertEdgeId).toBeUndefined();
+    expect(model.lines.find(line => line.label === 'None of these')?.insertAt).toBeUndefined();
     const trace = graphTrace(tree.steps, tree.graph!, { n1: ['balcony'], n4: 'small' });
     const on = model.lines.filter(line => lineIsOn(line, { screens: new Set(trace.indices.map(index => tree.steps[index].id)), edges: new Set(journeyTraceEdges(tree, trace.decisions)) }));
     expect(on.map(line => line.id)).toEqual(['interests>followups:garden', 'followups:garden>contact', 'contact>received']);

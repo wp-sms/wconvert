@@ -70,7 +70,10 @@ After 0137 the editor was still hard to read in four places:
    `add_to_cart`, each with "Counts {headline_label}". Only a design with no
    converting act reads "Choose what a visitor does". In Review each rule's
    answer is a link to its section, and Placement says the position, reopen
-   button, inline placement or content lock.
+   button, inline placement or content lock. *Amended by
+   [0178](0178-the-first-campaign-is-led-through-its-tabs.md): "Leads go to"
+   links to Destinations too, and Review tags each value still on WConvert's
+   starting setting "Default".*
 5. **Details is one body** — `optins/CampaignSummary.tsx`: the notice, the
    thumbnail (the list's), the **Goal** (its label, "Counts as success:
    {headline_label}", the measurement, and Change goal in the editor), the

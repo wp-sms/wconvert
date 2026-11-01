@@ -79,7 +79,9 @@ It does not redirect in any of these cases:
     before.
   - "Best campaign" (with 2+ published campaigns) and Insights' first card.
   - Buttons: Open WConvert (`#analytics?days=7`) and View leads (only when the
-    result is submissions).
+    result is submissions). *Amended by [0177](0177-reports-include-today.md):
+    "Last 7 days" now includes today, so Open WConvert links the email's own
+    dates (`#analytics?from=…&to=…`).*
   - A footer link to Settings to turn it off.
 - **It holds aggregate counts and campaign names only.**
 - **When it is skipped.** It is not sent before `first_publish`, and not for a

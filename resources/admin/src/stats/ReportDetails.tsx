@@ -264,6 +264,7 @@ export function GoalDetail({
           label={card.result_label}
           numbers={numbers}
           previous={prior}
+          partialDay={payload.complete_days === false ? payload.today : undefined}
         />
         {!optin && <Reconciliation card={card} />}
       </div>

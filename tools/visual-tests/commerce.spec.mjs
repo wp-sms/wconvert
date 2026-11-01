@@ -75,7 +75,8 @@ test('the real editor can select and search recommendation products', async ({ p
   await page.goto('/?wconvert_commerce_fixture=1&login=1&json=1');
   const fixture = JSON.parse(await page.locator('body').innerText());
   await page.goto(`/wp-admin/admin.php?page=wconvert#optins?edit=${fixture.id}`);
-  await expect(page.getByRole('button', { name: 'Review & publish', exact: true })).toBeVisible();
+  // The header's main button: "Review & publish", or "Next: …" before the site's first publish (ADR 0178).
+  await expect(page.getByRole('button', { name: /^(Review & publish|Next: Display rules|Next: Destinations)$/ })).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.testShadows.some(root => root.querySelector('[data-path="0.children.3"]')))).toBe(true);
   await page.evaluate(() => window.testShadows.flatMap(root => [...root.querySelectorAll('[data-path="0.children.3"]')]).find(node => node.isConnected)?.click());
   const search = page.getByRole('textbox', { name: 'Find products', exact: true });

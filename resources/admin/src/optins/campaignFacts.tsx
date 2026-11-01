@@ -7,10 +7,16 @@ import type { ConvertingAct } from '../builder/structure/catalogue';
 import { convertingActOf } from '../builder/structure/guards';
 import { countsNothing } from '../goals/countsNothing';
 import { nodeAt, nodesOf } from '../builder/structure/tree';
+import type { DisplayRulesValue } from '../builder/rules/summaries';
+import type { CaptureMode } from '../builder/captureMode';
+import { Badge } from '../components/ui/badge';
 import type { Fact } from '../shell/FactList';
 
+/** A How it runs row that can still hold WConvert's starting setting. */
+export type DefaultRow = 'who' | 'where' | 'when' | 'how-often' | 'leads';
+
 /** A said thing that may need a look: an unfinished rule, a destination problem. */
-interface Said { readonly text: ReactNode; readonly attention?: boolean }
+interface Said { readonly text: ReactNode; readonly attention?: boolean; readonly isDefault?: boolean }
 
 export interface CampaignFactsInput {
   readonly rules: AxisSummaries;
@@ -32,6 +38,40 @@ export interface CampaignFactsInput {
   readonly collects?: string;
   /** Makes each rule's answer a way to its section, where the host can go there. */
   readonly onRule?: (section: 'who' | 'where' | 'when' | 'how-often' | 'dates') => void;
+  /** Makes "Leads go to" a way to the Destinations tab, where the host can go there. */
+  readonly onDestinations?: () => void;
+  /**
+   * The rows still on WConvert's starting setting ({@link defaultRows}), each
+   * tagged “Default”. Only Review & publish passes it; Campaign details does not.
+   */
+  readonly defaults?: ReadonlySet<DefaultRow>;
+}
+
+/**
+ * The rows whose value is still WConvert's plain starting setting — the one
+ * "Start from scratch" writes (`DisplayPlan::immediate()`, `Prefill::fromScratch()`)
+ * and the one `captureModeOf` reads with no service chosen.
+ *
+ * A neutral fact about the value, not a record of whether anyone looked: a
+ * Playbook's own rules are tagged only where they equal it. "Leads go to" is
+ * tagged only where the install has another place to send them (`outbound`):
+ * on Free, outbound Destinations are Pro, so the tag would only nag.
+ */
+export function defaultRows(value: DisplayRulesValue, captureMode: CaptureMode, outbound: boolean): Set<DefaultRow> {
+  const rows = new Set<DefaultRow>();
+  const { display_rules: plan, targeting, frequency } = value;
+  if (plan?.audience.mode === 'everyone' && targeting.logged_in === undefined && (targeting.roles ?? []).length === 0) rows.add('who');
+  if (targeting.mode !== 'selected' && (targeting.include ?? []).length === 0 && (targeting.exclude ?? []).length === 0) rows.add('where');
+  if (plan?.opening.mode === 'immediate') rows.add('when');
+  if (frequency.maxPerSession === 1 && frequency.stopAfterDismiss === false && frequency.maxImpressions === undefined
+    && frequency.cooldownDays === undefined && frequency.stopAfterConversion !== false) rows.add('how-often');
+  if (outbound && captureMode === 'local') rows.add('leads');
+  return rows;
+}
+
+/** The muted tag beside a value still on its starting setting. */
+function DefaultTag() {
+  return <Badge variant="outline" className="wconvert-facts__default">{__('Default', 'wconvert')}</Badge>;
 }
 
 /**
@@ -43,13 +83,20 @@ export interface CampaignFactsInput {
  * act a quiz or basket design counts. Only a design with no converting act at
  * all reads as unfinished.
  */
-export function campaignFacts({ rules, where, act, forwarding, links, counts, placement, consent, collects, onRule }: CampaignFactsInput): Fact[] {
+export function campaignFacts({ rules, where, act, forwarding, links, counts, placement, consent, collects, onRule, onDestinations, defaults }: CampaignFactsInput): Fact[] {
+  const tagged = (text: ReactNode, isDefault: boolean): ReactNode => isDefault ? <>{text} <DefaultTag /></> : text;
   const rule = (key: 'who' | 'where' | 'when' | 'how-often' | 'dates'): Said => {
     const said = summaryOf(rules, key);
-    return { text: onRule ? <button type="button" className="wconvert-readiness__go" onClick={() => onRule(key)}>{said.text}</button> : said.text, attention: said.attention };
+    const text = onRule ? <button type="button" className="wconvert-readiness__go" onClick={() => onRule(key)}>{said.text}</button> : said.text;
+    // A row that needs a look reads its problem, never a tag beside it.
+    const isDefault = key !== 'dates' && !said.attention && defaults?.has(key) === true;
+    return { text: tagged(text, isDefault), attention: said.attention, isDefault };
   };
   const fact = (icon: Fact['icon'], label: string, said: Said): Fact =>
-    ({ icon, label, text: said.text, tone: said.attention ? 'warning' : undefined });
+    ({ icon, label, text: said.text, tone: said.attention ? 'warning' : undefined, ...(said.isDefault ? { isDefault: true } : {}) });
+  const leadsSaid = onDestinations
+    ? <button type="button" className="wconvert-readiness__go" onClick={onDestinations}>{forwarding.said}</button>
+    : forwarding.said;
   const counted = counts && <span className="block text-note text-muted-foreground">
     {/* translators: %s: what the Goal's number is called, e.g. “Quiz completions”. */ sprintf(__('Counts %s', 'wconvert'), counts)}
   </span>;
@@ -63,11 +110,13 @@ export function campaignFacts({ rules, where, act, forwarding, links, counts, pl
   ];
   if (act === 'submit') {
     if (collects) facts.push({ icon: TextCursorInput, label: __('Collects', 'wconvert'), text: collects });
+    const leadsDefault = defaults?.has('leads') === true;
     facts.push({
       icon: Inbox,
       label: __('Leads go to', 'wconvert'),
       tone: forwarding.problems.length > 0 ? 'warning' : undefined,
-      text: <>{forwarding.said}{forwarding.problems.map((problem) => <span key={problem} className="wconvert-facts__warning">{problem}</span>)}</>,
+      ...(leadsDefault ? { isDefault: true } : {}),
+      text: <>{tagged(leadsSaid, leadsDefault)}{forwarding.problems.map((problem) => <span key={problem} className="wconvert-facts__warning">{problem}</span>)}</>,
     });
   } else if (act === 'click') {
     facts.push({

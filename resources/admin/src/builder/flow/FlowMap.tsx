@@ -47,7 +47,8 @@ export interface FlowMapProps {
   onIssue?(issue: CampaignIssue): void;
   destinationSummary?: string;
   /** "+" on a line: insert a screen on that graph edge. Absent where screens cannot be inserted. */
-  onAdd?(index: number, edgeId: string): void;
+  /** "+" on a line: the screen it leaves, and where to insert (`FlowLine.insertAt`). */
+  onAdd?(index: number, insertAt: string): void;
   /** After "Every visitor sees these screens in order.": Pro's way to a first answer line (ADR 0147). */
   nudge?: ReactNode;
 }
@@ -66,7 +67,12 @@ export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelect
   const screen = selected === null ? undefined : tree.steps[selected];
   const selectedQuestion = screen ? questionsIn(screen.content)[0]?.id
     ?? screen.when?.clauses[0]?.question : undefined;
-  const model = useMemo(() => flowModel(tree, { selectedQuestion }), [tree, selectedQuestion]);
+  // Without a way to add (Free, ADR 0147), no line keeps room for a "+" it never draws.
+  const adds = onAdd !== undefined;
+  const model = useMemo(() => {
+    const built = flowModel(tree, { selectedQuestion });
+    return adds ? built : { ...built, lines: built.lines.map(line => line.insertAt === undefined ? line : { ...line, insertAt: undefined }) };
+  }, [tree, selectedQuestion, adds]);
   const [measured, setMeasured] = useState<Readonly<Record<string, number>>>({});
   const layout = useMemo(() => flowLayout(layoutInput(model, node => measured[node], coarse), { rtl }), [model, measured, coarse, rtl]);
 
@@ -205,8 +211,10 @@ export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelect
   const focusedLine = focusedPath !== null && selected !== null ? model.lines.find(line => line.select?.index === selected && line.select.priority === focusedPath)?.id : undefined;
   const byScreen = useMemo(() => issuesByScreen(issues), [issues]);
   const label = model.nameOf;
-  const edgeSource = (edge: string) => {
-    const graphEdge = tree.graph?.edges.find(item => item.id === edge);
+  /** The screen a "+" inserts after: an edge's source, or the screen a straight line leaves. */
+  const insertSource = (at: string) => {
+    if (at.startsWith('after:')) return tree.steps.findIndex(item => item.id === at.slice(6));
+    const graphEdge = at.startsWith('edge:') ? tree.graph?.edges.find(item => item.id === at.slice(5)) : undefined;
     return graphEdge ? tree.steps.findIndex(item => item.id === graphEdge.from) : -1;
   };
   const pills = (node: string) => model.lines.filter(line => line.from === node && layout.lines.get(line.id)?.label)
@@ -214,7 +222,7 @@ export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelect
   const pill = (line: FlowLine) => <LinePill key={line.id} line={line} rtl={rtl} rect={layout.lines.get(line.id)!.label!} fromName={label(line.from)} toName={label(line.to)}
     state={lineStates.get(line.id)} selected={focusedLine === line.id} tabbable={line.from === current}
     onLabel={line.select ? () => onSelectPath(line.select!.index, line.select!.priority) : undefined}
-    onAdd={onAdd && line.insertEdgeId && edgeSource(line.insertEdgeId) >= 0 ? () => onAdd(edgeSource(line.insertEdgeId!), line.insertEdgeId!) : undefined} />;
+    onAdd={onAdd && line.insertAt && insertSource(line.insertAt) >= 0 ? () => onAdd(insertSource(line.insertAt!), line.insertAt!) : undefined} />;
 
   const overflows = layout.width * zoom > view.width + 4 || layout.height * zoom > view.height + 4;
   return <div className="wconvert-journey-map wconvert-flow" data-trace={trace ? 'on' : undefined}>

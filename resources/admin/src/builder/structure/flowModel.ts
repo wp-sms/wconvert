@@ -45,8 +45,12 @@ export interface FlowLine {
   /** Answer color slot, 1–6. */
   readonly color?: AnswerColor;
   readonly edgeIds: readonly string[];
-  /** The graph edge "+" inserts a screen on; absent where the line is drawn only. */
-  readonly insertEdgeId?: string;
+  /**
+   * Where "+" inserts a screen, in the add dialog's location words: `edge:<id>`
+   * on a graph edge, or `after:<screenId>` on a straight campaign's line
+   * (ADR 0179). Absent where the line is drawn only.
+   */
+  readonly insertAt?: string;
   /** The rule a click on the label opens. */
   readonly select?: { readonly index: number; readonly priority: Priority };
   /** An answer line with no answer chosen yet. */
@@ -263,13 +267,16 @@ export function flowModel(tree: TemplateTree, { selectedQuestion }: { selectedQu
       && !conditional.some(other => other !== id && skipTarget(other) === id);
   };
 
+  /** "+" on a graph's every line, and on a straight campaign's plain lines (ADR 0179). */
+  const insertAt = (edge: FlowEdge | undefined): string | undefined => !edge ? undefined
+    : tree.graph ? `edge:${edge.id}` : edge.kind === 'default' ? `after:${edge.from}` : undefined;
   const raw: Omit<FlowLine, 'id'>[] = [];
   const groupLine = (group: typeof groups[number]) => {
     const members = group.screens.map(at => tree.steps[at].id);
     const last = members[members.length - 1];
     const fallback = defaultOf(last), hidden = hiddenOf(last);
     if (fallback) raw.push({ from: group.id, to: nodeOf(group.next), style: 'plain', edgeIds: [fallback.id, ...(hidden ? [hidden.id] : [])],
-      insertEdgeId: tree.graph ? fallback.id : undefined, select: { index: group.screens[group.screens.length - 1], priority: fallback.priority },
+      insertAt: insertAt(fallback), select: { index: group.screens[group.screens.length - 1], priority: fallback.priority },
       trace: [{ edges: [fallback.id, ...(hidden ? [hidden.id] : [])], any: members }] });
   };
   const order = graphDisplayOrder(tree);
@@ -282,16 +289,16 @@ export function flowModel(tree: TemplateTree, { selectedQuestion }: { selectedQu
     answers.forEach(edge => {
       const words = edge.when ? ruleWords(edge.when, id) : { text: __('Choose an answer', 'wconvert'), problem: true };
       raw.push({ from: id, to: nodeOf(edge.to), style: 'answer', label: words.text, color: colorOf(edge.when), problem: words.problem, edgeIds: [edge.id],
-        insertEdgeId: tree.graph ? edge.id : undefined, select: { index, priority: edge.priority }, trace: [{ edges: [edge.id] }] });
+        insertAt: insertAt(edge), select: { index, priority: edge.priority }, trace: [{ edges: [edge.id] }] });
     });
     if (fallback) {
       const select = { index, priority: fallback.priority };
-      const insertEdgeId = tree.graph ? fallback.id : undefined;
+      const insert = insertAt(fallback);
       const group = groupOf.get(fallback.to);
       if (group && tree.steps[group.screens[0]].id === fallback.to) {
         const members = group.screens.map(at => tree.steps[at].id);
         raw.push({ from: id, to: group.id, style: 'plain', label: answers.length ? __('All other answers', 'wconvert') : __('Any of these', 'wconvert'),
-          edgeIds: [fallback.id], insertEdgeId, select, trace: [{ edges: [fallback.id], all: [id], any: members }] });
+          edgeIds: [fallback.id], insertAt: insert, select, trace: [{ edges: [fallback.id], all: [id], any: members }] });
         raw.push({ from: id, to: nodeOf(group.next), style: 'around', label: __('None of these', 'wconvert'), edgeIds: [fallback.id], select,
           trace: [{ edges: [fallback.id], all: [id], none: members }] });
       } else if (splits(fallback.to)) {
@@ -301,18 +308,18 @@ export function flowModel(tree: TemplateTree, { selectedQuestion }: { selectedQu
         const clause = when.clauses.length === 1 ? when.clauses[0] : undefined;
         const ownRule = !!clause && own(id).has(clause.question);
         raw.push({ from: id, to: fallback.to, style: 'answer', label: ownRule ? words.text : sprintf(/* translators: %s: a rule, e.g. “Interests includes Growing”. */ __('Only if %s', 'wconvert'), conditionText(tree, when)),
-          color: colorOf(when), edgeIds: [fallback.id], insertEdgeId, select, trace: [{ edges: [fallback.id], all: [id, fallback.to] }] });
+          color: colorOf(when), edgeIds: [fallback.id], insertAt: insert, select, trace: [{ edges: [fallback.id], all: [id, fallback.to] }] });
         const skip = skipTarget(fallback.to);
         const around = answers.length || !clause || clause.operator !== 'includes_any' ? __('All other answers', 'wconvert')
           : ownRule ? sprintf(/* translators: %s: one or more answers. */ __('Without %s', 'wconvert'), answerWords(clause.question, clause.values))
             : conditionText(tree, { match: 'all', clauses: [{ ...clause, operator: 'includes_none' }] });
         const hidden = hiddenOf(fallback.to);
         if (skip) raw.push({ from: id, to: nodeOf(skip), style: 'around', label: around, edgeIds: [fallback.id, ...(hidden ? [hidden.id] : [])],
-          insertEdgeId: tree.graph && hidden ? hidden.id : undefined, select: { index: target.index, priority: 'hidden' },
+          insertAt: tree.graph ? insertAt(hidden) : undefined, select: { index: target.index, priority: 'hidden' },
           trace: [{ edges: [fallback.id], all: [id], none: [fallback.to] }] });
       } else {
         raw.push({ from: id, to: nodeOf(fallback.to), style: 'plain', label: answers.length ? __('All other answers', 'wconvert') : undefined,
-          edgeIds: [fallback.id], insertEdgeId, select, trace: [{ edges: [fallback.id] }] });
+          edgeIds: [fallback.id], insertAt: insert, select, trace: [{ edges: [fallback.id] }] });
       }
     }
     // An "Only if" screen in the line: draw its own skip only where it goes somewhere else.
@@ -320,7 +327,7 @@ export function flowModel(tree: TemplateTree, { selectedQuestion }: { selectedQu
       const skip = skipTarget(id);
       const skipEdge = hiddenOf(id) ?? fallback;
       if (skip && skipEdge && skip !== fallback?.to) raw.push({ from: id, to: nodeOf(skip), style: 'skipped', label: __('If skipped', 'wconvert'),
-        edgeIds: [skipEdge.id], insertEdgeId: tree.graph && hiddenOf(id) ? hiddenOf(id)!.id : undefined, select: { index, priority: 'hidden' },
+        edgeIds: [skipEdge.id], insertAt: tree.graph ? insertAt(hiddenOf(id)) : undefined, select: { index, priority: 'hidden' },
         trace: [{ edges: [skipEdge.id], none: [id] }] });
     }
   }

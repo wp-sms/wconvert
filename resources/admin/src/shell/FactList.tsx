@@ -8,6 +8,8 @@ export interface Fact {
   readonly text: ReactNode;
   /** A fact that needs a look — a destination problem, an unfinished rule. */
   readonly tone?: 'warning';
+  /** Its value is still WConvert's starting setting, and the text carries a “Default” tag. */
+  readonly isDefault?: boolean;
 }
 
 /**

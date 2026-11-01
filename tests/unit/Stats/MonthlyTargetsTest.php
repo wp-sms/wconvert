@@ -26,6 +26,18 @@ final class MonthlyTargetsTest extends TestCase
         self::assertFalse($first->covers('2026-09-01'));
     }
 
+    /** Analytics' This month runs through today, so its first day is one day, never empty (ADR 0177). */
+    public function testAnalyticsMonthRunsThroughToday(): void
+    {
+        $range = StatRange::calendarMonth('2026-09', '2026-09-14', true);
+        self::assertSame(['2026-09-01', '2026-09-14', 14], [$range->from, $range->to, $range->days()]);
+        $first = StatRange::calendarMonth('2026-09', '2026-09-01', true);
+        self::assertSame(1, $first->days());
+        self::assertTrue($first->covers('2026-09-01'));
+        $past = StatRange::calendarMonth('2026-08', '2026-09-01', true);
+        self::assertSame(['2026-08-01', '2026-08-31'], [$past->from, $past->to]);
+    }
+
     public function testTargetsSaveByMonthAndProgressReusesHistoricalCaptureCounters(): void
     {
         $db = new FakeConnection();

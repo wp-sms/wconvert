@@ -789,7 +789,8 @@ describe('the Campaigns workspace', () => {
     render(<OptinList onEdit={() => undefined} />);
     const row = await screen.findByRole('row', { name: OPTIN.name });
     expect(await within(row).findByRole('link', { name: `View ${OPTIN.name} report` })).toHaveTextContent(/^7Resource requests35(\.0)?% of 20 shown$/);
-    expect(stats.readDashboard).toHaveBeenCalledWith(30, true);
+    // The same "Last 30 days" as Analytics, today included (ADR 0177).
+    expect(stats.readDashboard).toHaveBeenCalledWith(30);
     await userEvent.click(within(row).getByRole('button', { name: /More actions/ }));
     expect(await screen.findByRole('menuitem', { name: 'View submissions' })).toHaveAttribute('href', expect.stringContaining('from=2026-08-16'));
   });

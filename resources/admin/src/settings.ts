@@ -23,6 +23,8 @@ export interface AdminSettings {
   readonly proHints?: boolean;
   /** Pro's plugin is installed but not active: hints say "Activate it" and lead to Plugins. */
   readonly proInstalledInactive?: boolean;
+  /** A campaign was ever published on this site: ADR 0176's `first_publish` milestone (ADR 0178). */
+  readonly firstPublished?: boolean;
   /**
    * Whether Pro registered question journeys on this install — its provider
    * does so when the `journeys` module shipped — `JourneySupport::active()`, read on the server (ADR 0116).
