@@ -1,10 +1,11 @@
-import { Component, Suspense, lazy, type ReactNode } from 'react';
+import { Component, Suspense, type ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import { BackLink, BuilderSkeleton } from '../shell/BuilderSkeleton';
 import { ChoiceSkeleton } from '../shell/ChoiceGrid';
 import { Region, RegionBody, RegionErrorState, RegionHeader } from '../shell/Region';
 import type { OptinBuilderProps } from './OptinBuilder';
 import type { GoalScreenProps } from '../goals/GoalScreen';
+import { lazyScreen } from '../lib/requestActivity';
 
 /**
  * ============================================================================
@@ -38,11 +39,12 @@ import type { GoalScreenProps } from '../goals/GoalScreen';
 
 const deferred = () => import('./deferred');
 
-const Builder = lazy(() =>
+// Through `lazyScreen`, so the header's bell waits for the download as it waits for a read (#395).
+const Builder = lazyScreen(() =>
   deferred().then((module) => ({ default: module.OptinBuilder })),
 );
 
-const Creation = lazy(() => deferred().then((module) => ({ default: module.GoalScreen })));
+const Creation = lazyScreen(() => deferred().then((module) => ({ default: module.GoalScreen })));
 
 /**
  * The builder, with the builder's own skeleton over the wait.

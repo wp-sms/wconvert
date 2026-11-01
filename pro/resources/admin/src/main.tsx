@@ -16,6 +16,7 @@ import { registerJourneyAuthoring } from '../../../modules/journeys/admin/regist
 import { registerProviderMarks } from '../../../modules/destinations/admin/marks';
 import { connectionSetup } from '@/destinations/connectionSetup';
 import { registerPage } from '@/extraPages';
+import { lazyScreen } from '@/lib/requestActivity';
 import { __ } from '@wordpress/i18n';
 
 // The License page (ADR 0143): a registered page in the one shared bundle
@@ -24,7 +25,7 @@ registerPage({
   id: 'license',
   title: __('License', 'wconvert-pro'),
   description: __('Updates and support for WConvert Pro.', 'wconvert-pro'),
-  Component: lazy(() => import('./license/LicensePage').then((module) => ({ default: module.LicensePage }))),
+  Component: lazyScreen(() => import('./license/LicensePage').then((module) => ({ default: module.LicensePage }))),
 });
 
 registerPremiumJourneyRenderer();

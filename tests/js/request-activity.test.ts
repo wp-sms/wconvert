@@ -18,7 +18,7 @@ const fake = vi.hoisted(() => {
   return { apiFetch, handler };
 });
 vi.mock('@wordpress/api-fetch', () => ({ default: fake.apiFetch }));
-const { installRequestActivity, resetRequestActivity, sharedRead, whenQuiet } = await import('../../resources/admin/src/lib/requestActivity');
+const { installRequestActivity, resetRequestActivity, sharedRead, track, whenQuiet } = await import('../../resources/admin/src/lib/requestActivity');
 
 function deferred<T = unknown>() {
   let resolve!: (value: T) => void;
@@ -74,6 +74,31 @@ describe('whenQuiet', () => {
     await vi.advanceTimersByTimeAsync(2900);
     expect(await settled(quiet)).toBe(false);
     await vi.advanceTimersByTimeAsync(200);
+    expect(await settled(quiet)).toBe(true);
+  });
+
+  it('waits for a tracked download as it waits for a read', async () => {
+    const chunk = deferred();
+    void track(chunk.promise);
+    const quiet = whenQuiet();
+
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(await settled(quiet)).toBe(false);
+    chunk.resolve({});
+    await vi.advanceTimersByTimeAsync(250);
+    expect(await settled(quiet)).toBe(true);
+  });
+
+  it('is released by a download that fails', async () => {
+    let fail!: (cause: Error) => void;
+    const chunk = track(new Promise((_, reject) => { fail = reject; }));
+    const quiet = whenQuiet();
+
+    await vi.advanceTimersByTimeAsync(500);
+    expect(await settled(quiet)).toBe(false);
+    fail(new Error('Failed to fetch dynamically imported module'));
+    await expect(chunk).rejects.toThrow('Failed to fetch');
+    await vi.advanceTimersByTimeAsync(250);
     expect(await settled(quiet)).toBe(true);
   });
 
