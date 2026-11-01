@@ -2,9 +2,14 @@ import { expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GoalScreen, OptinBuilder } from '../../resources/admin/src/builder/lazy';
+import { LeadLog } from '../../resources/admin/src/sections';
 
 // The deferred chunk is missing from the install: its import rejects (#363).
 vi.mock('../../resources/admin/src/builder/deferred', () => {
+  throw new Error('Failed to fetch dynamically imported module');
+});
+// A section's chunk, deleted by an update while the tab stayed open.
+vi.mock('../../resources/admin/src/leads/LeadLog', () => {
   throw new Error('Failed to fetch dynamically imported module');
 });
 
@@ -24,4 +29,12 @@ it('says the same in place of the creation flow', async () => {
   render(<GoalScreen onCreated={() => {}} />);
 
   expect(await screen.findByText('Part of WConvert didn’t load.')).toBeInTheDocument();
+});
+
+it('says the same in place of a section whose chunk is gone', async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  render(<LeadLog onQueryChange={() => {}} />);
+
+  expect(await screen.findByText('Part of WConvert didn’t load.')).toBeInTheDocument();
+  expect(screen.getByText('Reload the page. If it keeps happening, reinstall the plugin.')).toBeInTheDocument();
 });

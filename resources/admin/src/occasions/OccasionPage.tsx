@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ArrowLeft, CalendarDays, Copy, Download, Megaphone, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
+import { CalendarDays, Copy, Download, Megaphone, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { AdminDialog, AdminDialogBody, AdminDialogContent, AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
@@ -24,13 +24,13 @@ import { EmptyState } from '../shell/EmptyState';
 import { Field } from '../shell/Field';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { Region, RegionBody, RegionError, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
-import { RegionSkeleton } from '../shell/RegionSkeleton';
 import { Shell } from '../shell/Shell';
 import { Stat, StatRow } from '../shell/Stat';
 import { readReport, type DashboardPayload, type PeriodQuery } from '../stats/api';
 import { copyOccasion, download, exportOccasion, readOccasions, type OccasionNotice } from './api';
 import { DateLine } from './DateLine';
 import { OccasionNoticeView } from './Notice';
+import { OccasionBack, OccasionSkeleton } from './OccasionFrame';
 import '../optins/campaigns.css';
 
 const Design = lazy(() => import('../optins/CampaignDesign'));
@@ -108,11 +108,7 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
     return () => { active = false; };
   }, [ids]);
 
-  const back = (
-    <Button asChild variant="ghost" size="sm" className="-ms-3 self-start">
-      <a href={optinsHref()}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Campaigns', 'wconvert')}</a>
-    </Button>
-  );
+  const back = <OccasionBack />;
   const newCampaign = (
     <Button variant="brand" onClick={() => navigate(createHref({ occasion: id }))}>
       <Plus aria-hidden="true" />{__('New campaign in this occasion', 'wconvert')}
@@ -125,11 +121,7 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
       <Region><RegionErrorState message={message} onRetry={() => setAttempt((n) => n + 1)} /></Region>
     </Shell>;
   }
-  if (occasions.status === 'loading' || list.status === 'loading') {
-    return <Shell section="optins" pageTitle={__('Occasion', 'wconvert')} pageBack={back} hideDescription>
-      <RegionSkeleton label={__('Occasion', 'wconvert')} lines={6} />
-    </Shell>;
-  }
+  if (occasions.status === 'loading' || list.status === 'loading') return <OccasionSkeleton />;
   if (occasion === undefined) {
     return <Shell section="optins" pageTitle={__('Occasion', 'wconvert')} pageBack={back} hideDescription>
       <Region>

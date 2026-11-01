@@ -8,6 +8,7 @@ import './header.css';
 import { BrandMark, PlanBadge } from './Brand';
 import { HeaderTools } from './HeaderTools';
 import { Footer } from './Footer';
+import { preloadSection } from '../sectionLoaders';
 import type { ExtraPage } from '../extraPages';
 
 /** Harbor shared frame: dark navigation, light page heading and service footer (ADR 0097). */
@@ -65,7 +66,8 @@ export function Shell({
               <nav className="wconvert-section-nav" aria-label={__('WConvert sections', 'wconvert')}>
                 <ul>{SECTIONS.map((entry) => (
                   <li key={entry.id}>
-                    <a href={hashFor(entry.id)} aria-current={section === entry.id ? 'page' : undefined}>
+                    <a href={hashFor(entry.id)} aria-current={section === entry.id ? 'page' : undefined}
+                      onPointerEnter={() => preloadSection(entry.id)} onFocus={() => preloadSection(entry.id)}>
                       {entry.label}
                     </a>
                   </li>

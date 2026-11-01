@@ -12,7 +12,7 @@ use WConvert\Assets\ViteHelper;
  * A language pack names each JSON catalogue after the md5 of the shipped
  * file's path, and Pro's bundle is a different file from free's. So the only
  * catalogues that hold free's strings on a Pro install are the ones keyed by
- * free's own `main-*.js` and `builder-*.js`, and this is what reads them.
+ * free's own `main-*.js` and `chunk-*.js`, and this is what reads them.
  */
 #[CoversClass(ViteHelper::class)]
 final class ViteHelperTest extends TestCase
@@ -48,14 +48,14 @@ final class ViteHelperTest extends TestCase
     {
         $GLOBALS['wconvertTestScriptCatalogues'][self::HANDLE . '-wconvert-main-1234abcd|wconvert'] =
             self::catalogue('Campaigns', 'Kampagnen');
-        $GLOBALS['wconvertTestScriptCatalogues'][self::HANDLE . '-wconvert-builder-5678efgh|wconvert'] =
+        $GLOBALS['wconvertTestScriptCatalogues'][self::HANDLE . '-wconvert-chunk-5678efgh|wconvert'] =
             self::catalogue('Close button', 'Knopf zum Schliessen');
 
         ViteHelper::inlineAdminTranslations(self::HANDLE, self::FREE_TREE, self::FREE_URL);
 
         $inlined = implode("\n", self::inlined());
         $this->assertStringContainsString('Kampagnen', $inlined, 'the entry\'s strings were not loaded');
-        $this->assertStringContainsString('Knopf zum Schliessen', $inlined, 'the builder chunk\'s strings were not loaded');
+        $this->assertStringContainsString('Knopf zum Schliessen', $inlined, 'a lazy chunk\'s strings were not loaded');
 
         foreach (self::inlined() as $script) {
             $this->assertStringEndsWith('"wconvert" );', $script);
@@ -81,8 +81,8 @@ final class ViteHelperTest extends TestCase
             $registered[self::HANDLE . '-wconvert-main-1234abcd']['src'] ?? null
         );
         $this->assertSame(
-            self::FREE_URL . 'public/admin/builder-5678efgh.js',
-            $registered[self::HANDLE . '-wconvert-builder-5678efgh']['src'] ?? null
+            self::FREE_URL . 'public/admin/chunk-5678efgh.js',
+            $registered[self::HANDLE . '-wconvert-chunk-5678efgh']['src'] ?? null
         );
         $this->assertSame([], $GLOBALS['wconvertTestScripts']['enqueued']);
     }

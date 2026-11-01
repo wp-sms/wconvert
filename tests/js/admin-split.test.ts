@@ -180,6 +180,31 @@ describe('the lazy boundary', () => {
   });
 
   /**
+   * **One chunk per section, Campaigns aside** (ADR 0038, as amended). The
+   * landing screen is in the main file; every other section is fetched when
+   * it is first shown, through `sectionLoaders.ts`. A static import of any of
+   * these from anything the main file reaches puts the section back on every
+   * screen, and nothing else would notice.
+   */
+  it('keeps every section but Campaigns out of the main file', () => {
+    const sections = [
+      'stats/Dashboard.tsx',
+      'leads/LeadLog.tsx',
+      'settings-page/Settings.tsx',
+      'destinations/Destinations.tsx',
+      'occasions/OccasionPage.tsx',
+    ];
+    const reached = [...graph.files].map((file) => relative(SRC, file));
+
+    expect(reached).toContain('optins/OptinList.tsx');
+    expect(reached).toContain('sections.tsx');
+    expect(sections.filter((section) => reached.includes(section))).toEqual([]);
+    for (const section of sections) {
+      expect(readFileSync(resolve(SRC, 'sectionLoaders.ts'), 'utf8')).toContain(`import('./${section.replace(/\.tsx$/, '')}')`);
+    }
+  });
+
+  /**
    * **The dependency only the settings panel has.** Named rather than inferred,
    * because a package is where a static import is least visible: it arrives at
    * the top of one editor and costs every screen in the admin.

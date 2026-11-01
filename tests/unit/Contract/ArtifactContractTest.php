@@ -150,7 +150,7 @@ final class ArtifactContractTest extends TestCase
             // every exit-intent Optin as inert while it worked.
             'public/inspector/inspector.js' => "console.log('inspector');\n",
             'public/admin/main-abc12345.js' => "console.log('admin');\n",
-            'public/admin/builder-def67890.js' => "console.log('builder');\n",
+            'public/admin/chunk-def67890.js' => "console.log('builder');\n",
             // The block editor's bundle, free only — Pro has no block. An
             // unregistered dynamic block renders nothing, so the block is
             // registered whether or not this file exists; the ZIP is where
@@ -195,10 +195,10 @@ final class ArtifactContractTest extends TestCase
             // a Pro ZIP without it degrades to free's screen — correctly and
             // silently, which is why the ZIP is where it has to be caught.
             'public/admin/main-abc12345.js' => "console.log('pro admin');\n",
-            'public/admin/builder-def67890.js' => "console.log('pro builder');\n",
+            'public/admin/chunk-def67890.js' => "console.log('pro builder');\n",
             // Pro's catalogue template, made from THESE bundles: it names the
             // two files above and nothing else.
-            'resources/languages/wconvert-pro.pot' => "#: public/admin/main-abc12345.js:1\nmsgid \"Exit intent\"\nmsgstr \"\"\n\n#: public/admin/builder-def67890.js:3\n#: src/Bootstrap.php:4\nmsgid \"Licence\"\nmsgstr \"\"\n",
+            'resources/languages/wconvert-pro.pot' => "#: public/admin/main-abc12345.js:1\nmsgid \"Exit intent\"\nmsgstr \"\"\n\n#: public/admin/chunk-def67890.js:3\n#: src/Bootstrap.php:4\nmsgid \"Licence\"\nmsgstr \"\"\n",
             'resources/loader/src/main.ts' => "export const boot = () => {};\n",
             // Every module `tiers.json` names, which check (f) asserts.
             'modules/display-types/module.json' => "{\"slug\":\"display-types\"}\n",
@@ -817,11 +817,11 @@ final class ArtifactContractTest extends TestCase
     public function testFailsWhenTheAdminShipsNoBuilderChunk(): void
     {
         $result = $this->verify($this->stagedFree([
-            'public/admin/builder-def67890.js' => null,
+            'public/admin/chunk-def67890.js' => null,
         ]));
 
         $this->assertSame(1, $result['status'], $result['output']);
-        $this->assertStringContainsString('builder-*.js', $result['output']);
+        $this->assertStringContainsString('chunk-*.js', $result['output']);
     }
 
     /**

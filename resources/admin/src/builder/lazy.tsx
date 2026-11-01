@@ -116,9 +116,14 @@ function CreationSkeleton() {
  * reload, or a reinstall when the file is truly gone, fetches it again.
  *
  * `way` is the way out. The builder draws its own back link, so it brings one;
- * creation's sits above it in {@see App} and still works.
+ * creation's sits above it in {@see App} and still works. A section sits inside
+ * the frame and needs neither; a page that draws its own frame, as the occasion
+ * page does, passes `frame` to keep the nav around the message.
+ *
+ * Shared by every lazy section (`sections.tsx`), so a tab left open across an
+ * update that deleted its chunk says what happened instead of going blank.
  */
-class ChunkBoundary extends Component<{ children: ReactNode; way?: ReactNode }, { failed: boolean }> {
+export class ChunkBoundary extends Component<{ children: ReactNode; way?: ReactNode; frame?: (content: ReactNode) => ReactNode }, { failed: boolean }> {
   state = { failed: false };
 
   static getDerivedStateFromError(): { failed: boolean } {
@@ -131,6 +136,7 @@ class ChunkBoundary extends Component<{ children: ReactNode; way?: ReactNode }, 
       <RegionErrorState message={__('Part of WConvert didn’t load.', 'wconvert')}
         hint={__('Reload the page. If it keeps happening, reinstall the plugin.', 'wconvert')} />
     </Region>;
+    if (this.props.frame) return this.props.frame(failed);
     // The builder's own frame, so the way out sits where the skeleton put it.
     return this.props.way === undefined ? failed : <div className="wconvert-builder-skeleton">
       <div className="wconvert-builder-skeleton__header">{this.props.way}</div>

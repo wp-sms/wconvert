@@ -283,7 +283,7 @@ final class AdminReplacementTest extends TestCase
      */
     public function testProsChunksBringProsCatalogueForTheirOwnFiles(): void
     {
-        $GLOBALS['wconvertTestScriptCatalogues'][ProAdminEnqueue::HANDLE . '-wconvert-pro-builder-def67890|wconvert-pro'] =
+        $GLOBALS['wconvertTestScriptCatalogues'][ProAdminEnqueue::HANDLE . '-wconvert-pro-chunk-def67890|wconvert-pro'] =
             (string) json_encode(['locale_data' => ['messages' => ['' => [], 'Exit intent' => ['Absicht zu gehen']]]]);
 
         self::freeEnqueuesItsAdmin();

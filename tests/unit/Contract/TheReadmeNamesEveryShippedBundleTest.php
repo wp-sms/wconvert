@@ -19,7 +19,7 @@ use PHPUnit\Framework\TestCase;
  * into with a `.distignore` that stripped its own sources while its readme
  * still promised them. **What nothing checked was the enumeration**, and it
  * had gone wrong twice: `public/inspector/inspector.js` and the admin bundle's
- * `builder-*.js` chunk both ship and neither was named. A reader following the
+ * lazy chunk (`chunk-*.js` now) both ship and neither was named. A reader following the
  * list would find two files it does not account for, in the paragraph written
  * to reassure them.
  *

@@ -44,7 +44,7 @@ final class AdminContractTest extends TestCase
     {
         $files = [
             'public/admin/main-abc.js' => 'console.log("free admin");',
-            'public/admin/builder-def.js' => 'var a={onUpgrade:1},b="__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE";',
+            'public/admin/chunk-def.js' => 'var a={onUpgrade:1},b="__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE";',
             'public/inspector/inspector.js' => 'console.log("inspector");',
             'pro/modules/journeys/module.json' => '{"slug":"journeys","admin_markers":["Where visitors go next"]}',
             'pro/modules/display-types/module.json' => '{"slug":"display-types"}',
@@ -91,7 +91,7 @@ final class AdminContractTest extends TestCase
     public function testFailsWhenAFreeChunkCarriesAModulesAdminMarker(): void
     {
         $result = $this->check($this->adminTree([
-            'public/admin/builder-def.js' => 'x(__("Where visitors go next","wconvert"));',
+            'public/admin/chunk-def.js' => 'x(__("Where visitors go next","wconvert"));',
         ]));
 
         $this->assertSame(1, $result['status'], $result['output']);
@@ -141,7 +141,7 @@ final class AdminContractTest extends TestCase
      */
     public static function treesThatCannotBeInspected(): iterable
     {
-        yield 'admin directory missing' => [['public/admin/main-abc.js' => null, 'public/admin/builder-def.js' => null]];
+        yield 'admin directory missing' => [['public/admin/main-abc.js' => null, 'public/admin/chunk-def.js' => null]];
 
         yield 'inspector missing' => [['public/inspector/inspector.js' => null]];
 
