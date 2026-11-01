@@ -172,19 +172,12 @@ jobs:
 
       - run: composer install --no-progress
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            tools/template-server/package-lock.json
-
-      - run: npm ci
+      - uses: ./.github/actions/npm-install
 
       # Some studio tests import the Worker's operator scripts.
-      - run: npm ci
-        working-directory: tools/template-server
+      - uses: ./.github/actions/npm-install
+        with:
+          directory: tools/template-server
 
       # Thumbnails, previews and the contrast check render in Chromium. No
       # --with-deps: the runner image already carries Chromium's libraries,

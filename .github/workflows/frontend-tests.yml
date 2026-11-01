@@ -80,12 +80,8 @@ jobs:
       - run: |
           composer install --no-progress
           composer install --working-dir=pro --no-progress
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
       - id: install
-        run: npm ci
+        uses: ./.github/actions/npm-install
       - run: npm run typecheck
       - run: npm run lint
       # Runs even when tsc or ESLint failed, so one push reports all three.
@@ -109,10 +105,6 @@ jobs:
       visual: ${{ steps.visual.outputs.run }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
       # wp-cli makes the two POTs check:pot compares against; a missing one is
       # a red step, never a skip.
       - uses: shivammathur/setup-php@v2
@@ -128,7 +120,7 @@ jobs:
       # Pro's scoped licence SDK (ADR 0143): Playground fatals without
       # pro/packages/, and wp-scoper, which writes it, is a dev dependency.
       - run: composer install --working-dir=pro --no-progress
-      - run: npm ci
+      - uses: ./.github/actions/npm-install
       # The container tag for [visual], from the lockfile's @playwright/test.
       - id: playwright
         run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
@@ -177,13 +169,9 @@ jobs:
           - { leg: storefront-c, scripts: 'test:visual:analytics test:visual:fullscreen test:visual:events' }
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
       # No PHP or Composer here: vendor/ comes from the build, and PHP runs
-      # inside Playground. npm ci is for the Playground CLI and Playwright.
-      - run: npm ci
+      # inside Playground. node_modules is for the Playground CLI and Playwright.
+      - uses: ./.github/actions/npm-install
       - uses: actions/download-artifact@v4
         with:
           name: visual-build
