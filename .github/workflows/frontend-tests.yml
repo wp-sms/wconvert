@@ -19,7 +19,7 @@ name: Frontend tests
 #                signal worthless. One job, because each is seconds of work
 #                behind a minute of setup.
 #
-# Visual contracts run on disposable WordPress. [visual-build] runs `npm run
+# Visual contracts run on disposable WordPress. [build] runs `npm run
 # build` once — every bundle, free and Pro — and hands public/, pro/public/ and
 # vendor/ to [visual], a matrix of five legs: admin, the largest, split into two
 # Playwright shards, and the storefront suites packed three ways by measured
@@ -35,7 +35,7 @@ name: Frontend tests
 # throttles: in most runs one or more legs fetched at ~40 kB/s and spent 6–11
 # minutes on a suite that takes 20 seconds. The image already carries the
 # browsers and the same fonts. Its tag is read from the lockfile in
-# [visual-build], so it cannot drift from @playwright/test.
+# [build], so it cannot drift from @playwright/test.
 #
 # A DRAFT PULL REQUEST SKIPS THE VISUAL SUITES. Marking it ready for review
 # starts the full run, and GitHub refuses to merge a draft, so the run that
@@ -46,7 +46,16 @@ name: Frontend tests
 
 on:
   workflow_dispatch:
+    inputs:
+      tests:
+        description: 'Run Vitest and the visual suites, not only the build and its contracts'
+        type: boolean
+        default: true
   workflow_call:
+    inputs:
+      tests:
+        type: boolean
+        default: true
 
 concurrency:
   group: frontend-tests-${{ github.ref }}
@@ -58,6 +67,7 @@ permissions:
 jobs:
   test:
     name: 'Vitest'
+    if: inputs.tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -83,6 +93,7 @@ jobs:
 
   static:
     name: 'TypeScript and ESLint'
+    if: inputs.tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -95,36 +106,50 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
 
-  visual-build:
-    name: 'Visual contracts: build'
-    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+  # THE ONE BUILD (ADR 0029). Every bundle, free and Pro, built once; then
+  # the asserts that read build output — the loader contract and byte budgets,
+  # the admin contract, POT coverage — and the hand-off to [visual]. Always
+  # runs: the contracts are fail-closed, so no diff may opt out of them.
+  build:
+    name: 'Build + loader, admin and POT contracts'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     outputs:
       playwright: ${{ steps.playwright.outputs.version }}
+      visual: ${{ steps.visual.outputs.run }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: npm
+      # wp-cli makes the two POTs check:pot compares against; a missing one is
+      # a red step, never a skip.
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.1'
           coverage: none
+          tools: wp-cli
       - run: composer dist --no-progress
-      # Pro's scoped licence SDK (ADR 0143): Pro's autoloader requires it, so a
-      # Playground that mounts pro/ fatals without it. A dev install, because
-      # wp-scoper is a dev dependency and is what writes pro/packages/.
+      # Pro's scoped licence SDK (ADR 0143): Playground fatals without
+      # pro/packages/, and wp-scoper, which writes it, is a dev dependency.
       - run: composer install --working-dir=pro --no-progress
       - run: npm ci
       # The container tag for [visual], from the lockfile's @playwright/test.
       - id: playwright
         run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
-      # The one script that builds everything, so no leg's build list can drift
-      # from the suites that need it.
       - run: npm run build
-      - uses: actions/upload-artifact@v4
+      - name: Loader contract (budgets + no premium in free)
+        run: npm run assert:loader
+      - name: Admin contract (no Pro admin code, no "upgrade")
+        run: npm run assert:admin
+      - name: POT coverage (every string extracted)
+        run: npm run check:pot
+      # A draft skips the visual suites; a manual dispatch always runs them.
+      - id: visual
+        run: echo "run=${{ inputs.tests && (github.event_name != 'pull_request' || !github.event.pull_request.draft) }}" >> "$GITHUB_OUTPUT"
+      - if: steps.visual.outputs.run == 'true'
+        uses: actions/upload-artifact@v4
         with:
           name: visual-build
           path: |
@@ -136,11 +161,12 @@ jobs:
 
   visual:
     name: 'Visual contracts: ${{ matrix.leg }}'
-    needs: visual-build
+    needs: build
+    if: needs.build.outputs.visual == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     container:
-      image: mcr.microsoft.com/playwright:v${{ needs.visual-build.outputs.playwright }}-noble
+      image: mcr.microsoft.com/playwright:v${{ needs.build.outputs.playwright }}-noble
       # The runner's own uid, so the workspace checkout stays writable.
       options: --user 1001
     strategy:

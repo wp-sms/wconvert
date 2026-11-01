@@ -547,7 +547,7 @@ function wpBinary() {
   const res = spawnSync('sh', ['-c', 'command -v wp'], { encoding: 'utf8' });
   const path = res.stdout.trim();
   if (res.status !== 0 || path === '') {
-    fail2('wp-cli is not installed. It generates the POTs this check reads; CI installs it (ci.yml `pot-coverage`).');
+    fail2('wp-cli is not installed. It generates the POTs this check reads; CI installs it (frontend-tests.yml `build`).');
   }
   return path;
 }

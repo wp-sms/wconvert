@@ -81,8 +81,13 @@ const npm = (...argv) => ['npm', ...argv];
 
 const steps = [
   ['Source contract', ['composer', 'verify:source']],
-  ['Loader contract', npm('run', 'check:loader')],
-  ['Admin contract', npm('run', 'check:admin')],
+  // One build, then every assert that reads its output — as CI's build job.
+  // POT coverage needs wp-cli on the PATH; without it the check exits 2 and
+  // says so rather than passing.
+  ['Build', npm('run', 'build')],
+  ['Loader contract', npm('run', 'assert:loader')],
+  ['Admin contract', npm('run', 'assert:admin')],
+  ['POT coverage', npm('run', 'check:pot')],
   ...(hit.php ? [
     ['PHPUnit', ['composer', 'test']],
     ['PHPStan', ['composer', 'phpstan']],
@@ -92,12 +97,6 @@ const steps = [
     ['ESLint', npm('run', 'lint')],
     ['Vitest', npm('test'), { WCONVERT_DUMP_CONVERSIONS: dump }],
     ['Converted designs', ['php', 'bin/verify-converted-designs.php', dump]],
-  ] : []),
-  // Every bundle, then the POTs read out of them. Needs wp-cli on the PATH;
-  // without it the check exits 2 and says so rather than passing.
-  ...(hit.php || hit.js ? [
-    ['Build', npm('run', 'build')],
-    ['POT coverage', npm('run', 'check:pot')],
   ] : []),
   ...(hit.service ? [
     ['Design library', ['bash', 'tools/design-library/build.sh', 'renderer']],
