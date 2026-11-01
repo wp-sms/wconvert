@@ -10,7 +10,7 @@ import { ReportNavigationProvider, ReportShortcuts, ReportTarget } from '../../r
 import { routeFrom } from '../../resources/admin/src/nav';
 import { formatWhen } from '../../resources/admin/src/lib/format';
 import { JourneyReport } from '../../resources/admin/src/stats/JourneyReport';
-vi.mock('../../resources/admin/src/destinations/api', () => ({ readDestinations: vi.fn() }));
+vi.mock('../../resources/admin/src/destinations/api', () => { const readDestinations = vi.fn(); return { readDestinations, recentDestinations: readDestinations, destinationsAfter: () => readDestinations() }; });
 vi.mock('@wordpress/api-fetch', () => ({ default: vi.fn() }));
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 it('shows at most three observations with inspectable denominators and a scoped edit link', async () => {

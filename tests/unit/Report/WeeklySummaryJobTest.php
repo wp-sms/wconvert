@@ -55,10 +55,9 @@ final class WeeklySummaryJobTest extends TestCase
 
     public function testScheduleRegistersOneWeeklyEvent(): void
     {
-        $job = $this->job();
-        $job->schedule();
+        WeeklySummaryJob::schedule();
         $first = $GLOBALS['wconvertTestSchedule'][WeeklySummaryJob::HOOK];
-        $job->schedule();
+        WeeklySummaryJob::schedule();
 
         $this->assertSame($first, $GLOBALS['wconvertTestSchedule'][WeeklySummaryJob::HOOK]);
     }

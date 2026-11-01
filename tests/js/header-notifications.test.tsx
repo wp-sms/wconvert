@@ -7,12 +7,14 @@ import userEvent from '@testing-library/user-event';
  * when the popover opened, so every page said "nothing to see" until the
  * merchant had already looked — which is the one thing a dot exists to avoid.
  */
+// The bell reads through the `recent*` pair, which `header-shared-reads.test.tsx`
+// drives against a real request log; here they are spies (#395).
 const api = vi.hoisted(() => ({ listOptins: vi.fn(), readDestinations: vi.fn() }));
 vi.mock('../../resources/admin/src/optins/api', async (original) => ({
   ...(await original<typeof import('../../resources/admin/src/optins/api')>()),
-  listOptins: api.listOptins,
+  recentOptins: api.listOptins,
 }));
-vi.mock('../../resources/admin/src/destinations/api', () => ({ readDestinations: api.readDestinations }));
+vi.mock('../../resources/admin/src/destinations/api', () => ({ recentDestinations: api.readDestinations }));
 const protection = vi.hoisted(() => vi.fn());
 vi.mock('@wordpress/api-fetch', () => ({ default: protection }));
 const { HeaderTools } = await import('../../resources/admin/src/shell/HeaderTools');

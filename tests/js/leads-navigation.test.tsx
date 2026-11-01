@@ -3,7 +3,8 @@ import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { App } from '../../resources/admin/src/App';
 
-const api = vi.hoisted(() => ({ readDestinations: vi.fn() }));
+// One spy for both: the count may be served by a recent read or a fresh one (#395).
+const api = vi.hoisted(() => { const readDestinations = vi.fn(); return { readDestinations, recentDestinations: readDestinations, destinationsAfter: () => readDestinations() }; });
 const HEALTHY = { destinations: [], failures: [] };
 const ISSUES = { destinations: [], failures: [{ destination: 'route-1' }, { destination: 'route-1' }] };
 vi.mock('../../resources/admin/src/leads/LeadLog', () => ({

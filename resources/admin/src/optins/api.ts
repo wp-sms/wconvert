@@ -1,6 +1,7 @@
 import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
 import type { Template } from '@renderer/types';
+import { sharedRead } from '../lib/requestActivity';
 
 export interface CampaignPreview {
   id: string;
@@ -159,8 +160,26 @@ const path = (suffix = '') => `/wconvert/v1/optins${suffix}`;
 // `includeDeleted` because a Lead outlives the Optin that captured it: the
 // lead log labels rows with the Optin's name, and a soft-deleted Optin still
 // has one — which is what the soft delete is for.
-export const listOptins = (includeDeleted = false) =>
-  apiFetch<OptinSummary[]>({ path: path(includeDeleted ? '?include_deleted=1' : '') });
+const liveList = sharedRead(() => apiFetch<OptinSummary[]>({ path: path() }));
+const listWithDeleted = sharedRead(() => apiFetch<OptinSummary[]>({ path: path('?include_deleted=1') }));
+
+/** A screen's own list: always read, though two identical calls at once share one request (#395). */
+export const listOptins = (includeDeleted = false) => (includeDeleted ? listWithDeleted() : liveList());
+
+/**
+ * The list for a side widget such as the header's bell: one read in the last
+ * 30 s serves it, and any change since forgets it (`lib/requestActivity`).
+ *
+ * The lead log reads the list with deleted Optins; with those taken out it is
+ * the live list, so Leads makes one read rather than two.
+ */
+export function recentOptins(): Promise<OptinSummary[]> {
+  const withDeleted = liveList.remembered() === undefined ? listWithDeleted.remembered() : undefined;
+  if (withDeleted === undefined) return liveList.recent();
+  return Promise.resolve(withDeleted
+    .filter((optin) => optin.deleted_at === null)
+    .map((optin) => ({ ...optin, arms: optin.arms.filter((arm) => arm.deleted_at === null) })));
+}
 
 /**
  * Every Optin in the list, campaigns and arms alike, flat.

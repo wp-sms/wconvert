@@ -706,6 +706,14 @@ final class CoreServiceProvider implements ServiceProvider
             $c->resolve(MonthlyTargets::class)
         ));
 
+        $container->register(\WConvert\Destination\SubmissionDispatcher::class, static fn (ServiceContainer $c) => new \WConvert\Destination\SubmissionDispatcher(
+            $c->resolve(Connection::class),
+            $c->resolve(Queue::class),
+            $c->resolve(DestinationStore::class),
+            $c->resolve(DestinationRegistry::class),
+            $c->resolve(HealthStore::class)
+        ));
+
         // The weekly summary email reads the same report as Analytics (ADR 0176).
         $container->register(\WConvert\Report\WeeklySummarySettings::class, static fn (ServiceContainer $c) => new \WConvert\Report\WeeklySummarySettings($c->resolve(OptionStore::class)));
         $container->register(\WConvert\Report\SummaryMailer::class, static fn () => new \WConvert\Report\WpSummaryMailer());
@@ -788,7 +796,9 @@ final class CoreServiceProvider implements ServiceProvider
     public function boot(ServiceContainer $container): void
     {
         (new \WConvert\Stats\ProductStats($container->resolve(Connection::class)))->hooks();
-        add_action(\WConvert\Destination\SubmissionDispatcher::RECOVER, [new \WConvert\Protection\ResourceSendGuard($container->resolve(Connection::class), $container->resolve(\WConvert\Protection\Diagnostics::class)), 'prune']);
+        add_action(\WConvert\Destination\SubmissionDispatcher::RECOVER, static function () use ($container): void {
+            (new \WConvert\Protection\ResourceSendGuard($container->resolve(Connection::class), $container->resolve(\WConvert\Protection\Diagnostics::class)))->prune();
+        });
         // A plugin updated by overwriting its directory never fires an
         // activation hook, so the schema has to be able to catch up somewhere
         // other than activation.
@@ -939,14 +949,15 @@ final class CoreServiceProvider implements ServiceProvider
         // dispatch attaches to a capture, which arrives through REST from a
         // visitor's page; the worker attaches to an Action Scheduler hook,
         // which fires from a loopback request that is neither (#4).
-        $container->resolve(PushWorker::class)->hooks();
+        //
+        // Each handler is resolved when its hook fires, as `init`'s are above:
+        // building them here built fourteen services on every visitor page,
+        // for graphs most requests never touch (#395).
+        PushWorker::hooks(static fn (): PushWorker => $container->resolve(PushWorker::class));
         // Every request: the send fires from a WP-Cron request, which is not admin.
-        $container->resolve(\WConvert\Report\WeeklySummaryJob::class)->hooks();
+        \WConvert\Report\WeeklySummaryJob::hooks(static fn (): \WConvert\Report\WeeklySummaryJob => $container->resolve(\WConvert\Report\WeeklySummaryJob::class));
         \WConvert\Queue\RecentPushHistory::hooks();
-        (new \WConvert\Destination\SubmissionDispatcher(
-            $container->resolve(Connection::class), $container->resolve(\WConvert\Queue\Queue::class),
-            $container->resolve(DestinationStore::class), $container->resolve(DestinationRegistry::class), $container->resolve(HealthStore::class)
-        ))->hooks();
+        \WConvert\Destination\SubmissionDispatcher::hooks(static fn (): \WConvert\Destination\SubmissionDispatcher => $container->resolve(\WConvert\Destination\SubmissionDispatcher::class));
 
         if (is_admin()) {
             $container->resolve(\WConvert\Onboarding\FirstRunRedirect::class)->hooks();

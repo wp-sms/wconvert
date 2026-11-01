@@ -7,7 +7,7 @@ import { OptinList } from './optins/OptinList';
 import { Settings } from './settings-page/Settings';
 import { Dashboard } from './stats/Dashboard';
 import { Destinations } from './destinations/Destinations';
-import { readDestinations } from './destinations/api';
+import { destinationsAfter } from './destinations/api';
 import { issueCount } from './destinations/issueCount';
 import { Badge } from './components/ui/badge';
 import { Button } from './components/ui/button';
@@ -83,7 +83,7 @@ export function App() {
     if (section !== 'leads' || route.leadsView === 'issues') return;
     let active = true;
     setSendingCount(null);
-    void readDestinations().then((data) => { if (active) setSendingCount(issueCount(data)); }).catch(() => { if (active) setSendingCount(null); });
+    void destinationsAfter(sendingRefresh).then((data) => { if (active) setSendingCount(issueCount(data)); }).catch(() => { if (active) setSendingCount(null); });
     return () => { active = false; };
   }, [section, route.leadsView, sendingRefresh]);
 

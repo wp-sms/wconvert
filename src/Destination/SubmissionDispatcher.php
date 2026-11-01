@@ -19,18 +19,27 @@ final class SubmissionDispatcher
     public function __construct(private readonly Connection $db, private readonly Queue $queue,
         private readonly DestinationStore $destinations, private readonly DestinationRegistry $registry, private readonly HealthStore $health) {}
 
-    public function hooks(): void
+    /**
+     * Built when a capture or the sweep fires, not on every request (#395).
+     *
+     * @param \Closure(): self $dispatcher
+     */
+    public static function hooks(\Closure $dispatcher): void
     {
-        add_action(JourneyCapture::ACCEPTED, [$this, 'dispatch'], 10, 2);
-        add_action(self::RECOVER, [$this, 'recover']);
+        add_action(JourneyCapture::ACCEPTED, static function (string $leadId, string $submissionId) use ($dispatcher): void {
+            $dispatcher()->dispatch($leadId, $submissionId);
+        }, 10, 2);
+        add_action(self::RECOVER, static function () use ($dispatcher): void {
+            $dispatcher()->recover();
+        });
         // On `init`, not here: hooks() runs on `plugins_loaded`, and
         // wp_schedule_event() reads wp_get_schedules(), whose `cron_schedules`
         // filter lets other plugins (WooCommerce) translate their schedule
         // names before `init`, a _load_textdomain_just_in_time notice.
-        add_action('init', [$this, 'schedule']);
+        add_action('init', [self::class, 'schedule']);
     }
 
-    public function schedule(): void
+    public static function schedule(): void
     {
         if (!wp_next_scheduled(self::RECOVER)) { wp_schedule_event(time() + 60, 'hourly', self::RECOVER); }
     }
