@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { readDestinations, recentDestinations, type DestinationsPayload } from '../destinations/api';
+import { destinationsAfter, type DestinationsPayload } from '../destinations/api';
 
 /** One destination a submission never reached: its name (null once removed, '' if unnamed), why, and when. */
 export interface NotSent {
@@ -44,8 +44,7 @@ export function useNotSent(refreshKey: number): Map<string, NotSent[]> {
   const [notSent, setNotSent] = useState<Map<string, NotSent[]>>(() => new Map());
   useEffect(() => {
     let active = true;
-    // A recent read on load, shared with the header (#395); a refresh reads again.
-    (refreshKey === 0 ? recentDestinations() : readDestinations()).then((payload) => {
+    destinationsAfter(refreshKey).then((payload) => {
       if (active) setNotSent(notSentByLead(payload));
     }).catch(() => { /* See above: no badge is not a claim. */ });
     return () => { active = false; };

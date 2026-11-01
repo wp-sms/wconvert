@@ -35,7 +35,7 @@ let installed = false;
  * the builder's previews and a template export. Anything else that is not a
  * GET counts as a change, which is the safe side to be wrong on.
  */
-const READS_BY_POST = /\/wconvert\/v1\/(?:leads\/query|.*preview|.*\/export)(?:[?#]|$)/;
+const READS_BY_POST = /\/wconvert\/v1\/(?:leads\/query|(?:[^?#]*\/)?[\w-]*preview|(?:[^?#]*\/)?export)(?:[?#]|$)/;
 
 const target = (options: APIFetchOptions) => `${options.path ?? options.url ?? ''}`;
 const ours = (options: APIFetchOptions) => target(options).includes(NAMESPACE);

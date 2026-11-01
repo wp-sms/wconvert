@@ -570,8 +570,7 @@ final class NothingTranslatesAtBootTest extends TestCase
      * above them is the real object graph off the real manifests and the real
      * Playbook directory, because a boot that built fakes would prove nothing
      * about what the shipped one builds.
-     */
-    /**
+     *
      * @param array<class-string, callable(ServiceContainer): object> $factories Registered over the providers' own.
      */
     private function boot(?ProPresence $pro = null, array $factories = []): ServiceContainer

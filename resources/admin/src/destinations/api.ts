@@ -215,6 +215,9 @@ export const readDestinations = sharedRead(() => apiFetch<DestinationsPayload>({
 /** For a side widget (the bell, a count, a badge): a read from the last 30 s, forgotten on any change. */
 export const recentDestinations = () => readDestinations.recent();
 
+/** A side widget's read: recent on load, fresh once its own Refresh or Try again has been pressed. */
+export const destinationsAfter = (refreshes: number) => (refreshes === 0 ? recentDestinations() : readDestinations());
+
 export const readSelectedSchema = (type: string, connection: string, refresh = false) =>
   apiFetch<{ settings_schema: Record<string, SettingsField> }>({ path: `${path('/schema')}?type=${encodeURIComponent(type)}&connection=${encodeURIComponent(connection)}${refresh ? '&refresh=1' : ''}` });
 

@@ -951,8 +951,8 @@ final class CoreServiceProvider implements ServiceProvider
         // which fires from a loopback request that is neither (#4).
         //
         // Each handler is resolved when its hook fires, as `init`'s are above:
-        // building them here cost most of WConvert's boot on every visitor
-        // page and REST call, for graphs most requests never touch (#395).
+        // building them here built fourteen services on every visitor page,
+        // for graphs most requests never touch (#395).
         PushWorker::hooks(static fn (): PushWorker => $container->resolve(PushWorker::class));
         // Every request: the send fires from a WP-Cron request, which is not admin.
         \WConvert\Report\WeeklySummaryJob::hooks(static fn (): \WConvert\Report\WeeklySummaryJob => $container->resolve(\WConvert\Report\WeeklySummaryJob::class));

@@ -6,7 +6,7 @@ import type { LeadPage } from '../../resources/admin/src/leads/api';
 const log = vi.hoisted(() => ({ readLog: vi.fn(), readRetention: vi.fn(), saveRetention: vi.fn(), eraseIdentifier: vi.fn(), canExport: vi.fn(), exportLeads: vi.fn() }));
 const optins = vi.hoisted(() => ({ listOptins: vi.fn() }));
 // One spy for both: these tests are about what the log draws, not which read served it (#395).
-const destinations = vi.hoisted(() => { const readDestinations = vi.fn(); return { readDestinations, recentDestinations: readDestinations }; });
+const destinations = vi.hoisted(() => { const readDestinations = vi.fn(); return { readDestinations, recentDestinations: readDestinations, destinationsAfter: () => readDestinations() }; });
 vi.mock('../../resources/admin/src/leads/api', () => log);
 vi.mock('../../resources/admin/src/destinations/api', () => destinations);
 vi.mock('../../resources/admin/src/optins/api', async (importOriginal) => ({

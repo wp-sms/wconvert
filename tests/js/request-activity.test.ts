@@ -138,6 +138,17 @@ describe('sharedRead', () => {
     expect(fake.handler).toHaveBeenCalledTimes(3);
   });
 
+  it('still forgets on a write whose path only mentions a preview or an export', async () => {
+    const read = sharedRead(readOptins);
+    await read();
+    await fake.apiFetch({ path: '/wconvert/v1/export/apply', method: 'POST' });
+    await read.recent();
+    await fake.apiFetch({ path: '/wconvert/v1/connections?preview=1', method: 'POST' });
+    await read.recent();
+
+    expect(fake.handler).toHaveBeenCalledTimes(5);
+  });
+
   it('does not remember a read that was running while something changed', async () => {
     const read = sharedRead(readOptins);
     const before = deferred();

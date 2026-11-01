@@ -3,7 +3,7 @@ import { Send } from 'lucide-react';
 import { ReportDisclosure } from './ReportDisclosure';
 import { DataTable, DataTableHead, DataTableBody, DataTableRow, DataTableColumn, DataTableCell } from '../shell/DataTable';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { readDestinations, recentDestinations, type DestinationsPayload } from '../destinations/api';
+import { destinationsAfter, type DestinationsPayload } from '../destinations/api';
 import { issueCount } from '../destinations/issueCount';
 import { sendingIssuesHref } from '../nav';
 import { Region, RegionHeader, RegionBody, RegionErrorState } from '../shell/Region';
@@ -18,8 +18,7 @@ export function DeliveryAttention() {
   useEffect(() => {
     let active = true;
     setFailed(false);
-    // Shared with the header on load (#395); Try again reads again.
-    void (retry === 0 ? recentDestinations() : readDestinations()).then(value => { if (active) setData(value); }).catch(() => { if (active) setFailed(true); });
+    void destinationsAfter(retry).then(value => { if (active) setData(value); }).catch(() => { if (active) setFailed(true); });
     return () => { active = false; };
   }, [retry]);
   if (failed && !data) return <Region><RegionHeader title={__('Sending needs attention', 'wconvert')} icon={<Send />} /><RegionErrorState message={__('Could not check how sending is going.', 'wconvert')} onRetry={() => setRetry(n => n + 1)} /></Region>;

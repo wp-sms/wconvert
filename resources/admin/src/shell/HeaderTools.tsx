@@ -98,8 +98,9 @@ export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
   }, []);
   // Read on load, not on open: the unread dot is the whole point of the bell,
   // and a dot that only appears once the merchant has already looked says
-  // nothing at all. But after the screen's own reads, at most 3 s after them,
-  // so three side reads do not queue ahead of what the merchant came for (#395).
+  // nothing at all. But after the screen's own reads — or 3 s after the
+  // header mounts, whichever is first — so three side reads do not queue
+  // ahead of what the merchant came for (#395).
   useEffect(() => {
     const before = request.current;
     void whenQuiet().then(() => {
