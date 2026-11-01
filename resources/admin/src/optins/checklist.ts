@@ -46,15 +46,15 @@ export interface Checklist {
  * @param countsNothing Whether a Goal converts on nothing (`outcome.action === 'none'`).
  */
 export function checklistOf(rows: readonly OptinSummary[], milestones: Milestones, countsNothing: (goal: string) => boolean): Checklist {
-  const live = rows.filter((row) => row.parent_id === null && statusOf(row) !== 'deleted');
+  const existing = rows.filter((row) => row.parent_id === null && statusOf(row) !== 'deleted');
   // ULIDs sort by creation time, so the largest id is the newest.
   const newest = (list: readonly OptinSummary[]) => list.reduce<OptinSummary | null>((best, row) => (best === null || row.id > best.id ? row : best), null);
-  const draft = newest(live.filter((row) => statusOf(row) === 'draft'));
-  const result = live.length > 0 && live.every((row) => countsNothing(row.goal)) ? 'view' : 'lead';
+  const draft = newest(existing.filter((row) => statusOf(row) === 'draft'));
+  const result = existing.length > 0 && existing.every((row) => countsNothing(row.goal)) ? 'view' : 'lead';
   const resultOn = result === 'view' ? milestones.first_impression : milestones.first_conversion;
 
   const reached: Record<StepId, boolean> = {
-    create: live.length > 0 || milestones.first_publish !== null,
+    create: existing.length > 0 || milestones.first_publish !== null,
     publish: milestones.first_publish !== null,
     result: resultOn !== null,
   };
@@ -69,7 +69,7 @@ export function checklistOf(rows: readonly OptinSummary[], milestones: Milestone
     allSet: done === order.length,
     result,
     draft: draft ? { id: draft.id, name: draft.name } : null,
-    campaign: (draft ?? newest(live))?.name ?? null,
+    campaign: (draft ?? newest(existing))?.name ?? null,
     publishedOn: milestones.first_publish,
     resultOn,
   };

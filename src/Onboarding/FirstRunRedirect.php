@@ -79,7 +79,7 @@ final class FirstRunRedirect
             return;
         }
 
-        $target = admin_url('admin.php?page=wconvert');
+        $target = admin_url(\WConvert\Admin\AdminMenu::href());
 
         if ($this->go !== null) {
             ($this->go)($target);

@@ -119,7 +119,7 @@ final class WeeklySummaryJob
             $report,
             $this->milestones->firstPublish(),
             wp_specialchars_decode((string) get_bloginfo('name'), ENT_QUOTES),
-            admin_url('admin.php?page=wconvert'),
+            admin_url(\WConvert\Admin\AdminMenu::href()),
             $test
         );
 

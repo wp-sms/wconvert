@@ -155,7 +155,7 @@ export function campaignIssues(inputs: CampaignIssueInputs): CampaignIssue[] {
       issue(`problem:${index}:${problem.said}`, problem.said, 'edit', problem.path !== null ? { to: 'element', path: problem.path } : { to: 'edit-design' }, true,
         { screenId: screenOf(problem.path) })),
     ...(hasDesign && bound.length > 0 && captures.length === 0
-      ? [issue('no-fields', __('This campaign needs a form field to collect leads. Choose a design with a form.', 'wconvert'), 'edit', { to: 'library' }, true)] : []),
+      ? [issue('no-fields', __('This campaign needs a form field to collect leads. Choose a template with a form.', 'wconvert'), 'edit', { to: 'library' }, true)] : []),
   ];
 
   const where = destinationsSaid(bound, destinations, capturedFields(template), primaryMappings(inputs.integrationMappings, template));

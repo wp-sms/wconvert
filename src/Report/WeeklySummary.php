@@ -185,28 +185,35 @@ final class WeeklySummary
         return (string) array_key_first($held);
     }
 
-    /** @param array<string, mixed> $report */
-    private static function count(array $report, string $group): int
+    /**
+     * One of Dashboard's impact groups (`leads`, `offers`, …, `impressions`).
+     *
+     * @param array<string, mixed> $report
+     * @return array<string, mixed>
+     */
+    private static function impact(array $report, string $group): array
     {
         foreach ($report['impact'] ?? [] as $entry) {
-            if (($entry['id'] ?? null) === $group) {
-                return (int) ($entry['count'] ?? 0);
+            if (is_array($entry) && ($entry['id'] ?? null) === $group) {
+                return $entry;
             }
         }
 
-        return 0;
+        return [];
+    }
+
+    /** @param array<string, mixed> $report */
+    private static function count(array $report, string $group): int
+    {
+        return (int) (self::impact($report, $group)['count'] ?? 0);
     }
 
     /** @param array<string, mixed> $report */
     private static function label(array $report, string $group, string $fallback): string
     {
-        foreach ($report['impact'] ?? [] as $entry) {
-            if (($entry['id'] ?? null) === $group && is_string($entry['label'] ?? null)) {
-                return $entry['label'];
-            }
-        }
+        $label = self::impact($report, $group)['label'] ?? null;
 
-        return $fallback;
+        return is_string($label) ? $label : $fallback;
     }
 
     /**
@@ -217,14 +224,7 @@ final class WeeklySummary
      */
     private static function groupImpressions(array $report, string $group): int
     {
-        $goals = [];
-
-        foreach ($report['impact'] ?? [] as $entry) {
-            if (($entry['id'] ?? null) === $group) {
-                $goals = $entry['goals'] ?? [];
-            }
-        }
-
+        $goals = self::impact($report, $group)['goals'] ?? [];
         $shown = 0;
 
         foreach ($report['goals'] ?? [] as $card) {
@@ -263,14 +263,7 @@ final class WeeklySummary
      */
     private static function best(array $report, string $group): ?array
     {
-        $goals = [];
-
-        foreach ($report['impact'] ?? [] as $entry) {
-            if (($entry['id'] ?? null) === $group) {
-                $goals = $entry['goals'] ?? [];
-            }
-        }
-
+        $goals = self::impact($report, $group)['goals'] ?? [];
         $best = null;
 
         foreach ($report['goals'] ?? [] as $card) {
@@ -414,7 +407,7 @@ final class WeeklySummary
         $points = round(($rate - $before) * 100, 1);
 
         /* translators: %s: a signed change in percentage points, e.g. “+0.1”. */
-        return sprintf(__('%s pts vs last week', 'wconvert'), ($points > 0 ? '+' : ($points < 0 ? '−' : '')) . number_format_i18n(abs($points), 1));
+        return sprintf(__('%s pts vs last week', 'wconvert'), self::sign($points) . number_format_i18n(abs($points), 1));
     }
 
     private static function rate(float $rate): string
@@ -424,7 +417,13 @@ final class WeeklySummary
 
     private static function signed(int $percent): string
     {
-        return ($percent > 0 ? '+' : ($percent < 0 ? '−' : '')) . number_format_i18n(abs($percent));
+        return self::sign($percent) . number_format_i18n(abs($percent));
+    }
+
+    /** A typographic minus, not a hyphen, so “−5%” reads as a number. */
+    private static function sign(float $value): string
+    {
+        return $value > 0 ? '+' : ($value < 0 ? '−' : '');
     }
 
     private static function tone(float $change): string

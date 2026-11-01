@@ -45,6 +45,15 @@ final class AdminMenu
     public const HELP_HREF = 'admin.php?page=' . self::SLUG . '#help';
 
     /**
+     * The screen, or one of its hash routes (`nav.ts`), relative to wp-admin.
+     * The one place PHP spells the slug and a section together (ADR 0176).
+     */
+    public static function href(string $route = ''): string
+    {
+        return 'admin.php?page=' . self::SLUG . ($route === '' ? '' : '#' . $route);
+    }
+
+    /**
      * The handle the admin bundle is registered under.
      *
      * **Public because [[Pro]] replaces this bundle by dequeuing it**
@@ -136,9 +145,9 @@ final class AdminMenu
     public function registerSubmenu(): void
     {
         add_submenu_page(self::SLUG, __('Campaigns', 'wconvert'), __('Campaigns', 'wconvert'), 'manage_options', self::SLUG);
-        add_submenu_page(self::SLUG, __('Analytics', 'wconvert'), __('Analytics', 'wconvert'), 'manage_options', 'admin.php?page=' . self::SLUG . '#analytics');
-        add_submenu_page(self::SLUG, __('Leads', 'wconvert'), __('Leads', 'wconvert'), 'manage_options', 'admin.php?page=' . self::SLUG . '#leads');
-        add_submenu_page(self::SLUG, __('Settings', 'wconvert'), __('Settings', 'wconvert'), 'manage_options', 'admin.php?page=' . self::SLUG . '#settings');
+        add_submenu_page(self::SLUG, __('Analytics', 'wconvert'), __('Analytics', 'wconvert'), 'manage_options', self::href('analytics'));
+        add_submenu_page(self::SLUG, __('Leads', 'wconvert'), __('Leads', 'wconvert'), 'manage_options', self::href('leads'));
+        add_submenu_page(self::SLUG, __('Settings', 'wconvert'), __('Settings', 'wconvert'), 'manage_options', self::href('settings'));
         add_submenu_page(self::SLUG, __('Help', 'wconvert'), __('Help', 'wconvert'), 'manage_options', self::HELP_HREF);
     }
 

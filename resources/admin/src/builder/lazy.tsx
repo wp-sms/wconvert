@@ -96,7 +96,7 @@ function CreationSkeleton() {
     <Region>
       <RegionHeader
         title={__('What do you want to achieve?', 'wconvert')}
-        description={__('Choose a goal, then a campaign setup. You can customize the design and decide when to publish in the editor.', 'wconvert')}
+        description={__('Choose a goal, then a template. You can customize the design and decide when to publish in the editor.', 'wconvert')}
       />
       <RegionBody>
         {/* The announcement travels with the skeleton now. */}

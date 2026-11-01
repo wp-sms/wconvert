@@ -451,7 +451,7 @@ export type SwitchOffer = { readonly offered: true; readonly state: 'none' | Con
  */
 export function captureSwitch(config: Config, goal: string, goals: readonly GoalEntry[]): SwitchOffer {
   const tree = (config.template as Template | undefined)?.tree;
-  if (!tree || tree.steps.length === 0) return { offered: false, reason: __('Choose a design first.', 'wconvert') };
+  if (!tree || tree.steps.length === 0) return { offered: false, reason: __('Choose a template first.', 'wconvert') };
   const outcome = goals.find(entry => entry.id === goal)?.outcome;
   const all = tree.steps.flatMap(step => walkNodes(step.content));
   const refuse = (reason: string): SwitchOffer => ({ offered: false, reason });
