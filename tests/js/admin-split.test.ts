@@ -111,11 +111,11 @@ function fileFor(specifier: string, importer: string): string | null {
   return null;
 }
 
-/** Every file and every package the entry can reach without an `import()`. */
-function staticGraph(): { files: Set<string>; packages: Set<string> } {
-  const files = new Set([ENTRY]);
+/** Every file and every package an entry can reach without an `import()`. */
+function staticGraph(entry = ENTRY): { files: Set<string>; packages: Set<string> } {
+  const files = new Set([entry]);
   const packages = new Set<string>();
-  const queue = [ENTRY];
+  const queue = [entry];
 
   while (queue.length > 0) {
     const file = queue.pop() as string;
@@ -264,5 +264,48 @@ describe('the lazy boundary', () => {
     expect(
       [...graph.packages].filter((name) => name.startsWith('@atlaskit/pragmatic-drag-and-drop')),
     ).toEqual([]);
+  });
+});
+
+/**
+ * ============================================================================
+ * PRO'S MAIN FILE DOES NOT REACH THE RENDERER EITHER (#397).
+ * ============================================================================
+ * Pro's entry registered its journey renderer, its journey authoring and its
+ * product preview by calling them, which put `@renderer/*` and the journey
+ * editor in Pro's main file, on every Pro screen. They are `renderExtensions`
+ * loaders now, awaited by each boundary that draws a design. This is the same
+ * walk from Pro's entry, so a call put back at the top of `main.tsx` fails here.
+ */
+describe('Pro’s main file', () => {
+  const PRO = resolve(import.meta.dirname, '../../pro');
+  const PRO_ENTRY = resolve(PRO, 'resources/admin/src/main.tsx');
+  const pro = staticGraph(PRO_ENTRY);
+  const reached = [...pro.files].map((file) => relative(PRO, file));
+
+  it('reaches free’s app, so the walk is real', () => {
+    expect(pro.files).toContain(resolve(SRC, 'App.tsx'));
+    expect(pro.files).toContain(BOUNDARY);
+  });
+
+  it('keeps the renderer off it', () => {
+    expect([...pro.files].filter((file) => file.startsWith(`${RENDERER}/`)).map((file) => relative(RENDERER, file))).toEqual([]);
+  });
+
+  it('keeps the journey editor and Pro’s renderer registrations off it', () => {
+    expect(reached.filter((file) => [
+      'modules/journeys/admin/JourneySettings.tsx',
+      'modules/journeys/admin/useJourneyAuthoring.tsx',
+      'modules/journeys/admin/register.ts',
+      'modules/journeys/loader/render.ts',
+      'resources/admin/src/productPreview.ts',
+    ].includes(file))).toEqual([]);
+  });
+
+  it('registers them as loaders instead', () => {
+    const source = readFileSync(PRO_ENTRY, 'utf8');
+    for (const target of ['../../../modules/journeys/loader/render', '../../../modules/journeys/admin/register', './productPreview']) {
+      expect(source).toContain(`renderExtensions.load(() => import('${target}')`);
+    }
   });
 });

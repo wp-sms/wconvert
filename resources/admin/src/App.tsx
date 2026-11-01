@@ -1,7 +1,7 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { ArrowLeft, Plus, TriangleAlert } from 'lucide-react';
-import { GoalScreen, OptinBuilder } from './builder/lazy';
+import { ChunkBoundary, GoalScreen, OptinBuilder } from './builder/lazy';
 import { OptinList } from './optins/OptinList';
 import { Dashboard, Destinations, LeadLog, OccasionPage, Settings } from './sections';
 import { destinationsAfter } from './destinations/api';
@@ -160,7 +160,9 @@ export function App() {
             </a></Button>
             : undefined
         : undefined}>
-      {section === 'optins' && (
+      {/* Campaigns is in the main file, but its thumbnails are a chunk; a
+          failed one is the reload message rather than a blank admin. */}
+      {section === 'optins' && <ChunkBoundary>
         <OptinsSection
           key={listVersion}
           creating={creating}
@@ -178,7 +180,7 @@ export function App() {
           // A new campaign's editor returns to the list, never back into creation.
           onEdit={(id) => navigation.requestNavigation(editorHref(id, creating ? hashFor('optins') : navigation.hash || hashFor('optins')))}
         />
-      )}
+      </ChunkBoundary>}
       {section === 'analytics' && <Dashboard query={route.report} onQueryChange={(query) => navigate(reportHref(query))} />}
       {section === 'leads' && <>
         {route.leadsView === 'issues' ? <Destinations mode="issues" onIssueCount={setSendingCount} onEditingStateChange={navigation.onEditingStateChange} /> : <LeadLog query={route.leads} onRefresh={() => setSendingRefresh((value) => value + 1)} onQueryChange={(query) => navigate(leadsHref(query))} />}

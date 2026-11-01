@@ -6,6 +6,7 @@ import { Region, RegionBody, RegionErrorState, RegionHeader } from '../shell/Reg
 import type { OptinBuilderProps } from './OptinBuilder';
 import type { GoalScreenProps } from '../goals/GoalScreen';
 import { lazyScreen } from '../lib/requestActivity';
+import { withRenderExtensions } from '../renderExtensions';
 
 /**
  * ============================================================================
@@ -37,7 +38,8 @@ import { lazyScreen } from '../lib/requestActivity';
  * and there is no such thing as a generic one.
  */
 
-const deferred = () => import('./deferred');
+// With the renderer's extensions (Pro's journeys), which the builder draws with.
+const deferred = () => withRenderExtensions(import('./deferred'));
 
 // Through `lazyScreen`, so the header's bell waits for the download as it waits for a read (#395).
 const Builder = lazyScreen(() =>

@@ -18,8 +18,9 @@ describe('journey authoring slots', () => {
     expect(Object.keys(journeyAuthoring).sort()).toEqual([...slots].sort());
   });
 
+  // A loader the builder's boundary awaits, so it is set before the editor renders (#397).
   it("is registered by Pro's admin entry", () => {
     const entry = readFileSync(resolve(import.meta.dirname, '../../resources/admin/src/main.tsx'), 'utf8');
-    expect(entry).toMatch(/^registerJourneyAuthoring\(\);$/m);
+    expect(entry).toContain("renderExtensions.load(() => import('../../../modules/journeys/admin/register').then((module) => module.registerJourneyAuthoring()));");
   });
 });

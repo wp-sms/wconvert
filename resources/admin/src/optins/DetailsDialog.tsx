@@ -26,8 +26,9 @@ import { CampaignSummary, type CampaignResults } from './CampaignSummary';
 import { canUnpublish, statusOf, type OptinSummary } from './api';
 import { decisionCopy } from './decisionCopy';
 import { StatusBadge } from './StatusBadge';
+import { withRenderExtensions } from '../renderExtensions';
 
-const Facts = lazy(() => import('./CampaignDetails'));
+const Facts = lazy(() => withRenderExtensions(import('./CampaignDetails')));
 
 
 /** The two status changes Details can ask; delete stays in the row's menu only. */

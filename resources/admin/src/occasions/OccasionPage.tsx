@@ -31,9 +31,10 @@ import { copyOccasion, download, exportOccasion, readOccasions, type OccasionNot
 import { DateLine } from './DateLine';
 import { OccasionNoticeView } from './Notice';
 import { OccasionBack, OccasionSkeleton } from './OccasionFrame';
+import { withRenderExtensions } from '../renderExtensions';
 import '../optins/campaigns.css';
 
-const Design = lazy(() => import('../optins/CampaignDesign'));
+const Design = lazy(() => withRenderExtensions(import('../optins/CampaignDesign')));
 
 /**
  * One occasion's own screen, at `#occasions/<id>` (#277, layout B of the

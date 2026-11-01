@@ -67,8 +67,9 @@ import { groupConfirmCopy, plan, reduceResult, resultSentence, startResult, type
 import './campaigns.css';
 
 import { productHealthLabel, ProductHealthDetails, useProductHealth } from './ProductHealth';
+import { withRenderExtensions } from '../renderExtensions';
 
-const Design = lazy(() => import('./CampaignDesign'));
+const Design = lazy(() => withRenderExtensions(import('./CampaignDesign')));
 const PAGE_SIZE = 12;
 type Decision = {
   kind: DecisionKind;

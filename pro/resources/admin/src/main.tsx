@@ -1,5 +1,4 @@
 import { reportExtensions } from '@/stats/extensions';
-import { registerProductPreview } from './productPreview';
 import { analyticsIntegration } from '@/analyticsIntegration';
 import { lazy, StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -10,13 +9,12 @@ import { previewSurfaces } from '@/previewSurfaces';
 import { decorateFullscreen } from '../../../modules/display-types/loader/surface';
 import { reopenControls } from '@/reopenControls';
 import { codeLinkControls } from '@/codeLinkControls';
-import { inlinePlacementControls } from '@/inlinePlacement';
-import { registerPremiumJourneyRenderer } from '../../../modules/journeys/loader/render';
-import { registerJourneyAuthoring } from '../../../modules/journeys/admin/register';
+import { inlinePlacementControls } from '@/inlinePlacementSlots';
 import { registerProviderMarks } from '../../../modules/destinations/admin/marks';
 import { connectionSetup } from '@/destinations/connectionSetup';
 import { registerPage } from '@/extraPages';
 import { lazyScreen } from '@/lib/requestActivity';
+import { renderExtensions } from '@/renderExtensions';
 import { __ } from '@wordpress/i18n';
 
 // The License page (ADR 0143): a registered page in the one shared bundle
@@ -28,11 +26,13 @@ registerPage({
   Component: lazyScreen(() => import('./license/LicensePage').then((module) => ({ default: module.LicensePage }))),
 });
 
-registerPremiumJourneyRenderer();
-registerJourneyAuthoring();
+// Loaders, not calls: all three reach the renderer or the journey editor, and
+// only a screen that draws a design needs them (`renderExtensions`).
+renderExtensions.load(() => import('../../../modules/journeys/loader/render').then((module) => module.registerPremiumJourneyRenderer()));
+renderExtensions.load(() => import('../../../modules/journeys/admin/register').then((module) => module.registerJourneyAuthoring()));
+renderExtensions.load(() => import('./productPreview').then((module) => module.registerProductPreview()));
 registerProviderMarks();
 connectionSetup.connectionForms.webhook = lazy(() => import('../../../modules/destinations/admin/WebhookConnectionForm'));
-registerProductPreview();
 reportExtensions.commerce = lazy(() => import('../../../modules/analytics/admin/Revenue'));
 analyticsIntegration.settings = lazy(() => import('../../../modules/analytics/admin/Settings'));
 analyticsIntegration.campaign = lazy(() => import('../../../modules/analytics/admin/Campaign'));

@@ -36,8 +36,9 @@ import type { Destination } from '../destinations/api';
 import { goalSaid } from '../goals/said';
 import type { GoalEntry } from '../goals/api';
 import type { Template } from '@renderer/types';
+import { withRenderExtensions } from '../renderExtensions';
 
-const CampaignDesign = lazy(() => import('../optins/CampaignDesign'));
+const CampaignDesign = lazy(() => withRenderExtensions(import('../optins/CampaignDesign')));
 const handoffIssueOf = (issues: readonly CampaignIssue[]) => issues.some(issue => issue.key === ISSUE.handoff);
 
 /** A blocker's fix, named for where it takes the merchant. */

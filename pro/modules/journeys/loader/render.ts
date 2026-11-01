@@ -56,7 +56,7 @@ const CSS = [
   `.wc-products{display:grid;gap:.75rem}`,
 ].join('');
 
-/** Called by Pro's single entry before any Campaign can mount. */
+/** Called through `renderExtensions` before any boundary that draws a design resolves. */
 export function registerPremiumJourneyRenderer(): void {
   registerJourneyRenderer({ question, result });
   registerJourneyStyles(CSS);
