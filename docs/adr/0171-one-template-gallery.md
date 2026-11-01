@@ -82,6 +82,8 @@ rather than a preference. Picker preferences keep `saved`, `hidden` and
 7. **Removed**: Start here, Compare, "Works with this goal", the ⋯ menu,
    "Online setups" and "Occasions & preferences". **New occasion** moved to
    the Campaigns ⋯ menu beside Import occasion.
+   *Amended by [0176](0176-a-new-site-is-guided-to-its-first-lead.md): that
+   menu is hidden until the site's first campaign.*
 8. **The goal step stays**; step 2's header carries a goal switcher. A
    campaign created from an occasion opens the seasonal collection whose event
    overlaps the occasion's days, at the stage the occasion is in. A new
