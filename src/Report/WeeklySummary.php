@@ -353,11 +353,14 @@ final class WeeklySummary
     {
         $number = number_format_i18n($count);
 
-        /* translators: %s: a number. */
         return match ($group) {
+            /* translators: %s: a number. */
             'offers' => sprintf(_n('%s offer link click', '%s offer link clicks', $count, 'wconvert'), $number),
+            /* translators: %s: a number. */
             'carts' => sprintf(_n('%s cart return click', '%s cart return clicks', $count, 'wconvert'), $number),
+            /* translators: %s: a number. */
             'additions' => sprintf(_n('%s basket addition', '%s basket additions', $count, 'wconvert'), $number),
+            /* translators: %s: a number. */
             default => sprintf(_n('%s submission', '%s submissions', $count, 'wconvert'), $number),
         };
     }
