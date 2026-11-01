@@ -285,7 +285,7 @@ admin"*. Read down a column to find a gap.
 | **Builder — Design** | none of its own — the index arrives behind `BuilderSkeleton` | `EmptyState` + the other Display Types | `PageError` above the tabs | the design in use + tokens |
 | **Builder — Content** | with the design | `EmptyState` + *Pick a design* | with the frame | tree + inspector |
 | **Builder — Destinations** | `RowsSkeleton` | `EmptyState` | `RegionErrorState` | bindable routes |
-| ~~**Milestones**~~ | *Struck by [ADR 0131](0131-one-way-to-show-each-thing-in-the-admin.md): nothing rendered it, and the component is deleted.* | | | |
+| ~~**Milestones**~~ | *Struck by [ADR 0131](0131-one-way-to-show-each-thing-in-the-admin.md): nothing rendered it, and the component is deleted. [ADR 0176](0176-a-new-site-is-guided-to-its-first-lead.md)'s getting-started card now reads three of them; it is pending until they arrive and hides if they fail.* | | | |
 
 *Builder — Destinations row amended by
 [0074](0074-destinations-declare-requirements-and-show-shared-usage.md)'s tab

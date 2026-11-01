@@ -45,7 +45,7 @@ function fixLabel(issue: CampaignIssue): string {
   switch (issue.go.to) {
     case 'destinations': return __('Choose a service', 'wconvert');
     case 'rules': case 'schedule': return __('Fix in Display rules', 'wconvert');
-    case 'library': return __('Choose a design', 'wconvert');
+    case 'library': return __('Choose a template', 'wconvert');
     case 'placement': return __('Fix placement', 'wconvert');
     default: return __('Fix in the editor', 'wconvert');
   }
@@ -359,7 +359,7 @@ export function ReadinessDialog({
                 <section className="wconvert-launch-review__section wconvert-launch-review__what">
                   {hasDesign
                     ? <div className="wconvert-campaign-thumbnail"><Suspense fallback={<div className="wconvert-preview-placeholder" />}><CampaignDesign template={template} displayType={displayType} /></Suspense></div>
-                    : <p>{__('No design selected yet.', 'wconvert')} <Button type="button" variant="link" onClick={() => jump(onGoToDesign)}>{__('Choose design', 'wconvert')}</Button></p>}
+                    : <p>{__('No template chosen yet.', 'wconvert')} <Button type="button" variant="link" onClick={() => jump(onGoToDesign)}>{__('Browse templates', 'wconvert')}</Button></p>}
                   {/* What counts as success, said where publishing is decided, never folded away. */}
                   {outcome && goal.status === 'ready' && goal.data && (
                     <div className="wconvert-launch-review__success-measure">
@@ -375,7 +375,7 @@ export function ReadinessDialog({
                     <p className="text-note text-muted-foreground">
                       {sprintf(
                         /* translators: %s: the name of the starting point this campaign was created from. */
-                        __('Started from: %s', 'wconvert'),
+                        __('Template: %s', 'wconvert'),
                         startedFrom,
                       )}
                     </p>

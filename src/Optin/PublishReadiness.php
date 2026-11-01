@@ -106,7 +106,7 @@ final class PublishReadiness
             fn (): ?WP_Error => $this->display($config),
             static fn (): ?WP_Error => $optin->hasDesign() ? null : new WP_Error(
                 self::NO_DESIGN,
-                __('Choose a design before publishing. You can keep saving this campaign as a draft.', 'wconvert'),
+                __('Choose a template before publishing. You can keep saving this campaign as a draft.', 'wconvert'),
                 ['status' => 400]
             ),
             fn (): ?WP_Error => self::inlinePlacement($config) ?? $this->contentLock($config, $optin->id),

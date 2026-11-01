@@ -88,7 +88,7 @@ export function skipLabel(reason: SkipReason): string {
     case 'variant': return __('A/B variant', 'wconvert');
     case 'test': return __('A/B test', 'wconvert');
     case 'suspended': return __('Suspended', 'wconvert');
-    case 'no_design': return __('No design', 'wconvert');
+    case 'no_design': return __('No template', 'wconvert');
     case 'current': return __('Already published', 'wconvert');
     case 'draft': return __('Draft', 'wconvert');
   }

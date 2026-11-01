@@ -13,7 +13,9 @@ addressable categories: Visitor experience, Connections & destinations, Data &
 privacy. No additional overview or banner. The category rail moves above forms
 on narrow screens. **Amended by [0132](0132-every-screen-answers-its-first-question.md):**
 Settings opens on Connections & destinations and the rail runs Connections →
-Visitor experience → Spam protection → Data & privacy → Analytics integrations;
+Visitor experience → Spam protection → Data & privacy → Analytics integrations
+(*amended by [0176](0176-a-new-site-is-guided-to-its-first-lead.md): Email
+reports sits after Data & privacy*);
 below the `lg` breakpoint the rail is one native select; "Find a setting" lists
 individual settings and focuses the chosen control. On Connections &
 destinations the destinations come first, each a compact card whose settings

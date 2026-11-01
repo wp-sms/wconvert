@@ -62,6 +62,8 @@ $wconvertOptions = [
     'wconvert_retention_days',
     // Privacy\PrivacyGuidance::OPTION — authoring help for new Campaign drafts.
     'wconvert_privacy_guidance',
+    // Report\WeeklySummarySettings::OPTION — the weekly summary email's switch and recipients.
+    'wconvert_weekly_summary',
     // Template\GoogleFonts::OPTION — optional remote font delivery.
     'wconvert_google_fonts',
     // Optin\SiteFrequency::OPTION — the allowance the whole site shares.
@@ -220,7 +222,7 @@ delete_option('wconvert_submission_checkpoint');
  * runs first; they are named again so that a plugin deleted without being
  * deactivated (WP-CLI's `--deactivate` is optional) leaves nothing behind.
  */
-foreach (['wconvert_prune_leads', 'wconvert_recover_submissions', 'wconvert_transfer_cleanup'] as $wconvertHook) {
+foreach (['wconvert_prune_leads', 'wconvert_recover_submissions', 'wconvert_transfer_cleanup', 'wconvert_weekly_summary'] as $wconvertHook) {
     wp_unschedule_hook($wconvertHook);
 }
 
@@ -247,6 +249,8 @@ if (class_exists('ActionScheduler_QueueRunner', false)
 
 // User metadata is blog-scoped because WordPress users span multisite blogs.
 delete_metadata('user', 0, 'wconvert_picker_preferences_' . get_current_blog_id(), '', true);
+// Onboarding\ChecklistDismissal: who put the getting-started checklist away.
+delete_metadata('user', 0, 'wconvert_checklist_hidden_' . get_current_blog_id(), '', true);
 
 // Short-lived picker write leases belong only to this site's options table.
 // Static, like the statement above.

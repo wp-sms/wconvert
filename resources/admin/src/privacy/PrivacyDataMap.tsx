@@ -185,6 +185,15 @@ function recipientRows(data: DataMap): Recipient[] {
       </span>
     ) : destination.fields.map((field) => labelOf(field, fields, __('Other answers', 'wconvert'))).join(', '),
   }));
+  if (data.weekly_summary) {
+    rows.push({
+      key: 'weekly-summary',
+      name: __('Weekly summary email', 'wconvert'),
+      /* translators: %s: the email addresses it goes to. */
+      service: sprintf(__('Your site’s email, to %s', 'wconvert'), data.weekly_summary.recipients.join(', ')),
+      receives: __('Campaign names and totals: how often campaigns were shown and what they collected. No names, email addresses or phone numbers.', 'wconvert'),
+    });
+  }
   if (data.google_fonts) rows.push({ key: 'google-fonts', name: 'Google Fonts', receives: __('IP address and request information when a campaign needs a remotely hosted font. No form answers.', 'wconvert') });
   const analytics = data.analytics_integration;
   if (analytics?.configured) {

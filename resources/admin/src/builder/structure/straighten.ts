@@ -21,7 +21,7 @@ export function straightenedJourney(tree: TemplateTree): TemplateTree | Refusal 
     .filter(screen => screen.kind !== 'result' && (!asks(screen) || collects(screen)))
     .map(plainScreen);
   if (steps.length === 0) {
-    return { short: __('Nothing would be left', 'wconvert'), reason: __('Every screen in this design asks a question or shows a result. Start from another design instead.', 'wconvert') };
+    return { short: __('Nothing would be left', 'wconvert'), reason: __('Every screen in this design asks a question or shows a result. Start from another template instead.', 'wconvert') };
   }
   if (steps.length > 7) {
     return { short: __('Up to 7 screens', 'wconvert'), reason: __('A straight campaign holds up to 7 screens. Delete screens until 7 are left, then try again.', 'wconvert') };

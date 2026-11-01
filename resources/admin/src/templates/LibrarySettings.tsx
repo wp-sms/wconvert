@@ -8,7 +8,7 @@ import type { SettingsEditing } from '../settings-page/useSettingsEditing';
  * by default (ADR 0175), so this is said here and in the readme's External
  * services rather than asked first.
  */
-const disclosure = () => __('Designs and their thumbnails come from templates.wconvert.io, run on Cloudflare. Thumbnails load in your browser, so Cloudflare sees its IP address. No site address, licence or visitor data is sent. WConvert checks for new designs at most twice a day, and only while you have this library open.', 'wconvert');
+const disclosure = () => __('Templates and their thumbnails come from templates.wconvert.io, run on Cloudflare. Thumbnails load in your browser, so Cloudflare sees its IP address. No site address, licence or visitor data is sent. WConvert checks for new templates at most twice a day, and only while you have this library open.', 'wconvert');
 
 const readConsent = async () => ({ enabled: (await catalogStatus()).consent === 'yes' });
 const saveConsent = async (enabled: boolean) => ({ enabled: (await setCatalogConsent(enabled)).consent === 'yes' });
@@ -18,7 +18,7 @@ export function LibrarySettings({ onEditingStateChange }: { onEditingStateChange
   return (
     <SwitchSetting
       title={__('Online template library', 'wconvert')}
-      label={__('Show designs from the WConvert library', 'wconvert')}
+      label={__('Show templates from the WConvert library', 'wconvert')}
       hint={disclosure()}
       setting="template-library"
       saveLabel={__('Save template library', 'wconvert')}

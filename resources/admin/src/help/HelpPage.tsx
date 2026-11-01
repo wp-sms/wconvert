@@ -94,7 +94,7 @@ export function HelpPage() {
         <span className="wconvert-help-start__copy">
           <span className="wconvert-help-eyebrow">{__('New to WConvert?', 'wconvert')}</span>
           <strong>{__('Create your first campaign', 'wconvert')}</strong>
-          <span>{__('From a ready-made setup to your first saved lead.', 'wconvert')}</span>
+          <span>{__('From a template to your first saved lead.', 'wconvert')}</span>
         </span>
         <Button asChild variant="outline"><span>{__('Open the guide', 'wconvert')}<ExternalLink aria-hidden="true" /></span></Button>
         <NewTab />

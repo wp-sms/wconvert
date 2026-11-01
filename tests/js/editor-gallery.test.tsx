@@ -116,7 +116,7 @@ describe('the gallery it opens on', () => {
     render(<Editor entries={[CENTRED, hosted('bar', 'Countdown bar', 'locked', { display_type: 'floating_bar' })]} />);
     expect(screen.getByRole('option', { name: 'Floating bar · Pro' })).toBeInTheDocument();
     const locked = within(cardFor('Countdown bar'));
-    expect(locked.getByRole('link', { name: /See this design/ })).toHaveAttribute('href', 'https://wconvert.io/templates/bar/');
+    expect(locked.getByRole('link', { name: /See this template/ })).toHaveAttribute('href', 'https://wconvert.io/templates/bar/');
     expect(locked.queryByRole('button', { name: /Use/ })).toBeNull();
   });
 

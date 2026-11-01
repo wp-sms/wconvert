@@ -370,12 +370,12 @@ export function BlockRow({
               {losesWordsOnSwitch(block) && (
                 <span
                   className="wconvert-block__loses"
-                  title={__('What you type here is dropped when you switch design.', 'wconvert')}
+                  title={__('What you type here is dropped when you switch template.', 'wconvert')}
                 >
                   <TriangleAlert aria-hidden="true" />
                   <span className="sr-only">
                     {' '}
-                    {__('What you type here is dropped when you switch design.', 'wconvert')}
+                    {__('What you type here is dropped when you switch template.', 'wconvert')}
                   </span>
                 </span>
               )}

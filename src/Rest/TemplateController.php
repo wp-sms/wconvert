@@ -242,7 +242,7 @@ final class TemplateController implements RestController
      * **Only registered entries.** A hosted design has no local tree until it is installed,
      * so asking for one is not an error to report — it is simply absent from
      * the answer, and the card that asked keeps its skeleton and then its
-     * *"See this design"* link. An id this install never shipped behaves
+     * *"See this template"* link. An id this install never shipped behaves
      * identically, which is the same stance {@see TemplateLibrary::snapshotInto()}
      * takes: an id naming nothing here is not a broken request.
      */

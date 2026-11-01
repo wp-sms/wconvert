@@ -107,7 +107,7 @@ export function CampaignDetailsDialog({
     }
   }, [asking]);
   const notes = row ? [
-    missingDesign ? __('No design yet. Choose one in the editor before publishing.', 'wconvert') : null,
+    missingDesign ? __('No template yet. Choose one in the editor before publishing.', 'wconvert') : null,
     row.suspended || null,
     row.has_unpublished_changes
       ? status === 'suspended'
@@ -203,7 +203,7 @@ export function CampaignDetailsDialog({
                   )}
                   {publishes && missingDesign && (
                     <DropdownMenuLabel className="wconvert-menu-note text-micro font-normal text-muted-foreground">
-                      {__('Add a design in the editor before publishing.', 'wconvert')}
+                      {__('Choose a template in the editor before publishing.', 'wconvert')}
                     </DropdownMenuLabel>
                   )}
                   <DropdownMenuSeparator />

@@ -46,7 +46,7 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
   const committedLinks = useRef<Record<string, string>>({});
   const urls = useRef<Record<string, string>>({});
   const alive = useRef(true);
-  const title = action === 'export' ? __('Export design', 'wconvert') : __('Import design', 'wconvert');
+  const title = action === 'export' ? __('Export as template', 'wconvert') : __('Import template', 'wconvert');
   const readStatus = () => {
     setStatusFailed(false); setError(null);
     transferStatus().then(value => { if (alive.current) setStatus(value); })
@@ -120,7 +120,7 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
   const hasReview = !!preview && (preview.links.length > 0 || notices.length > 0);
   const hasProblems = Object.keys(problems).length > 0;
   const showWorkspace = action === 'export' || !!session.current;
-  const busyLabel = action === 'export' ? __('Creating your file…', 'wconvert') : preview ? __('Adding design to draft…', 'wconvert') : __('Preparing your preview…', 'wconvert');
+  const busyLabel = action === 'export' ? __('Creating your file…', 'wconvert') : preview ? __('Adding template to draft…', 'wconvert') : __('Preparing your preview…', 'wconvert');
   const reasonId = `${contentId}-reason`;
   // Busy is `disabled`; a refusal is `aria-disabled` with the reason in the footer note (§9).
   const applyRefusal = !preview ? null
@@ -132,13 +132,13 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
     <PickerDialogContent className={`wconvert-transfer-dialog ${showWorkspace ? 'wconvert-transfer-dialog--workspace' : ''}`} showCloseButton={!busy}
       onEscapeKeyDown={event => { if (busy) event.preventDefault(); }} onInteractOutside={event => { if (busy) event.preventDefault(); }}>
       <AdminDialogHeader title={title} meta={action === 'export'
-        ? __('Take this design to another WConvert site.', 'wconvert')
-        : __('Bring a design from another WConvert site into this campaign.', 'wconvert')} />
+        ? __('Take this campaign’s look to another WConvert site as a template.', 'wconvert')
+        : __('Bring a template from another WConvert site into this campaign.', 'wconvert')} />
       <PickerDialogBody className="wconvert-transfer" aria-busy={busy}>
         {!status && !statusFailed && <div role="status" className="grid gap-2"><span className="sr-only">{__('Checking file support…', 'wconvert')}</span><Skeleton aria-hidden="true" className="h-40 w-full" /></div>}
         {statusFailed && <div className="grid justify-items-start gap-3"><p>{__('File support could not be checked.', 'wconvert')}</p><TryAgain onClick={readStatus} /></div>}
         {status && !status.zip && <p className="wconvert-transfer__alert">{__('This feature needs PHP ZIP support. Ask your host to enable it.', 'wconvert')}</p>}
-        {action === 'import' && status?.zip && <input ref={fileInput} className="sr-only" type="file" tabIndex={-1} aria-label={__('Choose a WConvert design file', 'wconvert')} accept=".zip,application/zip" disabled={busy}
+        {action === 'import' && status?.zip && <input ref={fileInput} className="sr-only" type="file" tabIndex={-1} aria-label={__('Choose a WConvert template file', 'wconvert')} accept=".zip,application/zip" disabled={busy}
           onClick={event => { event.currentTarget.value = ''; }} onChange={event => upload(event.target.files?.[0])} />}
         {action === 'import' && status?.zip && !showWorkspace && <div className="wconvert-transfer__start">
           <div className="wconvert-transfer__dropzone" data-dragging={dragging || undefined}
@@ -146,7 +146,7 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
             onDragLeave={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDragging(false); }}
             onDrop={event => { event.preventDefault(); setDragging(false); if (!busy) upload(event.dataTransfer.files[0]); }}>
             <span className="wconvert-transfer__file-icon" aria-hidden="true"><FileArchive /></span>
-            <h3>{__('Drop your design file here', 'wconvert')}</h3>
+            <h3>{__('Drop your template file here', 'wconvert')}</h3>
             <p>{__('A .wconvert.zip file exported from WConvert', 'wconvert')}</p>
             <Button disabled={busy} onClick={() => fileInput.current?.click()}><ArrowUpFromLine aria-hidden="true" />{__('Choose file', 'wconvert')}</Button>
             <small>{sprintf(/* translators: %s: the largest file size allowed, in megabytes, e.g. “8”. */ __('Up to %s MB · Images included in the file travel with it', 'wconvert'), formatCount(Math.floor(status.max_bytes / 1048576)))}</small>
@@ -154,8 +154,8 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
 
         </div>}
         {showWorkspace && <div className="wconvert-transfer__workspace">
-          <section className="wconvert-transfer__preview" aria-label={__('Design preview', 'wconvert')}>
-            <div className="wconvert-transfer__preview-heading"><span>{__('Design preview', 'wconvert')}</span><Badge variant="outline">{action === 'export' ? __('Current draft', 'wconvert') : __('Before you apply', 'wconvert')}</Badge></div>
+          <section className="wconvert-transfer__preview" aria-label={__('Template preview', 'wconvert')}>
+            <div className="wconvert-transfer__preview-heading"><span>{__('Template preview', 'wconvert')}</span><Badge variant="outline">{action === 'export' ? __('Current draft', 'wconvert') : __('Before you apply', 'wconvert')}</Badge></div>
             {rendered ? <>
               <PreviewControls mobile={mobile} onMobile={setMobile} template={rendered} step={step} onStep={value => { setStep(value); setResult(0); }} fitHeight={fitHeight} onFitHeight={setFitHeight} disabled={busy} />
               {results.length > 0 && <label className="wconvert-transfer__result">{__('Result to preview', 'wconvert')}<select className="wconvert-picker__select" value={result} onChange={event => setResult(Number(event.target.value))}>{results.map((item, index) => <option key={item.id} value={index}>{item.heading || sprintf(/* translators: %d: the result's position in the list, starting at 1. */ __('Result %d', 'wconvert'), index + 1)}</option>)}</select></label>}
@@ -164,7 +164,7 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
               : <div className="wconvert-transfer__placeholder"><FileArchive aria-hidden="true" /><p>{__('The preview could not be prepared.', 'wconvert')}</p><TryAgain onClick={() => void run(() => prepare(session.current!))} /></div>}
           </section>
           <div className="wconvert-transfer__settings">
-            <div className="wconvert-transfer__identity"><FileArchive aria-hidden="true" /><div><h3>{action === 'export' ? design.name : importName}</h3><p>{action === 'export' ? __('WConvert design file · .zip', 'wconvert') : fileName}</p></div>
+            <div className="wconvert-transfer__identity"><FileArchive aria-hidden="true" /><div><h3>{action === 'export' ? design.name : importName}</h3><p>{action === 'export' ? __('WConvert template file · .zip', 'wconvert') : fileName}</p></div>
               {action === 'import' && <Button variant="ghost" disabled={busy} onClick={() => fileInput.current?.click()}>{__('Change file', 'wconvert')}</Button>}
             </div>
             {action === 'export' ? <>
@@ -199,7 +199,7 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
             </>}
           </div>
         </div>}
-        {action === 'import' && status && !status.upload_images && <p className="wconvert-transfer__note">{__('Your account can import text-only designs. Image files require upload permission.', 'wconvert')}</p>}
+        {action === 'import' && status && !status.upload_images && <p className="wconvert-transfer__note">{__('Your account can import text-only templates. Image files require upload permission.', 'wconvert')}</p>}
       </PickerDialogBody>
       <AdminDialogFooter
         back={<Button variant="outline" disabled={busy} onClick={close}>{__('Cancel', 'wconvert')}</Button>}
@@ -207,7 +207,7 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
         error={error && <><TriangleAlert aria-hidden="true" className="me-1 inline size-4 align-text-bottom" />{error}</>}
       >
         {action === 'export' ? <Button disabled={busy || !status?.zip} onClick={() => void run(async () => { await downloadDesign(design, Object.keys(problems)); if (alive.current) onClose(); })}>
-          <ArrowDownToLine aria-hidden="true" />{hasProblems ? __('Export without these images', 'wconvert') : __('Download design', 'wconvert')}
+          <ArrowDownToLine aria-hidden="true" />{hasProblems ? __('Export without these images', 'wconvert') : __('Download template', 'wconvert')}
         </Button> : showWorkspace && <Button disabled={busy || !preview} aria-disabled={applyRefusal !== null || undefined}
           aria-describedby={applyRefusal !== null ? reasonId : undefined} onClick={() => {
             if (applyRefusal !== null) return;

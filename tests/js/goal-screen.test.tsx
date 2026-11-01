@@ -388,7 +388,7 @@ describe('Pro hints on a free install', () => {
     await pickGoal();
     const card = await cardOf('Online night-sale');
     expect(within(card).getByText('Pro')).toBeVisible();
-    expect(within(card).getByRole('link', { name: 'See this design' })).toHaveAttribute('href', 'https://wconvert.io/templates/night-sale/');
+    expect(within(card).getByRole('link', { name: 'See this template' })).toHaveAttribute('href', 'https://wconvert.io/templates/night-sale/');
     expect(within(card).queryByRole('button', { name: 'Use template' })).toBeNull();
     // A format only Pro has says so in the Format select, and Plan separates the locked cards.
     expect(within(screen.getByRole('combobox', { name: 'Format' })).getByRole('option', { name: 'Slide-in · Pro' })).toBeInTheDocument();
@@ -612,7 +612,7 @@ describe('creating the draft', () => {
     render(<GoalScreen onCreated={created} />);
     await pickGoal();
     await cardOf('Welcome discount');
-    await userEvent.click(screen.getByRole('button', { name: 'Choose a design myself' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Start from a blank template' }));
     await waitFor(() => expect(created).toHaveBeenCalled());
     expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, undefined);
   });
@@ -622,7 +622,7 @@ describe('creating the draft', () => {
     render(<GoalScreen onCreated={vi.fn()} />);
     await pickGoal();
     expect(await screen.findByText('No templates for this goal yet')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Choose a design myself' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Start from a blank template' })).toBeEnabled();
   });
 
   it('guards every way out throughout prefill and POST', async () => {
@@ -635,7 +635,7 @@ describe('creating the draft', () => {
     await pickGoal();
     await useTemplate();
     expect(within(await cardOf('Welcome discount')).getByRole('button', { name: 'Adding…' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Choose a design myself' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Start from a blank template' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Goal: Grow my email list' })).toBeDisabled();
     expect(busy).toHaveBeenLastCalledWith(true);
     expect(unloadPrevented()).toBe(true);

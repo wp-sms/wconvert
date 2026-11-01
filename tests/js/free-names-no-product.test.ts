@@ -5,7 +5,7 @@ import type { TemplateTree } from '../../resources/renderer/src/types';
 
 afterEach(() => { delete window.wconvertAdmin; });
 
-const CANT_DISPLAY = 'This design uses elements this site can’t display.';
+const CANT_DISPLAY = 'This template uses elements this site can’t display.';
 
 it('a free install names no product when it explains an absence (ADR 0116 §3)', () => {
   expect(unlessFree('Cart testing requires WConvert Pro and WooCommerce.')).toBe(CANT_DISPLAY);

@@ -21,7 +21,7 @@ function Page({ children }: { children: (report: (state: { dirty: boolean }) => 
 it('keeps the library switch off until Save, then saves it (#359)', async () => {
   const user = userEvent.setup();
   render(<Page>{report => <LibrarySettings onEditingStateChange={report} />}</Page>);
-  const toggle = await screen.findByRole('checkbox', { name: /Show designs from the WConvert library/ });
+  const toggle = await screen.findByRole('checkbox', { name: /Show templates from the WConvert library/ });
   expect(toggle).toBeChecked();
 
   await user.click(toggle);

@@ -1051,7 +1051,7 @@ describe('the summary', () => {
 
     expect(await screen.findByRole('button', { name: 'Review & publish' })).toBeInTheDocument();
     expect(screen.queryByText('Entire site')).toBeNull();
-    expect(screen.queryByText('Started from')).toBeNull();
+    expect(screen.queryByText('Template:')).toBeNull();
   });
 
   /** One body for both Details (ADR 0138): the editor's says How it runs too, from the draft in hand. */
@@ -1118,7 +1118,7 @@ describe('the summary', () => {
     await summary();
 
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
-    expect(screen.getByText('Started from:', { exact: false })).toHaveTextContent('Welcome discount');
+    expect(screen.getByText('Template:', { exact: false })).toHaveTextContent('Welcome discount');
   });
 
   /**
@@ -1142,7 +1142,7 @@ describe('the summary', () => {
     await summary();
 
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
-    expect(screen.queryByText(/Started from/)).toBeNull();
+    expect(screen.queryByText(/Template:/)).toBeNull();
     expect(screen.queryByText(/welcome-discount/)).toBeNull();
   });
 

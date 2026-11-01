@@ -381,7 +381,7 @@ final class TemplateRoutesTest extends TestCase
     /**
      * A locked id and an id this install never shipped behave identically:
      * absent from the answer, never an error. The card that asked keeps its
-     * *"See this design"* link, which is what it had before it asked.
+     * *"See this template"* link, which is what it had before it asked.
      */
     public function testAnIdWithNoDesignBehindItIsSimplyAbsent(): void
     {

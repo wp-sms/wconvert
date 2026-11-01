@@ -22,6 +22,7 @@ import { ConfirmDialog } from './shell/ConfirmDialog';
 import { RegionSkeleton } from './shell/RegionSkeleton';
 import { extraPageFor, registerPage } from './extraPages';
 import { HELP_PAGE } from './help/page';
+import { markSubmenuCurrent } from './shell/menuHighlight';
 
 // Free's own registered page (ADR 0144). Here rather than in `main.tsx`, so
 // Pro's entry, which imports this app and not free's entry, has it too.
@@ -53,7 +54,8 @@ export function App() {
   const { route, navigate, onEditingStateChange } = navigation;
   const section = route.section;
   const [campaignBusy, setCampaignBusy] = useState(false);
-  const [campaignsEmpty, setCampaignsEmpty] = useState(false);
+  // Null until the list is in, so the header's occasion menu never flashes on an empty site.
+  const [campaignsEmpty, setCampaignsEmpty] = useState<boolean | null>(null);
   const campaignBusyRef = useRef(false);
   const onCampaignEditingStateChange = useCallback((state: EditingState) => {
     campaignBusyRef.current = state.busy;
@@ -84,6 +86,13 @@ export function App() {
     void readDestinations().then((data) => { if (active) setSendingCount(issueCount(data)); }).catch(() => { if (active) setSendingCount(null); });
     return () => { active = false; };
   }, [section, route.leadsView, sendingRefresh]);
+
+  // wp-admin's WConvert submenu names every section (ADR 0176); all are one
+  // page, so the current one is marked here from the hash. Help marks itself.
+  useEffect(() => {
+    if (section === 'optins' || route.editId !== undefined || route.occasionId !== undefined || extraPageFor(navigation.hash)) return undefined;
+    return markSubmenuCurrent(section);
+  }, [section, route.editId, route.occasionId, navigation.hash]);
 
   const createButton = (
     <Button variant="brand" disabled={campaignBusy} onClick={startCreating}>
@@ -137,9 +146,11 @@ export function App() {
       pageTitle={section === 'leads' && route.leadsView === 'issues' ? __('Sending issues', 'wconvert') : undefined}
       // An empty list carries its own Create button; one primary action per screen.
       actions={section === 'optins' && !creating ? <>
-        {/* Import is here even before the site has an occasion (#280). */}
-        <ImportOccasionMenu disabled={campaignBusy} onImported={(imported) => { setNotice(imported); setListVersion((n) => n + 1); }}
-          onCreated={(occasion) => navigate(occasionHref(occasion))} />
+        {/* Import is here even before the site has an occasion (#280), but
+            not before its first campaign: a new site's only door is the
+            getting-started card (ADR 0176). */}
+        {campaignsEmpty === false && <ImportOccasionMenu disabled={campaignBusy} onImported={(imported) => { setNotice(imported); setListVersion((n) => n + 1); }}
+          onCreated={(occasion) => navigate(occasionHref(occasion))} />}
         {!campaignsEmpty && createButton}
       </> : section === 'leads'
         ? route.leadsView === 'issues'
@@ -224,7 +235,7 @@ function OptinsSection({
   onCreateInOccasion: (occasion: string) => void;
   onEditingStateChange: (state: EditingState) => void;
   onCreate: () => void;
-  onEmptyChange: (empty: boolean) => void;
+  onEmptyChange: (empty: boolean | null) => void;
   onCancelCreate: () => void;
   onEdit: (id: string) => void;
 }) {

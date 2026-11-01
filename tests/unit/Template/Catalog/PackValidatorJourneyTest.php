@@ -148,7 +148,7 @@ final class PackValidatorJourneyTest extends TestCase
             (new PackValidator(TemplateManifest::load(), TemplateVocabulary::fromManifest(), Tier::Free, true))->decode(json_encode($pack, JSON_THROW_ON_ERROR));
             self::fail('A product design must not install on a free site.');
         } catch (RuntimeException $refused) {
-            self::assertSame('This design uses elements this site can’t display.', $refused->getMessage());
+            self::assertSame('This template uses elements this site can’t display.', $refused->getMessage());
         }
     }
 
@@ -165,7 +165,7 @@ final class PackValidatorJourneyTest extends TestCase
      */
     public function testAPaidInstallWithoutTheJourneysModuleRejectsAQuizPack(): void
     {
-        $this->expectExceptionMessage('This design uses elements this site can’t display.');
+        $this->expectExceptionMessage('This template uses elements this site can’t display.');
         $this->validator(Tier::Pro)->decode(json_encode($this->pack(), JSON_THROW_ON_ERROR));
     }
 }

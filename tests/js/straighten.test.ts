@@ -42,7 +42,7 @@ it('straightens a linear journey too', () => {
 
 it('refuses, saying why, where nothing or too much would be left', () => {
   const nothing = straightenedJourney(finder.tree as unknown as TemplateTree);
-  expect(isRefusal(nothing) && nothing.reason).toMatch(/Start from another design/);
+  expect(isRefusal(nothing) && nothing.reason).toMatch(/Start from another template/);
 
   const base = enquiry.tree as unknown as TemplateTree;
   let tree = base;

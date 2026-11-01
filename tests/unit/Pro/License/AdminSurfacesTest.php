@@ -35,7 +35,7 @@ final class AdminSurfacesTest extends TestCase
         $this->stopFakingNexus();
     }
 
-    /** Free's Campaigns and Help come first; License links to the same page at #license, last. */
+    /** Free's sections and Help come first; License links to the same page at #license, last. */
     public function testTheSubmenuEndsWithLicenseAfterFreesEntries(): void
     {
         (new AdminMenu(new AdminNotices(new PublishedSet(new FakeOptionStore()))))->registerSubmenu();
@@ -43,6 +43,9 @@ final class AdminSurfacesTest extends TestCase
 
         $this->assertSame([
             ['Campaigns', 'manage_options', 'wconvert'],
+            ['Analytics', 'manage_options', 'admin.php?page=wconvert#analytics'],
+            ['Leads', 'manage_options', 'admin.php?page=wconvert#leads'],
+            ['Settings', 'manage_options', 'admin.php?page=wconvert#settings'],
             ['Help', 'manage_options', 'admin.php?page=wconvert#help'],
             ['License', 'manage_options', 'admin.php?page=wconvert#license'],
         ], $GLOBALS['wconvertTestSubmenu']['wconvert']);

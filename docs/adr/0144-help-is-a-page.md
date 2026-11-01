@@ -20,6 +20,9 @@ review gate: claude.ai/artifact/EnhKuiKMx37rYDJDLcffgE (v5).
    License follows it. The page is free's own `registerPage()` entry, made in
    `App.tsx` so Pro's entry, which imports the app, has it too. It has no tab,
    like License: it is opened a few times a year.
+   *Amended by [0176](0176-a-new-site-is-guided-to-its-first-lead.md):
+   Analytics, Leads and Settings join the submenu between Campaigns and Help,
+   and free marks the current section from the hash.*
 2. **One Help, three doors.** The header ?, the footer's Help and the page share
    one `HELP_URLS` table. The popover gains the page's search field and *Open
    the Help page*, left out on the page itself. There the ? is marked current

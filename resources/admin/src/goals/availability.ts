@@ -83,7 +83,7 @@ export function isFreeInstall(): boolean {
  * §3). It says what the builder already says of a question block there.
  */
 export function unlessFree(paid: string): string {
-  return isFreeInstall() ? __('This design uses elements this site can’t display.', 'wconvert') : paid;
+  return isFreeInstall() ? __('This template uses elements this site can’t display.', 'wconvert') : paid;
 }
 
 export function renderingFor(availability: Availability, surface: Surface): Rendering {

@@ -40,9 +40,15 @@ vi.mock('../../resources/admin/src/optins/api', async (importOriginal) => ({
 }));
 vi.mock('../../resources/admin/src/goals/api', () => goals);
 
+// The getting-started card (ADR 0176). Rejected by default, which hides the
+// card, so every other test here sees the screen as it was.
+const gettingStarted = vi.hoisted(() => ({ readMilestones: vi.fn(), hideChecklist: vi.fn() }));
+vi.mock('../../resources/admin/src/optins/gettingStartedApi', () => gettingStarted);
+
 vi.mock('../../resources/admin/src/optins/CampaignDetails', () => ({ default: () => null }));
 
 const { OptinList } = await import('../../resources/admin/src/optins/OptinList');
+const { resetChecklistForTests } = await import('../../resources/admin/src/optins/GettingStarted');
 
 const OPTIN = {
   id: '01JQ00000000000000000000AA',
@@ -66,6 +72,9 @@ beforeEach(() => {
   optins.readProductHealth.mockImplementation(async (ids: string[]) => ids.map(id => ({ id, basis: 'draft', checks: [] })));
   stats.readDashboard.mockResolvedValue({ days: 30, from: '2026-08-16', to: '2026-09-14', goals: [], impact: [] });
   optins.listOptins.mockResolvedValue([OPTIN]);
+  gettingStarted.readMilestones.mockRejectedValue(new Error('not in this test'));
+  resetChecklistForTests();
+  gettingStarted.hideChecklist.mockResolvedValue({ hidden: true });
   goals.listGoals.mockResolvedValue([
     { id: 'grow_email_list', label: 'Grow my email list', availability: 'ready', headline_label: 'Email submissions', rate_label: 'Email submission rate',
       outcome: { measurement: 'Counts submitted forms with an email address.' } },
@@ -216,6 +225,24 @@ describe('the four situations this screen has to answer', () => {
 
     expect(await screen.findByText('No campaigns yet')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Create your first campaign/ })).toBeInTheDocument();
+  });
+
+  /** On an empty site the checklist replaces the bare empty state (ADR 0176). */
+  it('puts the getting-started card where the empty state was, and brings it back when hidden', async () => {
+    optins.listOptins.mockResolvedValue([]);
+    gettingStarted.readMilestones.mockResolvedValue({ first_publish: null, first_impression: null, first_conversion: null });
+    const onCreate = vi.fn();
+
+    render(<OptinList onEdit={() => undefined} onCreate={onCreate} />);
+
+    const card = await screen.findByRole('region', { name: 'Get your first campaign live' });
+    expect(screen.queryByText('No campaigns yet')).toBeNull();
+    await userEvent.click(within(card).getByRole('button', { name: /Create campaign/ }));
+    expect(onCreate).toHaveBeenCalledOnce();
+
+    await userEvent.click(within(card).getByRole('button', { name: 'Hide this checklist' }));
+    expect(await screen.findByText('No campaigns yet')).toBeInTheDocument();
+    expect(screen.getByText('Choose a goal, pick a template, and publish when you’re ready.')).toBeInTheDocument();
   });
 
   it('renders a first failure as the region’s whole content', async () => {
@@ -903,7 +930,7 @@ it('explains why a known design-less campaign cannot be published', async () => 
   render(<OptinList onEdit={() => undefined} />);
   await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
   expect(await screen.findByRole('menuitem', { name: 'Publish saved draft' })).toHaveAttribute('aria-disabled', 'true');
-  expect(screen.getByText('Add a design in the editor before publishing.')).toBeInTheDocument();
+  expect(screen.getByText('Choose a template in the editor before publishing.')).toBeInTheDocument();
 });
 
 it('keeps a family failure visible when another write succeeds and suppresses automatic editor handoff', async () => {

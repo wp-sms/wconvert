@@ -1022,6 +1022,11 @@ as creation's, one card per Template (ADR 0171). A Template and a [[Playbook]]
 share the UI word because the merchant picks either the same way; in code they
 stay two concepts.
 
+**UI wording: "template" is the only word for the thing you pick or start
+from** (ADR 0176). Not "ready-made setup", not "design", not "Started from".
+"Design" stays only where it means how the campaign looks on screen right now
+("Fit whole design", "Design default").
+
 A Template may declare optional decorative groups on panels/media and Google
 font requirements. The Look panel offers only each declared group's visibility;
 placement and motion remain authored. Remote font delivery is a separate,
@@ -1895,7 +1900,25 @@ separate decision with a separate consent conversation.
 
 A Milestone that has been reached changes nothing a merchant does next, so the
 screen draws only the first one *not* reached, with the door that fixes it — and
-nothing at all once a site is converting.
+nothing at all once a site is converting. *That screen is now the
+[[Getting-started checklist]] (ADR 0176), which reads three Milestones.*
+
+### Getting-started checklist
+
+The **card at the top of Campaigns that walks a new site to its first lead**:
+create a campaign, publish it, get the first [[Conversion]] (the first
+[[Impression]] on a site whose campaigns only show a message). Its progress is
+read from the [[Milestone]]s and the campaign list. The only thing stored is a
+per-user "hidden" flag, written by its × and by its one-time "You're all set".
+See [ADR 0176](docs/adr/0176-a-new-site-is-guided-to-its-first-lead.md).
+
+### Weekly summary
+
+The **Monday email to the site owner** with last week's totals: how often
+campaigns were shown, what they collected, the rate, each against the week
+before, plus the best campaign and Insights' first card. It holds counts and
+campaign names only, never a [[Lead]]. Off in Settings → Email reports; not sent
+before the first publish or for a week when nothing was shown (ADR 0176).
 
 ## External analytics integration
 

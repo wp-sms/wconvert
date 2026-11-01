@@ -91,21 +91,21 @@ export function PinnedDesignNotice({ pinned, onReload, onInstalled, onClear }: {
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  if (pinned.state === 'loading') return <p className="wconvert-picker__notice text-note">{__('Finding the design you chose…', 'wconvert')}</p>;
+  if (pinned.state === 'loading') return <p className="wconvert-picker__notice text-note">{__('Finding the template you chose…', 'wconvert')}</p>;
   if (pinned.state === 'failed') return <RegionError message={pinned.message} onRetry={onReload} />;
   const clear = <Button variant="link" onClick={onClear}>{__('Start without it', 'wconvert')}</Button>;
   if (pinned.state === 'off') {
     return <div className="wconvert-picker__notice" role="status">
-      <strong>{__('The online design library is off', 'wconvert')}</strong>
-      <Description>{__('Turn it on in Settings to find this design.', 'wconvert')}</Description>
+      <strong>{__('The online template library is off', 'wconvert')}</strong>
+      <Description>{__('Turn it on in Settings to find this template.', 'wconvert')}</Description>
       <div><a className="underline underline-offset-2" href={settingsHref('data')}>{__('Open Settings', 'wconvert')}</a></div>
       {clear}
     </div>;
   }
   if (pinned.state === 'missing') {
     return <div className="wconvert-picker__notice" role="status">
-      <strong>{__('That design is no longer available', 'wconvert')}</strong>
-      {pinned.related.length ? <Related related={pinned.related} /> : <Description>{__('Choose a goal, then a design.', 'wconvert')}</Description>}
+      <strong>{__('That template is no longer available', 'wconvert')}</strong>
+      {pinned.related.length ? <Related related={pinned.related} /> : <Description>{__('Choose a goal, then a template.', 'wconvert')}</Description>}
       {clear}
     </div>;
   }
@@ -119,16 +119,16 @@ export function PinnedDesignNotice({ pinned, onReload, onInstalled, onClear }: {
   };
   return <div className="wconvert-picker__notice" role="status">
     <strong>{sprintf(/* translators: %s: a design name. */ __('Starting from “%s”', 'wconvert'), entry.name)}</strong>
-    {pinned.state === 'ready' && <Description>{__('Choose a goal this design can serve. Your campaign starts with it.', 'wconvert')}</Description>}
+    {pinned.state === 'ready' && <Description>{__('Choose a goal this template can serve. Your campaign starts with it.', 'wconvert')}</Description>}
     {pinned.state === 'install' && <>
-      <Description>{__('This design is in the online library. Add it to your designs to start a campaign with it.', 'wconvert')}</Description>
-      <div><Button disabled={busy} onClick={() => { void install(); }}>{busy ? __('Adding…', 'wconvert') : __('Add to my designs', 'wconvert')}</Button></div>
+      <Description>{__('This template is in the online library. Add it to your templates to start a campaign with it.', 'wconvert')}</Description>
+      <div><Button disabled={busy} onClick={() => { void install(); }}>{busy ? __('Adding…', 'wconvert') : __('Add to my templates', 'wconvert')}</Button></div>
     </>}
-    {pinned.state === 'update_plugin' && <Description>{__('This design needs a newer version of WConvert.', 'wconvert')}</Description>}
-    {pinned.state === 'unavailable' && <Description>{__('This design needs a plugin this site doesn’t have.', 'wconvert')}</Description>}
+    {pinned.state === 'update_plugin' && <Description>{__('This template needs a newer version of WConvert.', 'wconvert')}</Description>}
+    {pinned.state === 'unavailable' && <Description>{__('This template needs a plugin this site doesn’t have.', 'wconvert')}</Description>}
     {/* A plain fact answering the link the admin followed: no link out, no
         price, nothing that reads as an advertisement (ADR 0156 §9). */}
-    {pinned.state === 'locked' && <Description>{sprintf(/* translators: %s: the product that supplies it, e.g. “WConvert Pro”. */ __('This design needs %s.', 'wconvert'), tierProductName(entry.tier))}</Description>}
+    {pinned.state === 'locked' && <Description>{sprintf(/* translators: %s: the product that supplies it, e.g. “WConvert Pro”. */ __('This template needs %s.', 'wconvert'), tierProductName(entry.tier))}</Description>}
     {(pinned.state === 'locked' || pinned.state === 'update_plugin' || pinned.state === 'unavailable') && <Related related={pinned.related} />}
     {error && <p role="alert" className="m-0 text-note text-destructive">{error}</p>}
     {clear}

@@ -49,7 +49,7 @@ it('resolves a "Use this template" link: local, hosted, not yet fetched and gone
 
   templates.listTemplates.mockResolvedValueOnce({ templates: [hosted('supper', 'Supper menu', 'install')], labels: LABELS, facets: FACETS, catalog: CATALOG() });
   const second = render(<Pinned design="supper" />);
-  expect(await screen.findByRole('button', { name: 'Add to my designs' })).toBeInTheDocument();
+  expect(await screen.findByRole('button', { name: 'Add to my templates' })).toBeInTheDocument();
   expect(catalog.installDesign).not.toHaveBeenCalled();
   second.unmount();
 
@@ -58,7 +58,7 @@ it('resolves a "Use this template" link: local, hosted, not yet fetched and gone
   templates.listTemplates.mockResolvedValueOnce({ templates: [], labels: LABELS, facets: FACETS, catalog: { ...CATALOG()!, checked_at: null } })
     .mockResolvedValueOnce({ templates: [hosted('supper', 'Supper menu', 'install')], labels: LABELS, facets: FACETS, catalog: CATALOG() });
   const third = render(<Pinned design="supper" />);
-  expect(await screen.findByRole('button', { name: 'Add to my designs' })).toBeInTheDocument();
+  expect(await screen.findByRole('button', { name: 'Add to my templates' })).toBeInTheDocument();
   expect(catalog.refreshCatalog).toHaveBeenCalledExactlyOnceWith(true);
   third.unmount();
   catalog.refreshCatalog.mockClear();
@@ -67,7 +67,7 @@ it('resolves a "Use this template" link: local, hosted, not yet fetched and gone
   catalog.refreshCatalog.mockResolvedValue({});
   templates.listTemplates.mockResolvedValue({ templates: [local('supper-card', 'Supper card')], labels: LABELS, facets: FACETS, catalog: CATALOG() });
   render(<Pinned design="supper-menu" />);
-  expect(await screen.findByText('That design is no longer available')).toBeInTheDocument();
+  expect(await screen.findByText('That template is no longer available')).toBeInTheDocument();
   expect(catalog.refreshCatalog).toHaveBeenCalledWith(true);
   expect(screen.getByRole('link', { name: 'Supper card' })).toHaveAttribute('href', '#optins?new=1&design=supper-card');
 });
@@ -80,15 +80,15 @@ it('follows a renamed design, names a declined library, and states a locked one 
 
   templates.listTemplates.mockResolvedValueOnce({ templates: [], labels: LABELS, facets: FACETS, catalog: CATALOG('no') });
   const declined = render(<Pinned design="supper" />);
-  expect(await screen.findByText('The online design library is off')).toBeInTheDocument();
+  expect(await screen.findByText('The online template library is off')).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Open Settings' })).toHaveAttribute('href', '#settings?group=data');
   expect(catalog.refreshCatalog).not.toHaveBeenCalled();
   declined.unmount();
 
   templates.listTemplates.mockResolvedValueOnce({ templates: [hosted('supper-pro', 'Supper pro', 'locked'), local('supper-card', 'Supper card')], labels: LABELS, facets: FACETS, catalog: CATALOG() });
   render(<Pinned design="supper-pro" />);
-  expect(await screen.findByText('This design needs WConvert Pro.')).toBeInTheDocument();
-  expect(screen.queryByRole('link', { name: /See this design/ })).toBeNull();
+  expect(await screen.findByText('This template needs WConvert Pro.')).toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: /See this template/ })).toBeNull();
   expect(screen.getByRole('link', { name: 'Supper card' })).toBeInTheDocument();
 });
 
