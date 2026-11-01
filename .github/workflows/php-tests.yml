@@ -1,24 +1,14 @@
 name: PHP tests
 
-# =============================================================================
-# PHPUnit across the supported PHP range, plus PHPStan.
+# PHPUnit across the supported PHP range, plus MySQL checks and PHPStan.
 #
-#   [test]      The floor and the ceiling on a pull request, every supported
-#               version on a manual dispatch or a release. The floor is where a
-#               construct needing a newer PHP fatals at parse time; the ceiling
-#               is where a deprecation shows up first. The matrix below is the
-#               ONLY place the supported versions are listed, and each job
-#               reports its own name, so a range in the workflow title would be
-#               duplicated information that goes stale.
+#   [test]      Floor and ceiling on a pull request, every version otherwise.
+#               This matrix is the ONLY list of supported versions.
+#   [database]  bin/verify-*.php against real MySQL, then PHPStan (its
+#               phpVersion pin in phpstan.neon.dist is the source of truth).
 #
-#   [analysis]  PHPStan, pinned to the floor by `phpVersion` in
-#               phpstan.neon.dist — that file is the source of truth, not this
-#               one.
-#
-# NO TRIGGERS OF ITS OWN beyond a manual dispatch. ci.yml calls this on every
-# pull request behind the changed-path filter; see the note in ci.yml for why
-# the filter cannot live here.
-# =============================================================================
+# No triggers of its own beyond a manual dispatch; ci.yml calls it behind the
+# php filter.
 
 on:
   workflow_dispatch:

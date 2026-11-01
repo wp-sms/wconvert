@@ -151,10 +151,14 @@ path grows a tier branch or touches the licence at all.
 ### It is checked, not trusted
 
 ```bash
-bin/verify-source-contract.sh          # no build, runs on every pull request
-npm run check:loader                   # two loader builds, runs on every pull request
-npm run check:admin                    # free's admin + inspector builds, same job
+bin/verify-source-contract.sh          # no build
+npm run check:loader                   # the loader builds, then the loader contract
+npm run check:admin                    # free's admin + inspector builds, then the admin contract
 ```
+
+Every pull request runs all three, plus POT coverage, in `frontend-tests.yml`'s
+`build` job: one `npm run build`, then `npm run assert:loader` and
+`assert:admin` on its output ([ADR 0029](docs/adr/0029-the-free-contract-is-proven-at-the-source.md#the-pull-request-workflow)).
 
 Use Node 22 (`nvm use`, matching `.nvmrc`) for release and loader-size checks,
 as CI does. Node versions can bundle different gzip implementations: the same
@@ -176,8 +180,8 @@ it. Both halves apply in both languages: PHP is checked for `pro/` paths too,
 since `require_once WCONVERT_DIR . 'pro/…'` is the shape a WordPress developer
 reaches for first.
 
-`npm run check:loader` and `npm run check:admin` are the **builds a pull
-request pays for**, and they earn it: every assertion is about build output. Free's and Pro's
+The one `npm run build` is the **build a pull request pays for**, and the
+contracts on it earn it: every assertion is about build output. Free's and Pro's
 loader, gzip -9 on Node 22, hard-fail at 17,456 / 30,720 bytes for Free / Pro (ADR 0139, amended; ADR 0146; ADR 0152; ADR 0155; ADR 0158; ADR 0159); and free's loader is scanned for
 every rule identifier the manifest calls premium. Free's *admin* bundle is
 never scanned for identifiers, because its Pro hints name Pro's rules on
@@ -904,6 +908,8 @@ npm run build          # build:free then build:pro — every bundle, both plugin
 npm run build:free     # free's bundles only; what the shipped package.json rebuilds
 npm run check:loader   # the loader byte budget + the premium-identifier scan
 npm run check:admin    # free's admin + inspector carry no Pro admin code, no "upgrade"
+npm run assert:loader  # the same two checks on what is already built, no rebuild
+npm run assert:admin
 composer verify:artifact dist/stage/plain/wconvert   # the artifact contract, on a staged tree
 composer test          # PHPUnit
 composer phpstan       # PHPStan, level 7

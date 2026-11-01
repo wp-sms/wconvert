@@ -148,7 +148,14 @@ bundles, opposite verdicts.
 
 `bin/verify-source-contract.sh` (no build, every PR), `npm run check:loader` (the
 loader build, every PR), `bin/verify-artifact-contract.sh <staged-tree>` (called from
-the release build, WSMS's exact slot). Each is **fail-closed**: a check that cannot
+the release build, WSMS's exact slot).
+
+*Amended 2026-11-01 (CI simplification): on a pull request the loader and admin
+programs no longer build for themselves. `npm run build` runs once in
+`frontend-tests.yml`'s `build` job and `npm run assert:loader` / `assert:admin`
+read its output; `check:loader` / `check:admin` remain the build-then-assert
+spellings for local use. Same programs, same flags (none), byte-identical numbers.
+See [The pull-request workflow](#the-pull-request-workflow).* Each is **fail-closed**: a check that cannot
 inspect what it was asked to inspect *fails*, because "couldn't look" reading as
 "clean" is how a leak ships the one time a build is incomplete.
 
@@ -297,6 +304,51 @@ check has an opt-out, the opt-out is what runs on the day it matters.
   which is the test of whether this stayed a decision about code or became one
   about the gate.*
 
+## The pull-request workflow
+
+*Added 2026-11-01, when a full pull-request run went from 18 jobs to 11. This is where the reasoning
+that used to fill `ci.yml`'s comments lives; the workflows now point here.*
+
+```
+changes            path filters (bin/preflight.mjs reads the same block)
+├─ PHP tests       PHPUnit 8.1 | 8.4 · MySQL verifiers + PHPStan      php filter
+├─ Frontend        build + contracts ALWAYS · Vitest/tsc/ESLint · visual ×3   js filter
+├─ Template service                                                   service filter
+└─ Required checks always; skipped passes, cancelled does not
+```
+
+- **One build carries every output-level assert.** `frontend-tests.yml`'s `build`
+  job runs the source contract first (source text only, before any install), then
+  `npm run build` once, then the loader contract and byte budgets, the admin
+  contract and POT coverage on that output, and uploads it for the visual legs.
+  Every Vite config has its own `outDir`, so asserting on the full build is the
+  same as asserting on the subset builds — measured byte-identical.
+- **`ci.yml` calls `frontend-tests.yml` unconditionally**, with
+  `tests: <js filter>`. The build job ignores `tests`, so the fail-closed contracts
+  run on every pull request whatever the diff; `tests` gates only Vitest and the
+  visual suites. The release workflows call it with the default (`true`), so a
+  release now runs the loader contract too.
+- **Filters live at job level, never workflow level.** A workflow skipped by a
+  workflow-level `paths:` filter reports no status at all, so a required check
+  waits forever on a pull request that misses those paths
+  ([community discussion 13690](https://github.com/orgs/community/discussions/13690)).
+  A skipped job still reports, and one `if: always()` gate aggregates `needs`.
+  Require `CI / Required checks` and nothing else.
+- **No `push` trigger.** A pull request is tested against the result of merging it;
+  running the suites again on `main` re-proves what it proved.
+- **A draft skips the visual suites**, most of a run's minutes. Marking it ready is
+  a trigger of its own, and GitHub will not merge a draft, so the run that gates a
+  merge is always a full one.
+- **Visual legs run in the Playwright container.** `playwright install --with-deps`
+  apt-installs ~26 MB of fonts from a mirror that throttled to ~40 kB/s in most
+  runs, turning a 20-second suite into 6–11 minutes. The image carries the browsers
+  and fonts; its tag is read from the lockfile, so it cannot drift.
+- **Small checks ride in jobs that already paid for setup.** tsc and ESLint share the
+  Vitest job; PHPStan shares the MySQL job's PHP 8.2 and install. Each later step
+  runs even when an earlier check failed, so one push reports all of them.
+- **`node_modules` is cached whole**, keyed on the lockfile and exact Node version
+  (`.github/actions/npm-install`); `npm ci` runs only on a miss.
+
 ## Consequences
 
 - **A stray premium import is caught by whoever wrote it.** WSMS finds one only when
@@ -316,6 +368,10 @@ check has an opt-out, the opt-out is what runs on the day it matters.
   assertions — the byte budget and the premium-identifier scan — are about build
   output, which is the premise WSMS's "no build on a PR" lacks. Seconds, one small
   Vite config.
+  *Amended 2026-11-01: the exception is now the one full `npm run build`, shared
+  by the loader and admin contracts, POT coverage and the visual suites, rather
+  than subset builds per check. Still no ZIP. See
+  [The pull-request workflow](#the-pull-request-workflow).*
 - **Each half lands with the thing it inspects.** The source contract exists on day
   one; the loader checks when there is a loader; the artifact contract, Plugin Check
   and the release guard when there is a release workflow. Nothing is written before
