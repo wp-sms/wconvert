@@ -94,8 +94,8 @@ export function OptinList({
   onEdit: (id: string) => void;
   onCreate?: () => void;
   onBusyChange?: (busy: boolean) => void;
-  /** An empty list carries the one Create button, so the header drops its own. */
-  onEmptyChange?: (empty: boolean) => void;
+  /** An empty list carries the one Create button, so the header drops its own. Null until the list is in. */
+  onEmptyChange?: (empty: boolean | null) => void;
   /** The Occasion filter, from the address so it survives a reload (ADR 0149). */
   occasion?: string;
   /** What an import did, kept above the rows it added. */
@@ -574,7 +574,8 @@ export function OptinList({
     );
   };
   const empty = list.status === 'ready' && all.length === 0;
-  useEffect(() => onEmptyChange?.(empty), [empty, onEmptyChange]);
+  const known = list.status === 'ready';
+  useEffect(() => onEmptyChange?.(known ? empty : null), [known, empty, onEmptyChange]);
   // The getting-started card (ADR 0176). On an empty site it replaces the
   // bare empty state; until its milestones arrive, the sheet waits with it.
   const checklist = useChecklist(list.status === 'ready' ? list.data : null, goalEntries);

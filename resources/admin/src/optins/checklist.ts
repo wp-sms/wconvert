@@ -15,8 +15,9 @@ import { statusOf, type OptinSummary } from './api';
  *
  * **A site whose campaigns only show a message counts views instead.** A
  * "Show a message" campaign converts on nothing (ADR 0163), so its third step
- * would never finish. On such a site step 3 is "Get your first view" and reads
- * `first_impression`.
+ * would never finish. When every published campaign (every campaign, before
+ * the first publish) only shows a message, step 3 is "Get your first view" and
+ * reads `first_impression`.
  */
 export interface Milestones {
   first_publish: string | null;
@@ -50,7 +51,11 @@ export function checklistOf(rows: readonly OptinSummary[], milestones: Milestone
   // ULIDs sort by creation time, so the largest id is the newest.
   const newest = (list: readonly OptinSummary[]) => list.reduce<OptinSummary | null>((best, row) => (best === null || row.id > best.id ? row : best), null);
   const draft = newest(existing.filter((row) => statusOf(row) === 'draft'));
-  const result = existing.length > 0 && existing.every((row) => countsNothing(row.goal)) ? 'view' : 'lead';
+  // What step 3 waits for is what the published campaigns can produce; before
+  // anything is published, what the drafts will.
+  const published = existing.filter((row) => statusOf(row) === 'published' || statusOf(row) === 'suspended');
+  const basis = published.length > 0 ? published : existing;
+  const result = basis.length > 0 && basis.every((row) => countsNothing(row.goal)) ? 'view' : 'lead';
   const resultOn = result === 'view' ? milestones.first_impression : milestones.first_conversion;
 
   const reached: Record<StepId, boolean> = {

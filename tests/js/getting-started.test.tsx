@@ -13,7 +13,7 @@ import { actionFor, checklistOf, type Milestones } from '../../resources/admin/s
 const api = vi.hoisted(() => ({ readMilestones: vi.fn(), hideChecklist: vi.fn() }));
 vi.mock('../../resources/admin/src/optins/gettingStartedApi', () => api);
 
-const { GettingStarted, useChecklist } = await import('../../resources/admin/src/optins/GettingStarted');
+const { GettingStarted, useChecklist, resetChecklistForTests } = await import('../../resources/admin/src/optins/GettingStarted');
 
 const NONE: Milestones = { first_publish: null, first_impression: null, first_conversion: null };
 const row = (id: string, overrides: Partial<OptinSummary> = {}): OptinSummary => ({
@@ -26,6 +26,7 @@ const states = (rows: OptinSummary[], m: Milestones, countsNothing = never) => c
 
 beforeEach(() => {
   vi.clearAllMocks();
+  resetChecklistForTests();
   window.wconvertAdmin = { homeUrl: 'https://shop.example/' } as typeof window.wconvertAdmin;
   api.hideChecklist.mockResolvedValue({ hidden: true });
 });
@@ -48,6 +49,13 @@ describe('the steps, from what the site records', () => {
     const checklist = checklistOf([row('A')], { first_publish: '2026-10-31', first_impression: '2026-10-31', first_conversion: '2026-11-01' }, never);
     expect(checklist.done).toBe(3);
     expect(checklist.allSet).toBe(true);
+  });
+
+  it('decides lead or view by what is published, once anything is', () => {
+    const message = (goal: string) => goal === 'show_message';
+    const rows = [row('A', { goal: 'show_message', published_at: '2026-10-31 09:00:00' }), row('B')];
+    expect(checklistOf(rows, { ...NONE, first_publish: '2026-10-31' }, message).result).toBe('view');
+    expect(checklistOf([row('A', { goal: 'show_message' }), row('B')], NONE, message).result).toBe('lead');
   });
 
   it('counts views instead on a site whose campaigns only show a message', () => {
@@ -109,6 +117,17 @@ describe('the card', () => {
     expect(screen.queryByRole('region')).toBeNull();
     expect(screen.getByText('hidden')).toBeInTheDocument();
     expect(api.hideChecklist).toHaveBeenCalledOnce();
+  });
+
+  it('stays hidden when Campaigns is left and opened again without a reload', async () => {
+    api.readMilestones.mockResolvedValue(NONE);
+    const first = render(<Harness rows={[]} />);
+    await userEvent.click(await screen.findByRole('button', { name: 'Hide this checklist' }));
+    first.unmount();
+
+    render(<Harness rows={[]} />);
+
+    expect(screen.getByText('hidden')).toBeInTheDocument();
   });
 
   it('says "You’re all set" once and writes the hidden flag while it says it', async () => {

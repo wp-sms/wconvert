@@ -48,6 +48,7 @@ vi.mock('../../resources/admin/src/optins/gettingStartedApi', () => gettingStart
 vi.mock('../../resources/admin/src/optins/CampaignDetails', () => ({ default: () => null }));
 
 const { OptinList } = await import('../../resources/admin/src/optins/OptinList');
+const { resetChecklistForTests } = await import('../../resources/admin/src/optins/GettingStarted');
 
 const OPTIN = {
   id: '01JQ00000000000000000000AA',
@@ -72,6 +73,7 @@ beforeEach(() => {
   stats.readDashboard.mockResolvedValue({ days: 30, from: '2026-08-16', to: '2026-09-14', goals: [], impact: [] });
   optins.listOptins.mockResolvedValue([OPTIN]);
   gettingStarted.readMilestones.mockRejectedValue(new Error('not in this test'));
+  resetChecklistForTests();
   gettingStarted.hideChecklist.mockResolvedValue({ hidden: true });
   goals.listGoals.mockResolvedValue([
     { id: 'grow_email_list', label: 'Grow my email list', availability: 'ready', headline_label: 'Email submissions', rate_label: 'Email submission rate',

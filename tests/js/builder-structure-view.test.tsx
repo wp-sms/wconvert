@@ -530,7 +530,7 @@ describe('the row', () => {
   it('warns on a block whose words a design switch would throw away', async () => {
     await structure();
 
-    expect(within(row('Fine print')).queryByTitle('What you type here is dropped when you switch design.')).toBeNull();
+    expect(within(row('Fine print')).queryByTitle('What you type here is dropped when you switch template.')).toBeNull();
 
     await userEvent.click(
       within(row('Fine print')).getByRole('button', { name: 'Add, copy or delete Fine print' }),
@@ -539,7 +539,7 @@ describe('the row', () => {
 
     // The copy comes back with no Role — Roles are unique tree-wide — so it is
     // exactly the block the warning is about.
-    expect(within(row('Text')).getByTitle('What you type here is dropped when you switch design.')).toBeInTheDocument();
+    expect(within(row('Text')).getByTitle('What you type here is dropped when you switch template.')).toBeInTheDocument();
   });
 
   /**
@@ -556,7 +556,7 @@ describe('the row', () => {
     await userEvent.click(screen.getByRole('menuitem', { name: 'Add after' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Image' }));
 
-    expect(within(row('Image')).queryByTitle('What you type here is dropped when you switch design.')).toBeNull();
+    expect(within(row('Image')).queryByTitle('What you type here is dropped when you switch template.')).toBeNull();
   });
 
   /** What a row says under its name: the words, or how much is inside it. */

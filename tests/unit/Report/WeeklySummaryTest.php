@@ -87,6 +87,15 @@ final class WeeklySummaryTest extends TestCase
         $this->assertNull($m['insight']);
     }
 
+    public function testAPublishWeekThatShowedNothingMakesTheNextOneTheFirstWeek(): void
+    {
+        $report = $this->report(shown: 300, results: 9, rows: [$this->row('A', 'Welcome discount', 9, 300)]);
+        $report['previous'] = ['from' => '2026-10-19', 'to' => '2026-10-25'] + $this->report(shown: 0, results: 0, rows: []);
+
+        $this->assertSame('9 submissions in your first week', WeeklySummary::compose($report, '2026-10-24', 'My site', self::ADMIN)['headline']);
+        $this->assertSame('9 submissions last week', WeeklySummary::compose($report, '2026-09-01', 'My site', self::ADMIN)['headline'], 'A quiet week long after the first publish is not a first week.');
+    }
+
     public function testAnOfferOnlySiteCountsClicksAndOffersNoLeadsButton(): void
     {
         $report = $this->report(shown: 1000, results: 40, rows: [$this->row('A', 'Sale bar', 40, 1000)], group: 'offers', goal: 'promote_offer');

@@ -44,7 +44,7 @@ final class FirstRunRedirect
         $bulk = ($request['action'] ?? null) === 'activate-selected'
             && is_array($request['checked'] ?? null) && count($request['checked']) > 1;
 
-        if ($networkWide || $bulk || self::cli()) {
+        if ($networkWide || $bulk || self::cli() || wp_doing_ajax()) {
             return;
         }
 

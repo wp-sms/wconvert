@@ -25,8 +25,20 @@ export type ChecklistView =
  * "You're all set" shows once. Showing it writes the same per-user flag the ×
  * writes, because the milestones alone can't tell this visit from the next.
  */
+/**
+ * Hidden with × during this page load. The boot data is read once per load,
+ * and Campaigns unmounts whenever the hash moves to another section, so the
+ * list remembers it here rather than in a component.
+ */
+let hiddenThisLoad = false;
+
+/** For tests: forget a × from an earlier render. */
+export function resetChecklistForTests(): void {
+  hiddenThisLoad = false;
+}
+
 export function useChecklist(rows: readonly OptinSummary[] | null, goals: readonly GoalEntry[] | null): ChecklistView {
-  const [hidden, setHidden] = useState(() => adminSettings()?.checklistHidden === true);
+  const [hidden, setHidden] = useState(() => hiddenThisLoad || adminSettings()?.checklistHidden === true);
   const [milestones, setMilestones] = useState<Milestones | null | 'failed'>(null);
   const wroteAllSet = useRef(false);
 
@@ -59,6 +71,7 @@ export function useChecklist(rows: readonly OptinSummary[] | null, goals: readon
     status: 'shown',
     checklist,
     hide: () => {
+      hiddenThisLoad = true;
       setHidden(true);
       // If this fails the card comes back next visit, which is the safe way round.
       void hideChecklist().catch(() => undefined);

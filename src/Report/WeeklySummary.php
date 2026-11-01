@@ -54,7 +54,11 @@ final class WeeklySummary
     public static function compose(array $report, ?string $firstPublish, string $site, string $adminUrl, bool $test = false): array
     {
         $group = self::leadingGroup($report);
-        $firstWeek = $firstPublish !== null && $firstPublish >= (string) ($report['from'] ?? '');
+        // The first summary after the first publish says "First week": either
+        // the publish fell in this window, or it fell in the one before and
+        // that week showed nothing, so the week before was skipped.
+        $firstWeek = $firstPublish !== null && ($firstPublish >= (string) ($report['from'] ?? '')
+            || ($firstPublish >= (string) ($report['previous']['from'] ?? '9999') && self::count($report['previous'] ?? [], 'impressions') === 0));
         $hasPrevious = !$firstWeek && is_array($report['previous'] ?? null);
         $published = self::published($report);
 

@@ -54,7 +54,8 @@ export function App() {
   const { route, navigate, onEditingStateChange } = navigation;
   const section = route.section;
   const [campaignBusy, setCampaignBusy] = useState(false);
-  const [campaignsEmpty, setCampaignsEmpty] = useState(false);
+  // Null until the list is in, so the header's occasion menu never flashes on an empty site.
+  const [campaignsEmpty, setCampaignsEmpty] = useState<boolean | null>(null);
   const campaignBusyRef = useRef(false);
   const onCampaignEditingStateChange = useCallback((state: EditingState) => {
     campaignBusyRef.current = state.busy;
@@ -148,7 +149,7 @@ export function App() {
         {/* Import is here even before the site has an occasion (#280), but
             not before its first campaign: a new site's only door is the
             getting-started card (ADR 0176). */}
-        {!campaignsEmpty && <ImportOccasionMenu disabled={campaignBusy} onImported={(imported) => { setNotice(imported); setListVersion((n) => n + 1); }}
+        {campaignsEmpty === false && <ImportOccasionMenu disabled={campaignBusy} onImported={(imported) => { setNotice(imported); setListVersion((n) => n + 1); }}
           onCreated={(occasion) => navigate(occasionHref(occasion))} />}
         {!campaignsEmpty && createButton}
       </> : section === 'leads'
@@ -234,7 +235,7 @@ function OptinsSection({
   onCreateInOccasion: (occasion: string) => void;
   onEditingStateChange: (state: EditingState) => void;
   onCreate: () => void;
-  onEmptyChange: (empty: boolean) => void;
+  onEmptyChange: (empty: boolean | null) => void;
   onCancelCreate: () => void;
   onEdit: (id: string) => void;
 }) {

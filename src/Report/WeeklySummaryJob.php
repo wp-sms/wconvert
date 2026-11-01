@@ -62,7 +62,8 @@ final class WeeklySummaryJob
      * The next Monday at {@see SEND_HOUR} in the site's zone, strictly after `$now`.
      *
      * WP-Cron's `weekly` recurrence is a fixed seven days, so a clock change
-     * moves later sends by an hour. The email says "around 9:00" for that reason.
+     * moves later sends by an hour; Settings names the time zone rather than
+     * promising the hour.
      */
     public static function nextSend(int $now, \DateTimeZone $zone): int
     {

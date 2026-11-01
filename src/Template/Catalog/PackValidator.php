@@ -42,7 +42,7 @@ final class PackValidator
      */
     public function portable(array $design): array
     {
-        self::check(is_array($design['tree'] ?? null) && is_array($design['tokens'] ?? null), __('This design has an invalid tree or styles.', 'wconvert'));
+        self::check(is_array($design['tree'] ?? null) && is_array($design['tokens'] ?? null), __('This template has an invalid tree or styles.', 'wconvert'));
         $tier = CaptureJourney::requiresPremium($design['tree'] ?? []) || !in_array($design['display_type'] ?? '', ['popup', 'inline'], true)
             || \WConvert\Template\CommerceSupport::used($design['tree']) || \WConvert\Template\CommerceSupport::quizAdditions($design['tree']) ? Tier::Pro : Tier::Free;
         $entry = ['id' => 'imported', 'name' => $design['name'] ?? '', 'display_type' => $design['display_type'] ?? '',
@@ -57,7 +57,7 @@ final class PackValidator
     /** Validate authored data before normalization; JSON object order is immaterial. */
     private function fonts(mixed $fonts): void
     {
-        $error = __('This design has invalid font requirements.', 'wconvert');
+        $error = __('This template has invalid font requirements.', 'wconvert');
         self::check(is_array($fonts) && array_is_list($fonts) && count($fonts) <= 4, $error);
         foreach ($fonts as $font) {
             self::check(is_array($font), $error);
@@ -76,7 +76,7 @@ final class PackValidator
 
     private function decorations(mixed $group): void
     {
-        $error = __('This design has invalid decorations.', 'wconvert');
+        $error = __('This template has invalid decorations.', 'wconvert');
         self::check(is_array($group), $error);
         $this->keys($group, ['label', 'hidden', 'items']);
         $this->words($group['label'] ?? null, 80);
@@ -110,9 +110,9 @@ final class PackValidator
     /** Only typed merchant action URLs are permitted, never markup or controls. */
     public static function portableUrl(mixed $value): void
     {
-        self::check(is_string($value) && strlen($value) <= 2048 && !preg_match('/[<>"\\\\\x00-\x20]/', $value), __('This design contains an invalid link.', 'wconvert'));
+        self::check(is_string($value) && strlen($value) <= 2048 && !preg_match('/[<>"\\\\\x00-\x20]/', $value), __('This template contains an invalid link.', 'wconvert'));
         if (preg_match('/^([a-z][a-z0-9+.-]*):/i', $value, $match)) {
-            self::check(in_array(strtolower($match[1]), ['http', 'https', 'mailto', 'tel'], true), __('This design contains an unsupported link.', 'wconvert'));
+            self::check(in_array(strtolower($match[1]), ['http', 'https', 'mailto', 'tel'], true), __('This template contains an unsupported link.', 'wconvert'));
         }
         self::check(!str_starts_with($value, '//'), __('Use an explicit https address for this link.', 'wconvert'));
     }
@@ -175,13 +175,13 @@ final class PackValidator
                 && in_array($template['display_type'] ?? null, $tier === Tier::Free ? ['inline', 'popup'] : ['inline', 'popup', 'floating_bar', 'slide_in', 'fullscreen'], true), __('This pack needs a display format or entitlement this installer does not support yet.', 'wconvert'));
             $this->bag($template['tokens'] ?? []);
             $tree = $template['tree'] ?? null;
-            self::check(is_array($tree), __('This design has no tree.', 'wconvert'));
+            self::check(is_array($tree), __('This template has no tree.', 'wconvert'));
             // Shape first: the capability probes below walk the steps.
-            self::check(is_array($tree['steps'] ?? null) && array_is_list($tree['steps']), __('This design has an invalid screen list.', 'wconvert'));
-            foreach ($tree['steps'] as $step) self::check(is_array($step) && (!isset($step['content']) || is_array($step['content'])), __('This design has an invalid screen.', 'wconvert'));
-            if (\WConvert\Template\CommerceSupport::used($tree) || \WConvert\Template\CommerceSupport::quizAdditions($tree)) self::check($tier === Tier::Pro && \WConvert\Template\CommerceSupport::active(), $this->installedTier === Tier::Free ? __('This design uses elements this site can’t display.', 'wconvert') : __('Product suggestions require WConvert Pro and WooCommerce.', 'wconvert'));
+            self::check(is_array($tree['steps'] ?? null) && array_is_list($tree['steps']), __('This template has an invalid screen list.', 'wconvert'));
+            foreach ($tree['steps'] as $step) self::check(is_array($step) && (!isset($step['content']) || is_array($step['content'])), __('This template has an invalid screen.', 'wconvert'));
+            if (\WConvert\Template\CommerceSupport::used($tree) || \WConvert\Template\CommerceSupport::quizAdditions($tree)) self::check($tier === Tier::Pro && \WConvert\Template\CommerceSupport::active(), $this->installedTier === Tier::Free ? __('This template uses elements this site can’t display.', 'wconvert') : __('Product suggestions require WConvert Pro and WooCommerce.', 'wconvert'));
             if (CaptureJourney::requiresPremium($tree)) {
-                self::check($tier !== Tier::Free && JourneySupport::active(), __('This design uses elements this site can’t display.', 'wconvert'));
+                self::check($tier !== Tier::Free && JourneySupport::active(), __('This template uses elements this site can’t display.', 'wconvert'));
                 $requiredCapabilities[] = 'question-journey:1';
             }
             $graph = TemplateTree::isGraph($tree);
@@ -189,7 +189,7 @@ final class PackValidator
             if (isset($tree['fonts'])) $this->fonts($tree['fonts']);
             // `v` is the vocabulary version; a flow is said by `graph` (ADR 0156).
             self::check(($tree['v'] ?? null) === TemplateTree::VERSION, __('Update required: this design uses a newer vocabulary.', 'wconvert'));
-            self::check(count($tree['steps']) >= 1 && count($tree['steps']) <= ($this->portable && $graph ? 256 : 7), __('This design has an invalid screen list.', 'wconvert'));
+            self::check(count($tree['steps']) >= 1 && count($tree['steps']) <= ($this->portable && $graph ? 256 : 7), __('This template has an invalid screen list.', 'wconvert'));
             if ($graph) $requiredCapabilities[] = 'template-flow:1';
             $requiredCapabilities[] = 'template-tree:2';
             $nodeIds = [];
@@ -199,22 +199,22 @@ final class PackValidator
                 $this->keys($step, ['id', 'name', 'kind', 'content', 'when', 'paths', 'results', 'products_required', 'review_answers', 'details_note']);
                 if (isset($step['when'])) $this->condition($step['when']);
                 if (isset($step['paths'])) {
-                    self::check(is_array($step['paths']) && array_is_list($step['paths']), __('This design has invalid lines between screens.', 'wconvert'));
+                    self::check(is_array($step['paths']) && array_is_list($step['paths']), __('This template has invalid lines between screens.', 'wconvert'));
                     foreach ($step['paths'] as $route) {
-                        self::check(is_array($route), __('This design has invalid lines between screens.', 'wconvert'));
+                        self::check(is_array($route), __('This template has invalid lines between screens.', 'wconvert'));
                         $this->keys($route, ['to', 'when']);
                         if (isset($route['when'])) $this->condition($route['when']);
                     }
                 }
-                if (isset($step['review_answers'])) self::check(is_bool($step['review_answers']), __('This design has an invalid answer review setting.', 'wconvert'));
+                if (isset($step['review_answers'])) self::check(is_bool($step['review_answers']), __('This template has an invalid answer review setting.', 'wconvert'));
                 if (isset($step['details_note'])) $this->words($step['details_note'], 500);
-                if (isset($step['products_required'])) self::check(is_bool($step['products_required']), __('This design has an invalid product requirement.', 'wconvert'));
+                if (isset($step['products_required'])) self::check(is_bool($step['products_required']), __('This template has an invalid product requirement.', 'wconvert'));
                 if (isset($step['results'])) {
-                    self::check(is_array($step['results']) && array_is_list($step['results']) && count($step['results']) <= 6, __('This design has invalid results.', 'wconvert'));
+                    self::check(is_array($step['results']) && array_is_list($step['results']) && count($step['results']) <= 6, __('This template has invalid results.', 'wconvert'));
                     foreach ($step['results'] as $result) {
-                        self::check(is_array($result), __('This design has invalid results.', 'wconvert'));
+                        self::check(is_array($result), __('This template has invalid results.', 'wconvert'));
                         $this->keys($result, ['id', 'heading', 'body', 'when', 'href', 'link_label', 'product_ids', 'product_filter', 'product_action']);
-                        self::check(CaptureJourney::identifier($result['id'] ?? null), __('This design has invalid results.', 'wconvert'));
+                        self::check(CaptureJourney::identifier($result['id'] ?? null), __('This template has invalid results.', 'wconvert'));
                         $this->words($result['heading'] ?? null, 200);
                         $this->words($result['body'] ?? '', 500);
                         if (isset($result['link_label'])) $this->words($result['link_label'], 120);
@@ -236,13 +236,13 @@ final class PackValidator
                 $this->node($step['content'] ?? null, 0, $nodeIds, $count, $requiredCapabilities);
             }
             foreach (is_array($tree['submissions'] ?? null) ? $tree['submissions'] : [] as $submission) {
-                self::check(is_array($submission), __('This design has an invalid submission.', 'wconvert'));
+                self::check(is_array($submission), __('This template has an invalid submission.', 'wconvert'));
                 $this->keys($submission, ['id', 'required', 'fields', 'consents']);
             }
-            self::check(!in_array(TemplateForm::issue($template), ['identifier', 'choices'], true), __('This design needs a usable email or phone capture form.', 'wconvert'));
+            self::check(!in_array(TemplateForm::issue($template), ['identifier', 'choices'], true), __('This template needs a usable email or phone capture form.', 'wconvert'));
             $acts = ConvertingAct::offeredIn($tree);
             if ($graph) {
-                self::check(is_array($tree['graph'] ?? null), __('This design has no lines between screens.', 'wconvert'));
+                self::check(is_array($tree['graph'] ?? null), __('This template has no lines between screens.', 'wconvert'));
                 $this->keys($tree['graph'], ['entry', 'edges']);
                 foreach ($tree['graph']['edges'] ?? [] as $edge) {
                     self::check(is_array($edge), __('Invalid line between screens.', 'wconvert'));
@@ -259,7 +259,7 @@ final class PackValidator
                 return $node;
             })['template']['tree'] : $tree;
             $issue = $graph ? \WConvert\Template\GraphCaptureContract::issue($checking, in_array('result', array_column($tree['steps'], 'kind'), true) ? 'find_match' : 'grow_email_list') : CaptureJourney::issue($checking);
-            self::check(count($acts) === 1 && $issue === null, __('This design does not provide one valid conversion flow.', 'wconvert'));
+            self::check(count($acts) === 1 && $issue === null, __('This template does not provide one valid conversion flow.', 'wconvert'));
             if ($this->portable) {
                 $pack['templates'][$position] = array_replace($template, $this->vocabulary->normalize($template));
             } else {
@@ -272,11 +272,11 @@ final class PackValidator
                     public function entries(): array { return [$this->entry]; }
                 };
                 $library = TemplateLibrary::from($this->vocabulary, $source);
-                self::check(count($library->all()) === 1, __('This design does not provide one valid conversion flow.', 'wconvert'));
+                self::check(count($library->all()) === 1, __('This template does not provide one valid conversion flow.', 'wconvert'));
                 $pack['templates'][$position] = array_values($library->all())[0];
             }
             $snapshot = ['tree' => $this->vocabulary->withoutCopy($tree), 'tokens' => $template['tokens'] ?? []];
-            self::check($this->portable || strlen((string) gzencode((string) wp_json_encode($snapshot))) <= DesignBudget::PER_DESIGN, __('This design exceeds the size budget.', 'wconvert'));
+            self::check($this->portable || strlen((string) gzencode((string) wp_json_encode($snapshot))) <= DesignBudget::PER_DESIGN, __('This template exceeds the size budget.', 'wconvert'));
         }
         if (array_key_exists('playbooks', $pack)) {
             $requiredCapabilities[] = 'campaign-starts:1';
@@ -304,15 +304,15 @@ final class PackValidator
      */
     private function node($node, int $depth, array &$ids, int &$count, array &$requiredCapabilities): void
     {
-        self::check(is_array($node) && $depth <= 12 && ++$count <= 200, __('This design is too deeply nested or has too many blocks.', 'wconvert'));
+        self::check(is_array($node) && $depth <= 12 && ++$count <= 200, __('This template is too deeply nested or has too many blocks.', 'wconvert'));
         $type = $node['type'] ?? null;
-        self::check(is_string($type), __('This design has an invalid block.', 'wconvert'));
+        self::check(is_string($type), __('This template has an invalid block.', 'wconvert'));
         $definition = $this->manifest['layouts'][$type] ?? $this->manifest['nodes'][$type] ?? null;
         self::check(is_array($definition), __('Update required: this design uses an unknown block.', 'wconvert'));
         $children = isset($definition['children']) ? ($definition['children'] === 'panes' ? ['start', 'end'] : ['children']) : [];
         $this->keys($node, array_merge($children === [] ? ['type', 'id', 'role'] : ['type'], self::strings($definition['content'] ?? []), self::strings($definition['params'] ?? []), $children));
         if ($children === []) {
-            self::check(self::identifier($node['id'] ?? null) && !isset($ids[$node['id']]), __('This design needs unique block identities.', 'wconvert'));
+            self::check(self::identifier($node['id'] ?? null) && !isset($ids[$node['id']]), __('This template needs unique block identities.', 'wconvert'));
             $ids[$node['id']] = true;
         }
         if (isset($node['role'])) {
@@ -321,18 +321,18 @@ final class PackValidator
         foreach ($node as $key => $value) {
             if (in_array($key, ['type', 'id', 'role'], true)) continue;
             if (in_array($key, $children, true)) {
-                self::check(is_array($value) && array_is_list($value), __('This design has an invalid block list.', 'wconvert'));
+                self::check(is_array($value) && array_is_list($value), __('This template has an invalid block list.', 'wconvert'));
                 foreach ($value as $child) $this->node($child, $depth + 1, $ids, $count, $requiredCapabilities);
             } elseif (in_array($key, ['tokens', 'narrow'], true)) {
                 $this->bag($value);
             } elseif ($key === 'decorations') {
                 $this->decorations($value);
             } elseif ($type === 'countdown' && $key === 'density') {
-                self::check(in_array($value, ['regular', 'compact', 'stacked'], true), __('This design has an invalid countdown size.', 'wconvert'));
+                self::check(in_array($value, ['regular', 'compact', 'stacked'], true), __('This template has an invalid countdown size.', 'wconvert'));
             } elseif ($type === 'countdown' && $key === 'precision') {
-                self::check(in_array($value, ['seconds', 'minutes'], true), __('This design has an invalid countdown precision.', 'wconvert'));
+                self::check(in_array($value, ['seconds', 'minutes'], true), __('This template has an invalid countdown precision.', 'wconvert'));
             } elseif ($key === 'link') {
-                self::check(is_array($value), __('This design has an invalid link label.', 'wconvert'));
+                self::check(is_array($value), __('This template has an invalid link label.', 'wconvert'));
                 $this->keys($value, $this->portable ? ['label', 'href'] : ['label']);
                 if ($this->portable && isset($value['href'])) self::portableUrl($value['href']);
                 $this->words($value['label'] ?? null, 200);
@@ -342,26 +342,26 @@ final class PackValidator
                 self::check($value === [], __('Choose products from this site after installing the design.', 'wconvert'));
             } elseif ($key === 'options') {
                 self::check((($node['name'] ?? null) === 'interest' || $type === 'question') && is_array($value)
-                    && ($type === 'question' || $value !== []) && $this->vocabulary->choiceOptions($value) === $value, __('This design has invalid choice options.', 'wconvert'));
+                    && ($type === 'question' || $value !== []) && $this->vocabulary->choiceOptions($value) === $value, __('This template has invalid choice options.', 'wconvert'));
                 foreach ($value as $option) $this->words($option['label'], 200);
             } elseif (in_array($key, ['href', 'src'], true)) {
                 if ($this->portable && $key === 'href') self::portableUrl($value);
                 else self::check($value === '', __('Pack links and pictures must be supplied by the site owner.', 'wconvert'));
             } elseif (in_array($key, ['hidden', 'required', 'copy', 'notch', 'exclude_cart'], true)) {
-                self::check(is_bool($value) || ($this->portable && $key === 'notch' && in_array($value, ['true', 'false'], true)), __('This design has an invalid switch value.', 'wconvert'));
+                self::check(is_bool($value) || ($this->portable && $key === 'notch' && in_array($value, ['true', 'false'], true)), __('This template has an invalid switch value.', 'wconvert'));
             } elseif ($type === 'split' && $key === 'ratio') {
                 // Layout choices are editor presets, not an enum (ADR 0054).
                 self::check((is_int($value) || is_float($value) || is_string($value)) && is_numeric($value)
                     && is_finite((float) $value) && (float) $value >= 0 && (float) $value <= 1,
-                    __('This design has an invalid column ratio.', 'wconvert'));
+                    __('This template has an invalid column ratio.', 'wconvert'));
             } elseif ((in_array($type, ['split', 'grid'], true) && in_array($key, ['basis', 'narrow_basis'], true))
                 || (in_array($type, ['panel', 'media'], true) && $key === 'min')) {
-                self::check(self::layoutLength($value), __('This design has an invalid layout size.', 'wconvert'));
+                self::check(self::layoutLength($value), __('This template has an invalid layout size.', 'wconvert'));
             } elseif (isset($definition['choices'][$key])) {
-                self::check(is_string($value) || is_int($value) || is_float($value), __('This design has an invalid setting.', 'wconvert'));
+                self::check(is_string($value) || is_int($value) || is_float($value), __('This template has an invalid setting.', 'wconvert'));
                 self::check(in_array((string) $value, $definition['choices'][$key], true), __('Update required: this design uses an unknown setting.', 'wconvert'));
             } elseif ($key === 'action') {
-                self::check(in_array($value, CaptureJourney::ACTIONS, true), __('This design has an invalid action.', 'wconvert'));
+                self::check(in_array($value, CaptureJourney::ACTIONS, true), __('This template has an invalid action.', 'wconvert'));
             } elseif ($type === 'field' && $key === 'name') {
                 self::check(in_array($value, $this->vocabulary->fields(), true), __('Update required: this design uses an unknown field.', 'wconvert'));
             } else {
@@ -372,13 +372,13 @@ final class PackValidator
         if ($type === 'followup' || ($type === 'code' && ($node['copy'] ?? false) === true)) $requiredCapabilities[] = 'success-actions:1';
         if ($type === 'field' && ($node['name'] ?? null) === 'interest') $requiredCapabilities[] = 'enquiry-choice:1';
         if ($type === 'field') {
-            self::check(isset($node['name']) && is_string($node['label'] ?? null) && trim($node['label']) !== '', __('This design has an unlabeled field.', 'wconvert'));
+            self::check(isset($node['name']) && is_string($node['label'] ?? null) && trim($node['label']) !== '', __('This template has an unlabeled field.', 'wconvert'));
         }
         if ($type === 'question') {
             self::check(CaptureJourney::identifier($node['id'] ?? null) && is_string($node['label'] ?? null)
-                && trim($node['label']) !== '', __('This design has an invalid question.', 'wconvert'));
+                && trim($node['label']) !== '', __('This template has an invalid question.', 'wconvert'));
         }
-        if ($type === 'button') self::check(isset($node['action']), __('This design has no button action.', 'wconvert'));
+        if ($type === 'button') self::check(isset($node['action']), __('This template has no button action.', 'wconvert'));
         if ($type === 'consent' && !$this->portable) self::check(($node['hidden'] ?? null) === true, __('Pack consent must start hidden.', 'wconvert'));
     }
 
@@ -395,9 +395,9 @@ final class PackValidator
     /** A flat, bounded condition. The journey validator checks earlier-question references. */
     private function condition(mixed $condition): void
     {
-        self::check(is_array($condition), __('This design has an invalid condition.', 'wconvert'));
+        self::check(is_array($condition), __('This template has an invalid condition.', 'wconvert'));
         $this->keys($condition, ['match', 'clauses']);
-        self::check(\WConvert\Template\JourneyRules::normalize($condition) !== null, __('This design has an invalid condition.', 'wconvert'));
+        self::check(\WConvert\Template\JourneyRules::normalize($condition) !== null, __('This template has an invalid condition.', 'wconvert'));
         foreach ($condition['clauses'] as $clause) {
             $this->keys($clause, ['question', 'operator', 'values']);
         }
@@ -406,7 +406,7 @@ final class PackValidator
     /** @param mixed $bag */
     private function bag($bag): void
     {
-        self::check(is_array($bag), __('This design has invalid styles.', 'wconvert'));
+        self::check(is_array($bag), __('This template has invalid styles.', 'wconvert'));
         foreach ($bag as $name => $value) {
             self::check(isset($this->manifest['tokens'][$name]), __('Update required: this design uses an unknown style.', 'wconvert'));
             self::check(is_string($value) && strlen($value) <= 500 && preg_match('/^[a-zA-Z0-9 #.,()%+\-*\/\'"\s]*$/D', $value) === 1, __('This pack contains unsupported style content.', 'wconvert'));

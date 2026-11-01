@@ -58,6 +58,11 @@ final class FirstRunRedirectTest extends TestCase
         FirstRunRedirect::arm(true, []);
         $this->assertFalse(get_transient(FirstRunRedirect::TRANSIENT), 'Network.');
 
+        $GLOBALS['wconvertTestDoingAjax'] = true;
+        FirstRunRedirect::arm(false, []);
+        unset($GLOBALS['wconvertTestDoingAjax']);
+        $this->assertFalse(get_transient(FirstRunRedirect::TRANSIENT), 'AJAX, e.g. Activate on the install screen.');
+
         FirstRunRedirect::arm(false, ['action' => 'activate', 'plugin' => 'wconvert/wconvert.php']);
         $this->assertSame(1, get_transient(FirstRunRedirect::TRANSIENT));
     }

@@ -38,8 +38,8 @@ says "3-min") and the guide. Both open on wconvert.io.
 - **Progress is read, not stored.** The card reads `GET /milestones` and the
   list the screen already loads.
 - **A site whose campaigns only show a message counts views.** "Show a message"
-  converts on nothing (ADR 0163), so step 3 would never finish. When every existing
-  (not deleted) campaign's Goal has `outcome.action === 'none'`, step 3 is "Get your first
+  converts on nothing (ADR 0163), so step 3 would never finish. When every published
+  campaign's Goal (every campaign, before the first publish) has `outcome.action === 'none'`, step 3 is "Get your first
   view" and reads `first_impression`.
 - **On an empty site the card replaces the empty state.** While the milestones
   load, the sheet shows its skeleton, so the plain empty state never flashes. A
