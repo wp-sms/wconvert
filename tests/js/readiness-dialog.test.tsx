@@ -454,3 +454,62 @@ it('says what a quiz counts and how it runs, in the list’s words', async () =>
   expect(fact('Visitor action').parentElement).not.toHaveAttribute('data-tone');
   expect(screen.getByRole('button', { name: 'Preview' })).toBeInTheDocument();
 });
+
+/** ADR 0178: every How it runs row is a way to its tab, and a value still on WConvert's starting setting says so. */
+describe('rows still on their starting setting', () => {
+  const scratch = { display_rules: { audience: { mode: 'everyone' as const }, opening: { mode: 'immediate' as const } }, targeting: {},
+    frequency: { maxPerSession: 1, stopAfterDismiss: false }, schedule: {}, priority: 0 };
+  const tagged = (label: string) => within(fact(label)).queryByText('Default') !== null;
+
+  it('tags a fresh draft’s five defaults on Pro, with one line saying what the tag means', async () => {
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
+    await open({ rules: scratch });
+    for (const label of ['Who', 'Where', 'Opens', 'How often', 'Leads go to']) expect(tagged(label), label).toBe(true);
+    expect(tagged('Runs')).toBe(false);
+    expect(screen.getByText('Rows marked Default use WConvert’s starting settings.')).toBeInTheDocument();
+  });
+
+  it('never tags where leads go on Free, which has nowhere else to send them, but still links it', async () => {
+    const { supplied } = await open({ rules: scratch });
+    expect(tagged('Leads go to')).toBe(false);
+    expect(tagged('Who')).toBe(true);
+    await userEvent.click(within(fact('Leads go to')).getByRole('button', { name: 'Kept in WConvert only' }));
+    await waitFor(() => expect(supplied.onGoToDestinations).toHaveBeenCalledOnce());
+  });
+
+  it('tags only the rows that equal the default, and says nothing when none do', async () => {
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
+    await open({ captureMode: 'connected', bound: ['dest'], destinations: [], rules: { ...scratch,
+      display_rules: { audience: { mode: 'everyone' }, opening: { mode: 'click', rules: [] } }, targeting: { include: [{ type: 'url', value: '/pricing' }] }, frequency: {} } });
+    expect(tagged('Who')).toBe(true);
+    for (const label of ['Where', 'Opens', 'How often', 'Leads go to']) expect(tagged(label), label).toBe(false);
+  });
+
+  it('keeps the way back after changing a row, without a blocker to count', async () => {
+    const { supplied } = await open({ rules: scratch });
+    await userEvent.click(within(fact('Opens')).getByRole('button', { name: 'Right away' }));
+    expect(screen.queryByRole('dialog')).toBeNull();
+    await waitFor(() => expect(supplied.onGoToRules).toHaveBeenCalledWith('when'));
+    await userEvent.click(await screen.findByRole('button', { name: 'Back to review' }));
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Back to review' })).toBeNull();
+  });
+});
+
+it('keeps the way back after How it runs’ own Display rules link', async () => {
+  await open();
+  await userEvent.click(within(screen.getByRole('heading', { name: 'How it runs' }).closest('section')!).getByRole('button', { name: 'Display rules' }));
+  expect(screen.queryByRole('dialog')).toBeNull();
+  expect(await screen.findByRole('button', { name: 'Back to review' })).toBeInTheDocument();
+});
+
+describe('the first campaign’s Next button (ADR 0178)', () => {
+  it('leads to the named tab instead of opening the review', async () => {
+    const onGo = vi.fn();
+    render(<Review {...props()} next={{ label: 'Next: Display rules', onGo }} />);
+    expect(screen.queryByRole('button', { name: 'Review & publish' })).toBeNull();
+    await userEvent.click(screen.getByRole('button', { name: 'Next: Display rules' }));
+    expect(onGo).toHaveBeenCalledOnce();
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+});

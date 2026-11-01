@@ -189,7 +189,7 @@ export function OptinList({
     let active = true;
     setReportLoading(true);
     setReportError(null);
-    void readDashboard(days, true)
+    void readDashboard(days)
       .then((data) => {
         if (active) setReport(data);
       })

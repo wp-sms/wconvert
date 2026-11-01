@@ -65,8 +65,8 @@ final class DashboardController implements RestController
         catch (\InvalidArgumentException $refusal) { return ReportWindow::error($refusal); }
         $custom = ReportWindow::custom($request);
         $month = $custom ? null : $request->get_param('month');
-        // Custom dates always carry their comparison, even when they end today.
-        $data = $custom || ReportWindow::complete($request, $range) ? $this->dashboard->compare($range) : $this->dashboard->read($range);
+        // Every window but Today carries its comparison, today so far included (ADR 0177).
+        $data = ReportWindow::today($request, $range) ? $this->dashboard->read($range) : $this->dashboard->compare($range);
         if (is_string($month) && $month !== '') $data['month'] = $month;
         if ($custom) $data['custom'] = true;
         // Said either way, so a live read (Today) is told apart from a complete one.

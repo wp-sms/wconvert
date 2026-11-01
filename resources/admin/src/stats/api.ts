@@ -117,8 +117,10 @@ export interface DashboardPayload {
   impact: Impact[];
   previous?: DashboardPayload;
   /**
-   * Whether the window counts complete days only. False for Today, and for
-   * custom dates that end today: both include today so far.
+   * Whether the window counts complete days only: true for Yesterday, Last
+   * month and dates that end before today. False for every window that ends
+   * today — Today, This month, the day counts and custom dates ending today —
+   * which include today so far (ADR 0177).
    */
   complete_days?: boolean;
   /** Set when the window is custom dates the merchant typed. */
@@ -144,8 +146,13 @@ export function periodOf(period: ReportPeriod): PeriodQuery {
 }
 
 /**
- * One window as REST parameters, for every report route (ADR 0132). Today is
- * the one live read and says so: the order report defaults to complete days.
+ * One window as REST parameters, for every report route (ADR 0132).
+ *
+ * **Every window includes today but Yesterday** (ADR 0177): Today, This month
+ * and Last 7/30/90 days run through today so far, so a new site sees its first
+ * views where it opens. One day that is not Today is Yesterday, the one count
+ * that asks for complete days. The order report defaults to complete days, so
+ * each window says which it is.
  */
 export function periodParams(query: PeriodQuery): URLSearchParams {
   const params = new URLSearchParams();
@@ -155,10 +162,12 @@ export function periodParams(query: PeriodQuery): URLSearchParams {
   } else if (query.from !== undefined && query.to !== undefined) {
     params.set('from', query.from);
     params.set('to', query.to);
-  } else {
-    if (query.month) params.set('month', query.month);
-    else if (query.days !== undefined) params.set('days', String(query.days));
-    params.set('complete', '1');
+  } else if (query.month) {
+    params.set('month', query.month);
+    params.set('complete', '0');
+  } else if (query.days !== undefined) {
+    params.set('days', String(query.days));
+    params.set('complete', query.days === 1 ? '1' : '0');
   }
   return params;
 }
@@ -176,18 +185,14 @@ export interface Impact {
 }
 
 /**
- * `days` omitted asks for the server's own default window, which is the only
- * way this bundle can avoid naming it.
+ * The last `days` days, today included — what Campaigns and the editor read,
+ * the same window as Analytics' and Leads' "Last 7 days" (ADR 0177). `days`
+ * omitted asks for the server's own default window, which is the only way this
+ * bundle can avoid naming it.
  */
-export const readDashboard = (
-  days: number | null,
-  complete = false,
-  month?: string,
-) =>
+export const readDashboard = (days: number | null) =>
   apiFetch<DashboardPayload>({
-    path: month
-      ? `/wconvert/v1/dashboard?month=${encodeURIComponent(month)}&complete=1`
-      : `/wconvert/v1/dashboard${days === null ? (complete ? '?complete=1' : '') : `?days=${encodeURIComponent(String(days))}${complete ? '&complete=1' : ''}`}`,
+    path: `/wconvert/v1/dashboard${days === null ? '' : `?days=${encodeURIComponent(String(days))}`}`,
   });
 
 /**

@@ -35,7 +35,10 @@ scenarios), reviewed at claude.ai/artifact/2Hk19gwMXdFXvtpSeN2Q5u.
 4. **Several follow-ups are one box**: "Any of these" in, every match asked one
    at a time, a dashed "None of these" around it.
 5. **No drawing mode and no dragging.** Every line has a "+" (insert a screen
-   there); each card says "Then → X" or "If skipped → X", and those open the
+   there; *amended by [0179](0179-straight-campaigns-take-a-screen-on-any-line.md):
+   in practice only a branching campaign's lines had one. In Pro a straight
+   campaign's lines now do too, because each is the continue line its screen
+   gets as a graph, so the same add dialog can insert there. Free has none*); each card says "Then → X" or "If skipped → X", and those open the
    control that sets them. Tidy up, Edit paths and Highlight paths are gone:
    nothing moves a card, so there is nothing to tidy.
 6. **Plain words.** Kinds are Question, Message, Form, Result, Ending.

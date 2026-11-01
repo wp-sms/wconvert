@@ -63,7 +63,9 @@ canvas. Missing designs show a neutral placeholder rather than an invented one.
 
 Results show each Goal's `conversions` and `result_label`, never the resource
 send headline. No cross-Goal rate or performance ranking is introduced. The
-7/30-day read requests complete days and the footer says **Through yesterday**;
+7/30-day read requests complete days and the footer says **Through yesterday**
+(**amended by [0177](0177-reports-include-today.md):** it now includes today,
+the same "Last 7 days" as Analytics and Leads);
 reports preserve that window and submission links use its server-resolved dates.
 Independent result, preview and goal-name failures show a shared error with
 Retry. A failed results refresh retains accepted values, dates and drill-down

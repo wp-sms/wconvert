@@ -28,7 +28,8 @@ it('refuses journey numbers from a different reporting period', async () => {
   vi.mocked(apiFetch).mockResolvedValue({ from: '2026-09-01', to: '2026-09-07', rows: [], definitions: {}, days: 7 });
   render(<JourneyReport id="campaign" period={{ from: '2026-09-24', to: '2026-09-30', days: 7 }} />);
   await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Could not load matching screen totals'));
-  expect(vi.mocked(apiFetch).mock.calls[0][0].path).toContain('complete=1');
+  // Last 7 days runs through today (ADR 0177).
+  expect(vi.mocked(apiFetch).mock.calls[0][0].path).toContain('days=7&complete=0');
   expect(screen.queryByText('No journey activity in this period.')).not.toBeInTheDocument();
 });
 
@@ -113,7 +114,10 @@ it('asks every campaign report for the window the overview accepted (ADR 0132)',
   expect(vi.mocked(apiFetch).mock.calls[0][0].path).toBe('/wconvert/v1/optins/campaign/journey-stats?days=1&complete=0');
 });
 
-it('says the one sentence about today where a month has no complete day yet', () => {
-  render(<JourneyReport id="campaign" period={{ from: '2026-10-01', to: '2026-10-01', days: 0, month: '2026-10' }} />);
-  expect(screen.getByText('Today’s activity appears tomorrow. Choose Today to see it so far.')).toBeInTheDocument();
+it('reads This month through today, even on its first day (ADR 0177)', async () => {
+  vi.mocked(apiFetch).mockClear();
+  render(<JourneyReport id="campaign" period={{ from: '2026-10-01', to: '2026-10-01', days: 1, month: '2026-10', complete_days: false }} />);
+  await waitFor(() => expect(vi.mocked(apiFetch)).toHaveBeenCalled());
+  expect(vi.mocked(apiFetch).mock.calls[0][0].path).toBe('/wconvert/v1/optins/campaign/journey-stats?month=2026-10&complete=0');
+  expect(screen.queryByText(/appears tomorrow/)).not.toBeInTheDocument();
 });

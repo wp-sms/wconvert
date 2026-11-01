@@ -21,8 +21,10 @@ defined('ABSPATH') || exit;
  * is React, rendered from the Vite build; PHP's whole job here is to reserve
  * the page and put the bundle on it.
  *
- * Its submenu is WConvert → Campaigns, then WConvert → Help. Both are this one
- * page; Help's slug is a URL to it at `#help` (Pro adds License after it).
+ * Its submenu is WConvert → Campaigns, Analytics, Leads, Settings and Help
+ * (Pro adds License after Help). All five are this one page: Campaigns is its
+ * slug, and the others are URLs to it at their hash route (`#analytics`,
+ * `#leads`, `#settings`, `#help`) — ADR 0176.
  *
  * @since 0.1.0
  */
@@ -273,6 +275,10 @@ final class AdminMenu
             // The contextual Pro hints, and whether they say "Activate it" (ADR 0147).
             'proHints' => ProHints::shown($pro),
             'proInstalledInactive' => ProHints::proInstalledInactive($pro),
+            // Whether any campaign was ever published (ADR 0176's `first_publish`
+            // milestone). Until one is, the editor's header leads through the
+            // Display rules and Destinations tabs before Review (ADR 0178).
+            'firstPublished' => function_exists('get_option') && (new \WConvert\Milestone\MilestoneStore(new \WConvert\Storage\WpOptionStore()))->firstPublish() !== null,
             // Registered by Pro's journeys module, never inferred from a tier:
             // the builder offers questions, results and paths only where the
             // code that draws them is on disk (ADR 0116).

@@ -11,7 +11,6 @@ import { ReportDisclosure } from './ReportDisclosure';
 import { formatDay, formatRange } from '../lib/format';
 import { formatCount } from './format';
 import { periodOf, periodParams, type ReportPeriod } from './api';
-import { chooseToday, todayAppearsTomorrow } from './reporting';
 import { productModuleActive } from '../settings';
 
 interface ProductReport {
@@ -57,7 +56,6 @@ export function ProductActivityReport({ id, period }: { id: string; period?: Rep
         {!report.collecting && <p className="wa-report-notice">{__('Tracking is unavailable. Saved activity is still shown.', 'wconvert')}</p>}
         {report.recorded_from && report.recorded_from !== report.from && report.recorded_from !== report.since && <p className="wa-report-notice">{sprintf(/* translators: %s: a date range, e.g. “Sep 9 – Oct 8, 2026”. */ __('Available activity: %s. The rest of this period is not recorded or has expired.', 'wconvert'), formatRange(report.recorded_from, report.to))}</p>}
         {report.truncated ? <EmptyState icon={Package} title={__('Choose a shorter period', 'wconvert')}>{__('More than 100 products have activity. Narrow the dates to see a complete table.', 'wconvert')}</EmptyState>
-          : report.days === 0 ? <EmptyState icon={Package} title={__('No complete days yet', 'wconvert')}>{todayAppearsTomorrow()} {chooseToday()}</EmptyState>
           : !report.recorded_from ? <EmptyState icon={Package} title={__('No product data for these dates', 'wconvert')}>{__('Choose dates after tracking started and within the last 90 days.', 'wconvert')}</EmptyState>
           : report.rows.length === 0 ? <EmptyState icon={Package} title={__('No product activity recorded', 'wconvert')}>{__('Activity appears when shoppers see or use recommendations. Previews do not count.', 'wconvert')}</EmptyState>
           : <DataTable className="wa-product-table" label={__('Recommended product activity', 'wconvert')}>

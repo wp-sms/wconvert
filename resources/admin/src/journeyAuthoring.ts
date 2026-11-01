@@ -108,7 +108,8 @@ export interface JourneyAuthoringUI {
   result: ReactNode;
   nextSummary: ReactNode;
   flowNudge: ReactNode;
-  flowAdd?(index: number, edgeId: string): void;
+  /** "+" on a Flow line (ADR 0179): `insertAt` is `edge:<id>` on a graph, `after:<screenId>` on a straight campaign. */
+  flowAdd?(index: number, insertAt: string): void;
   screenItems: ReactNode;
   screenPanel: ReactNode;
   /** Answer lines are editable, so the screen has a Lines section. */

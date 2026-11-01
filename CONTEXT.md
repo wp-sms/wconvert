@@ -172,8 +172,11 @@ Analytics starts with compatible totals: captured submissions, offer clicks,
 cart return clicks and appearances. It never reports a global conversion rate,
 unique people or recovered revenue from those counters. The optional paid campaign-sales report reads actual WooCommerce paid orders and refunds separately, under a consented 30-minute last-interaction model; attribution is not causation. See [ADR 0119](docs/adr/0119-actionable-reports-use-local-evidence-and-order-provenance.md). Goal and individual Optin reports
 explain their denominators. Resource requests and accepted email sends remain
-separate. Complete-day comparisons are resolved in the site's calendar; no
-visible timezone label is needed. Campaigns also uses complete days through yesterday; editor windows still include today.
+separate. Comparisons are resolved in the site's calendar; no visible timezone
+label is needed. Every window includes today so far except Yesterday, Last month
+and custom dates that end before today, so "Last 7 days" means the same days on
+Analytics, Campaigns, Leads and the editor; Today alone has no comparison. See
+[ADR 0177](docs/adr/0177-reports-include-today.md).
 
 Paused and soft-deleted Optins retain inspectable history; never-published
 drafts without counters are excluded. Parent/variant grouping is presentation,
@@ -1918,7 +1921,11 @@ The **Monday email to the site owner** with last week's totals: how often
 campaigns were shown, what they collected, the rate, each against the week
 before, plus the best campaign and Insights' first card. It holds counts and
 campaign names only, never a [[Lead]]. Off in Settings → Email reports; not sent
-before the first publish or for a week when nothing was shown (ADR 0176).
+before the first publish or for a week when nothing was shown (ADR 0176). It
+reports seven complete days and links to Analytics at those dates (ADR 0177).
+
+Until the first publish, the editor's header also leads a new site's draft
+through Display rules and Destinations before Review & publish (ADR 0178).
 
 ## External analytics integration
 

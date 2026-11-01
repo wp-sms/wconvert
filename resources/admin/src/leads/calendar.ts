@@ -33,8 +33,8 @@ type WindowPreset = Exclude<DatePreset, 'all' | 'occasion'>;
 /**
  * What a preset covers on the log, **today included**: "Last 7 days" is today
  * and the six days before it, because a submission log is read for what just
- * arrived. Analytics reads complete days and resolves the same names its own
- * way (ADR 0089); the presets are shared, their arithmetic is not.
+ * arrived. Analytics resolves the same names on the server (`ReportWindow`),
+ * through today as well (ADR 0177); only the arithmetic lives in two places.
  */
 export function presetWindow(preset: WindowPreset, today: string): Required<DayWindow> {
   const month = `${today.slice(0, 7)}-01`;

@@ -89,7 +89,11 @@ too, and by the same test — what is this screen, and what does it need?
 - **Reading screens cap at 80rem (1280px)**, amended by [ADR 0068](0068-reading-pages-put-results-and-routes-before-occasional-settings.md).
   Tables gain room for names and actions; long capture details retain a narrower
   measure. Reading tables become labelled cards at 900px and below.
-- **The builder caps at 90rem (1440px).** It is a place rather than a list —
+- **The builder caps at 90rem (1440px).** *(Amended by
+  [0180](0180-display-rules-and-destinations-share-one-width.md): the 90rem cap
+  no longer covers the Display rules and Destinations tabs. They are one 72rem
+  column, because three tabs with three widths moved the page's edges at every
+  switch; Edit is still full width.)* It is a place rather than a list —
   a block tree, the controls for whichever block is selected, and a live preview
   of the design, three things a merchant works between rather than reads down.
 

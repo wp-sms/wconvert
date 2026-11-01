@@ -97,9 +97,26 @@ describe('the Flow map (ADR 0142)', () => {
     await user.click(screen.getByRole('button', { name: /^None of these: .*Edit$/ }));
     expect(onSelectPath).toHaveBeenLastCalledWith(at('interests'), 0);
     await user.click(screen.getByRole('button', { name: /^Add a screen on the line Any of these/ }));
-    expect(onAdd).toHaveBeenLastCalledWith(at('interests'), 'start');
+    expect(onAdd).toHaveBeenLastCalledWith(at('interests'), 'edge:start');
     await user.click(screen.getByRole('button', { name: /^Follow-up 1 of 3: Garden details/ }));
     expect(onSelect).toHaveBeenLastCalledWith(at('garden'));
+  });
+
+  it('puts a “+” on each line of a straight campaign, and none where nothing can add (ADR 0179)', async () => {
+    const user = userEvent.setup();
+    const graph = splitCapture as unknown as TemplateTree;
+    const straight = { v: 2, submissions: graph.submissions, steps: ['details', 'save', 'thanks'].map(id => graph.steps.find(screen => screen.id === id)!) } as unknown as TemplateTree;
+    const onAdd = vi.fn();
+    const { unmount } = render(<FlowMap tree={straight} selected={null} onSelect={vi.fn()} onSelectPath={vi.fn()} onAdd={onAdd} />);
+    const adds = screen.getAllByRole('button', { name: /^Add a screen on the line/ });
+    expect(adds).toHaveLength(2);
+    await user.click(adds[0]);
+    expect(onAdd).toHaveBeenLastCalledWith(0, 'after:details');
+    unmount();
+    // Free: no way to add, so no "+" and no empty pill kept for one.
+    render(<FlowMap tree={straight} selected={null} onSelect={vi.fn()} onSelectPath={vi.fn()} />);
+    expect(screen.queryByRole('button', { name: /^Add a screen on the line/ })).not.toBeInTheDocument();
+    expect(document.querySelectorAll('.wconvert-flow-pill')).toHaveLength(0);
   });
 
   it('offers no “+” where screens cannot be inserted, and none on a line drawn only', () => {

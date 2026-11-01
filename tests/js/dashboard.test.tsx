@@ -138,29 +138,21 @@ beforeEach(() => {
 });
 
 describe('impact overview', () => {
-  it('does not link an empty first-day month to today’s capture history or export', async () => {
+  it('reads This month’s first day as today so far, with its submissions and export (ADR 0177)', async () => {
     api.readReport.mockResolvedValue({
       ...payload(),
       month: '2026-09',
       from: '2026-09-01',
       to: '2026-09-01',
-      days: 0,
+      days: 1,
+      complete_days: false,
+      today: '2026-09-01',
       previous: undefined,
     });
     render(<Dashboard query={{ month: '2026-09', optinId: 'email' }} />);
-    await screen.findByText('No complete days yet this month');
-    expect(
-      screen.queryByRole('link', { name: 'View submissions' }),
-    ).not.toBeInTheDocument();
-    const refused = screen.getByRole('button', { name: 'View submissions' });
-    expect(refused).toHaveAttribute('aria-disabled', 'true');
-    expect(refused).toHaveAccessibleDescription(
-      'Submissions open once this month has a complete day.',
-    );
-    expect(screen.getByRole('button', { name: 'Export CSV' })).toHaveAttribute('aria-disabled', 'true');
-    expect(
-      screen.getByRole('button', { name: /^Report period: This month, No complete days yet this month$/ }),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: 'View submissions' })).toBeInTheDocument();
+    expect(screen.queryByText(/No complete days/)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Export CSV' })).not.toHaveAttribute('aria-disabled');
   });
   it('keeps a monthly target drilldown on that month through campaign and editor links', async () => {
     const monthly = {
@@ -727,12 +719,26 @@ describe('what the overview says', () => {
     expect(screen.queryByText(/conversion rate/i)).toBeNull();
   });
 
-  it('points a complete window at Today for what it leaves out', async () => {
+  it('says an empty window showed nothing, and no longer points at tomorrow (ADR 0177)', async () => {
     const data = payload();
     data.impact = data.impact.map((i) => (i.id === 'impressions' ? { ...i, count: 0 } : i));
     api.readReport.mockResolvedValue(data);
     render(<Dashboard />);
-    expect(await screen.findByText('Nothing was shown in this period. Today’s activity appears tomorrow. Choose Today to see it so far.')).toBeInTheDocument();
+    expect(await screen.findByText('Nothing was shown in this period.')).toBeInTheDocument();
+    expect(screen.queryByText(/appears tomorrow/)).not.toBeInTheDocument();
+  });
+
+  it('compares a window through today and says it includes today so far (ADR 0177)', async () => {
+    api.readReport.mockResolvedValue({ ...payload(), from: '2026-08-16', to: '2026-09-14', complete_days: false });
+    render(<Dashboard />);
+    expect(await screen.findByText('Includes today so far')).toBeInTheDocument();
+  });
+
+  it('says nothing about today on a complete window', async () => {
+    api.readReport.mockResolvedValue(payload());
+    render(<Dashboard />);
+    await screen.findAllByText(/Email submissions/);
+    expect(screen.queryByText('Includes today so far')).not.toBeInTheDocument();
   });
 
   it('lifts linked sales into the headlines, qualified, and jumps to Campaign sales', async () => {

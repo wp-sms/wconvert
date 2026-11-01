@@ -94,8 +94,9 @@ export function hashFor(id: SectionId): string {
  * Read-state links stay inside WordPress's existing admin page.
  *
  * The window is one of four, in this precedence: `today` (one live day),
- * `from`–`to` (days the merchant typed, ADR 0132), `month`, then `days` of
- * complete days. A link names only the one that applies.
+ * `from`–`to` (days the merchant typed, ADR 0132), `month`, then `days` —
+ * through today, or Yesterday's one complete day (ADR 0177). A link names only
+ * the one that applies.
  */
 export interface ReportQuery {
   today?: boolean;

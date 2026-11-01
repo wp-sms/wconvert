@@ -295,6 +295,14 @@ button.wa-impact {
 .wa-chart circle {
   fill: var(--action);
 }
+.wa-chart .wa-partial-line {
+  stroke-dasharray: 2 6;
+}
+.wa-chart .wa-partial-point {
+  fill: var(--card, var(--background));
+  stroke: var(--action);
+  stroke-width: 2;
+}
 .wa-chart-dates {
   display: flex;
   justify-content: space-between;

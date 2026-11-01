@@ -95,8 +95,15 @@ final class StatRange
         return self::lastDays($days, self::daysBefore($today, 1));
     }
 
-    /** A named month is stable in bookmarks; the site day still caps its end. */
-    public static function calendarMonth(string $month, string $today): self
+    /**
+     * A named month is stable in bookmarks; the site day still caps its end.
+     *
+     * Analytics' This month runs through today (`$throughToday`, ADR 0177), so
+     * it is never empty. Monthly targets read complete days only, so pace is
+     * never set against a day still in progress: their first-day month is
+     * explicitly empty.
+     */
+    public static function calendarMonth(string $month, string $today, bool $throughToday = false): self
     {
         if (!preg_match('/^[1-9][0-9]{3}-(0[1-9]|1[0-2])$/D', $month) || $month > substr($today, 0, 7)) {
             // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- operator text: caught upstream and returned or stored as plain text, never printed as HTML.
@@ -104,7 +111,7 @@ final class StatRange
         }
         $from = $month . '-01';
         $end = (new \DateTimeImmutable($from, new \DateTimeZone('UTC')))->format('Y-m-t');
-        $to = min($end, self::daysBefore($today, 1));
+        $to = min($end, $throughToday ? $today : self::daysBefore($today, 1));
         // An empty first-day report has a valid date anchor, never yesterday's
         // counts disguised as this month's. days/covers/eachDay carry emptiness.
         return new self($from, max($from, $to), $to < $from);

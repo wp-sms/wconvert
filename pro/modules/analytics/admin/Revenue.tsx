@@ -16,7 +16,6 @@ import { messageOf } from '@/shell/loadable';
 import { Button } from '@/components/ui/button';
 import type { ReportExtensionProps } from '@/stats/extensions';
 import { periodOf, periodParams, type PeriodQuery } from '@/stats/api';
-import { chooseToday, todayAppearsTomorrow } from '@/stats/reporting';
 import { GUIDES, docsUrl } from '@/shell/docs';
 import { formatCount, formatDay, formatMoney, formatRange, formatWhen, labelOf } from '@/lib/format';
 interface Report {
@@ -61,7 +60,6 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
   const [confirmOff, setConfirmOff] = useState(false);
   const [retry, setRetry] = useState(0);
   const toggle = useRef<HTMLButtonElement>(null);
-  const live = periodOf(period).today === true;
   const windowQuery = periodParams(periodOf(period)).toString();
   useEffect(() => {
     const controller = new AbortController();
@@ -121,10 +119,9 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
           <div className="wa-report-meta"><span>{report.from && report.to ? formatRange(report.from, report.to) : __('Report not loaded', 'wconvert-pro')}</span><span>{__('By order paid date', 'wconvert-pro')}</span>{updating && <span role="status">{__('Updating… Previous dates shown.', 'wconvert-pro')}</span>}</div>
           {enabled && !report.consent_ready && <div className="wa-report-notice"><strong>{__('Finish consent setup to link new orders.', 'wconvert-pro')}</strong><a href={docsUrl(GUIDES.campaignSales, 'turn-on-tracking')} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert-pro')}</a></div>}
           {!report.site_matches && <p className="wa-report-notice">{__('The site address changed. Turn on tracking again in Tracking & setup below.', 'wconvert-pro')}</p>}
-          {period.days === 0 ? <EmptyState icon={ShoppingBag} title={__('No complete days yet', 'wconvert-pro')}>{todayAppearsTomorrow()} {chooseToday()}</EmptyState>
-            : report.complete === undefined ? <p className="wa-muted">{__('Sales totals have not loaded yet.', 'wconvert-pro')}</p>
+          {report.complete === undefined ? <p className="wa-muted">{__('Sales totals have not loaded yet.', 'wconvert-pro')}</p>
             : report.complete === false ? <EmptyState icon={ShoppingBag} title={__('Choose a shorter period', 'wconvert-pro')}>{__('This report is too large to total safely. No partial totals are shown.', 'wconvert-pro')}</EmptyState>
-            : (report.linked_orders ?? 0) === 0 ? <EmptyState icon={ShoppingBag} title={__('No linked orders in this period', 'wconvert-pro')}>{__('With tracking on and statistics consent granted, a signup or click can link a checkout within 30 minutes.', 'wconvert-pro')}{!live && <> {todayAppearsTomorrow()}</>}</EmptyState>
+            : (report.linked_orders ?? 0) === 0 ? <EmptyState icon={ShoppingBag} title={__('No linked orders in this period', 'wconvert-pro')}>{__('With tracking on and statistics consent granted, a signup or click can link a checkout within 30 minutes.', 'wconvert-pro')}</EmptyState>
             : <SalesTotals report={report} />}
           {report.complete && period.days > 0 && <p className="wa-muted wa-report-context">{__('Linked after a signup or eligible click within 30 minutes. A link does not prove the campaign caused the sale.', 'wconvert-pro')}</p>}
           {report.complete && period.days > 0 && <p className="wa-muted wa-report-store-total">{sprintf(/* translators: %s: how many eligible paid orders the store had, e.g. “1,204”. */ __('%s eligible paid orders across your store in this period.', 'wconvert-pro'), formatCount(report.eligible_orders ?? 0))} <InfoTip label={__('About linked orders', 'wconvert-pro')}>{__('Orders may be unlinked because consent was not granted, the interaction expired or tracking failed.', 'wconvert-pro')}</InfoTip></p>}

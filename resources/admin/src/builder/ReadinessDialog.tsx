@@ -14,7 +14,8 @@ import { statusOf, type OptinState } from '../optins/api';
 import { FactList } from '../shell/FactList';
 import { GuideLink, SuspensionGuideLink } from '../shell/GuideLink';
 import { GUIDES, docsUrl } from '../shell/docs';
-import { campaignFacts, factAct, linksIn } from '../optins/campaignFacts';
+import { campaignFacts, defaultRows, factAct, linksIn } from '../optins/campaignFacts';
+import { isFreeInstall } from '../goals/availability';
 import { formatCount, humanize, labelOf } from '../lib/format';
 import { messageOf, type Loadable } from '../shell/loadable';
 import { destinationsSaid } from './destinations';
@@ -52,6 +53,11 @@ function fixLabel(issue: CampaignIssue): string {
 }
 
 export interface ReadinessDialogProps {
+  /**
+   * Before the site's first publish, the tab the header leads to next instead
+   * of opening the review (ADR 0178). Absent, the button opens the review.
+   */
+  readonly next?: { readonly label: string; readonly onGo: () => void };
   /** The campaign's name: the dialog is about it, so it is the title. */
   readonly name?: string;
   readonly captureMode?: CaptureMode;
@@ -99,6 +105,7 @@ export interface ReadinessDialogProps {
 }
 
 export function ReadinessDialog({
+  next,
   name = '',
   captureMode = 'local',
   issues,
@@ -177,9 +184,12 @@ export function ReadinessDialog({
         {go(contentLock != null ? __('Content lock', 'wconvert') : inlinePlacementLabel(inlinePlacement) ?? __('Where you place its block or shortcode', 'wconvert'), onGoToPlacement)}
         {contentLock != null && <span className="block text-note text-muted-foreground">{__('Locks the selected region and remembers an unlock for 30 days in that browser. The content stays readable if the form cannot load.', 'wconvert')}</span>}
       </> };
+  // Every row is a way to the tab that changes it; Back to review returns here.
   const facts = campaignFacts({
     rules: summaries,
-    onRule: (section) => jump(() => onGoToRules(section)),
+    onRule: (section) => jump(() => onGoToRules(section), 'row'),
+    onDestinations: () => jump(onGoToDestinations, 'row'),
+    defaults: defaultRows(rules, captureMode, !isFreeInstall()),
     act: factAct(template, outcome),
     forwarding,
     links: linksIn(template),
@@ -193,20 +203,22 @@ export function ReadinessDialog({
       : undefined,
   });
   const routes: IssueRoutes = { onGoTo, onGoToSchedule, onGoToRules, onGoToDestinations, onGoToDesign, onGoToPlacement, onEditDesign, onEditJourney, onRetryGoal };
-  // After jumping to fix a blocker, the way back to the list stays on screen until the list is empty.
-  const [resume, setResume] = useState(false);
+  // After jumping to fix a blocker or to change a row, the way back stays on
+  // screen: until the blockers are fixed, or until the review is reopened.
+  const [resume, setResume] = useState<'blocker' | 'row' | false>(false);
   const reviewCount = issues.length;
   const startedFrom = playbookId !== '' && playbook.status === 'ready' ? playbook.data : null;
   const isPublished = optin.published_at !== null;
   const current = isPublished && !dirty && !optin.has_unpublished_changes;
 
-  const jump = (action: () => void, fromBlocker = false) => {
+  const jump = (action: () => void, from: 'blocker' | 'row' | false = false) => {
     if (publishing) return;
     afterClose.current = action;
-    setResume(fromBlocker);
+    setResume(from);
     setOpen(false);
   };
-  const fix = (issue: CampaignIssue, fromBlocker = false) => jump(() => followIssue(issue.go, routes), fromBlocker);
+  const fix = (issue: CampaignIssue, fromBlocker = false) => jump(() => followIssue(issue.go, routes), fromBlocker && 'blocker');
+  const resumable = resume === 'row' || (resume === 'blocker' && blocking.length > 0);
   const reopen = () => {
     setPublished(false);
     setError(null);
@@ -248,14 +260,14 @@ export function ReadinessDialog({
 
   return (
     <>
-      {resume && blocking.length > 0 && !open && (
+      {resumable && !open && (
         <Button type="button" variant="outline" className="wconvert-readiness__resume" disabled={busy} onClick={reopen}>
           <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
-          {sprintf(
+          {blocking.length > 0 ? sprintf(
             /* translators: %s: how many items still block publishing. */
             _n('Back to review · %s left', 'Back to review · %s left', blocking.length, 'wconvert'),
             formatCount(blocking.length),
-          )}
+          ) : __('Back to review', 'wconvert')}
         </Button>
       )}
       <Button
@@ -263,10 +275,10 @@ export function ReadinessDialog({
         variant="brand"
         disabled={busy}
         aria-describedby={blocking.length > 0 ? `${reasonId}-count` : undefined}
-        onClick={reopen}
+        onClick={next?.onGo ?? reopen}
       >
         {reviewCount > 0 && <TriangleAlert aria-hidden="true" />}
-        {__('Review & publish', 'wconvert')}
+        {next?.label ?? __('Review & publish', 'wconvert')}
         {blocking.length > 0 && <span id={`${reasonId}-count`} hidden>{sprintf(
           /* translators: %s: how many items block publishing. */
           _n('%s item blocks publishing', '%s items block publishing', blocking.length, 'wconvert'),
@@ -384,16 +396,19 @@ export function ReadinessDialog({
                 <ReviewSection
                   title={__('How it runs', 'wconvert')}
                   action={__('Display rules', 'wconvert')}
-                  onAction={() => jump(() => onGoToRules('where'))}
+                  onAction={() => jump(() => onGoToRules('where'), 'row')}
                 >
                   <FactList facts={facts} />
+                  {facts.some(fact => fact.isDefault) && (
+                    <p className="text-note text-muted-foreground">{__('Rows marked Default use WConvert’s starting settings.', 'wconvert')}</p>
+                  )}
                   {displayType === 'fullscreen' && (
                     <p className="text-note text-muted-foreground">{__('Fullscreen covers the page until it is closed. Prefer a visitor action or real engagement over opening right away, and check it on mobile.', 'wconvert')}</p>
                   )}
                   {bound.length > 0 && (
                     <p className="text-note text-muted-foreground">
                       {__('Publishing does not test delivery.', 'wconvert')}{' '}
-                      <button type="button" className="wconvert-readiness__go" onClick={() => jump(onGoToDestinations)}>
+                      <button type="button" className="wconvert-readiness__go" onClick={() => jump(onGoToDestinations, 'row')}>
                         {__('Send a test first', 'wconvert')}
                       </button>
                     </p>

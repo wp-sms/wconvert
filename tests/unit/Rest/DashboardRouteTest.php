@@ -196,6 +196,39 @@ final class DashboardRouteTest extends TestCase
         self::assertArrayNotHasKey('previous', $report);
     }
 
+    /** Every other window runs through today and keeps its comparison (ADR 0177). */
+    public function testLastSevenDaysIncludeTodayAndStillCompare(): void
+    {
+        $report = self::report(['days' => 7, 'complete' => false]);
+
+        self::assertSame(StatDay::today(), $report['to']);
+        self::assertSame(7, $report['days']);
+        self::assertFalse($report['complete_days']);
+        self::assertArrayHasKey('previous', $report);
+        self::assertSame(7, $report['previous']['days']);
+    }
+
+    /** Yesterday is the one count of days that asks for complete days. */
+    public function testYesterdayIsOneCompleteDayWithAComparison(): void
+    {
+        $report = self::report(['days' => 1, 'complete' => true]);
+
+        self::assertSame([$report['from'], 1], [$report['to'], $report['days']]);
+        self::assertLessThan(StatDay::today(), $report['to']);
+        self::assertTrue($report['complete_days']);
+        self::assertArrayHasKey('previous', $report);
+    }
+
+    public function testThisMonthRunsThroughTodayAndIsNeverEmpty(): void
+    {
+        $report = self::report(['month' => substr(StatDay::today(), 0, 7), 'complete' => false]);
+
+        self::assertSame([substr(StatDay::today(), 0, 7) . '-01', StatDay::today()], [$report['from'], $report['to']]);
+        self::assertGreaterThan(0, $report['days']);
+        self::assertFalse($report['complete_days']);
+        self::assertArrayHasKey('previous', $report);
+    }
+
     public function testNamedMonthOverridesRollingDaysAndRejectsFutureMonths(): void
     {
         $db = new FakeConnection();

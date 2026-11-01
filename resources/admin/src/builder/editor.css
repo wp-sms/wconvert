@@ -515,29 +515,24 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   color: var(--action);
   font-size: var(--text-micro);
 }
+/*
+ * Display rules and Destinations: one centred column at the app's measure, so
+ * switching between them never moves the page's edges. Neither changes the
+ * design canvas; Edit (`.wconvert-workspace__journey`) alone is full width.
+ */
 #wconvert-admin .wconvert-workspace__secondary {
-  display: grid;
-  grid-template-columns: 380px minmax(0, 1fr);
+  display: block;
   width: 100%;
   min-height: 0;
   margin: 0;
-}
-#wconvert-admin .wconvert-workspace__settings {
-  padding: 24px;
-  overflow: auto;
-  border-inline-end: 1px solid var(--editor-rule);
-}
-/* Destination bindings and answer mappings do not change the design canvas. */
-#wconvert-admin .wconvert-workspace__secondary.wconvert-workspace__destinations {
-  display: block;
   overflow: auto;
   background: var(--background);
 }
-#wconvert-admin .wconvert-workspace__destinations > .wconvert-workspace__settings {
-  max-inline-size: 64rem;
+#wconvert-admin .wconvert-workspace__settings {
+  min-inline-size: 0;
+  max-inline-size: var(--wconvert-measure, 72rem);
   margin-inline: auto;
-  border: 0;
-  overflow: visible;
+  padding: 1.25rem 1.5rem;
 }
 #wconvert-admin .wconvert-workspace__preview-action { display: flex; justify-content: flex-end; margin-block-end: 16px; }
 .wconvert-preview-dialog {
@@ -883,18 +878,6 @@ body .wconvert-add-elements { inline-size: 280px; max-inline-size: calc(100vw - 
   font-weight: 400;
 }
 
-@media (max-width: 1000px) {
-  #wconvert-admin .wconvert-workspace__secondary[data-content-lock] {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto;
-    overflow: auto;
-  }
-  #wconvert-admin .wconvert-workspace__secondary[data-content-lock] .wconvert-workspace__settings {
-    overflow: visible;
-    border-inline-end: 0;
-  }
-}
-
 @layer utilities {
   .wconvert-journey-dialog__fields :is(input, select) { inline-size: 100% !important; max-inline-size: none !important; min-inline-size: 0; block-size: 36px !important; margin: 0 !important; font-size: var(--text-micro) !important; }
 }
@@ -1100,9 +1083,7 @@ body .wconvert-add-elements { inline-size: 280px; max-inline-size: calc(100vw - 
 #wconvert-admin .wconvert-editor-drawer .wconvert-pane__stick { display: flex; flex-direction: column; }
 #wconvert-admin .wconvert-editor-drawer .wconvert-pane__body { overflow: auto; }
 @media (max-width: 1000px) {
-  #wconvert-admin .wconvert-workspace__secondary { grid-template-columns: minmax(0, 1fr); overflow: auto; }
-  #wconvert-admin .wconvert-workspace__secondary > .wconvert-canvas { display: none; }
-  #wconvert-admin .wconvert-workspace__settings { border: 0; min-inline-size: 0; padding: 16px; }
+  #wconvert-admin .wconvert-workspace__settings { padding: 16px; }
   #wconvert-admin .wconvert-workspace__header { padding: 8px; }
   #wconvert-admin .wconvert-workspace__brand-mark { display: none; }
   :is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-canvas__bar { flex-wrap: wrap; gap: 8px; padding: 10px; }
@@ -1224,7 +1205,7 @@ body .wconvert-add-elements { inline-size: 280px; max-inline-size: calc(100vw - 
  * button` (1,1,1) and `label:has(> input[type=checkbox])` (1,1,2) — rather
  * than competing with them one property at a time (GUIDELINES §21).
  * ------------------------------------------------------------------------- */
-#wconvert-admin .wconvert-display { container-type: inline-size; min-inline-size: 0; max-inline-size: 90rem; margin-inline: auto; }
+#wconvert-admin .wconvert-display { container-type: inline-size; min-inline-size: 0; }
 
 /* The sentence: muted connecting words, each answer a phrase that opens its question. */
 #wconvert-admin .wconvert-display .wconvert-display-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem 1.25rem; margin-block-end: 1rem; }
@@ -1373,10 +1354,8 @@ body .wconvert-add-elements { inline-size: 280px; max-inline-size: calc(100vw - 
   #wconvert-admin .wconvert-display .wconvert-display-editor { padding: 1rem; }
 }
 
-#wconvert-admin .wconvert-workspace__secondary.wconvert-workspace__display { display: block; overflow: auto; background: var(--background); }
-#wconvert-admin .wconvert-workspace__display > .wconvert-workspace__settings { max-inline-size: none; border: 0; padding: 1.25rem 1.5rem; overflow: visible; }
 @media (max-width: 640px) {
-  #wconvert-admin .wconvert-workspace__display > .wconvert-workspace__settings { padding: 1rem; }
+  #wconvert-admin .wconvert-workspace__settings { padding: 1rem; }
 }
 
 /* Match the important utility layer so wp-admin and button utilities cannot widen
