@@ -4,9 +4,9 @@ import apiFetch from '@wordpress/api-fetch';
 import { ArrowUpRight, Bell, BookOpen, CircleCheck, CircleHelp, ExternalLink, LifeBuoy, Rocket, Search, Sparkles } from 'lucide-react';
 import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { Button } from '../components/ui/button';
-import { readDestinations } from '../destinations/api';
+import { recentDestinations } from '../destinations/api';
 import { issueCount } from '../destinations/issueCount';
-import { campaignName, listOptins, type OptinSummary } from '../optins/api';
+import { campaignName, recentOptins, type OptinSummary } from '../optins/api';
 import { StatusBadge } from '../optins/StatusBadge';
 import { editorHref, sendingIssuesHref, settingsHref } from '../nav';
 import { tierName, tierProductName } from '../goals/availability';
@@ -14,6 +14,7 @@ import { formatCount } from '../lib/format';
 import { TryAgain } from './Region';
 import { RowsSkeleton } from './RowsSkeleton';
 import { messageOf } from './loadable';
+import { whenQuiet } from '../lib/requestActivity';
 import { adminSettings } from '../settings';
 import { PlanBadge } from './Brand';
 import { DOCS_URL, GUIDES, docsUrl } from './docs';
@@ -74,8 +75,9 @@ export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
     try {
       // Spam protection can pause every form; it is broken in a way the merchant can't see from a campaign.
       const [campaigns, destinations, protection] = await Promise.all([
-        listOptins(),
-        readDestinations(),
+        // The screen's own reads from the last 30 s serve these (#395).
+        recentOptins(),
+        recentDestinations(),
         apiFetch<{ rules_configured?: boolean; rules_available?: boolean }>({ path: '/wconvert/v1/protection' }).catch(() => null),
       ]);
       if (current !== request.current) return;
@@ -96,9 +98,14 @@ export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
   }, []);
   // Read on load, not on open: the unread dot is the whole point of the bell,
   // and a dot that only appears once the merchant has already looked says
-  // nothing at all.
+  // nothing at all. But after the screen's own reads, at most 3 s after them,
+  // so three side reads do not queue ahead of what the merchant came for (#395).
   useEffect(() => {
-    void load();
+    const before = request.current;
+    void whenQuiet().then(() => {
+      // Opened meanwhile, or gone: that read already answers.
+      if (request.current === before) void load();
+    });
     return () => {
       request.current += 1;
     };

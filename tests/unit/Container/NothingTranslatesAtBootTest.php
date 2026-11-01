@@ -237,6 +237,42 @@ final class NothingTranslatesAtBootTest extends TestCase
         );
     }
 
+    /**
+     * The push worker, the weekly summary and the submission dispatcher are
+     * built when their hook fires, not on every request (#395). Booting built
+     * all three, for an `add_action()` each — most of WConvert's boot cost.
+     *
+     * A factory that counts and then refuses: boot must not reach it, and the
+     * hook must, which is the proof the handler still runs.
+     */
+    public function testHookHandlersAreBuiltWhenTheirHookFires(): void
+    {
+        $built = [];
+        $spy = static function (string $id) use (&$built): \Closure {
+            return static function () use ($id, &$built): object {
+                $built[] = $id;
+                throw new \LogicException($id);
+            };
+        };
+        $hooks = [
+            \WConvert\Destination\PushWorker::class => [\WConvert\Destination\PushJob::HOOK, [[]]],
+            \WConvert\Report\WeeklySummaryJob::class => [\WConvert\Report\WeeklySummaryJob::HOOK, []],
+            \WConvert\Destination\SubmissionDispatcher::class => [\WConvert\Lead\JourneyCapture::ACCEPTED, ['lead', 'submission']],
+        ];
+
+        $this->boot(null, array_combine(array_keys($hooks), array_map($spy, array_keys($hooks))));
+        $this->assertSame([], $built, 'booting built a hook handler nothing had fired yet');
+
+        foreach ($hooks as $id => [$hook, $args]) {
+            try {
+                do_action($hook, ...$args);
+                $this->fail(sprintf('%s fired without building %s', $hook, $id));
+            } catch (\LogicException $refused) {
+                $this->assertSame($id, $refused->getMessage());
+            }
+        }
+    }
+
     public function testNoRouteIsBuiltUntilOneIsServed(): void
     {
         $this->boot();
@@ -535,7 +571,10 @@ final class NothingTranslatesAtBootTest extends TestCase
      * Playbook directory, because a boot that built fakes would prove nothing
      * about what the shipped one builds.
      */
-    private function boot(?ProPresence $pro = null): ServiceContainer
+    /**
+     * @param array<class-string, callable(ServiceContainer): object> $factories Registered over the providers' own.
+     */
+    private function boot(?ProPresence $pro = null, array $factories = []): ServiceContainer
     {
         $container = self::container();
 
@@ -565,6 +604,9 @@ final class NothingTranslatesAtBootTest extends TestCase
         $container->register(Queue::class, static fn (): Queue => new FakeQueue());
         $container->register(ProPresence::class, static fn (): ProPresence => $pro ?? new FakeProPresence());
         $container->register(SitePresence::class, static fn (): SitePresence => new FakeSitePresence());
+        foreach ($factories as $id => $factory) {
+            $container->register($id, $factory);
+        }
 
         $GLOBALS['wconvertTestInitHasFired'] = false;
 

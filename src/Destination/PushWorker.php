@@ -64,11 +64,19 @@ final class PushWorker
     ) {
     }
 
-    public function hooks(): void
+    /**
+     * Built when a push fires, not on every request: ten collaborators for
+     * one `add_action()` was most of WConvert's boot (#395).
+     *
+     * @param \Closure(): self $worker
+     */
+    public static function hooks(\Closure $worker): void
     {
         // Action Scheduler hands the handler the ONE argument the job was
         // enqueued with, which is our args array.
-        add_action(PushJob::HOOK, [$this, 'run']);
+        add_action(PushJob::HOOK, static function (array $args) use ($worker): void {
+            $worker()->run($args);
+        });
     }
 
     /**

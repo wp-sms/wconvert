@@ -40,18 +40,24 @@ final class WeeklySummaryJob
     ) {
     }
 
-    public function hooks(): void
+    /**
+     * The job, with its Dashboard, is built when the send fires rather than on
+     * every request (#395). Scheduling needs none of it.
+     *
+     * @param \Closure(): self $job
+     */
+    public static function hooks(\Closure $job): void
     {
-        add_action(self::HOOK, function (): void {
-            $this->run();
+        add_action(self::HOOK, static function () use ($job): void {
+            $job()->run();
         });
 
         // On `init`, for the reason LeadPruner gives: wp_get_schedules() runs
         // filters other plugins translate, which is too early on plugins_loaded.
-        add_action('init', [$this, 'schedule']);
+        add_action('init', [self::class, 'schedule']);
     }
 
-    public function schedule(): void
+    public static function schedule(): void
     {
         if (wp_next_scheduled(self::HOOK) === false) {
             wp_schedule_event(self::nextSend(time(), wp_timezone()), 'weekly', self::HOOK);

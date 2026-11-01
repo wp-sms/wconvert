@@ -17,26 +17,28 @@ use WConvert\Destination\SubmissionDispatcher;
 #[CoversClass(SubmissionDispatcher::class)]
 final class SubmissionDispatcherScheduleTest extends TestCase
 {
-    private SubmissionDispatcher $dispatcher;
-
     protected function setUp(): void
     {
         $GLOBALS['wconvertTestActions'] = [];
         $GLOBALS['wconvertTestSchedule'] = [];
-        // hooks() and schedule() touch none of the five collaborators.
-        $this->dispatcher = (new \ReflectionClass(SubmissionDispatcher::class))->newInstanceWithoutConstructor();
+    }
+
+    /** Scheduling needs no dispatcher, so asking for one fails the test. */
+    private static function hooks(): void
+    {
+        SubmissionDispatcher::hooks(static fn (): SubmissionDispatcher => throw new \LogicException('scheduling built the dispatcher'));
     }
 
     public function testBootingSchedulesNothingBeforeInit(): void
     {
-        $this->dispatcher->hooks();
+        self::hooks();
 
         self::assertFalse(wp_next_scheduled(SubmissionDispatcher::RECOVER));
     }
 
     public function testInitSchedulesTheSweepOnce(): void
     {
-        $this->dispatcher->hooks();
+        self::hooks();
         do_action('init');
         $first = wp_next_scheduled(SubmissionDispatcher::RECOVER);
         do_action('init');

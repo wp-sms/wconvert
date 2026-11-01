@@ -1,5 +1,6 @@
 import apiFetch from '@wordpress/api-fetch';
 import type { Availability } from '../goals/availability';
+import { sharedRead } from '../lib/requestActivity';
 
 /**
  * The three states, and how a surface renders them, come from
@@ -208,7 +209,11 @@ export interface RePushReport {
 
 const path = (suffix = '') => `/wconvert/v1/destinations${suffix}`;
 
-export const readDestinations = () => apiFetch<DestinationsPayload>({ path: path() });
+/** A screen's own read: always fresh, though identical calls at once share one request (#395). */
+export const readDestinations = sharedRead(() => apiFetch<DestinationsPayload>({ path: path() }));
+
+/** For a side widget (the bell, a count, a badge): a read from the last 30 s, forgotten on any change. */
+export const recentDestinations = () => readDestinations.recent();
 
 export const readSelectedSchema = (type: string, connection: string, refresh = false) =>
   apiFetch<{ settings_schema: Record<string, SettingsField> }>({ path: `${path('/schema')}?type=${encodeURIComponent(type)}&connection=${encodeURIComponent(connection)}${refresh ? '&refresh=1' : ''}` });
