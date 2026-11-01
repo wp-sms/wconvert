@@ -39,7 +39,13 @@ final class LeadEraser
     ) {
     }
 
-    public function hooks(): void
+    /**
+     * The entry WordPress's privacy tools read. The eraser is built only when
+     * WordPress calls the entry's callback, not on every request (#397).
+     *
+     * @param \Closure(): self $eraser
+     */
+    public static function hooks(\Closure $eraser): void
     {
         // Default priority, deliberately. WSMS registers its contact eraser at
         // 99 because several of its erasers resolve an email to a phone number
@@ -48,18 +54,19 @@ final class LeadEraser
         // and its Lead deletion plus diagnostic cleanup has no dependency on
         // another eraser (ADR 0018, ADR 0093). Copy the caveat only if a
         // second registered eraser ever appears.
-        add_filter('wp_privacy_personal_data_erasers', [$this, 'register']);
+        add_filter('wp_privacy_personal_data_erasers', static fn (array $erasers): array => self::register($erasers, $eraser));
     }
 
     /**
      * @param array<string, array{eraser_friendly_name: string, callback: callable}> $erasers
+     * @param \Closure(): self $eraser
      * @return array<string, array{eraser_friendly_name: string, callback: callable}>
      */
-    public function register(array $erasers): array
+    public static function register(array $erasers, \Closure $eraser): array
     {
         $erasers[self::ID] = [
             'eraser_friendly_name' => __('WConvert leads', 'wconvert'),
-            'callback' => [$this, 'erase'],
+            'callback' => static fn (string $email, int $page = 1): array => $eraser()->erase($email, $page),
         ];
 
         return $erasers;

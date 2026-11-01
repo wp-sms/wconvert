@@ -14,9 +14,16 @@ final class ProductStats
 
     public function __construct(private readonly Connection $db) {}
 
-    public function hooks(): void
+    /**
+     * Built when the prune fires, not on every request (#397).
+     *
+     * @param \Closure(): self $stats
+     */
+    public static function hooks(\Closure $stats): void
     {
-        add_action(self::HOOK, [$this, 'prune']);
+        add_action(self::HOOK, static function () use ($stats): void {
+            $stats()->prune();
+        });
     }
 
     /** Called only when live cards are served or a cart addition is accepted. */

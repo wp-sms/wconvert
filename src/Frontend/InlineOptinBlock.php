@@ -102,9 +102,17 @@ final class InlineOptinBlock
         'wp-i18n',
     ];
 
+    /**
+     * Resolvers rather than the services: both are read only in the block
+     * editor's and the REST route's callbacks, never on the `init` that
+     * registers the block on every request (#397).
+     *
+     * @param \Closure(): PublishedSet $publishedSet
+     * @param \Closure(): OptinRepository $optins
+     */
     public function __construct(
-        private readonly PublishedSet $publishedSet,
-        private readonly OptinRepository $optins,
+        private readonly \Closure $publishedSet,
+        private readonly \Closure $optins,
     ) {
     }
 
@@ -255,7 +263,7 @@ final class InlineOptinBlock
             $campaigns[] = ['id' => $optin['id'], 'name' => $optin['name'], 'status' => 'published', 'editUrl' => $editUrl($optin['id'])];
         }
 
-        foreach ($this->optins->draftsOfType(DisplayType::Inline) as $draft) {
+        foreach (($this->optins)()->draftsOfType(DisplayType::Inline) as $draft) {
             $campaigns[] = [
                 'id' => $draft['id'],
                 'name' => $draft['name'],
@@ -305,10 +313,10 @@ final class InlineOptinBlock
      */
     private function publishedInlineOptins(): array
     {
-        $names = $this->optins->names();
+        $names = ($this->optins)()->names();
         $inline = [];
 
-        foreach (PublishedOptin::fromSet($this->publishedSet->all()) as $optin) {
+        foreach (PublishedOptin::fromSet(($this->publishedSet)()->all()) as $optin) {
             // Asked of the Optin rather than read out of the entry it would
             // send to the browser. Absence is `popup` on both sides of the
             // wire, which is what makes this a positive test rather than a

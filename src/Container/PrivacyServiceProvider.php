@@ -22,7 +22,8 @@ defined('ABSPATH') || exit;
  * The personal-data surface: the exporter, the eraser, the suggested
  * privacy-policy text, the shared Data Map, and the retention pruning job.
  *
- * **The three hook-owning services boot on every request, admin or not.** The exporter and eraser
+ * **The three hook-owning services hook in on every request, admin or not**,
+ * and are built only when their hook fires. The exporter and eraser
  * are filters WordPress applies inside its own privacy tools, so registering
  * them behind `is_admin()` would work today and break the moment those tools
  * are driven by WP-CLI or by a cron request. The pruner has to be registered
@@ -96,9 +97,12 @@ final class PrivacyServiceProvider implements ServiceProvider
 
     public function boot(ServiceContainer $container): void
     {
-        $container->resolve(LeadExporter::class)->hooks();
-        $container->resolve(LeadEraser::class)->hooks();
-        $container->resolve(LeadPruner::class)->hooks();
+        // Each is built when WordPress calls it, not here (#397): the list
+        // entries are added on every request, the services behind them only
+        // when an export, an erasure or the prune actually runs.
+        LeadExporter::hooks($container->lazy(LeadExporter::class));
+        LeadEraser::hooks($container->lazy(LeadEraser::class));
+        LeadPruner::hooks($container->lazy(LeadPruner::class));
 
         // `admin_init` rather than now: the suggestion is only ever read by
         // the policy editor, and composing it means reading the retention

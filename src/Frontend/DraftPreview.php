@@ -58,8 +58,12 @@ final class DraftPreview
 
     private bool $resolved = false;
 
+    /**
+     * @param \Closure(): OptinRepository $optins Resolved only when a preview is asked for, so the
+     *                                       loader's every page view does not build the repository (#397).
+     */
     public function __construct(
-        private readonly OptinRepository $optins,
+        private readonly \Closure $optins,
         private readonly RuleVocabulary $vocabulary,
     ) {
     }
@@ -111,7 +115,7 @@ final class DraftPreview
 
         $this->resolved = true;
         $id = self::asked();
-        $optin = $id === null ? null : $this->optins->find($id);
+        $optin = $id === null ? null : ($this->optins)()->find($id);
 
         if ($optin === null || $optin->isDeleted()) {
             return null;

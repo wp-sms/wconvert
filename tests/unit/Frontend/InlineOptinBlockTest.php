@@ -61,7 +61,7 @@ final class InlineOptinBlockTest extends TestCase
 
     private function block(): InlineOptinBlock
     {
-        return new InlineOptinBlock($this->publishedSet, $this->optins);
+        return new InlineOptinBlock(fn (): PublishedSet => $this->publishedSet, fn (): OptinRepository => $this->optins);
     }
 
     /**

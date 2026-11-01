@@ -381,7 +381,7 @@ final class CoreServiceProvider implements ServiceProvider
         $container->register(
             DraftPreview::class,
             static fn (ServiceContainer $c): DraftPreview => new DraftPreview(
-                $c->resolve(OptinRepository::class),
+                $c->lazy(OptinRepository::class),
                 $c->resolve(RuleVocabulary::class)
             )
         );
@@ -410,8 +410,8 @@ final class CoreServiceProvider implements ServiceProvider
         $container->register(
             InlineOptinBlock::class,
             static fn (ServiceContainer $c): InlineOptinBlock => new InlineOptinBlock(
-                $c->resolve(PublishedSet::class),
-                $c->resolve(OptinRepository::class)
+                $c->lazy(PublishedSet::class),
+                $c->lazy(OptinRepository::class)
             )
         );
 
@@ -537,7 +537,8 @@ final class CoreServiceProvider implements ServiceProvider
         );
 
         $container->register(\WConvert\Rest\ProductHealthController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\ProductHealthController($c->resolve(OptinRepository::class)));
-        $container->register(\WConvert\Rest\ProductStatsController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\ProductStatsController(new \WConvert\Stats\ProductStats($c->resolve(Connection::class))));
+        $container->register(\WConvert\Rest\ProductStatsController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\ProductStatsController($c->resolve(\WConvert\Stats\ProductStats::class)));
+        $container->register(\WConvert\Stats\ProductStats::class, static fn (ServiceContainer $c) => new \WConvert\Stats\ProductStats($c->resolve(Connection::class)));
         $container->register(\WConvert\Rest\JourneyStatsController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\JourneyStatsController($c->resolve(Connection::class)));
 
         $container->register(
@@ -795,7 +796,7 @@ final class CoreServiceProvider implements ServiceProvider
 
     public function boot(ServiceContainer $container): void
     {
-        (new \WConvert\Stats\ProductStats($container->resolve(Connection::class)))->hooks();
+        \WConvert\Stats\ProductStats::hooks($container->lazy(\WConvert\Stats\ProductStats::class));
         add_action(\WConvert\Destination\SubmissionDispatcher::RECOVER, static function () use ($container): void {
             (new \WConvert\Protection\ResourceSendGuard($container->resolve(Connection::class), $container->resolve(\WConvert\Protection\Diagnostics::class)))->prune();
         });
@@ -953,11 +954,11 @@ final class CoreServiceProvider implements ServiceProvider
         // Each handler is resolved when its hook fires, as `init`'s are above:
         // building them here built fourteen services on every visitor page,
         // for graphs most requests never touch (#395).
-        PushWorker::hooks(static fn (): PushWorker => $container->resolve(PushWorker::class));
+        PushWorker::hooks($container->lazy(PushWorker::class));
         // Every request: the send fires from a WP-Cron request, which is not admin.
-        \WConvert\Report\WeeklySummaryJob::hooks(static fn (): \WConvert\Report\WeeklySummaryJob => $container->resolve(\WConvert\Report\WeeklySummaryJob::class));
+        \WConvert\Report\WeeklySummaryJob::hooks($container->lazy(\WConvert\Report\WeeklySummaryJob::class));
         \WConvert\Queue\RecentPushHistory::hooks();
-        \WConvert\Destination\SubmissionDispatcher::hooks(static fn (): \WConvert\Destination\SubmissionDispatcher => $container->resolve(\WConvert\Destination\SubmissionDispatcher::class));
+        \WConvert\Destination\SubmissionDispatcher::hooks($container->lazy(\WConvert\Destination\SubmissionDispatcher::class));
 
         if (is_admin()) {
             $container->resolve(\WConvert\Onboarding\FirstRunRedirect::class)->hooks();
@@ -972,7 +973,7 @@ final class CoreServiceProvider implements ServiceProvider
             // after that constant became `- 1`, which is how a duplicated
             // fact goes stale. It costs an ordinary page view one capability
             // check and one `isset($_GET[...])`.
-            $container->resolve(InspectorEnqueue::class)->hooks();
+            InspectorEnqueue::hooks($container->lazy(InspectorEnqueue::class));
             $container->resolve(DraftPreview::class)->hooks();
         }
     }

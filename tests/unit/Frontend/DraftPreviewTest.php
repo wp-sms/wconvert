@@ -71,10 +71,9 @@ final class DraftPreviewTest extends TestCase
     {
         $vocabulary = RuleVocabulary::fromManifest(self::PLUGIN_DIR);
 
-        return new DraftPreview(
-            new OptinRepository($this->db, new PublishedSet(new FakeOptionStore()), $vocabulary, new MilestoneStore(new FakeOptionStore())),
-            $vocabulary
-        );
+        $optins = new OptinRepository($this->db, new PublishedSet(new FakeOptionStore()), $vocabulary, new MilestoneStore(new FakeOptionStore()));
+
+        return new DraftPreview(static fn (): OptinRepository => $optins, $vocabulary);
     }
 
     public function testAnyoneWhoCannotManageTheSiteGetsTheOrdinaryPage(): void

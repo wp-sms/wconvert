@@ -258,6 +258,9 @@ final class NothingTranslatesAtBootTest extends TestCase
             \WConvert\Destination\PushWorker::class => [\WConvert\Destination\PushJob::HOOK, [[]]],
             \WConvert\Report\WeeklySummaryJob::class => [\WConvert\Report\WeeklySummaryJob::HOOK, []],
             \WConvert\Destination\SubmissionDispatcher::class => [\WConvert\Lead\JourneyCapture::ACCEPTED, ['lead', 'submission']],
+            // #397: the prune jobs.
+            \WConvert\Retention\LeadPruner::class => [\WConvert\Retention\LeadPruner::HOOK, []],
+            \WConvert\Stats\ProductStats::class => [\WConvert\Stats\ProductStats::HOOK, []],
         ];
 
         $this->boot(null, array_combine(array_keys($hooks), array_map($spy, array_keys($hooks))));
@@ -270,6 +273,90 @@ final class NothingTranslatesAtBootTest extends TestCase
             } catch (\LogicException $refused) {
                 $this->assertSame($id, $refused->getMessage());
             }
+        }
+    }
+
+    /**
+     * The privacy exporter and eraser (#397). WordPress reads the two lists on
+     * Tools → Export / Erase, from WP-CLI and from REST, so the entries are
+     * added on every request — but the services behind them, with their
+     * repositories, are built only when WordPress calls an entry's callback.
+     */
+    public function testThePrivacyToolsListWConvertWithoutBuildingItsExporterOrEraser(): void
+    {
+        $built = [];
+        $spy = static function (string $id) use (&$built): \Closure {
+            return static function () use ($id, &$built): object {
+                $built[] = $id;
+                throw new \LogicException($id);
+            };
+        };
+        $lists = [
+            \WConvert\Privacy\LeadExporter::class => 'wp_privacy_personal_data_exporters',
+            \WConvert\Privacy\LeadEraser::class => 'wp_privacy_personal_data_erasers',
+        ];
+
+        $this->boot(null, array_combine(array_keys($lists), array_map($spy, array_keys($lists))));
+
+        foreach ($lists as $id => $filter) {
+            /** @var array<string, array{callback: callable}> $entries */
+            $entries = apply_filters($filter, []);
+            $this->assertArrayHasKey('wconvert-leads', $entries, "$filter lost WConvert's entry");
+            $this->assertSame([], $built, "listing $filter built its service");
+
+            try {
+                ($entries['wconvert-leads']['callback'])('someone@example.com', 1);
+                $this->fail(sprintf('%s’s callback ran without building %s', $filter, $id));
+            } catch (\LogicException $refused) {
+                $this->assertSame($id, $refused->getMessage());
+            }
+
+            $built = [];
+        }
+    }
+
+    /**
+     * The inspector and its admin-bar node (#397): built for a front-end page
+     * an administrator is looking at, and never for anyone else. Only the
+     * build moved; the capability checks are where they were.
+     */
+    public function testTheInspectorIsBuiltOnlyForAnAdministratorWhoCanUseIt(): void
+    {
+        $built = [];
+        $spy = static function (string $id) use (&$built): \Closure {
+            return static function () use ($id, &$built): object {
+                $built[] = $id;
+                throw new \LogicException($id);
+            };
+        };
+        $ids = [\WConvert\Frontend\InspectorEnqueue::class, \WConvert\Admin\InspectorBar::class];
+        $capabilities = $GLOBALS['wconvertTestCapabilities'] ?? [];
+
+        $this->boot(null, array_combine($ids, array_map($spy, $ids)));
+
+        try {
+            // A visitor: both hooks fire, neither builds.
+            $GLOBALS['wconvertTestCapabilities'] = [];
+            $_GET[\WConvert\Frontend\InspectorEnqueue::PARAM] = '1';
+            self::fireAt('wp_enqueue_scripts', \WConvert\Frontend\InspectorEnqueue::PRIORITY);
+            self::fireAt('admin_bar_menu', 100, new \WP_Admin_Bar());
+            $this->assertSame([], $built, 'a visitor’s page built the inspector');
+
+            $GLOBALS['wconvertTestCapabilities'] = [\WConvert\Rest\Routes::MANAGE_CAPABILITY];
+            foreach ([
+                \WConvert\Frontend\InspectorEnqueue::class => ['wp_enqueue_scripts', \WConvert\Frontend\InspectorEnqueue::PRIORITY],
+                \WConvert\Admin\InspectorBar::class => ['admin_bar_menu', 100],
+            ] as $id => [$hook, $priority]) {
+                try {
+                    self::fireAt($hook, $priority, new \WP_Admin_Bar());
+                    $this->fail(sprintf('%s fired for an administrator without building %s', $hook, $id));
+                } catch (\LogicException $refused) {
+                    $this->assertSame($id, $refused->getMessage());
+                }
+            }
+        } finally {
+            $GLOBALS['wconvertTestCapabilities'] = $capabilities;
+            unset($_GET[\WConvert\Frontend\InspectorEnqueue::PARAM]);
         }
     }
 
@@ -621,6 +708,19 @@ final class NothingTranslatesAtBootTest extends TestCase
         }
 
         return $container;
+    }
+
+    /**
+     * One priority of a hook, so another module's handler on the same hook
+     * (Pro's analytics on `wp_enqueue_scripts`) is not part of the question.
+     */
+    private static function fireAt(string $hook, int $priority, mixed ...$args): void
+    {
+        foreach ($GLOBALS['wconvertTestActions'][$hook] ?? [] as $registered) {
+            if ($registered['priority'] === $priority) {
+                $registered['callback'](...$args);
+            }
+        }
     }
 
     /**
