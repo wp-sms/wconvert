@@ -1,9 +1,7 @@
 import { Suspense } from 'react';
-import { __ } from '@wordpress/i18n';
 import { BackLink, BuilderSkeleton } from '../shell/BuilderSkeleton';
-import { ChoiceSkeleton } from '../shell/ChoiceGrid';
 import { ChunkBoundary } from '../shell/ChunkBoundary';
-import { Region, RegionBody, RegionHeader } from '../shell/Region';
+import { GoalStepSkeleton } from '../goals/GoalStepSkeleton';
 import type { OptinBuilderProps } from './OptinBuilder';
 import type { GoalScreenProps } from '../goals/GoalScreen';
 import { lazyScreen } from '../lib/requestActivity';
@@ -80,33 +78,16 @@ export function OptinBuilder(props: OptinBuilderProps) {
  * would be the same failure a step earlier — the merchant has clicked *Create
  * an Optin* and is owed the shape of what is coming.
  *
- * So the fallback is step one as it draws itself mid-fetch: the region, its
- * title, and four cards in the shape of the four [[Goal]]s. Four because the
- * free install ships four; a fifth arriving makes this one card short for the
- * length of one fetch, which is a rounding error in a placeholder and not worth
- * a read to fix.
+ * So the fallback is {@see GoalStepSkeleton}, the component step one itself
+ * draws while its goals are read: one shape from the click until the goals
+ * land, with the step nav and heading already where they will stay.
  */
 export function GoalScreen(props: GoalScreenProps) {
   return (
     <ChunkBoundary>
-      <Suspense fallback={<CreationSkeleton />}>
+      <Suspense fallback={<GoalStepSkeleton />}>
         <Creation {...props} />
       </Suspense>
     </ChunkBoundary>
-  );
-}
-
-function CreationSkeleton() {
-  return (
-    <Region>
-      <RegionHeader
-        title={__('What do you want to achieve?', 'wconvert')}
-        description={__('Choose a goal, then a template. You can customize the design and decide when to publish in the editor.', 'wconvert')}
-      />
-      <RegionBody>
-        {/* The announcement travels with the skeleton now. */}
-        <ChoiceSkeleton />
-      </RegionBody>
-    </Region>
   );
 }

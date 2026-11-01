@@ -76,11 +76,21 @@ different situations:
 `shell/skeletonDelay.ts` is where that line lives, so a new skeleton chooses
 rather than copies.
 
+*Amended by [0181](0181-a-loading-screen-is-one-static-shape.md): the line is
+now drawn by the caller. Every skeleton paints at once by default, and a re-read
+passes `wait` (or sits in a `Reread` boundary). `TableSkeleton`,
+`ChoiceSkeleton` and `GallerySkeleton` no longer wait on their own.*
+
 **The announcement belongs to the skeleton and never to the call site.** One
 `role="status"` reading *Loading…* per region, with every bar `aria-hidden` — a
 screen reader has nothing to gain from twenty-eight empty cells. Leaving it to
 callers is how three of the four choice-and-gallery loading states in this admin
 came to be silent.
+
+*Amended by [0181](0181-a-loading-screen-is-one-static-shape.md): the status is
+screen-reader only everywhere, names the region ("Loading answers…"), and a
+skeleton nested in one that has spoken stays quiet. Placeholders are static, in
+`--skeleton`.*
 
 **A busy control is `disabled`, and it is a different thing from a refused
 one** — see §3.
@@ -267,6 +277,12 @@ rather than clip.
 
 The artefact that answers *"do we deliver the same experience across the
 admin"*. Read down a column to find a gap.
+
+*Amended by [0181](0181-a-loading-screen-is-one-static-shape.md): the Loading
+column is now one component per screen, shared by the chunk fallback —
+Analytics is `AnalyticsSkeleton` (impact cards and goal cards), Leads is
+`LeadLogSkeleton` (filters, toolbar and table under its headings),
+Destinations is `DestinationsSkeleton`.*
 
 | Screen | Loading | Empty | Failed | Full |
 |---|---|---|---|---|

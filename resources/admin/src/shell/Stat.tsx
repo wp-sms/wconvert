@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Skeleton } from '../components/ui/skeleton';
 import { cn } from '../lib/utils';
+import { useAnnounced } from './RegionSkeleton';
 
 /**
  * A row of numbers that belong to one subject.
@@ -115,10 +116,11 @@ export function StatRowSkeleton({
   stats: number;
   className?: string;
 }) {
+  const announced = useAnnounced();
   return (
     <StatRow className={className}>
-      {/* `<div>` and not `<span>`: a `<dl>`'s content model takes one. */}
-      <div className="sr-only">{__('Loading…', 'wconvert')}</div>
+      {/* `<div>` and not `<span>`: a `<dl>`'s content model takes one. Inside a region skeleton the region has said it. */}
+      {!announced && <div className="sr-only">{__('Loading…', 'wconvert')}</div>}
       {Array.from({ length: stats }, (_, index) => (
         <div key={index} className="flex flex-col-reverse gap-0.5">
           {/*

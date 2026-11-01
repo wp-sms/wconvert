@@ -3,7 +3,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { Info } from 'lucide-react';
 import { ConfirmDialog } from '@/shell/ConfirmDialog';
 import { Region, RegionBody, RegionError } from '@/shell/Region';
-import { RegionSkeleton } from '@/shell/RegionSkeleton';
+import { LicenseSkeleton } from './LicenseSkeleton';
 import { LOADING, messageOf, ready, type Loadable } from '@/shell/loadable';
 import { setPlanBadge } from '@/shell/planBadge';
 import { markSubmenuCurrent } from '@/shell/menuHighlight';
@@ -125,7 +125,7 @@ export function LicensePage() {
 
   const startSignIn = () => goSignIn((error) => say('danger', errorCopy(error).text));
 
-  if (license.status === 'loading') return <RegionSkeleton label={__('Loading license…', 'wconvert-pro')} lines={5} />;
+  if (license.status === 'loading') return <LicenseSkeleton />;
 
   if (license.status === 'failed') {
     return <Region><RegionBody><RegionError message={license.message} onRetry={() => { setLicense(LOADING); void load(); }} /></RegionBody></Region>;

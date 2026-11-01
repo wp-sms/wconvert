@@ -33,7 +33,8 @@ import {
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { BackLink, BuilderSkeleton } from '../shell/BuilderSkeleton';
+import { BackLink, BuilderSkeleton, useEditingFrame } from '../shell/BuilderSkeleton';
+import { RegionSkeleton } from '../shell/RegionSkeleton';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { EmptyState } from '../shell/EmptyState';
 import { PageAction } from '../shell/PageActions';
@@ -190,10 +191,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   }, [browsing, busy]);
   const [details, setDetails] = useState(false);
   const detailsTrigger = useRef<HTMLButtonElement | null>(null);
-  useEffect(() => {
-    document.body.classList.add('wconvert-editing');
-    return () => document.body.classList.remove('wconvert-editing');
-  }, []);
+  useEditingFrame();
   const [tab, setTab] = useState<TabId>(initialTab ?? 'edit');
   const [journeyVisited, setJourneyVisited] = useState(true);
   const previewReturnTab = useRef<TabId>('edit');
@@ -1216,7 +1214,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         }}
       />
 
-      {transfer && <Suspense fallback={<span role="status">{__('Loading file tools…', 'wconvert')}</span>}>
+      {/* The dialog's own body while its code loads, not a sentence pinned to the page. */}
+      {transfer && <Suspense fallback={<TransferSkeleton action={transfer.action} onClose={() => { setTransfer(null); campaignActions.current?.focus(); }} />}>
         <TemplateTransferDialog action={transfer.action} optin={id} config={transfer.config}
           design={{ ...(transfer.config.template as Template), name: transfer.name, display_type: displayTypeOf(transfer.config, templates) }}
           onClose={() => { setTransfer(null); campaignActions.current?.focus(); }}
@@ -1409,6 +1408,21 @@ function entryFor(
 }
 
 /** A tab's mark for something that blocks publishing; the words are its description. */
+/**
+ * The import/export dialog while its code downloads: the dialog it will be,
+ * titled, with its body as a region skeleton — so the click opens the dialog
+ * at once, and Escape still closes it.
+ */
+function TransferSkeleton({ action, onClose }: { action: 'import' | 'export'; onClose: () => void }) {
+  const title = action === 'export' ? __('Export as template', 'wconvert') : __('Import template', 'wconvert');
+  return <AdminDialog open onOpenChange={(open) => { if (!open) onClose(); }}>
+    <AdminDialogContent size="md">
+      <AdminDialogHeader title={title} />
+      <AdminDialogBody><RegionSkeleton label={title} lines={4} /></AdminDialogBody>
+    </AdminDialogContent>
+  </AdminDialog>;
+}
+
 function AttentionDot() {
   return <span className="wconvert-tab-attention" aria-hidden="true" />;
 }

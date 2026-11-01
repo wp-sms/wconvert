@@ -18,11 +18,15 @@ import { RegionBody } from './Region';
  * No anti-flash delay: this fills a region for the first time and there is
  * nothing to flicker against — {@see useShownAfterDelay} draws that line.
  */
-export function RowsSkeleton({ rows = 3 }: { rows?: number }) {
+export function RowsSkeleton({ rows = 3, status }: {
+  rows?: number;
+  /** What is loading, said once: "Loading recent sends…". Plain "Loading…" otherwise. */
+  status?: string;
+}) {
   return (
     <RegionBody className="flex flex-col gap-3">
       <span role="status" className="flex items-center gap-2">
-        <span className="sr-only">{__('Loading…', 'wconvert')}</span>
+        <span className="sr-only">{status ?? __('Loading…', 'wconvert')}</span>
         <Skeleton aria-hidden="true" className="size-4 shrink-0" />
         <Skeleton aria-hidden="true" className="h-4 w-48 max-w-full" />
       </span>

@@ -18,7 +18,7 @@ import {
   RegionFooter,
   RegionHeader,
 } from '../shell/Region';
-import { RegionSkeleton } from '../shell/RegionSkeleton';
+import { SettingsRegionSkeleton } from '../settings-page/SettingsSkeleton';
 import { CheckRow } from '../shell/CheckRow';
 import { Field } from '../shell/Field';
 import { SaveStatus, useSaveStatus } from '../shell/SaveStatus';
@@ -129,7 +129,7 @@ export function SiteAllowance({
   };
   const title = __('Display limits', 'wconvert');
   if (allowance.status === 'loading')
-    return <RegionSkeleton label={title} lines={4} />;
+    return <SettingsRegionSkeleton region="allowance" />;
   if (allowance.status === 'failed')
     return (
       <Region>

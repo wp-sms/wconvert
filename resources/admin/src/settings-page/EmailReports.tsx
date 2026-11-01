@@ -5,7 +5,7 @@ import { Input } from '../components/ui/input';
 import { CheckRow } from '../shell/CheckRow';
 import { Field } from '../shell/Field';
 import { Region, RegionBody, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
-import { RegionSkeleton } from '../shell/RegionSkeleton';
+import { SettingsRegionSkeleton } from './SettingsSkeleton';
 import { SaveStatus, useSaveStatus } from '../shell/SaveStatus';
 import { messageOf } from '../shell/loadable';
 import { useSettingsEditing, type SettingsEditing } from './useSettingsEditing';
@@ -55,7 +55,7 @@ export function EmailReports({ onEditingStateChange }: { onEditingStateChange?: 
 
   if (saved === null) {
     return loadingError === null
-      ? <RegionSkeleton label={title} lines={3} />
+      ? <SettingsRegionSkeleton region="reports" />
       : <Region><RegionHeader title={title} /><RegionErrorState message={loadingError} onRetry={() => setRetry((n) => n + 1)} /></Region>;
   }
 

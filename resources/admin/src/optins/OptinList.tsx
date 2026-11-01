@@ -32,7 +32,6 @@ import type { Occasion } from '../discovery/api';
 import { readOccasions, type OccasionNotice } from '../occasions/api';
 import { OccasionNoticeView } from '../occasions/Notice';
 import { GettingStarted, useChecklist } from './GettingStarted';
-import { RegionSkeleton } from '../shell/RegionSkeleton';
 import { readDashboard, type DashboardPayload } from '../stats/api';
 import { rowResultOf, shownLine } from './rowResult';
 import { formatCount, formatRange, labelOf } from '../lib/format';
@@ -423,6 +422,9 @@ export function OptinList({
       {previews[row.id]?.template ? (
         <CampaignThumbnail template={previews[row.id].template!} displayType={previews[row.id].display_type} />
       ) : (
+        // While the preview is still being read this is the plain box the
+        // skeleton and the design chunk draw, so loading is one box; the icon
+        // is for a campaign that will not have a picture.
         <div
           className="wconvert-preview-placeholder"
           aria-label={
@@ -433,7 +435,7 @@ export function OptinList({
                 : __('Loading preview', 'wconvert')
           }
         >
-          <Megaphone aria-hidden="true" />
+          {(previewError || previews[row.id]) && <Megaphone aria-hidden="true" />}
         </div>
       )}
     </div>
@@ -575,14 +577,16 @@ export function OptinList({
   const known = list.status === 'ready';
   useEffect(() => onEmptyChange?.(known ? empty : null), [known, empty, onEmptyChange]);
   // The getting-started card (ADR 0176). On an empty site it replaces the
-  // bare empty state; until its milestones arrive, the sheet waits with it.
+  // bare empty state.
   const checklist = useChecklist(list.status === 'ready' ? list.data : null, goalEntries);
   const card = checklist.status === 'shown'
     ? <GettingStarted checklist={checklist.checklist} onCreate={onCreate} onEdit={onEdit} onHide={checklist.hide} />
     : null;
-  if (empty && checklist.status !== 'hidden') {
-    return card ?? <RegionSkeleton label={__('Campaigns', 'wconvert')} lines={3} />;
-  }
+  if (empty && card) return card;
+  // Until the card's milestones arrive the empty site keeps the table's own
+  // skeleton, so the wait is one shape and not a second placeholder before it.
+  const pending = empty && checklist.status === 'pending';
+  const listEmpty = empty && !pending;
   const decisionWords = decision ? decisionCopy(decision.kind, decision.row.parent_id !== null, nameOf(decision.row), decision.row.arms.length) : null;
   const groupWords = groupConfirm ? groupConfirmCopy(groupConfirm.action, groupConfirm.plan) : null;
   return (
@@ -633,7 +637,7 @@ export function OptinList({
             {productChecks && productHealth.loading && (
               <p role="status" className="sr-only">{__('Checking products…', 'wconvert')}</p>
             )}
-            {!empty && (
+            {!listEmpty && (
               <>
                 <div className="wconvert-toolbar wconvert-campaign-filterbar">
                   <OptionStrip
@@ -718,7 +722,7 @@ export function OptinList({
                 </div>
               </>
             )}
-            {empty ? (
+            {listEmpty ? (
               <EmptyState
                 icon={Megaphone}
                 title={__('No campaigns yet', 'wconvert')}
@@ -735,7 +739,7 @@ export function OptinList({
               >
                 {__('Choose a goal, pick a template, and publish when you’re ready.', 'wconvert')}
               </EmptyState>
-            ) : list.status === 'ready' && visible.length === 0 ? (
+            ) : list.status === 'ready' && !pending && visible.length === 0 ? (
               <EmptyState
                 icon={Search}
                 title={__('No campaigns found', 'wconvert')}
@@ -759,31 +763,31 @@ export function OptinList({
               <DataTable label={__('Campaigns', 'wconvert')} className="wconvert-campaign-table">
                 <DataTableHead>
                   <DataTableColumn className="wconvert-campaign-select">
-                    {list.status === 'ready' && (
-                      <CheckRow
-                        label={<span className="sr-only">{__('Select all campaigns on this page', 'wconvert')}</span>}
-                        checked={allTicked}
-                        ref={(input: HTMLInputElement | null) => {
-                          selectAll.current = input;
-                          if (input) input.indeterminate = tickedRows.length > 0 && !allTicked;
-                        }}
-                        // Refused, not disabled: a group action unmounts the tray it
-                        // was started from, and this is where focus goes (§14).
-                        aria-disabled={busy.size > 0 || undefined}
-                        onChange={() => {
-                          if (busyRef.current.size > 0) return;
-                          setGroupResult(null);
-                          setTicked(allTicked ? new Set() : new Set(shown.map((c) => c.id)));
-                        }}
-                      />
-                    )}
+                    {/* Drawn while the rows load too, disabled, so the header row keeps its height. */}
+                    <CheckRow
+                      label={<span className="sr-only">{__('Select all campaigns on this page', 'wconvert')}</span>}
+                      checked={list.status === 'ready' && !pending && allTicked}
+                      disabled={list.status !== 'ready' || pending}
+                      ref={(input: HTMLInputElement | null) => {
+                        selectAll.current = input;
+                        if (input) input.indeterminate = tickedRows.length > 0 && !allTicked;
+                      }}
+                      // Refused, not disabled: a group action unmounts the tray it
+                      // was started from, and this is where focus goes (§14).
+                      aria-disabled={busy.size > 0 || undefined}
+                      onChange={() => {
+                        if (busyRef.current.size > 0) return;
+                        setGroupResult(null);
+                        setTicked(allTicked ? new Set() : new Set(shown.map((c) => c.id)));
+                      }}
+                    />
                   </DataTableColumn>
                   <DataTableColumn>{__('Campaign', 'wconvert')}</DataTableColumn>
                   <DataTableColumn>{__('Status', 'wconvert')}</DataTableColumn>
                   <DataTableColumn numeric>{__('Results', 'wconvert')}</DataTableColumn>
                   <DataTableColumn>{__('Next action', 'wconvert')}</DataTableColumn>
                 </DataTableHead>
-                {list.status === 'loading' ? <CampaignSkeleton /> : <DataTableBody>
+                {list.status === 'loading' || pending ? <CampaignSkeleton /> : <DataTableBody>
                   {shown.flatMap((c) => [
                     rowView(c, c, false),
                     ...(!collapsed.has(c.id) ? c.arms.map((arm) => rowView(arm, c, true)) : []),

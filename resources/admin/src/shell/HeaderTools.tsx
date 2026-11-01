@@ -59,12 +59,25 @@ export const HELP_URLS = {
 /** The Help page's hash on the one WConvert screen (`help/page.ts`). */
 export const HELP_PAGE_ID = 'help';
 
+type Notices = { campaigns: OptinSummary[]; sending: number; formsPaused: boolean; protectionChecked: boolean };
+
+/**
+ * What the bell last knew, outside the component. A screen that redraws its
+ * frame — the occasion page's chunk, then its read, then the page — remounts
+ * the header with it, and a badge kept in component state went blank and came
+ * back each time. The next read still runs; until it lands, the badge says
+ * what it said a moment ago.
+ */
+let lastNotices: Notices | null = null;
+
 export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
   const tier = adminSettings()?.installedTier ?? 'free';
   const proInactive = adminSettings()?.proInstalledInactive === true;
-  const [notices, setNotices] = useState<{ campaigns: OptinSummary[]; sending: number; formsPaused: boolean; protectionChecked: boolean } | null>(
-    null,
-  );
+  const [notices, setHeld] = useState<Notices | null>(() => lastNotices);
+  const setNotices = useCallback((next: Notices) => {
+    lastNotices = next;
+    setHeld(next);
+  }, []);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const request = useRef(0);
@@ -95,7 +108,7 @@ export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
     } finally {
       if (current === request.current) setLoading(false);
     }
-  }, []);
+  }, [setNotices]);
   // Read on load, not on open: the unread dot is the whole point of the bell,
   // and a dot that only appears once the merchant has already looked says
   // nothing at all. But after the screen's own reads — or 3 s after the

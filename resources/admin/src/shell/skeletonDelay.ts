@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 /**
  * How long a fetch may take before anything is drawn to say it is happening.
@@ -16,35 +16,42 @@ const DELAY_MS = 160;
  * Whether a placeholder has waited long enough to be worth drawing.
  *
  * ============================================================================
- * NOT EVERY SKELETON WANTS THIS, AND THE DIVIDING LINE IS WHAT IT REPLACES.
+ * A FIRST FILL PAINTS AT ONCE. ONLY A RE-READ WAITS (GUIDELINES §12).
  * ============================================================================
- * One skeleton of five delayed and four painted at once, which read as drift.
- * It is not: the two behaviours answer different situations, and nothing in
- * the admin said which was which.
+ * The line is what the skeleton replaces, and the CALLER is the one who knows,
+ * so it is a flag at the call site rather than a property of each skeleton.
  *
- * **A skeleton that replaces content the merchant was already reading waits.**
- * That is the flicker case — the region has something in it, a re-read lands
- * in tens of milliseconds, and a placeholder that appears and vanishes inside
- * one is a screen that blinks. {@see TableSkeleton} is written for exactly
- * this, and {@see ChoiceSkeleton} and {@see GallerySkeleton} join it because
- * picking a different [[Goal]] puts a filled step back into `loading`.
+ * **A region filling for the first time paints at once** — `wait` false, the
+ * default. There is nothing to flicker against: the region is blank either
+ * way, and 160ms of blank before the shape is 160ms of a screen that has not
+ * started. Drawing the shape immediately is also what reserves the height.
+ * The section fallbacks hand off to these same components, so a delay here
+ * was a blank frame at the chunk's end and another at the read's start.
  *
- * **A skeleton filling a region for the first time paints at once.** There is
- * nothing to flicker against — the region is blank either way — and drawing
- * the shape immediately is what reserves the height, which is the whole job of
- * {@see StatRowSkeleton} (its numbers arrive after the page and would push the
- * tab strip down) and of {@see RegionSkeleton}. {@see BuilderSkeleton} is the
- * sharpest case: it carries the way OUT of the builder while the chunk loads,
- * so 160ms of nothing is 160ms with no way back.
+ * **A re-read over content the merchant was already reading waits** — `wait`
+ * true. A Leads filter change, a second [[Goal]] picked in creation, a
+ * Settings group re-read: a local REST call lands in tens of milliseconds, and
+ * a placeholder that appears and vanishes inside one is a screen that blinks.
  */
-export function useShownAfterDelay(): boolean {
-  const [shown, setShown] = useState(false);
+export function useShownAfterDelay(asked = false): boolean {
+  const inherited = useContext(Reread);
+  const wait = asked || inherited;
+  const [shown, setShown] = useState(!wait);
 
   useEffect(() => {
+    if (!wait) return undefined;
     const timer = setTimeout(() => setShown(true), DELAY_MS);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [wait]);
 
-  return shown;
+  return shown || !wait;
 }
+
+/**
+ * Every skeleton under it is a re-read, so each waits as if it had been asked
+ * to. For a screen that swaps a whole column over content the merchant was
+ * reading — Settings' category switch — where the regions inside cannot know
+ * they are not the first thing drawn there.
+ */
+export const Reread = createContext(false);

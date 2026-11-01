@@ -150,14 +150,14 @@ export function ChoiceCard({
  * placeholder. Owning the grid is what makes there be exactly one of it, and
  * it is the shape {@see GallerySkeleton} already had.
  */
-export function ChoiceSkeleton({ cards = 4 }: { cards?: number }) {
+export function ChoiceSkeleton({ cards = 4, wait = false }: { cards?: number; wait?: boolean }) {
   /*
-    **It delays, because this step can be entered a second time.** Picking a
-    different [[Goal]] puts a filled step back into `loading`, which is the
-    flicker case {@see useShownAfterDelay} describes — unlike the skeletons
-    that only ever fill a blank region.
+    `wait` when a filled step goes back into `loading` — picking a different
+    [[Goal]] — which is the flicker case {@see useShownAfterDelay} describes.
+    Step one's first read paints at once, so the chunk's fallback and the
+    step's own loading state are one unbroken shape.
   */
-  if (!useShownAfterDelay()) {
+  if (!useShownAfterDelay(wait)) {
     return null;
   }
 
@@ -168,15 +168,17 @@ export function ChoiceSkeleton({ cards = 4 }: { cards?: number }) {
       </span>
 
       <ChoiceGrid>
+        {/*
+          A [[Goal]] card's anatomy — the icon tile, the name, a line of
+          description and the full-width action — in the card's own classes,
+          so each placeholder is the height of the card that replaces it.
+        */}
         {Array.from({ length: cards }, (_each, card) => (
-          <li
-            key={card}
-            className="flex flex-col gap-2 rounded-md border border-border bg-card p-4"
-          >
-            <Skeleton aria-hidden="true" className="h-4 w-40 max-w-full" />
-            <Skeleton aria-hidden="true" className="h-3 w-full" />
-            <Skeleton aria-hidden="true" className="h-3 w-2/3" />
-            <Skeleton aria-hidden="true" className="h-9 w-24" />
+          <li key={card} aria-hidden="true" className="wconvert-choice wconvert-goal-card flex flex-col gap-2 rounded-md border border-border bg-card p-4">
+            <Skeleton className="wconvert-goal-card__icon" />
+            <Skeleton className="h-[1lh] w-full max-w-40 text-heading leading-[1.4]" />
+            <Skeleton className="h-[1lh] w-full text-note" />
+            <Skeleton className="w-full" style={{ blockSize: 'var(--control-height)' }} />
           </li>
         ))}
       </ChoiceGrid>

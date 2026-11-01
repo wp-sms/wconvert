@@ -25,7 +25,7 @@ import { Field } from '../shell/Field';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { Region, RegionBody, RegionError, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
 import { Shell } from '../shell/Shell';
-import { Stat, StatRow } from '../shell/Stat';
+import { Stat, StatRow, StatRowSkeleton } from '../shell/Stat';
 import { readReport, type DashboardPayload, type PeriodQuery } from '../stats/api';
 import { copyOccasion, download, exportOccasion, readOccasions, type OccasionNotice } from './api';
 import { DateLine } from './DateLine';
@@ -223,8 +223,9 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
             } />
             <RegionBody>
               {report?.status === 'failed' ? <RegionError message={report.message} onRetry={() => setAttempt((n) => n + 1)} />
+                : (report?.status === 'loading' || (report === null && queryKey !== '')) ? <StatRowSkeleton stats={3} />
                 : totals === null || totals.shown === 0
-                  ? <p className="m-0 text-note text-muted-foreground">{report?.status === 'loading' ? __('Loading results…', 'wconvert') : __('Totals appear once a campaign here is published and shown.', 'wconvert')}</p>
+                  ? <p className="m-0 text-note text-muted-foreground">{__('Totals appear once a campaign here is published and shown.', 'wconvert')}</p>
                   : <StatRow>
                     <Stat emphasis label={__('Shown', 'wconvert')} value={formatCount(totals.shown)} />
                     {/* Clicks count click goals only, so with none here there is no number to give. */}

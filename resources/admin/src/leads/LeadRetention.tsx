@@ -15,7 +15,7 @@ import { Input } from '../components/ui/input';
 import { Field } from '../shell/Field';
 import { OptionStrip } from '../shell/OptionStrip';
 import { Region, RegionBody, RegionError, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
-import { RegionSkeleton } from '../shell/RegionSkeleton';
+import { SettingsRegionSkeleton } from '../settings-page/SettingsSkeleton';
 import { SaveStatus, useSaveStatus } from '../shell/SaveStatus';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { readRetention, saveRetention, type Retention } from './api';
@@ -143,7 +143,7 @@ export function LeadRetention({ onEditingStateChange }: { onEditingStateChange?:
   };
 
   const title = __('How long submissions are kept', 'wconvert');
-  if (retention.status === 'loading') return <RegionSkeleton label={title} lines={2} />;
+  if (retention.status === 'loading') return <SettingsRegionSkeleton region="retention" />;
   if (retention.status === 'failed') {
     return (
       <Region>

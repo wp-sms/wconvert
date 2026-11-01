@@ -16,6 +16,7 @@ import { registerPage } from '@/extraPages';
 import { lazyScreen } from '@/lib/requestActivity';
 import { renderExtensions } from '@/renderExtensions';
 import { __ } from '@wordpress/i18n';
+import { LicenseSkeleton } from './license/LicenseSkeleton';
 
 // The License page (ADR 0143): a registered page in the one shared bundle
 // rather than an entry in PRO_SCREENS, which stays empty.
@@ -24,6 +25,7 @@ registerPage({
   title: __('License', 'wconvert-pro'),
   description: __('Updates and support for WConvert Pro.', 'wconvert-pro'),
   Component: lazyScreen(() => import('./license/LicensePage').then((module) => ({ default: module.LicensePage }))),
+  skeleton: LicenseSkeleton,
 });
 
 // Loaders, not calls: all three reach the renderer or the journey editor, and

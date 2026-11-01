@@ -9,6 +9,7 @@ import { failed, type Loadable } from '@/shell/loadable';
 import type { CampaignAnalyticsProps } from '@/analyticsIntegration';
 import { editorHref } from '@/nav';
 import { path, type Response } from './api';
+import { LineSkeleton } from '@/shell/LineSkeleton';
 
 export default function Campaign({ value, parentId, onChange }: CampaignAnalyticsProps) {
   const preference = value as { off?: boolean; label?: string } | undefined;
@@ -33,7 +34,7 @@ export default function Campaign({ value, parentId, onChange }: CampaignAnalytic
         onChange={choice => onChange({ ...preference, off: choice === 'off' })} />
     </div>
     {/* One sentence about the site setting, not a region: a fact inside a form. */}
-    {enabled.status === 'loading' ? <p role="status" className="m-0 text-note text-muted-foreground">{__('Loading site analytics…', 'wconvert-pro')}</p>
+    {enabled.status === 'loading' ? <LineSkeleton status={__('Loading site analytics…', 'wconvert-pro')} className="text-note" />
       : enabled.status === 'failed' ? <div role="alert" className="flex flex-wrap items-center gap-3 text-note text-destructive"><span>{enabled.message}</span><TryAgain onClick={() => setRetry(n => n + 1)} /></div>
       : <p className="m-0 text-note">{enabled.data ? __('Published preferences apply to enabled external analytics and campaign sales, subject to consent.', 'wconvert-pro') : __('External analytics is off. Campaign sales has a separate site setting.', 'wconvert-pro')}</p>}
     <p className="m-0 text-note text-muted-foreground">{__('Off excludes this campaign from external analytics and sales attribution. Its own results still count.', 'wconvert-pro')}</p>

@@ -1,15 +1,14 @@
 import { Suspense, type ComponentProps, type ComponentType, type ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
+import { DestinationsSkeleton } from './destinations/DestinationsSkeleton';
+import { LeadLogSkeleton } from './leads/LeadLogSkeleton';
 import { lazyScreen } from './lib/requestActivity';
 import { OccasionSkeleton } from './occasions/OccasionSkeleton';
 import { sectionChunks } from './sectionLoaders';
+import { SettingsSkeleton } from './settings-page/SettingsSkeleton';
 import { ChunkBoundary } from './shell/ChunkBoundary';
-import { DataTable } from './shell/DataTable';
-import { Region } from './shell/Region';
-import { RegionSkeleton } from './shell/RegionSkeleton';
 import { Shell } from './shell/Shell';
-import { StatRowSkeleton } from './shell/Stat';
-import { TableSkeleton } from './shell/TableSkeleton';
+import { AnalyticsSkeleton } from './stats/AnalyticsSkeleton';
 
 /**
  * The reading sections, each in its own chunk (ADR 0038).
@@ -19,10 +18,13 @@ import { TableSkeleton } from './shell/TableSkeleton';
  * renders them where it rendered the screens, and each owns what the merchant
  * sees while its code is on the way and if it never comes.
  *
- * - **Waiting** is the screen's own first loading state (GUIDELINES §12): the
- *   stat row Analytics draws, the table Leads draws, the settings card stack
- *   Destinations draws, a form's lines for Settings. So the chunk landing and
- *   the screen's first read are one placeholder, not two shapes in a row.
+ * - **Waiting is ONE component, drawn twice** (GUIDELINES §12). Each fallback
+ *   is the very component its screen draws on its own first read —
+ *   {@see AnalyticsSkeleton}, {@see LeadLogSkeleton}, {@see SettingsSkeleton},
+ *   {@see DestinationsSkeleton}, {@see OccasionSkeleton} — kept outside the
+ *   chunk and imported back by the screen. So the chunk landing and the first
+ *   read are one placeholder, not two shapes in a row. A fallback is handed the
+ *   screen's props, because Settings' shape depends on the group it opens.
  * - **A chunk that never comes** — a tab left open across an update that
  *   deleted the file — is {@see ChunkBoundary}'s reload message inside the
  *   frame, never a blank page.
@@ -33,12 +35,12 @@ import { TableSkeleton } from './shell/TableSkeleton';
 /** One section: its chunk, and what stands in for it until the chunk is here. */
 // `any` as React's own `lazy` has it: a component's props are whatever it takes.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function section<M, C extends ComponentType<any>>(load: () => Promise<M>, pick: (module: M) => C, fallback: () => ReactNode) {
+function section<M, C extends ComponentType<any>>(load: () => Promise<M>, pick: (module: M) => C, fallback: (props: ComponentProps<C>) => ReactNode) {
   const Screen = lazyScreen(() => load().then((module) => ({ default: pick(module) })));
   return function Section(props: ComponentProps<C>) {
     return (
       <ChunkBoundary>
-        <Suspense fallback={fallback()}>
+        <Suspense fallback={fallback(props)}>
           <Screen {...props} />
         </Suspense>
       </ChunkBoundary>
@@ -46,29 +48,13 @@ function section<M, C extends ComponentType<any>>(load: () => Promise<M>, pick: 
   };
 }
 
-export const AnalyticsSection = section(
-  sectionChunks.analytics,
-  (module) => module.Dashboard,
-  () => <RegionSkeleton label={__('Analytics', 'wconvert')}><StatRowSkeleton stats={4} /></RegionSkeleton>,
-);
+export const AnalyticsSection = section(sectionChunks.analytics, (module) => module.Dashboard, () => <AnalyticsSkeleton />);
 
-export const LeadsSection = section(
-  sectionChunks.leads,
-  (module) => module.LeadLog,
-  () => <Region label={__('Submissions', 'wconvert')}><DataTable><TableSkeleton columns={5} /></DataTable></Region>,
-);
+export const LeadsSection = section(sectionChunks.leads, (module) => module.LeadLog, () => <LeadLogSkeleton />);
 
-export const SettingsSection = section(
-  sectionChunks.settings,
-  (module) => module.Settings,
-  () => <RegionSkeleton label={__('Settings', 'wconvert')} lines={5} />,
-);
+export const SettingsSection = section(sectionChunks.settings, (module) => module.Settings, (props) => <SettingsSkeleton group={props.group} />);
 
-export const SendingIssuesSection = section(
-  sectionChunks.destinations,
-  (module) => module.Destinations,
-  () => <RegionSkeleton label={__('Destinations', 'wconvert')} lines={3} />,
-);
+export const SendingIssuesSection = section(sectionChunks.destinations, (module) => module.Destinations, () => <DestinationsSkeleton mode="issues" />);
 
 const OccasionScreen = lazyScreen(() => sectionChunks.occasion().then((module) => ({ default: module.OccasionPage })));
 

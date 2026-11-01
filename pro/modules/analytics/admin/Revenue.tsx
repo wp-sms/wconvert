@@ -94,7 +94,7 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
     catch (cause) { setError(sprintf(/* translators: %s: the reason the request failed, as the server gave it. */ __('Could not save the tracking setting. %s', 'wconvert-pro'), messageOf(cause))); }
     finally { setBusy(false); }
   }
-  if (!report && !error) return <RegionSkeleton label={__('Campaign sales', 'wconvert-pro')} lines={3} />;
+  if (!report && !error) return <RegionSkeleton label={__('Campaign sales', 'wconvert-pro')} className="wa-report" icon={<ShoppingBag />} description lines={3} />;
   if (report && !report.available) return report.settings.since ? <Region className="wa-report"><RegionHeader title={__('Campaign sales', 'wconvert-pro')} icon={<ShoppingBag />} /><EmptyState icon={ShoppingBag} title={__('WooCommerce is unavailable', 'wconvert-pro')}>{__('Activate WooCommerce to read sales. Your tracking settings are kept.', 'wconvert-pro')}</EmptyState></Region> : null;
   const Failure = report ? RegionError : RegionErrorState;
   const enabled = !!report?.settings.enabled && report.site_matches;

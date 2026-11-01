@@ -153,7 +153,8 @@ colour.
 ## 6. Quiet surfaces
 
 Shared shadow tokens are `none`. Use surface contrast and fine borders for depth,
-with 6px control corners and 8px work surfaces. No gradients or decorative motion.
+with 6px control corners and 8px work surfaces. No gradients or decorative motion,
+and that includes a loading placeholder: skeletons are static, never pulsing (§12).
 This supersedes the earlier hard-offset shadow direction (ADR 0097).
 
 Expanded destination settings remain white. Place usage notices inside the form's
@@ -427,6 +428,7 @@ not jump.
 | a `StatRow` | `StatRowSkeleton` |
 | a list of choices with a control at the leading edge | `RowsSkeleton` |
 | the builder's Flow map, while its code loads | `FlowSkeleton` |
+| a line of text inside a form, a popover or a sentence | `LineSkeleton` |
 | anything else — a form, a run of sentences | `RegionSkeleton` |
 
 Picking one by what is on screen rather than by what is coming is the failure
@@ -441,36 +443,69 @@ up four pixels short on two of the three numbers in a stat row. `1lh` is the
 same height by construction whatever the scale does next — which is why no
 skeleton in this admin states a `min-block-size`.
 
-**Waiting 160ms is a property of what the placeholder replaces, not of
-loading.** Both behaviours are correct and they answer different situations:
+**A skeleton is static and one colour.** No pulse — a shape that holds the
+layout still says *coming* without motion (§6). Every bar is `--skeleton`, one
+step darker than `--surface`, so it reads on the canvas, a card and the surface
+tint alike. It was `--accent`, the hover colour, which all but vanished on
+`--background`; screens that noticed patched it locally into three or four
+greys. No screen sets its own placeholder colour.
 
-- **A skeleton that replaces content the merchant was already reading waits.**
-  That is the flicker case — the region has something in it, a re-read lands in
-  tens of milliseconds, and a placeholder that appears and vanishes inside one
-  is a screen that blinks. `TableSkeleton`, `ChoiceSkeleton` and
-  `GallerySkeleton`, the last two because picking a different Goal puts a filled
-  step back into `loading`.
-- **A skeleton filling a region for the first time paints at once.** There is
-  nothing to flicker against, and drawing the shape immediately is what reserves
-  the height. `StatRowSkeleton` exists for exactly that — its numbers arrive
-  after the page and would otherwise push the tab strip down — and
-  `BuilderSkeleton` is the sharpest case of all, because it carries the way OUT
-  of the builder while the chunk loads.
+**One component is a screen's chunk fallback AND its own first-load state.**
+A section whose code is split shows a Suspense fallback while the chunk
+downloads, then its own loading state while its first read is in flight. Two
+components there are two shapes in a row, and they drifted on every screen that
+had them: a bare table that grew filters above it, a full-width card that became
+a rail and a column. So the skeleton lives in an **eager** file outside the
+chunk (`stats/AnalyticsSkeleton`, `leads/LeadLogSkeleton`,
+`settings-page/SettingsSkeleton`, `goals/GoalStepSkeleton`,
+`occasions/OccasionSkeleton`, `shell/BuilderSkeleton`), the section draws it as
+its fallback, and the screen imports it back for its first read. A test asserts
+the two are the same component. **Any CSS the skeleton needs is eager CSS too**
+— a skeleton styled by the stylesheet of the chunk it stands in for is
+unstyled for exactly the wait it exists for (`stats/analytics-frame.css`).
+
+**A first fill paints at once; only a re-read waits 160ms.** The line is what
+the placeholder replaces, and the caller is the one who knows, so it is a flag:
+
+- **A region filling for the first time paints at once** — the default. There
+  is nothing to flicker against, and 160ms of blank before the shape is 160ms
+  of a screen that has not started. Drawing the shape immediately is also what
+  reserves the height. With the chunk fallback handing off to the same
+  component, a delay there was a blank frame at each end of the hand-off.
+- **A re-read over content the merchant was already reading waits** — pass
+  `wait` to `TableSkeleton`, `ChoiceSkeleton`, `GallerySkeleton` or
+  `CampaignSkeleton`. A local REST call lands in tens of milliseconds, and a
+  placeholder that appears and vanishes inside one is a screen that blinks: a
+  second Goal picked in creation, a Leads re-read. Where a whole column swaps
+  over what was being read — Settings' category switch — the screen wraps it in
+  `Reread` and every skeleton inside waits.
 
 `shell/skeletonDelay.ts` is where that line lives, so a new skeleton chooses
 rather than copies.
 
-**The announcement belongs to the skeleton and never to the call site.** One
-`role="status"` reading *Loading…* per region, with every bar `aria-hidden` — a
-screen reader has nothing to gain from twenty-eight empty cells. Leaving it to
-callers is how three of the four choice-and-gallery loading states in this admin
-came to be silent.
+**The announcement belongs to the skeleton and never to the call site, and it
+is screen-reader only.** One `role="status"` per region, naming the concern —
+*Loading answers…*, *Loading campaigns…* — with every bar `aria-hidden`. A
+visible status line is a row of text the loaded region does not have, so the
+body jumped by it; a screen reader has nothing to gain from twenty-eight empty
+cells. A skeleton nested in one that has already spoken stays quiet
+(`StatRowSkeleton` inside `RegionSkeleton`). `RegionSkeleton`'s `label` is the
+region's NAME, never a sentence — *License*, not *Loading license…*, which read
+*Loading loading license……*. Leaving the announcement to callers is how three
+of the four choice-and-gallery loading states in this admin came to be silent.
+
+**A skeleton's header is the header it stands for.** `RegionSkeleton` takes
+the loaded region's `icon`, reserves its `description` line and its `trailing`
+action. A heading without its description is a region that grows a line when it
+lands. A plain *Loading…* sentence in a form or a popover is the same mistake
+smaller: use `LineSkeleton`, a bar the height of the line it holds.
 
 **A busy control is `disabled`, and it is a different thing from a refused
 one** — see §14.
 
-**There is one loading pattern**: `RegionSkeleton` / `RowsSkeleton` and the
-other skeletons above, each with a status line naming what is loading. No
+**There is one loading pattern**: `RegionSkeleton` / `RowsSkeleton` /
+`LineSkeleton` and the other skeletons above, each with a screen-reader status
+naming what is loading. No
 spinner stands in for a region (ADR 0131); a spinner is only a busy control's
 icon.
 
@@ -516,8 +551,8 @@ look like one.
 the fallback when no local retry is possible. Keep the previous accepted data
 visible when a refresh fails, with a clear stale-data explanation.
 
-**Loading names the concern.** `RegionSkeleton` displays “Loading [region]…”
-as an accessible status. Placeholders stay static; a pending read must never
+**Loading names the concern.** `RegionSkeleton` says “Loading [region]…” as a
+screen-reader-only status (§12). Placeholders stay static; a pending read must never
 claim that there are no results. Empty campaigns explain the goal → design →
 publish sequence and offer the first action.
 

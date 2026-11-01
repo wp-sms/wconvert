@@ -189,7 +189,7 @@ describe('capture history', () => {
     render(<LeadLog />);
     expect(screen.queryByText('No submissions yet')).not.toBeInTheDocument();
     // The skeleton announces the first load, once (§12).
-    expect(await screen.findByText('Loading…')).toBeInTheDocument();
+    expect(await screen.findByText('Loading submissions…')).toBeInTheDocument();
     await act(async () => finish(SEVEN));
     expect(screen.getByText('sarah@example.com')).toBeInTheDocument();
   });
@@ -360,7 +360,8 @@ describe('capture history', () => {
   it('recognizes a pasted Lead ID and preserves existing date scope', async () => {
     const onQueryChange = vi.fn();
     render(<LeadLog query={{ from: '2026-08-01', to: '2026-08-31' }} onQueryChange={onQueryChange} />);
-    await userEvent.type(screen.getByLabelText('Search submissions'), CAPTURE.id.toLowerCase());
+    // The filters arrive with the first read; until then the screen is its skeleton.
+    await userEvent.type(await screen.findByLabelText('Search submissions'), CAPTURE.id.toLowerCase());
     await userEvent.click(screen.getByRole('button', { name: 'Search' }));
     expect(onQueryChange).toHaveBeenCalledWith(expect.objectContaining({ leadId: CAPTURE.id, from: '2026-08-01', to: '2026-08-31' }));
     expect(onQueryChange.mock.calls.at(-1)?.[0]).not.toHaveProperty('identifier');
@@ -379,7 +380,7 @@ describe('capture history', () => {
   it('clears every applied filter explicitly', async () => {
     const change = vi.fn();
     render(<LeadLog query={{ identifier: 'sarah@example.com', from: '2026-08-01' }} onQueryChange={change} />);
-    await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Clear filters' }));
     expect(change).toHaveBeenCalledWith({});
   });
 

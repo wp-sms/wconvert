@@ -4,6 +4,7 @@ import { Popover, PopoverAnchor, PopoverContent } from '../../components/ui/popo
 import { Button } from '../../components/ui/button';
 import { resolveObjects, searchObjects, type ObjectHit, type ObjectKind } from './objects';
 import { useObjectSearch } from './useObjectSearch';
+import { Skeleton } from '../../components/ui/skeleton';
 
 /**
  * Targeting a page by its NAME.
@@ -245,7 +246,9 @@ export function ObjectPicker({ id, kind, value, onChange }: ObjectPickerProps) {
           <span role="status" className="sr-only">
             {!expanded ? resolutionNote : searching || searchFailed ? searchNote : countOf(hits.length)}
           </span>
-          {resolutionNote && <span id={selectedNoteId} className="block mt-1 text-micro text-muted-foreground">{resolutionNote}</span>}
+          {/* While the name is read the note is a bar of its line; the words stay for `aria-describedby`. */}
+          {resolutionNote && <span id={selectedNoteId} className={resolving ? 'sr-only' : 'block mt-1 text-micro text-muted-foreground'}>{resolutionNote}</span>}
+          {resolving && <Skeleton aria-hidden="true" className="mt-1 h-[1lh] w-40 max-w-full text-micro" />}
           {resolutionFailed && <Button type="button" variant="outline" size="sm" className="mt-2"
             onClick={() => { setResolutionAttempt((attempt) => attempt + 1); input.current?.focus(); }}>
             {__('Retry name lookup', 'wconvert')}

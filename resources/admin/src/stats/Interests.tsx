@@ -27,7 +27,7 @@ export function Interests({ id, period }: { id: string; period: ReportPeriod }) 
     return () => controller.abort();
   }, [id, days, windowQuery, from, to, retry]);
   if (days === 0 || (data && !data.answered && !data.questions?.length && !updating && !error)) return null;
-  if (!data && !error) return <RegionSkeleton label={__('Answers', 'wconvert')} lines={3} />;
+  if (!data && !error) return <RegionSkeleton label={__('Answers', 'wconvert')} className="wa-report" icon={<ChartBar />} description lines={3} />;
   const Failure = data ? RegionError : RegionErrorState;
   return <ReportTarget name="answers" label={__('Answers', 'wconvert')}><Region className="wa-report">
     <RegionHeader title={__('Answers', 'wconvert')} level={3} icon={<ChartBar />} description={__('What visitors chose when they submitted this campaign.', 'wconvert')} />

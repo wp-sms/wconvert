@@ -5,6 +5,7 @@ import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { ArrowUp, ArrowDown, X } from 'lucide-react';
 import apiFetch from '@wordpress/api-fetch';
 import { __, sprintf } from '@wordpress/i18n';
+import { LineSkeleton } from '../shell/LineSkeleton';
 
 type Hit = { id: number; name: string };
 type Results = { items: Hit[]; currency: string; decimals: number };
@@ -96,6 +97,6 @@ export function CommerceRange({ value, onChange, money }: { value: unknown; onCh
     </NativeSelect>
     <Input aria-label={__('Amount or quantity', 'wconvert')} type="number" min="0" step={money ? 10 ** -(currency?.decimals ?? 2) : 1} value={range.min ?? ''} onChange={event => update({ min: event.target.value === '' ? undefined : Number(event.target.value) })} />
     {range.operator === 'between' && <Input aria-label={__('Upper limit', 'wconvert')} type="number" min="0" step={money ? 'any' : 1} value={range.max ?? ''} onChange={event => update({ max: event.target.value === '' ? undefined : Number(event.target.value) })} />}
-    {money && <p>{range.currency ?? currency?.currency ?? __('Loading store currency…', 'wconvert')} · {__('Products after discounts, excluding tax and shipping.', 'wconvert')}</p>}
+    {money && <p>{range.currency ?? currency?.currency ?? <LineSkeleton inline status={__('Loading store currency…', 'wconvert')} className="w-8" />} · {__('Products after discounts, excluding tax and shipping.', 'wconvert')}</p>}
   </div>;
 }

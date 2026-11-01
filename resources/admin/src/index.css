@@ -27,6 +27,7 @@
  * below disables runtime motion, including portaled layers (ADR 0097). */
 @import 'tw-animate-css';
 @import './panel.css';
+@import './stats/analytics-frame.css';
 @import './shell/fonts.css';
 
 /*
@@ -118,6 +119,7 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-surface: var(--surface);
+  --color-skeleton: var(--skeleton);
 
   /* Harbor uses surface contrast and borders for depth (ADR 0097). */
   --shadow-2xs: none;
@@ -375,6 +377,14 @@
   --popover: #ffffff;
   --popover-foreground: #302720;
   --surface: #efede8;
+
+  /*
+   * A placeholder's bar: one step darker than `--surface`, so it reads on the
+   * canvas, a card and the surface tint alike (GUIDELINES §12). It was
+   * `--accent`, the hover colour, which all but vanished on `--background`, and
+   * screens that noticed patched it locally into three or four greys.
+   */
+  --skeleton: #e4e0d8;
 
   /*
    * Selected is ice with ink text; hover is a neutral step. The two never read
@@ -6167,26 +6177,121 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 @media (pointer: coarse) { .wconvert-date-picker__presets > label { min-block-size: 2.75rem; } }
 
 /*
- * The builder before its chunk lands (shell/BuilderSkeleton): its own frame,
- * header, tabs and three panes, drawn here because editor.css arrives with it.
+ * ---------------------------------------------------------------------------
+ * THE BUILDER'S FRAME, EAGER (GUIDELINES §12).
+ * ---------------------------------------------------------------------------
+ * The workspace box, its header band and the Edit tab's pane widths, here and
+ * not in `builder/editor.css` because `shell/BuilderSkeleton` draws the same
+ * frame while the builder's chunk — and that sheet with it — downloads. One
+ * set of rules for both is what keeps the header and the panes still when the
+ * editor lands. The pane widths are properties so the skeleton's grid and the
+ * editor's `.wconvert-journey-side` read the same numbers.
  */
-#wconvert-admin .wconvert-builder-skeleton { display: flex; flex-direction: column; block-size: calc(100dvh - var(--wp-admin--admin-bar--height, 32px)); min-block-size: 560px; overflow: hidden; background: var(--card); }
-#wconvert-admin .wconvert-builder-skeleton__header { display: flex; align-items: center; gap: 10px; min-block-size: 65px; padding: 10px 18px; border-block-start: 3px solid var(--primary); border-block-end: 1px solid var(--border); }
-#wconvert-admin .wconvert-builder-skeleton__back .-ms-3 { margin-inline-start: 0; }
-#wconvert-admin .wconvert-builder-skeleton__mark { inline-size: 28px; block-size: 28px; flex: none; }
-#wconvert-admin .wconvert-builder-skeleton__spacer { flex: 1; }
-#wconvert-admin .wconvert-builder-skeleton__tabs { display: flex; gap: 4px; padding: 6px 18px; border-block-end: 1px solid var(--border); }
-#wconvert-admin .wconvert-builder-skeleton__body { display: grid; grid-template-columns: 240px minmax(0, 1fr) 320px; flex: 1; min-block-size: 0; }
-#wconvert-admin .wconvert-builder-skeleton__list { display: grid; align-content: start; gap: 8px; padding: 16px; border-inline-end: 1px solid var(--border); }
-#wconvert-admin .wconvert-builder-skeleton__canvas { display: grid; place-items: center; padding: 32px; background: var(--surface); }
-#wconvert-admin .wconvert-builder-skeleton__design { inline-size: min(100%, 520px); aspect-ratio: 16 / 10; border-radius: var(--radius); background: var(--card); }
-#wconvert-admin .wconvert-builder-skeleton__panel { display: grid; align-content: start; gap: 18px; padding: 18px; border-inline-start: 1px solid var(--border); }
+#wconvert-admin {
+  --editor-tree: 240px;
+  --editor-panel: minmax(320px, 360px);
+}
+@media (max-width: 1200px) {
+  #wconvert-admin {
+    --editor-tree: 210px;
+    --editor-panel: minmax(290px, 330px);
+  }
+}
+#wconvert-admin .wconvert-workspace {
+  position: relative;
+  --editor-rule: var(--border);
+  --wconvert-gutter: 18px;
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - var(--wp-admin--admin-bar--height, 32px));
+  min-height: 560px;
+  gap: 0;
+  overflow: hidden;
+  background: #fff;
+  font-size: var(--text-note);
+}
+body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
+  height: 100dvh;
+}
+#wconvert-admin .wconvert-workspace__header {
+  display: flex;
+  align-items: center;
+  flex: none;
+  min-height: 65px;
+  padding: 10px 18px;
+  gap: 10px;
+  border-top: 3px solid var(--primary);
+  border-bottom: 1px solid var(--editor-rule);
+}
+#wconvert-admin .wconvert-workspace__brand-mark {
+  flex: 0 0 32px;
+  inline-size: 32px;
+  block-size: 32px;
+}
+#wconvert-admin .wconvert-workspace__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-inline-start: auto;
+  flex: none;
+}
+/* Name and status side by side, never wrapped: the name box is as wide as the name (ADR 0136). */
+#wconvert-admin .wconvert-workspace__identity {
+  display: flex;
+  align-items: center;
+  flex: 0 1 auto;
+  min-inline-size: 0;
+  gap: 6px;
+}
+@media (max-width: 1350px) {
+  #wconvert-admin .wconvert-workspace__header {
+    padding-inline: 12px;
+    gap: 5px;
+  }
+  #wconvert-admin .wconvert-workspace__actions {
+    gap: 4px;
+  }
+}
+/* From 1350px down the tabs take a row of their own. */
+@media (max-width: 1350px) {
+  #wconvert-admin .wconvert-workspace__header { flex-wrap: wrap; }
+  #wconvert-admin .wconvert-workspace__navigation { order: 3; flex-basis: 100%; inline-size: 100%; }
+}
 @media (max-width: 1000px) {
-  #wconvert-admin .wconvert-builder-skeleton__body { grid-template-columns: minmax(0, 1fr); }
-  #wconvert-admin :is(.wconvert-builder-skeleton__list, .wconvert-builder-skeleton__panel) { display: none; }
+  #wconvert-admin .wconvert-workspace__header { padding: 8px; }
+  #wconvert-admin .wconvert-workspace__brand-mark { display: none; }
 }
 @media (max-width: 640px) {
-  #wconvert-admin .wconvert-builder-skeleton__action { display: none; }
+  #wconvert-admin .wconvert-workspace__header { gap: 6px; }
+  #wconvert-admin .wconvert-workspace__identity { flex: 1 1 auto; }
+  #wconvert-admin .wconvert-workspace__actions { flex-basis: 100%; justify-content: space-between; }
+  #wconvert-admin .wconvert-workspace__navigation { min-inline-size: 0; max-inline-size: 100%; overflow-x: auto; }
+}
+
+/*
+ * The builder before its chunk lands (shell/BuilderSkeleton). The frame and
+ * header are the rules above; these are only its placeholders: the tabs, the
+ * Canvas/Flow row and the Edit tab's three panes at the editor's own widths.
+ */
+/* The chunk-failure frame's Back (`builder/lazy`) sits flush, as the header's would. */
+#wconvert-admin .wconvert-builder-skeleton__back .-ms-3 { margin-inline-start: 0; }
+#wconvert-admin .wconvert-builder-skeleton__tabs { display: inline-flex; align-items: center; gap: 2px; block-size: 36px; padding: 3px; border-radius: var(--radius-lg); }
+#wconvert-admin .wconvert-builder-skeleton__view { display: flex; flex: none; align-items: center; gap: 6px; min-block-size: 47px; padding: 7px 30px; border-block-end: 1px solid var(--border); }
+#wconvert-admin .wconvert-builder-skeleton__body { display: grid; grid-template-columns: var(--editor-tree) minmax(0, 1fr) var(--editor-panel); flex: 1; min-block-size: 0; }
+#wconvert-admin .wconvert-builder-skeleton__tree { display: grid; align-content: start; gap: 8px; padding: 16px 10px; border-inline-end: 1px solid var(--border); }
+#wconvert-admin .wconvert-builder-skeleton__canvas { display: flex; flex-direction: column; min-inline-size: 0; background: var(--surface); }
+#wconvert-admin .wconvert-builder-skeleton__bar { display: flex; flex: none; align-items: center; justify-content: center; gap: 6px; block-size: 48px; padding-inline: 16px; background: var(--card); border-block-end: 1px solid var(--border); }
+#wconvert-admin .wconvert-builder-skeleton__stage { display: grid; flex: 1; place-items: center; padding: 32px; }
+#wconvert-admin .wconvert-builder-skeleton__design { inline-size: min(100%, 490px); aspect-ratio: 3 / 2; border-radius: var(--radius); }
+#wconvert-admin .wconvert-builder-skeleton__panel { display: grid; align-content: start; gap: 18px; padding: 0 24px 24px; border-inline-start: 1px solid var(--border); }
+#wconvert-admin .wconvert-builder-skeleton__panel-head { display: flex; align-items: center; gap: 12px; block-size: 70px; margin-inline: -24px; padding-inline: 16px 20px; border-block-end: 1px solid var(--border); }
+/* Narrow, the editor shows one pane at a time and opens on the preview (ADR 0134). */
+@media (max-width: 1000px) {
+  #wconvert-admin .wconvert-builder-skeleton__body { grid-template-columns: minmax(0, 1fr); }
+  #wconvert-admin :is(.wconvert-builder-skeleton__tree, .wconvert-builder-skeleton__panel) { display: none; }
+}
+@media (max-width: 640px) {
+  #wconvert-admin .wconvert-builder-skeleton__history { display: none; }
 }
 
 /* Data & privacy's data map is a card disclosure whose body runs edge to edge, like a region's. */

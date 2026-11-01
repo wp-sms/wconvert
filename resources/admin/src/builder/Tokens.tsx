@@ -39,6 +39,7 @@ import { cssOnlyNote, useAdvanced } from './advanced';
 import { FieldHeading, PanelHint, PanelSection } from './PanelSection';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Template, Tokens as TokenMap } from '@renderer/types';
+import { LineSkeleton } from '../shell/LineSkeleton';
 
 /**
  * ============================================================================
@@ -1089,7 +1090,7 @@ function FontField({
 
           <PopoverContent align="end" side="left" collisionPadding={12} className="wconvert-font-popover">
             <label className="wconvert-font-search">{__('Find a font', 'wconvert')}<input type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder={__('Search fonts…', 'wconvert')} /></label>
-            {site === null && <p role="status">{__('Loading site fonts…', 'wconvert')}</p>}
+            {site === null && <LineSkeleton status={__('Loading site fonts…', 'wconvert')} lines={3} />}
             {fontError && <p role="status">{__('Site fonts could not load.', 'wconvert')} <TryAgain onClick={read} /></p>}
             <div className="wconvert-fonts" role="group" aria-labelledby={named}>
               {theirs.length > 0 && (

@@ -26,6 +26,7 @@ import { Region, RegionBody, RegionHeader } from '../shell/Region';
 import { GuideLink } from '../shell/GuideLink';
 import { GUIDES, docsUrl } from '../shell/docs';
 import { Description } from '../shell/Description';
+import { Reread } from '../shell/skeletonDelay';
 
 /**
  * A persistent category rail; the chosen category goes straight to its
@@ -44,6 +45,20 @@ export function Settings({
 }) {
   const id = useId();
   const [search, setSearch] = useState('');
+  /*
+   * **The rail stays; only the group's column swaps.** The section used to be
+   * keyed on the address, so every category click remounted the rail and the
+   * search with it. Now a new group clears the search, as the remount did, and
+   * marks every skeleton in the column a re-read: it replaces a group the
+   * merchant was reading, so a quick answer never flashes one (GUIDELINES §12).
+   */
+  const [shownGroup, setShownGroup] = useState(asked);
+  const [switched, setSwitched] = useState(false);
+  if (shownGroup !== asked) {
+    setShownGroup(asked);
+    setSwitched(true);
+    setSearch('');
+  }
   // Analytics integrations arrive with Pro; a free install has no such page
   // to open (ADR 0116), so a deep link lands on the default group.
   const free = isFreeInstall();
@@ -63,8 +78,8 @@ export function Settings({
   const searching = search.trim() !== '';
   const results = matchSettings(index, search, groupLabel);
 
-  // A setting chosen in another group was requested before this page
-  // remounted at its address; focus it once its region draws it.
+  // A setting chosen in another group was requested before its column
+  // remounted at the new address; focus it once its region draws it.
   useEffect(() => {
     const key = requestedSetting(group);
     const entry = key === null ? undefined : settingsIndex().find((each) => each.key === key);
@@ -153,7 +168,7 @@ export function Settings({
           {free && <MoreWithPro />}
         </div>
       </nav>
-      <div className="min-w-0 max-w-[900px]">
+      <div key={`${group}:${destinationId ?? ''}`} className="min-w-0 max-w-[900px]"><Reread value={switched}>
         {group === 'connections' && (
           <ConnectionSettings destinationId={destinationId} onEditingStateChange={onEditingStateChange} />
         )}
@@ -164,7 +179,7 @@ export function Settings({
         )}
         {group === 'reports' && <EmailReports onEditingStateChange={onEditingStateChange} />}
         {group === 'integrations' && <AnalyticsIntegrationSettings onEditingStateChange={onEditingStateChange} />}
-      </div>
+      </Reread></div>
     </div>
   );
 }
