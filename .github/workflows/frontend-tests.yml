@@ -160,13 +160,12 @@ jobs:
       # frontend-tests call, and with it the Required checks gate.
       fail-fast: false
       matrix:
-        # Balanced against admin's ~3.5 minutes a shard, from measured runs.
+        # Packed by measured duration, ~6–7 minutes a leg; re-balance from
+        # the per-suite timings in each leg's log.
         include:
-          - { leg: admin-1, scripts: 'test:visual', args: '--shard=1/2' }
-          - { leg: admin-2, scripts: 'test:visual', args: '--shard=2/2' }
-          - { leg: storefront-a, scripts: 'test:visual:inline test:visual:reopen' }
-          - { leg: storefront-b, scripts: 'test:visual:content-lock test:visual:popup' }
-          - { leg: storefront-c, scripts: 'test:visual:analytics test:visual:fullscreen test:visual:events' }
+          - { leg: admin, scripts: 'test:visual' }
+          - { leg: storefront-a, scripts: 'test:visual:inline test:visual:reopen test:visual:content-lock' }
+          - { leg: storefront-b, scripts: 'test:visual:popup test:visual:analytics test:visual:fullscreen test:visual:events' }
     steps:
       - uses: actions/checkout@v4
       # No PHP or Composer here: vendor/ comes from the build, and PHP runs
@@ -179,13 +178,13 @@ jobs:
         shell: bash
         env:
           SCRIPTS: ${{ matrix.scripts }}
-          ARGS: ${{ matrix.args }}
         run: |
           failed=()
           for script in $SCRIPTS; do
-            echo "── npm run $script $ARGS"
-            # ARGS is a flag list, unquoted so it splits.
-            npm run "$script" -- $ARGS || failed+=("$script")
+            echo "── npm run $script"
+            started=$SECONDS
+            npm run "$script" || failed+=("$script")
+            echo "── $script took $((SECONDS - started)) s"
           done
           if [ ${#failed[@]} -gt 0 ]; then
             echo "::error::Failed: ${failed[*]}"
