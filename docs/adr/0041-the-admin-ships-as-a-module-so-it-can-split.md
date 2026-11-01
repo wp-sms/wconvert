@@ -84,7 +84,9 @@ screen that renders with a function that is not there).
 This is the part that only a browser could have found, and it did:
 the screen went blank with *"Invalid hook call"* while every test stayed green.
 
-`builder-<hash>.js` imports React and the shared components from the entry, as
+`builder-<hash>.js` (*`chunk-<hash>.js` since
+[#397](https://github.com/wp-sms/wconvert/pull/397), which made the sections
+chunks too; the rule below covers every chunk*) imports React and the shared components from the entry, as
 `./main-<hash>.js`, resolved against its own URL. The entry was enqueued as
 `main.js?ver=<mtime>` — `WConvert\Assets\BuiltAsset`'s mtime, the ordinary
 WordPress way of busting a cache, applied to a file that is now also a module.

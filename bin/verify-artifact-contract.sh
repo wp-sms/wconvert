@@ -207,7 +207,7 @@ require_file public/inspector/inspector.js "the eligibility inspector is built, 
 # the chunk boots, renders four working screens, and fails only on the fifth —
 # in the browser, with a 404 in a console nobody has open.
 require_matching_file "$TREE" public/admin 'main-*.js' "the admin bundle is built, never committed — run the build" || true
-require_matching_file "$TREE" public/admin 'builder-*.js' "the builder chunk is built, never committed — run the build" || true
+require_matching_file "$TREE" public/admin 'chunk-*.js' "the lazy chunks are built, never committed — run the build" || true
 
 if [ "$tier" = "free" ]; then
     # Free's wconvert.php requires packages/autoload.php (wp-scoper's, or the

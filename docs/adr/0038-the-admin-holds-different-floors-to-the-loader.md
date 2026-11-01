@@ -40,6 +40,10 @@ it, and a person decides.
 
 ## Splitting the builder is what makes the number stay honest
 
+*Amended by [#397](https://github.com/wp-sms/wconvert/pull/397): the reading
+screens are now split from each other too, one chunk per section with
+Campaigns in the main file. See the boundary bullet under Consequences.*
+
 The reading screens — Optins, Analytics, Leads, Destinations — need none of the
 gallery, none of the settings panel and none of the renderer. The builder needs
 all three, and the renderer is imported into the admin precisely because there
@@ -263,6 +267,18 @@ failure, not a line of new code.
   real and is what made #73 a ticket; ADR 0041 is the three changes it took.
   The boundary itself is `resources/admin/src/builder/lazy.tsx`, and that is
   where anything heavy lands.*
+  *Amended by [#397](https://github.com/wp-sms/wconvert/pull/397): the 132.6 kB
+  had grown to 214 kB, because every reading screen was still in the one main
+  file. **The rule now: Campaigns, the landing screen, is in the main file;
+  every other section — Analytics, Leads, Settings, the sending issues view,
+  an occasion's page — is one chunk, fetched on its first visit** (and warmed
+  when the pointer or focus reaches its tab). The wrappers are
+  `resources/admin/src/sections.tsx`, the loaders `sectionLoaders.ts`, and
+  `tests/js/admin-split.test.ts` fails if a section's file reaches the main
+  graph again. **A chunk that fails to load shows the builder's reload
+  message inside the frame**, never a blank page. Free's main file is 146 kB
+  after the split. The built chunks are named `chunk-*.js`, no longer
+  `builder-*.js`, and `ViteHelper` inlines a catalogue for every one.*
 - **Narrow windows open the same editor.** Accessible modal drawers provide
   focus containment, Escape dismissal and a return to the editing toolbar.
 - **A per-screen measure is one prop and one custom property**, not a fork.

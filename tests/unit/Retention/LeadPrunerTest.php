@@ -109,7 +109,7 @@ final class LeadPrunerTest extends TestCase
      */
     public function testTheJobIsScheduledFromDayOneWithNoPeriodConfigured(): void
     {
-        $this->pruner->hooks();
+        LeadPruner::hooks(fn (): LeadPruner => $this->pruner);
         do_action('init');
 
         $this->assertNull($this->retention->days());
@@ -118,11 +118,11 @@ final class LeadPrunerTest extends TestCase
 
     public function testASecondBootDoesNotScheduleItTwice(): void
     {
-        $this->pruner->hooks();
+        LeadPruner::hooks(fn (): LeadPruner => $this->pruner);
         do_action('init');
         $first = wp_next_scheduled(LeadPruner::HOOK);
 
-        $this->pruner->hooks();
+        LeadPruner::hooks(fn (): LeadPruner => $this->pruner);
         do_action('init');
 
         $this->assertSame($first, wp_next_scheduled(LeadPruner::HOOK));
@@ -136,7 +136,7 @@ final class LeadPrunerTest extends TestCase
      */
     public function testBootingSchedulesNothingBeforeInit(): void
     {
-        $this->pruner->hooks();
+        LeadPruner::hooks(fn (): LeadPruner => $this->pruner);
 
         $this->assertFalse(wp_next_scheduled(LeadPruner::HOOK));
     }
@@ -150,7 +150,7 @@ final class LeadPrunerTest extends TestCase
         $this->retention->set(30);
         $this->db->removes = 3;
 
-        $this->pruner->hooks();
+        LeadPruner::hooks(fn (): LeadPruner => $this->pruner);
         do_action(LeadPruner::HOOK);
 
         $this->assertCount(1, $this->db->deletes);

@@ -50,20 +50,28 @@ final class LeadExporter
     ) {
     }
 
-    public function hooks(): void
+    /**
+     * The entry WordPress's privacy tools read, from Tools → Export, WP-CLI or
+     * REST alike. The exporter itself, with its repositories, is built only
+     * when WordPress calls the entry's callback, not on every request (#397).
+     *
+     * @param \Closure(): self $exporter
+     */
+    public static function hooks(\Closure $exporter): void
     {
-        add_filter('wp_privacy_personal_data_exporters', [$this, 'register']);
+        add_filter('wp_privacy_personal_data_exporters', static fn (array $exporters): array => self::register($exporters, $exporter));
     }
 
     /**
      * @param array<string, array{exporter_friendly_name: string, callback: callable}> $exporters
+     * @param \Closure(): self $exporter
      * @return array<string, array{exporter_friendly_name: string, callback: callable}>
      */
-    public function register(array $exporters): array
+    public static function register(array $exporters, \Closure $exporter): array
     {
         $exporters[self::ID] = [
             'exporter_friendly_name' => __('WConvert leads', 'wconvert'),
-            'callback' => [$this, 'export'],
+            'callback' => static fn (string $email, int $page = 1): array => $exporter()->export($email, $page),
         ];
 
         return $exporters;

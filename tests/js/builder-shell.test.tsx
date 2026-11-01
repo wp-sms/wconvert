@@ -9,7 +9,7 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { ruleTypes } from './support/rule-types';
 import type { TemplateEntry, TemplateIndex, TemplateIndexEntry } from '../../resources/admin/src/templates/api';
-import { inlinePlacementControls } from '../../resources/admin/src/inlinePlacement';
+import { inlinePlacementControls } from '../../resources/admin/src/inlinePlacementSlots';
 
 /**
  * The builder shell, against the four decisions #69 and #71 make about it that

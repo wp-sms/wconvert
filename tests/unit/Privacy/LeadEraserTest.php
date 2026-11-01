@@ -151,13 +151,25 @@ final class LeadEraserTest extends TestCase
      */
     public function testItRegistersExactlyOneEraserAndNeedsNoOrderingCaveat(): void
     {
-        $this->eraser->hooks();
+        $built = 0;
+        LeadEraser::hooks(function () use (&$built): LeadEraser {
+            $built++;
+
+            return $this->eraser;
+        });
 
         /** @var array<string, array{eraser_friendly_name: string, callback: callable}> $erasers */
         $erasers = apply_filters('wp_privacy_personal_data_erasers', []);
 
         $this->assertCount(1, $erasers);
         $this->assertArrayHasKey(LeadEraser::ID, $erasers);
-        $this->assertSame([$this->eraser, 'erase'], $erasers[LeadEraser::ID]['callback']);
+        $this->assertSame('WConvert leads', $erasers[LeadEraser::ID]['eraser_friendly_name']);
+        // Listed without building the eraser; built when WordPress calls it (#397).
+        $this->assertSame(0, $built);
+        $this->assertSame(
+            $this->eraser->erase('nobody@example.com', 1),
+            ($erasers[LeadEraser::ID]['callback'])('nobody@example.com', 1)
+        );
+        $this->assertSame(1, $built);
     }
 }

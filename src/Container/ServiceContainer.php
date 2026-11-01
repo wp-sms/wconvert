@@ -80,6 +80,22 @@ final class ServiceContainer
     }
 
     /**
+     * A service, resolved when the closure is first called rather than now.
+     *
+     * For a handler that only hooks itself in: its static `hooks()` takes
+     * this, and the service and everything it depends on are built when the
+     * hook fires, not on every request that boots WConvert (#395, #397).
+     *
+     * @template T of object
+     * @param class-string<T> $className
+     * @return \Closure(): T
+     */
+    public function lazy(string $className): \Closure
+    {
+        return fn (): object => $this->resolve($className);
+    }
+
+    /**
      * Resolve a service by class name, with the type preserved for callers.
      *
      * @template T of object

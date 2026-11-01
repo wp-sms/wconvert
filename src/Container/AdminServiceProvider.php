@@ -84,7 +84,7 @@ final class AdminServiceProvider implements ServiceProvider
         // it explains exists. `admin_bar_menu` fires on both sides and
         // {@see InspectorBar} returns on `is_admin()` itself, so a merchant in
         // wp-admin is offered nothing.
-        $container->resolve(InspectorBar::class)->hooks();
+        InspectorBar::hooks($container->lazy(InspectorBar::class));
 
         if (!is_admin()) {
             return;

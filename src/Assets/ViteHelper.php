@@ -24,8 +24,9 @@ final class ViteHelper
      * ========================================================================
      * BOTH ARE HASHED, AND NEITHER IS ENQUEUED WITH A VERSION QUERY.
      * ========================================================================
-     * `main-*.js` is the entry the screen loads; `builder-*.js` is the chunk it
-     * `import()`s when a merchant opens the builder (#73). The hashes are
+     * `main-*.js` is the entry the screen loads; `chunk-*.js` are the chunks it
+     * `import()`s when a merchant opens the builder (#73) or a section other
+     * than Campaigns (ADR 0038). The hashes are
      * `vite.config.admin.mjs`'s `entryFileNames` and `chunkFileNames`, and they
      * are not only about caching.
      *
@@ -44,7 +45,7 @@ final class ViteHelper
      */
     private const ENTRY = 'main-*.js';
 
-    private const BUILDER_CHUNK = 'builder-*.js';
+    private const CHUNK = 'chunk-*.js';
 
     /**
      * @param AdminNotices $notices where a broken build is reported, since
@@ -73,8 +74,8 @@ final class ViteHelper
      * dequeues free's (ADR 0014, extended to the admin). It is the same
      * artifact built from a different entry into a different plugin, so it
      * needs everything this file knows and none of it copied: the hashed entry
-     * that must carry no `?ver`, the builder chunk whose absence is a blank
-     * screen on the fifth click, the `type="module"` filter, the fail-closed
+     * that must carry no `?ver`, the chunks whose absence is a blank
+     * screen on the second click, the `type="module"` filter, the fail-closed
      * glob.
      *
      * Pro passes its OWN directory and URL rather than borrowing free's
@@ -106,11 +107,13 @@ final class ViteHelper
         $entry = self::built($distDir, self::ENTRY);
 
         // An incomplete build renders as a blank <div> with nothing in any log.
-        // Say so instead. **Both files, since #73 split the bundle in two**: the
-        // entry alone booting is not the screen working, because the builder
-        // lives in a chunk the entry fetches at the moment a merchant opens it
-        // — which is the one moment nobody is reading a build log.
-        if ($entry === null || self::built($distDir, self::BUILDER_CHUNK) === null) {
+        // Say so instead. **The entry and its chunks, since #73 split the
+        // bundle**: the entry alone booting is not the screen working, because
+        // the builder and every section but Campaigns live in chunks the entry
+        // fetches when a merchant opens them — the one moment nobody is reading
+        // a build log. This proves chunks shipped, not each one; the artifact
+        // contract and a section's reload message cover the rest.
+        if ($entry === null || self::built($distDir, self::CHUNK) === null) {
             if ($notices !== null) {
                 self::noticeMissingAdminBundle($notices);
             }
@@ -133,7 +136,7 @@ final class ViteHelper
         // `null`, WHICH IS THE ONLY VALUE THAT ADDS NO QUERY AT ALL.
         // ====================================================================
         // The constant above says why no query: a `?ver` gives the browser a
-        // second module for the very file the builder chunk imports, and a
+        // second module for the very file every chunk imports, and a
         // second React with it.
         //
         // **`false` does not do that**, however much it reads like it should.
@@ -157,7 +160,7 @@ final class ViteHelper
         self::serveAsModule($handle);
 
         wp_set_script_translations($handle, $textDomain, $languagesDir);
-        self::inlineCatalogues($handle, $distDir, $distUrl, [self::BUILDER_CHUNK], $textDomain, $languagesDir);
+        self::inlineCatalogues($handle, $distDir, $distUrl, [self::CHUNK], $textDomain, $languagesDir);
 
         return true;
     }
@@ -204,7 +207,7 @@ final class ViteHelper
             $handle,
             $freeDir . self::ADMIN_DIST,
             $freeUrl . self::ADMIN_DIST,
-            [self::ENTRY, self::BUILDER_CHUNK],
+            [self::ENTRY, self::CHUNK],
             self::TEXT_DOMAIN,
             ''
         );
@@ -219,7 +222,7 @@ final class ViteHelper
      * WordPress names a script's JSON catalogue after the md5 of the script's
      * path, and wp.org's language packs make one per JavaScript file. So
      * `wp_set_script_translations()` on the entry loads the entry's strings
-     * and none of the builder's — and the builder chunks are never enqueued,
+     * and none of the chunks' — and the chunks are never enqueued,
      * because the entry `import()`s them, so there is no handle of theirs for
      * WordPress to print a catalogue against.
      *
@@ -229,7 +232,7 @@ final class ViteHelper
      * rather than replaced: `setLocaleData` adds to the domain's data.
      *
      * The handle carries the domain as well as the file name, so free's
-     * `builder-<hash>` and Pro's can never claim one registration between
+     * `chunk-<hash>` and Pro's can never claim one registration between
      * them on Pro's screen, where both sets are read.
      *
      * @param list<string> $patterns The built files to read, as globs.

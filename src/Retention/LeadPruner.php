@@ -44,22 +44,28 @@ final class LeadPruner
     ) {
     }
 
-    public function hooks(): void
+    /**
+     * The pruner, with its repository, is built when the prune fires rather
+     * than on every request (#397). Scheduling needs none of it.
+     *
+     * @param \Closure(): self $pruner
+     */
+    public static function hooks(\Closure $pruner): void
     {
         // Wrapped rather than passed directly: `run()` returns the number it
         // removed, which is what a caller wants and what a WordPress action
         // callback must not have. The count goes nowhere here because there is
         // nowhere for it to go — Destination health, which is where a job's
         // outcome will eventually be readable, arrives with #30 (ADR 0008).
-        add_action(self::HOOK, function (): void {
-            $this->run();
+        add_action(self::HOOK, static function () use ($pruner): void {
+            $pruner()->run();
         });
 
         // On `init`, not here: hooks() runs on `plugins_loaded`, and
         // wp_schedule_event() reads wp_get_schedules(), whose `cron_schedules`
         // filter lets other plugins (WooCommerce) translate their schedule
         // names before `init`, a _load_textdomain_just_in_time notice.
-        add_action('init', [$this, 'schedule']);
+        add_action('init', [self::class, 'schedule']);
     }
 
     /**
@@ -69,7 +75,7 @@ final class LeadPruner
      * in the one place nobody looks when the prune turns out never to have
      * run.
      */
-    public function schedule(): void
+    public static function schedule(): void
     {
         if (wp_next_scheduled(self::HOOK) === false) {
             wp_schedule_event(time() + HOUR_IN_SECONDS, 'daily', self::HOOK);

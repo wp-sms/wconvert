@@ -45,17 +45,24 @@ final class InspectorBar
     ) {
     }
 
-    public function hooks(): void
+    /**
+     * Built only for a bar the node may appear in, not on every request that
+     * draws an admin bar (#397).
+     *
+     * @param \Closure(): self $bar
+     */
+    public static function hooks(\Closure $bar): void
     {
-        add_action('admin_bar_menu', [$this, 'node'], 100);
+        add_action('admin_bar_menu', static function (WP_Admin_Bar $adminBar) use ($bar): void {
+            if (self::offered()) {
+                $bar()->node($adminBar);
+            }
+        }, 100);
     }
 
     public function node(WP_Admin_Bar $bar): void
     {
-        // The same capability the panel itself is gated on, named rather than
-        // written out — so the link and the thing it links to can never come
-        // to disagree about who may have it.
-        if (is_admin() || !current_user_can(Routes::MANAGE_CAPABILITY)) {
+        if (!self::offered()) {
             return;
         }
 
@@ -104,5 +111,15 @@ final class InspectorBar
         }
 
         return add_query_arg(InspectorEnqueue::PARAM, '1', home_url($uri));
+    }
+
+    /**
+     * The same capability the panel itself is gated on, named rather than
+     * written out — so the link and the thing it links to can never come to
+     * disagree about who may have it. Front end only.
+     */
+    private static function offered(): bool
+    {
+        return !is_admin() && current_user_can(Routes::MANAGE_CAPABILITY);
     }
 }

@@ -1,3 +1,4 @@
+import { createElement, lazy, useEffect, type ComponentProps, type ComponentType, type LazyExoticComponent } from 'react';
 import apiFetch, { type APIFetchMiddleware, type APIFetchOptions } from '@wordpress/api-fetch';
 
 /**
@@ -53,8 +54,7 @@ const middleware: APIFetchMiddleware = (options, next) => {
   if (change) forgetAll();
   inFlight += 1;
   const settle = () => {
-    inFlight -= 1;
-    lastSettled = Date.now();
+    settleOne();
     // Again on the way out: a read that started while this ran may hold the old state.
     if (change) forgetAll();
   };
@@ -63,6 +63,59 @@ const middleware: APIFetchMiddleware = (options, next) => {
     (cause: unknown) => { settle(); throw cause; },
   );
 };
+
+const settleOne = () => {
+  inFlight -= 1;
+  lastSettled = Date.now();
+};
+
+/**
+ * Count `work` as in flight until it settles, as a request is. For the code a
+ * screen downloads before it can ask for data: without it the bell saw nothing
+ * in flight while the editor's chunk arrived, and went first. A failed download
+ * still releases it, and {@link whenQuiet}'s cap still applies.
+ */
+export function track<T>(work: Promise<T>): Promise<T> {
+  inFlight += 1;
+  return work.finally(settleOne);
+}
+
+/** How long a downloaded screen that never mounts may still count as in flight. */
+const MOUNT_MS = 1000;
+
+/**
+ * `React.lazy`, with the download counted as in flight until the screen has
+ * mounted. Every lazily loaded screen goes through it.
+ *
+ * **Until it mounts, not until the file arrives.** React holds a suspended
+ * screen back for up to 300 ms after its fallback appeared, so the file landing
+ * left a gap with nothing in flight and none of the screen's reads started yet,
+ * and the bell went first. A screen's reads start in its effects, which run
+ * before the wrapper's, so releasing there hands over to them. A screen that
+ * never mounts (the merchant moved on) is released after {@link MOUNT_MS}, and a
+ * failed download at once.
+ */
+// `any` as React's own `lazy` has it: a component's props are whatever it takes.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function lazyScreen<T extends ComponentType<any>>(load: () => Promise<{ default: T }>): LazyExoticComponent<ComponentType<ComponentProps<T>>> {
+  return lazy(() => {
+    let mounted!: () => void;
+    const shown = new Promise<void>((done) => { mounted = done; });
+    const loaded = load();
+    // In flight from the download to the mount, or MOUNT_MS after the file
+    // lands if it never mounts; a failed download releases at once. Its
+    // failure is the boundary's to report, not this count's.
+    void track(loaded.then(() => Promise.race([shown, new Promise<void>((done) => { setTimeout(done, MOUNT_MS); })])))
+      .catch(() => undefined);
+    return loaded.then(({ default: Loaded }) => {
+      function Mounted(props: ComponentProps<T>) {
+        useEffect(mounted, []);
+        return createElement(Loaded, props);
+      }
+      return { default: Mounted };
+    });
+  });
+}
 
 /** Install the middleware, once. A test's `apiFetch` mock without `.use` is left alone. */
 export function installRequestActivity() {

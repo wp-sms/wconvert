@@ -137,7 +137,7 @@ final class ProAdminEnqueue
         // order below is what makes that true rather than nearly true: Pro's
         // bundle is enqueued FIRST, and free's is only dequeued once that
         // returned true. `ViteHelper` checks both halves of the split build —
-        // the entry and the builder chunk — so a Pro that shipped one and not
+        // the entry and the chunks — so a Pro that shipped one and not
         // the other degrades here rather than on the merchant's fifth click.
         $enqueued = ViteHelper::enqueueAdminFrom(
             self::HANDLE,

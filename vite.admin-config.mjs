@@ -176,9 +176,9 @@ export const GETTEXT_SAFE_TERSER = {
  * the stylesheet is not a byte saved.
  *
  * **Two totals since #73, because one no longer answers the question.** The
- * entry and the stylesheet are what a merchant checking yesterday's leads
- * downloads; the builder chunk is fetched only by someone who opens the
- * builder. A single figure across both would report the pessimistic number as
+ * entry and the stylesheet are what every screen downloads; the builder's chunk
+ * is fetched only by someone who opens the builder, and since ADR 0038's
+ * amendment each section but Campaigns is a chunk fetched on its first visit. A single figure across both would report the pessimistic number as
  * though everyone paid it, which is exactly the claim the split exists to stop
  * being true. The classification is the build's own — an entry chunk and its
  * assets load with the page, a dynamically imported chunk does not — so a
@@ -224,7 +224,7 @@ function reportBundleSize() {
       );
       half(
         'ON DEMAND',
-        'only if the builder is opened',
+        'only when its section or the builder is opened',
         rows.filter((row) => !row.eager),
       );
     },
@@ -330,7 +330,7 @@ export function adminConfig({ entry, outDir }) {
           // ENTRY has to be hashed for the same reason, and it is a correctness
           // problem rather than a caching one:
           //
-          // `builder-*.js` imports React and the shared components from the
+          // `chunk-*.js` imports React and the shared components from the
           // entry, as `./main.js`, relative to its own URL. WordPress enqueued
           // the entry as `main.js?ver=<mtime>` ({@see BuiltAsset}), and to a
           // browser **those are two different modules**. React was evaluated
@@ -343,7 +343,7 @@ export function adminConfig({ entry, outDir }) {
           // patterns and enqueues the entry with no version at all — the two
           // halves of that are commented against each other.
           entryFileNames: 'main-[hash].js',
-          chunkFileNames: 'builder-[hash].js',
+          chunkFileNames: 'chunk-[hash].js',
           // Each font weight needs a stable, cache-safe identity across builds.
           assetFileNames: (asset) => /\.(ttf|woff2?)$/.test(asset.names[0] ?? '')
             ? 'fonts/[name]-[hash][extname]' : /\.css$/.test(asset.names[0] ?? '') ? 'main.css' : 'assets/[name]-[hash][extname]',

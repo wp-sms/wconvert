@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useId, useRef, useState, type ReactNode, type RefObject } from 'react';
+import { Suspense, useEffect, useId, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { Copy, EyeOff, Inbox, MoreHorizontal, Upload } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -26,8 +26,9 @@ import { CampaignSummary, type CampaignResults } from './CampaignSummary';
 import { canUnpublish, statusOf, type OptinSummary } from './api';
 import { decisionCopy } from './decisionCopy';
 import { StatusBadge } from './StatusBadge';
+import { LazyCampaignDetails as Facts } from './designChunks';
+import { ChunkBoundary } from '../shell/ChunkBoundary';
 
-const Facts = lazy(() => import('./CampaignDetails'));
 
 
 /** The two status changes Details can ask; delete stays in the row's menu only. */
@@ -159,7 +160,7 @@ export function CampaignDetailsDialog({
               goalId={goalId}
               results={results}
               status={status}
-              howItRuns={<Suspense fallback={<RowsSkeleton rows={4} />}><Facts key={row.id} id={row.id} /></Suspense>}
+              howItRuns={<ChunkBoundary><Suspense fallback={<RowsSkeleton rows={4} />}><Facts key={row.id} id={row.id} /></Suspense></ChunkBoundary>}
               productCheck={productCheck}
               developers={<ForDevelopers key={row.id} value={row.id} variant={row.parent_id !== null} />}
             />

@@ -121,9 +121,21 @@ final class InspectorEnqueue
     ) {
     }
 
-    public function hooks(): void
+    /**
+     * The inspector, with the five services it reads, is built only on the
+     * request that asks for it — an administrator's page with the parameter —
+     * rather than on every page view (#397). The gate is the same one
+     * {@see enqueue()} applies.
+     *
+     * @param \Closure(): self $inspector
+     */
+    public static function hooks(\Closure $inspector): void
     {
-        add_action('wp_enqueue_scripts', [$this, 'enqueue'], self::PRIORITY);
+        add_action('wp_enqueue_scripts', static function () use ($inspector): void {
+            if (self::asked()) {
+                $inspector()->enqueue();
+            }
+        }, self::PRIORITY);
     }
 
     public function enqueue(): void

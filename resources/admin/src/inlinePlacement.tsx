@@ -1,33 +1,13 @@
 import type { Template } from '@renderer/types';
 import { convertingActOf } from './builder/structure/guards';
-import { Suspense, type ComponentType } from 'react';
+import { Suspense } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import type { Rule, RuleVocabulary } from './builder/api';
 import { Button } from './components/ui/button';
 import { ManualPlacement } from './builder/ManualPlacement';
 import { RegionSkeleton } from './shell/RegionSkeleton';
 
-export interface InlinePlacementProps {
-  optinId: string;
-  published: boolean;
-  config: Record<string, unknown>;
-  vocabulary: RuleVocabulary;
-  onChange: (changes: Record<string, unknown>) => void;
-}
-
-export type ContentLockPreviewState = 'locked' | 'unlocked' | 'unavailable';
-export interface ContentLockPreviewProps {
-  template: Template;
-  state: ContentLockPreviewState;
-  onStateChange(state: ContentLockPreviewState): void;
-}
-
-/** Composition-time slots: Free never imports premium authoring controls. */
-export const inlinePlacementControls: {
-  component?: ComponentType<InlinePlacementProps>;
-  preview?: ComponentType<ContentLockPreviewProps>;
-  previewControls?: ComponentType<ContentLockPreviewProps>;
-} = {};
+import { inlinePlacementControls, type ContentLockPreviewProps, type InlinePlacementProps } from './inlinePlacementSlots';
 
 export function ContentLockPreview(props: ContentLockPreviewProps & { controls?: boolean }) {
   const Component = props.controls ? inlinePlacementControls.previewControls : inlinePlacementControls.preview;

@@ -197,13 +197,25 @@ final class LeadExporterTest extends TestCase
 
     public function testItRegistersExactlyOneExporter(): void
     {
-        $this->exporter->hooks();
+        $built = 0;
+        LeadExporter::hooks(function () use (&$built): LeadExporter {
+            $built++;
+
+            return $this->exporter;
+        });
 
         /** @var array<string, array{exporter_friendly_name: string, callback: callable}> $exporters */
         $exporters = apply_filters('wp_privacy_personal_data_exporters', []);
 
         $this->assertCount(1, $exporters);
         $this->assertArrayHasKey(LeadExporter::ID, $exporters);
-        $this->assertSame([$this->exporter, 'export'], $exporters[LeadExporter::ID]['callback']);
+        $this->assertSame('WConvert leads', $exporters[LeadExporter::ID]['exporter_friendly_name']);
+        // Listed without building the exporter; built when WordPress calls it (#397).
+        $this->assertSame(0, $built);
+        $this->assertSame(
+            $this->exporter->export('nobody@example.com', 1),
+            ($exporters[LeadExporter::ID]['callback'])('nobody@example.com', 1)
+        );
+        $this->assertSame(1, $built);
     }
 }
