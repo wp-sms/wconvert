@@ -1,32 +1,18 @@
 name: PHP tests
 
-# =============================================================================
-# PHPUnit across the supported PHP range, plus PHPStan.
+# PHPUnit across the supported PHP range, plus MySQL checks and PHPStan.
 #
-#   [test]      The floor and the ceiling on a pull request, every supported
-#               version on a manual dispatch or a release. The floor is where a
-#               construct needing a newer PHP fatals at parse time; the ceiling
-#               is where a deprecation shows up first. The matrix below is the
-#               ONLY place the supported versions are listed, and each job
-#               reports its own name, so a range in the workflow title would be
-#               duplicated information that goes stale.
+#   [test]      Floor and ceiling on a pull request, every version otherwise.
+#               This matrix is the ONLY list of supported versions.
+#   [database]  bin/verify-*.php against real MySQL, then PHPStan (its
+#               phpVersion pin in phpstan.neon.dist is the source of truth).
 #
-#   [analysis]  PHPStan, pinned to the floor by `phpVersion` in
-#               phpstan.neon.dist — that file is the source of truth, not this
-#               one.
-#
-# NO TRIGGERS OF ITS OWN beyond a manual dispatch. ci.yml calls this on every
-# pull request behind the changed-path filter; see the note in ci.yml for why
-# the filter cannot live here.
-# =============================================================================
+# No triggers of its own beyond a manual dispatch; ci.yml calls it behind the
+# php filter.
 
 on:
   workflow_dispatch:
   workflow_call:
-
-concurrency:
-  group: php-tests-${{ github.ref }}
-  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -76,43 +62,8 @@ jobs:
       - name: PHPUnit
         run: composer test
 
-  analysis:
-    name: 'Static analysis (PHPStan)'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          extensions: mbstring, dom, xml
-          coverage: none
-
-      - name: Get Composer cache directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
-
-      - name: Cache Composer downloads
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-php8.2-composer-${{ hashFiles('composer.lock', 'pro/composer.lock') }}
-          restore-keys: ${{ runner.os }}-php8.2-composer-
-
-      - name: Install dependencies
-        run: composer install --no-interaction --no-progress
-
-      - name: Install Pro dependencies
-        run: composer install --working-dir=pro --no-interaction --no-progress
-
-      # phpstan.neon.dist pins phpVersion: 80100 — analysis runs on the floor.
-      - name: PHPStan
-        run: composer phpstan
-
   database:
-    name: 'Database · WordPress 6.8 / PHP 8.2 / MySQL 8.4'
+    name: 'Database + PHPStan · WordPress 6.8 / PHP 8.2 / MySQL 8.4'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     services:
@@ -135,7 +86,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          extensions: mbstring, mysqli, mysqlnd
+          extensions: mbstring, dom, xml, mysqli, mysqlnd
           tools: composer
           coverage: none
 
@@ -152,7 +103,19 @@ jobs:
           rm wp-cli.phar
           wp --info
 
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer downloads
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-php8.2-composer-${{ hashFiles('composer.lock', 'pro/composer.lock') }}
+          restore-keys: ${{ runner.os }}-php8.2-composer-
+
       - name: Install plugin dependencies
+        id: deps
         run: |
           composer install --no-interaction --no-progress
           composer install --working-dir=pro --no-interaction --no-progress
@@ -209,3 +172,9 @@ jobs:
           WCONVERT_VERIFY_BOOTSTRAP="$WP_PATH/wp-load.php" php "$GITHUB_WORKSPACE/bin/verify-capture-journeys.php"
           wp eval-file "$GITHUB_WORKSPACE/bin/verify-template-media.php" --use-include --path="$WP_PATH"
           wp eval-file "$GITHUB_WORKSPACE/bin/verify-claims.php" --use-include --path="$WP_PATH"
+
+      # PHPStan shares this job's PHP 8.2 and install; phpstan.neon.dist pins
+      # phpVersion to the floor. Runs even when the MySQL checks failed.
+      - name: PHPStan
+        if: ${{ !cancelled() && steps.deps.outcome == 'success' }}
+        run: composer phpstan

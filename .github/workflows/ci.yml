@@ -1,53 +1,16 @@
 name: CI
 
-# =============================================================================
-# The single entry point for every check that runs on a pull request.
+# Every pull-request check. Require `CI / Required checks` and nothing else.
 #
-#   source-contract ──── ALWAYS runs, no path filter
-#   loader-contract ──── ALWAYS runs, no path filter
-#   changes ── one dorny/paths-filter run, the only place the filters live
-#     ├── PHP tests        php-tests.yml
-#     ├── Frontend tests   frontend-tests.yml
-#     ├── POT coverage     every bundle built, then bin/pot-coverage.mjs
-#     ├── Template service tools/template-server + tools/design-library suites
-#     └── Required checks ──── always runs, aggregates needs.*.result
+#   changes ── the path filters, read by bin/preflight.mjs too
+#     ├── PHP tests        php-tests.yml        (php filter)
+#     ├── Frontend         frontend-tests.yml   build + contracts ALWAYS; tests on js
+#     ├── Template service                      (service filter)
+#     └── Required checks  always runs, aggregates needs.*.result
 #
-# This mirrors WSMS's ci.yml, including WHY it has this shape. A workflow
-# skipped by a workflow-LEVEL `paths:` filter reports no status at all — not
-# "skipped", nothing — so the day branch protection requires it, a pull request
-# that misses those paths waits forever on a check that never arrives
-# (https://github.com/orgs/community/discussions/13690). Filters therefore live
-# at JOB level, where a skipped job still reports, and one always-running gate
-# aggregates. Require `CI / Required checks` and nothing else.
-#
-# WHY source-contract CARRIES NO PATH FILTER. It is the check that carries the
-# free contract's guarantee (ADR 0029), and it is fail-closed by design — so
-# letting a paths expression decide whether it runs would hand the opt-out to
-# the diff. A pull request that touches only pro/ still changes what free's
-# tree may import, and the whole point of proving the contract at the source is
-# that it costs seconds and can therefore run unconditionally.
-#
-# NO ZIP IS BUILT HERE, DELIBERATELY (ADR 0029). The artifact-level checks
-# confirm at release what the source already proved, and paying minutes per
-# pull request for that confirmation buys nothing. The artifact contract,
-# Plugin Check and the release guard live in release-free.yml and
-# release-pro.yml, and are exercised on a pull request only as PHPUnit —
-# tests/unit/Contract/{ArtifactContract,ReleaseGuard}Test.php build their
-# fixture trees file by file rather than calling bin/build.sh, so the suite a
-# pull request runs still stages nothing.
-#
-# NO `push` TRIGGER, DELIBERATELY. A pull request is tested against the result
-# of merging it, so running the same suites again on `main` a moment later
-# re-proves what the pull request proved.
-#
-# A DRAFT SKIPS THE VISUAL SUITES (frontend-tests.yml), which are most of a
-# run's minutes and most of its jobs; everything else still runs. Marking the
-# pull request ready for review is a trigger of its own, so it starts the full
-# run, and GitHub refuses to merge a draft, so the run that gates a merge is
-# always a full one. Open pull requests as drafts while iterating. Before
-# pushing, `npm run preflight` runs locally what this workflow would run for
-# the same diff, reading the filters below.
-# =============================================================================
+# Filters live at job level so a skipped job still reports; no push trigger;
+# no ZIP; a draft skips the visual suites. Why: ADR 0029, "The pull-request
+# workflow". Run `npm run preflight` before pushing.
 
 on:
   pull_request:
@@ -63,68 +26,6 @@ permissions:
   pull-requests: read
 
 jobs:
-  # ---------------------------------------------------------------------------
-  # THE FREE CONTRACT, PROVEN AT THE SOURCE (ADR 0029, check a).
-  #
-  # No build, no npm install, no composer install — PHP and a shell, because
-  # the invariant is a property of the source text. That is what makes running
-  # it on every pull request cheap enough to be unconditional, and it is why a
-  # stray premium import is caught by whoever wrote it rather than by whoever
-  # cuts the release. WSMS finds one only at release time, because its guard
-  # lives inside build.sh.
-  # ---------------------------------------------------------------------------
-  source-contract:
-    name: 'Source contract (free carries no Pro)'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.1'
-          coverage: none
-
-      - name: Verify the source contract
-        run: bash bin/verify-source-contract.sh
-
-  # ---------------------------------------------------------------------------
-  # THE FREE CONTRACT, PROVEN AT THE LOADER BUILD (ADR 0029, check b, plus the
-  # byte budget).
-  #
-  # THE ONE BUILD ON A PULL REQUEST, and it earns it: both of its assertions
-  # are about build OUTPUT, which is the premise "no ZIP on a PR" lacks. Two
-  # small Vite configs, seconds.
-  #
-  # NO PATH FILTER, for the same reason source-contract carries none. Letting a
-  # paths expression decide whether a fail-closed compliance check runs hands
-  # the opt-out to the diff — and the byte budget is a property of the shipped
-  # artifact, which a pull request touching only PHP can still change through a
-  # dependency or a config.
-  # ---------------------------------------------------------------------------
-  loader-contract:
-    name: 'Loader contract (budget + no premium in free)'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
-
-      - run: npm ci
-
-      - name: Verify the loader contract
-        run: npm run check:loader
-
-      # Free's admin and inspector carry no Pro module's admin code and never
-      # say "upgrade" (ADR 0147). Two more small builds, same job.
-      - name: Verify the admin contract
-        run: npm run check:admin
-
   changes:
     name: 'Changed paths'
     runs-on: ubuntu-latest
@@ -134,12 +35,9 @@ jobs:
       js: ${{ steps.filter.outputs.js }}
       service: ${{ steps.filter.outputs.service }}
     steps:
-      # Shallow: on a pull request paths-filter reads the changed-file list
-      # from the API, so the history is never consulted.
       - uses: actions/checkout@v4
 
-      # Pinned to a commit rather than a tag: `stable` is a tag someone else
-      # can repoint at will.
+      # Pinned to a commit: a tag can be repointed.
       - name: Filter changed paths
         id: filter
         uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
@@ -183,6 +81,7 @@ jobs:
               - 'pro/tests/**'
               - 'tiers.json'
               - '.github/workflows/frontend-tests.yml'
+              - '.github/actions/**'
               - '.github/workflows/ci.yml'
             # Everything a setup's revision is computed from, so a change
             # that stales an approval meets `templates:releasable`.
@@ -196,6 +95,7 @@ jobs:
               - 'pro/modules/*/templates/**'
               - 'pro/modules/*/playbooks/**'
               - 'src/Template/**'
+              - '.github/actions/**'
               - '.github/workflows/ci.yml'
 
   php-tests:
@@ -204,59 +104,17 @@ jobs:
     if: needs.changes.outputs.php == 'true'
     uses: ./.github/workflows/php-tests.yml
 
+  # Unconditional: its build job carries the fail-closed contracts, which no
+  # diff may opt out of (ADR 0029). The js filter gates only the tests.
   frontend-tests:
-    name: 'Frontend tests'
+    name: 'Frontend'
     needs: changes
-    if: needs.changes.outputs.js == 'true'
     uses: ./.github/workflows/frontend-tests.yml
+    with:
+      tests: ${{ needs.changes.outputs.js == 'true' }}
 
-  # ---------------------------------------------------------------------------
-  # EVERY TRANSLATABLE STRING REACHES A CATALOGUE (bin/pot-coverage.mjs).
-  #
-  # Its own job because it needs what no other job has together: every bundle
-  # built — make-pot reads JS strings out of the built files, never the
-  # TypeScript — and wp-cli, which makes the two POTs it compares against.
-  # Both are installed here and a missing one is a red step, never a skip: a
-  # check that can skip itself is how the whole admin went untranslatable
-  # with every suite green.
-  #
-  # PHP or JS, because either side can lose a string: a PHP call make-pot
-  # cannot parse, a minifier setting that renames `__`, a Pro call in free's
-  # domain.
-  # ---------------------------------------------------------------------------
-  pot-coverage:
-    name: 'POT coverage (every string extracted)'
-    needs: changes
-    if: needs.changes.outputs.php == 'true' || needs.changes.outputs.js == 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.1'
-          coverage: none
-          tools: wp-cli
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
-
-      - run: npm ci
-
-      - run: npm run build
-
-      - name: Every translatable call is in its POT
-        run: npm run check:pot
-
-  # ---------------------------------------------------------------------------
-  # THE HOSTED CATALOGUE. The Worker and the publisher that feeds it are not in
-  # the plugin ZIP, so neither suite above reaches them; this is the only place
-  # a pull request proves them. Two `node --test` runs and a Wrangler dry-run.
-  # ---------------------------------------------------------------------------
+  # The hosted catalogue: the Worker and its publisher are not in the ZIP, so
+  # this is the only place a pull request proves them.
   template-service:
     name: 'Template service'
     needs: changes
@@ -275,24 +133,15 @@ jobs:
 
       - run: composer install --no-progress
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            tools/template-server/package-lock.json
-
-      - run: npm ci
+      - uses: ./.github/actions/npm-install
 
       # Some studio tests import the Worker's operator scripts.
-      - run: npm ci
-        working-directory: tools/template-server
+      - uses: ./.github/actions/npm-install
+        with:
+          directory: tools/template-server
 
-      # Thumbnails, previews and the contrast check render in Chromium. No
-      # --with-deps: the runner image already carries Chromium's libraries,
-      # and the apt mirror behind --with-deps throttles (frontend-tests.yml).
-      # Nothing here compares pixels, so the missing fonts change nothing.
+      # No --with-deps: the image has Chromium's libraries, the apt mirror
+      # throttles, and nothing here compares pixels, so fonts don't matter.
       - id: playwright
         run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@v4
@@ -308,8 +157,7 @@ jobs:
       - name: Catalogue revisions
         run: npm run templates:revisions:check
 
-      # A renderer edit stales every approval, even one that draws nothing
-      # differently; the failure names the one command that carries them.
+      # A renderer edit stales every approval; the failure names the fix.
       - name: Approvals current
         run: npm run templates:releasable
 
@@ -317,20 +165,12 @@ jobs:
         working-directory: tools/template-server
         run: npm run check && npm test
 
-  # ---------------------------------------------------------------------------
-  # THE GATE. The one check to require in branch protection.
-  #
-  # `if: always()` is the whole point — it reports whatever happened upstream,
-  # including "everything was skipped", which is the case a workflow-level path
-  # filter cannot report at all. It reads `needs` as a whole rather than naming
-  # each job, so adding a suite above means adding one line to `needs:` and
-  # nothing else. Skipped counts as passing; cancelled does not, because a
-  # cancelled required check is an unfinished one.
-  # ---------------------------------------------------------------------------
+  # THE GATE. `if: always()` so it reports even "everything skipped". Skipped
+  # passes; cancelled does not. A new suite is one more name in `needs:`.
   required-checks:
     name: 'Required checks'
     if: always()
-    needs: [source-contract, loader-contract, changes, php-tests, frontend-tests, pot-coverage, template-service]
+    needs: [changes, php-tests, frontend-tests, template-service]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

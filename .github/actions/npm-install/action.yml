@@ -1,0 +1,31 @@
+name: npm install (cached)
+description: >-
+  Node 22, then node_modules restored whole from a cache keyed on the
+  lockfile and the exact Node version; npm ci runs only on a miss.
+inputs:
+  directory:
+    description: The directory holding package-lock.json
+    default: .
+  cache:
+    description: >-
+      Restore and save node_modules. Off in a container job: the cache
+      version differs there, so it never hits, and the save costs more than
+      the install.
+    default: 'true'
+runs:
+  using: composite
+  steps:
+    - id: node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+    - id: cache
+      if: inputs.cache == 'true'
+      uses: actions/cache@v4
+      with:
+        path: ${{ inputs.directory }}/node_modules
+        key: node-modules-${{ runner.os }}-${{ steps.node.outputs.node-version }}-${{ hashFiles(format('{0}/package-lock.json', inputs.directory)) }}
+    - if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      working-directory: ${{ inputs.directory }}
+      run: npm ci --no-audit --no-fund
