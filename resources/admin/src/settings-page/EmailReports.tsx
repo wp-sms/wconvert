@@ -121,18 +121,20 @@ export function EmailReports({ onEditingStateChange }: { onEditingStateChange?: 
       </RegionBody>
       <RegionFooter className="flex flex-wrap items-center justify-end gap-3">
         {error !== null && <p role="alert" className="m-0 me-auto text-note text-destructive">{error}</p>}
-        <p role="status" className="m-0 me-auto text-note text-muted-foreground">
+        <p role="status" className="m-0 min-w-0 flex-1 basis-64 text-note text-muted-foreground">
           {tested !== null && sprintf(/* translators: %s: the addresses the test went to. */ __('Test sent to %s. Not there in a few minutes? Check spam, then your site’s email setup.', 'wconvert'), tested)}
         </p>
-        <SaveStatus saved={status.saved} />
-        {enabled && (
-          <Button type="button" variant="outline" disabled={testing || saving} data-setting="weekly-summary-test" onClick={() => { void test(); }}>
-            {testing ? __('Sending…', 'wconvert') : __('Send a test email', 'wconvert')}
+        <div className="ms-auto flex flex-wrap items-center justify-end gap-3">
+          <SaveStatus saved={status.saved} />
+          {enabled && (
+            <Button type="button" variant="outline" disabled={testing || saving} data-setting="weekly-summary-test" onClick={() => { void test(); }}>
+              {testing ? __('Sending…', 'wconvert') : __('Send a test email', 'wconvert')}
+            </Button>
+          )}
+          <Button type="button" disabled={!dirty || saving} onClick={() => { void save(); }}>
+            {saving ? __('Saving…', 'wconvert') : __('Save email reports', 'wconvert')}
           </Button>
-        )}
-        <Button type="button" disabled={!dirty || saving} onClick={() => { void save(); }}>
-          {saving ? __('Saving…', 'wconvert') : __('Save email reports', 'wconvert')}
-        </Button>
+        </div>
       </RegionFooter>
     </Region>
   );
