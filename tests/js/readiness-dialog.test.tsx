@@ -496,6 +496,13 @@ describe('rows still on their starting setting', () => {
   });
 });
 
+it('keeps the way back after How it runs’ own Display rules link', async () => {
+  await open();
+  await userEvent.click(within(screen.getByRole('heading', { name: 'How it runs' }).closest('section')!).getByRole('button', { name: 'Display rules' }));
+  expect(screen.queryByRole('dialog')).toBeNull();
+  expect(await screen.findByRole('button', { name: 'Back to review' })).toBeInTheDocument();
+});
+
 describe('the first campaign’s Next button (ADR 0178)', () => {
   it('leads to the named tab instead of opening the review', async () => {
     const onGo = vi.fn();

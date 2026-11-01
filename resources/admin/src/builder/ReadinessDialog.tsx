@@ -396,7 +396,7 @@ export function ReadinessDialog({
                 <ReviewSection
                   title={__('How it runs', 'wconvert')}
                   action={__('Display rules', 'wconvert')}
-                  onAction={() => jump(() => onGoToRules('where'))}
+                  onAction={() => jump(() => onGoToRules('where'), 'row')}
                 >
                   <FactList facts={facts} />
                   {facts.some(fact => fact.isDefault) && (
@@ -408,7 +408,7 @@ export function ReadinessDialog({
                   {bound.length > 0 && (
                     <p className="text-note text-muted-foreground">
                       {__('Publishing does not test delivery.', 'wconvert')}{' '}
-                      <button type="button" className="wconvert-readiness__go" onClick={() => jump(onGoToDestinations)}>
+                      <button type="button" className="wconvert-readiness__go" onClick={() => jump(onGoToDestinations, 'row')}>
                         {__('Send a test first', 'wconvert')}
                       </button>
                     </p>
