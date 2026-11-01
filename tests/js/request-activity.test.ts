@@ -97,6 +97,23 @@ describe('sharedRead', () => {
     expect(a).toBe(b);
   });
 
+  it('lets side widgets share a read in flight, but never hands a fresh read a side widget’s', async () => {
+    const read = sharedRead(readOptins);
+    const side = deferred();
+    fake.handler.mockReturnValueOnce(side.promise);
+    const bell = read.recent();
+    const count = read.recent();
+    const retry = read();
+    expect(fake.handler).toHaveBeenCalledTimes(2);
+
+    // The retry's newer answer is the one remembered, whichever lands last.
+    await retry;
+    side.resolve(['older']);
+    await Promise.all([bell, count]);
+    expect(await read.recent()).toEqual([]);
+    expect(fake.handler).toHaveBeenCalledTimes(2);
+  });
+
   it('reads again for a screen, and serves a side widget from memory', async () => {
     const read = sharedRead(readOptins);
     await read();

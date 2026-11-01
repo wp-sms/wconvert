@@ -92,7 +92,11 @@ export function whenQuiet(maxMs = 3000): Promise<void> {
 }
 
 export interface SharedRead<T> {
-  /** Always a new read, except that identical calls in flight together share one. */
+  /**
+   * A new read. Identical calls in flight together share one, but never a side
+   * widget's: a Try again pressed while the bell is reading must not be handed
+   * the bell's answer, which was asked before whatever the retry is about.
+   */
   (): Promise<T>;
   /** A result younger than `maxMs`, else a read. For side widgets, never for a screen's own data. */
   recent(maxMs?: number): Promise<T>;
@@ -103,29 +107,33 @@ export interface SharedRead<T> {
 /** One read that callers share: concurrent calls coalesce, a success is remembered until a change. */
 export function sharedRead<T>(read: () => Promise<T>): SharedRead<T> {
   installRequestActivity();
-  let pending: Promise<T> | null = null;
+  let pending: { request: Promise<T>; side: boolean } | null = null;
   let held: { value: T; at: number } | null = null;
+  /** The newest request started; only its answer is remembered. */
+  let latest = 0;
   const state = { forget() { pending = null; held = null; } };
   reads.add(state);
 
-  const fresh = (): Promise<T> => {
-    if (pending) return pending;
+  const start = (side: boolean): Promise<T> => {
     const started = generation;
+    const id = ++latest;
     const request = read().then((value) => {
-      if (generation === started) held = { value, at: Date.now() };
+      if (generation === started && id === latest) held = { value, at: Date.now() };
       return value;
     }).finally(() => {
-      if (pending === request) pending = null;
+      if (pending?.request === request) pending = null;
     });
-    pending = request;
+    pending = { request, side };
     return request;
   };
+  const fresh = (): Promise<T> => (pending && !pending.side ? pending.request : start(false));
   const remembered = (maxMs = RECENT_MS) => (held && Date.now() - held.at < maxMs ? held.value : undefined);
   return Object.assign(fresh, {
     remembered,
     recent: (maxMs = RECENT_MS) => {
       const value = remembered(maxMs);
-      return value === undefined ? fresh() : Promise.resolve(value);
+      if (value !== undefined) return Promise.resolve(value);
+      return pending ? pending.request : start(true);
     },
   });
 }
