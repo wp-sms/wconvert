@@ -31,6 +31,10 @@ ZIP (ADR 0157).
 see a string inside JSON, so a JSON bundled registry ships an English-only
 library (ADR 0013). Wrap every visible name, note and copy string in `__()`.
 Stable ids and choice `value` keys are identifiers, not translated words.
+A bundled entry's words also need their list translations (ADR 0183): run
+`npm run templates:words`, translate what it adds to each
+`tools/design-library/translations/<locale>.po` by that language's `.terms.md`,
+then run it again.
 
 ```php
 return [

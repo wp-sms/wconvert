@@ -102,6 +102,7 @@ const steps = [
     ['Design library', ['bash', 'tools/design-library/build.sh', 'renderer']],
     ['Template studio', npm('run', 'test:template-studio')],
     ['Catalogue revisions', npm('run', 'templates:revisions:check')],
+    ['Design words', npm('run', 'templates:words', '--', '--check')],
     ['Approvals current', npm('run', 'templates:releasable')],
     ['Worker check', npm('run', 'check'), {}, 'tools/template-server'],
     ['Worker tests', npm('test'), {}, 'tools/template-server'],

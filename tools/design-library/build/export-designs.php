@@ -12,6 +12,8 @@
  *   designs  — {designs, setups, metadata, raster_sources, image_rights} → objects
  *   validate — {source, responses, designs, setups, empty_directory} → runs the
  *              shipping TemplateCatalog over an in-memory copy of the release
+ *   words    — {translations} → every design's and setup's words by where they
+ *              ship, and the translations a site would refuse (bin/template-words.mjs)
  */
 define('ABSPATH', '/');
 $root = isset($argv[1]) ? realpath($argv[1]) : dirname(__DIR__, 3);
@@ -39,6 +41,7 @@ use WConvert\Template\BundledArtwork;
 use WConvert\Template\Catalog\DesignObject;
 use WConvert\Template\Catalog\PackValidator;
 use WConvert\Template\Catalog\VocabularySince;
+use WConvert\Template\DesignWords;
 use WConvert\Template\TemplateManifest;
 use WConvert\Template\TemplateVocabulary;
 use WConvert\Template\Transfer\DesignImages;
@@ -230,6 +233,34 @@ if (($input['mode'] ?? '') === 'validate') {
     }
     if (count($archive->playbooks()) !== count($input['setups'])) throw new RuntimeException('Not every installed setup registers a starting point');
     echo 'Validated ' . count($input['designs']) . ' designs and ' . count($input['setups']) . " setups with the shipping catalogue reader.\n";
+    exit;
+}
+
+if (($input['mode'] ?? '') === 'words') {
+    $manifest = TemplateManifest::load($root);
+    $sets = ['free' => []];
+    $add = static function (string $set, array $words, string $file) use (&$sets, $root): void {
+        foreach ($words as $english => $word) {
+            $known = $sets[$set][$english] ?? ['limit' => PHP_INT_MAX, 'kind' => $word['kind'], 'refs' => []];
+            $known['limit'] = min($known['limit'], $word['limit']);
+            $known['refs'][] = substr($file, strlen($root) + 1);
+            $sets[$set][$english] = $known;
+        }
+    };
+    foreach (glob($root . '/resources/templates/library/*.json') ?: [] as $file) {
+        $add('free', DesignWords::wordsOfTemplate(json_decode((string) file_get_contents($file), true, 512, JSON_THROW_ON_ERROR), $manifest), $file);
+    }
+    foreach (glob($root . '/resources/playbooks/*.php') ?: [] as $file) $add('free', DesignWords::wordsOfPlaybook(require $file), $file);
+    $limits = [];
+    foreach ($sets as $words) foreach ($words as $english => $word) $limits[$english] = min($limits[$english] ?? PHP_INT_MAX, $word['limit']);
+    $refused = [];
+    foreach ($input['translations'] ?? [] as $locale => $translations) {
+        foreach ($translations as $english => $translated) {
+            if (!is_string($translated) || !DesignWords::acceptable($english, $translated)) $refused[$locale][] = ['english' => $english, 'reason' => 'empty, has markup, or changes a %s, %b or %i'];
+            elseif (strlen($translated) > ($limits[$english] ?? PHP_INT_MAX)) $refused[$locale][] = ['english' => $english, 'reason' => 'longer than its ' . $limits[$english] . ' bytes'];
+        }
+    }
+    echo json_encode(['sets' => $sets, 'refused' => $refused], FLAGS);
     exit;
 }
 

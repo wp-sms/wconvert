@@ -42,6 +42,10 @@ final class PictureTransfer
             foreach ($slot['values'] as $key => $value) {
                 if ($value !== ($old['values'][$key] ?? null)) $changes[$key] = $value;
             }
+            // A picture nobody replaced keeps the design's own description, and that
+            // reads differently once the site's language changes (ADR 0183). It is
+            // not the merchant's edit, and it describes a picture the target lacks.
+            if (!isset($changes['src'])) unset($changes['alt']);
             if ($changes === [] || !self::hasPicture($slot)) continue;
             if (isset($changes['picture']) && !isset($changes['mobile-picture'])) {
                 // A target's sample mobile photo must not hide the carried desktop photo.

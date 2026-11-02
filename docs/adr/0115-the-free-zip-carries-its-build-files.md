@@ -34,4 +34,7 @@ the build instructions can live.
 - The shipped `package.json` still lists Pro's scripts. They fail in the free
   ZIP because their configs are absent; the readme names `build:free`.
 - Translations come from wp.org language packs: no `Domain Path` header and no
-  `load_plugin_textdomain()`.
+  `load_plugin_textdomain()`. *Amended by
+  [ADR 0183](0183-design-words-are-one-list-per-language.md): still true of every
+  gettext string, but the ZIP now carries per-language lists of design and setup
+  words, read by `DesignWords` rather than the text domain.*

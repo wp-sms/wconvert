@@ -19,6 +19,10 @@ content**; the default **Keep my content** prepares the merchant's current
 words in the new design before Apply
 ([ADR 0075](../../docs/adr/0075-draft-history-and-template-content-choices-stay-predictable.md)).
 
+The words then pass through a per-language list for languages no WordPress.org pack
+covers ([ADR 0183](../../docs/adr/0183-design-words-are-one-list-per-language.md)):
+after editing an entry, run `npm run templates:words` and translate what it adds.
+
 Remote entries are JSON and untranslated, because remote PHP is Guideline 8
 remote code execution with no argument available. Reviewed JSON packs can supply campaign setups under ADR 0083: a decoded remote entry is an array, so it enters through
 `PlaybookLibrary::fromEntries()` exactly as a bundled one does.

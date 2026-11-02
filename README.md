@@ -961,14 +961,20 @@ has a route of its own (ADR 0166):
 - **Design and screen names live in JSON.** After adding or renaming a bundled
   design, run `npm run templates:labels`. It rewrites the two `labels.php`
   files, and `TemplateNamesTest` fails until you do.
+- **A design's and a setup's starting words** are read through one list per
+  language (ADR 0183). The source is `tools/design-library/translations/<locale>.po`;
+  after changing any bundled design or setup, run `npm run templates:words`, translate
+  what it added, and run it again. `-- --check` fails on a stale list, an untranslated
+  word or one that loses a `%s`, `%b` or `%i`. To add a language, create an empty
+  `<locale>.po` and run it.
 - **Pro's inspector explanations** read their words from
   `ProInspectorLabels`, by group and key.
 
 To see a locale for real, turn both POTs into pseudo-translated `.po` files,
 compile them with `wp i18n make-json` and `make-php`, mount them as
 `wp-content/languages` (Pro's into `pro/resources/languages`), and force the
-locale with a one-line mu-plugin: `add_filter('locale', fn () => 'de_DE')`.
-`WPLANG` is refused for a locale whose core pack is not installed.
+locale with a one-line mu-plugin: `add_filter('locale', fn () => 'de_DE')`. The design
+words need nothing but that mu-plugin. `WPLANG` is refused for a locale whose core pack is not installed.
 
 ## Releasing
 

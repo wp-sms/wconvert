@@ -349,6 +349,7 @@ so `clamp()` widths, asymmetric `pad`, arbitrary radii, gradients through
 ```bash
 composer verify:templates   # every entry survives registration intact
 npm run templates:revisions:check   # revisions and both bundled revision files current
+npm run templates:words             # a bundled design's new words: translate what it adds, run it again (ADR 0183)
 composer test               # TemplateFacetsTest, TemplateLibraryTest, ProLibraryTest
 npm test                    # renderer-manifest-parity, builder-gallery — READ THE EXIT CODE
 composer verify:source      # no Pro tree in the free tree

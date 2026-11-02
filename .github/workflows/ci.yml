@@ -157,6 +157,10 @@ jobs:
       - name: Catalogue revisions
         run: npm run templates:revisions:check
 
+      # A new word needs its translation, or a German popup shows English (ADR 0183).
+      - name: Design words
+        run: npm run templates:words -- --check
+
       # A renderer edit stales every approval; the failure names the fix.
       - name: Approvals current
         run: npm run templates:releasable

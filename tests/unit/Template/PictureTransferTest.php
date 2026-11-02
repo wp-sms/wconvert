@@ -44,6 +44,19 @@ final class PictureTransferTest extends TestCase
         $this->assertSame($mine, $result['template']);
     }
 
+    public function testAnUnchangedPicturesTranslatedDescriptionIsNotTheMerchantsEdit(): void
+    {
+        $old = $this->template([array_replace($this->picture('/sample.jpg'), ['alt' => 'A sunrise'])]);
+        $mine = $this->template([array_replace($this->picture('/sample.jpg'), ['alt' => 'Ein Sonnenaufgang'])]);
+        $next = $this->template([array_replace($this->picture('/other.jpg'), ['alt' => 'Another view'])]);
+
+        $result = PictureTransfer::prepare($mine, $old, $next);
+
+        $this->assertSame('/other.jpg', $result['template']['tree']['steps'][0]['content']['children'][0]['src']);
+        $this->assertSame('Another view', $result['template']['tree']['steps'][0]['content']['children'][0]['alt']);
+        $this->assertSame(0, $result['unplaced']);
+    }
+
     public function testTargetSampleMobilePhotoCannotHideACarriedDesktopPhoto(): void
     {
         $old = $this->template([['type' => 'media', 'tokens' => ['bg-image' => 'none'], 'children' => []]]);
