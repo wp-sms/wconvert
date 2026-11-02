@@ -1,9 +1,11 @@
 import { useEffect, useId, useRef, useState } from 'react';
+import { refusable } from '@/lib/refusable';
 import apiFetch from '@wordpress/api-fetch';
 import { __, sprintf } from '@wordpress/i18n';
 import { TryAgain } from '@/shell/Region';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { formatMoney } from '@/lib/format';
 
 interface Product { id: number; name: string; is_in_stock?: boolean; images?: { thumbnail?: string }[]; prices?: { price?: string; currency_code?: string; currency_minor_unit?: number } }
 function productPrice(product: Product): string {
@@ -11,8 +13,7 @@ function productPrice(product: Product): string {
   if (!price?.price || !price.currency_code || !Number.isInteger(price.currency_minor_unit)) return '';
   const amount = Number(price.price) / Math.pow(10, price.currency_minor_unit!);
   if (!Number.isFinite(amount)) return '';
-  try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: price.currency_code }).format(amount); }
-  catch { return `${amount} ${price.currency_code}`; }
+  return formatMoney(amount, price.currency_code, price.currency_minor_unit);
 }
 export function ProductPicker({ ids, onChange, max = 6, ordered = true, allowUnavailable = false, label, help, actionLabel = __('Add', 'wconvert-pro') }: {
   ids: readonly number[]; onChange(ids: number[]): void; max?: number; ordered?: boolean; allowUnavailable?: boolean; label?: string; help?: string; actionLabel?: string;
@@ -34,7 +35,7 @@ export function ProductPicker({ ids, onChange, max = 6, ordered = true, allowUna
       .catch(() => { if (!controller.signal.aborted) setNamesFailed(true); });
     return () => controller.abort();
   }, [selectedKey, max, namesRetry]);
-  const productName = (id: number) => [...found, ...selected].find(product => product.id === id)?.name ?? sprintf(/* translators: %d: a product's ID number, shown when its name could not load. */ __('Product #%d', 'wconvert-pro'), id);
+  const productName = (id: number) => [...found, ...selected].find(product => product.id === id)?.name ?? __('Unnamed product', 'wconvert-pro');
   const move = (index: number, direction: -1 | 1) => { const next = [...ids]; [next[index], next[index + direction]] = [next[index + direction], next[index]]; onChange(next); };
   const search = async () => {
     if (!query.trim()) return;
@@ -44,25 +45,27 @@ export function ProductPicker({ ids, onChange, max = 6, ordered = true, allowUna
     try {
       const products = await apiFetch<Product[]>({ path: `/wc/store/v1/products?search=${encodeURIComponent(query.trim())}&per_page=12&catalog_visibility=visible`, signal: controller.signal });
       if (!controller.signal.aborted) { setFound(products); setSearched(true); }
-    } catch { if (!controller.signal.aborted) setError(__('Products could not load. Try again.', 'wconvert-pro')); }
+    } catch { if (!controller.signal.aborted) setError(__('Products could not load.', 'wconvert-pro')); }
     finally { if (!controller.signal.aborted) setBusy(false); }
   };
   return <div className="wconvert-journey-settings__products">
     <p id={helpId}>{help ?? __('Up to 6. The first 3 available appear.', 'wconvert-pro')}</p>
     <label>{label ?? __('Find products', 'wconvert-pro')}<Input type="search" autoComplete="off" aria-describedby={helpId} value={query} onChange={event => { searchRequest.current?.abort(); setQuery(event.target.value); setFound([]); setError(''); setBusy(false); setSearched(false); }} onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); void search(); } }} /></label>
-    <Button variant="outline" type="button" onClick={() => void search()} disabled={busy || !query.trim()}>{busy ? __('Searching…', 'wconvert-pro') : error ? __('Retry search', 'wconvert-pro') : __('Search catalog', 'wconvert-pro')}</Button>
-    {error && <p role="alert">{error}</p>}
+    <span id={`${helpId}-empty`} className="sr-only">{__('Type a name to search.', 'wconvert-pro')}</span>
+    <Button variant="outline" type="button" disabled={busy} {...refusable(query.trim() ? null : `${helpId}-empty`, () => void search())}>{busy ? __('Searching…', 'wconvert-pro') : __('Search catalog', 'wconvert-pro')}</Button>
+    {error && <div className="wconvert-result-filter__body"><p role="alert">{error}</p><TryAgain onClick={() => void search()} busy={busy} /></div>}
     {searched && !found.length && <p role="status">{__('No products found. Try another name.', 'wconvert-pro')}</p>}
-    {ids.length >= max && <p>{__('Selection full. Remove a product to choose another.', 'wconvert-pro')}</p>}
+    {ids.length >= max && <p id={`${helpId}-full`}>{__('Selection full. Remove a product to choose another.', 'wconvert-pro')}</p>}
     {namesFailed && <div className="wconvert-result-filter__body"><p role="alert">{__('Product names could not load. Your selection is kept.', 'wconvert-pro')}</p><TryAgain onClick={() => setNamesRetry(n => n + 1)} /></div>}
     {!!ids.length && <ol aria-label={ordered ? __('Selected products, in display order', 'wconvert-pro') : __('Selected products', 'wconvert-pro')}>{ids.map((id, index) => <li key={id} className="wconvert-result-picker__selection"><span>{productName(id)}</span><div className="wconvert-result-picker__actions">
-      {ordered && ids.length > 1 && <Button variant="outline" type="button" disabled={index === 0} onClick={() => move(index, -1)} aria-label={`${__('Move earlier', 'wconvert-pro')}: ${productName(id)}`}>{__('Earlier', 'wconvert-pro')}</Button>}
-      {ordered && ids.length > 1 && <Button variant="outline" type="button" disabled={index === ids.length - 1} onClick={() => move(index, 1)} aria-label={`${__('Move later', 'wconvert-pro')}: ${productName(id)}`}>{__('Later', 'wconvert-pro')}</Button>}
+      {ordered && ids.length > 1 && <Button variant="outline" type="button" disabled={index === 0} onClick={() => move(index, -1)} aria-label={`${__('Move up', 'wconvert-pro')}: ${productName(id)}`}>{__('Earlier', 'wconvert-pro')}</Button>}
+      {ordered && ids.length > 1 && <Button variant="outline" type="button" disabled={index === ids.length - 1} onClick={() => move(index, 1)} aria-label={`${__('Move down', 'wconvert-pro')}: ${productName(id)}`}>{__('Later', 'wconvert-pro')}</Button>}
       <Button variant="outline" type="button" data-destructive="true" aria-label={`${__('Remove', 'wconvert-pro')}: ${productName(id)}`} onClick={() => onChange(ids.filter(item => item !== id))}>{__('Remove', 'wconvert-pro')}</Button></div></li>)}</ol>}
     {!!found.length && <ul aria-label={__('Search results', 'wconvert-pro')}>{found.map(product => <li key={product.id}>
       {product.images?.[0]?.thumbnail && <img alt="" src={product.images[0].thumbnail} width="36" height="36" />}
-      <span>{product.name} {product.is_in_stock === false ? __('Out of stock', 'wconvert-pro') : ''} {productPrice(product)}</span>
-      <Button variant="outline" type="button" aria-label={sprintf(/* translators: 1: the button's action, e.g. “Add”, “Pin” or “Exclude”. 2: a product's name. */ __('%1$s: %2$s', 'wconvert-pro'), actionLabel, product.name)} disabled={ids.includes(product.id) || ids.length >= max || (!allowUnavailable && product.is_in_stock === false)} onClick={() => onChange([...ids, product.id])}>{ids.includes(product.id) ? __('Selected', 'wconvert-pro') : actionLabel}</Button>
+      <span>{product.name} {product.is_in_stock === false && <span id={`${helpId}-stock-${product.id}`}>{__('Out of stock', 'wconvert-pro')}</span>} {productPrice(product)}</span>
+      {ids.includes(product.id) && <span id={`${helpId}-chosen-${product.id}`} className="sr-only">{__('Already selected.', 'wconvert-pro')}</span>}
+      <Button variant="outline" type="button" aria-label={sprintf(/* translators: 1: the button's action, e.g. “Add”, “Pin” or “Exclude”. 2: a product's name. */ __('%1$s: %2$s', 'wconvert-pro'), actionLabel, product.name)} {...refusable(ids.includes(product.id) ? `${helpId}-chosen-${product.id}` : !allowUnavailable && product.is_in_stock === false ? `${helpId}-stock-${product.id}` : ids.length >= max ? `${helpId}-full` : null, () => onChange([...ids, product.id]))}>{ids.includes(product.id) ? __('Selected', 'wconvert-pro') : actionLabel}</Button>
     </li>)}</ul>}
   </div>;
 }

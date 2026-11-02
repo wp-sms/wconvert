@@ -6,6 +6,7 @@ import { unreachableScreenIds, walkNodes } from './journey';
 import { graphDisplayOrder, graphReaches } from './graph';
 import { MAX_PATH_QUESTIONS, questionPath } from './questionBudget';
 import { requiredSaveBypasses } from './graphChangeImpact';
+import { formatCount } from '../../lib/format';
 
 export interface JourneyRepair {
   readonly screenId: string;
@@ -42,7 +43,7 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
     const screenId = budget.screens[budget.screens.length - 1];
     const names = budget.screens.map(id => tree.steps.find(screen => screen.id === id)?.name ?? id).join(' → ');
     issues.push({ key: 'question-path-limit',
-      said: sprintf(/* translators: 1: how many questions one path through the screens asks, 2: the screens on that path joined by arrows, e.g. “Intro → Skin type → Result”. */ __('This line asks %1$d questions; the limit is ten: %2$s. Remove questions or move them to a separate line.', 'wconvert'), budget.count, names),
+      said: sprintf(/* translators: 1: how many questions one path through the screens asks, 2: the screens on that path joined by arrows, e.g. “Intro → Skin type → Result”. */ __('This line asks %1$s questions; the limit is ten: %2$s. Remove questions or move them to a separate line.', 'wconvert'), formatCount(budget.count), names),
       repair: { screenId, section: 'content', focus: 'questions' } });
   }
   const incomplete = (condition: QuestionCondition | undefined) => !condition || !condition.clauses.length
@@ -68,13 +69,13 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
   };
   for (const screen of tree.steps) {
     if (!screen.name.trim() || screen.name.length > 120) issues.push({ key: `name:${screen.id}`,
-      said: sprintf(/* translators: %d: the screen's position in the journey, e.g. 2. */ __('Give screen %d a name of 1 to 120 characters.', 'wconvert'), order.indexOf(tree.steps.indexOf(screen)) + 1),
+      said: sprintf(/* translators: %s: the screen's position in the journey, e.g. 2. */ __('Give screen %s a name of 1 to 120 characters.', 'wconvert'), formatCount(order.indexOf(tree.steps.indexOf(screen)) + 1)),
       repair: { screenId: screen.id, section: 'content', focus: 'screen-name' } });
     const screenQuestions = [...questions.entries()].filter(([, question]) => question.screen === screen.id);
     screenQuestions.forEach(([id, { node }], index) => {
-      const name = node.label?.trim() || sprintf(/* translators: %d: the question's position on its screen, e.g. 1. Used as a name for a question with no text. */ __('Question %d', 'wconvert'), index + 1);
+      const name = node.label?.trim() || sprintf(/* translators: %s: the question's position on its screen, e.g. 1. Used as a name for a question with no text. */ __('Question %s', 'wconvert'), formatCount(index + 1));
       if (!node.label?.trim() || node.label.length > 200) issues.push({ key: `question-label:${id}`,
-        said: sprintf(/* translators: 1: the question's position on its screen, 2: the screen's name, e.g. “Skin type”. */ __('Give question %1$d on “%2$s” text of 1 to 200 characters.', 'wconvert'), index + 1, screen.name),
+        said: sprintf(/* translators: 1: the question's position on its screen, 2: the screen's name, e.g. “Skin type”. */ __('Give question %1$s on “%2$s” text of 1 to 200 characters.', 'wconvert'), formatCount(index + 1), screen.name),
         repair: { screenId: screen.id, section: 'content', focus: 'questions', questionId: id } });
       if (node.answer_type !== 'text') {
         if ((node.options?.length ?? 0) < 2 || (node.options?.length ?? 0) > 12) issues.push({ key: `question-choices:${id}`,
@@ -82,7 +83,7 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
           repair: { screenId: screen.id, section: 'content', focus: 'questions', questionId: id, choiceIndex: 0 } });
         node.options?.forEach((option, choiceIndex) => {
           if (!option.label.trim()) issues.push({ key: `choice-label:${id}:${choiceIndex}`,
-            said: sprintf(/* translators: 1: the answer choice's position in the question, 2: the question's text, 3: the screen's name. */ __('Name answer %1$d for “%2$s” on “%3$s”.', 'wconvert'), choiceIndex + 1, name, screen.name),
+            said: sprintf(/* translators: 1: the answer choice's position in the question, 2: the question's text, 3: the screen's name. */ __('Name answer %1$s for “%2$s” on “%3$s”.', 'wconvert'), formatCount(choiceIndex + 1), name, screen.name),
             repair: { screenId: screen.id, section: 'content', focus: 'questions', questionId: id, choiceIndex } });
         });
       }
@@ -96,7 +97,7 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
     }
     screen.results?.forEach((result, index) => {
       if (!result.heading.trim()) issues.push({ key: `result-heading:${screen.id}:${result.id}`,
-        said: sprintf(/* translators: 1: the result's position on its screen, 2: the screen's name, e.g. “Your match”. */ __('Give result %1$d on “%2$s” a heading.', 'wconvert'), index + 1, screen.name),
+        said: sprintf(/* translators: 1: the result's position on its screen, 2: the screen's name, e.g. “Your match”. */ __('Give result %1$s on “%2$s” a heading.', 'wconvert'), formatCount(index + 1), screen.name),
         repair: { screenId: screen.id, section: 'content', resultId: result.id, focus: 'result-heading' } });
       if (result.product_action === 'add_to_cart' && (!commerceSupported() || (!result.product_ids?.length && !result.product_filter))) issues.push({
         key: `result-cart:${screen.id}:${result.id}`, said: !commerceSupported() ? unlessFree(sprintf(
@@ -120,15 +121,15 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
       }
       if (!result.when) {
         if (index < (screen.results?.length ?? 0) - 1) issues.push({ key: `result:${screen.id}:${index}`,
-          said: sprintf(/* translators: 1: the result's position on its screen, 2: the screen's name, e.g. “Your match”. */ __('Choose a condition for result %1$d on “%2$s”. Only the last one, for all other answers, has none.', 'wconvert'), index + 1, screen.name),
+          said: sprintf(/* translators: 1: the result's position on its screen, 2: the screen's name, e.g. “Your match”. */ __('Choose a condition for result %1$s on “%2$s”. Only the last one, for all other answers, has none.', 'wconvert'), formatCount(index + 1), screen.name),
           repair: { screenId: screen.id, section: 'content', resultId: result.id } });
         return;
       }
       const reason = incomplete(result.when) ? null : invalid(result.when, screen.id, false);
       if (!incomplete(result.when) && !reason) return;
       issues.push({ key: `result:${screen.id}:${index}`,
-        said: reason ? sprintf(/* translators: 1: the result's position on its screen, 2: the screen's name, 3: a sentence saying what is wrong with its rule. */ __('Review result %1$d on “%2$s”: %3$s', 'wconvert'), index + 1, screen.name, reason)
-          : sprintf(/* translators: 1: the result's position on its screen, 2: the screen's name, e.g. “Your match”. */ __('Choose an answer for result %1$d on “%2$s”.', 'wconvert'), index + 1, screen.name),
+        said: reason ? sprintf(/* translators: 1: the result's position on its screen, 2: the screen's name, 3: a sentence saying what is wrong with its rule. */ __('Review result %1$s on “%2$s”: %3$s', 'wconvert'), formatCount(index + 1), screen.name, reason)
+          : sprintf(/* translators: 1: the result's position on its screen, 2: the screen's name, e.g. “Your match”. */ __('Choose an answer for result %1$s on “%2$s”.', 'wconvert'), formatCount(index + 1), screen.name),
         repair: { screenId: screen.id, section: 'content', resultId: result.id } });
     });
     screen.paths?.forEach((path, index) => {
@@ -136,8 +137,8 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
       const reason = incomplete(path.when) ? null : invalid(path.when, screen.id, true);
       if (!incomplete(path.when) && !reason) return;
       issues.push({ key: `path:${screen.id}:${index}`,
-        said: reason ? sprintf(/* translators: 1: the line's position among the lines leaving the screen, 2: the screen's name, 3: a sentence saying what is wrong with its rule. */ __('Check line %1$d from “%2$s”: %3$s', 'wconvert'), index + 1, screen.name, reason)
-          : sprintf(/* translators: 1: the line's position among the lines leaving the screen, 2: the screen's name, e.g. “Skin type”. */ __('Choose an answer for line %1$d from “%2$s”.', 'wconvert'), index + 1, screen.name),
+        said: reason ? sprintf(/* translators: 1: the line's position among the lines leaving the screen, 2: the screen's name, 3: a sentence saying what is wrong with its rule. */ __('Check line %1$s from “%2$s”: %3$s', 'wconvert'), formatCount(index + 1), screen.name, reason)
+          : sprintf(/* translators: 1: the line's position among the lines leaving the screen, 2: the screen's name, e.g. “Skin type”. */ __('Choose an answer for line %1$s from “%2$s”.', 'wconvert'), formatCount(index + 1), screen.name),
         repair: { screenId: screen.id, section: 'paths', pathPriority: index } });
     });
   }
@@ -162,7 +163,7 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
   for (const id of unreachableScreenIds(tree)) {
     const name = tree.steps.find(screen => screen.id === id)?.name ?? id;
     issues.push({ key: `unreachable:${id}`,
-      said: sprintf(/* translators: %s: a screen's name, e.g. “Skin type”. */ __('No line reaches “%s”. Connect one to it, or delete it.', 'wconvert'), name),
+      said: sprintf(/* translators: %s: a screen's name, e.g. “Skin type”. */ __('No line reaches “%s”. Add one, or delete it.', 'wconvert'), name),
       repair: { screenId: id, section: 'content' } });
   }
   return issues;

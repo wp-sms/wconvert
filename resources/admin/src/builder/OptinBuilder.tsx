@@ -36,7 +36,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { BackLink, BuilderSkeleton, useEditingFrame } from '../shell/BuilderSkeleton';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
 import { Dialog } from '../components/ui/dialog';
-import { PickerDialogBody, PickerDialogContent } from '../discovery/PickerDialog';
+import { PickerDialogBody } from '../discovery/PickerDialog';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { EmptyState } from '../shell/EmptyState';
 import { PageAction } from '../shell/PageActions';
@@ -115,6 +115,7 @@ import { editorHref, reportHref } from '../nav';
 import { BrandMark } from '../shell/Brand';
 import type { EditingState } from '../hooks/useAdminNavigation';
 import type { Template, Tokens as TokenBag } from '@renderer/types';
+import { formatCount } from '../lib/format';
 
 export interface OptinBuilderProps {
   readonly id: string;
@@ -304,7 +305,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const captureMode = captureModeOf(config);
   const destinationSummary = captureMode === 'local' ? __('Keep in WConvert only', 'wconvert')
     : destinationNames.length === bound.length && bound.length > 0 ? destinationNames.join(' + ')
-      : bound.length > 0 ? sprintf(/* translators: %d: how many destinations the campaign sends leads to. */ _n('%d connected destination', '%d connected destinations', bound.length, 'wconvert'), bound.length)
+      : bound.length > 0 ? sprintf(/* translators: %s: how many destinations the campaign sends leads to. */ _n('%s connected destination', '%s connected destinations', bound.length, 'wconvert'), formatCount(bound.length))
         : __('No connected destinations', 'wconvert');
 
   const template = config?.template as Template | undefined;
@@ -728,7 +729,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
       said: result.goal !== goal && newGoal
         ? sprintf(/* translators: 1: what changed, e.g. “Email form added.” 2: the new goal's name. */ __('%1$s The goal is now “%2$s”.', 'wconvert'), done, newGoal.label) : done }));
   };
-  const signupCopy = () => sprintf(/* translators: %s: the campaign's name. A copy that asks for contact details. */ __('%s (signup)', 'wconvert'), name);
+  const signupCopy = () => sprintf(/* translators: %s: the campaign's name. A copy that asks for contact details. */ __('%s (form)', 'wconvert'), name);
   const offerCopy = () => sprintf(/* translators: %s: the campaign's name. A copy without a form. */ __('%s (offer)', 'wconvert'), name);
   const copyName = formState === 'none' ? signupCopy() : offerCopy();
   // The same create, confirmation and cleaning as Duplicate for another goal.
@@ -904,7 +905,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               template={template}
               bound={bound}
               local={localCapture}
-              title={template?.tree.submissions[1] ? __('Main signup', 'wconvert') : undefined}
+              title={template?.tree.submissions[1] ? __('Main form', 'wconvert') : undefined}
               available={routes}
               types={read(destinations)?.types ?? []}
               connections={read(destinations)?.connections ?? []}
@@ -1129,11 +1130,11 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               look={<ScopeStyle key={selection.path.join('.')} template={entry} labels={gallery.labels} path={selection.path} openToken={openToken} onOpenToken={setOpenToken} onSelect={chooseFromTree}
                 onChange={(next, coalesce) => edit({ template: next }, coalesce)} copied={copiedLook} onCopy={setCopiedLook} width={width === 'narrow' ? 'narrow' : 'tokens'} onWidth={next => setWidth(next === 'narrow' ? 'narrow' : 'own')} />} /> : undefined}
             testRequest={journeyTestRequest} testReturnFocus={previewButton} previewTitle={name || __('Untitled campaign', 'wconvert')}
-            whoSeesIt={close => <Suspense fallback={<RowsSkeleton rows={4} />}><SampleVisit template={template} cartRequired={entryOfGoal?.cart_required} act={offered} value={displayRules} vocabulary={vocabulary}
+            whoSeesIt={close => <Suspense fallback={<RowsSkeleton rows={4} status={__('Loading the sample visit…', 'wconvert')} />}><SampleVisit template={template} cartRequired={entryOfGoal?.cart_required} act={offered} value={displayRules} vocabulary={vocabulary}
               onClose={close} onOpenSection={section => { close(); setTab('rules'); setRevealSection({ id: section }); }} /></Suspense>} onTestExit={() => setPreviewFromRules(false)} onTestClose={() => { const returnTab = previewReturnTab.current; previewReturnTab.current = 'edit'; setTab(returnTab); }}
             issues={issues} onIssue={issue => followIssue(issue.go, issueRoutes)} primaryChannel={entryOfGoal?.outcome.audience_channel} tree={entry.tree} tokens={entry.tokens} step={shownStep} repairRequest={journeyRepair ?? undefined}
             focusActions={<><HistoryControls history={{ ...history, canUndo: !busy && history.canUndo, canRedo: !busy && history.canRedo }} />
-              <Button type="button" variant="outline" size="sm" disabled={busy || !dirty} onClick={() => void save()}>{busy ? __('Saving…', 'wconvert') : __('Save draft', 'wconvert')}</Button></>}
+              <Button type="button" variant="outline" disabled={busy || !dirty} onClick={() => void save()}>{busy ? __('Saving…', 'wconvert') : __('Save draft', 'wconvert')}</Button></>}
             onChange={(tree, coalesce) => edit({ template: { ...entry, tree } }, coalesce)} onSelect={chooseStep} displaySummary={displaySummary} destinationSummary={destinationSummary}
             deliveryMode={captureMode === 'local' ? 'local' : bound.length > 0 ? 'connected' : 'none'}
             onGoToDesign={openLook}
@@ -1196,9 +1197,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               )}
             </CampaignSummary>
           </AdminDialogBody>
-          <AdminDialogFooter>
+          <AdminDialogFooter back={<Button type="button" variant="outline" onClick={() => setDetails(false)}>{__('Done', 'wconvert')}</Button>}>
             <Button variant="outline" asChild><a href={reportHref({ optinId: id })}>{__('View report', 'wconvert')}</a></Button>
-            <Button type="button" onClick={() => setDetails(false)}>{__('Close', 'wconvert')}</Button>
           </AdminDialogFooter>
         </AdminDialogContent>
       </AdminDialog>
@@ -1217,7 +1217,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
       />
 
       {/* The dialog's own body while its code loads, not a sentence pinned to the page. */}
-      {transfer && <Suspense fallback={<TransferSkeleton action={transfer.action} onClose={() => { setTransfer(null); campaignActions.current?.focus(); }} />}>
+      {transfer && <Suspense fallback={<TransferSkeleton action={transfer.action} name={transfer.name} onClose={() => { setTransfer(null); campaignActions.current?.focus(); }} />}>
         <TemplateTransferDialog action={transfer.action} optin={id} config={transfer.config}
           design={{ ...(transfer.config.template as Template), name: transfer.name, display_type: displayTypeOf(transfer.config, templates) }}
           onClose={() => { setTransfer(null); campaignActions.current?.focus(); }}
@@ -1415,13 +1415,13 @@ function entryFor(
  * titled, with its body as a region skeleton — so the click opens the dialog
  * at once, and Escape still closes it.
  */
-function TransferSkeleton({ action, onClose }: { action: 'import' | 'export'; onClose: () => void }) {
-  const title = action === 'export' ? __('Export as template', 'wconvert') : __('Import template', 'wconvert');
+function TransferSkeleton({ action, name, onClose }: { action: 'import' | 'export'; name: string; onClose: () => void }) {
+  const title = action === 'export' ? name || __('Export as template', 'wconvert') : __('Import template', 'wconvert');
   return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
-    <PickerDialogContent className="wconvert-transfer-dialog">
-      <AdminDialogHeader title={title} />
+    <AdminDialogContent size={action === 'export' ? 'lg' : 'sm'} className="wconvert-transfer-dialog">
+      <AdminDialogHeader title={<bdi>{title}</bdi>} />
       <PickerDialogBody className="wconvert-transfer"><RegionSkeleton label={title} lines={4} /></PickerDialogBody>
-    </PickerDialogContent>
+    </AdminDialogContent>
   </Dialog>;
 }
 

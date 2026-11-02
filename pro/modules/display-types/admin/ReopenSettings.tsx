@@ -12,9 +12,9 @@ import { CheckRow } from '@/shell/CheckRow';
 import { Disclosure } from '@/shell/Disclosure';
 import { PanelField, PanelSection } from '@/builder/PanelSection';
 import { type Teaser } from '../loader/reminder';
+import { formatCount } from '@/lib/format';
 
 const corners = ['block_start_inline_start', 'block_start_inline_end', 'block_end_inline_start', 'block_end_inline_end'];
-const gapOf = (value: string) => Math.max(8, Math.min(96, Number(value)));
 
 export default function ReopenSettings({ value, template, onChange }: ReopenProps) {
   const id = useId();
@@ -31,9 +31,12 @@ export default function ReopenSettings({ value, template, onChange }: ReopenProp
       {corners.map(corner => <option key={corner} value={corner}>{physicalPlacementLabel('slide_in', corner, direction)}</option>)}
     </NativeSelect>
   </PanelField>;
-  // The input refuses anything outside 8–96, so no line under it says so (ADR 0136).
+  // The slider refuses anything outside 8–96, so no line under it says so (ADR 0136).
   const distance = (field: string, label: string, current: number, change: (gap: number) => void) => <PanelField label={label} htmlFor={field}>
-    <Input id={field} type="number" min={8} max={96} value={current} onChange={event => change(gapOf(event.target.value))} />
+    <span className="wconvert-token__row">
+      <input id={field} type="range" className="wconvert-token__slider min-w-0" min={8} max={96} value={current} onChange={event => change(Number(event.target.value))} />
+      <output htmlFor={field} className="text-note">{formatCount(current)}</output>
+    </span>
   </PanelField>;
   const color = (key: 'background' | 'color', label: string, fallback: string) => {
     const held = config?.[key] ?? '';
@@ -77,7 +80,7 @@ export default function ReopenSettings({ value, template, onChange }: ReopenProp
           {position(`${id}-mobile-position`, __('Mobile position', 'wconvert-pro'), config.mobile?.placement ?? config.placement, placement => updateMobile({ placement }))}
           {distance(`${id}-mobile-gap`, __('Mobile distance (px)', 'wconvert-pro'), config.mobile?.gap ?? config.gap ?? 16, gap => updateMobile({ gap }))}
         </div>
-        <Button variant="outline" size="sm" className="justify-self-start" disabled={config.mobile === undefined} onClick={() => update({ mobile: undefined })}>{__('Reset mobile', 'wconvert-pro')}</Button>
+        <Button variant="outline" className="justify-self-start" disabled={config.mobile === undefined} onClick={() => update({ mobile: undefined })}>{__('Reset mobile', 'wconvert-pro')}</Button>
       </Disclosure>
     </>}
   </PanelSection>;

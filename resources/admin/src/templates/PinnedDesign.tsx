@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import { Description } from '../shell/Description';
+import { LineSkeleton } from '../shell/LineSkeleton';
 import { RegionError } from '../shell/Region';
 import { messageOf } from '../shell/loadable';
 import { designIdOf, listTemplates, type TemplateIndex, type TemplateIndexEntry } from './api';
@@ -91,7 +92,7 @@ export function PinnedDesignNotice({ pinned, onReload, onInstalled, onClear }: {
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  if (pinned.state === 'loading') return <p className="wconvert-picker__notice text-note">{__('Finding the template you chose…', 'wconvert')}</p>;
+  if (pinned.state === 'loading') return <div className="wconvert-picker__notice"><LineSkeleton status={__('Finding the template you chose…', 'wconvert')} className="text-note" /></div>;
   if (pinned.state === 'failed') return <RegionError message={pinned.message} onRetry={onReload} />;
   const clear = <Button variant="link" onClick={onClear}>{__('Start without it', 'wconvert')}</Button>;
   if (pinned.state === 'off') {

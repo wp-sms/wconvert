@@ -254,11 +254,11 @@ describe('the numbers in Campaign details', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
     const details = within(await screen.findByRole('dialog', { name: 'Welcome discount' }));
-    const alert = await details.findByText('Results couldn’t load.');
+    const alert = await details.findByText('Results could not load.');
     expect(alert).toHaveAttribute('role', 'alert');
     // Each failed read in the dialog carries its own door, beside its own sentence.
     await userEvent.click(within(alert.parentElement!).getByRole('button', { name: 'Try again' }));
-    await waitFor(() => expect(details.queryByText('Results couldn’t load.')).toBeNull());
+    await waitFor(() => expect(details.queryByText('Results could not load.')).toBeNull());
     expect(stats.readDashboard).toHaveBeenCalledTimes(2);
   });
 });
@@ -590,6 +590,14 @@ describe('confirming the change', () => {
     await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue('Welcome discount revised');
     expect(builder.saveOptin).toHaveBeenCalledTimes(1);
+  });
+
+  it('is Large while it picks and Small once it confirms', async () => {
+    open();
+    await changeGoal();
+    expect(screen.getByRole('dialog')).toHaveAttribute('data-size', 'lg');
+    await userEvent.click(within(cardFor('Promote a sale or offer')).getByRole('button', { name: /^Use this goal/ }));
+    expect(screen.getByRole('dialog')).toHaveAttribute('data-size', 'sm');
   });
 
   it('keeps Undo available after a refused Goal save', async () => {

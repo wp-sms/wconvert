@@ -87,9 +87,12 @@ describe('the account form', () => {
     expect(screen.queryByLabelText('Signing secret')).toBeNull();
     expect(screen.getByRole('group', { name: /Custom headers/ })).toBeVisible();
     const save = screen.getByRole('button', { name: 'Check and save account' });
-    expect(save).toBeDisabled();
+    expect(save).toHaveAttribute('aria-disabled', 'true');
+    expect(save).toHaveAccessibleDescription('Fill in the required fields first.');
+    await userEvent.click(save);
+    expect(api.saveConnection).not.toHaveBeenCalled();
     await userEvent.type(screen.getByLabelText('Webhook URL'), 'https://hooks.example/abc');
-    expect(save).toBeEnabled();
+    expect(save).not.toHaveAttribute('aria-disabled');
     await userEvent.click(save);
     expect(api.saveConnection).toHaveBeenCalledWith({ id: undefined, type: 'webhook', label: 'Webhook', credentials: { url: 'https://hooks.example/abc', headers: [] } });
     await waitFor(() => expect(onSaved).toHaveBeenCalledWith(ACCOUNT, { signing_secret: SECRET }));
@@ -101,7 +104,9 @@ describe('the account form', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Add header' }));
     await userEvent.type(screen.getByRole('textbox', { name: 'Header name' }), 'Content-Type');
     expect(screen.getByText('WConvert sets this header itself.')).toBeVisible();
-    expect(screen.getByRole('button', { name: 'Check and save account' })).toBeDisabled();
+    const save = screen.getByRole('button', { name: 'Check and save account' });
+    expect(save).toHaveAttribute('aria-disabled', 'true');
+    expect(save).toHaveAccessibleDescription('Fix the headers above first.');
   });
 });
 

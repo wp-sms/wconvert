@@ -292,7 +292,7 @@ export function swapNameOf(tree: TemplateTree, path: Path): string | null {
   const type = nodeAt(tree, path)?.type;
 
   if (type === 'field') {
-    return __('Capture something else', 'wconvert');
+    return __('Ask for something else', 'wconvert');
   }
 
   return type === 'button' ? __('Change what this button does', 'wconvert') : null;

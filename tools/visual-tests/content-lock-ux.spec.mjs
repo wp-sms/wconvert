@@ -244,7 +244,7 @@ test('missing Campaigns remain repairable and unsupported content warning can ju
     return unsupported.clientId;
   }, missingId);
   await expect(page.locator('.wconvert-lock-picker__selected')).toContainText('Previously selected campaign');
-  await expect(page.locator('.components-notice__content').filter({ hasText: /no longer published as inline/ }).first()).toBeVisible();
+  await expect(page.locator('.components-notice__content').filter({ hasText: /no longer published inline/ }).first()).toBeVisible();
   const warning = editor(page).getByText(/Custom HTML block below is not supported here/);
   await expect(warning).toBeVisible();
   await editor(page).getByRole('button', { name: 'Find unsupported block', exact: true }).click();

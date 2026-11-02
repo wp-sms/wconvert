@@ -11,6 +11,7 @@ import { sentenceParts } from './sentence';
 import { targetingSummary } from './targetingSummary';
 import { summarise, summaryOf, type DisplayRulesValue } from './summaries';
 import type { RuleVocabulary, Schedule, Targeting } from '../api';
+import { formatCount } from '../../lib/format';
 
 /**
  * Test a visit — one described visitor, read against the five questions.
@@ -194,11 +195,11 @@ export function historyLabel(history: History, daysAgo: number | undefined, act:
   switch (history) {
     case 'new': return __('First time here', 'wconvert');
     case 'this-visit': return __('Saw it earlier this visit', 'wconvert');
-    /* translators: %d: a number of days. */
-    case 'days-ago': return sprintf(_n('Saw it %d day ago', 'Saw it %d days ago', daysAgo ?? 1, 'wconvert'), daysAgo ?? 1);
+    /* translators: %s: a number of days. */
+    case 'days-ago': return sprintf(_n('Saw it %s day ago', 'Saw it %s days ago', daysAgo ?? 1, 'wconvert'), formatCount(daysAgo ?? 1));
     case 'closed': return __('Closed it before', 'wconvert');
     case 'converted': return act === 'click' ? __('Clicked the main button before', 'wconvert')
-      : act === 'add_to_cart' ? __('Added it to their cart before', 'wconvert') : __('Signed up before', 'wconvert');
+      : act === 'add_to_cart' ? __('Added it to their basket before', 'wconvert') : __('Signed up before', 'wconvert');
   }
 }
 
@@ -235,7 +236,7 @@ function audienceReason(pick: string): string | null {
     case 'computers': return __('This campaign is for computers only.', 'wconvert');
     case 'signed-in': return __('This campaign is for signed-in visitors only.', 'wconvert');
     case 'signed-out': return __('This campaign is for signed-out visitors only.', 'wconvert');
-    case 'cart': return __('This campaign is for shoppers with items in their cart.', 'wconvert');
+    case 'cart': return __('This campaign is for shoppers with items in their basket.', 'wconvert');
     default: return null;
   }
 }
@@ -250,7 +251,7 @@ function pacingReason(stop: PacingStop, often: string, act: ConvertingAct | null
     case 'impressions': return sprintf(__('They have already seen it (%s).', 'wconvert'), often);
     case 'dismissed': return __('It stops showing after they close it.', 'wconvert');
     case 'converted': return act === 'click' ? __('It stops showing after they click the main button.', 'wconvert')
-      : act === 'add_to_cart' ? __('It stops showing after they add it to their cart.', 'wconvert') : __('It stops showing after they sign up.', 'wconvert');
+      : act === 'add_to_cart' ? __('It stops showing after they add it to their basket.', 'wconvert') : __('It stops showing after they sign up.', 'wconvert');
   }
 }
 

@@ -2,7 +2,6 @@ import { useCallback, useEffect, useId, useRef, useState, type ReactNode, type R
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { missingSettings } from './requirements';
 import {
-  ArrowLeft,
   ArrowRight,
   CircleAlert,
   CircleCheck,
@@ -31,11 +30,9 @@ import {
 import { Button } from '../components/ui/button';
 import {
   DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu';
+import { OptionItem, OptionMenuContent, OptionSeparator, refusal } from '../components/ui/option-menu';
 import { AddDestinationDialog } from './AddDestinationDialog';
 import { AccountEditor } from './AccountEditor';
 import { DestinationSettingsForm } from './DestinationSettingsForm';
@@ -55,6 +52,7 @@ import {
 } from '../shell/DataTable';
 import { Description } from '../shell/Description';
 import { EmptyState } from '../shell/EmptyState';
+import { ListFoot, ListPages } from '../shell/ListFoot';
 import {
   PageError,
   Region,
@@ -69,7 +67,8 @@ import { DestinationCardsSkeleton, DestinationsSkeleton } from './DestinationsSk
 import { PageAction } from '../shell/PageActions';
 import { SaveStatus, useSaveStatus } from '../shell/SaveStatus';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
-import { formatCount, formatWhen } from '../lib/format';
+import { formatCount, formatRange, formatWhen } from '../lib/format';
+import { wallKey } from '../lib/wallTime';
 import {
   deleteDestination,
   readDestinations,
@@ -88,7 +87,7 @@ import {
 } from './api';
 import { hasSendingIssue, issueCount } from './issueCount';
 import { readLog, type Lead } from '../leads/api';
-import { LeadDetail } from '../leads/LeadDetail';
+import { LeadDetail, submissionCount } from '../leads/LeadDetail';
 import { campaignName, listOptins } from '../optins/api';
 import { RowsSkeleton } from '../shell/RowsSkeleton';
 import { GuideLink } from '../shell/GuideLink';
@@ -444,9 +443,11 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
         </Button>}
       </div>}
       {data !== null && destinationId !== undefined && !data.destinations.some((destination) => destination.id === destinationId) && (
-        <Region><RegionHeader title={__('This destination is no longer available', 'wconvert')}
-          description={__('It may have been removed. Other destinations are listed below.', 'wconvert')} />
-          <RegionFooter><Button asChild variant="outline"><a href={destinationHref()}>{__('Show all destinations', 'wconvert')}</a></Button></RegionFooter>
+        <Region>
+          <EmptyState icon={Plug} title={__('This destination is no longer available', 'wconvert')}
+            action={<Button asChild variant="outline"><a href={destinationHref()}>{__('Show all destinations', 'wconvert')}</a></Button>}>
+            {__('It may have been removed. Other destinations are listed below.', 'wconvert')}
+          </EmptyState>
         </Region>
       )}
 
@@ -629,7 +630,7 @@ const BUSY_SAID: Partial<Record<Busy, () => string>> = {
 
 const OUTCOMES: Record<RecentAttempt['outcome'], () => string> = {
   accepted: () => __('Accepted', 'wconvert'),
-  retry_scheduled: () => __('Will retry', 'wconvert'),
+  retry_scheduled: () => __('Will try again', 'wconvert'),
   needs_attention: () => __('Needs attention', 'wconvert'),
   skipped: () => __('Skipped', 'wconvert'),
   queued: () => __('Queued', 'wconvert'),
@@ -842,7 +843,12 @@ function Configured({
         draws two lines at its foot.
       */}
       <div data-slot="region-header" className={`flex flex-wrap items-start justify-between gap-x-4 gap-y-2 px-4 py-2.5${health || footer ? ' border-b border-border' : ''}`}>
-        <div className="flex min-w-0 flex-1 items-start gap-3">
+        {/*
+          A basis, because `overflow-wrap: anywhere` lets the name's min-content
+          fall to one letter: at 360px the row never wrapped, and the name stood
+          one letter per line beside the badge and buttons.
+        */}
+        <div className="flex min-w-0 flex-[1_1_14rem] items-start gap-3">
           <span className="wconvert-region-icon" aria-hidden="true"><ProviderMark type={type} /></span>
           <div className="min-w-0">
             <h2 id={`${id}-name`} className="m-0 text-heading font-semibold leading-tight tracking-tight text-foreground [overflow-wrap:anywhere]">
@@ -868,7 +874,7 @@ function Configured({
                 <MoreHorizontal aria-hidden="true" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" sideOffset={5}>
+            <OptionMenuContent align="end" sideOffset={5}>
               {/*
                 **Two verbs, in the order a merchant needs them.** *Test
                 connection* answers whether the credentials are good; *Send a
@@ -877,28 +883,21 @@ function Configured({
                 0031). A type with no credentials has nothing to connect to,
                 so there is no item rather than one whose only answer is
                 "nothing to check".
-
-                **`aria-disabled`, not `disabled`**: Radix skips a disabled
-                item in keyboard navigation, which hides the reason with it.
               */}
               {type?.needs_connection === true && (
-                <RefusableItem icon={<Plug aria-hidden="true" />} label={__('Test connection', 'wconvert')}
-                  refusal={connectionRefusal} reasonId={`${id}-connection`} onSelect={onTestConnection} />
+                <OptionItem icon={Plug} name={__('Test connection', 'wconvert')} onSelect={onTestConnection}
+                  refused={connectionRefusal === null ? null : refusal(connectionRefusal)} />
               )}
-              <RefusableItem icon={<Send aria-hidden="true" />} label={__('Send a test', 'wconvert')}
-                refusal={testRefusal} reasonId={`${id}-test`} onSelect={() => onTestSend(menu.current)} />
-              <RefusableItem icon={<RotateCcw aria-hidden="true" />} label={__('Send stored submissions again', 'wconvert')}
-                refusal={replayRefusal} reasonId={`${id}-replay`} onSelect={() => onRePush(menu.current)} />
-              <DropdownMenuItem onSelect={() => { dialogTrigger.current = menu.current; setRecentOpen(true); }}>
-                <History aria-hidden="true" />{__('Recent sends', 'wconvert')}
-              </DropdownMenuItem>
+              <OptionItem icon={Send} name={__('Send a test', 'wconvert')} onSelect={() => onTestSend(menu.current)}
+                refused={testRefusal === null ? null : refusal(testRefusal)} />
+              <OptionItem icon={RotateCcw} name={__('Send stored submissions again', 'wconvert')} onSelect={() => onRePush(menu.current)}
+                refused={replayRefusal === null ? null : refusal(replayRefusal)} />
+              <OptionItem icon={History} name={__('Recent sends', 'wconvert')} onSelect={() => { dialogTrigger.current = menu.current; setRecentOpen(true); }} />
               {mode === 'settings' && <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem variant="destructive" onSelect={() => onRemove(menu.current)}>
-                  <Trash2 aria-hidden="true" />{__('Remove', 'wconvert')}
-                </DropdownMenuItem>
+                <OptionSeparator />
+                <OptionItem icon={Trash2} destructive name={__('Remove', 'wconvert')} onSelect={() => onRemove(menu.current)} />
               </>}
-            </DropdownMenuContent>
+            </OptionMenuContent>
           </DropdownMenu>
         </div>
       </div>
@@ -1098,9 +1097,9 @@ function RecentSendsDialog({ destination, returnFocusTo, onClose }: {
           {recent.status === 'loading'
             ? <RowsSkeleton rows={3} status={__('Loading recent sends…', 'wconvert')} />
             : recent.status === 'failed'
-              ? <PageError message={recent.message} onRetry={() => { setRecent(LOADING); setAttempt((current) => current + 1); }} />
+              ? <RegionErrorState message={recent.message} onRetry={() => { setRecent(LOADING); setAttempt((current) => current + 1); }} />
               : recent.data.length === 0
-                ? <p className="m-0 text-note text-muted-foreground">{__('No recent sends on record.', 'wconvert')}</p>
+                ? <EmptyState icon={History} title={__('No recent sends on record', 'wconvert')}>{__('Each send to this destination appears here.', 'wconvert')}</EmptyState>
                 : <ul className="m-0 list-none divide-y divide-border p-0">{recent.data.map((each) => (
                   <li key={each.id} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-2 text-note">
                     <span>
@@ -1112,41 +1111,20 @@ function RecentSendsDialog({ destination, returnFocusTo, onClose }: {
                   </li>
                 ))}</ul>}
         </AdminDialogBody>
-        <AdminDialogFooter>
-          <AdminDialogClose asChild><Button type="button" variant="outline">{__('Done', 'wconvert')}</Button></AdminDialogClose>
-        </AdminDialogFooter>
+        <AdminDialogFooter back={<AdminDialogClose asChild><Button type="button" variant="outline">{__('Done', 'wconvert')}</Button></AdminDialogClose>} />
       </AdminDialogContent>
     </AdminDialog>
   );
 }
 
 
-/**
- * A ⋯ item that may be refused. Refused, it stays reachable and says why
- * under its label (`aria-disabled` + `aria-describedby`), because a disabled
- * Radix item is skipped by the keyboard and takes its reason with it (§14).
- */
-function RefusableItem({ icon, label, refusal, reasonId, onSelect }: {
-  icon: ReactNode;
-  label: string;
-  refusal: string | null;
-  reasonId: string;
-  onSelect: () => void;
-}) {
-  return (
-    <DropdownMenuItem aria-disabled={refusal === null ? undefined : true} aria-describedby={refusal === null ? undefined : reasonId}
-      className={refusal === null ? undefined : 'text-muted-foreground'}
-      onSelect={(event) => { if (refusal !== null) { event.preventDefault(); return; } onSelect(); }}>
-      {icon}
-      <span className="flex flex-col">
-        {label}
-        {refusal !== null && <span id={reasonId} className="text-note">{refusal}</span>}
-      </span>
-    </DropdownMenuItem>
-  );
-}
-
 const FAILURES_PER_PAGE = 25;
+
+/** The days the kept failures run across, oldest to newest, or null if none can be read. */
+function datesOf(failures: DestinationsPayload['failures']): string | null {
+  const days = failures.map((failure) => wallKey(failure.at)?.slice(0, 10)).filter((day) => day !== undefined).sort();
+  return days.length === 0 ? null : formatRange(days[0], days[days.length - 1]);
+}
 
 /**
  * The terminal-failure ring.
@@ -1206,19 +1184,11 @@ function Failures({ failures, destinations }: { failures: DestinationsPayload['f
         </DataTableBody>
       </DataTable>
       <SubmissionDialog leadId={opened} onClose={() => setOpened(null)} returnFocus={opener} />
-      {pages > 1 && <RegionFooter>
-        <nav className="flex flex-wrap items-center gap-2" aria-label={__('Pages of unsent submissions', 'wconvert')}>
-          <Button variant="outline" disabled={current === 0} onClick={() => setPage(current - 1)}>
-            <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Previous', 'wconvert')}
-          </Button>
-          <span aria-live="polite" aria-atomic="true">
-            {sprintf(/* translators: 1: this page's number, 2: how many pages. */ __('Page %1$s of %2$s', 'wconvert'), formatCount(current + 1), formatCount(pages))}
-          </span>
-          <Button variant="outline" disabled={current === pages - 1} onClick={() => setPage(current + 1)}>
-            {__('Next', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" />
-          </Button>
-        </nav>
-      </RegionFooter>}
+      <ListFoot
+        count={submissionCount(failures.length)}
+        dates={datesOf(failures)}
+        pages={pages > 1 && <ListPages label={__('Pages of unsent submissions', 'wconvert')} page={current} pages={pages} onChange={setPage} />}
+      />
     </Region>
   );
 }
@@ -1268,11 +1238,11 @@ function SubmissionDialog({ leadId, onClose, returnFocus }: { leadId: string | n
           : <>
             <AdminDialogHeader title={__('Submission', 'wconvert')} />
             <AdminDialogBody>
-              {state.status === 'loading' ? <RowsSkeleton rows={4} />
+              {state.status === 'loading' ? <RowsSkeleton rows={4} status={__('Loading the submission…', 'wconvert')} />
                 : state.status === 'failed' ? <RegionErrorState message={state.message} onRetry={() => setAttempt((value) => value + 1)} />
                   : <p className="m-0">{__('This submission is no longer kept.', 'wconvert')}</p>}
             </AdminDialogBody>
-            <AdminDialogFooter back={<AdminDialogClose asChild><Button variant="outline">{__('Close', 'wconvert')}</Button></AdminDialogClose>} />
+            <AdminDialogFooter back={<AdminDialogClose asChild><Button variant="outline">{__('Done', 'wconvert')}</Button></AdminDialogClose>} />
           </>}
       </AdminDialogContent>
     </AdminDialog>

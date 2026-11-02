@@ -4,6 +4,7 @@ import { LayoutTemplate } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 import { PickerPagination } from '../discovery/PickerPagination';
+import { EmptyState } from '../shell/EmptyState';
 import { useShownAfterDelay } from '../shell/skeletonDelay';
 
 /** Cards a page holds (ADR 0171). */
@@ -29,25 +30,14 @@ export function GalleryGrid({ children, total, shown, page, pages, onPage, onCle
 }) {
   return (
     <>
-      <ul className="wconvert-template-grid">
-        {total === 0 ? <Empty title={empty.title} body={empty.body} action={empty.action} />
-          : shown === 0 ? <Empty title={__('No templates match', 'wconvert')} body={__('Try fewer filters or another word.', 'wconvert')}
-            action={<Button variant="outline" disabled={disabled} onClick={onClear}>{__('Clear filters', 'wconvert')}</Button>} />
-            : children}
-      </ul>
+      {total === 0 ? <EmptyState icon={LayoutTemplate} title={empty.title} action={empty.action}>{empty.body}</EmptyState>
+        : shown === 0 ? <EmptyState icon={LayoutTemplate} title={__('No templates match', 'wconvert')}
+          action={<Button variant="outline" disabled={disabled} onClick={onClear}>{__('Clear filters', 'wconvert')}</Button>}>
+          {__('Try fewer filters or another word.', 'wconvert')}
+        </EmptyState>
+          : <ul className="wconvert-template-grid">{children}</ul>}
       {pages > 1 && <PickerPagination label={__('Template pages', 'wconvert')} page={page} pages={pages} disabled={disabled} onChange={onPage} />}
     </>
-  );
-}
-
-function Empty({ title, body, action }: { title: string; body: string; action: ReactNode }) {
-  return (
-    <li className="wconvert-template-empty">
-      <span className="wconvert-template-empty__icon" aria-hidden="true"><LayoutTemplate size={20} /></span>
-      <h3>{title}</h3>
-      <p className="m-0 text-note text-muted-foreground">{body}</p>
-      {action}
-    </li>
   );
 }
 
@@ -62,7 +52,7 @@ export function GallerySkeleton({ cards = 6, wait = false }: { cards?: number; w
 
   return (
     <>
-      <span role="status" className="sr-only">{__('Loading…', 'wconvert')}</span>
+      <span role="status" className="sr-only">{__('Loading templates…', 'wconvert')}</span>
       <ul className="wconvert-template-grid" aria-hidden="true">
         {Array.from({ length: cards }, (_each, index) => (
           <li key={index} className="wconvert-template-card">

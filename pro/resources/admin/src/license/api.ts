@@ -1,4 +1,5 @@
 import apiFetch from '@wordpress/api-fetch';
+import { messageOf } from '@/shell/loadable';
 import type { LicensePayload } from './describeLicense';
 
 /**
@@ -86,5 +87,5 @@ export function asLicenseError(cause: unknown): LicenseError {
     return cause as LicenseError;
   }
 
-  return { code: 'unknown', message: cause instanceof Error ? cause.message : undefined };
+  return { code: 'unknown', message: messageOf(cause) };
 }

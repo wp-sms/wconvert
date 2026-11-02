@@ -13,7 +13,7 @@ import { suspensionGuide } from './docs';
 export function GuideLink({ href, children, className }: { href: string; children?: ReactNode; className?: string }) {
   return <a className={className ? `wconvert-guide-link ${className}` : 'wconvert-guide-link'} href={href} target="_blank" rel="noreferrer">
     {children ?? __('Read the guide', 'wconvert')}
-    <ArrowUpRight aria-hidden="true" />
+    <ArrowUpRight aria-hidden="true" className="rtl:-scale-x-100" />
     <span className="sr-only">{__('(opens in a new tab)', 'wconvert')}</span>
   </a>;
 }

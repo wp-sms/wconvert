@@ -8,7 +8,7 @@ import { Button } from '../components/ui/button';
 import { HELP_URLS } from '../shell/HeaderTools';
 import { GUIDES, docsSearchUrl, docsUrl } from '../shell/docs';
 import { markSubmenuCurrent } from '../shell/menuHighlight';
-import { tierName } from '../goals/availability';
+import { tierName, tierProductName } from '../goals/availability';
 import { settingsHref } from '../nav';
 import { adminSettings } from '../settings';
 import { interpolate } from '../lib/interpolate';
@@ -43,7 +43,7 @@ function fixes(paid: boolean): readonly { readonly href: string; readonly title:
     { href: docsUrl(GUIDES.missingSubmissions), title: __('I cannot find a submission or the numbers look different', 'wconvert') },
     { href: docsUrl(GUIDES.inlineMissing), title: __('My inline campaign or locked content is missing', 'wconvert') },
     { href: docsUrl(GUIDES.changesNotVisible), title: __('My changes are not visible or the campaign conflicts with my site', 'wconvert') },
-    ...(paid ? [{ href: docsUrl(GUIDES.proUnavailable), title: __('Pro features or license updates are unavailable', 'wconvert') }] : []),
+    ...(paid ? [{ href: docsUrl(GUIDES.proUnavailable), title: sprintf(/* translators: %s: the paid product's name, e.g. “WConvert Pro”. */ __('%s features or license updates are unavailable', 'wconvert'), tierProductName('pro')) }] : []),
   ];
 }
 
@@ -96,7 +96,7 @@ export function HelpPage() {
           <strong>{__('Create your first campaign', 'wconvert')}</strong>
           <span>{__('From a template to your first saved lead.', 'wconvert')}</span>
         </span>
-        <Button asChild variant="outline"><span>{__('Open the guide', 'wconvert')}<ExternalLink aria-hidden="true" /></span></Button>
+        <Button asChild variant="outline"><span>{__('Open the guide', 'wconvert')}<ExternalLink aria-hidden="true" className="rtl:-scale-x-100" /></span></Button>
         <NewTab />
       </a>
 
@@ -127,7 +127,7 @@ export function HelpPage() {
           </div>
           <ul className="wconvert-help-fixes">
             {fixes(paid).map(({ href, title }) => (
-              <li key={href}><a href={href} target="_blank" rel="noreferrer"><span>{title}</span><ArrowUpRight aria-hidden="true" /><NewTab /></a></li>
+              <li key={href}><a href={href} target="_blank" rel="noreferrer"><span>{title}</span><ArrowUpRight aria-hidden="true" className="rtl:-scale-x-100" /><NewTab /></a></li>
             ))}
           </ul>
         </section>
@@ -141,7 +141,7 @@ export function HelpPage() {
           <p>{__('Let Claude, ChatGPT or Cursor read your campaigns, report how they are doing and make drafts for you to check.', 'wconvert')}</p>
         </div>
         <div className="wconvert-help-agents__links">
-          <a href={docsUrl(GUIDES.aiAgents)} target="_blank" rel="noreferrer">{__('How to connect one', 'wconvert')}<ArrowUpRight aria-hidden="true" /><NewTab /></a>
+          <a href={docsUrl(GUIDES.aiAgents)} target="_blank" rel="noreferrer">{__('How to connect one', 'wconvert')}<ArrowUpRight aria-hidden="true" className="rtl:-scale-x-100" /><NewTab /></a>
           <a href={settingsHref('connections')}>{__('Settings → AI agents', 'wconvert')}</a>
         </div>
       </section>
@@ -165,10 +165,11 @@ export function HelpPage() {
             </span>
           </p>
         </div>
-        <Button asChild size="lg">
+        {/* The screen's one primary is its search; this is for when that did not help. */}
+        <Button asChild variant="outline">
           <a href={HELP_URLS.support} target="_blank" rel="noreferrer">
             {paid ? sprintf(/* translators: %s: the installed plan's name, e.g. “Pro”. */ __('Contact %s support', 'wconvert'), tierName(tier)) : __('Contact support', 'wconvert')}
-            <ExternalLink aria-hidden="true" /><NewTab />
+            <ExternalLink aria-hidden="true" className="rtl:-scale-x-100" /><NewTab />
           </a>
         </Button>
       </section>

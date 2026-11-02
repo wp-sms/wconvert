@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { ArrowUpRight, Check } from 'lucide-react';
+import { ArrowUpRight, Check, Target } from 'lucide-react';
 import { InfoTip } from '../shell/InfoTip';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -11,12 +11,13 @@ import {
   AdminDialogFooter,
   AdminDialogHeader,
 } from '../components/ui/admin-dialog';
+import { EmptyState } from '../shell/EmptyState';
 import { Field } from '../shell/Field';
 import { PageError, Region, RegionErrorState } from '../shell/Region';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
 import { reportHref } from '../nav';
 import { messageOf } from '../shell/loadable';
-import { formatDay, formatRange, siteLocale } from '../lib/format';
+import { formatDay, formatMonth, formatRange } from '../lib/format';
 import { formatCount } from './format';
 import {
   readMonthlyTargets,
@@ -68,14 +69,6 @@ export function useMonthlyTargets(enabled: boolean) {
     setLoading(false);
   };
   return { data, error, loading, refresh, accept };
-}
-
-export function monthLabel(month: string): string {
-  return new Intl.DateTimeFormat(siteLocale(), {
-    month: 'long',
-    year: 'numeric',
-    timeZone: 'UTC',
-  }).format(new Date(`${month}-01T12:00:00Z`));
 }
 
 /** Calendar days from `from` to `to`, both counted; zone-free like the server's. */
@@ -134,7 +127,7 @@ export function MonthlyTargets({
     </Button>
   );
   return (
-    <section className="wa-targets" aria-labelledby="wa-targets-heading">
+    <section className="wa-targets" aria-label={active.length > 0 ? undefined : __('Monthly targets', 'wconvert')} aria-labelledby={active.length > 0 ? 'wa-targets-heading' : undefined}>
       {error && (
         // A refresh failed: the last accepted month stays on screen under it.
         <PageError
@@ -151,7 +144,7 @@ export function MonthlyTargets({
           <header className="wa-targets-heading">
             <div>
               <h2 id="wa-targets-heading">
-                {sprintf(/* translators: %s: a month and year, e.g. “October 2026”. */ __('%s targets', 'wconvert'), monthLabel(data.month))}
+                {sprintf(/* translators: %s: a month and year, e.g. “October 2026”. */ __('%s targets', 'wconvert'), formatMonth(data.month))}
               </h2>
               <p className="wa-muted">
                 {formatRange(data.from, data.end)} ·{' '}
@@ -274,18 +267,14 @@ export function MonthlyTargets({
           </p>
         </>
       ) : (
-        <div className="wa-target-empty">
-          <div>
-            <h2 id="wa-targets-heading">{__('Monthly targets', 'wconvert')}</h2>
-            <p>
-              {__(
-                'Set a target for this month, such as 100 submissions, and track it here.',
-                'wconvert',
-              )}
-            </p>
-          </div>
-          {edit(__('Set a monthly target', 'wconvert'))}
-        </div>
+        <Region>
+          <EmptyState icon={Target} title={__('No monthly targets yet', 'wconvert')} action={edit(__('Set a monthly target', 'wconvert'))}>
+            {__(
+              'Set a target for this month, such as 100 submissions, and track it here.',
+              'wconvert',
+            )}
+          </EmptyState>
+        </Region>
       )}
       {editing && (
         <TargetEditor
@@ -388,7 +377,7 @@ function TargetEditor({
         }}
       >
         <AdminDialogHeader
-          title={sprintf(/* translators: %s: a month and year, e.g. “October 2026”. */ __('%s targets', 'wconvert'), monthLabel(context.month))}
+          title={sprintf(/* translators: %s: a month and year, e.g. “October 2026”. */ __('%s targets', 'wconvert'), formatMonth(context.month))}
           meta={`${formatRange(context.from, context.end)} · ${__('all campaigns', 'wconvert')}`}
         />
         <form className="flex min-h-0 flex-1 flex-col" onSubmit={submit} noValidate>

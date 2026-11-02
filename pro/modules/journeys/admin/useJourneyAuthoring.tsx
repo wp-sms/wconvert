@@ -27,6 +27,7 @@ import { RouteEditor } from './RouteEditor';
 import { ThenSelect } from './ThenSelect';
 import { BranchNudge } from './BranchNudge';
 import { AnswerFollowup } from './AnswerFollowup';
+import { formatCount } from '@/lib/format';
 
 /**
  * Journey authoring inside free's screens editor (ADR 0147): adding questions
@@ -41,6 +42,7 @@ export function useJourneyAuthoring(ctx: JourneyEditorContext): JourneyAuthoring
   const [followupAnswer, setFollowupAnswer] = useState<{ question: string; value: string }>();
   const [insertIntent, setInsertIntent] = useState<'branch' | undefined>();
   const [insertLocation, setInsertLocation] = useState<string | undefined>();
+  const [insertDirty, setInsertDirty] = useState(false);
   const [addKind, setAddKind] = useState<GraphScreenKind | null>(null);
   const insertDialog = useRef<HTMLDivElement>(null);
   const insertedScreen = useRef(false);
@@ -53,6 +55,14 @@ export function useJourneyAuthoring(ctx: JourneyEditorContext): JourneyAuthoring
   const canAddGraphResultSignup = !!graphResultSignupTarget(tree);
   const canAddGraphCapture = !!tree.graph && tree.submissions.length === 1 && ['email', 'phone', 'sms'].includes(primaryChannel ?? '');
   const resultAccessIssue = tree.graph && tree.submissions.length === 1 ? graphResultAccessIssue(tree, !tree.submissions[0].required) : null;
+  // Each refused answer points at the sentence already drawn under the radios (GUIDELINES §14).
+  const accessRefusal = (required: boolean): string | null => {
+    if (required && tree.submissions.length === 0) return `${id}-access-signup`;
+    if (tree.submissions.length > 1 && (required || tree.graph)) return `${id}-access-one`;
+    if (!tree.graph) return tree.steps.some(screen => screen.paths?.length) ? `${id}-access-lines` : null;
+    return tree.submissions.length === 1 && graphResultAccessIssue(tree, required) ? `${id}-access-issue` : null;
+  };
+  const accessReason = { immediately: accessRefusal(false), required: accessRefusal(true) };
   const canCondition = !!current && tree.steps.some((screen, index) => (tree.graph
     ? screen.id === current.id || graphReaches(tree.graph, screen.id, current.id)
     : index <= step) && walkNodes(screen.content).some(node => node.type === 'question' && 'answer_type' in node && node.answer_type !== 'text'));
@@ -181,35 +191,36 @@ export function useJourneyAuthoring(ctx: JourneyEditorContext): JourneyAuthoring
     followup: (questionId, option) => <AnswerFollowup question={questionId} option={option} onFollowup={startFollowup} />,
     followupOrder: currentFollowups && <PanelSection title={__('Follow-up order', 'wconvert-pro')}
       tip={followupSource === undefined ? __('Other lines lead into these follow-ups. Check them in Flow before changing the order.', 'wconvert-pro') : __('Visitors see matching questions in this order. Other lines stay the same.', 'wconvert-pro')}>
-      <FactList><FactRow label={__('Position', 'wconvert-pro')}>{sprintf(/* translators: 1: this follow-up's place. 2: how many follow-ups match. */ __('%1$d of %2$d', 'wconvert-pro'), currentFollowups.screens.indexOf(step) + 1, currentFollowups.screens.length)}</FactRow></FactList>
-      <div className="wconvert-panel-actions">{([-1, 1] as const).map(direction => <Button key={direction} type="button" variant="outline" size="sm" disabled={moveFollowup(tree, current.id, direction) === tree} onClick={() => { onChange(moveFollowup(tree, current.id, direction)); say(__('Follow-up order updated. Try it with several answers picked.', 'wconvert-pro')); }}>{direction === -1 ? __('Move up', 'wconvert-pro') : __('Move down', 'wconvert-pro')}</Button>)}
-        {followupSource === undefined && <Button type="button" variant="ghost" size="sm" onClick={ctx.showFlow}>{__('Review in Flow', 'wconvert-pro')}</Button>}</div>
+      <FactList><FactRow label={__('Position', 'wconvert-pro')}>{sprintf(/* translators: 1: this follow-up's place. 2: how many follow-ups match. */ __('%1$s of %2$s', 'wconvert-pro'), formatCount(currentFollowups.screens.indexOf(step) + 1), formatCount(currentFollowups.screens.length))}</FactRow></FactList>
+      <div className="wconvert-panel-actions">{([-1, 1] as const).map(direction => <Button key={direction} type="button" variant="outline" disabled={moveFollowup(tree, current.id, direction) === tree} onClick={() => { onChange(moveFollowup(tree, current.id, direction)); say(__('Follow-up order updated. Try it with several answers picked.', 'wconvert-pro')); }}>{direction === -1 ? __('Move up', 'wconvert-pro') : __('Move down', 'wconvert-pro')}</Button>)}
+        {followupSource === undefined && <Button type="button" variant="ghost" onClick={ctx.showFlow}>{__('Review in Flow', 'wconvert-pro')}</Button>}</div>
     </PanelSection>,
     result: <>
       <ResultSettings key={current.id} onResultSelect={ctx.onResultSelect} tree={tree} step={step} onChange={onChange} onAction={say} repairRequest={repairRequest?.screenId === current.id ? repairRequest : undefined} />
       {current.kind === 'result' && <PanelSection title={__('When visitors see their result', 'wconvert-pro')}
         tipLabel={__('About result access', 'wconvert-pro')} tip={tree.submissions.length > 0 ? __('Changing this moves signup before or after the result, and you can undo the whole change. Mention required contact details on the first screen.', 'wconvert-pro') : undefined}>
         <div role="radiogroup" aria-label={__('When visitors see their result', 'wconvert-pro')} className="wconvert-panel-radios">
-          <CheckRow type="radio" className="wconvert-check" name={`${id}-result-access`} label={__('Immediately after the questions', 'wconvert-pro')} disabled={tree.graph ? tree.submissions.length > 0 && !!graphResultAccessIssue(tree, false) : tree.steps.some(screen => screen.paths?.length)} checked={tree.submissions.length === 0 || (tree.graph
+          <CheckRow type="radio" className="wconvert-check" name={`${id}-result-access`} label={__('Immediately after the questions', 'wconvert-pro')} aria-disabled={accessReason.immediately !== null || undefined} aria-describedby={accessReason.immediately ?? undefined} checked={tree.submissions.length === 0 || (tree.graph
             ? !tree.submissions[0].required : step < submissionScreen(tree, tree.submissions[0]?.id))}
-            onChange={() => { if (tree.submissions.length) { const next = resultAccess(tree, false); write(next, next.steps.findIndex(s => s.id === current.id));
+            onChange={() => { if (accessReason.immediately === null && tree.submissions.length) { const next = resultAccess(tree, false); write(next, next.steps.findIndex(s => s.id === current.id));
               if (next !== tree) say(__('Result moved before contact details. Signup is optional and visitors may finish without submitting.', 'wconvert-pro')); } }} />
-          <CheckRow type="radio" className="wconvert-check" name={`${id}-result-access`} label={__('After required contact details', 'wconvert-pro')} disabled={tree.submissions.length !== 1 || (tree.graph ? !!graphResultAccessIssue(tree, true) : tree.steps.some(screen => screen.paths?.length))}
+          <CheckRow type="radio" className="wconvert-check" name={`${id}-result-access`} label={__('After required contact details', 'wconvert-pro')} aria-disabled={accessReason.required !== null || undefined} aria-describedby={accessReason.required ?? undefined}
             checked={tree.submissions.length === 1 && (tree.graph ? tree.submissions[0].required : step > submissionScreen(tree, tree.submissions[0].id))}
-            onChange={() => { const next = resultAccess(tree, true); write(next, next.steps.findIndex(s => s.id === current.id));
+            onChange={() => { if (accessReason.required !== null) return; const next = resultAccess(tree, true); write(next, next.steps.findIndex(s => s.id === current.id));
               if (next !== tree) say(__('Contact details are now required before the result. Tell visitors on the first screen.', 'wconvert-pro')); }} />
         </div>
-        {!tree.graph && tree.steps.some(screen => screen.paths?.length) && <PanelHint>{__('Remove answer lines before changing when results appear.', 'wconvert-pro')}</PanelHint>}
-        {tree.submissions.length === 0 && <PanelHint>{__('Add a signup screen first to make contact details required.', 'wconvert-pro')} {(!tree.graph || canAddGraphResultSignup) && <button type="button" className="wconvert-panel-link" onClick={ctx.addOptional}>{__('Add optional signup', 'wconvert-pro')}</button>}</PanelHint>}
-        {resultAccessIssue && <div className="wconvert-panel-warn"><span>{resultAccessIssue.message}</span>{resultAccessIssue.screenId && <button type="button" className="wconvert-panel-link" onClick={() => {
+        {!tree.graph && tree.steps.some(screen => screen.paths?.length) && <PanelHint id={`${id}-access-lines`}>{__('Remove answer lines before changing when results appear.', 'wconvert-pro')}</PanelHint>}
+        {tree.submissions.length > 1 && <PanelHint id={`${id}-access-one`}>{__('Keep one signup to choose when contact details are requested.', 'wconvert-pro')}</PanelHint>}
+        {tree.submissions.length === 0 && <PanelHint id={`${id}-access-signup`}>{__('Add a signup screen first to make contact details required.', 'wconvert-pro')} {(!tree.graph || canAddGraphResultSignup) && <button type="button" className="wconvert-panel-link" onClick={ctx.addOptional}>{__('Add optional form', 'wconvert-pro')}</button>}</PanelHint>}
+        {resultAccessIssue && <div className="wconvert-panel-warn"><span id={`${id}-access-issue`}>{resultAccessIssue.message}</span>{resultAccessIssue.screenId && <button type="button" className="wconvert-panel-link" onClick={() => {
           const index = tree.steps.findIndex(screen => screen.id === resultAccessIssue.screenId);
           if (index >= 0) { select(index); ctx.showSection(resultAccessIssue.section); requestAnimationFrame(() => settingsHeading.current?.focus()); }
         }}>{sprintf(/* translators: %s: a screen's name, e.g. “Skin type”. */ __('Review %s', 'wconvert-pro'), tree.steps.find(screen => screen.id === resultAccessIssue.screenId)?.name ?? '')}</button>}</div>}
       </PanelSection>}
     </>,
     nextSummary: !slim && (tree.graph ? tree.graph.edges.some(edge => edge.from === current.id) : step < tree.steps.length - 1) && <button type="button" className="wconvert-journey-next-summary" onClick={() => ctx.showSection('paths')}>
-      <strong>{remainingFollowups ? __('Check remaining follow-ups', 'wconvert-pro') : tree.graph ? branchCount ? sprintf(/* translators: %d: how many answers on this screen have their own line. */ _n('%d answer line and all other answers', '%d answer lines and all other answers', branchCount, 'wconvert-pro'), branchCount) : sprintf(/* translators: %s: where visitors go next, usually a screen's name, e.g. “Thank you”. */ __('Then: %s', 'wconvert-pro'), nextGroup ? __('Every matching follow-up', 'wconvert-pro') : tree.steps.find(item => item.id === nextId)?.name ?? __('Choose a line', 'wconvert-pro'))
-        : current.paths?.length && current.paths.length > 1 ? sprintf(/* translators: %d: how many answers on this screen have their own line. */ _n('%d answer line and all other answers', '%d answer lines and all other answers', branchCount, 'wconvert-pro'), branchCount)
+      <strong>{remainingFollowups ? __('Check remaining follow-ups', 'wconvert-pro') : tree.graph ? branchCount ? sprintf(/* translators: %s: how many answers on this screen have their own line. */ _n('%s answer line and all other answers', '%s answer lines and all other answers', branchCount, 'wconvert-pro'), formatCount(branchCount)) : sprintf(/* translators: %s: where visitors go next, usually a screen's name, e.g. “Thank you”. */ __('Then: %s', 'wconvert-pro'), nextGroup ? __('Every matching follow-up', 'wconvert-pro') : tree.steps.find(item => item.id === nextId)?.name ?? __('Choose a line', 'wconvert-pro'))
+        : current.paths?.length && current.paths.length > 1 ? sprintf(/* translators: %s: how many answers on this screen have their own line. */ _n('%s answer line and all other answers', '%s answer lines and all other answers', branchCount, 'wconvert-pro'), formatCount(branchCount))
           : sprintf(/* translators: %s: where visitors go next, usually a screen's name, e.g. “Thank you”. */ __('Then: %s', 'wconvert-pro'), tree.steps.find(item => item.id === current.paths?.[0]?.to)?.name ?? tree.steps[step + 1].name)}</strong>
       <small>{remainingFollowups ? sprintf(/* translators: %s: where visitors go next, usually a screen's name, e.g. “Thank you”. */ __('Then: %s', 'wconvert-pro'), tree.steps.find(item => item.id === remainingFollowups.next)?.name ?? '') : __('Review where visitors go next', 'wconvert-pro')}</small>
     </button>,
@@ -246,8 +257,8 @@ export function useJourneyAuthoring(ctx: JourneyEditorContext): JourneyAuthoring
         </AdminDialogContent>
       </Dialog>
       <Dialog open={addKind !== null} onOpenChange={value => { if (!value) setAddKind(null); }}>
-        <AdminDialogContent size="md" ref={insertDialog} onOpenAutoFocus={event => { if (followupAnswer) { event.preventDefault(); insertDialog.current?.querySelector<HTMLInputElement>('input')?.focus(); } }} className="wconvert-graph-insert" onCloseAutoFocus={closeFocus}>
-          {addKind && <GraphScreenInsert tree={insertionTree} source={current.id} kind={addKind} initialLocation={insertLocation} initialIntent={insertIntent} initialAnswer={followupAnswer} onCancel={() => setAddKind(null)}
+        <AdminDialogContent size="md" dirty={insertDirty} ref={insertDialog} onOpenAutoFocus={event => { if (followupAnswer) { event.preventDefault(); insertDialog.current?.querySelector<HTMLInputElement>('input')?.focus(); } }} className="wconvert-graph-insert" onCloseAutoFocus={closeFocus}>
+          {addKind && <GraphScreenInsert tree={insertionTree} source={current.id} kind={addKind} initialLocation={insertLocation} initialIntent={insertIntent} initialAnswer={followupAnswer} onCancel={() => setAddKind(null)} onDirtyChange={setInsertDirty}
             onEditCapture={screenId => { select(tree.steps.findIndex(screen => screen.id === screenId)); setAddKind(null); insertedScreen.current = true; }}
             onCapture={canAddGraphResultSignup || canAddGraphCapture ? () => { setAddKind(null); ctx.addOptional(); } : undefined}
             onExisting={(target, when, edgeId) => {

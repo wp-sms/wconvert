@@ -1,7 +1,16 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { formatCount, formatRate } from '../lib/format';
 import { countsNothing } from '../goals/countsNothing';
+import { statusOf, type OptinSummary } from './api';
 import type { GoalReport, OptinReport } from '../stats/api';
+
+/** A row's one text action, in the words every list of campaigns uses (§11). */
+export function nextActionOf(row: OptinSummary): string {
+  if (row.has_unpublished_changes) return __('Review changes', 'wconvert');
+  const status = statusOf(row);
+  if (status === 'suspended') return __('Review issue', 'wconvert');
+  return status === 'draft' ? __('Continue editing', 'wconvert') : __('Edit', 'wconvert');
+}
 
 /** One campaign's numbers as its row shows them. */
 export type RowResult = {

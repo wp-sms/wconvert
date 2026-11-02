@@ -199,7 +199,7 @@ export function DestinationSettingsForm({
       <AdminDialogBody>
         <fieldset disabled={busy} className="m-0 flex min-w-0 flex-col gap-4 border-0 p-0">
           {revealed !== null && <RevealedSecret type={type} revealed={revealed} />}
-          {destination && <div id={id('usage')}><DestinationUsageNotice usage={destination.usage} /></div>}
+          {destination && <div id={id('usage')}><DestinationUsageNotice id={destination.id} usage={destination.usage} /></div>}
 
           <Field label={__('Name', 'wconvert')} htmlFor={id('label')} hintId={id('label-hint')}
             hint={__('What you’ll pick in a campaign’s Destinations tab.', 'wconvert')}>

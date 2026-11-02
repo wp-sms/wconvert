@@ -7,6 +7,7 @@ import { derive, type SectionId } from './picks';
 import { everyType } from './plan';
 import { summarise, type DisplayRulesValue } from './summaries';
 import type { Frequency, Rule, RuleParam, RuleType, RuleVocabulary, Schedule, Targeting } from '../api';
+import { formatCount, formatRate } from '../../lib/format';
 
 /**
  * The five section answers and the one summary sentence — pure, and the only
@@ -113,9 +114,9 @@ export function whereSummary(targeting: Targeting): Summary {
 
 const countOfPages = (count: number): string =>
   sprintf(
-    /* translators: %d: a number of page rules. */
-    _n('%d page rule', '%d page rules', count, 'wconvert'),
-    count,
+    /* translators: %s: a number of page rules. */
+    _n('%s page rule', '%s page rules', count, 'wconvert'),
+    formatCount(count),
   );
 
 // ============================================================================
@@ -269,8 +270,8 @@ export function namedPages(names: readonly string[], total: number): string {
   if (total <= 3) return join(names.slice(0, 3), _x('or', 'joins pages any one of which it shows on', 'wconvert'));
   return sprintf(
     /* translators: 1: the first page names, comma-separated. 2: how many more pages it shows on. */
-    __('%1$s +%2$d more', 'wconvert'),
-    names.slice(0, 3).join(_x(', ', 'separates all but the last item of a list', 'wconvert')), total - 3,
+    __('%1$s +%2$s more', 'wconvert'),
+    names.slice(0, 3).join(_x(', ', 'separates all but the last item of a list', 'wconvert')), formatCount(total - 3),
   );
 }
 
@@ -283,8 +284,8 @@ export function whereReading(pickId: string, targeting: Targeting, types: readon
   const include = targeting.include ?? [];
   const excepted = exclude.length === 0 ? null
     : namesOf(exclude, types, _x('and', 'joins pages a campaign is kept off', 'wconvert')) ?? sprintf(
-      /* translators: %d: a number of pages. */
-      _n('%d page', '%d pages', exclude.length, 'wconvert'), exclude.length);
+      /* translators: %s: a number of pages. */
+      _n('%s page', '%s pages', exclude.length, 'wconvert'), formatCount(exclude.length));
   const with_ = (answer: string, phrase: string, attention = false) => ({
     answer: { text: excepted === null ? answer : sprintf(
       /* translators: 1: where it shows, e.g. “Entire site”. 2: the pages it is kept off, e.g. “/checkout/*” or “2 pages”. */
@@ -300,8 +301,8 @@ export function whereReading(pickId: string, targeting: Targeting, types: readon
     return { answer: { text: __('Choose at least one page', 'wconvert'), attention: true }, phrase: __('pages you haven’t chosen yet', 'wconvert') };
   }
   const chosen = named ?? namesOf(include, types, _x('or', 'joins pages any one of which it shows on', 'wconvert')) ?? sprintf(
-    /* translators: %d: a number of pages. */
-    _n('%d selected page', '%d selected pages', include.length, 'wconvert'), include.length);
+    /* translators: %s: a number of pages. */
+    _n('%s selected page', '%s selected pages', include.length, 'wconvert'), formatCount(include.length));
   return with_(chosen, chosen);
 }
 
@@ -314,13 +315,13 @@ export function customPacing(frequency: Frequency, capital: boolean): string {
   const parts: string[] = [];
   if (frequency.maxPerSession !== undefined) {
     parts.push(sprintf(capital
-      ? /* translators: %d: the most times it shows in one visit. */ _n('Up to %d time per visit', 'Up to %d times per visit', frequency.maxPerSession, 'wconvert')
-      : /* translators: %d: the most times it shows in one visit. */ _n('up to %d time per visit', 'up to %d times per visit', frequency.maxPerSession, 'wconvert'), frequency.maxPerSession));
+      ? /* translators: %s: the most times it shows in one visit. */ _n('Up to %s time per visit', 'Up to %s times per visit', frequency.maxPerSession, 'wconvert')
+      : /* translators: %s: the most times it shows in one visit. */ _n('up to %s time per visit', 'up to %s times per visit', frequency.maxPerSession, 'wconvert'), formatCount(frequency.maxPerSession)));
   }
   if (frequency.cooldownDays !== undefined) {
     parts.push(sprintf(
-      /* translators: %d: a number of days. */
-      _n('%d day apart', '%d days apart', frequency.cooldownDays, 'wconvert'), frequency.cooldownDays));
+      /* translators: %s: a number of days. */
+      _n('%s day apart', '%s days apart', frequency.cooldownDays, 'wconvert'), formatCount(frequency.cooldownDays)));
   }
   if (parts.length === 0) return capital ? __('Every page they see', 'wconvert') : __('on every page they see', 'wconvert');
   return parts.join(_x(', ', 'separates two limits on how often a campaign shows', 'wconvert'));
@@ -410,7 +411,7 @@ export function sentenceParts(
 export function phraseOf(rule: Rule, types: readonly RuleType[]): Summary {
   if (['cart_products', 'cart_categories'].includes(rule.type)) {
     const count = Array.isArray(rule.ids) ? rule.ids.length : 0;
-    const items = rule.type === 'cart_products' ? sprintf(/* translators: %d: how many products the cart rule lists. */ _n('%d selected product', '%d selected products', count, 'wconvert'), count) : sprintf(/* translators: %d: how many product categories the cart rule lists. */ _n('%d selected category', '%d selected categories', count, 'wconvert'), count);
+    const items = rule.type === 'cart_products' ? sprintf(/* translators: %s: how many products the cart rule lists. */ _n('%s selected product', '%s selected products', count, 'wconvert'), formatCount(count)) : sprintf(/* translators: %s: how many product categories the cart rule lists. */ _n('%s selected category', '%s selected categories', count, 'wconvert'), formatCount(count));
     const phrase = rule.operator === 'none' ? /* translators: %s: the chosen products or categories, e.g. “3 selected products”. */ __('Cart contains none of %s', 'wconvert') : rule.operator === 'all' ? /* translators: %s: the chosen products or categories, e.g. “3 selected products”. */ __('Cart contains all of %s', 'wconvert') : /* translators: %s: the chosen products or categories, e.g. “3 selected products”. */ __('Cart contains any of %s', 'wconvert');
     return { text: sprintf(phrase, items) + (rule.type === 'cart_categories' && rule.descendants ? __(' (including subcategories)', 'wconvert') : ''), attention: count === 0 };
   }
@@ -536,16 +537,16 @@ export function valueText(param: RuleParam, value: unknown): string | null {
 
   switch (param.control) {
     case 'seconds':
-      return sprintf(/* translators: %d: a number of seconds. */ _n('%d second', '%d seconds', Number(value), 'wconvert'), Number(value));
+      return sprintf(/* translators: %s: a number of seconds. */ _n('%s second', '%s seconds', Number(value), 'wconvert'), formatCount(Number(value)));
     case 'percent':
-      return sprintf(/* translators: %d: a percentage of the page. */ __('%d%%', 'wconvert'), Number(value));
+      return formatRate(Number(value) / 100);
     case 'quantity_range':
     case 'money_range':
       return typeof value === 'object' ? rangeText(value as Record<string, unknown>) : null;
     case 'product_set':
-      return sprintf(/* translators: %d: how many products are chosen. */ _n('%d product', '%d products', count, 'wconvert'), count);
+      return sprintf(/* translators: %s: how many products are chosen. */ _n('%s product', '%s products', count, 'wconvert'), formatCount(count));
     case 'category_set':
-      return sprintf(/* translators: %d: how many categories are chosen. */ _n('%d category', '%d categories', count, 'wconvert'), count);
+      return sprintf(/* translators: %s: how many categories are chosen. */ _n('%s category', '%s categories', count, 'wconvert'), formatCount(count));
     default:
       return format(param, value, 'label');
   }

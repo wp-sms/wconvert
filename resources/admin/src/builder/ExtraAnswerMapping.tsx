@@ -16,6 +16,7 @@ import { RegionError, RegionErrorState, TryAgain } from '../shell/Region';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
 import { answerGroups, answerSources } from './answerSources';
 import type { AnswerSource } from './answerSources';
+import { formatCount } from '../lib/format';
 
 /** Whether this signup has an optional answer that could be mapped by a capable destination. */
 export const hasExtraAnswers = (template: Template, submissionId: string): boolean =>
@@ -62,7 +63,7 @@ export function ExtraAnswerMapping({ destination, providerLabel, submissionId, t
   }, [open, destination.id, context, sources.length, refresh]);
   if (eligible.length === 0 && orphaned.length === 0) return null;
   return <Disclosure className="mt-3" onToggle={setOpen} bodyClassName="p-0" title={__('Field mapping', 'wconvert')}
-    summary={<Badge variant={hasIssues ? 'warning' : 'outline'} className="mt-1 font-normal">{hasIssues ? __('Needs review', 'wconvert') : sprintf(/* translators: %d: how many answers are mapped to a field in the destination. */ _n('%d field mapped', '%d fields mapped', selected.length, 'wconvert'), selected.length)}</Badge>}>
+    summary={<Badge variant={hasIssues ? 'warning' : 'outline'} className="mt-1 font-normal">{hasIssues ? __('Needs review', 'wconvert') : sprintf(/* translators: %s: how many answers are mapped to a field in the destination. */ _n('%s field mapped', '%s fields mapped', selected.length, 'wconvert'), formatCount(selected.length))}</Badge>}>
     {open && <div className="flex min-w-0 flex-col gap-4 p-3">
       <div className="wconvert-toolbar flex flex-wrap items-start justify-between gap-3">
         <Description className="min-w-0 flex-1 basis-56">{__('Choose which answers to send. Changes take effect when you publish.', 'wconvert')}</Description>
@@ -83,7 +84,7 @@ export function ExtraAnswerMapping({ destination, providerLabel, submissionId, t
               <Description>{__('Each selected choice sends Yes. Earlier interests stay saved.', 'wconvert')}</Description>
               {!fields.some((field) => field.type === 'boolean') && <Description className="mt-2">{sprintf(/* translators: %s: the service answers are sent to, e.g. “Mailchimp”. */ __('Add a yes/no field for each choice in %s, then refresh fields.', 'wconvert'), providerLabel ?? destination.label)}</Description>}
               {group.choices.map((source) => <MappingRow key={source.id} id={`${id}-${source.id}`} source={source} label={source.choice?.label ?? source.label} fields={fields} value={value} issue={issueFor(source)} onChange={onChange} />)}
-              {group.answer && <Disclosure variant="inline" className="border-t border-border" open={value[group.answer.id] ? true : undefined} title={__('Send all choices as text (optional)', 'wconvert')}>
+              {group.answer && <Disclosure variant="inline" className="border-t border-border" open={value[group.answer.id] ? true : undefined} title={__('Choices as text', 'wconvert')}>
                 <MappingRow id={`${id}-${group.answer.id}`} source={group.answer} label={__('All selected choices', 'wconvert')} fields={fields} value={value} issue={issueFor(group.answer)} onChange={onChange} />
               </Disclosure>}
             </div>

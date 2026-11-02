@@ -1,4 +1,5 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
+import { refusable } from '@/lib/refusable';
 import { ArrowDown, ArrowRight, ArrowUp, ChevronDown, FilePlus2, GitBranch, ListPlus, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import type { QuestionClause, QuestionCondition, QuestionNode, ResultVariant, TemplateNode, TemplateTree } from '@renderer/types';
@@ -31,6 +32,9 @@ import { GUIDES, docsUrl } from '@/shell/docs';
 import { AutoGrowTextarea } from '@/builder/AutoGrowTextarea';
 import { answerTypeName } from '@/builder/answerType';
 import type { QuestionReviewContext } from '@/journeyAuthoring';
+import { NativeSelect } from '@/components/ui/native-select';
+import { Field } from '@/shell/Field';
+import { formatCount } from '@/lib/format';
 
 type ChoiceQuestion = QuestionNode & { id: string };
 
@@ -52,37 +56,36 @@ export function ConditionSettings({ value, sources, onChange, required = false, 
   value?: QuestionCondition; sources: ChoiceQuestion[]; onChange(value?: QuestionCondition): void; required?: boolean;
   purpose?: 'screen' | 'route' | 'result'; deliberate?: boolean;
 }) {
+  const noSourcesId = useId();
   const initial = (q: ChoiceQuestion): QuestionClause => ({ question: q.id, operator: q.answer_type === 'multi' ? 'includes_any' : 'is', values: deliberate ? [] : [q.options?.[0]?.value ?? ''] });
   const patch = (index: number, clause: QuestionCondition['clauses'][number]) => onChange({ match: value?.match ?? 'all', clauses: (value?.clauses ?? []).map((old, at) => at === index ? clause : old) });
   return <div className="wconvert-journey-settings wconvert-condition-settings">
     {!required && <label>{__('Only if…', 'wconvert-pro')}
-      <select value={value ? 'match' : 'always'} onChange={event => onChange(event.target.value === 'match' && sources[0] ? { match: 'all', clauses: [initial(sources[0])] } : undefined)}>
+      <NativeSelect value={value ? 'match' : 'always'} onChange={event => onChange(event.target.value === 'match' && sources[0] ? { match: 'all', clauses: [initial(sources[0])] } : undefined)}>
         <option value="always">{__('For everyone', 'wconvert-pro')}</option>
         <option value="match" disabled={!sources.length}>{__('Only if an answer matches', 'wconvert-pro')}</option>
-      </select>
+      </NativeSelect>
     </label>}
-    {!sources.length && <p>{__('Add a choice question on an earlier screen to use conditions.', 'wconvert-pro')}</p>}
-    {required && !value && <button type="button" disabled={!sources.length} onClick={() => {
-      if (sources[0]) onChange({ match: 'all', clauses: [initial(sources[0])] });
-    }}>{__('Add condition', 'wconvert-pro')}</button>}
+    {!sources.length && <p id={noSourcesId}>{__('Add a choice question on an earlier screen to use conditions.', 'wconvert-pro')}</p>}
+    {required && !value && <button type="button" {...refusable(sources.length ? null : noSourcesId, () => onChange({ match: 'all', clauses: [initial(sources[0])] }))}>{__('Add condition', 'wconvert-pro')}</button>}
     {value && <>
-      {value.clauses.length > 1 && <label>{__('Match', 'wconvert-pro')}<select value={value.match} onChange={event => onChange({ ...value, match: event.target.value as 'all' | 'any' })}>
+      {value.clauses.length > 1 && <label>{__('Match', 'wconvert-pro')}<NativeSelect value={value.match} onChange={event => onChange({ ...value, match: event.target.value as 'all' | 'any' })}>
         <option value="all">{__('All conditions', 'wconvert-pro')}</option><option value="any">{__('Any condition', 'wconvert-pro')}</option>
-      </select></label>}
+      </NativeSelect></label>}
       {value.clauses.map((clause, index) => {
         const source = sources.find(q => q.id === clause.question);
         const operators = source?.answer_type === 'multi' ? ['includes_any', 'includes_none'] : ['is', 'is_not'];
         const unavailable = source ? clause.values.filter(answer => answer && !source.options?.some(option => option.value === answer)) : [];
         return <div key={index} className="wconvert-journey-settings__clause">
           <span>{index === 0 ? __('If', 'wconvert-pro') : value.match === 'all' ? __('And', 'wconvert-pro') : __('Or', 'wconvert-pro')}</span>
-          <select aria-label={__('Question', 'wconvert-pro')} value={clause.question} onChange={event => { const q = sources.find(item => item.id === event.target.value)!; patch(index, initial(q)); }}>
+          <NativeSelect aria-label={__('Question', 'wconvert-pro')} value={clause.question} onChange={event => { const q = sources.find(item => item.id === event.target.value)!; patch(index, initial(q)); }}>
             {!source && <option value={clause.question} disabled>{clause.question ? __('Question not asked before this line — choose another', 'wconvert-pro') : __('Choose a question…', 'wconvert-pro')}</option>}
             {sources.map(q => <option key={q.id} value={q.id}>{q.label}</option>)}
-          </select>
-          <select aria-label={__('Comparison', 'wconvert-pro')} value={clause.operator} disabled={!source} onChange={event => patch(index, { ...clause, operator: event.target.value as typeof clause.operator })}>
+          </NativeSelect>
+          <NativeSelect aria-label={__('Comparison', 'wconvert-pro')} value={clause.operator} disabled={!source} onChange={event => patch(index, { ...clause, operator: event.target.value as typeof clause.operator })}>
             {!operators.includes(clause.operator) && <option value={clause.operator} disabled>{__('Choose comparison…', 'wconvert-pro')}</option>}
             {source?.answer_type === 'multi' ? <><option value="includes_any">{__('includes', 'wconvert-pro')}</option><option value="includes_none">{__('without', 'wconvert-pro')}</option></> : <><option value="is">{__('is', 'wconvert-pro')}</option><option value="is_not">{__('is not', 'wconvert-pro')}</option></>}
-          </select>
+          </NativeSelect>
           {/* Every choice question takes several answers: "is any of" on choose-one too (ADR 0142). */}
           {source ? <fieldset className="wconvert-journey-settings__answers">
             <legend>{clause.operator === 'includes_none' || clause.operator === 'is_not' ? __('None of these answers', 'wconvert-pro') : __('Any of these answers', 'wconvert-pro')}</legend>
@@ -93,13 +96,13 @@ export function ConditionSettings({ value, sources, onChange, required = false, 
             {unavailable.length > 0 && <div role="status"><small>{__('This rule contains an answer that is no longer available.', 'wconvert-pro')}</small>
               <button type="button" data-destructive="true" onClick={() => patch(index, { ...clause, values: clause.values.filter(answer => !unavailable.includes(answer)) })}>{__('Remove unavailable answers', 'wconvert-pro')}</button></div>}
             {!clause.values.some(value => value !== '') && <small>{__('Choose at least one answer.', 'wconvert-pro')}</small>}
-          </fieldset> : <select aria-label={__('Answer', 'wconvert-pro')} disabled defaultValue={clause.values[0] ?? ''}>
+          </fieldset> : <NativeSelect aria-label={__('Answer', 'wconvert-pro')} disabled defaultValue={clause.values[0] ?? ''}>
             <option value={clause.values[0] ?? ''}>{clause.values[0] ? __('Answer unavailable — choose another', 'wconvert-pro') : __('Choose answer…', 'wconvert-pro')}</option>
-          </select>}
+          </NativeSelect>}
           <button type="button" data-destructive="true" onClick={() => { const clauses = value.clauses.filter((_, at) => at !== index); onChange(clauses.length || required ? { ...value, clauses } : undefined); }}>{__('Remove', 'wconvert-pro')}</button>
         </div>;
       })}
-      {value.clauses.length < 5 && <button type="button" disabled={!sources.length} onClick={() => { if (sources[0]) onChange({ ...value, clauses: [...value.clauses, initial(sources[0])] }); }}>{value.clauses.length ? __('Add another condition', 'wconvert-pro') : __('Add condition', 'wconvert-pro')}</button>}
+      {value.clauses.length < 5 && <button type="button" {...refusable(sources.length ? null : noSourcesId, () => onChange({ ...value, clauses: [...value.clauses, initial(sources[0])] }))}>{value.clauses.length ? __('Add another condition', 'wconvert-pro') : __('Add condition', 'wconvert-pro')}</button>}
       <div className="wconvert-editor-help"><p>{purpose === 'route'
         ? __('Otherwise, the next line is checked.', 'wconvert-pro')
         : required
@@ -158,10 +161,10 @@ export function RouteSettings({ tree, step, focusPath = null, onChange, onInsert
     {screen.when && screen.paths && <PanelHint>{__('Skipped visitors go on to the following screen without checking these lines.', 'wconvert-pro')}</PanelHint>}
     {/* eslint-disable-next-line jsx-a11y/no-redundant-roles -- Preserve list semantics in WebKit when list-style is none. */}
     <ol ref={list} className="wconvert-journey-routes__list" role="list">{paths.map((path, index) => <li key={`${index}-${path.to}`} data-path-priority={index}>
-      <strong>{index === paths.length - 1 ? __('All other answers', 'wconvert-pro') : sprintf(/* translators: %d: the line's place. */ __('Line %d', 'wconvert-pro'), index + 1)}</strong>
-      <label>{__('Then', 'wconvert-pro')}<select value={path.to} onChange={event => write(paths.map((item, at) => at === index ? { ...item, to: event.target.value } : item))}>
+      <strong>{index === paths.length - 1 ? __('All other answers', 'wconvert-pro') : sprintf(/* translators: %s: the line's place. */ __('Line %s', 'wconvert-pro'), formatCount(index + 1))}</strong>
+      <label>{__('Then', 'wconvert-pro')}<NativeSelect value={path.to} onChange={event => write(paths.map((item, at) => at === index ? { ...item, to: event.target.value } : item))}>
         {targets.map(target => <option key={target.id} value={target.id} disabled={paths.some((item, at) => at !== index && item.to === target.id)}>{target.name}</option>)}
-      </select></label>
+      </NativeSelect></label>
       {path.when && <ConditionSettings required purpose="route" value={path.when} sources={sources} onChange={when => {
         if (when) write(paths.map((item, at) => at === index ? { ...item, when } : item));
       }} />}
@@ -262,20 +265,20 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
 
         <PanelField label={__('Answer type', 'wconvert-pro')} htmlFor={`${question.id}-type`}
           tip={refs.length > 0 ? __('Changing it asks you to review the rules that use these answers. Renaming a choice keeps its lines.', 'wconvert-pro') : undefined}>
-          <select id={`${question.id}-type`} value={question.answer_type} onChange={event => {
+          <NativeSelect id={`${question.id}-type`} value={question.answer_type} onChange={event => {
           const type = event.target.value as QuestionNode['answer_type'];
           if (refs.length) { setTypeReview({ question: question.id, type }); return; }
           change(question.id, node => ({ ...node, answer_type: type, options: type === 'text' ? [] : node.options?.length ? node.options : [{ value: 'first', label: __('First option', 'wconvert-pro') }, { value: 'second', label: __('Second option', 'wconvert-pro') }] }));
         }}>
           {(['single', 'multi', 'text'] as const).map(type => <option key={type} value={type}>{answerTypeName(type)}</option>)}
-        </select></PanelField>
+        </NativeSelect></PanelField>
         {typeReview?.question === question.id && <section tabIndex={-1} className="wconvert-journey-answer-repair" aria-label={__('Review answer type change', 'wconvert-pro')}>
           <strong>{__('Review the affected conditions', 'wconvert-pro')}</strong>
-          <p>{typeReview.type === 'text' ? __('Short answers cannot keep rules based on selected choices. Edit the rules below first, then change the answer type.', 'wconvert-pro')
+          <p id={`${question.id}-type-review`}>{typeReview.type === 'text' ? __('Short answers cannot keep rules based on selected choices. Edit the rules below first, then change the answer type.', 'wconvert-pro')
             : questionTypeChange(tree, question.id, typeReview.type) ? __('Choice labels and lines will stay. Condition operators will be updated. Choosing several answers can match several rules; the top-to-bottom order still applies to answer lines and results. Try the form after this change.', 'wconvert-pro')
             : __('Some conditions compare several choices at once. Edit those conditions to use one choice each before switching to Choose one.', 'wconvert-pro')}</p>
           {refs.map(reference => <button type="button" key={reference.key} onClick={() => openReference(reference)}>{reference.label} · {reference.detail} <ArrowRight aria-hidden="true" className="inline size-3 rtl:-scale-x-100" /></button>)}
-          <div className="wconvert-journey-answer-repair__actions"><button type="button" disabled={!questionTypeChange(tree, question.id, typeReview.type)} onClick={() => { const next = questionTypeChange(tree, question.id, typeReview.type); if (next) onChange(next); setTypeReview(null); }}>{__('Apply answer type change', 'wconvert-pro')}</button><button type="button" onClick={() => setTypeReview(null)}>{__('Cancel', 'wconvert-pro')}</button></div>
+          <div className="wconvert-journey-answer-repair__actions"><Button type="button" {...refusable(questionTypeChange(tree, question.id, typeReview.type) ? null : `${question.id}-type-review`, () => { const next = questionTypeChange(tree, question.id, typeReview.type); if (next) onChange(next); setTypeReview(null); })}>{__('Apply answer type change', 'wconvert-pro')}</Button><Button type="button" variant="ghost" onClick={() => setTypeReview(null)}>{__('Cancel', 'wconvert-pro')}</Button></div>
         </section>}
         {question.answer_type !== 'text' && <div className="wconvert-panel-field" role="group" aria-labelledby={`${question.id}-choices`}><FieldHeading as="span" label={__('Choices', 'wconvert-pro')} labelId={`${question.id}-choices`} />
           {/*
@@ -289,7 +292,7 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
             const followups = tree.steps.map((item, index) => ({ item, index })).filter(({ item }) => item.when?.clauses.some(clause => clause.question === question.id && clause.values.includes(option.value)));
             const uses = answerReferences(tree, question.id, option.value).length;
             const used = protectedValues.has(option.value);
-            return <div key={option.value} className="wconvert-journey-settings__choice"><span aria-hidden="true">{at + 1}</span><input aria-label={`${__('Choice', 'wconvert-pro')} ${at + 1}`} value={option.label} maxLength={120}
+            return <div key={option.value} className="wconvert-journey-settings__choice"><span aria-hidden="true">{formatCount(at + 1)}</span><Input aria-label={sprintf(/* translators: %s: the choice's position in the list, e.g. 1. */ __('Choice %s', 'wconvert-pro'), formatCount(at + 1))} value={option.label} maxLength={120}
               onChange={event => change(question.id, node => ({ ...node, options: node.options?.map((old, i) => i === at ? { ...old, label: event.target.value } : old) }), `choice:${option.value}`)} />
               <DropdownMenu><DropdownMenuTrigger asChild><button type="button" className="wconvert-choice-menu" aria-label={sprintf(/* translators: %s: a choice's words. */ __('More for “%s”', 'wconvert-pro'), option.label)} title={sprintf(/* translators: %s: a choice's words. */ __('More for “%s”', 'wconvert-pro'), option.label)}><MoreHorizontal aria-hidden="true" /></button></DropdownMenuTrigger>
                 <OptionMenuContent align="end" aria-label={sprintf(/* translators: %s: a choice's words. */ __('More for “%s”', 'wconvert-pro'), option.label)}>
@@ -312,13 +315,15 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
               <p>{__('Review the matching behavior that will be removed with this choice. Other choices and saved leads stay unchanged.', 'wconvert-pro')}</p>
               {retirement.reason ? <p role="status">{retirement.reason}</p> : <>{retirement.removed.length > 0 && <><strong>{__('Also remove', 'wconvert-pro')}</strong><ul>{retirement.removed.map((name, index) => <li key={index}>{name}</li>)}</ul></>}<Button type="button" variant="destructive" onClick={() => { if (retirement.next) { onChange(retirement.next); setRepair(null); onAction?.(__('Choice and listed behavior removed. Test the remaining answers.', 'wconvert-pro')); } }}>{retirement.removed.length ? __('Remove choice and listed behavior', 'wconvert-pro') : __('Remove choice', 'wconvert-pro')}</Button></>}
             </Disclosure>}
-            {reviewRefs.length > 0 && <label>{__('Replace its uses with', 'wconvert-pro')}<select value={question.options?.some(option => option.value === replacement && option.value !== repair.value) ? replacement : ''} onChange={event => setReplacement(event.target.value)}>
+            {reviewRefs.length > 0 && <label>{__('Replace its uses with', 'wconvert-pro')}<NativeSelect value={question.options?.some(option => option.value === replacement && option.value !== repair.value) ? replacement : ''} onChange={event => setReplacement(event.target.value)}>
               <option value="">{__('Choose an existing answer…', 'wconvert-pro')}</option>
               {question.options?.filter(option => option.value !== repair.value).map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
-            </select></label>}
-            <div className="wconvert-journey-answer-repair__actions">{reviewRefs.length > 0 && <button type="button" disabled={!question.options?.some(option => option.value === replacement && option.value !== repair.value) || (question.options?.length ?? 0) <= 2} onClick={() => { onChange(replaceAnswer(tree, question.id, repair.value, replacement)); setRepair(null); }}>
-              {__('Replace uses & remove', 'wconvert-pro')}</button>}<button type="button" onClick={() => setRepair(null)}>{__('Cancel', 'wconvert-pro')}</button></div>
-            {(question.options?.length ?? 0) <= 2 && <p>{__('Keep at least two choices. Add another choice before removing this one.', 'wconvert-pro')}</p>}
+            </NativeSelect></label>}
+            <div className="wconvert-journey-answer-repair__actions">{reviewRefs.length > 0 && <Button type="button" {...refusable((question.options?.length ?? 0) <= 2 ? `${question.id}-keep-two` : question.options?.some(option => option.value === replacement && option.value !== repair.value) ? null : `${question.id}-choose-replacement`, () => { onChange(replaceAnswer(tree, question.id, repair.value, replacement)); setRepair(null); })}>
+              {__('Replace uses & remove', 'wconvert-pro')}</Button>}<Button type="button" variant="ghost" onClick={() => setRepair(null)}>{__('Cancel', 'wconvert-pro')}</Button></div>
+            {(question.options?.length ?? 0) <= 2 && <p id={`${question.id}-keep-two`}>{__('Keep at least two choices. Add another choice before removing this one.', 'wconvert-pro')}</p>}
+            {reviewRefs.length > 0 && (question.options?.length ?? 0) > 2 && !question.options?.some(option => option.value === replacement && option.value !== repair.value)
+              && <p id={`${question.id}-choose-replacement`}>{__('Choose an answer to replace it with first.', 'wconvert-pro')}</p>}
             <small>{__('One draft change. Undo restores the answer and its references.', 'wconvert-pro')}</small>
           </div>}
           {(question.options?.length ?? 0) < 12 && <button type="button" className="wconvert-panel-link" onClick={() => change(question.id, node => {
@@ -329,9 +334,9 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
         <CheckRow className="wconvert-check" label={__('Answer required', 'wconvert-pro')} checked={question.required === true} onChange={event => change(question.id, node => ({ ...node, required: event.target.checked }))} />
         <PanelField label={__('Help text', 'wconvert-pro')} htmlFor={`${question.id}-help`}
           hint={question.answer_type === 'multi' ? __('Visitors can choose several answers and see every relevant follow-up.', 'wconvert-pro') : undefined}>
-          <input id={`${question.id}-help`} value={question.help ?? ''} maxLength={300} placeholder={__('Optional', 'wconvert-pro')} onChange={event => change(question.id, node => ({ ...node, help: event.target.value }), 'help')} />
+          <Input id={`${question.id}-help`} value={question.help ?? ''} maxLength={300} placeholder={__('Optional', 'wconvert-pro')} onChange={event => change(question.id, node => ({ ...node, help: event.target.value }), 'help')} />
         </PanelField>
-        {refs.length > 0 && <Disclosure variant="inline" className="wconvert-journey-used-by" title={__('Used by', 'wconvert-pro')} summary={sprintf(/* translators: %d: how many rules use these answers. */ _n('%d rule', '%d rules', refs.length, 'wconvert-pro'), refs.length)}>
+        {refs.length > 0 && <Disclosure variant="inline" className="wconvert-journey-used-by" title={__('Used by', 'wconvert-pro')} summary={sprintf(/* translators: %s: how many rules use these answers. */ _n('%s rule', '%s rules', refs.length, 'wconvert-pro'), formatCount(refs.length))}>
           {refs.map(reference => <button type="button" key={reference.key} onClick={() => openReference(reference)}><strong>{reference.label}</strong>{' '}<small>{reference.detail} <ArrowRight aria-hidden="true" className="inline size-3 rtl:-scale-x-100" /></small></button>)}
         </Disclosure>}
       </div>;
@@ -402,7 +407,7 @@ export function ResultSettings({ tree, step, onChange: change, onAction, repairR
     setSelectedId(id); setDraftResult(null);
   };
   const productsSummary = (variant: ResultVariant) => variant.product_filter ? __('By category', 'wconvert-pro')
-    : variant.product_ids?.length ? sprintf(/* translators: %d: how many products are chosen. */ _n('%d chosen', '%d chosen', variant.product_ids.length, 'wconvert-pro'), variant.product_ids.length) : __('None', 'wconvert-pro');
+    : variant.product_ids?.length ? sprintf(/* translators: %s: how many products are chosen. */ _n('%s chosen', '%s chosen', variant.product_ids.length, 'wconvert-pro'), formatCount(variant.product_ids.length)) : __('None', 'wconvert-pro');
   /*
     Results in the panel grammar (ADR 0136): the order rule is the InfoTip's,
     a result's row is its heading and its rule, and what acts on one result —
@@ -417,41 +422,41 @@ export function ResultSettings({ tree, step, onChange: change, onAction, repairR
     <div className="wconvert-journey-results" role="group" aria-label={__('Possible results', 'wconvert-pro')}>
       {variants.map((variant, at) => <div className="wconvert-journey-result-card" key={variant.id}><button className="wconvert-journey-result-summary" type="button" id={`${tabsId}-result-${at}`} aria-controls={`${tabsId}-panel-${at}`}
         aria-expanded={selected?.id === variant.id} onClick={() => setSelectedId(selected?.id === variant.id ? null : variant.id)}>
-        <strong><span className="wconvert-flow-dot" data-color={answerColorOf(resultColors, variant.when)} aria-hidden="true" />{at === variants.length - 1 ? __('All other answers', 'wconvert-pro') : variant.heading || sprintf(/* translators: %d: the result's position in the list, starting at 1. */ __('Result %d', 'wconvert-pro'), at + 1)}</strong>
+        <strong><span className="wconvert-flow-dot" data-color={answerColorOf(resultColors, variant.when)} aria-hidden="true" />{at === variants.length - 1 ? __('All other answers', 'wconvert-pro') : variant.heading || sprintf(/* translators: %s: the result's position in the list, starting at 1. */ __('Result %s', 'wconvert-pro'), formatCount(at + 1))}</strong>
         <span>{at === variants.length - 1 ? __('When no other result matches', 'wconvert-pro')
           : variant.when ? sprintf(/* translators: %s: the answers that pick this result, e.g. “Budget is Under $50”. */ __('If %s', 'wconvert-pro'), conditionText(tree, variant.when)) : __('Set a condition', 'wconvert-pro')}</span><ChevronDown aria-hidden="true" className="wconvert-journey-result-chevron" />
       </button>
     {selected?.id === variant.id && <div className="wconvert-journey-settings__result" role="region" id={`${tabsId}-panel-${at}`} aria-labelledby={`${tabsId}-result-${at}`}>
 
-      <PanelField label={__('Heading', 'wconvert-pro')} htmlFor={`${tabsId}-heading`}><input id={`${tabsId}-heading`} ref={headingInput} value={selected.heading} maxLength={200} onChange={event => edit(selectedAt, { heading: event.target.value }, 'heading')} /></PanelField>
+      <PanelField label={__('Heading', 'wconvert-pro')} htmlFor={`${tabsId}-heading`}><Input id={`${tabsId}-heading`} ref={headingInput} value={selected.heading} maxLength={200} onChange={event => edit(selectedAt, { heading: event.target.value }, 'heading')} /></PanelField>
       <PanelField label={__('Message', 'wconvert-pro')} htmlFor={`${tabsId}-body`}><AutoGrowTextarea id={`${tabsId}-body`} value={selected.body ?? ''} maxLength={500} onChange={event => edit(selectedAt, { body: event.target.value }, 'body')} /></PanelField>
       {/* Optional (ADR 0133): with no address the result shows no button, which is a choice rather than a fault. */}
       <PanelField label={__('Link', 'wconvert-pro')} htmlFor={`${tabsId}-href`} hint={!selected.href?.trim() ? __('Without a link, this result shows no button.', 'wconvert-pro') : undefined}>
         <LinkField id={`${tabsId}-href`} ref={linkInput} value={selected.href ?? ''} onChange={href => edit(selectedAt, { href }, 'href')} />
       </PanelField>
-      <PanelField label={__('Button text', 'wconvert-pro')} htmlFor={`${tabsId}-link-label`}><input id={`${tabsId}-link-label`} value={selected.link_label ?? ''} maxLength={120} onChange={event => edit(selectedAt, { link_label: event.target.value }, 'link_label')} /></PanelField>
+      <PanelField label={__('Button text', 'wconvert-pro')} htmlFor={`${tabsId}-link-label`}><Input id={`${tabsId}-link-label`} value={selected.link_label ?? ''} maxLength={120} onChange={event => edit(selectedAt, { link_label: event.target.value }, 'link_label')} /></PanelField>
       <Disclosure variant="inline" className="wconvert-result-products" open={!!selected.product_ids?.length || !!selected.product_filter || screen.products_required || undefined} title={__('Products', 'wconvert-pro')} summary={productsSummary(selected)}>
-        <PanelField label={__('Choose products by', 'wconvert-pro')} htmlFor={`${tabsId}-source`}><select id={`${tabsId}-source`} value={selected.product_filter ? 'category' : 'selected'} onChange={event => edit(selectedAt, { product_filter: event.target.value === 'category' ? { category_id: 0, attributes: [] } : undefined })}>
+        <PanelField label={__('Choose products by', 'wconvert-pro')} htmlFor={`${tabsId}-source`}><NativeSelect id={`${tabsId}-source`} value={selected.product_filter ? 'category' : 'selected'} onChange={event => edit(selectedAt, { product_filter: event.target.value === 'category' ? { category_id: 0, attributes: [] } : undefined })}>
           <option value="selected">{__('Hand-picked products', 'wconvert-pro')}</option><option value="category">{__('Category and attributes', 'wconvert-pro')}</option>
-        </select></PanelField>
+        </NativeSelect></PanelField>
         {selected.product_filter ? <ResultProductFilter key={selected.id} value={selected.product_filter} onChange={product_filter => edit(selectedAt, { product_filter })} />
           : <ProductPicker ids={selected.product_ids ?? []} onChange={product_ids => edit(selectedAt, { product_ids })} />}
         <PanelField label={__('Product button', 'wconvert-pro')} htmlFor={`${tabsId}-action`} hint={!commerceSupported() ? unlessFree(sprintf(
           /* translators: %s: the product that includes cart buttons, e.g. “WConvert Pro”. */
           __('Cart buttons are included with %s and need WooCommerce on this site.', 'wconvert-pro'), tierProductName('pro'))) : selected.product_action === 'add_to_cart' ? __('Products with options open their product page.', 'wconvert-pro') : undefined}>
-          <select id={`${tabsId}-action`} value={selected.product_action ?? 'link'} onChange={event => edit(selectedAt, { product_action: event.target.value as 'link' | 'add_to_cart' })}>
+          <NativeSelect id={`${tabsId}-action`} value={selected.product_action ?? 'link'} onChange={event => edit(selectedAt, { product_action: event.target.value as 'link' | 'add_to_cart' })}>
             <option value="link">{__('Open the product page', 'wconvert-pro')}</option>
             <option value="add_to_cart" disabled={!commerceSupported()}>{__('Add to cart', 'wconvert-pro')}</option>
-          </select>
+          </NativeSelect>
         </PanelField>
       </Disclosure>
       {selectedAt < variants.length - 1 && <ConditionSettings required value={selected.when} sources={sources} onChange={when => { if (when) edit(selectedAt, { when }); }} />}
       {selectedAt < variants.length - 1 && <div className="wconvert-journey-result-actions">
-        <DropdownMenu><DropdownMenuTrigger asChild><button type="button" className="wconvert-choice-menu" aria-label={sprintf(/* translators: %s: a result's heading. */ __('More for “%s”', 'wconvert-pro'), selected.heading || sprintf(/* translators: %d: the result's position in the list, starting at 1. */ __('Result %d', 'wconvert-pro'), selectedAt + 1))}><MoreHorizontal aria-hidden="true" /></button></DropdownMenuTrigger>
-          <OptionMenuContent align="end" aria-label={sprintf(/* translators: %s: a result's heading. */ __('More for “%s”', 'wconvert-pro'), selected.heading || sprintf(/* translators: %d: the result's position in the list, starting at 1. */ __('Result %d', 'wconvert-pro'), selectedAt + 1))}>
-            {variants.length > 2 && <OptionItem icon={ArrowUp} name={__('Move earlier', 'wconvert-pro')} onSelect={() => move(selectedAt, selectedAt - 1)}
+        <DropdownMenu><DropdownMenuTrigger asChild><button type="button" className="wconvert-choice-menu" aria-label={sprintf(/* translators: %s: a result's heading. */ __('More for “%s”', 'wconvert-pro'), selected.heading || sprintf(/* translators: %s: the result's position in the list, starting at 1. */ __('Result %s', 'wconvert-pro'), formatCount(selectedAt + 1)))}><MoreHorizontal aria-hidden="true" /></button></DropdownMenuTrigger>
+          <OptionMenuContent align="end" aria-label={sprintf(/* translators: %s: a result's heading. */ __('More for “%s”', 'wconvert-pro'), selected.heading || sprintf(/* translators: %s: the result's position in the list, starting at 1. */ __('Result %s', 'wconvert-pro'), formatCount(selectedAt + 1)))}>
+            {variants.length > 2 && <OptionItem icon={ArrowUp} name={__('Move up', 'wconvert-pro')} onSelect={() => move(selectedAt, selectedAt - 1)}
               refused={selectedAt === 0 ? refusal(__('Already first', 'wconvert-pro')) : null} />}
-            {variants.length > 2 && <OptionItem icon={ArrowDown} name={__('Move later', 'wconvert-pro')} onSelect={() => move(selectedAt, selectedAt + 1)}
+            {variants.length > 2 && <OptionItem icon={ArrowDown} name={__('Move down', 'wconvert-pro')} onSelect={() => move(selectedAt, selectedAt + 1)}
               refused={selectedAt >= variants.length - 2 ? refusal(__('All other answers stays last', 'wconvert-pro'), __('The result for all other answers stays last.', 'wconvert-pro')) : null} />}
             <OptionItem icon={Trash2} destructive name={__('Remove result', 'wconvert-pro')} onSelect={() => { setSelectedId(null); setVariants(variants.filter((_, index) => index !== selectedAt)); }} />
           </OptionMenuContent>
@@ -465,7 +470,7 @@ export function ResultSettings({ tree, step, onChange: change, onAction, repairR
     </Disclosure>
     <Dialog open={draftResult !== null} onOpenChange={open => { if (!open) setDraftResult(null); }}><AdminDialogContent size="sm" className="wconvert-graph-insert" dirty={!!draftResult?.heading.trim()}>
       <AdminDialogHeader title={__('Add matching result', 'wconvert-pro')} meta={__('Choose who sees this result. Nothing changes until you add it.', 'wconvert-pro')} />
-      {draftResult && <><AdminDialogBody className="wconvert-graph-insert__body"><label>{__('Result heading', 'wconvert-pro')}<Input value={draftResult.heading} maxLength={200} onChange={event => setDraftResult({ ...draftResult, heading: event.target.value })} /></label>
+      {draftResult && <><AdminDialogBody className="wconvert-graph-insert__body"><Field label={__('Result heading', 'wconvert-pro')} htmlFor={`${tabsId}-draft-heading`}><Input id={`${tabsId}-draft-heading`} value={draftResult.heading} maxLength={200} onChange={event => setDraftResult({ ...draftResult, heading: event.target.value })} /></Field>
         <ConditionSettings deliberate required purpose="result" value={draftResult.when} sources={sources} onChange={when => setDraftResult({ ...draftResult, when: when ?? { match: 'all', clauses: [] } })} />
         <p>{__('Checked after your existing results, before all other answers. You can move it afterward.', 'wconvert-pro')}</p>
         {variants.slice(0, -1).filter(result => resultReady && resultsMayOverlap(tree, result, { ...draftResult, id: 'new-result' })).map(result => <p key={result.id} role="status">{sprintf(/* translators: %s: an existing result's heading. */ __('“%s” may match the same answers and is checked first.', 'wconvert-pro'), result.heading)}</p>)}

@@ -103,7 +103,7 @@ it('leaves the saved Full width preference intact when exiting journey focus', a
   expect(document.body).not.toHaveClass('wconvert-journey-focus');
   expect(document.body).toHaveClass('wconvert-fullscreen');
   expect(localStorage.getItem('wconvert:fullscreen')).toBe(remembered);
-  await user.click(screen.getByRole('button', { name: 'Show the menu' }));
+  await user.click(screen.getByRole('button', { name: 'Full width' }));
 });
 function Editor({ initial = source.tree as TemplateTree }: { initial?: TemplateTree }) {
   const [tree, setTree] = useState(initial);
@@ -136,6 +136,29 @@ it('lets an ending selection add a question at an explicit location and restores
   await user.click(screen.getByRole('button', { name: 'Add screen here' }));
   expect(draft().graph!.edges.find(edge => edge.id === 'start')?.to).toBe(draft().steps.at(-1)!.id);
   await waitFor(() => expect(screen.getByRole('heading', { level: 3, name: draft().steps.at(-1)!.name })).toHaveFocus());
+});
+
+it('asks before losing a typed screen name, and only then', async () => {
+  const user = userEvent.setup();
+  render(<Editor initial={graphFixture as unknown as TemplateTree} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByRole('button', { name: 'Add screen' }));
+  const dialog = await screen.findByRole('dialog', { name: 'Add a screen' });
+  const name = within(dialog).getByRole('textbox', { name: /Question|Screen name/ });
+  await user.type(name, 'Skin type');
+  await user.keyboard('{Escape}');
+  expect(within(dialog).getByRole('group', { name: 'Discard changes?' })).toBeInTheDocument();
+  await user.click(within(dialog).getByRole('button', { name: 'Keep editing' }));
+  expect(name).toHaveValue('Skin type');
+  await user.keyboard('{Escape}');
+  await user.click(within(dialog).getByRole('button', { name: 'Discard' }));
+  await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Add a screen' })).toBeNull());
+
+  // Nothing typed this time, so Escape just closes: the last dialog's answer was not kept.
+  await user.click(screen.getByRole('button', { name: 'Add screen' }));
+  await screen.findByRole('dialog', { name: 'Add a screen' });
+  await user.keyboard('{Escape}');
+  await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Add a screen' })).toBeNull());
 });
 
 it('requires a chosen answer before inserting a relevant follow-up from the toolbar', async () => {
@@ -224,7 +247,7 @@ it('reviews newly unreachable screens before applying a changed line', async () 
   await user.click(await screen.findByRole('button', { name: 'Select interests' }));
   await user.click(screen.getByRole('radio', { name: 'Lines' }));
   // A follow-up box keeps its lines folded until asked.
-  await user.click(screen.getByRole('button', { name: 'Show answer lines' }));
+  await user.click(screen.getByText('Answer lines'));
   await user.selectOptions(screen.getByRole('combobox', { name: 'Then' }), 'contact');
   expect(screen.getByRole('heading', { name: 'Check this change' })).toBeInTheDocument();
   const explanation = screen.getByText(/These screens would become unreachable:/);
@@ -241,7 +264,7 @@ it('reviews a save bypass even when no screens are disconnected', async () => {
   await user.click(await screen.findByRole('button', { name: 'Select balcony' }));
   await user.click(screen.getByRole('radio', { name: 'Lines' }));
   // A follow-up box keeps its lines folded until asked.
-  await user.click(screen.getByRole('button', { name: 'Show answer lines' }));
+  await user.click(screen.getByText('Answer lines'));
   const skip = screen.getByRole('combobox', { name: 'If skipped' });
   await user.selectOptions(skip, 'received');
   expect(screen.getByRole('alertdialog')).toHaveTextContent('could reach “Received” without saving at “One enquiry”');
@@ -323,16 +346,16 @@ it('lets a merchant choose several answers for a multi-select condition', async 
 const screenMenu = () => screen.getByRole('button', { name: /^Actions for / });
 async function action(user: ReturnType<typeof userEvent.setup>, name: string, confirm = true) {
   await user.click(screenMenu());
-  const actionName = name === 'Delete screen' && screen.queryByRole('menuitem', { name: 'Remove optional signup' }) ? 'Remove optional signup' : name;
+  const actionName = name === 'Delete screen' && screen.queryByRole('menuitem', { name: 'Remove optional form' }) ? 'Remove optional form' : name;
   await user.click(screen.getByRole('menuitem', { name: actionName }));
-  if (confirm && actionName === 'Remove optional signup' && screen.queryByRole('button', { name: 'Remove signup' })) await user.click(screen.getByRole('button', { name: 'Remove signup' }));
+  if (confirm && actionName === 'Remove optional form' && screen.queryByRole('button', { name: 'Remove form' })) await user.click(screen.getByRole('button', { name: 'Remove form' }));
 }
 it('adds and removes an optional SMS signup without changing the primary field ownership', async () => {
   const user = userEvent.setup();
   render(<Editor />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(screen.getByRole('button', {name:'More screen options'}));
-  await user.click(screen.getByRole('menuitem', {name:'Add optional signup'}));
+  await user.click(screen.getByRole('menuitem', {name:'Add optional form'}));
   const tree = draft();
   expect(tree.submissions).toHaveLength(2);
   expect(tree.submissions[0].fields).toEqual(source.tree.submissions[0].fields);
@@ -350,7 +373,7 @@ it('invites, rather than thanks, when the optional signup is the first one (#357
   render(<Editor initial={{ v: 1, steps: structuredClone(rules.steps), submissions: [] } as unknown as TemplateTree} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(screen.getByRole('button', { name: 'More screen options' }));
-  await user.click(screen.getByRole('menuitem', { name: 'Add optional signup' }));
+  await user.click(screen.getByRole('menuitem', { name: 'Add optional form' }));
   const added = draft().steps.find(step => step.name === 'Optional email signup')!;
   const headings = walkNodes(added.content).filter(node => node.type === 'heading').map(node => 'text' in node && node.text);
   expect(headings).toEqual(['Want updates about your result?']);
@@ -362,7 +385,7 @@ it('keeps an explicit forward path connected when adding an optional signup', as
   render(<Editor initial={initial} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(screen.getByRole('button', { name: 'More screen options' }));
-  await user.click(screen.getByRole('menuitem', { name: 'Add optional signup' }));
+  await user.click(screen.getByRole('menuitem', { name: 'Add optional form' }));
   const tree = draft();
   expect(tree.steps[0].paths).toEqual([{ to: tree.steps[1].id }]);
   expect(tree.steps[1].paths).toEqual([{ to: tree.steps[2].id }]);
@@ -375,7 +398,7 @@ it('lets a merchant add optional capture to a graph quiz and move it before the 
   await user.click(screen.getByRole('radio', { name: 'Screens' }));
   await user.click(screen.getByRole('button', { name: /Your result Shows a selected result/ }));
   expect(screen.getByRole('radio', { name: 'Immediately after the questions' })).toBeChecked();
-  await user.click(screen.getByRole('button', { name: 'Add optional signup' }));
+  await user.click(screen.getByRole('button', { name: 'Add optional form' }));
   expect(draft().submissions[0].required).toBe(false);
   expect(screen.getByText(/Visitors may skip this signup and finish without saving contact details/)).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: /Your result Shows a selected result/ }));
@@ -469,7 +492,25 @@ it('starts the embedded journey with a readable overview and can return to it af
   await user.click(screen.getByRole('button', { name: 'Close screen settings' }));
   expect(screen.getByRole('list', { name: 'All screens' })).toBeInTheDocument();
   expect(screen.queryByLabelText('Selected screen settings')).not.toBeInTheDocument();
-  await waitFor(() => expect(screen.getByRole('searchbox', { name: 'Find a screen' })).toHaveFocus());
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Find a screen' })).toHaveFocus());
+});
+
+it('finds a screen in the option menu, marks the current one, and leaves on Escape', async () => {
+  const user = userEvent.setup();
+  const onSelect = vi.fn();
+  render(<JourneyEditor displayType="popup" embedded tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={onSelect} />);
+  const trigger = screen.getByRole('button', { name: 'Find a screen' });
+  await user.click(trigger);
+  const search = screen.getByRole('searchbox', { name: 'Find a screen' });
+  expect(search).toHaveFocus();
+  const first = (source.tree as TemplateTree).steps[0].name;
+  expect(screen.getByRole('button', { name: first })).toHaveAttribute('aria-current', 'true');
+  await user.keyboard('{Escape}');
+  expect(screen.queryByRole('searchbox', { name: 'Find a screen' })).toBeNull();
+  expect(trigger).toHaveFocus();
+  await user.click(trigger);
+  await user.type(screen.getByRole('searchbox', { name: 'Find a screen' }), 'no screen is called this');
+  expect(screen.getByText('No matching screens')).toBeInTheDocument();
 });
 
 it('opens on the flow and creates an ordered answer path through the inspector', async () => {
@@ -582,7 +623,7 @@ it('names the affected screens before removing a signup spread across multiple s
   await user.click(within(confirmation).getByRole('button', { name: 'Cancel' }));
   expect(draft()).toEqual(initial);
   await action(user, 'Delete screen', false);
-  await user.click(screen.getByRole('button', { name: 'Remove signup' }));
+  await user.click(screen.getByRole('button', { name: 'Remove form' }));
   expect(draft().steps).toHaveLength(2);
   expect(draft().submissions).toHaveLength(1);
 });
@@ -607,7 +648,7 @@ it('reveals the earned coupon immediately when adding SMS and preserves it when 
   render(<Editor initial={initial} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(screen.getByRole('button', { name: 'More screen options' }));
-  await user.click(screen.getByRole('menuitem', { name: 'Add optional signup' }));
+  await user.click(screen.getByRole('menuitem', { name: 'Add optional form' }));
   const tree = draft();
   const reward = walkNodes(tree.steps[1].content).find(n => n.type === 'code');
   expect(reward).toMatchObject({ text: 'WELCOME10', copy: true });
@@ -682,11 +723,11 @@ it('warns when two matching results can receive the same answer', async () => {
   await user.click(screen.getByRole('radio', { name: 'Screens' }));
   await user.click(screen.getByRole('list', { name: 'All screens' }).querySelectorAll('button')[3]);
   expect(screen.getByText(/may match the same answers/)).toBeInTheDocument();
-  await resultAction(user, 'Move later');
+  await resultAction(user, 'Move down');
   expect(screen.getByLabelText('Heading')).toHaveValue('Garden');
-  await resultAction(user, 'Move earlier');
+  await resultAction(user, 'Move up');
   await user.click(within(screen.getByRole('group', { name: 'Possible results' })).getByRole('button', { name: /More garden ideas/ }));
-  await resultAction(user, 'Move earlier');
+  await resultAction(user, 'Move up');
   expect(draft().steps[3].results?.[0].id).toBe('also-garden');
 });
 
@@ -833,16 +874,16 @@ it('removes a graph optional signup as one undoable edit and explains its captur
   render(<CaptureEditor />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(screenMenu());
-  await user.click(screen.getByRole('menuitem', { name: 'Remove optional signup' }));
-  let dialog = screen.getByRole('alertdialog', { name: 'Remove this optional signup?' });
+  await user.click(screen.getByRole('menuitem', { name: 'Remove optional form' }));
+  let dialog = screen.getByRole('alertdialog', { name: 'Remove this optional form?' });
   expect(within(dialog).getByText(/saved leads stay/)).toBeInTheDocument();
   await user.click(within(dialog).getByRole('button', { name: 'Cancel' }));
   expect(draft()).toEqual(initial);
   await waitFor(() => expect(screenMenu()).toHaveFocus());
   await user.click(screenMenu());
-  await user.click(screen.getByRole('menuitem', { name: 'Remove optional signup' }));
-  dialog = screen.getByRole('alertdialog', { name: 'Remove this optional signup?' });
-  await user.click(within(dialog).getByRole('button', { name: 'Remove signup' }));
+  await user.click(screen.getByRole('menuitem', { name: 'Remove optional form' }));
+  dialog = screen.getByRole('alertdialog', { name: 'Remove this optional form?' });
+  await user.click(within(dialog).getByRole('button', { name: 'Remove form' }));
   expect(draft().submissions).toEqual(initial.submissions.filter(sub => sub.required));
   expect(draft().steps.map(item => item.id)).not.toContain('sms');
   await user.keyboard('{Escape}');
@@ -857,7 +898,7 @@ it('adds graph secondary capture at a named saved path and restores focus after 
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(screen.getByRole('button', { name: 'Add screen' }));
   await user.click(screen.getByRole('radio', { name: /^Form/ }));
-  await user.click(screen.getByRole('button', { name: 'Set up optional signup' }));
+  await user.click(screen.getByRole('button', { name: 'Set up optional form' }));
   let dialog = screen.getByRole('dialog', { name: 'Add optional SMS signup' });
   expect(within(dialog).getByRole('combobox', { name: 'Insert after the main signup' })).toHaveValue(`edge:${initial.graph!.edges[0].id}`);
   await user.click(within(dialog).getByRole('button', { name: 'Cancel' }));
@@ -865,14 +906,14 @@ it('adds graph secondary capture at a named saved path and restores focus after 
   await waitFor(() => expect(screen.getByRole('button', { name: 'Add screen' })).toHaveFocus());
   await user.click(screen.getByRole('button', { name: 'Add screen' }));
   await user.click(screen.getByRole('radio', { name: /^Form/ }));
-  await user.click(screen.getByRole('button', { name: 'Set up optional signup' }));
+  await user.click(screen.getByRole('button', { name: 'Set up optional form' }));
   dialog = screen.getByRole('dialog', { name: 'Add optional SMS signup' });
-  await user.click(within(dialog).getByRole('button', { name: 'Add signup' }));
+  await user.click(within(dialog).getByRole('button', { name: 'Add form' }));
   expect(draft().submissions).toHaveLength(2);
   expect(draft().submissions[0]).toEqual(initial.submissions[0]);
   await waitFor(() => expect(screen.getByRole('heading', { name: 'Optional SMS signup', level: 3 })).toHaveFocus());
   await user.click(screenMenu());
-  expect(screen.getByRole('menuitem', { name: 'Remove optional signup' })).not.toHaveAttribute('data-disabled');
+  expect(screen.getByRole('menuitem', { name: 'Remove optional form' })).not.toHaveAttribute('data-disabled');
 });
 
 it('explains a branched result timing restriction and opens the named paths for repair', async () => {
@@ -887,8 +928,11 @@ it('explains a branched result timing restriction and opens the named paths for 
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(screen.getByRole('radio', { name: 'Screens' }));
   await user.click(screen.getByRole('button', { name: /Your result Shows a selected result/ }));
-  expect(screen.getByRole('radio', { name: 'After required contact details' })).toBeDisabled();
-  expect(screen.getByText(/Move any answer lines after both screens first/)).toBeInTheDocument();
+  const required = screen.getByRole('radio', { name: 'After required contact details' });
+  expect(required).toHaveAttribute('aria-disabled', 'true');
+  expect(required).toHaveAccessibleDescription(/Move any answer lines after both screens first/);
+  await user.click(required);
+  expect(draft()).toEqual(initial);
   await user.click(screen.getByRole('button', { name: 'Review Your result' }));
   expect(screen.getByRole('radio', { name: 'Lines' })).toBeChecked();
   await waitFor(() => expect(screen.getByRole('heading', { name: 'Your result' })).toHaveFocus());
@@ -974,7 +1018,7 @@ it('opens the exact referenced show condition and returns to its source question
   }
   render(<References />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  await user.click(screen.getByRole('button', { name: 'Garden details Show condition' }));
+  await user.click(screen.getByRole('button', { name: 'Garden details Only if…' }));
   await waitFor(() => expect(screen.getByRole('combobox', { name: 'Question' })).toHaveFocus());
   expect(screen.getByRole('checkbox', { name: 'Garden' })).toBeChecked();
   expect(screen.getByRole('combobox', { name: 'Question' }).closest('details')).toHaveAttribute('open');
@@ -1004,7 +1048,9 @@ it('lets a two-choice question review references while keeping the two-choice mi
   expect(within(review).getByRole('button', { name: /Sunny garden picks/ })).toBeEnabled();
   expect(within(review).queryByRole('button', { name: /Balcony picks/ })).not.toBeInTheDocument();
   await user.selectOptions(within(review).getByRole('combobox', { name: 'Replace its uses with' }), 'balcony');
-  expect(within(review).getByRole('button', { name: 'Replace uses & remove' })).toBeDisabled();
+  const replace = within(review).getByRole('button', { name: 'Replace uses & remove' });
+  expect(replace).toHaveAttribute('aria-disabled', 'true');
+  expect(replace).toHaveAccessibleDescription(/Keep at least two choices/);
 });
 
 
@@ -1056,7 +1102,7 @@ it('reviews a shared follow-up continuation change and updates shown and skipped
   render(<Campaign />);
   // On the Edit tab a question's paths are on the question's own panel: "Where visitors go next" (ADR 0134).
   expect(screen.getByText('Follow-ups')).toBeInTheDocument();
-  expect(screen.queryByRole('combobox', { name: 'Then' })).toBeNull();
+  expect(screen.getByText('Answer lines').closest('details')).not.toHaveAttribute('open');
   await user.selectOptions(screen.getByRole('combobox', { name: 'After the follow-ups' }), 'received');
   expect(screen.getByRole('alertdialog', { name: 'Check this change' })).toBeInTheDocument();
   expect(draft()).toEqual(initial);

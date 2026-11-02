@@ -19,7 +19,13 @@ the new Goal and a list of changes. The editor's Screens switch, ordinary edits
 (dropping a contact field on a one-screen design, deleting the form screen or its
 only field) and the gallery's "Use with email form" / "Use without form" all call
 it and show the same short "what changes" box. One Undo reverts the design and
-the Goal together.
+the Goal together. *Amended by [ADR 0182](0182-the-written-rules-are-held-by-guards.md): the gallery shows that box's body in
+place in its review, with Back, never as a second dialog, and read-only, so its
+Shop now choice (§3) is the switch's alone: the design the gallery applies comes
+from the campaign's Goal and the site's shop link, and a link typed there could
+not reach it. The box's title is its subject, "Email form", "Phone form", "Both
+forms", "Form copy" or "Offer copy", where the prototype asked "Add an email
+form?"; the button keeps the verb.*
 
 - **Adding a form** turns the offer screen into the form screen. Its headline and
   artwork stay; a field and a submit button take the counted link's place, and
@@ -106,7 +112,7 @@ carries the Goal, so Undo and Redo restore both. **Change goal** keeps its
 immediate save.
 
 After first publication, and for A/B arms and test parents, the Goal stays fixed
-(ADR 0085). The switch then reads **Make a signup copy** / **Make an offer copy**
+(ADR 0085). The switch then reads **Make a form copy** / **Make an offer copy**
 and creates a new unpublished draft with the converted design, named with
 "(signup)" or "(offer)". The original and its results are untouched.
 

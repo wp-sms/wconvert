@@ -31,7 +31,7 @@ export function ManualPlacement({ optinId, published }: { readonly optinId: stri
         {destination && <Button asChild variant="outline">
           <a href={destination.url} target="_blank" rel="noopener noreferrer">
             {blockTheme ? __('Open Site Editor', 'wconvert') : __('Open Widgets', 'wconvert')}
-            <ExternalLink aria-hidden="true" />
+            <ExternalLink aria-hidden="true" className="rtl:-scale-x-100" />
           </a>
         </Button>}
       </div>

@@ -50,7 +50,7 @@ function SecretField({ label, value, description, guide }: { label: string; valu
         </Button>
       </div>
       <p role="status" className="m-0 text-note empty:hidden">
-        {copy === 'failed' ? __('Couldn’t copy. It is selected: press Ctrl+C or ⌘C.', 'wconvert') : ''}
+        {copy === 'failed' ? __('Could not copy. It is selected: press Ctrl+C or ⌘C.', 'wconvert') : ''}
       </p>
     </div>
     <div id={`${id}-note`} className="flex items-start gap-2 rounded-md bg-info-surface p-3 text-note text-foreground">

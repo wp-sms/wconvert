@@ -1,5 +1,7 @@
+import { useId } from 'react';
 import { __ } from '@wordpress/i18n';
 import { useDirection } from '../hooks/useDirection';
+import { FieldHeading } from './PanelSection';
 
 const BAR_DEFAULT = 'block_end';
 const SLIDE_IN_DEFAULT = 'block_end_inline_end';
@@ -49,6 +51,7 @@ export function PlacementControl({
   onChange: (placement: string | null) => void;
 }) {
   const direction = useDirection();
+  const heading = useId();
   const selected = resolvedPlacement(displayType, value);
 
   if (selected === null) {
@@ -81,8 +84,8 @@ export function PlacementControl({
         ];
 
   return (
-    <fieldset className="wconvert-overlay-placement">
-      <legend>{__('Position', 'wconvert')}</legend>
+    <fieldset className="wconvert-overlay-placement" aria-labelledby={heading}>
+      <FieldHeading as="span" label={__('Position', 'wconvert')} labelId={heading} />
       <div
         className="wconvert-overlay-placement__choices"
         data-display-type={displayType}

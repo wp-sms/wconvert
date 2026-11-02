@@ -48,7 +48,7 @@ export function MappingTest({ destination, fields, sources, mapping }: {
     catch (cause) { setError(messageOf(cause)); }
     finally { setBusy(null); }
   };
-  return <Disclosure variant="inline" className="border-t border-border" title={__('Preview and test mapping', 'wconvert')}>
+  return <Disclosure variant="inline" className="border-t border-border" title={__('Test mapping', 'wconvert')}>
     <div className="flex min-w-0 flex-col gap-3">
       <Description>{__('Try sample answers before sending a test contact.', 'wconvert')}</Description>
       <fieldset disabled={busy !== null} className="m-0 flex min-w-0 flex-col gap-3 border-0 p-0">

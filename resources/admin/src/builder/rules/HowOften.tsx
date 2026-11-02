@@ -7,6 +7,8 @@ import { halves } from './picks';
 import { SiteLimitsNote } from './SiteLimitsNote';
 import type { Frequency } from '../api';
 import type { ConvertingAct } from '../structure/catalogue';
+import { CheckRow } from '../../shell/CheckRow';
+import { formatCount } from '../../lib/format';
 
 export interface HowOftenProps {
   readonly frequency: Frequency;
@@ -61,25 +63,18 @@ export function HowOften({ frequency, priority, overlay, custom, reopenEnabled, 
 
     <div className="wconvert-display-settings" role="group" aria-labelledby="wconvert-stop-heading">
       <p className="wconvert-display-settings__title" id="wconvert-stop-heading">{__('Stop showing it…', 'wconvert')}</p>
-      {act !== null && <label className="wconvert-display-setting">
-        <input type="checkbox" checked={frequency.stopAfterConversion !== false} onChange={event => setSwitch('stopAfterConversion', event.target.checked)} />
-        <span>{act === 'click' ? __('after they click the main button', 'wconvert') : __('after they submit the form', 'wconvert')}</span>
-      </label>}
-      <label className="wconvert-display-setting">
-        <input type="checkbox" checked={frequency.stopAfterDismiss !== false} onChange={event => setSwitch('stopAfterDismiss', event.target.checked)} />
-        <span>{__('after they close it', 'wconvert')}</span>
-      </label>
-      <div className="wconvert-display-setting">
-        <input type="checkbox" id="wconvert-frequency-capped" checked={capped}
-          onChange={event => { const next = { ...frequency }; if (event.target.checked) next.maxImpressions = 3; else delete next.maxImpressions; onFrequency(next); }} />
-        <label htmlFor="wconvert-frequency-capped">{before}<TotalField value={frequency.maxImpressions} disabled={!capped} onChange={count => setCount('maxImpressions', count)} />{after}</label>
-      </div>
+      {act !== null && <CheckRow className="wconvert-display-setting" checked={frequency.stopAfterConversion !== false} onChange={event => setSwitch('stopAfterConversion', event.target.checked)}
+        label={act === 'click' ? __('after they click the main button', 'wconvert') : __('after they submit the form', 'wconvert')} />}
+      <CheckRow className="wconvert-display-setting" checked={frequency.stopAfterDismiss !== false} onChange={event => setSwitch('stopAfterDismiss', event.target.checked)} label={__('after they close it', 'wconvert')} />
+      <CheckRow className="wconvert-display-setting" checked={capped}
+        onChange={event => { const next = { ...frequency }; if (event.target.checked) next.maxImpressions = 3; else delete next.maxImpressions; onFrequency(next); }}
+        label={<>{before}<TotalField value={frequency.maxImpressions} disabled={!capped} onChange={count => setCount('maxImpressions', count)} />{after}</>} />
     </div>
     {frequency.maxPerSession !== undefined && frequency.stopAfterDismiss !== false && <p className="wconvert-display-hint">{__('Closing it stops it for good, not just for this visit.', 'wconvert')}</p>}
-    {reopenEnabled && <p className="wconvert-display-hint">{__('Your reopen button skips automatic view limits, waiting periods and closing restrictions. Completion stops it; closing the reminder stops this campaign for the visit.', 'wconvert')}</p>}
+    {reopenEnabled && <p className="wconvert-display-hint">{__('Your reopen button skips automatic display limits, waiting periods and closing restrictions. Completion stops it; closing the reminder stops this campaign for the visit.', 'wconvert')}</p>}
 
-    {overlay && <DisclosureCard title={__('If several popups are ready at once', 'wconvert')}
-      current={priority === 0 ? __('Opens in the usual order', 'wconvert') : sprintf(/* translators: %d: a priority number. */ __('Shows before others (%d)', 'wconvert'), priority)}>
+    {overlay && <DisclosureCard title={__('Popup priority', 'wconvert')}
+      current={priority === 0 ? __('Opens in the usual order', 'wconvert') : sprintf(/* translators: %s: a priority number. */ __('Shows before others (%s)', 'wconvert'), formatCount(priority))}>
       <label className="wconvert-display-inline-field" htmlFor="wconvert-priority">{__('Show this one first', 'wconvert')}
         <Input id="wconvert-priority" className="w-24" type="number" value={priority === 0 ? '' : priority} aria-describedby="wconvert-priority-help"
           onChange={event => { const next = Number(event.target.value); onPriority(event.target.value === '' || !Number.isFinite(next) ? 0 : Math.trunc(next)); }} />

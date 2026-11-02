@@ -4,6 +4,7 @@ import type { ProductsNode } from '@renderer/types';
 import { CommercePicker } from './CommerceControls';
 import { CheckRow } from '../shell/CheckRow';
 import { FactList, FactRow, PanelField, PanelHint, PanelSection } from './PanelSection';
+import { NativeSelect } from '../components/ui/native-select';
 
 /** One recommendation editor; campaign placement remains owned by Display rules. */
 export function RecommendationSettings({ value, onChange, onPlacement, placement }: {
@@ -26,10 +27,10 @@ export function RecommendationSettings({ value, onChange, onPlacement, placement
     <PanelSection title={__('Recommended extras', 'wconvert')}>
       <PanelField label={__('Product source', 'wconvert')} htmlFor={sourceId}
         hint={value.source === 'cross_sells' ? value.main_product_id ? __('Uses cross-sells saved on the main product.', 'wconvert') : __('Uses cross-sells saved on basket products.', 'wconvert') : undefined}>
-        <select id={sourceId} value={value.source ?? 'selected'} onChange={event => onChange({ source: event.target.value as ProductsNode['source'] })}>
+        <NativeSelect id={sourceId} value={value.source ?? 'selected'} onChange={event => onChange({ source: event.target.value as ProductsNode['source'] })}>
           <option value="selected">{__('Choose products', 'wconvert')}</option>
           <option value="cross_sells">{__('WooCommerce cross-sells', 'wconvert')}</option>
-        </select>
+        </NativeSelect>
       </PanelField>
       {value.source !== 'cross_sells' && <div className="wconvert-panel-field">
         <CommercePicker value={value.product_ids} max={6} recommendations compact searchLabel={__('Find an extra', 'wconvert')} excludeIds={value.main_product_id ? [value.main_product_id] : []} onChange={ids => onChange({ product_ids: ids })} />
@@ -46,12 +47,12 @@ export function RecommendationSettings({ value, onChange, onPlacement, placement
       <FactList><FactRow label={__('Placement', 'wconvert')} action={onPlacement ? __('Display rules', 'wconvert') : undefined} onAction={onPlacement}>{placement ?? __('Set in Display rules', 'wconvert')}</FactRow></FactList>
     </PanelSection>
     <PanelSection title={__('Product action', 'wconvert')}
-      tip={value.action === 'add_to_cart' ? __('Adds one item; products needing options open their product page. It counts additions to the cart, not purchases.', 'wconvert') : __('Results count product clicks.', 'wconvert')}>
+      tip={value.action === 'add_to_cart' ? __('Adds one item; products needing options open their product page. It counts additions to the basket, not purchases.', 'wconvert') : __('Results count product clicks.', 'wconvert')}>
       <label className="sr-only" htmlFor={actionId}>{__('Product action', 'wconvert')}</label>
-      <select id={actionId} value={value.action ?? 'link'} onChange={event => onChange({ action: event.target.value as ProductsNode['action'] })}>
+      <NativeSelect id={actionId} value={value.action ?? 'link'} onChange={event => onChange({ action: event.target.value as ProductsNode['action'] })}>
         <option value="link">{__('Open the product page', 'wconvert')}</option>
         <option value="add_to_cart">{__('Add to cart', 'wconvert')}</option>
-      </select>
+      </NativeSelect>
       {/* It changes which goal to pick, so it stays a line rather than a tip (ADR 0136 §2). */}
       {value.action === 'add_to_cart' && <PanelHint>{__('Use the Increase basket value goal to count these.', 'wconvert')}</PanelHint>}
     </PanelSection>

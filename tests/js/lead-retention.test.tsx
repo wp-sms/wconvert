@@ -94,6 +94,27 @@ describe('explicit lead retention', () => {
     expect(screen.getByRole('status')).toHaveTextContent('');
   });
 
+  it('says a refused save beside the actions it is about, and keeps the confirm open', async () => {
+    await open();
+    api.saveRetention.mockRejectedValueOnce(new Error('The site refused the period.'));
+    const dialog = await propose('30');
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Delete after 30 days' }));
+    const alert = await within(dialog).findByRole('alert');
+    expect(alert).toHaveTextContent('The site refused the period.');
+    expect(alert.closest('[data-slot="alert-dialog-footer"]')).not.toBeNull();
+  });
+
+  it('says a refused save with no confirm beside Save, in the region’s footer', async () => {
+    api.readRetention.mockResolvedValue({ ...forever, days: 90 });
+    api.saveRetention.mockRejectedValueOnce(new Error('The site refused it.'));
+    render(<LeadRetention />);
+    await userEvent.click(await screen.findByRole('radio', { name: 'Keep them until I delete them' }));
+    await userEvent.click(save());
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('The site refused it.');
+    expect(alert.parentElement).toBe(save().parentElement);
+  });
+
   it('keeps a confirmation cancellation editable and restores focus without saving', async () => {
     await open();
     const dialog = await propose('45');
@@ -137,7 +158,7 @@ describe('explicit lead retention', () => {
     await userEvent.click(automatic());
     fireEvent.change(days(), { target: { value } });
     await userEvent.click(save());
-    expect(screen.getByRole('alert')).toHaveTextContent('Enter a whole number from 1 to 3650 days.');
+    expect(screen.getByRole('alert')).toHaveTextContent('Enter a whole number from 1 to 3,650 days.');
     expect(days()).toHaveAttribute('aria-invalid', 'true');
     expect(days()).toHaveFocus();
     expect(screen.queryByRole('alertdialog')).toBeNull();

@@ -3,8 +3,11 @@ import apiFetch from '@wordpress/api-fetch';
 import { __, sprintf } from '@wordpress/i18n';
 import { CommercePicker } from '../CommerceControls';
 import { Input } from '../../components/ui/input';
+import { Skeleton } from '../../components/ui/skeleton';
+import { TryAgain } from '../../shell/Region';
 import type { ProductsNode } from '@renderer/types';
 import type { Rule } from '@loader/types';
+import { NativeSelect } from '../../components/ui/native-select';
 
 export type Basket = { viewed_product_id?: number; items: { id: number; quantity: number }[]; amount: number; total: number; state: 'known' | 'unknown' | 'blocked' };
 export const emptyBasket = (): Basket => ({ items: [], amount: 0, total: 0, state: 'known' });
@@ -16,6 +19,7 @@ export function useBasketPreview(enabled: boolean, basket: Basket, rules: readon
   const key = JSON.stringify({ ...basket, rules, products: products ? { action: products.action ?? 'link', source: products.source ?? 'selected', product_ids: products.product_ids ?? [], exclude_cart: products.exclude_cart !== false, context: products.context ?? 'cart', ...(products.main_product_id !== undefined ? { main_product_id: products.main_product_id } : {}) } : null });
   const request = useMemo(() => ({ key }), [key]);
   const [reply, setReply] = useState<{ request: typeof request; result?: BasketResult; error?: boolean }>();
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     if (!enabled) return;
     let current = true;
@@ -27,11 +31,15 @@ export function useBasketPreview(enabled: boolean, basket: Basket, rules: readon
         .catch(() => { if (current) setReply({ request, error: true }); }).finally(() => clearTimeout(timeout));
     }, 250);
     return () => { current = false; clearTimeout(timer); controller.abort(); };
-  }, [enabled, key, request]);
-  return { result: enabled && reply?.request === request ? reply.result : undefined, error: enabled && reply?.request === request && reply.error === true };
+  }, [enabled, key, request, attempt]);
+  return {
+    result: enabled && reply?.request === request ? reply.result : undefined,
+    error: enabled && reply?.request === request && reply.error === true,
+    retry: () => { setReply(undefined); setAttempt(current => current + 1); },
+  };
 }
 
-export function SampleBasket({ value, onChange, result, error, products, legacyTotal }: { value: Basket; onChange(value: Basket): void; result?: BasketResult; error: boolean; products?: ProductsNode; legacyTotal: boolean }) {
+export function SampleBasket({ value, onChange, result, error, onRetry, products, legacyTotal }: { value: Basket; onChange(value: Basket): void; result?: BasketResult; error: boolean; onRetry(): void; products?: ProductsNode; legacyTotal: boolean }) {
   const reason: Record<string, string> = {
     unknown: __('The sample basket is unavailable or consent is not given.', 'wconvert'),
     main_required: __('Choose an available main product in the recommendation settings.', 'wconvert'),
@@ -45,20 +53,22 @@ export function SampleBasket({ value, onChange, result, error, products, legacyT
   };
   return <section aria-labelledby="wconvert-sample-basket" className="space-y-3">
     <h3 id="wconvert-sample-basket">{__('Sample basket', 'wconvert')}</h3>
-    <p className="wconvert-sample-help">{__('These are pretend basket contents and totals. Product categories, relationships and availability come from your store. Nothing is added to a real cart.', 'wconvert')}</p>
-    <label>{__('Basket status', 'wconvert')}<select value={value.state} onChange={event => onChange({ ...value, state: event.target.value as Basket['state'] })}>
+    <p className="wconvert-sample-help">{__('These are pretend basket contents and totals. Product categories, relationships and availability come from your store. Nothing is added to a real basket.', 'wconvert')}</p>
+    <label>{__('Basket status', 'wconvert')}<NativeSelect value={value.state} onChange={event => onChange({ ...value, state: event.target.value as Basket['state'] })}>
       <option value="known">{__('Known basket', 'wconvert')}</option><option value="unknown">{__('Basket unavailable', 'wconvert')}</option><option value="blocked">{__('Consent not given', 'wconvert')}</option>
-    </select></label>
+    </NativeSelect></label>
     {products?.context === 'product' && <fieldset className="space-y-3"><legend>{__('Viewed product', 'wconvert')}</legend><CommercePicker recommendations compact max={1} searchLabel={__('Find viewed product', 'wconvert')} value={value.viewed_product_id ? [value.viewed_product_id] : []} onChange={ids => onChange({ ...value, viewed_product_id: ids[0] ?? 0 })}/><p className="wconvert-sample-help">{__('Choose a product page. This does not add it to the sample basket.', 'wconvert')}</p></fieldset>}
     <CommercePicker value={value.items.map(item => item.id)} onChange={ids => onChange({ ...value, items: ids.map(id => value.items.find(item => item.id === id) ?? { id, quantity: 1 }) })}
       itemControls={(id, name) => <label>{__('Quantity', 'wconvert')}<Input className="w-24" type="number" min={1} max={10000} step={1} aria-label={sprintf(/* translators: %s: a product's name in the sample basket, e.g. “Blue T-shirt”. */ __('Quantity for %s', 'wconvert'), name)} value={value.items.find(item => item.id === id)?.quantity ?? 1}
         onChange={event => onChange({ ...value, items: value.items.map(item => item.id === id ? { ...item, quantity: Math.max(1, Math.min(10000, Math.floor(Number(event.target.value) || 1))) } : item) })} /></label>} />
     <label>{__('Merchandise amount after discounts', 'wconvert')}<Input type="number" min={0} max={1000000000} step="any" value={value.amount} onChange={event => onChange({ ...value, amount: Number(event.target.value) })} /></label>
     <p className="wconvert-sample-help">{result?.currency ?? ''} · {__('Enter a pretend amount, excluding shipping and tax. It is not calculated from product prices.', 'wconvert')}</p>
-    {legacyTotal && <label>{__('Cart total including shipping and tax', 'wconvert')}<Input type="number" min={0} max={1000000000} step="any" value={value.total} onChange={event => onChange({ ...value, total: Number(event.target.value) })} /></label>}
-    {error ? <p role="alert">{__('Could not test this basket. Review the values or reopen the sample visit to try again.', 'wconvert')}</p> : !result ? <p>{__('Checking the sample basket…', 'wconvert')}</p> : null}
+    {legacyTotal && <label>{__('Basket total including shipping and tax', 'wconvert')}<Input type="number" min={0} max={1000000000} step="any" value={value.total} onChange={event => onChange({ ...value, total: Number(event.target.value) })} /></label>}
+    {/* The verdict beside this says "Checking…", so the wait has no second voice here. */}
+    {error && <div role="alert" className="flex flex-wrap items-center gap-3"><span>{__('Could not test this basket. Review the values, then try again.', 'wconvert')}</span><TryAgain onClick={onRetry} /></div>}
     {products && <div className="space-y-3"><h4>{__('Recommendations for this sample visit', 'wconvert')}</h4>
       <p className="wconvert-sample-help">{__('Product availability preview only. The campaign also needs to pass the display rules above. No clicks or sales are recorded.', 'wconvert')}</p>
+      {!result && !error && <Skeleton aria-hidden="true" className="h-[1lh] w-64 max-w-full" />}
       {result && !result.cards.length && <p>{reason[result.reason] ?? __('No eligible suggestions.', 'wconvert')}</p>}
       {!!result?.cards.length && <ul className="grid gap-3 sm:grid-cols-3">{result.cards.map(card => <li className="min-w-0 rounded-md border p-3 space-y-2" key={card.id}>
         {card.image && <img className="w-full aspect-square object-cover" src={card.image} alt="" />}

@@ -17,7 +17,10 @@ it('keeps an incomplete filter visible and changes its value without losing the 
   await waitFor(() => expect(screen.getByRole('option', { name: 'Blue' })).toBeInTheDocument());
   await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Value' }), '9');
   expect(onChange).toHaveBeenCalledWith({ category_id: 7, attributes: [{ taxonomy: 'pa_color', term_id: 9 }] });
-  expect(screen.getByRole('button', { name: 'Add attribute filter' })).toBeDisabled();
+  // Refused rather than disabled (§14): it keeps focus, and says why.
+  const add = screen.getByRole('button', { name: 'Add attribute filter' });
+  expect(add).toHaveAttribute('aria-disabled', 'true');
+  expect(add).toHaveAccessibleDescription('Finish this filter first.');
 });
 
 it('does not fetch incomplete matches and explains empty and failed reads', async () => {
@@ -53,7 +56,7 @@ it('changes ordering without losing filters and loads curation only when opened'
   await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Product order' }), 'price_low');
   expect(onChange).toHaveBeenCalledWith({ ...original, order: 'price_low' });
   expect(vi.mocked(apiFetch).mock.calls.some(([args]) => args.path?.includes('/wc/store/'))).toBe(false);
-  await userEvent.click(screen.getByText('Pin or exclude products'));
+  await userEvent.click(screen.getByText('Pin or exclude'));
   expect(await screen.findByLabelText('Find products to pin')).toBeInTheDocument();
   expect(screen.getByLabelText('Find products to exclude')).toBeInTheDocument();
 });
@@ -62,14 +65,19 @@ it('reorders pins, removes a pin and enforces the pin limit', async () => {
   vi.mocked(apiFetch).mockResolvedValue([{ id: 1, name: 'One' }, { id: 2, name: 'Two' }, { id: 3, name: 'Three' }, { id: 4, name: 'Four' }]);
   function Harness() { const [ids, setIds] = useState([1, 2, 3]); return <><ProductPicker ids={ids} onChange={setIds} max={3} /><output>{ids.join(',')}</output></>; }
   render(<Harness />);
-  await userEvent.click(await screen.findByRole('button', { name: 'Move earlier: Two' }));
+  await userEvent.click(await screen.findByRole('button', { name: 'Move up: Two' }));
   expect(screen.getByRole('status')).toHaveTextContent('2,1,3');
   await userEvent.type(screen.getByLabelText('Find products'), 'Four');
   await userEvent.click(screen.getByRole('button', { name: 'Search catalog' }));
-  expect((await screen.findAllByRole('button', { name: /^Add:/ })).every(button => button.hasAttribute('disabled'))).toBe(true);
+  const adds = await screen.findAllByRole('button', { name: /^Add:/ });
+  expect(adds.every(button => button.getAttribute('aria-disabled') === 'true')).toBe(true);
+  expect(adds[0]).toHaveAccessibleDescription('Already selected.');
+  expect(adds[3]).toHaveAccessibleDescription('Selection full. Remove a product to choose another.');
+  await userEvent.click(adds[3]);
+  expect(screen.getByRole('status')).toHaveTextContent('2,1,3');
   await userEvent.click(screen.getByRole('button', { name: 'Remove: One' }));
   expect(screen.getByRole('status')).toHaveTextContent('2,3');
-  expect(screen.getAllByRole('button', { name: /^Add:/ })[3]).toBeEnabled();
+  expect(screen.getAllByRole('button', { name: /^Add:/ })[3]).not.toHaveAttribute('aria-disabled');
 });
 
 it('allows excluding out-of-stock products without ordering controls', async () => {
@@ -80,7 +88,7 @@ it('allows excluding out-of-stock products without ordering controls', async () 
   await userEvent.click(screen.getByRole('button', { name: 'Search catalog' }));
   await userEvent.click(await screen.findByRole('button', { name: /^Add:/ }));
   expect(onChange).toHaveBeenCalledWith([4]);
-  expect(screen.queryByRole('button', { name: /Move earlier/ })).toBeNull();
+  expect(screen.queryByRole('button', { name: /Move up/ })).toBeNull();
 });
 
 it('explains missing pins but ignores intentionally excluded pins', async () => {
@@ -114,7 +122,7 @@ it('drops old search results when the query changes and offers a working retry',
   await userEvent.keyboard('{Enter}');
   expect(await screen.findByRole('alert')).toHaveTextContent('Products could not load');
   vi.mocked(apiFetch).mockResolvedValueOnce([{ id: 2, name: 'New product' }]);
-  await userEvent.click(screen.getByRole('button', { name: 'Retry search' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
   expect(await screen.findByRole('button', { name: 'Pin: New product' })).toBeEnabled();
 });
 
@@ -123,7 +131,7 @@ it('keeps the selection when names cannot load and retries in place', async () =
   const onChange = vi.fn();
   render(<ProductPicker ids={[3]} onChange={onChange} />);
   expect(await screen.findByRole('alert')).toHaveTextContent('Your selection is kept');
-  expect(screen.getByRole('button', { name: 'Remove: Product #3' })).toBeEnabled();
+  expect(screen.getByRole('button', { name: 'Remove: Unnamed product' })).toBeEnabled();
   vi.mocked(apiFetch).mockResolvedValueOnce([{ id: 3, name: 'Recovered name' }]);
   await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
   expect(await screen.findByRole('button', { name: 'Remove: Recovered name' })).toBeEnabled();

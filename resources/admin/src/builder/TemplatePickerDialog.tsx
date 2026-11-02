@@ -18,9 +18,11 @@ import { filterCards, mergeDesigns, optionCounts, type GalleryCard as Card, type
 import { GalleryCard, TemplateAction } from '../gallery/GalleryCard';
 import { GalleryGrid, PER_PAGE } from '../gallery/GalleryGrid';
 import { GalleryToolbar, NO_CHOICES, type ActiveFilter, type GalleryChoices } from '../gallery/GalleryToolbar';
-import { InspectDialog } from '../gallery/InspectDialog';
+import { InspectDescription, InspectView } from '../gallery/InspectDialog';
 import { useAskForPage } from '../gallery/useAskForPage';
 import '../gallery/gallery.css';
+import { NativeSelect } from '../components/ui/native-select';
+import { CheckRow } from '../shell/CheckRow';
 
 export interface TemplatePickerDialogProps {
   readonly open: boolean;
@@ -66,6 +68,9 @@ const NO_EXTRAS: EditorFilters = { industry: '', occasion: '', style: '', shape:
  * form switch adds or removes its form carries the switch's chip (ADR 0163).
  * Using a card opens its review — keep my words or the sample's, what changes
  * — and applying there replaces the draft's design.
+ *
+ * One modal, its body swapped (§9): the review, what changes under it, and the
+ * inspect view all open in place with Back, over a grid that stays mounted.
  */
 export function TemplatePickerDialog({ open, onOpenChange, onClosed, onLibraryChanged, index, trees, displayType, chosen, hasCurrentDesign = true, contentLock = false, fit, goalLabel, busy: pickerBusy, onChoose, onPrepare, onNear, failed, onRetry, fieldMappings, asksQuestions }: TemplatePickerDialogProps) {
   const catalog = index.catalog;
@@ -75,6 +80,7 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onLibraryCh
   const [goalOnly, setGoalOnly] = useState(true);
   const [page, setPage] = useState(0);
   const [reviewing, setReviewing] = useState<string | null>(null);
+  const [explaining, setExplaining] = useState(false);
   const [inspecting, setInspecting] = useState<string | null>(null);
   const [installing, setInstalling] = useState<string | null>(null);
   const [installFailed, setInstallFailed] = useState<{ key: string; message: string } | null>(null);
@@ -145,10 +151,10 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onLibraryCh
     if (values.length === 0) return null;
     return <label key={facet}>
       <span>{label}</span>
-      <select className="wconvert-picker__select" value={extras[facet]} onChange={event => changeExtras({ [facet]: event.target.value })}>
+      <NativeSelect value={extras[facet]} onChange={event => changeExtras({ [facet]: event.target.value })}>
         <option value="">{__('Any', 'wconvert')}</option>
         {values.map(value => <option key={value} value={value}>{word(value)}</option>)}
-      </select>
+      </NativeSelect>
     </label>;
   };
   const extrasActive: ActiveFilter[] = [
@@ -158,7 +164,7 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onLibraryCh
   ];
 
   /** A design the library has: added to this site, then reviewed like any other. */
-  const review = (key: string) => { onNear(key); setReviewing(key); };
+  const review = (key: string) => { onNear(key); setInspecting(null); setReviewing(key); };
   const install = async (card: Card, sha256: string, id = designIdOf(entries.get(card.key)!)) => {
     if (!onLibraryChanged) return;
     setInstalling(card.key); setInstallFailed(null);
@@ -167,13 +173,16 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onLibraryCh
       await onLibraryChanged();
       review(installed.template_id);
     } catch (cause) {
-      setInstallFailed({ key: card.key, message: __('Couldn’t add this template.', 'wconvert') + ' ' + messageOf(cause) });
+      setInstallFailed({ key: card.key, message: __('Could not add this template.', 'wconvert') + ' ' + messageOf(cause) });
     } finally { setInstalling(null); }
+  };
+  const adopt = (card: Card) => {
+    if (card.availability === 'install' && card.sha256) { void install(card, card.sha256); return; }
+    review(card.key);
   };
   const use = (card: Card) => {
     returnFocus.current = document.activeElement as HTMLElement | null;
-    if (card.availability === 'install' && card.sha256) { void install(card, card.sha256); return; }
-    review(card.key);
+    adopt(card);
   };
   // A template on this site is looked at in its review; any other in the inspect view.
   const inspect = (card: Card) => {
@@ -181,39 +190,46 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onLibraryCh
     if (card.source === 'local' && card.availability === 'ready') { review(card.key); return; }
     setInspecting(card.key);
   };
-  const back = () => { setReviewing(null); requestAnimationFrame(() => returnFocus.current?.focus({ preventScroll: true })); };
+  const back = () => { setReviewing(null); setInspecting(null); requestAnimationFrame(() => returnFocus.current?.focus({ preventScroll: true })); };
 
   const reviewed = reviewing ? entries.get(reviewing) : undefined;
   const inspected = all.find(card => card.key === inspecting) ?? null;
   // Opening a design moves the caret to its name, as the setup preview does.
-  useEffect(() => { if (reviewing) title.current?.focus({ preventScroll: true }); }, [reviewing]);
+  useEffect(() => { if (reviewing || inspecting) title.current?.focus({ preventScroll: true }); }, [reviewing, inspecting]);
+  // Escape steps back one view, as each view's Back does; only the grid closes the modal.
+  const stepBack = explaining ? () => setExplaining(false) : reviewed !== undefined || inspected !== null ? back : null;
   useAskForPage(open && reviewed === undefined ? paged.filter(card => card.source === 'local').map(card => card.key) : [], onNear);
 
   return (
     <Dialog open={open} onOpenChange={(next) => {
-      if (!next) { setReviewing(null); setInspecting(null); }
+      if (!next) { setReviewing(null); setExplaining(false); setInspecting(null); }
       onOpenChange(next);
     }}>
-      <PickerDialogContent onCloseAutoFocus={(event) => { if (onClosed) { event.preventDefault(); onClosed(); } }}>
+      <PickerDialogContent onCloseAutoFocus={(event) => { if (onClosed) { event.preventDefault(); onClosed(); } }}
+        onEscapeKeyDown={(event) => { if (stepBack === null) return; event.preventDefault(); if (!busy) stepBack(); }}>
         <PickerDialogHeader className="flex-row flex-wrap items-center justify-between gap-x-6 gap-y-3 text-start">
           <div className="wconvert-picker__identity">
-            <DialogTitle ref={title} tabIndex={-1}>{reviewed ? reviewed.name : __('Change template', 'wconvert')}</DialogTitle>
+            <DialogTitle ref={title} tabIndex={-1}>{reviewed ? reviewed.name : inspected ? inspected.name : __('Change template', 'wconvert')}</DialogTitle>
             {reviewed && reviewed.id === chosen && <Badge variant="secondary">{__('Current template', 'wconvert')}</Badge>}
           </div>
-          <DialogDescription>{reviewed
+          {inspected ? <InspectDescription card={inspected} /> : <DialogDescription>{reviewed
             ? designMeta(asConverted(reviewed, fit, trees.get(reviewed.id)), index.labels)
-            : __('Your words, rules and placement stay. Only the design changes.', 'wconvert')}</DialogDescription>
+            : __('Your words, rules and placement stay. Only the design changes.', 'wconvert')}</DialogDescription>}
         </PickerDialogHeader>
-        {/* The grid stays mounted under a review, so Back returns to the card and the scroll it left. */}
+        {/* The grid stays mounted under a view, so Back returns to the card and the scroll it left. */}
         {reviewed && (
           <TemplateDesignDetail key={reviewed.id} entry={reviewed} template={trees.get(reviewed.id)}
             currentDisplayType={displayType} hasCurrentDesign={hasCurrentDesign} contentLock={contentLock}
             labels={index.labels} current={reviewed.id === chosen} active={open} fit={fit} goalLabel={goalLabel} busy={busy}
             loadError={failed?.has(reviewed.id)} onRetry={onRetry ? () => onRetry(reviewed.id) : undefined}
             backLabel={__('Back to templates', 'wconvert')} fieldMappings={fieldMappings} asksQuestions={asksQuestions}
-            onChoose={(id, prepared) => { setReviewing(null); onChoose(id, prepared); }} onPrepare={onPrepare} onBack={back} />
+            onChoose={(id, prepared) => { setReviewing(null); onChoose(id, prepared); }} onPrepare={onPrepare} onBack={back}
+            explaining={explaining} onExplain={setExplaining} />
         )}
-        <PickerDialogBody className="wconvert-gallery-scope" hidden={reviewed !== undefined}>
+        {inspected && <InspectView key={inspected.key} card={inspected} busy={busy} onBack={back}
+          error={installFailed?.key === inspected.key ? installFailed.message : null}
+          action={<TemplateAction card={inspected} busy={installing === inspected.key} disabled={busy} onUse={() => adopt(inspected)} />} />}
+        <PickerDialogBody className="wconvert-gallery-scope" hidden={reviewed !== undefined || inspected !== null}>
           <div className="grid gap-4">
             {picker.error && <RegionError message={picker.error} onRetry={() => { void picker.reload(); }} />}
             {catalog?.update_required && <p className="wconvert-picker__notice text-note">{__('Update WConvert to see new templates from the online library.', 'wconvert')}</p>}
@@ -221,20 +237,17 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onLibraryCh
               showPlan={proHints && cards.some(card => card.availability === 'locked')}
               scope={fit.outcome && <label className="wconvert-gallery-toolbar__field">
                 <span className="sr-only">{__('Show', 'wconvert')}</span>
-                <select className="wconvert-picker__select" value={goalOnly ? 'goal' : 'all'} onChange={event => { setGoalOnly(event.target.value === 'goal'); setPage(0); }}>
+                <NativeSelect className="text-note" value={goalOnly ? 'goal' : 'all'} onChange={event => { setGoalOnly(event.target.value === 'goal'); setPage(0); }}>
                   <option value="goal">{goalLabel ? sprintf(/* translators: %s: campaign goal. */ __('For “%s”', 'wconvert'), goalLabel) : __('For this goal', 'wconvert')}</option>
                   <option value="all">{__('All templates', 'wconvert')}</option>
-                </select>
+                </NativeSelect>
               </label>}
               extras={<>
                 {extraSelect('industry', __('Industry', 'wconvert'), id => tagWord('industry', id))}
                 {extraSelect('occasion', __('Occasion', 'wconvert'), id => tagWord('occasion', id))}
                 {extraSelect('style', __('Style', 'wconvert'), id => tagWord('style', id))}
                 {extraSelect('shape', __('Layout', 'wconvert'), shapeWord)}
-                {(extras.picture || filterCards(cards, { ...filters, hasImage: true }).length > 0) && <label className="flex items-center gap-2">
-                  <input type="checkbox" checked={extras.picture} onChange={event => changeExtras({ picture: event.target.checked })} />
-                  {__('With a picture', 'wconvert')}
-                </label>}
+                {(extras.picture || filterCards(cards, { ...filters, hasImage: true }).length > 0) && <CheckRow checked={extras.picture} onChange={event => changeExtras({ picture: event.target.checked })} label={__('With a picture', 'wconvert')} />}
               </>}
               extrasActive={extrasActive} />
             <GalleryGrid total={cards.length} shown={shown.length} page={shownPage} pages={pages} onPage={setPage} onClear={clear} disabled={busy}
@@ -255,9 +268,6 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onLibraryCh
             </GalleryGrid>
           </div>
         </PickerDialogBody>
-        <InspectDialog card={inspected} onClose={() => setInspecting(null)} returnFocusTo={returnFocus}
-          action={inspected && <TemplateAction card={inspected} busy={installing === inspected.key} disabled={busy}
-            onUse={() => { setInspecting(null); use(inspected); }} />} />
       </PickerDialogContent>
     </Dialog>
   );

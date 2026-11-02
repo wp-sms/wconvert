@@ -1,6 +1,7 @@
-import { useId, useMemo, useState, type ReactNode, type RefObject } from 'react';
+import { useEffect, useId, useMemo, useRef, useState, type ReactNode, type RefObject } from 'react';
+import { refusable } from '../lib/refusable';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import type { Template } from '@renderer/types';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -11,18 +12,22 @@ import { DesignStage } from '../stage/DesignStage';
 import { captureState, type CaptureTarget, type Change, type ChangeItem, type Conversion, type NotConverted } from './structure/captureConversion';
 import type { ContactChannel } from './structure/captureWording';
 import { walkNodes } from './structure/journey';
+import { messageOf } from '../shell/loadable';
+import { CheckRow } from '../shell/CheckRow';
+import { formatCount } from '../lib/format';
 
 /**
  * ============================================================================
  * THE ONE BOX EVERY WAY INTO THE FORM SWITCH SHOWS (ADR 0163).
  * ============================================================================
- * The Screens switch, deleting the form in the editor and the gallery all
- * open this before anything changes. It names what the screens gain and lose,
- * what the Goal becomes and which Destinations stop, from the engine's own
- * change list, and says once that Undo takes all of it back.
+ * The Screens switch and deleting the form in the editor open this before
+ * anything changes; the gallery shows the same body in place, read-only, as
+ * `CaptureChangeView` (GUIDELINES §9: one body per subject, never nested). It
+ * names what the screens gain and lose, what the Goal becomes and which
+ * Destinations stop, from the engine's own change list, and says once that Undo
+ * takes all of it back.
  *
- * `copy` makes a new draft for a Goal that cannot change; `preview` only
- * explains, for the gallery.
+ * `copy` makes a new draft for a Goal that cannot change.
  */
 export interface CaptureChangeDialogProps {
   readonly open: boolean;
@@ -33,7 +38,7 @@ export interface CaptureChangeDialogProps {
   /** What was asked for. A channel the merchant may still change in `copy`. */
   readonly target: CaptureTarget;
   readonly convert: (target: CaptureTarget) => Conversion | NotConverted;
-  readonly mode?: 'apply' | 'copy' | 'preview';
+  readonly mode?: 'apply' | 'copy';
   /** The copy's name, in `copy`. */
   readonly copyName?: string;
   /** The campaign had a form before, so a new one starts from default wording. */
@@ -125,58 +130,52 @@ function ScreenTile({ template, displayType, step, caption }: { template: Templa
   </figure>;
 }
 
-export function CaptureChangeDialog({ open, onOpenChange, before, displayType, target, convert, mode = 'apply', copyName, hadForm = false, onConfirm, returnFocusTo }: CaptureChangeDialogProps) {
-  const offer = adminSettings()?.offerLink;
+/**
+ * The box's title, its one line and its button. The title is the subject, the
+ * form or the copy (§9); the line says what visitors will see, and the button
+ * carries the verb the prototype's title asked as a question.
+ */
+function changeWords(before: Template, effective: CaptureTarget, copy: boolean) {
   const was = captureState(before.tree);
-  const [channel, setChannel] = useState<ContactChannel>(target.capture === 'none' ? 'email' : target.capture);
-  const [withLink, setWithLink] = useState(true);
-  const [href, setHref] = useState(offer?.href ?? '');
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const hrefId = useId();
-  const radioName = useId();
-
-  // The box offers a "Shop now" button only where no link comes back on its own.
-  const plain = useMemo(() => target.capture === 'none' ? convert({ capture: 'none' }) : null, [convert, target]);
-  const needsLink = plain !== null && !('reason' in plain)
-    && !plain.changes.some(change => change.kind === 'screen-changes' && change.gets.some(item => item.kind === 'link'));
-  const linkHref = needsLink && withLink ? href.trim() : '';
-  const effective = useMemo((): CaptureTarget => target.capture === 'none'
-    ? (linkHref ? { capture: 'none', link: { label: __('Shop now', 'wconvert'), href: linkHref } } : { capture: 'none' })
-    : mode === 'copy' && was === 'none' ? { capture: channel } : target, [target, linkHref, mode, was, channel]);
-  const result = useMemo(() => convert(effective), [convert, effective]);
-
   const adding = was === 'none';
   const removing = effective.capture === 'none';
   const signups = before.tree.submissions.length;
-  const copy = mode === 'copy';
-  const title = copy ? (adding ? __('Make a signup copy', 'wconvert') : __('Make an offer copy', 'wconvert'))
-    : adding ? (channel === 'phone' ? __('Add a phone form?', 'wconvert') : __('Add an email form?', 'wconvert'))
-      : removing ? (signups > 1 ? __('Remove both signups?', 'wconvert') : was === 'phone' ? __('Remove the phone form?', 'wconvert') : __('Remove the email form?', 'wconvert'))
-        : effective.capture === 'phone' ? __('Ask for a phone number instead?', 'wconvert') : __('Ask for an email address instead?', 'wconvert');
+  const channelForm = effective.capture === 'phone' ? __('Phone form', 'wconvert') : __('Email form', 'wconvert');
+  const title = copy ? (adding ? __('Form copy', 'wconvert') : __('Offer copy', 'wconvert'))
+    : !removing ? channelForm
+      : signups > 1 ? __('Both forms', 'wconvert') : was === 'phone' ? __('Phone form', 'wconvert') : __('Email form', 'wconvert');
   const code = before.tree.steps.some(screen => walkNodes(screen.content).some(node => node.type === 'code'));
   const meta = copy ? __('The original keeps its published version and all its results.', 'wconvert')
     : adding ? (code ? __('Visitors sign up first, then see the code.', 'wconvert') : __('Visitors sign up first, then see the thank-you screen.', 'wconvert'))
       : removing ? (before.tree.steps.length > 2
-        ? sprintf(/* translators: %d: how many screens go. */ _n('A campaign without a form is one screen, so %d screen goes.', 'A campaign without a form is one screen, so %d screens go.', before.tree.steps.length - 1, 'wconvert'), before.tree.steps.length - 1)
+        ? sprintf(/* translators: %s: how many screens go. */ _n('A campaign without a form is one screen, so %s screen goes.', 'A campaign without a form is one screen, so %s screens go.', before.tree.steps.length - 1, 'wconvert'), formatCount(before.tree.steps.length - 1))
         : code ? __('Visitors see the offer and the code straight away.', 'wconvert') : __('Visitors see the offer straight away.', 'wconvert'))
         : __('The screens stay the same. Only the field and its consent change.', 'wconvert');
-  const confirmLabel = copy ? (adding ? __('Create signup copy', 'wconvert') : __('Create offer copy', 'wconvert'))
-    : adding ? (channel === 'phone' ? __('Add phone form', 'wconvert') : __('Add email form', 'wconvert'))
+  const confirm = copy ? (adding ? __('Create form copy', 'wconvert') : __('Create offer copy', 'wconvert'))
+    : adding ? (effective.capture === 'phone' ? __('Add phone form', 'wconvert') : __('Add email form', 'wconvert'))
       : removing ? (signups > 1 ? __('Remove both', 'wconvert') : __('Remove form', 'wconvert'))
         : effective.capture === 'phone' ? __('Ask for phone', 'wconvert') : __('Ask for email', 'wconvert');
+  return { title, meta, confirm };
+}
 
-  // A ticked button needs somewhere to go; the box will not quietly drop it.
-  const missingLink = needsLink && withLink && href.trim() === '';
-  const close = (next: boolean) => { if (!saving) onOpenChange(next); };
-  const confirm = () => {
-    if ('reason' in result || !onConfirm) return;
-    setSaving(true); setError(null);
-    Promise.resolve(onConfirm(result))
-      .then(() => { setSaving(false); onOpenChange(false); })
-      .catch((cause: unknown) => { setSaving(false); setError(cause instanceof Error ? cause.message : String(cause)); });
-  };
-
+/**
+ * What changes, whichever modal it stands in. `choice` and `link` are the
+ * sections only the dialog has, since only there can the answer still change.
+ */
+function ChangeBody({ before, displayType, effective, result, copy = false, copyName, hadForm = false, reasonId, choice, link }: {
+  before: Template;
+  displayType: string;
+  effective: CaptureTarget;
+  result: Conversion | NotConverted;
+  copy?: boolean;
+  copyName?: string;
+  hadForm?: boolean;
+  reasonId?: string;
+  choice?: ReactNode;
+  link?: ReactNode;
+}) {
+  const adding = captureState(before.tree) === 'none';
+  const removing = effective.capture === 'none';
   const after = 'reason' in result ? null : (result.config.template as Template);
   const changes = 'reason' in result ? [] : result.changes;
   const goalRow = changes.filter(change => change.kind === 'goal');
@@ -187,53 +186,127 @@ export function CaptureChangeDialog({ open, onOpenChange, before, displayType, t
     : swapped === 'email' ? __('Choose an email destination before publishing. Leads already saved stay.', 'wconvert') : null;
   const kept = after?.tree.steps[0]?.id;
 
+  return <>
+    {choice}
+    {'reason' in result ? <p id={reasonId} role="alert">{result.reason}</p> : <>
+      {/* Before and after, drawn small, for every change the box describes, copies included. */}
+      {after && <div className="wconvert-capture-box__tiles" aria-hidden="true">
+        {before.tree.steps.map((screen, index) => <ScreenTile key={screen.id} template={before} displayType={displayType} step={index}
+          caption={adding ? __('Now', 'wconvert') : !removing ? (index === 0 ? __('Now', 'wconvert') : __('Stays', 'wconvert'))
+            : screen.id !== kept ? __('Removed', 'wconvert') : index === 0 ? __('With the form', 'wconvert') : __('Becomes the offer', 'wconvert')} />)}
+        <ArrowRight aria-hidden="true" className="wconvert-capture-box__arrow rtl:-scale-x-100" />
+        {after.tree.steps.map((screen, index) => <ScreenTile key={screen.id} template={after} displayType={displayType} step={index}
+          caption={removing ? __('One screen', 'wconvert') : !adding ? (index === 0
+            ? (effective.capture === 'phone' ? __('Phone field', 'wconvert') : __('Email field', 'wconvert')) : __('Stays', 'wconvert'))
+            : index === 0 ? __('With the form', 'wconvert') : __('New screen', 'wconvert')} />)}
+      </div>}
+      <dl className="wconvert-capture-box__rows">
+        {copy && <Row label={__('New draft', 'wconvert')}>{quoted(copyName ?? '')}
+          <small>{__('Same design, display rules and placement. Its results start at zero.', 'wconvert')}</small></Row>}
+        {changeRows(screenRows, copy)}
+        {!link && changeRows(goalRow, copy)}
+        {changeRows(leadRows, copy, swapNote)}
+        {adding && <Row label={__('Where leads go', 'wconvert')}>{__('Kept in WConvert. You can add a service in Destinations.', 'wconvert')}</Row>}
+        {copy && <Row label={__('Original', 'wconvert')}>{__('Stays live, unchanged.', 'wconvert')}</Row>}
+      </dl>
+      {link}
+      {link && <dl className="wconvert-capture-box__rows">{changeRows(goalRow, copy)}</dl>}
+      {hadForm && adding && !copy && <p className="wconvert-capture-box__note">{__('This campaign had a form before. A new one is built, so earlier changes to its wording come back only with Undo.', 'wconvert')}</p>}
+    </>}
+  </>;
+}
+
+export function CaptureChangeDialog({ open, onOpenChange, before, displayType, target, convert, mode = 'apply', copyName, hadForm = false, onConfirm, returnFocusTo }: CaptureChangeDialogProps) {
+  const offer = adminSettings()?.offerLink;
+  const was = captureState(before.tree);
+  const [channel, setChannel] = useState<ContactChannel>(target.capture === 'none' ? 'email' : target.capture);
+  const [withLink, setWithLink] = useState(true);
+  const [href, setHref] = useState(offer?.href ?? '');
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const hrefId = useId();
+  const reasonId = useId();
+  const radioName = useId();
+  const copy = mode === 'copy';
+
+  // The box offers a "Shop now" button only where no link comes back on its own.
+  const plain = useMemo(() => target.capture === 'none' ? convert({ capture: 'none' }) : null, [convert, target]);
+  const needsLink = plain !== null && !('reason' in plain)
+    && !plain.changes.some(change => change.kind === 'screen-changes' && change.gets.some(item => item.kind === 'link'));
+  const linkHref = needsLink && withLink ? href.trim() : '';
+  const effective = useMemo((): CaptureTarget => target.capture === 'none'
+    ? (linkHref ? { capture: 'none', link: { label: __('Shop now', 'wconvert'), href: linkHref } } : { capture: 'none' })
+    : copy && was === 'none' ? { capture: channel } : target, [target, linkHref, copy, was, channel]);
+  const result = useMemo(() => convert(effective), [convert, effective]);
+  const { title, meta, confirm: confirmLabel } = changeWords(before, effective, copy);
+
+  // A ticked button needs somewhere to go; the box will not quietly drop it.
+  const missingLink = needsLink && withLink && href.trim() === '';
+  // The prefilled link is ours, so only a link the merchant changed is theirs to lose.
+  const dirty = needsLink && withLink && href !== (offer?.href ?? '');
+  const close = (next: boolean) => { if (!saving) onOpenChange(next); };
+  const confirm = () => {
+    if ('reason' in result || !onConfirm) return;
+    setSaving(true); setError(null);
+    Promise.resolve(onConfirm(result))
+      .then(() => { setSaving(false); onOpenChange(false); })
+      .catch((cause: unknown) => { setSaving(false); setError(messageOf(cause)); });
+  };
+
   return <AdminDialog open={open} onOpenChange={close}>
-    <AdminDialogContent size="md" showCloseButton={!saving} onCloseAutoFocus={returnFocusTo ? event => { event.preventDefault(); returnFocusTo.current?.focus(); } : undefined}>
+    <AdminDialogContent size="md" dirty={dirty && !saving} showCloseButton={!saving} onCloseAutoFocus={returnFocusTo ? event => { event.preventDefault(); returnFocusTo.current?.focus(); } : undefined}>
       <AdminDialogHeader title={title} meta={meta} />
       <AdminDialogBody className="wconvert-capture-box">
-        {copy && adding && <div className="wconvert-capture-box__choice" role="radiogroup" aria-label={__('What the copy asks for', 'wconvert')}>
-          {(['email', 'phone'] as const).map(value => <label key={value} data-checked={channel === value || undefined}>
-            <input type="radio" name={radioName} checked={channel === value} onChange={() => setChannel(value)} />
-            {value === 'email' ? __('Ask for email', 'wconvert') : __('Ask for phone', 'wconvert')}</label>)}
-        </div>}
-        {'reason' in result ? <p role="alert">{result.reason}</p> : <>
-          {/* Before and after, drawn small, for every change the box describes, copies included. */}
-          {after && <div className="wconvert-capture-box__tiles" aria-hidden="true">
-            {before.tree.steps.map((screen, index) => <ScreenTile key={screen.id} template={before} displayType={displayType} step={index}
-              caption={adding ? __('Now', 'wconvert') : !removing ? (index === 0 ? __('Now', 'wconvert') : __('Stays', 'wconvert'))
-                : screen.id !== kept ? __('Removed', 'wconvert') : index === 0 ? __('With the form', 'wconvert') : __('Becomes the offer', 'wconvert')} />)}
-            <ArrowRight aria-hidden="true" className="wconvert-capture-box__arrow rtl:-scale-x-100" />
-            {after.tree.steps.map((screen, index) => <ScreenTile key={screen.id} template={after} displayType={displayType} step={index}
-              caption={removing ? __('One screen', 'wconvert') : !adding ? (index === 0
-                ? (effective.capture === 'phone' ? __('Phone field', 'wconvert') : __('Email field', 'wconvert')) : __('Stays', 'wconvert'))
-                : index === 0 ? __('With the form', 'wconvert') : __('New screen', 'wconvert')} />)}
+        <ChangeBody before={before} displayType={displayType} effective={effective} result={result} copy={copy} copyName={copyName} hadForm={hadForm} reasonId={reasonId}
+          choice={copy && was === 'none' && <div className="wconvert-radio-cards wconvert-capture-box__channels" role="group" aria-label={__('What the copy asks for', 'wconvert')}>
+            {(['email', 'phone'] as const).map(value => <label key={value} className="wconvert-radio-card">
+              <input type="radio" name={radioName} aria-labelledby={`${radioName}-${value}`} checked={channel === value} onChange={() => setChannel(value)} />
+              <span><span id={`${radioName}-${value}`}>{value === 'email' ? __('Ask for email', 'wconvert') : __('Ask for phone', 'wconvert')}</span></span></label>)}
           </div>}
-          <dl className="wconvert-capture-box__rows">
-            {copy && <Row label={__('New draft', 'wconvert')}>{quoted(copyName ?? '')}
-              <small>{__('Same design, display rules and placement. Its results start at zero.', 'wconvert')}</small></Row>}
-            {changeRows(screenRows, copy)}
-            {!needsLink && changeRows(goalRow, copy)}
-            {changeRows(leadRows, copy, swapNote)}
-            {adding && <Row label={__('Where leads go', 'wconvert')}>{__('Kept in WConvert. You can add a service in Destinations.', 'wconvert')}</Row>}
-            {copy && <Row label={__('Original', 'wconvert')}>{__('Stays live, unchanged.', 'wconvert')}</Row>}
-          </dl>
-          {needsLink && <div className="wconvert-capture-box__link">
-            <label><input type="checkbox" checked={withLink} onChange={event => setWithLink(event.target.checked)} />
-              <strong>{__('Add a “Shop now” button', 'wconvert')}</strong></label>
+          link={needsLink && <div className="wconvert-capture-box__link">
+            <CheckRow checked={withLink} onChange={event => setWithLink(event.target.checked)} label={<strong>{__('Add a “Shop now” button', 'wconvert')}</strong>} />
             {withLink && <div><label htmlFor={hrefId}>{__('Link', 'wconvert')}</label>
               <Input id={hrefId} type="url" dir="ltr" value={href} onChange={event => setHref(event.target.value)} />
               <small>{offer?.place === 'home' ? __('Your home page. Change it if the offer lives somewhere else.', 'wconvert')
                 : __('Your shop page. Change it if the offer lives somewhere else.', 'wconvert')}</small>
-              {missingLink && <small role="alert">{__('Add a link, or untick the button.', 'wconvert')}</small>}</div>}
-          </div>}
-          {needsLink && <dl className="wconvert-capture-box__rows">{changeRows(goalRow, copy)}</dl>}
-          {hadForm && adding && !copy && <p className="wconvert-capture-box__note">{__('This campaign had a form before. A new one is built, so earlier changes to its wording come back only with Undo.', 'wconvert')}</p>}
-        </>}
+              {missingLink && <small id={reasonId} role="alert">{__('Add a link, or untick the button.', 'wconvert')}</small>}</div>}
+          </div>} />
       </AdminDialogBody>
-      <AdminDialogFooter note={mode === 'preview' ? undefined : copy ? __('Nothing is published automatically.', 'wconvert') : __('Undo reverts all of this.', 'wconvert')} error={error}>
-        <Button type="button" variant="outline" disabled={saving} onClick={() => close(false)}>{mode === 'preview' ? __('Done', 'wconvert') : __('Cancel', 'wconvert')}</Button>
-        {mode !== 'preview' && <Button type="button" disabled={saving || 'reason' in result || missingLink} onClick={confirm}>{confirmLabel}</Button>}
+      <AdminDialogFooter note={copy ? __('Nothing is published automatically.', 'wconvert') : __('Undo reverts all of this.', 'wconvert')} error={error}
+        back={<Button type="button" variant="outline" disabled={saving} onClick={() => close(false)}>{__('Cancel', 'wconvert')}</Button>}>
+        <Button type="button" disabled={saving} {...refusable('reason' in result || missingLink ? reasonId : null, confirm)}>{confirmLabel}</Button>
       </AdminDialogFooter>
     </AdminDialogContent>
   </AdminDialog>;
+}
+
+/**
+ * The same body in place, inside the template picker's review (ADR 0171).
+ *
+ * It only explains: the design that applies is `conversion`, so a link typed
+ * here could never reach it, and the box's Shop now choice is not offered.
+ * The picker's header keeps naming the design, so this names itself and takes
+ * the caret, as a view opened with Back does (§9).
+ */
+export function CaptureChangeView({ before, displayType, target, conversion, onBack }: {
+  before: Template;
+  displayType: string;
+  target: CaptureTarget;
+  conversion: Conversion;
+  onBack: () => void;
+}) {
+  const heading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => { heading.current?.focus({ preventScroll: true }); }, []);
+  return <>
+    <AdminDialogBody className="wconvert-capture-box wconvert-capture-box--in-place">
+      <div className="wconvert-capture-box__intro">
+        <h3 ref={heading} tabIndex={-1}>{__('What changes', 'wconvert')}</h3>
+        <p>{changeWords(before, target, false).meta}</p>
+      </div>
+      <ChangeBody before={before} displayType={displayType} effective={target} result={conversion} />
+    </AdminDialogBody>
+    <AdminDialogFooter back={<Button type="button" className="wconvert-picker__back" variant="outline" onClick={onBack}>
+      <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back', 'wconvert')}
+    </Button>} />
+  </>;
 }

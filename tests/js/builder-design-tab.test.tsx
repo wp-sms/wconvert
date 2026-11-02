@@ -158,6 +158,18 @@ describe('the look', () => {
    * shape and needs no new vocabulary — which is the clause of ADR 0010 that
    * survived the merge intact.
    */
+  it('announces the looks as one choice of several, and none is chosen on a design edited away from all of them', () => {
+    const { rerender } = render(<Themes template={ENTRY} onChange={vi.fn()} />);
+    const looks = within(screen.getByRole('group', { name: 'Ready-made looks' })).getAllByRole('radio');
+    expect(looks.length).toBeGreaterThan(1);
+    // One name, so the browser gives one tab stop and arrow keys (GUIDELINES §7).
+    expect(new Set(looks.map(look => look.getAttribute('name'))).size).toBe(1);
+    expect(screen.queryByRole('button', { pressed: true })).toBeNull();
+
+    rerender(<Themes template={{ ...ENTRY, tokens: { ...ENTRY.tokens, accent: '#123456', bg: '#654321' } }} onChange={vi.fn()} />);
+    expect(within(screen.getByRole('group', { name: 'Ready-made looks' })).getAllByRole('radio').filter(look => (look as HTMLInputElement).checked)).toEqual([]);
+  });
+
   it('applies a preset as token values, and touches nothing else', async () => {
     /*
       **The picker moved out of this panel and the assertion followed it.** It
@@ -171,7 +183,7 @@ describe('the look', () => {
 
     render(<Themes template={ENTRY} onChange={onChange} />);
 
-    await userEvent.click(screen.getByRole('button', { name: /Midnight/ }));
+    await userEvent.click(screen.getByRole('radio', { name: /Midnight/ }));
 
     const [next] = onChange.mock.calls[0] as [{ tokens: Record<string, string>; tree: unknown }];
 
@@ -518,7 +530,7 @@ describe('the library entry', () => {
     await userEvent.type(screen.getByLabelText('Library entry JSON'), 'not json');
     await userEvent.click(screen.getByRole('button', { name: 'Load this design' }));
 
-    expect(screen.getByText('That is not a library entry.')).toBeInTheDocument();
+    expect(screen.getByText('That is not a library entry. Paste an exported entry here, then load it again.')).toBeInTheDocument();
     expect(changed).not.toHaveBeenCalled();
   });
 });

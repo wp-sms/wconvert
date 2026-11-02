@@ -141,7 +141,7 @@ function useSubmissionsFrom(contact: string | null): number | null {
  * It renders the inside of an `AdminDialogContent`, so the same view serves
  * the log's own dialog and the in-place step of a lead's history. Opened from
  * the log it is the top level, so its footer's first button closes and says
- * Close; inside a history it steps Back.
+ * Done, since Close is the ✕'s name; inside a history it steps Back.
  *
  * **"See all" only when there is more than this one** — a history holding the
  * same single row is a click that shows nothing new — and it says how many.
@@ -245,7 +245,7 @@ export function LeadDetail({
       </AdminDialogBody>
       <AdminDialogFooter
         back={<Button ref={backRef} variant="outline" onClick={onBack}>
-          {closes ? __('Close', 'wconvert') : <><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back', 'wconvert')}</>}
+          {closes ? __('Done', 'wconvert') : <><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back', 'wconvert')}</>}
         </Button>}
       >
         {contact !== null && onErase && (

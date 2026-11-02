@@ -16,14 +16,15 @@ import { campaignName, deleteOptin, duplicateCampaign, listOptins, publishOptin,
 import { CampaignMenu } from '../optins/CampaignMenu';
 import { decisionCopy, type DecisionKind } from '../optins/decisionCopy';
 import { StatusBadge } from '../optins/StatusBadge';
-import { rowResultOf, shownLine } from '../optins/rowResult';
+import { nextActionOf, rowResultOf, shownLine } from '../optins/rowResult';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
-import { DataTable, DataTableActions, DataTableActionsColumn, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '../shell/DataTable';
+import { DataTable, DataTableActions, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '../shell/DataTable';
 import { DateRangePicker, type DateRange } from '../shell/DateRangePicker';
 import { EmptyState } from '../shell/EmptyState';
 import { Field } from '../shell/Field';
+import { ListFoot } from '../shell/ListFoot';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
-import { Region, RegionBody, RegionError, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
+import { PageError, Region, RegionBody, RegionError, RegionErrorState, RegionHeader } from '../shell/Region';
 import { Shell } from '../shell/Shell';
 import { Stat, StatRow, StatRowSkeleton } from '../shell/Stat';
 import { readReport, type DashboardPayload, type PeriodQuery } from '../stats/api';
@@ -34,6 +35,8 @@ import { OccasionBack, OccasionSkeleton } from './OccasionSkeleton';
 import { CampaignThumbnail } from '../optins/designChunks';
 import '../optins/campaigns.css';
 
+/** A re-read over what is on screen keeps it; only what has nothing to show goes back to loading (§13). */
+const rereading = <T,>(current: Loadable<T>): Loadable<T> => (current.status === 'ready' ? current : LOADING);
 
 /**
  * One occasion's own screen, at `#occasions/<id>` (#277, layout B of the
@@ -58,7 +61,12 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
   const [attempt, setAttempt] = useState(0);
   const [range, setRange] = useState<DateRange>({ preset: 'occasion' });
   const [report, setReport] = useState<Loadable<DashboardPayload> | null>(null);
+  const [reportStale, setReportStale] = useState(false);
+  const [reportUpdating, setReportUpdating] = useState(false);
   const [previews, setPreviews] = useState<Record<string, CampaignPreview>>({});
+  const [previewFailed, setPreviewFailed] = useState(false);
+  const [previewAttempt, setPreviewAttempt] = useState(0);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
   const [asking, setAsking] = useState<'copy' | 'delete' | 'edit' | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -69,9 +77,14 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
 
   useEffect(() => {
     let active = true;
-    setOccasions(LOADING); setList(LOADING);
-    readOccasions().then((data) => { if (active) setOccasions(ready(data)); }, (cause) => { if (active) setOccasions(failed(cause)); });
-    listOptins().then((data) => { if (active) setList(ready(data)); }, (cause) => { if (active) setList(failed(cause)); });
+    // `OccasionSection` keys this page by occasion, so a re-read here is always this occasion's.
+    setOccasions(rereading); setList(rereading); setRefreshError(null);
+    readOccasions().then((data) => { if (active) setOccasions(ready(data)); }, (cause) => {
+      if (active) { setRefreshError(messageOf(cause)); setOccasions((current) => (current.status === 'ready' ? current : failed(cause))); }
+    });
+    listOptins().then((data) => { if (active) setList(ready(data)); }, (cause) => {
+      if (active) { setRefreshError(messageOf(cause)); setList((current) => (current.status === 'ready' ? current : failed(cause))); }
+    });
     return () => { active = false; };
   }, [id, attempt]);
 
@@ -91,22 +104,27 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
   useEffect(() => {
     if (queryKey === '' || ids === '') { setReport(null); return; }
     let active = true;
-    setReport(LOADING);
-    readReport(JSON.parse(queryKey) as PeriodQuery).then((data) => { if (active) setReport(ready(data)); }, (cause) => { if (active) setReport(failed(cause)); });
+    setReport((current) => (current === null ? LOADING : rereading(current)));
+    setReportStale(false); setReportUpdating(true);
+    readReport(JSON.parse(queryKey) as PeriodQuery)
+      .then((data) => { if (active) setReport(ready(data)); }, (cause) => {
+        if (active) { setReportStale(true); setReport((current) => (current?.status === 'ready' ? current : failed(cause))); }
+      })
+      .finally(() => { if (active) setReportUpdating(false); });
     return () => { active = false; };
   }, [queryKey, ids, attempt]);
 
   useEffect(() => {
-    setPreviews({});
     if (ids === '') return;
     let active = true;
+    setPreviewFailed(false);
     const values = ids.split(','), batches: string[][] = [];
     for (let i = 0; i < values.length; i += 12) batches.push(values.slice(i, i + 12));
     void Promise.all(batches.map(readCampaignPreviews))
       .then((responses) => { if (active) setPreviews(Object.fromEntries(responses.flat().map((p) => [p.id, p]))); })
-      .catch(() => undefined);
+      .catch(() => { if (active) setPreviewFailed(true); });
     return () => { active = false; };
-  }, [ids]);
+  }, [ids, previewAttempt]);
 
   const back = <OccasionBack />;
   const newCampaign = (
@@ -117,13 +135,15 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
 
   if (occasions.status === 'failed' || list.status === 'failed') {
     const message = occasions.status === 'failed' ? occasions.message : list.status === 'failed' ? list.message : '';
-    return <Shell section="optins" pageTitle={__('Occasion', 'wconvert')} pageBack={back} hideDescription>
+    return <Shell section="optins" pageTitle={__('Occasion', 'wconvert')} hideDescription>
+      {back}
       <Region><RegionErrorState message={message} onRetry={() => setAttempt((n) => n + 1)} /></Region>
     </Shell>;
   }
   if (occasions.status === 'loading' || list.status === 'loading') return <OccasionSkeleton />;
   if (occasion === undefined) {
-    return <Shell section="optins" pageTitle={__('Occasion', 'wconvert')} pageBack={back} hideDescription>
+    return <Shell section="optins" pageTitle={__('Occasion', 'wconvert')} hideDescription>
+      {back}
       <Region>
         <EmptyState icon={CalendarDays} title={__('This occasion no longer exists', 'wconvert')}
           action={<Button asChild variant="outline"><a href={optinsHref()}>{__('Back to campaigns', 'wconvert')}</a></Button>}>
@@ -149,8 +169,8 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
         occasion: result.occasion.id,
         kind: 'copy',
         title: result.failed.length === 0
-          ? sprintf(/* translators: 1: how many campaigns, 2: an occasion's name. */ _n('Copied %1$d campaign into %2$s as a draft.', 'Copied %1$d campaigns into %2$s as drafts.', total, 'wconvert'), total, result.occasion.name)
-          : sprintf(/* translators: 1: how many were copied, 2: how many there were, 3: an occasion's name. */ __('Copied %1$d of %2$d campaigns into %3$s as drafts.', 'wconvert'), result.created.length, total, result.occasion.name),
+          ? sprintf(/* translators: 1: how many campaigns, 2: an occasion's name. */ _n('Copied %1$s campaign into %2$s as a draft.', 'Copied %1$s campaigns into %2$s as drafts.', total, 'wconvert'), formatCount(total), result.occasion.name)
+          : sprintf(/* translators: 1: how many were copied, 2: how many there were, 3: an occasion's name. */ __('Copied %1$s of %2$s campaigns into %3$s as drafts.', 'wconvert'), formatCount(result.created.length), formatCount(total), result.occasion.name),
         problems: result.failed.map((failure) => sprintf(/* translators: 1: a campaign's name, 2: why it was not copied. */ __('%1$s wasn’t copied. %2$s', 'wconvert'), failure.name, failure.message)),
       });
       navigate(occasionHref(result.occasion.id));
@@ -181,12 +201,12 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
   const numbers = report?.status === 'ready'
     ? Object.fromEntries(report.data.goals.flatMap((goal) => goal.optins.map((row) => [row.id, rowResultOf(goal, row)])))
     : {};
-  const summary = query === null ? null
-    : 'from' in query && query.from !== undefined && query.to !== undefined ? formatRange(query.from, query.to)
-      : report?.status === 'ready' ? formatRange(report.data.from, report.data.to) : null;
+  // The dates of the numbers on screen, which until a new read lands are the old ones.
+  const summary = report?.status === 'ready' ? formatRange(report.data.from, report.data.to)
+    : query !== null && 'from' in query && query.from !== undefined && query.to !== undefined ? formatRange(query.from, query.to) : null;
 
   return (
-    <Shell section="optins" pageTitle={occasion.name} pageBack={back}
+    <Shell section="optins" pageTitle={occasion.name}
       pageDescription={[formatRange(occasion.start, occasion.end), phaseLine(occasionPhase(occasion, today))].join(' · ')}
       actions={<>
         <DropdownMenu modal={false}>
@@ -207,9 +227,11 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
         </DropdownMenu>
         {campaigns.length > 0 && newCampaign}
       </>}>
+      {back}
       <div className="flex flex-col gap-5">
         {notice && <OccasionNoticeView notice={notice} onDismiss={onDismissNotice} />}
-        {error && <Region><RegionError message={error} /></Region>}
+        {error && <PageError message={error} />}
+        {refreshError && <PageError message={sprintf(/* translators: %s: the reason reading the occasion again failed, as the server gave it. */ __('This page could not refresh, so it still shows what was read before. %s', 'wconvert'), refreshError)} onRetry={() => setAttempt((n) => n + 1)} />}
         {campaigns.length === 0 ? (
           <Region>
             <EmptyState icon={Megaphone} title={sprintf(/* translators: %s: an occasion's name. */ __('No campaigns in %s yet', 'wconvert'), occasion.name)} action={newCampaign}>
@@ -221,9 +243,11 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
             <RegionHeader title={__('Results', 'wconvert')} trailing={
               <DateRangePicker label={__('Results period', 'wconvert')} value={range} presets={['occasion', '7', '30']} summary={summary} today={today} maxDays={366} onChange={setRange} />
             } />
-            <RegionBody>
-              {report?.status === 'failed' ? <RegionError message={report.message} onRetry={() => setAttempt((n) => n + 1)} />
-                : (report?.status === 'loading' || (report === null && queryKey !== '')) ? <StatRowSkeleton stats={3} status={__('Loading results…', 'wconvert')} />
+            {reportStale && report?.status === 'ready' && <RegionError message={__('Results could not refresh. The previous period and results remain below.', 'wconvert')} onRetry={() => setAttempt((n) => n + 1)} />}
+            {report?.status === 'failed' ? <RegionErrorState message={report.message} onRetry={() => setAttempt((n) => n + 1)} /> : <RegionBody>
+              {reportUpdating && report?.status === 'ready' && <p role="status" className="sr-only">{__('Updating results…', 'wconvert')}</p>}
+              <div aria-busy={reportUpdating || undefined} className={reportUpdating && report?.status === 'ready' ? 'opacity-60' : undefined}>
+              {(report?.status === 'loading' || (report === null && queryKey !== '')) ? <StatRowSkeleton stats={3} status={__('Loading results…', 'wconvert')} />
                 : totals === null || totals.shown === 0
                   ? <p className="m-0 text-note text-muted-foreground">{__('Totals appear once a campaign here is published and shown.', 'wconvert')}</p>
                   : <StatRow>
@@ -233,7 +257,8 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
                       hint={!totals.counted || totals.clickRate === null ? undefined : sprintf(/* translators: %s: a rate such as "7.4%". */ __('%s of shown', 'wconvert'), formatRate(totals.clickRate))} />
                     <Stat label={__('Dismissed', 'wconvert')} value={formatCount(totals.dismissed)} />
                   </StatRow>}
-            </RegionBody>
+              </div>
+            </RegionBody>}
           </Region>
           <Region label={__('Dates', 'wconvert')}>
             <RegionHeader title={__('Dates', 'wconvert')} />
@@ -241,13 +266,14 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
           </Region>
           <Region label={__('Campaigns', 'wconvert')}>
             <RegionHeader title={__('Campaigns', 'wconvert')} />
+            {previewFailed && <RegionError message={__('Design previews could not load.', 'wconvert')} onRetry={() => setPreviewAttempt((n) => n + 1)} />}
             <DataTable label={sprintf(/* translators: %s: an occasion's name. */ __('Campaigns in %s', 'wconvert'), occasion.name)} className="wconvert-campaign-table is-occasion">
               <DataTableHead>
                 <DataTableColumn>{__('Campaign', 'wconvert')}</DataTableColumn>
                 <DataTableColumn>{__('Dates', 'wconvert')}</DataTableColumn>
                 <DataTableColumn>{__('Status', 'wconvert')}</DataTableColumn>
                 <DataTableColumn numeric>{__('Results', 'wconvert')}</DataTableColumn>
-                <DataTableActionsColumn>{__('Actions', 'wconvert')}</DataTableActionsColumn>
+                <DataTableColumn>{__('Next action', 'wconvert')}</DataTableColumn>
               </DataTableHead>
               <DataTableBody>
                 {campaigns.map((row) => {
@@ -259,7 +285,8 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
                         <div className="wconvert-campaign-thumbnail" aria-hidden="true">
                           {previews[row.id]?.template
                             ? <CampaignThumbnail template={previews[row.id].template!} displayType={previews[row.id].display_type} />
-                            : <div className="wconvert-preview-placeholder"><Megaphone aria-hidden="true" /></div>}
+                            // A plain box while it is read; the icon is for a campaign that will not have a picture.
+                            : <div className="wconvert-preview-placeholder">{(previewFailed || previews[row.id]) && <Megaphone aria-hidden="true" />}</div>}
                         </div>
                         <div className="min-w-0">
                           <p className="m-0 wconvert-campaign-name"><bdi>{name}</bdi></p>
@@ -278,8 +305,8 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
                           : <span>{status === 'draft' ? __('No results yet', 'wconvert') : __('No results in this period', 'wconvert')}</span>}
                       </DataTableCell>
                       <DataTableActions className="wconvert-campaign-row-actions">
-                        <Button variant="ghost" disabled={busy} onClick={() => onEdit(row.id)}>
-                          {status === 'draft' ? __('Continue editing', 'wconvert') : __('Edit', 'wconvert')}
+                        <Button variant="ghost" className="text-action" disabled={busy} onClick={() => onEdit(row.id)}>
+                          {nextActionOf(row)}
                         </Button>
                         <CampaignMenu
                           row={row}
@@ -291,7 +318,7 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
                           missingDesign={previews[row.id]?.template === null}
                           result={result}
                           reportReady={report?.status === 'ready'}
-                          days={query !== null && 'days' in query && query.days !== undefined ? query.days : 30}
+                          period={{ days: query !== null && 'days' in query && query.days !== undefined ? query.days : 30 }}
                           range={report?.status === 'ready' ? { from: report.data.from, to: report.data.to } : undefined}
                           onDuplicate={() => void act(() => duplicateCampaign(row.id, sprintf(/* translators: %s: a campaign's name. */ __('%s — copy', 'wconvert'), name)), name)}
                           onDecision={(kind, trigger) => { rowFocus.current = trigger; setDecision({ kind, row }); }}
@@ -302,7 +329,7 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
                 })}
               </DataTableBody>
             </DataTable>
-            <RegionFooter>{sprintf(/* translators: %d: how many campaigns are listed for this occasion. */ _n('%d campaign', '%d campaigns', campaigns.length, 'wconvert'), campaigns.length)}</RegionFooter>
+            <ListFoot count={sprintf(/* translators: %s: how many campaigns are listed for this occasion. */ _n('%s campaign', '%s campaigns', campaigns.length, 'wconvert'), formatCount(campaigns.length))} dates={summary} />
           </Region>
         </>}
       </div>
@@ -325,19 +352,19 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
         description={<>
           {sprintf(
             /* translators: 1: the new occasion's name, 2: its dates, 3: how many campaigns, 4: this occasion's name. */
-            _n('Creates %1$s, %2$s, with a draft of its %3$d campaign. Its dates move one year. %4$s and its campaigns stay as they are.',
-              'Creates %1$s, %2$s, with a draft of each of its %3$d campaigns. Their dates move one year. %4$s and its campaigns stay as they are.', campaigns.length, 'wconvert'),
-            next.name, formatRange(next.start, next.end), campaigns.length, occasion.name)}
+            _n('Creates %1$s, %2$s, with a draft of its %3$s campaign. Its dates move one year. %4$s and its campaigns stay as they are.',
+              'Creates %1$s, %2$s, with a draft of each of its %3$s campaigns. Their dates move one year. %4$s and its campaigns stay as they are.', campaigns.length, 'wconvert'),
+            next.name, formatRange(next.start, next.end), formatCount(campaigns.length), occasion.name)}
           {' '}{__('Dates keep the same day of the month, so a sale tied to a weekday may need its dates moved.', 'wconvert')}
         </>}
         confirmLabel={__('Copy to next year', 'wconvert')} onConfirm={() => void copy()} />
       <ConfirmDialog open={asking === 'delete'} variant="destructive" onOpenChange={(open) => { if (!open) setAsking(null); }} returnFocusTo={menu}
         title={sprintf(/* translators: %s: an occasion's name. */ __('Delete %s?', 'wconvert'), occasion.name)}
         description={sprintf(
-          /* translators: %d: how many campaigns the occasion holds. */
-          _n('Its %d campaign stays, with its design, dates, status and results. It just leaves this occasion.',
-            'Its %d campaigns stay, with their designs, dates, status and results. They just leave this occasion.', campaigns.length, 'wconvert'),
-          campaigns.length)}
+          /* translators: %s: how many campaigns the occasion holds. */
+          _n('Its %s campaign stays, with its design, dates, status and results. It just leaves this occasion.',
+            'Its %s campaigns stay, with their designs, dates, status and results. They just leave this occasion.', campaigns.length, 'wconvert'),
+          formatCount(campaigns.length))}
         confirmLabel={__('Delete occasion', 'wconvert')}
         onConfirm={() => {
           setAsking(null);
@@ -352,9 +379,9 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
 
 function phaseLine(phase: Phase): string {
   if (phase.kind === 'before') return phase.days === 1 ? __('Starts tomorrow', 'wconvert')
-    : sprintf(/* translators: %d: days until the occasion starts. */ _n('Starts in %d day', 'Starts in %d days', phase.days, 'wconvert'), phase.days);
+    : sprintf(/* translators: %s: days until the occasion starts. */ _n('Starts in %s day', 'Starts in %s days', phase.days, 'wconvert'), formatCount(phase.days));
   if (phase.kind === 'after') return __('Ended', 'wconvert');
-  return sprintf(/* translators: 1: today's day number in the occasion, 2: how many days it has. */ __('Day %1$d of %2$d', 'wconvert'), phase.day, phase.of);
+  return sprintf(/* translators: 1: today's day number in the occasion, 2: how many days it has. */ __('Day %1$s of %2$s', 'wconvert'), formatCount(phase.day), formatCount(phase.of));
 }
 
 /** The row's flag when the campaign shows outside its occasion, or null. */
@@ -383,7 +410,7 @@ function EditOccasion({ occasion, busy, error, returnFocusTo, onClose, onSave }:
     <AdminDialog open onOpenChange={(open) => { if (!open) onClose(); }}>
       <AdminDialogContent size="sm" dirty={dirty} showCloseButton={!busy}
         onCloseAutoFocus={(event) => { event.preventDefault(); returnFocusTo.current?.focus(); }}>
-        <AdminDialogHeader title={__('Edit occasion', 'wconvert')} />
+        <AdminDialogHeader title={<bdi>{occasion.name}</bdi>} />
         <form className="flex min-h-0 flex-1 flex-col" onSubmit={(event) => { event.preventDefault(); onSave({ ...occasion, name: name.trim(), start, end }); }}>
           <AdminDialogBody className="flex flex-col gap-4">
             <Field label={__('Occasion name', 'wconvert')} htmlFor={`${id}-name`}>

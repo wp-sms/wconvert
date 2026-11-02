@@ -1526,6 +1526,8 @@ describe('destination recovery entry points', () => {
     expect(await screen.findByText('Rejected 0.')).toBeVisible();
     expect(screen.queryByText('Rejected 25.')).toBeNull();
     expect(screen.getByText('Page 1 of 2')).toBeVisible();
+    // One line: how many, across which days, and the pages (§20).
+    expect(screen.getByText('30 submissions').closest('.wconvert-list-foot')).toHaveTextContent(/30 submissions · Aug 25, 2026/);
     await userEvent.click(screen.getByRole('button', { name: 'Next' }));
     expect(screen.getByText('Rejected 25.')).toBeVisible();
     expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
@@ -1547,11 +1549,12 @@ describe('destination recovery entry points', () => {
     const dialog = within(await screen.findByRole('dialog', { name: 'MailPoet subscribers' }));
     expect(await dialog.findByText('Recent sends could not be read.')).toBeVisible();
     await userEvent.click(dialog.getByRole('button', { name: 'Try again' }));
-    expect(await dialog.findByText('Will retry')).toBeVisible();
+    expect(await dialog.findByText('Will try again')).toBeVisible();
     expect(dialog.getByText(/Aug 25/)).toBeVisible();
     expect(dialog.queryByText(/Attempt/)).toBeNull();
     expect(dialog.getByRole('link', { name: 'View submission' })).toHaveAttribute('href', leadsHref({ leadId: '01J0000000BBBBBBBBBBBBBBBB' }));
     expect(screen.queryByText(/01J0000000BBBBBBBBBBBBBBBB/)).toBeNull();
+    expect(dialog.getByRole('button', { name: 'Done' }).closest('.wconvert-dialog__back')).not.toBeNull();
     await userEvent.click(dialog.getByRole('button', { name: 'Done' }));
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
     expect(within(region).getByRole('button', { name: 'Actions for MailPoet subscribers' })).toHaveFocus();
@@ -1598,13 +1601,23 @@ describe('connected accounts', () => {
   });
 
   it('refuses to remove an account a destination still uses, and says why', async () => {
+    vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
+    onTestFinished(() => { vi.unstubAllGlobals(); });
     render(<Destinations />);
     await userEvent.click(await screen.findByRole('button', { name: 'Actions for Main account' }));
-    const remove = screen.getByRole('menuitem', { name: /Remove/ });
+    const remove = screen.getByRole('menuitem', { name: 'Remove' });
     expect(remove).toHaveAttribute('aria-disabled', 'true');
+    // A few words on the row, the sentence as its description (ADR 0139).
+    expect(remove).toHaveTextContent('In use');
     expect(remove).toHaveAccessibleDescription(/Used by 1 destination/);
     await userEvent.click(remove);
     expect(screen.queryByRole('alertdialog')).toBeNull();
+  });
+
+  it('draws a failed check red, because red means broken (§14)', async () => {
+    api.readDestinations.mockResolvedValue({ types: [REMOTE], destinations: [], connections: [{ ...MAIN, check_outcome: 'failed' }], failures: [] });
+    render(<Destinations />);
+    expect(await screen.findByText('Check failed')).toHaveAttribute('data-variant', 'destructive');
   });
 
   it('removes an unused account behind a confirm that says what survives', async () => {
@@ -1747,6 +1760,13 @@ describe('the order of the screen', () => {
    * dialog into nothing — the account sends nowhere until a destination runs
    * over it — so the result offers that destination, with the account chosen.
    */
+  it('lets an empty accounts list carry the way to connect one, once', async () => {
+    render(<Destinations />);
+    expect(await screen.findByText('No accounts connected yet')).toBeVisible();
+    expect(screen.getAllByRole('button', { name: 'Connect an account' })).toHaveLength(1);
+    expect(screen.getByRole('button', { name: 'Connect an account' }).closest('[data-slot="region-header"]')).toBeNull();
+  });
+
   it('connects an account from one menu, then offers a destination over it', async () => {
     const ACCOUNT = { id: 'account-1', type: 'mailchimp', label: 'Mailchimp', credentials: { api_key: true } };
     api.saveConnection.mockResolvedValue({ connection: ACCOUNT });

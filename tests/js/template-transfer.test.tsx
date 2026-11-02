@@ -49,6 +49,50 @@ it('shows a refused apply inside the dialog and stays open', async () => {
   expect(onClose).not.toHaveBeenCalled();
 });
 
+it('is Small while it asks for a file and Large once it shows the file’s preview, named for the template', async () => {
+  const user = userEvent.setup();
+  render(<TemplateTransferDialog action="import" design={{ ...fixture, name: 'Current', display_type: 'popup' }} config={config} optin="campaign" onClose={vi.fn()} onApply={vi.fn()} />);
+  const dialog = await screen.findByRole('dialog', { name: 'Import template' });
+  expect(dialog).toHaveAttribute('data-size', 'sm');
+  await user.upload(await screen.findByLabelText('Choose a WConvert template file'), file());
+  await screen.findByText('Review links');
+  expect(screen.getByRole('dialog', { name: 'Offer' })).toHaveAttribute('data-size', 'lg');
+});
+
+it('exports at Large, named for the design', async () => {
+  render(<TemplateTransferDialog action="export" design={{ ...fixture, name: 'Current', display_type: 'popup' }} config={config} optin="campaign" onClose={vi.fn()} onApply={vi.fn()} />);
+  expect(await screen.findByRole('dialog', { name: 'Current' })).toHaveAttribute('data-size', 'lg');
+});
+
+it('asks before losing a typed link, updated into the preview or not, and only then', async () => {
+  const onClose = vi.fn(); const user = userEvent.setup();
+  render(<TemplateTransferDialog action="import" design={{ ...fixture, name: 'Current', display_type: 'popup' }} config={config} optin="campaign" onClose={onClose} onApply={vi.fn()} />);
+  await user.upload(await screen.findByLabelText('Choose a WConvert template file'), file());
+  const link = await screen.findByRole('textbox', { name: 'Link: https://old.example/offer' });
+  await user.type(link, '/new');
+  await user.keyboard('{Escape}');
+  expect(screen.getByRole('group', { name: 'Discard changes?' })).toBeInTheDocument();
+  expect(onClose).not.toHaveBeenCalled();
+  await user.click(screen.getByRole('button', { name: 'Keep editing' }));
+
+  await user.click(screen.getByRole('button', { name: 'Update preview' }));
+  await screen.findByRole('checkbox', { name: 'Keep these links and apply the reviewed changes' });
+  expect(transfer.prepareImport).toHaveBeenLastCalledWith('session', 'campaign', config, 'file', { 'https://old.example/offer': 'https://old.example/offer/new' });
+  await user.keyboard('{Escape}');
+  expect(screen.getByRole('group', { name: 'Discard changes?' })).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'Discard' }));
+  expect(onClose).toHaveBeenCalledOnce();
+});
+
+it('closes on Escape while nothing was typed', async () => {
+  const onClose = vi.fn(); const user = userEvent.setup();
+  render(<TemplateTransferDialog action="import" design={{ ...fixture, name: 'Current', display_type: 'popup' }} config={config} optin="campaign" onClose={onClose} onApply={vi.fn()} />);
+  await user.upload(await screen.findByLabelText('Choose a WConvert template file'), file());
+  await screen.findByRole('textbox', { name: 'Link: https://old.example/offer' });
+  await user.keyboard('{Escape}');
+  expect(onClose).toHaveBeenCalledOnce();
+});
+
 it('previews file content before one explicit reviewed Apply and leaves persistence to the editor', async () => {
   const onApply = vi.fn(); const user = userEvent.setup();
   render(<TemplateTransferDialog action="import" design={{ ...fixture, name: 'Current', display_type: 'popup' }} config={config} optin="campaign" onClose={vi.fn()} onApply={onApply} />);

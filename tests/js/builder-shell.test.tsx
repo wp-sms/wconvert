@@ -540,7 +540,7 @@ describe('the builder shell', () => {
     // The template in use is marked, with nothing to press but its picture.
     expect(picker.queryByRole('button', { name: 'Use template' })).not.toBeInTheDocument();
     await userEvent.click(picker.getByRole('button', { name: `Preview ${ENTRY.name}` }));
-    expect(picker.getByRole('radio', { name: /Keep my words and images/ })).toBeChecked();
+    expect(picker.getByRole('radio', { name: /Keep my current content/ })).toBeChecked();
     expect(picker.queryByText(/Preview with (your|sample) content/)).toBeNull();
     const current = picker.getByRole('button', { name: 'Current template' });
     expect(current).toHaveAttribute('aria-disabled', 'true');
@@ -1064,7 +1064,8 @@ describe('the summary', () => {
     expect([...runs.querySelectorAll('dt')].map((term) => term.textContent)).toEqual(['Who', 'Where', 'Opens', 'How often', 'Runs', 'Leads go to']);
     const footer = dialog.querySelector('footer')!;
     expect(within(footer).getByRole('link', { name: 'View report' })).toHaveAttribute('href', expect.stringContaining('optin='));
-    await userEvent.click(within(footer).getByRole('button', { name: 'Close' }));
+    expect(within(footer).getByRole('button', { name: 'Done' }).closest('.wconvert-dialog__back')).not.toBeNull();
+    await userEvent.click(within(footer).getByRole('button', { name: 'Done' }));
     expect(screen.queryByRole('dialog', { name: 'Welcome discount' })).not.toBeInTheDocument();
   });
 

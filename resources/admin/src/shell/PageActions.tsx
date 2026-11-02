@@ -1,5 +1,7 @@
 import { createContext, useContext, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
+import { ArrowLeft } from 'lucide-react';
+import { Button } from '../components/ui/button';
 
 /**
  * Where a page-scoped action a SCREEN owns is rendered.
@@ -23,9 +25,11 @@ interface Slot {
   readonly present: boolean;
   /** The node to portal into, once the header's ref has run. */
   readonly target: HTMLElement | null;
+  /** Where the way back goes: above the title. */
+  readonly backTarget: HTMLElement | null;
 }
 
-const PageActionSlot = createContext<Slot>({ present: false, target: null });
+const PageActionSlot = createContext<Slot>({ present: false, target: null, backTarget: null });
 
 export const PageActionSlotProvider = PageActionSlot.Provider;
 
@@ -47,4 +51,27 @@ export function PageAction({ children }: { children: ReactNode }) {
   }
 
   return slot.target === null ? null : createPortal(children, slot.target);
+}
+
+/**
+ * The way back to the page this one sits inside: **one ghost link, above the
+ * title** (§11). It had been an outline button among the heading's actions on
+ * Sending issues, this on an occasion, and a link in the body on a report.
+ *
+ * It portals for the reason {@see PageAction} does: a report's way back keeps
+ * the window it loaded, which is the screen's state and not the frame's.
+ */
+export function PageBack({ href, children }: { href: string; children: ReactNode }) {
+  const slot = useContext(PageActionSlot);
+  const link = (
+    <Button asChild variant="ghost" className="-ms-3 self-start">
+      <a href={href}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{children}</a>
+    </Button>
+  );
+
+  if (!slot.present) {
+    return link;
+  }
+
+  return slot.backTarget === null ? null : createPortal(link, slot.backTarget);
 }

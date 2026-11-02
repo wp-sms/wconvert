@@ -56,7 +56,7 @@ describe('creation and its owning admin page', () => {
     expect(screen.queryByText('Your on-site forms and offers, in one place.')).toBeNull();
     expect(screen.getByRole('heading', { level: 1, name: 'Campaigns' })).toHaveClass('sr-only');
     expect(screen.getByRole('heading', { name: 'Choose a template' })).toBeVisible();
-    await userEvent.click(screen.getByRole('button', { name: 'Back to Campaigns' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Back to campaigns' }));
     expect(screen.getByText('Your on-site forms and offers, in one place.')).toBeVisible();
   });
 
@@ -65,12 +65,12 @@ describe('creation and its owning admin page', () => {
     api.prefill.mockReturnValue(new Promise(resolve => { prefill = resolve; }));
     api.createOptin.mockReturnValue(new Promise(resolve => { created = resolve; }));
     await userEvent.click(await openCreation());
-    expect(screen.getByRole('button', { name: 'Back to Campaigns', hidden: true })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Back to campaigns', hidden: true })).toBeDisabled();
     await requestReports();
     await waitFor(() => expect(window.location.hash).toBe('#optins?new=1'));
     expect(screen.queryByText('Report content')).not.toBeInTheDocument();
     await act(async () => prefill(DRAFT));
-    expect(screen.getByRole('button', { name: 'Back to Campaigns', hidden: true })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Back to campaigns', hidden: true })).toBeDisabled();
     await requestReports();
     await waitFor(() => expect(window.location.hash).toBe('#optins?new=1'));
     await act(async () => created({ id: ID }));

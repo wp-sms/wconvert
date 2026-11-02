@@ -4,7 +4,8 @@ import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { Disclosure } from '../shell/Disclosure';
 import { OptionStrip } from '../shell/OptionStrip';
 import { DropdownMenu, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
-import { OptionGroup, OptionItem, OptionMenuContent, OptionSeparator, refusal } from '../components/ui/option-menu';
+import { OptionEmpty, OptionGroup, OptionItem, OptionList, OptionListContent, OptionMenuContent, OptionSeparator, refusal } from '../components/ui/option-menu';
+import { Popover, PopoverTrigger } from '../components/ui/popover';
 import { Dialog, DialogTrigger, DialogTitle, DialogDescription, DialogClose } from '../components/ui/dialog';
 import { AdminDialogContent } from '../components/ui/admin-dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
@@ -43,6 +44,8 @@ import type { JourneyRepair } from './structure/journeyReadiness';
 import type { CampaignIssue } from './readiness/campaignIssues';
 import { journeysSupported } from '../settings';
 import { ProHint } from '../shell/ProHint';
+import { NativeSelect } from '../components/ui/native-select';
+import { formatCount } from '../lib/format';
 
 const EMPTY_TOKENS: Tokens = {};
 const NO_ISSUES: readonly CampaignIssue[] = [];
@@ -130,7 +133,8 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   const testHeading = useRef<HTMLHeadingElement>(null);
   const settingsHeading = useRef<HTMLHeadingElement>(null);
   const inspectorTrigger = useRef<HTMLElement | null>(null);
-  const findInput = useRef<HTMLInputElement>(null);
+  const findTrigger = useRef<HTMLButtonElement>(null);
+  const [finding, setFinding] = useState(false);
   const returnToTestTrigger = useRef(true);
   const [view, setView] = useState<'edit' | 'flow' | 'screens'>(editorCanvas ? 'edit' : 'flow');
   // Flow is always offered, a straight campaign too (ADR 0142).
@@ -275,7 +279,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
     const next = movedScreen(tree, from, to);
     if (next === tree) { setSaid(__('Keep the main signup before the optional signup, and the thank-you screen last.', 'wconvert')); return; }
     write(next, to);
-    setSaid(sprintf(/* translators: 1: a screen's name, e.g. “Skin type”, 2: its new position in the journey, e.g. 3. */ __('%1$s moved to screen %2$d.', 'wconvert'), tree.steps[from].name, to + 1));
+    setSaid(sprintf(/* translators: 1: a screen's name, e.g. “Skin type”, 2: its new position in the journey, e.g. 3. */ __('%1$s moved to screen %2$s.', 'wconvert'), tree.steps[from].name, formatCount(to + 1)));
   };
   const saving = (index: number) => tree.submissions.find(sub => submissionScreen(tree, sub.id) === index);
   const saveLabel = (id: string) => {
@@ -391,7 +395,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
     const target = next.steps.findIndex(screen => screen.id === destination);
     write(next, target >= 0 ? target : 0);
     setRequestedSection('content'); setMobilePane('details'); setConfirmGraphRemoval(false);
-    setSaid(optionalRemoval ? __('Optional signup removed. Check the remaining screens. Undo restores the signup and its lines.', 'wconvert')
+    setSaid(optionalRemoval ? __('Optional form removed. Check the remaining screens. Undo restores the form and its lines.', 'wconvert')
       : __('Screen removed. Check the remaining lines. Undo restores the screen and its lines.', 'wconvert'));
   };
   const duplicate = () => {
@@ -479,31 +483,34 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
           <div>{embedded ? <h2 className={editorCanvas ? 'sr-only' : undefined}>{__('Screens', 'wconvert')}</h2> : <DialogTitle>{__('Manage screens', 'wconvert')}</DialogTitle>}
             {embedded ? <p className="wconvert-journey-description sr-only">{__('Select a screen to edit its content and lines.', 'wconvert')}</p>
               : <DialogDescription>{__('Select a screen to edit its content and lines.', 'wconvert')}</DialogDescription>}</div>
-        <div className="wconvert-journey-view">
+        <div className="wconvert-journey-view wconvert-toolbar">
           <OptionStrip label={__('Edit view', 'wconvert')} value={view} options={[
             ...(editorCanvas ? [{ value: 'edit', label: __('Canvas', 'wconvert') }] : []),
             { value: 'flow', label: __('Flow', 'wconvert') },
             ...(!editorCanvas ? [{ value: 'screens', label: __('Screens', 'wconvert') }] : []),
           ]} onChange={value => { setView(value as typeof view); if (value !== 'flow') setInspecting(true); setMobilePane('map'); }} />
           {/* Edit has its own screen list; finding by name is a Flow-view tool. */}
-          {view !== 'edit' && <div className="wconvert-journey-find"><label><Search aria-hidden="true" /><span className="sr-only">{__('Find a screen', 'wconvert')}</span><input ref={findInput} type="search" value={query} placeholder={__('Find a screen…', 'wconvert')} onChange={event => setQuery(event.target.value)} /></label>
-            {query.trim() && <div className="wconvert-journey-find__results" role="group" aria-label={__('Matching screens', 'wconvert')}>
-              {matches.length ? matches.map(({ screen, index }) => <button type="button" key={screen.id} onClick={() => { select(index); setQuery(''); }}><bdi>{screen.name}</bdi></button>)
-                : <p>{__('No matching screens.', 'wconvert')}</p>}
-            </div>}
-          </div>}
+          {view !== 'edit' && <Popover open={finding} onOpenChange={next => { setFinding(next); if (!next) setQuery(''); }}>
+            <PopoverTrigger asChild><Button ref={findTrigger} type="button" variant="outline" className="wconvert-journey-find"><Search aria-hidden="true" />{__('Find a screen', 'wconvert')}</Button></PopoverTrigger>
+            <OptionListContent align="end" aria-label={__('Find a screen', 'wconvert')}>
+              <OptionList search={{ value: query, onChange: setQuery, label: __('Find a screen', 'wconvert'), placeholder: __('Find a screen…', 'wconvert') }}>
+                {matches.map(({ screen, index }) => <OptionItem key={screen.id} name={screen.name} checked={index === step} onSelect={() => { select(index); setFinding(false); setQuery(''); }} />)}
+                {matches.length === 0 && <OptionEmpty what={__('screens', 'wconvert')} onClear={() => setQuery('')} />}
+              </OptionList>
+            </OptionListContent>
+          </Popover>}
         </div>
           {!journeys && usesJourneyElements(tree) && <div className="wconvert-journey-settings__warning" role="status"><p>{__('This design uses elements this site can’t display. This campaign can’t be published, and a live copy is paused; your draft keeps saving. Remove them to publish.', 'wconvert')}</p>
             {/* One undoable edit to everything this site can't show (ADR 0147). */}
             {straight && (isRefusal(straight)
-              ? <><Button type="button" variant="outline" size="sm" aria-disabled="true" aria-describedby={`${id}-straight`}>{__('Make it a straight campaign', 'wconvert')}</Button>
+              ? <><Button type="button" variant="outline" aria-disabled="true" aria-describedby={`${id}-straight`}>{__('Make it a straight campaign', 'wconvert')}</Button>
                 <small id={`${id}-straight`}>{straight.reason}</small></>
-              : <Button type="button" variant="outline" size="sm" onClick={() => setStraightening(true)}>{__('Make it a straight campaign', 'wconvert')}</Button>)}
+              : <Button type="button" variant="outline" onClick={() => setStraightening(true)}>{__('Make it a straight campaign', 'wconvert')}</Button>)}
           </div>}
           <div className="wconvert-journey-dialog__header-actions">
-            {embedded && view !== 'edit' && <Button ref={focusTrigger} type="button" variant="outline" aria-pressed={focused} onClick={() => setFocused(value => !value)}>
+            {embedded && view !== 'edit' && <Button ref={focusTrigger} type="button" variant="outline" className="wconvert-pressable" aria-pressed={focused} onClick={() => setFocused(value => !value)}>
               {focused ? <Minimize2 aria-hidden="true" /> : <Maximize2 aria-hidden="true" />}
-              {focused ? __('Back to campaign', 'wconvert') : __('Focus', 'wconvert')}
+              {__('Focus', 'wconvert')}
             </Button>}
             {focused && focusActions}
             {!editorCanvas && (authoring.headerAdd ? authoring.headerAdd
@@ -524,7 +531,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
                   <OptionGroup heading={tree.submissions.length === 0
                     ? __('After the result', 'wconvert')
                     : tree.graph ? __('After the primary signup', 'wconvert') : sprintf(/* translators: %s: a screen's name. */ __('Before %s', 'wconvert'), tree.steps[tree.steps.length - 1].name)}>
-                    <OptionItem icon={Plus} name={__('Add optional signup', 'wconvert')} refused={optionalRefusal} onSelect={addOptional} />
+                    <OptionItem icon={Plus} name={__('Add optional form', 'wconvert')} refused={optionalRefusal} onSelect={addOptional} />
                   </OptionGroup>}
                 {authoring.answersGroup}
               </OptionMenuContent>
@@ -541,23 +548,23 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
           ]} onChange={value => setMobilePane(value as typeof mobilePane)} />}
         <QuestionPanelContext.Provider value={editorCanvas ? questionPanel : null}>
         <div className="wconvert-journey-side" data-mobile-pane={mobilePane} data-panel-open={panelOpen} data-editing={view === 'edit' || undefined} data-wide-panel={widePanel || undefined}>
-          <div className="wconvert-journey-mobile-picker"><label>{__('Screen', 'wconvert')}<select value={step} onChange={event => select(Number(event.target.value))}>{displayOrder.map(index => <option key={tree.steps[index].id} value={index}>{tree.steps[index].name}</option>)}</select></label></div>
+          <div className="wconvert-journey-mobile-picker"><label>{__('Screen', 'wconvert')}<NativeSelect value={step} onChange={event => select(Number(event.target.value))}>{displayOrder.map(index => <option key={tree.steps[index].id} value={index}>{tree.steps[index].name}</option>)}</NativeSelect></label></div>
           {view === 'edit' && <><EditTree tree={tree} step={step} editingScreen={editingScreen && !look?.open} issues={issues} onIssue={openIssue} onSelect={select}
             look={look} formSwitch={formSwitch} elements={elements} extraRows={extraRows} addScreen={addScreenMenu} /><div className="wconvert-campaign-canvas">{editorCanvas}</div></>}
           {view === 'flow' && <FlowMapBoundary><Suspense fallback={<FlowSkeleton />}>
             <JourneyMap issues={issues} onIssue={openIssue} tree={tree} selected={inspecting ? step : null} focusedPath={inspecting && (panelSection === 'paths' || !!elementPanel) ? pathFocus : null}
               onSelect={select} onSelectPath={openLine} samplePath={samplePath} sampleEdges={sampleEdges}
               onClearTrace={() => { setSamplePath(null); setSampleEdges(null); setSaid(__('Cleared. Every screen and line is shown again.', 'wconvert')); }}
-              onAdd={authoring.flowAdd} nudge={authoring.flowNudge ?? <ProHint medium="flow-map" features={[__('Quizzes that branch on answers', 'wconvert')]} />}
+              onAdd={authoring.flowAdd} nudge={authoring.flowNudge ?? <ProHint medium="flow-map" features={[__('Quizzes that send answers to different screens', 'wconvert')]} />}
               destinationSummary={destinationSummary} />
           </Suspense></FlowMapBoundary>}
           {view === 'screens' && <aside className="wconvert-journey-rail" aria-label={__('Screens', 'wconvert')}>
             {formSwitch}
-            <div className="wconvert-journey-rail__heading"><strong>{__('Screens', 'wconvert')}</strong><span>{tree.graph ? tree.steps.length : sprintf(/* translators: %d: how many screens the journey has; 7 is the most allowed. */ __('%d of 7', 'wconvert'), tree.steps.length)}</span><small>{tree.graph ? __('Lines may skip screens', 'wconvert') : __('Up to 7 screens without answer lines', 'wconvert')}</small></div>
+            <div className="wconvert-journey-rail__heading"><strong>{__('Screens', 'wconvert')}</strong><span>{tree.graph ? tree.steps.length : sprintf(/* translators: %s: how many screens the journey has; 7 is the most allowed. */ __('%s of 7', 'wconvert'), formatCount(tree.steps.length))}</span><small>{tree.graph ? __('Lines may skip screens', 'wconvert') : __('Up to 7 screens without answer lines', 'wconvert')}</small></div>
             <ol ref={screenList} className="wconvert-journey-dialog__screens" aria-label={__('All screens', 'wconvert')}>
               {displayOrder.map((index, position) => <JourneyScreenCard key={tree.steps[index].id} template={{ tree, tokens }} displayType={displayType} index={index} ordinal={position + 1} selected={index === step}
                 scope={id} label={disconnected.has(tree.steps[index].id) ? __('Unreachable', 'wconvert') : screenLabel(index)} condition={tree.steps[index].when ? sprintf(/* translators: %s: the rule that shows the screen, e.g. “Skin type is Oily”. */ __('Only if %s', 'wconvert'), conditionText(tree, tree.steps[index].when!))
-                  : tree.steps[index].kind === 'result' && (tree.steps[index].results?.length ?? 0) > 1 ? sprintf(/* translators: %d: how many results the result screen can show. */ __('%d possible results', 'wconvert'), tree.steps[index].results?.length ?? 0) : undefined}
+                  : tree.steps[index].kind === 'result' && (tree.steps[index].results?.length ?? 0) > 1 ? sprintf(/* translators: %s: how many results the result screen can show. */ __('%s possible results', 'wconvert'), formatCount(tree.steps[index].results?.length ?? 0)) : undefined}
                 onSelect={() => select(index)}
                 onMove={tree.graph ? undefined : (from, to) => move(tree.steps.findIndex(s => s.id === from), Math.min(tree.steps.findIndex(s => s.id === to), tree.steps.length - 2))} />)}
             </ol>
@@ -604,14 +611,14 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
                       {/* A refused delete stays reachable and says why, rather than vanishing from the keyboard (GUIDELINES §6). */}
                       <OptionItem icon={Trash2} destructive onSelect={askToDelete}
                         refused={deletionRefusal}
-                        name={(tree.graph ? optionalRemoval : captureOnScreen(tree, current.id)?.required === false) ? __('Remove optional signup', 'wconvert') : __('Delete screen', 'wconvert')} />
+                        name={(tree.graph ? optionalRemoval : captureOnScreen(tree, current.id)?.required === false) ? __('Remove optional form', 'wconvert') : __('Delete screen', 'wconvert')} />
                     </OptionMenuContent>
                   </DropdownMenu>
                   {!slim && <button type="button" aria-label={__('Close screen settings', 'wconvert')} title={__('Close screen settings', 'wconvert')} onClick={() => {
                     setInspecting(false); setPathFocus(null); setMobilePane('map');
                     requestAnimationFrame(() => {
                       const trigger = inspectorTrigger.current;
-                      (trigger?.isConnected ? trigger : findInput.current)?.focus();
+                      (trigger?.isConnected ? trigger : findTrigger.current)?.focus();
                     });
                   }}><X aria-hidden="true" /></button>}
                 </>} />;
@@ -619,7 +626,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
             <div className="wconvert-journey-dialog__details">
           {authoring.screenPanel}
           {slim && <ScreenIssues issues={issues.filter(issue => issue.screenId === current.id)} onIssue={openIssue} />}
-          {disconnected.has(current.id) && <PanelSection label={__('To fix on this screen', 'wconvert')}><p className="wconvert-panel-warn">{__('No line reaches this screen. Connect one to it, or delete it.', 'wconvert')}</p></PanelSection>}
+          {disconnected.has(current.id) && <PanelSection label={__('To fix on this screen', 'wconvert')}><p className="wconvert-panel-warn">{__('No line reaches this screen. Add one, or delete it.', 'wconvert')}</p></PanelSection>}
           {view !== 'edit' && !currentFollowups && <PanelSection><JourneyArrivalSummary tree={tree} step={step} onSelectPath={(index, priority) => { select(index); setRequestedSection('paths'); setPathFocus(priority); }} /></PanelSection>}
           {/*
             **Facts first** (ADR 0136): where this screen goes, when it shows,
@@ -655,7 +662,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
 
           {/* Pro's: results, and when visitors see them. A free install only removes them (ADR 0147). */}
           {authoring.result}
-          {!slim && <Disclosure variant="inline" className="wconvert-journey-behavior-help" title={__('What happens to answers here?', 'wconvert')}><p>{current.kind === 'acknowledgement'
+          {!slim && <Disclosure variant="inline" className="wconvert-journey-behavior-help" title={__('About these answers', 'wconvert')}><p>{current.kind === 'acknowledgement'
             ? tree.graph ? __('The campaign ends here.', 'wconvert') : __('The campaign ends here. This screen always stays last.', 'wconvert')
             : submission?.required === false
               ? tree.submissions[0]?.id === submission.id
@@ -670,7 +677,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
                 : __('New answers stay on this page until the visitor submits. Going to the next screen does not save new details.', 'wconvert')}</p></Disclosure>}
           {authoring.nextSummary}
           {authoring.route && slim && tree.graph && !questionPath && (tree.graph.edges.some(edge => edge.from === current.id && edge.kind !== 'default') || !!current.when) && <PanelSection><Disclosure variant="inline" className="wconvert-screen-paths"
-            open={panelSection === 'paths' || undefined} title={__('Lines', 'wconvert')} summary={sprintf(/* translators: %d: how many paths leave this screen. */ _n('%d line', '%d lines', tree.graph.edges.filter(edge => edge.from === current.id && edge.kind !== 'hidden').length, 'wconvert'), tree.graph.edges.filter(edge => edge.from === current.id && edge.kind !== 'hidden').length)}>{authoring.route}</Disclosure></PanelSection>}
+            open={panelSection === 'paths' || undefined} title={__('Lines', 'wconvert')} summary={sprintf(/* translators: %s: how many paths leave this screen. */ _n('%s line', '%s lines', tree.graph.edges.filter(edge => edge.from === current.id && edge.kind !== 'hidden').length, 'wconvert'), formatCount(tree.graph.edges.filter(edge => edge.from === current.id && edge.kind !== 'hidden').length))}>{authoring.route}</Disclosure></PanelSection>}
           {slim && tree.graph && <ScreenAnswers tree={tree} step={step} onSelect={select} followup={authoring.followup} />}
           {slim && <ScreenChips tree={tree} step={step} labels={labels} onSelect={onSelectElement} />}
 
@@ -685,9 +692,9 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
         <ConfirmDialog variant="destructive" open={deleting} onOpenChange={setDeleting} title={sprintf(/* translators: %s: a screen's name, e.g. “Skin type”. */ __('Delete “%s”?', 'wconvert'), current.name)} returnFocusTo={deleteTrigger}
           description={__('Other screens, their lines and saved leads stay. Undo brings this screen back.', 'wconvert')}
           confirmLabel={__('Delete screen', 'wconvert')} onConfirm={() => { setDeleting(false); remove(); }} />
-        <ConfirmDialog variant="destructive" open={confirmRemoval} onOpenChange={setConfirmRemoval} title={__('Remove this optional signup?', 'wconvert')}
+        <ConfirmDialog variant="destructive" open={confirmRemoval} onOpenChange={setConfirmRemoval} title={__('Remove this optional form?', 'wconvert')}
           description={sprintf(/* translators: %s: a comma-separated list of the optional signup's screen names, e.g. “Get updates, Thanks”. */ __('Removes %s, with its contact fields, consent and signup settings. Other screens and saved leads stay. Undo restores this draft edit.', 'wconvert'), tree.steps.filter(s => removal.screens.includes(s.id)).map(s => s.name).join(', '))}
-          confirmLabel={__('Remove signup', 'wconvert')} onConfirm={remove} />
+          confirmLabel={__('Remove form', 'wconvert')} onConfirm={remove} />
         <ConfirmDialog open={straightening} onOpenChange={setStraightening} title={__('Make it a straight campaign?', 'wconvert')}
           description={__('Removes the questions, results, answer lines and “Only if…” this site can’t display, and the screens that only asked questions. The rest stay in the order the Flow map shows. Undo brings it all back.', 'wconvert')}
           confirmLabel={__('Make it straight', 'wconvert')} onConfirm={() => {
@@ -698,7 +705,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   return <>
     {embedded ? <section ref={workspaceRoot} className="wconvert-journey-workspace" data-focused={focused || undefined} aria-label={__('Screens', 'wconvert')}>{workspace}</section>
       : <Dialog open={open} onOpenChange={value => { setOpen(value); setSaid(''); }}>
-        <DialogTrigger asChild><Button type="button" variant="outline" size="sm"><Workflow aria-hidden="true" />{__('Manage screens', 'wconvert')}</Button></DialogTrigger>
+        <DialogTrigger asChild><Button type="button" variant="outline"><Workflow aria-hidden="true" />{__('Manage screens', 'wconvert')}</Button></DialogTrigger>
         <AdminDialogContent size="lg" className="wconvert-journey-dialog" showCloseButton={false}>{workspace}</AdminDialogContent>
       </Dialog>}
     <AlertDialog open={confirmGraphRemoval} onOpenChange={setConfirmGraphRemoval}>
@@ -716,7 +723,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
       <AdminDialogContent size="lg" className="wconvert-journey-test-dialog" onOpenAutoFocus={event => { event.preventDefault(); testHeading.current?.focus(); }}
         onCloseAutoFocus={event => {
           event.preventDefault();
-          const restore = () => (returnToTestTrigger.current ? externalTestTrigger.current?.isConnected ? externalTestTrigger.current : findInput.current : settingsHeading.current)?.focus();
+          const restore = () => (returnToTestTrigger.current ? externalTestTrigger.current?.isConnected ? externalTestTrigger.current : findTrigger.current : settingsHeading.current)?.focus();
           // The embedded workspace stays mounted. Deferring its restoration can
           // steal focus from a subsequent Escape that leaves Focus journey.
           if (embedded) restore();

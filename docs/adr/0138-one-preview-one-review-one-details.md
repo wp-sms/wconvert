@@ -84,6 +84,7 @@ After 0137 the editor was still hard to read in four places:
    draft in hand. The editor keeps Analytics, Product activity, Journey report
    and Developer tools below the shared sections, and its footer is View
    report and Close; the list's stays ⋯, View report and the editor.
+   *Amended by [ADR 0182](0182-the-written-rules-are-held-by-guards.md): the editor's is Done at the start, then View report.*
 
 ## Consequences
 

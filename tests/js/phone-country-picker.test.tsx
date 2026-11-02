@@ -20,6 +20,9 @@ describe('phone country picker', () => {
     await user.click(screen.getByRole('button', { name: 'Default country Armenia' }));
     const search = screen.getByRole('searchbox', { name: 'Search countries' });
     expect(search).toHaveFocus();
+    // The chosen one is a state a screen reader hears, not only a tick it cannot see.
+    expect(screen.getByRole('button', { name: 'Armenia' })).toHaveAttribute('aria-current', 'true');
+    expect(screen.getByRole('button', { name: 'Oman' })).not.toHaveAttribute('aria-current');
     await user.type(search, 'OM');
     expect(screen.getByRole('button', { name: 'Oman' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Armenia' })).not.toBeInTheDocument();

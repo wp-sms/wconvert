@@ -8,7 +8,7 @@ import type { SettingsEditing } from '../settings-page/useSettingsEditing';
  * by default (ADR 0175), so this is said here and in the readme's External
  * services rather than asked first.
  */
-const disclosure = () => __('Templates and their thumbnails come from templates.wconvert.io, run on Cloudflare. Thumbnails load in your browser, so Cloudflare sees its IP address. No site address, licence or visitor data is sent. WConvert checks for new templates at most twice a day, and only while you have this library open.', 'wconvert');
+const disclosure = () => __('Templates and their thumbnails come from templates.wconvert.io, run on Cloudflare. Thumbnails load in your browser, so Cloudflare sees its IP address. No site address, license or visitor data is sent. WConvert checks for new templates at most twice a day, and only while you have this library open.', 'wconvert');
 
 const readConsent = async () => ({ enabled: (await catalogStatus()).consent === 'yes' });
 const saveConsent = async (enabled: boolean) => ({ enabled: (await setCatalogConsent(enabled)).consent === 'yes' });

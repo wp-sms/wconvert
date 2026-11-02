@@ -111,8 +111,8 @@ describe('capture history', () => {
     expect(screen.queryByText('More filters')).not.toBeInTheDocument();
     const filters = within(screen.getByRole('form', { name: 'Filter submissions' }));
     expect(filters.getByRole('button', { name: 'Period: Any time' })).toBeVisible();
-    // The chip already says 7; the toolbar repeats a count only under a narrower filter.
-    expect(screen.queryByText('7 submissions')).not.toBeInTheDocument();
+    // The count is the list foot's, and the toolbar does not repeat it (§20).
+    expect(screen.getByText('7 submissions').closest('.wconvert-list-foot')).not.toBeNull();
     expect(screen.getByLabelText('Order')).toBeVisible();
     await userEvent.selectOptions(screen.getByLabelText('Order'), 'oldest');
     await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ order: 'oldest' })));
@@ -176,7 +176,7 @@ describe('capture history', () => {
     expect(details.getByText('Not asked')).toBeVisible();
     expect(details.queryByText('Other details')).not.toBeInTheDocument();
     // The top level closes; nothing behind it to go back to.
-    expect(within(dialog.querySelector('footer')!).getByRole('button', { name: 'Close' })).toBeInTheDocument();
+    expect(within(dialog.querySelector('footer')!).getByRole('button', { name: 'Done' })).toBeInTheDocument();
     await userEvent.click(details.getByRole('button', { name: 'See all 7 from Sarah' }));
     expect(onQueryChange).toHaveBeenCalledWith({});
     await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ identifier: 'sarah@example.com' })));
@@ -283,6 +283,18 @@ describe('capture history', () => {
     expect(screen.getByText('sarah@example.com')).toBeInTheDocument();
   });
 
+  it('puts the count, the dates and the pages on the foot’s one line', async () => {
+    log.readLog.mockResolvedValue({ ...SEVEN, next_cursor: 'next-page' });
+    render(<LeadLog query={{ from: '2026-09-01', to: '2026-09-30' }} />);
+    const count = await screen.findByText('7 submissions');
+    const foot = count.closest('.wconvert-list-foot')!;
+    expect(foot).toHaveTextContent(/2026/);
+    const pages = within(foot as HTMLElement).getByRole('navigation', { name: 'Submission pages' });
+    expect(within(pages).getByText('Page 1')).toHaveAttribute('aria-live', 'polite');
+    expect(within(pages).getByRole('button', { name: 'Older' }).querySelector('svg')).not.toBeNull();
+    expect(within(pages).getByRole('button', { name: 'Newer' })).toBeDisabled();
+  });
+
   it('keeps the headline as submissions when the grouping view changes', async () => {
     render(<LeadLog query={{ optinId: 'OPTIN1' }} />);
     await screen.findByText('7 submissions');
@@ -308,6 +320,8 @@ describe('capture history', () => {
     // jsdom's name computation pads a <bdi> with a space; a browser does not.
     const dialog = screen.getByRole('alertdialog', { name: /^Delete every submission from \+96899123456\s?\?$/ });
     expect(within(dialog).getByText(/Counting their submissions/)).toBeVisible();
+    // The bar stands in a sentence, so it must be something a <p> can hold.
+    expect(dialog.querySelector('p div')).toBeNull();
     expect(within(dialog).getByText(/Campaign totals in analytics stay/)).toBeVisible();
     expect(within(dialog).getByRole('button', { name: 'Delete permanently' })).toBeDisabled();
 
@@ -316,6 +330,11 @@ describe('capture history', () => {
     });
 
     expect(await within(dialog).findByText(/all 7 submissions, from every campaign/)).toBeVisible();
+    log.eraseIdentifier.mockRejectedValueOnce(new Error('The site refused the deletion.'));
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Delete permanently' }));
+    const alert = await within(dialog).findByRole('alert');
+    expect(alert).toHaveTextContent('The site refused the deletion.');
+    expect(alert.closest('[data-slot="alert-dialog-footer"]')).not.toBeNull();
     await userEvent.click(within(dialog).getByRole('button', { name: 'Export them first' }));
     expect(log.exportLeads).toHaveBeenCalledWith({ identifier: '+96899123456', snapshot: SNAPSHOT });
     await userEvent.click(within(dialog).getByRole('button', { name: 'Delete permanently' }));
@@ -470,7 +489,7 @@ describe('capture history', () => {
     await userEvent.click(exportCsv);
     expect(log.exportLeads).toHaveBeenCalledWith(expect.objectContaining({ groupIdentifier: 'sarah@example.com', from: '2026-08-01', snapshot: SNAPSHOT }));
     // The history is the top level: its first button closes.
-    expect(within(dialog.querySelector('footer')!).getByRole('button', { name: 'Close' })).toBeInTheDocument();
+    expect(within(dialog.querySelector('footer')!).getByRole('button', { name: 'Done' })).toBeInTheDocument();
     expect(within(dialog).queryByRole('button', { name: 'All leads' })).not.toBeInTheDocument();
 
     // A submission opens in place, never as a second dialog over the first.
@@ -532,7 +551,7 @@ describe('capture history', () => {
     const dialog = screen.getByRole('dialog', { name: 'Unnamed lead' });
     expect(within(dialog).queryByRole('button', { name: /See all/ })).not.toBeInTheDocument();
     expect(within(dialog).queryByRole('button', { name: /Delete all/ })).not.toBeInTheDocument();
-    await userEvent.click(within(dialog.querySelector('footer')!).getByRole('button', { name: 'Close' }));
+    await userEvent.click(within(dialog.querySelector('footer')!).getByRole('button', { name: 'Done' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Open submission from Unnamed lead' })).toHaveFocus();
   });

@@ -26,7 +26,7 @@ import { describe, expect, it } from 'vitest';
  * Vitest 4's Browser Mode is what closes the gap properly, in a pull request of
  * its own.
  */
-const CSS = ['index.css', 'stage/stage.css', 'gallery/gallery.css', 'builder/editor.css', 'builder/preview-test.css', 'optins/campaigns.css', 'shell/header.css', 'stats/report.css', '../../../pro/modules/inline-placement/admin/placement.css'].map(file => readFileSync(resolve(import.meta.dirname, '../../resources/admin/src', file), 'utf8')).join('\n');
+const CSS = ['index.css', 'stage/stage.css', 'gallery/gallery.css', 'builder/editor.css', 'builder/preview-test.css', 'optins/campaigns.css', 'shell/header.css', 'stats/report.css', '../../../pro/modules/inline-placement/admin/placement.css', '../../../pro/resources/admin/src/license/license.css', '../../../pro/modules/destinations/admin/webhook.css', 'help/help.css', 'panel.css', 'stats/analytics.css', 'stats/analytics-frame.css', 'stats/monthly-targets.css'].map(file => readFileSync(resolve(import.meta.dirname, '../../resources/admin/src', file), 'utf8')).join('\n');
 
 describe('journey choices', () => {
   it('keeps unchecked controls wide enough when WordPress removes native appearance', () => {
@@ -35,6 +35,24 @@ describe('journey choices', () => {
     const checkbox = /input:is\(\[type="checkbox"\], \[type="radio"\]\):not\(\.sr-only\) \{([^}]*)\}/.exec(CSS)?.[1] ?? '';
     expect(checkbox).toMatch(/min-inline-size:\s*18px/);
     expect(checkbox).toMatch(/flex:\s*0 0 18px/);
+  });
+});
+
+describe('the coarse pointer floor', () => {
+  // Only the selector can be read here: jsdom computes no style (GUIDELINES §21).
+  const floor = /@media \(pointer: coarse\) \{\s*(:is\(#wconvert-admin[^{]*)\{\s*min-block-size: 2\.75rem !important;/.exec(CSS)?.[1] ?? '';
+
+  it('reaches a native input of any text-like type, and a textarea, as §3 says', () => {
+    expect(floor).toMatch(/input:not\(/);
+    expect(floor).toContain('textarea');
+    expect(floor).toContain('[data-slot="input"]');
+    // It is a statement about portals too, or a dialog's fields would miss it.
+    for (const root of ['[data-slot="dialog-content"]', '[data-slot="popover-content"]']) expect(floor).toContain(root);
+  });
+
+  it('leaves a box, a dot and a slider to their own targets', () => {
+    const exempt = /input:not\(([^)]*)\)/.exec(floor)?.[1] ?? '';
+    for (const type of ['checkbox', 'radio', 'range']) expect(exempt).toContain(`[type="${type}"]`);
   });
 });
 
@@ -340,6 +358,12 @@ describe('the rules panel against the editor’s blanket rules', () => {
  * made total without forking every vendored component, so it is guarded at the
  * one boundary where it IS total: the CSS this project writes by hand.
  */
+/*
+ * The block sheets load in the block editor, where the admin's tokens and type
+ * roles do not exist, so they answer to direction and nothing else here.
+ */
+const BLOCK_CSS = ['resources/blocks/inline-optin/src/editor.css', 'pro/modules/content-lock/block/editor.css'].map(file => readFileSync(resolve(import.meta.dirname, '../..', file), 'utf8')).join('\n');
+
 /**
  * ============================================================================
  * 4,470 LINES AND NOT ONE PHYSICAL DIRECTION PROPERTY. IT STAYS THAT WAY.
@@ -356,7 +380,7 @@ describe('the rules panel against the editor’s blanket rules', () => {
  */
 describe('the direction convention', () => {
   /** Declarations only — a comment naming `left` is prose about one. */
-  const DECLARATIONS = CSS.replace(/\/\*[\s\S]*?\*\//g, '');
+  const DECLARATIONS = `${CSS}\n${BLOCK_CSS}`.replace(/\/\*[\s\S]*?\*\//g, '');
 
   it('states no physical direction property, and no physical value either', () => {
     /*
@@ -372,6 +396,24 @@ describe('the direction convention', () => {
     for (const pattern of physical) {
       expect([...DECLARATIONS.matchAll(pattern)].map(([found]) => found.trim())).toEqual([]);
     }
+  });
+
+  it('states no physical side through a shorthand either', () => {
+    /*
+      `margin: 2px 0 6px 18px` names a left and a right without saying either
+      word, so the test above cannot see it. Four values with different sides,
+      or corners that differ, are a direction written down.
+    */
+    const sheets = readdirSync(resolve(import.meta.dirname, '../../resources/admin/src/builder'))
+      .filter(name => name.endsWith('.css'))
+      .map(name => readFileSync(resolve(import.meta.dirname, '../../resources/admin/src/builder', name), 'utf8'));
+    const lopsided = sheets.join('\n').replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/(?:^|[\s;{])(margin|padding|inset|border-radius)\s*:\s*([^;{}()]+?)\s*(?:!important\s*)?[;}]/g);
+    const found = [...lopsided].filter(([, property, value]) => {
+      const parts = value.split(/\s+/);
+      if (property === 'border-radius') return parts.length > 1 && !parts.includes('/');
+      return parts.length === 4 && parts[1] !== parts[3];
+    }).map(([declaration]) => declaration.trim());
+    expect(found).toEqual([]);
   });
 
   /**
@@ -546,9 +588,8 @@ describe('the builder card’s one inset', () => {
    * **Derived from the selector rather than from a list**, because a list is
    * the thing that rots: a band added next year is caught without anybody
    * remembering to add it here. `\b` is what keeps the family names out —
-   * `_` is a word character, so `.wconvert-checks__chip` and
-   * `.wconvert-block__label` do not match while `.wconvert-checks` and
-   * `.wconvert-block[data-hidden]` do.
+   * `_` is a word character, so `.wconvert-block__label` does not match while
+   * `.wconvert-block[data-hidden]` does.
    *
    * `padding-block` is deliberately not checked. The gutter is an INSET; how
    * much air a band has above and below it is a question about that band.
@@ -560,7 +601,7 @@ describe('the builder card’s one inset', () => {
    * no business claiming it.
    */
   const BAND =
-    String.raw`\.wconvert-(?:hint|said|stored|checks|pane__head|inspector__head|inspector__body|block)\b`;
+    String.raw`\.wconvert-(?:said|stored|pane__head|inspector__head|inspector__body|block)\b`;
   const SUBJECT = new RegExp(String.raw`${BAND}[^\s>+~]*$`);
 
   const RULES = [

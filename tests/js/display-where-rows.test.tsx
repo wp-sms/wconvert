@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { Where } from '../../resources/admin/src/builder/rules/Where';
 import type { Targeting } from '../../resources/admin/src/builder/api';
+import { resolveObjects } from '../../resources/admin/src/builder/rules/objects';
 import { ruleTypes } from './support/rule-types';
 
 vi.mock('../../resources/admin/src/builder/rules/objects', async (original) => ({
@@ -38,6 +39,23 @@ describe('a page rule', () => {
     await userEvent.selectOptions(word, 'product');
     expect(read().exclude?.[1]).toEqual({ type: 'archive', value: 'product' });
     expect(screen.getByRole('combobox', { name: 'value' })).not.toHaveAttribute('data-attention');
+  });
+
+  it('holds a bar while a saved page’s title is read, and draws a failed read with its door', async () => {
+    let refuse!: (cause: unknown) => void;
+    vi.mocked(resolveObjects).mockImplementationOnce(() => new Promise((_resolve, reject) => { refuse = reject; }));
+    setup({ exclude: [{ type: 'post', value: '70' }] });
+
+    expect(screen.getByRole('status')).toHaveTextContent('Loading the saved selection’s name…');
+    expect(screen.queryByText('#70')).toBeNull();
+
+    await act(async () => refuse(new Error('offline')));
+    expect(screen.getByRole('alert')).toHaveTextContent('Could not load the saved selection’s name. This rule still uses #70.');
+    expect(screen.getByRole('button', { name: 'value: #70' })).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(await screen.findByRole('button', { name: 'value: The Friday Edit' })).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).toBeNull();
   });
 
   it('opens a path in its pill, and says Choose… while it is empty', async () => {

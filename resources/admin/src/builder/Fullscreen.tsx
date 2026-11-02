@@ -91,9 +91,10 @@ export function Fullscreen() {
       type="button"
       variant="ghost"
       size="icon-sm"
+      className="wconvert-pressable"
       aria-pressed={on}
-      title={on ? __('Show the menu', 'wconvert') : __('Full width', 'wconvert')}
-      aria-label={on ? __('Show the menu', 'wconvert') : __('Full width', 'wconvert')}
+      title={__('Full width', 'wconvert')}
+      aria-label={__('Full width', 'wconvert')}
       onClick={() => {
         setOn(!on);
         remember(!on);

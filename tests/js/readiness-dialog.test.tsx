@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ReadinessDialog, type ReadinessDialogProps } from '../../resources/admin/src/builder/ReadinessDialog';
 import { campaignIssues } from '../../resources/admin/src/builder/readiness/campaignIssues';
-import { ready } from '../../resources/admin/src/shell/loadable';
+import { LOADING, ready } from '../../resources/admin/src/shell/loadable';
 import type { GoalEntry } from '../../resources/admin/src/goals/api';
 import type { Template } from '@renderer/types';
 import { ruleTypes } from './support/rule-types';
@@ -512,4 +512,10 @@ describe('the first campaign’s Next button (ADR 0178)', () => {
     expect(onGo).toHaveBeenCalledOnce();
     expect(screen.queryByRole('dialog')).toBeNull();
   });
+});
+
+it('holds the success measure’s place while its goal is read', async () => {
+  await open({ goal: LOADING });
+  expect(screen.getByText('Loading what counts as success…')).toBeInTheDocument();
+  expect(screen.queryByText('Counts as success')).toBeNull();
 });

@@ -8,6 +8,7 @@ import { OptionGroup, OptionItem, OptionMenuContent } from '../components/ui/opt
 import { messageOf } from '../shell/loadable';
 import { importOccasion, type OccasionNotice } from './api';
 import { NewOccasionDialog } from './NewOccasion';
+import { formatCount } from '../lib/format';
 
 /**
  * The ⋯ beside Create campaign: a new occasion (ADR 0171), or an imported
@@ -65,8 +66,8 @@ function ImportDialog({ returnFocusTo, onClose, onImported }: {
         occasion: result.occasion.id,
         kind: 'import',
         title: sprintf(/* translators: 1: an occasion's name, 2: how many draft campaigns came in. */
-          _n('Imported %1$s with %2$d draft campaign.', 'Imported %1$s with %2$d draft campaigns.', result.created.length, 'wconvert'),
-          result.occasion.name, result.created.length),
+          _n('Imported %1$s with %2$s draft campaign.', 'Imported %1$s with %2$s draft campaigns.', result.created.length, 'wconvert'),
+          result.occasion.name, formatCount(result.created.length)),
         problems: result.refused.map((refused) => sprintf(/* translators: 1: a campaign's name, 2: why it was not imported. */ __('%1$s wasn’t imported. %2$s', 'wconvert'), refused.name, refused.reason)),
       });
     } catch (cause) {
@@ -116,7 +117,7 @@ export function whereIn(document: unknown, path: string): string {
     const campaigns = typeof document === 'object' && document !== null && Array.isArray((document as { campaigns?: unknown }).campaigns)
       ? (document as { campaigns: unknown[] }).campaigns : [];
     const name = (campaigns[Number(index)] as { name?: unknown } | undefined)?.name;
-    return typeof name === 'string' && name.trim() !== '' ? name : sprintf(/* translators: %d: a campaign's position in the imported file, from 1. */ __('Campaign %d', 'wconvert'), Number(index) + 1);
+    return typeof name === 'string' && name.trim() !== '' ? name : sprintf(/* translators: %s: a campaign's position in the imported file, from 1. */ __('Campaign %s', 'wconvert'), formatCount(Number(index) + 1));
   }
   return head === 'occasion' ? __('Occasion', 'wconvert') : head === 'campaigns' ? __('Campaigns', 'wconvert') : __('File', 'wconvert');
 }

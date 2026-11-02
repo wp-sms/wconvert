@@ -1,6 +1,6 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { __ } from '@wordpress/i18n';
-import { ArrowLeft, Plus, TriangleAlert } from 'lucide-react';
+import { Plus, TriangleAlert } from 'lucide-react';
 import { GoalScreen, OptinBuilder } from './builder/lazy';
 import { ChunkBoundary } from './shell/ChunkBoundary';
 import { OptinList } from './optins/OptinList';
@@ -10,6 +10,7 @@ import { issueCount } from './destinations/issueCount';
 import { Badge } from './components/ui/badge';
 import { Button } from './components/ui/button';
 import { BackLink } from './shell/BuilderSkeleton';
+import { PageBack } from './shell/PageActions';
 import { Shell } from './shell/Shell';
 import { createHref, editorHref, hashFor, leadsHref, occasionHref, optinsHref, reportHref, sendingIssuesHref, takeDesignLink } from './nav';
 import { ImportOccasionMenu } from './occasions/ImportOccasion';
@@ -103,8 +104,8 @@ export function App() {
   if (route.editId !== undefined) {
     return <>
       <OptinBuilder key={navigation.hash} id={route.editId} initialTab={route.editorTab}
-        backLabel={route.returnTo.startsWith('#analytics') ? __('Back to Analytics', 'wconvert')
-          : route.returnTo.startsWith('#leads') ? __('Back to Leads', 'wconvert') : __('Back to Campaigns', 'wconvert')}
+        backLabel={route.returnTo.startsWith('#analytics') ? __('Back to analytics', 'wconvert')
+          : route.returnTo.startsWith('#leads') ? __('Back to leads', 'wconvert') : __('Back to campaigns', 'wconvert')}
         onEditingStateChange={navigation.onEditingStateChange}
         onCreated={(createdId) => navigate(editorHref(createdId, route.returnTo))}
         onClose={() => navigate(route.returnTo)} />
@@ -139,6 +140,7 @@ export function App() {
 
   return (
     <Shell section={section} hidePageHeading={section === 'optins' && creating}
+      // Leads opens straight on its submissions, with no subtitle above the table (ADR 0091).
       hideDescription={section === 'leads'}
       pageTitle={section === 'leads' && route.leadsView === 'issues' ? __('Sending issues', 'wconvert') : undefined}
       // An empty list carries its own Create button; one primary action per screen.
@@ -149,18 +151,15 @@ export function App() {
         {campaignsEmpty === false && <ImportOccasionMenu disabled={campaignBusy} onImported={(imported) => { setNotice(imported); setListVersion((n) => n + 1); }}
           onCreated={(occasion) => navigate(occasionHref(occasion))} />}
         {!campaignsEmpty && createButton}
-      </> : section === 'leads'
-        ? route.leadsView === 'issues'
-          ? <Button asChild variant="outline"><a href={leadsHref(route.leads)}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back to Leads', 'wconvert')}</a></Button>
-          : sendingCount !== null && sendingCount > 0
-            // The count is destinations with a known problem, not undelivered
-            // submissions; the amber badge is the shared "held back" colour.
-            ? <Button asChild variant="outline"><a href={sendingIssuesHref()}>
-              <TriangleAlert aria-hidden="true" />{__('Sending issues', 'wconvert')}
-              <Badge variant="warning" className="tabular-nums">{sendingCount}</Badge>
-            </a></Button>
-            : undefined
+      </> : section === 'leads' && route.leadsView !== 'issues' && sendingCount !== null && sendingCount > 0
+        // The count is destinations with a known problem, not undelivered
+        // submissions; the amber badge is the shared "held back" colour.
+        ? <Button asChild variant="outline"><a href={sendingIssuesHref()}>
+          <TriangleAlert aria-hidden="true" />{__('Sending issues', 'wconvert')}
+          <Badge variant="warning" className="tabular-nums">{sendingCount}</Badge>
+        </a></Button>
         : undefined}>
+      {section === 'leads' && route.leadsView === 'issues' && <PageBack href={leadsHref(route.leads)}>{__('Back to leads', 'wconvert')}</PageBack>}
       {/* A backstop: each chunk Campaigns loads has its own boundary (a
           thumbnail falls back to its box), but nothing here may blank the admin. */}
       {section === 'optins' && <ChunkBoundary>

@@ -1,19 +1,22 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import apiFetch from '@wordpress/api-fetch';
 import { __, _n, sprintf } from '@wordpress/i18n';
+import { tierProductName } from '@/goals/availability';
 import { CircleAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertTitle } from '@/components/ui/alert';
 import { AdminDialog, AdminDialogBody, AdminDialogClose, AdminDialogContent, AdminDialogFooter, AdminDialogHeader, AdminDialogTrigger } from '@/components/ui/admin-dialog';
+import { formatCount } from '@/lib/format';
+import { GuideLink } from '@/shell/GuideLink';
 import { InfoTip } from '@/shell/InfoTip';
 import { GUIDES, docsUrl } from '@/shell/docs';
 import { CheckRow } from '@/shell/CheckRow';
 import { Disclosure } from '@/shell/Disclosure';
 import { Field } from '@/shell/Field';
 import { OptionStrip } from '@/shell/OptionStrip';
-import { Region, RegionBody, RegionError, RegionErrorState, RegionFooter, RegionHeader } from '@/shell/Region';
+import { Region, RegionBody, RegionErrorState, RegionFooter, RegionHeader } from '@/shell/Region';
 import { SettingsRegionSkeleton } from '@/settings-page/SettingsSkeleton';
 import { SaveStatus, useSaveStatus } from '@/shell/SaveStatus';
 import { failed, messageOf, type Loadable } from '@/shell/loadable';
@@ -82,12 +85,11 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
 
   return <Region>
     <RegionHeader title={title} description={__('Track published campaigns through your existing analytics setup.', 'wconvert-pro')} />
-    {error && <RegionError message={error} />}
     <RegionBody className="grid gap-5">
       {/* A site problem, not a failed read: it stays until the files are restored. */}
       {!response.asset_available && <Alert variant="destructive" className="border-destructive/30 bg-destructive-surface">
         <CircleAlert />
-        <AlertTitle id={`${ids}-asset`} className="line-clamp-none">{__('The analytics script is missing. Reinstall WConvert Pro to restore it.', 'wconvert-pro')}</AlertTitle>
+        <AlertTitle id={`${ids}-asset`} className="line-clamp-none">{sprintf(/* translators: %s: the paid product's name, e.g. “WConvert Pro”. */ __('The analytics script is missing. Reinstall %s to restore it.', 'wconvert-pro'), tierProductName('pro'))}</AlertTitle>
       </Alert>}
       {/* What the SAVED setup is doing, so nobody opens the fields to find out. */}
       {live && <p className="m-0 font-medium">{live}</p>}
@@ -109,7 +111,7 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
             <InfoTip label={__('About the Measurement ID', 'wconvert-pro')}>{__('Use the G- ID of the web stream already installed on this site. WConvert does not install a Google tag.', 'wconvert-pro')}</InfoTip>
           </div>
           <Input id="analytics-stream" data-setting="analytics-measurement" className="max-w-sm" value={value.measurement_id} placeholder="G-XXXXXXXXXX" maxLength={22} dir="ltr" autoComplete="off" onChange={e => change({ measurement_id: e.target.value.trim().toUpperCase() })} />
-        </div> : plausible ? <p className="m-0 text-note text-muted-foreground">{__('Uses your installed Plausible script. Custom events count toward Plausible usage.', 'wconvert-pro')} <a href={docsUrl(GUIDES.externalAnalytics, 'plausible')} target="_blank" rel="noreferrer" className="underline">{__('Plausible setup', 'wconvert-pro')}</a></p> : <p className="m-0 text-note text-muted-foreground">{__('Add the WConvert event tag to your container, then publish it.', 'wconvert-pro')} <a href={docsUrl(GUIDES.externalAnalytics, 'google-tag-manager')} target="_blank" rel="noreferrer" className="underline">{__('GTM setup', 'wconvert-pro')}</a></p>}
+        </div> : plausible ? <p className="m-0 text-note text-muted-foreground">{__('Uses your installed Plausible script. Custom events count toward Plausible usage.', 'wconvert-pro')} <GuideLink href={docsUrl(GUIDES.externalAnalytics, 'plausible')}>{__('Plausible setup', 'wconvert-pro')}</GuideLink></p> : <p className="m-0 text-note text-muted-foreground">{__('Add the WConvert event tag to your container, then publish it.', 'wconvert-pro')} <GuideLink href={docsUrl(GUIDES.externalAnalytics, 'google-tag-manager')}>{__('GTM setup', 'wconvert-pro')}</GuideLink></p>}
 
         <div className="grid gap-2">
           <Choices label={__('Consent handling', 'wconvert-pro')} value={value.consent} onChange={consent => change({ consent })}
@@ -133,7 +135,7 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
             {value.route === 'gtm' && <Field label={__('Data-layer name', 'wconvert-pro')} htmlFor={`${ids}-layer`}>
               <Input id={`${ids}-layer`} className="max-w-sm" value={value.data_layer} maxLength={40} dir="ltr" onChange={e => change({ data_layer: e.target.value })} />
             </Field>}
-            <p className="m-0 text-note text-muted-foreground">{__('Includes existing and future campaigns unless excluded in campaign details.', 'wconvert-pro')}{response.excluded > 0 && <> {sprintf(/* translators: %s: how many published campaigns are excluded from analytics. */ _n('%s published campaign is excluded.', '%s published campaigns are excluded.', response.excluded, 'wconvert-pro'), String(response.excluded))}</>}</p>
+            <p className="m-0 text-note text-muted-foreground">{__('Includes existing and future campaigns unless excluded in campaign details.', 'wconvert-pro')}{response.excluded > 0 && <> {sprintf(/* translators: %s: how many published campaigns are excluded from analytics. */ _n('%s published campaign is excluded.', '%s published campaigns are excluded.', response.excluded, 'wconvert-pro'), formatCount(response.excluded))}</>}</p>
           </Disclosure>
         </div>
         </>}
@@ -144,11 +146,12 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
         <AdminDialogTrigger asChild><Button variant="outline" disabled={busy} aria-disabled={testBlocked || undefined} aria-describedby={testReason}
           onClick={event => { if (testBlocked) event.preventDefault(); }}>{__('Test setup', 'wconvert-pro')}</Button></AdminDialogTrigger>
         <TestDialog page={page} onPage={setPage} testUrl={testUrl} plausible={plausible} />
-      </AdminDialog>}<a className="text-note underline underline-offset-2" href={docsUrl(GUIDES.externalAnalytics)} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert-pro')}</a></div>
+      </AdminDialog>}<GuideLink href={docsUrl(GUIDES.externalAnalytics)}>{__('Setup guide', 'wconvert-pro')}</GuideLink></div>
       <div className="flex flex-wrap items-center gap-3">
         {dirty && on && <span id={`${ids}-unsaved`} className="text-note text-muted-foreground">{__('Save changes before testing.', 'wconvert-pro')}</span>}
+        {error && <p role="alert" className="m-0 text-note text-destructive">{error}</p>}
         <SaveStatus saved={status.saved} />
-        {dirty && <Button variant="ghost" disabled={busy} onClick={() => { setValue(response.settings); setError(''); }}>{__('Cancel changes', 'wconvert-pro')}</Button>}
+        {dirty && <Button variant="outline" disabled={busy} onClick={() => { setValue(response.settings); setError(''); }}>{__('Cancel changes', 'wconvert-pro')}</Button>}
         <Button ref={saveButton} disabled={busy || (!dirty && !reconfirm)} aria-describedby={reconfirm ? `${ids}-review` : undefined} onClick={() => void save()}>{busy ? __('Saving…', 'wconvert-pro') : __('Save analytics integration', 'wconvert-pro')}</Button>
       </div>
     </RegionFooter>

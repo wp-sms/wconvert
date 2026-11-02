@@ -62,14 +62,15 @@ interface Props {
   readonly consent?: 'yes' | 'no';
   readonly onChoose?: (id: string) => void;
   readonly onNear?: (id: string) => void;
+  readonly onOpenChange?: (open: boolean) => void;
   /** What the index holds once the library changed it. */
   readonly after?: TemplateIndexEntry[];
 }
 
 /** The dialog as the editor holds it: the index is the editor's, and reloads when the library changes it. */
-function Editor({ entries, chosen, fit = EMAIL_LIST, consent = 'yes', onChoose = vi.fn(), onNear = vi.fn(), after }: Props) {
+function Editor({ entries, chosen, fit = EMAIL_LIST, consent = 'yes', onChoose = vi.fn(), onNear = vi.fn(), onOpenChange = vi.fn(), after }: Props) {
   const [templates, setTemplates] = useState(entries);
-  return <TemplatePickerDialog open onOpenChange={vi.fn()} index={{ templates, labels: LABELS, facets: {}, catalog: CATALOG(consent) }} trees={TREES}
+  return <TemplatePickerDialog open onOpenChange={onOpenChange} index={{ templates, labels: LABELS, facets: {}, catalog: CATALOG(consent) }} trees={TREES}
     displayType="popup" chosen={chosen} fit={fit} goalLabel="Grow your email list" busy={false} onChoose={onChoose} onNear={onNear}
     onLibraryChanged={async () => { if (after) setTemplates(after); }} />;
 }
@@ -179,7 +180,7 @@ describe('using a template', () => {
     render(<Editor entries={[CENTRED, hosted('supper', 'Supper menu', 'install')]} />);
     await userEvent.click(within(cardFor('Supper menu')).getByRole('button', { name: 'Use template' }));
     const alert = await within(cardFor('Supper menu')).findByRole('alert');
-    expect(alert).toHaveTextContent('Couldn’t add this template. The library is unreachable.');
+    expect(alert).toHaveTextContent('Could not add this template. The library is unreachable.');
     catalog.installDesign.mockResolvedValue({ template_id: 'design-1-supper' });
     await userEvent.click(within(alert).getByRole('button', { name: 'Try again' }));
     expect(catalog.installDesign).toHaveBeenCalledTimes(2);
@@ -199,6 +200,107 @@ describe('using a template', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Use template' }));
     expect(await screen.findByText('Nothing on this template counts as a conversion.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Use this template' })).toHaveAttribute('aria-disabled', 'true');
+  });
+});
+
+describe('one modal, its body swapped (GUIDELINES §9)', () => {
+  it('opens what changes in place, steps back one view at a time on Escape, and hands the caret back', async () => {
+    const onOpenChange = vi.fn();
+    render(<Editor entries={[CENTRED, OFFER]} onOpenChange={onOpenChange} />);
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Show' }), 'all');
+    const use = within(cardFor('Offer receipt')).getByRole('button', { name: 'Use with email form' });
+    use.focus();
+    await userEvent.keyboard('{Enter}');
+    expect(screen.getByRole('dialog')).toHaveAccessibleName('Offer receipt');
+
+    const whatChanges = screen.getByRole('button', { name: 'What changes' });
+    whatChanges.focus();
+    await userEvent.keyboard('{Enter}');
+    expect(screen.getAllByRole('dialog')).toHaveLength(1);
+    expect(screen.getByRole('dialog')).toHaveAccessibleName('Offer receipt');
+    expect(screen.getByRole('heading', { name: 'What changes' })).toHaveFocus();
+    expect(screen.queryByRole('button', { name: 'Use with email form' })).toBeNull();
+
+    // Back returns to the control that opened it, with the review as it was left.
+    const back = screen.getByRole('button', { name: 'Back' });
+    back.focus();
+    await userEvent.keyboard('{Enter}');
+    expect(screen.queryByRole('heading', { name: 'What changes' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'What changes' })).toHaveFocus();
+
+    await userEvent.keyboard('{Enter}');
+    expect(screen.getByRole('heading', { name: 'What changes' })).toHaveFocus();
+    await userEvent.keyboard('{Escape}');
+    expect(screen.getByRole('button', { name: 'What changes' })).toHaveFocus();
+    expect(screen.getByRole('dialog')).toHaveAccessibleName('Offer receipt');
+
+    await userEvent.keyboard('{Escape}');
+    expect(screen.getByRole('dialog')).toHaveAccessibleName('Change template');
+    await waitFor(() => expect(within(cardFor('Offer receipt')).getByRole('button', { name: 'Use with email form' })).toHaveFocus());
+    expect(onOpenChange).not.toHaveBeenCalled();
+
+    await userEvent.keyboard('{Escape}');
+    expect(onOpenChange).toHaveBeenCalledExactlyOnceWith(false);
+  });
+
+  it('leaves the whole modal from ✕, whichever view is showing', async () => {
+    const onOpenChange = vi.fn();
+    render(<Editor entries={[OFFER]} onOpenChange={onOpenChange} />);
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Show' }), 'all');
+    await userEvent.click(within(cardFor('Offer receipt')).getByRole('button', { name: 'Use with email form' }));
+    await userEvent.click(screen.getByRole('button', { name: 'What changes' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Close' }));
+    expect(onOpenChange).toHaveBeenCalledExactlyOnceWith(false);
+  });
+
+  it('inspects an online template in place, with Back and its action in the fixed footer', async () => {
+    const onOpenChange = vi.fn();
+    render(<Editor entries={[CENTRED, hosted('supper', 'Supper menu', 'install')]} onOpenChange={onOpenChange} />);
+    const preview = within(cardFor('Supper menu')).getByRole('button', { name: 'Preview Supper menu' });
+    preview.focus();
+    await userEvent.keyboard('{Enter}');
+    expect(screen.getAllByRole('dialog')).toHaveLength(1);
+    expect(screen.getByRole('dialog')).toHaveAccessibleName('Supper menu');
+    expect(screen.getByRole('heading', { name: 'Supper menu', level: 2 })).toHaveFocus();
+    const footer = screen.getByRole('dialog').querySelector('footer')!;
+    expect(within(footer).getByRole('button', { name: 'Use template' })).toBeEnabled();
+    const back = within(footer).getByRole('button', { name: 'Back to templates' });
+
+    await userEvent.click(back);
+    await waitFor(() => expect(preview).toHaveFocus());
+    expect(screen.getByRole('dialog')).toHaveAccessibleName('Change template');
+
+    await userEvent.keyboard('{Enter}');
+    expect(screen.getByRole('dialog')).toHaveAccessibleName('Supper menu');
+    await userEvent.keyboard('{Escape}');
+    await waitFor(() => expect(preview).toHaveFocus());
+    expect(screen.getByRole('dialog')).toHaveAccessibleName('Change template');
+    expect(onOpenChange).not.toHaveBeenCalled();
+  });
+
+  it('says a failed install beside the action that retries it, and reviews once it works', async () => {
+    catalog.installDesign.mockRejectedValueOnce(new Error('The library is unreachable.'));
+    catalog.installDesign.mockResolvedValue({ template_id: 'design-1-supper' });
+    render(<Editor entries={[CENTRED, hosted('supper', 'Supper menu', 'install')]} after={[CENTRED, local('design-1-supper', 'Supper menu')]} />);
+    await userEvent.click(within(cardFor('Supper menu')).getByRole('button', { name: 'Preview Supper menu' }));
+    const footer = screen.getByRole('dialog').querySelector('footer')!;
+    await userEvent.click(within(footer).getByRole('button', { name: 'Use template' }));
+    expect(await within(footer).findByRole('alert')).toHaveTextContent('Could not add this template. The library is unreachable.');
+    expect(screen.getByRole('dialog')).toHaveAccessibleName('Supper menu');
+    await userEvent.click(within(footer).getByRole('button', { name: 'Use template' }));
+    expect(await screen.findByRole('button', { name: 'Use this template' })).toBeInTheDocument();
+    expect(screen.getAllByRole('dialog')).toHaveLength(1);
+    expect(screen.getByRole('button', { name: 'Back to templates' })).toBeEnabled();
+  });
+
+  it('holds Escape while a view is working, as its Back does', async () => {
+    const onOpenChange = vi.fn();
+    render(<TemplatePickerDialog open onOpenChange={onOpenChange} index={{ templates: [CENTRED], labels: LABELS, facets: {}, catalog: CATALOG() }} trees={TREES}
+      displayType="popup" chosen={undefined} fit={EMAIL_LIST} busy onChoose={vi.fn()} onNear={vi.fn()} />);
+    await userEvent.click(within(cardFor('Centred card')).getByRole('button', { name: 'Preview Centred card' }));
+    await userEvent.keyboard('{Escape}');
+    expect(screen.getByRole('dialog')).toHaveAccessibleName('Centred card');
+    expect(onOpenChange).not.toHaveBeenCalled();
   });
 });
 

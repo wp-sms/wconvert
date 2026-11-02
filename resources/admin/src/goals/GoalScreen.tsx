@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ChevronDown, Sparkles } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
+import { OptionItem, OptionMenuContent } from '../components/ui/option-menu';
 import { PinnedDesignNotice, usePinnedDesign } from '../templates/PinnedDesign';
 import { installSetup, refreshCatalog } from '../templates/catalog';
 import { fitsOutcome } from './outcome';
@@ -224,7 +225,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
     } catch (cause) {
       busy.current = false;
       if (active.current && request === operation.current) {
-        setInstallFailed({ key: card.key, message: __('Couldn’t add this template.', 'wconvert') + ' ' + messageOf(cause) });
+        setInstallFailed({ key: card.key, message: __('Could not add this template.', 'wconvert') + ' ' + messageOf(cause) });
       }
     } finally {
       if (active.current) setAdding(null);
@@ -239,7 +240,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
       await installSetup(card.newerRevision.id, card.newerRevision.sha256);
       if (active.current) { previews.reset(); setGalleryRetry(value => value + 1); }
     } catch (cause) {
-      if (active.current) setInstallFailed({ key: card.key, message: __('Couldn’t add this template.', 'wconvert') + ' ' + messageOf(cause) });
+      if (active.current) setInstallFailed({ key: card.key, message: __('Could not add this template.', 'wconvert') + ' ' + messageOf(cause) });
     } finally {
       if (active.current) setAdding(null);
     }
@@ -308,7 +309,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
       {goals.status === 'failed' ? <RegionErrorState message={goals.message} onRetry={() => setGoalsRetry((value) => value + 1)} />
         : <RegionBody className="wconvert-creation__goals">{shown.length === 0 ?
         <EmptyState icon={Sparkles} title={__('No goals available', 'wconvert')}
-          action={onCheckOptins && <Button variant="outline" onClick={onCheckOptins}>{__('Back to Campaigns', 'wconvert')}</Button>}>
+          action={onCheckOptins && <Button variant="outline" onClick={onCheckOptins}>{__('Back to campaigns', 'wconvert')}</Button>}>
           {__('Goals come from WConvert and the plugins that extend it.', 'wconvert')}
         </EmptyState> : <ChoiceGrid>{shown.map((entry) => <GoalCard key={entry.id} goal={entry}
           surface="creation_flow" choose={__('Choose', 'wconvert')} onChoose={choose} />)}</ChoiceGrid>}
@@ -337,21 +338,18 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
   return <Region className="wconvert-creation wconvert-gallery-scope">
     <div className="wconvert-gallery-head">
       <Step at={2} />
-      <div className="wconvert-gallery-head__title">
+      <div className="wconvert-gallery-head__title wconvert-toolbar">
         <h2>{__('Choose a template', 'wconvert')}</h2>
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" disabled={working}>
+            <Button variant="outline" disabled={working}>
               <span className="wconvert-goal-switch__key">{__('Goal:', 'wconvert')}</span> {goal.label}<ChevronDown aria-hidden="true" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" sideOffset={4}>
-            <DropdownMenuRadioGroup value={goal.id} onValueChange={id => { const next = goalsHere.find(entry => entry.id === id); if (next && next.id !== goal.id) choose(next); }}>
-              {goalsHere.map(entry => <DropdownMenuRadioItem key={entry.id} value={entry.id} className="items-start">
-                <span className="grid gap-0.5"><span className="font-semibold">{entry.label}</span>{entry.description && <span className="text-note text-muted-foreground">{entry.description}</span>}</span>
-              </DropdownMenuRadioItem>)}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
+          <OptionMenuContent align="start" sideOffset={4}>
+            {goalsHere.map(entry => <OptionItem key={entry.id} name={entry.label} hint={entry.description} checked={entry.id === goal.id}
+              onSelect={() => { if (entry.id !== goal.id) choose(entry); }} />)}
+          </OptionMenuContent>
         </DropdownMenu>
       </div>
       {pinned && <div className="wconvert-picker__notice" role="status">
@@ -403,11 +401,10 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
     <InspectDialog card={inspectedCard} template={inspectedCard ? treeOf(inspectedCard) : undefined}
       gist={inspectedCard ? gistOf(entryOf(inspectedCard)?.notes ?? '') : undefined}
       onClose={() => setInspected(null)} returnFocusTo={inspectTrigger}
+      error={inspectedCard && [error && (createUnconfirmed ? unconfirmed : error), installFailed?.key === inspectedCard.key && installFailed.message].filter(Boolean).join(' ')}
       action={inspectedCard && <>
-        {error && (createUnconfirmed ? <><p role="alert" className="m-0 text-note text-destructive">{unconfirmed}</p>{checkCampaigns}</>
-          : <><p role="alert" className="m-0 text-note text-destructive">{error}</p>
-            {staleSetup && <Button variant="outline" disabled={working} onClick={() => { setInspected(null); reload(); }}>{__('Reload templates', 'wconvert')}</Button>}</>)}
-        {installFailed?.key === inspectedCard.key && <p role="alert" className="m-0 text-note text-destructive">{installFailed.message}</p>}
+        {error && (createUnconfirmed ? checkCampaigns
+          : staleSetup && <Button variant="outline" disabled={working} onClick={() => { setInspected(null); reload(); }}>{__('Reload templates', 'wconvert')}</Button>)}
         <TemplateAction card={inspectedCard} busy={starting === inspectedCard.key || adding === inspectedCard.key} disabled={working || createUnconfirmed}
           onUse={() => { void use(inspectedCard); }} onUpdate={inspectedCard.newerRevision ? () => { void update(inspectedCard); } : undefined} />
       </>} />

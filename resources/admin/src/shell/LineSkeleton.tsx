@@ -23,7 +23,7 @@ export function LineSkeleton({ status, lines = 1, inline = false, className }: {
   if (inline) {
     return <span role="status">
       <span className="sr-only">{status}</span>
-      <Skeleton aria-hidden="true" className={cn('inline-block h-[1lh] w-12 align-top', className)} />
+      <Skeleton inline aria-hidden="true" className={cn('inline-block h-[1lh] w-12 align-top', className)} />
     </span>;
   }
   return <div role="status" className="flex flex-col gap-1.5">

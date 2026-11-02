@@ -105,7 +105,7 @@ describe('the Contact form switch', () => {
   it('adds an email form as one Undo step that also restores the goal, and saves both in one PATCH', async () => {
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
     await userEvent.click((await formSwitch()).getByRole('radio', { name: 'Email' }));
-    const box = within(await screen.findByRole('dialog', { name: 'Add an email form?' }));
+    const box = within(await screen.findByRole('dialog', { name: 'Email form' }));
     expect(box.getByText(/Gets the “Email address” field, consent and the “Get my code” button\./)).toBeInTheDocument();
     expect(box.getByText('Grow my email list')).toBeInTheDocument();
     expect(box.getByText('Undo reverts all of this.')).toBeInTheDocument();
@@ -142,12 +142,40 @@ describe('the Contact form switch', () => {
     builder.getOptin.mockResolvedValue(optin(SIGNUP));
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
     await userEvent.click((await formSwitch()).getByRole('radio', { name: 'None' }));
-    const box = within(await screen.findByRole('dialog', { name: 'Remove the email form?' }));
+    const box = within(await screen.findByRole('dialog', { name: 'Email form' }));
     expect(box.getByRole('checkbox', { name: 'Add a “Shop now” button' })).toBeChecked();
     expect(box.getByRole('textbox', { name: 'Link' })).toHaveValue('https://shop.test/shop/');
     expect(box.getByText('Promote an offer or content')).toBeInTheDocument();
     await userEvent.click(box.getByRole('checkbox', { name: 'Add a “Shop now” button' }));
     expect(box.getByText('Show a message')).toBeInTheDocument();
+  });
+
+  it('keeps the way out at the start of the footer, and asks before losing a link the merchant typed', async () => {
+    vi.stubGlobal('wconvertAdmin', { offerLink: { href: 'https://shop.test/shop/', place: 'shop' } });
+    onTestFinished(() => { vi.unstubAllGlobals(); });
+    builder.getOptin.mockResolvedValue(optin(SIGNUP));
+    render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+    const openBox = async () => {
+      await userEvent.click((await formSwitch()).getByRole('radio', { name: 'None' }));
+      return within(await screen.findByRole('dialog', { name: 'Email form' }));
+    };
+    let box = await openBox();
+    expect(box.getByRole('button', { name: 'Cancel' }).closest('.wconvert-dialog__back')).not.toBeNull();
+    expect(box.getByRole('button', { name: 'Remove form' }).closest('.wconvert-dialog__actions')).not.toBeNull();
+
+    // The prefilled link is not the merchant's, so nothing asks.
+    await userEvent.keyboard('{Escape}');
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+
+    box = await openBox();
+    await userEvent.type(box.getByRole('textbox', { name: 'Link' }), 'sale/');
+    await userEvent.keyboard('{Escape}');
+    expect(screen.getByRole('group', { name: 'Discard changes?' })).toBeInTheDocument();
+    await userEvent.click(box.getByRole('button', { name: 'Keep editing' }));
+    expect(box.getByRole('textbox', { name: 'Link' })).toHaveValue('https://shop.test/shop/sale/');
+    await userEvent.keyboard('{Escape}');
+    await userEvent.click(box.getByRole('button', { name: 'Discard' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
   });
 
   it('makes a signup copy of a published campaign and leaves the original alone', async () => {
@@ -160,12 +188,14 @@ describe('the Contact form switch', () => {
     await userEvent.click(control.getByRole('button', { name: 'Why a copy' }));
     expect(await screen.findByText(/This campaign is published, so what it counts can’t change/)).toBeInTheDocument();
     await userEvent.keyboard('{Escape}');
-    await userEvent.click(control.getByRole('button', { name: 'Make a signup copy' }));
-    const box = within(await screen.findByRole('dialog', { name: 'Make a signup copy' }));
+    await userEvent.click(control.getByRole('button', { name: 'Make a form copy' }));
+    const box = within(await screen.findByRole('dialog', { name: 'Form copy' }));
+    // Native radios in a named group: the set is announced as a set (GUIDELINES §7).
+    expect(within(box.getByRole('group', { name: 'What the copy asks for' })).getAllByRole('radio')).toHaveLength(2);
     await userEvent.click(box.getByRole('radio', { name: 'Ask for phone' }));
-    await userEvent.click(box.getByRole('button', { name: 'Create signup copy' }));
+    await userEvent.click(box.getByRole('button', { name: 'Create form copy' }));
     await waitFor(() => expect(onCreated).toHaveBeenCalledWith('COPIED'));
-    expect(copies.createOptin).toHaveBeenCalledWith('Welcome offer (signup)', 'grow_sms_list', expect.objectContaining({ template_id: OFFER.id, analytics: { label: '' } }));
+    expect(copies.createOptin).toHaveBeenCalledWith('Welcome offer (form)', 'grow_sms_list', expect.objectContaining({ template_id: OFFER.id, analytics: { label: '' } }));
     expect(tree(copies.createOptin.mock.calls[0][2]).submissions).toHaveLength(1);
     expect(builder.saveOptin).not.toHaveBeenCalled();
   });
@@ -186,7 +216,7 @@ describe('the Contact form switch', () => {
     const item = screen.getByRole('menuitem', { name: 'Delete screen' });
     expect(item).not.toHaveAttribute('aria-disabled', 'true');
     await userEvent.click(item);
-    expect(await screen.findByRole('dialog', { name: 'Remove the email form?' })).toBeInTheDocument();
+    expect(await screen.findByRole('dialog', { name: 'Email form' })).toBeInTheDocument();
   });
 
   it('turns adding an email field to a design with no form into the same box', async () => {
@@ -197,6 +227,6 @@ describe('the Contact form switch', () => {
     const email = within(screen.getByRole('dialog', { name: 'Add element' })).getByRole('button', { name: /^email/i });
     expect(email).not.toHaveAttribute('aria-disabled', 'true');
     await userEvent.click(email);
-    expect(await screen.findByRole('dialog', { name: 'Add an email form?' })).toBeInTheDocument();
+    expect(await screen.findByRole('dialog', { name: 'Email form' })).toBeInTheDocument();
   });
 });

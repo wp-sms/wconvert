@@ -64,7 +64,7 @@ const paid = () => {
   window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
   onTestFinished(() => { delete window.wconvertAdmin; });
 };
-const search = () => screen.getByRole('searchbox', { name: 'Find a setting' });
+const search = () => screen.getByRole('searchbox', { name: 'Search settings' });
 
 it('finds settings, not categories, without replacing the active form', async () => {
   render(<Settings group="experience" />);
@@ -73,7 +73,7 @@ it('finds settings, not categories, without replacing the active form', async ()
   expect(within(results).getByRole('link', { name: 'Delete submissions automatically · Data & privacy' })).toHaveAttribute('href', '#settings?group=data');
   expect(screen.queryByRole('link', { name: /Visitor experience/ })).not.toBeInTheDocument();
   expect(await screen.findByRole('heading', { name: 'Display limits' })).toBeInTheDocument();
-  expect(screen.queryByRole('link', { name: /Back to Leads/ })).not.toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: /Back to leads/ })).not.toBeInTheDocument();
 });
 
 it('lists matching settings as “Label · Group” rows and says so when none match', async () => {

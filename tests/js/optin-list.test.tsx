@@ -25,8 +25,8 @@ const optins = vi.hoisted(() => ({
   duplicateCampaign: vi.fn(),
 }));
 
-const stats = vi.hoisted(() => ({ readDashboard: vi.fn() }));
-vi.mock('../../resources/admin/src/stats/api', () => stats);
+const stats = vi.hoisted(() => ({ readDashboard: vi.fn(), readReport: vi.fn() }));
+vi.mock('../../resources/admin/src/stats/api', async (original) => ({ ...await original<object>(), ...stats }));
 
 const goals = vi.hoisted(() => ({ listGoals: vi.fn() }));
 
@@ -175,7 +175,7 @@ it('selects the campaign ID for manual copying when clipboard permission is refu
   await user.click(await screen.findByRole('button', { name: OPTIN.name }));
   await user.click(screen.getByText('For developers'));
   await user.click(screen.getByRole('button', { name: 'Copy ID' }));
-  expect(await screen.findByRole('alert')).toHaveTextContent('Couldn’t copy');
+  expect(await screen.findByRole('alert')).toHaveTextContent('Could not copy');
   const field = screen.getByRole('textbox', { name: 'Campaign ID' }) as HTMLInputElement;
   expect(field).toHaveFocus(); expect(field.value).toBe(OPTIN.id);
   expect(field.selectionStart).toBe(0); expect(field.selectionEnd).toBe(OPTIN.id.length);
@@ -224,7 +224,7 @@ describe('the four situations this screen has to answer', () => {
     render(<OptinList onEdit={() => undefined} onCreate={() => undefined} />);
 
     expect(await screen.findByText('No campaigns yet')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Create your first campaign/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Create campaign' })).toBeInTheDocument();
   });
 
   /** On an empty site the checklist replaces the bare empty state (ADR 0176). */
@@ -729,13 +729,13 @@ it('draws Details as the campaign, its numbers, and the footer’s ways out', as
   expect(onEdit).toHaveBeenCalledWith(OPTIN.id);
 });
 
-it('explains a missing rate and views counted only from the published version', async () => {
+it('explains a missing rate and Shown counting only the published version', async () => {
   stats.readDashboard.mockResolvedValue({ days: 30, from: '2026-08-16', to: '2026-09-14', goals: [{ action: 'submit', result_label: 'Submissions', optins: [{ id: OPTIN.id, conversions: 1, impressions: 0, conversion_rate: null }] }] });
   render(<OptinList onEdit={() => undefined} />);
   await userEvent.click(await screen.findByRole('button', { name: OPTIN.name }));
   const dialog = await screen.findByRole('dialog', { name: OPTIN.name });
   expect(await within(dialog).findByText('Shows once it has been shown')).toBeInTheDocument();
-  expect(within(dialog).getByText(/Views are counted only from the published version/)).toBeInTheDocument();
+  expect(within(dialog).getByText(/Shown counts only the published version/)).toBeInTheDocument();
 });
 
 /**
@@ -799,7 +799,7 @@ describe('the Campaigns workspace', () => {
     stats.readDashboard.mockRejectedValue(new Error('Stats unavailable'));
     const onEdit = vi.fn();
     render(<OptinList onEdit={onEdit} />);
-    expect(await screen.findByText(/Results couldn’t load/)).toBeInTheDocument();
+    expect(await screen.findByText(/Results could not load/)).toBeInTheDocument();
     await userEvent.click(await screen.findByRole('button', { name: 'Continue editing' }));
     expect(onEdit).toHaveBeenCalledWith(OPTIN.id);
   });
@@ -843,12 +843,29 @@ it('does not describe a suspended saved version as live in details', async () =>
   expect(within(detail).getByText(/Resolve the issue before it can show again/)).toBeInTheDocument();
 });
 
+it('reads dates the merchant chose, and links the report to those days rather than to a count', async () => {
+  const payload = { days: 30, from: '2026-08-16', to: '2026-09-14', goals: [{ action: 'submit', result_label: 'Submissions', optins: [{ id: OPTIN.id, conversions: 7, impressions: 20, conversion_rate: 0.35 }] }] };
+  stats.readDashboard.mockResolvedValue(payload);
+  stats.readReport.mockResolvedValue({ ...payload, days: 9, from: '2026-08-01', to: '2026-08-09', custom: true });
+  render(<OptinList onEdit={() => undefined} />);
+  const report = await screen.findByRole('link', { name: `View ${OPTIN.name} report` });
+  await userEvent.click(screen.getByRole('button', { name: /^Results period:/ }));
+  await userEvent.click(screen.getByRole('radio', { name: 'Custom dates' }));
+  await userEvent.type(screen.getByLabelText('From'), '2026-08-01');
+  await userEvent.type(screen.getByLabelText('To'), '2026-08-09');
+  await userEvent.click(screen.getByRole('button', { name: 'Apply dates' }));
+  expect(stats.readReport).toHaveBeenLastCalledWith({ from: '2026-08-01', to: '2026-08-09' });
+  await waitFor(() => expect(report).toHaveAttribute('href', expect.stringContaining('from=2026-08-01')));
+  expect(report).not.toHaveAttribute('href', expect.stringContaining('days='));
+});
+
 it('retains accepted results, dates and drill-down links when a new period fails, then retries', async () => {
   const payload = { days: 30, from: '2026-08-16', to: '2026-09-14', goals: [{ action: 'submit', result_label: 'Submissions', optins: [{ id: OPTIN.id, conversions: 7, impressions: 20, conversion_rate: 0.35 }] }] };
   stats.readDashboard.mockResolvedValueOnce(payload).mockRejectedValueOnce(new Error('Offline')).mockResolvedValue({ ...payload, days: 7, from: '2026-09-08' });
   render(<OptinList onEdit={() => undefined} />);
   const report = await screen.findByRole('link', { name: `View ${OPTIN.name} report` });
-  await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Results period' }), '7');
+  await userEvent.click(screen.getByRole('button', { name: /^Results period:/ }));
+  await userEvent.click(screen.getByRole('radio', { name: 'Last 7 days' }));
   expect(await screen.findByText(/previous period and results remain/)).toBeInTheDocument();
   expect(report).toHaveTextContent('7Submissions');
   expect(report).toHaveAttribute('href', expect.stringContaining('days=30'));
@@ -864,7 +881,7 @@ it('makes preview and vocabulary failures recoverable without presenting missing
   optins.readCampaignPreviews.mockRejectedValueOnce(new Error('Offline')).mockResolvedValue([]);
   goals.listGoals.mockRejectedValueOnce(new Error('Offline')).mockResolvedValue([{ id: OPTIN.goal, label: 'Grow my email list' }]);
   render(<OptinList onEdit={() => undefined} />);
-  expect(await screen.findByText(/Design previews couldn’t load/)).toHaveTextContent('Goal names couldn’t load');
+  expect(await screen.findByText(/Design previews could not load/)).toHaveTextContent('Goal names could not load');
   expect(screen.getByText('Goal unavailable')).toBeInTheDocument();
   expect(screen.queryByText(OPTIN.goal)).toBeNull();
   await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
@@ -900,7 +917,7 @@ it('asks for the empty list to carry the only Create button', async () => {
   optins.listOptins.mockResolvedValue([]);
   const onEmptyChange = vi.fn();
   render(<OptinList onEdit={() => undefined} onCreate={() => undefined} onEmptyChange={onEmptyChange} />);
-  await screen.findByRole('button', { name: /Create your first campaign/ });
+  await screen.findByRole('button', { name: 'Create campaign' });
   await waitFor(() => expect(onEmptyChange).toHaveBeenLastCalledWith(true));
 });
 
@@ -932,6 +949,23 @@ it('explains why a known design-less campaign cannot be published', async () => 
   await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
   expect(await screen.findByRole('menuitem', { name: 'Publish saved draft' })).toHaveAttribute('aria-disabled', 'true');
   expect(screen.getByText('Choose a template in the editor before publishing.')).toBeInTheDocument();
+});
+
+it('refuses publishing from Details the way the row does: a few words, the sentence as its description', async () => {
+  vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
+  onTestFinished(() => { vi.unstubAllGlobals(); });
+  optins.readCampaignPreviews.mockResolvedValue([{ id: OPTIN.id, template: null, display_type: 'popup' }]);
+  render(<OptinList onEdit={() => undefined} />);
+  await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
+  await userEvent.click(await screen.findByRole('menuitem', { name: 'Details' }));
+  const dialog = await screen.findByRole('dialog');
+  await userEvent.click(within(dialog).getByRole('button', { name: /More actions/ }));
+  const publish = await screen.findByRole('menuitem', { name: 'Publish saved draft' });
+  expect(publish).toHaveAttribute('aria-disabled', 'true');
+  expect(publish).toHaveTextContent('Choose a template first');
+  expect(publish).toHaveAccessibleDescription('Choose a template in the editor before publishing.');
+  await userEvent.click(publish);
+  expect(optins.publishOptin).not.toHaveBeenCalled();
 });
 
 it('keeps a family failure visible when another write succeeds and suppresses automatic editor handoff', async () => {

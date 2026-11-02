@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { isChoiceHeld, valueOfChoice } from './panel';
 import { CheckRow } from '../shell/CheckRow';
 import { FieldHeading } from './PanelSection';
+import { NativeSelect } from '../components/ui/native-select';
 
 /** One manifest setting: checkbox for booleans, select for words, radios for pictures.
  * Preserve unlisted stored values and use the manifest default only when absent.
@@ -63,11 +64,11 @@ export function ParamChoice({
     }
     return <div className="wconvert-token">
       <FieldHeading label={label} htmlFor={`wconvert-param-${id}`} tip={tip} />
-      <select id={`wconvert-param-${id}`} value={selected ?? '__current'} onChange={event => onChange(valueOfChoice(event.target.value))}>
+      <NativeSelect id={`wconvert-param-${id}`} value={selected ?? '__current'} onChange={event => onChange(valueOfChoice(event.target.value))}>
         {selected === undefined && <option value="__current" disabled>{held === undefined && fallback === undefined
           ? __('Choose…', 'wconvert') : sprintf(/* translators: %s: the setting's value now, shown as stored because it is not one of the listed choices. */ __('Current: %s', 'wconvert'), String(held ?? fallback))}</option>}
         {offered.map(choice => <option key={choice} value={choice}>{nameOfValue(choice)}</option>)}
-      </select>
+      </NativeSelect>
     </div>;
   }
 

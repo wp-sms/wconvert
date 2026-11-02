@@ -1,5 +1,6 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { formatLongDay, formatShortDay } from '@/lib/format';
+import { tierName, tierProductName } from '@/goals/availability';
+import { formatCount, formatLongDay, formatShortDay } from '@/lib/format';
 
 /**
  * What the License page says about the licence.
@@ -90,7 +91,7 @@ export function describeLicense(license: LicensePayload, now = Date.now()): Lice
   const elsewhere = license.state === 'moved' || license.state === 'copy' || license.state === 'not_activated_here';
   const mode = license.renewal?.mode ?? 'manual';
   const ends = license.expires_at;
-  const keepWorking = __('Pro features keep working.', 'wconvert-pro');
+  const keepWorking = featuresKeepWorking();
 
   if (license.managed) return managed(license, stopped);
 
@@ -100,7 +101,7 @@ export function describeLicense(license: LicensePayload, now = Date.now()): Lice
   switch (license.state) {
     case 'key_unreadable':
       card = hero('danger', 'key', __('Enter your license key again', 'wconvert-pro'),
-        __('WordPress can’t read the saved key. This usually happens after the site’s security keys change. Updates stopped until you do; Pro features keep working.', 'wconvert-pro'), 'rekey');
+        sprintf(/* translators: %s: the paid product's name, e.g. “WConvert Pro”. */ __('WordPress can’t read the saved key. This usually happens after the site’s security keys change. Updates stopped until you do; %s features keep working.', 'wconvert-pro'), tierProductName('pro')), 'rekey');
       break;
     case 'copy':
       card = hero('info', 'globe', sprintf(/* translators: %s: the live site's domain this site was copied from, e.g. “shop.example.com”. */ __('This is a copy of %s', 'wconvert-pro'), license.domain_change?.was ?? ''),
@@ -130,18 +131,18 @@ export function describeLicense(license: LicensePayload, now = Date.now()): Lice
       break;
     case 'over_limit': {
       const used = license.plan?.used ?? license.sites.filter((site) => !site.dev).length;
-      card = hero('warning', 'warn', sprintf(/* translators: 1: how many sites use the license, 2: how many sites the plan allows. */ _n('%1$d site uses a %2$d-site license', '%1$d sites use a %2$d-site license', used, 'wconvert-pro'), used, license.plan?.max ?? 0),
+      card = hero('warning', 'warn', sprintf(/* translators: 1: how many sites use the license, 2: how many sites the plan allows. */ _n('%1$s site uses a %2$s-site license', '%1$s sites use a %2$s-site license', used, 'wconvert-pro'), formatCount(used), formatCount(license.plan?.max ?? 0)),
         __('Remove the sites you no longer use, or upgrade for more.', 'wconvert-pro'), 'sites');
       break;
     }
     case 'trial':
       card = hero(days <= 7 ? 'warning' : 'info', 'clock',
-        days <= 7 ? sprintf(/* translators: %d: how many days are left in the trial. */ _n('Your trial ends in %d day', 'Your trial ends in %d days', days, 'wconvert-pro'), days) : __('You’re on a trial', 'wconvert-pro'),
+        days <= 7 ? sprintf(/* translators: %s: how many days are left in the trial. */ _n('Your trial ends in %s day', 'Your trial ends in %s days', days, 'wconvert-pro'), formatCount(days)) : __('You’re on a trial', 'wconvert-pro'),
         sprintf(/* translators: %s: the date the trial ends, e.g. “Mar 3, 2027”. */ __('It ends on %s. Buy to keep updates and support after that.', 'wconvert-pro'), long(license.renewal?.trial_ends_at ?? ends)), 'buy');
       break;
     case 'expiring':
       card = hero('warning', 'calendar',
-        days <= 0 ? __('Your license ends today', 'wconvert-pro') : sprintf(/* translators: %d: how many days are left before the license ends. */ _n('Your license ends in %d day', 'Your license ends in %d days', days, 'wconvert-pro'), days),
+        days <= 0 ? __('Your license ends today', 'wconvert-pro') : sprintf(/* translators: %s: how many days are left before the license ends. */ _n('Your license ends in %s day', 'Your license ends in %s days', days, 'wconvert-pro'), formatCount(days)),
         sprintf(/* translators: %s: the date the license ends, e.g. “Mar 3, 2027”. */ __('It ends on %s. Renew to keep getting updates and support.', 'wconvert-pro'), long(ends)), 'renew');
       break;
     default: {
@@ -165,6 +166,9 @@ export function describeLicense(license: LicensePayload, now = Date.now()): Lice
 }
 
 /** What an agency's client sees: whether updates work, and who to call (P1). */
+/** The sentence every problem state ends on (ADR 0143). */
+const featuresKeepWorking = () => sprintf(/* translators: %s: the paid product's name, e.g. “WConvert Pro”. */ __('%s features keep working.', 'wconvert-pro'), tierProductName('pro'));
+
 function managed(license: LicensePayload, stopped: boolean): LicenseDescription {
   const by = license.managed?.by ?? null;
   const who = by ?? __('your site developer', 'wconvert-pro');
@@ -175,10 +179,10 @@ function managed(license: LicensePayload, stopped: boolean): LicenseDescription 
     icon: stopped ? 'alert' : 'checkCircle',
     headline: stopped ? __('Updates stopped', 'wconvert-pro') : __('Updates are on', 'wconvert-pro'),
     body: stopped
-      ? `${__('Pro features keep working.', 'wconvert-pro')} ${sprintf(/* translators: %s: who manages the license, an agency's name or “your site developer”. */ __('Contact %s to turn updates back on.', 'wconvert-pro'), who)}`
+      ? `${featuresKeepWorking()} ${sprintf(/* translators: %s: who manages the license, an agency's name or “your site developer”. */ __('Contact %s to turn updates back on.', 'wconvert-pro'), who)}`
       : sprintf(/* translators: %s: who manages the license, an agency's name or “Your site developer”. */ __('%s manages this license.', 'wconvert-pro'), Who),
     door: stopped ? 'contact' : null,
-    chip: __('Pro', 'wconvert-pro'),
+    chip: tierName('pro'),
     facts: [
       { label: __('Updates', 'wconvert-pro'), value: stopped ? __('Stopped', 'wconvert-pro') : license.updates.file_mods ? __('On', 'wconvert-pro') : __('Off on this site', 'wconvert-pro'), tone: stopped ? 'warning' : undefined },
       { label: __('Managed by', 'wconvert-pro'), value: Who },
@@ -191,9 +195,9 @@ function managed(license: LicensePayload, stopped: boolean): LicenseDescription 
 }
 
 function chip(license: LicensePayload): string {
-  const pro = __('Pro', 'wconvert-pro');
+  const pro = tierName('pro');
   const plan = license.plan === null ? null : license.plan.max === null ? __('Unlimited', 'wconvert-pro')
-    : sprintf(/* translators: %d: how many sites the plan allows. */ _n('%d site', '%d sites', license.plan.max, 'wconvert-pro'), license.plan.max);
+    : sprintf(/* translators: %s: how many sites the plan allows. */ _n('%s site', '%s sites', license.plan.max, 'wconvert-pro'), formatCount(license.plan.max));
   const lifetime = license.renewal?.mode === 'lifetime' ? __('Lifetime', 'wconvert-pro') : null;
 
   const parts: Array<string | null> = [pro, plan, lifetime];
@@ -254,8 +258,8 @@ function short(iso: string | null, now = Date.now()): string {
 function relative(days: number | null): string | null {
   if (days === null) return null;
   if (days === 0) return __('today', 'wconvert-pro');
-  if (days < 0) return sprintf(/* translators: %d: how many days ago the license ended. */ _n('%d day ago', '%d days ago', -days, 'wconvert-pro'), -days);
-  if (days < 45) return sprintf(/* translators: %d: how many days until the date. */ _n('in %d day', 'in %d days', days, 'wconvert-pro'), days);
+  if (days < 0) return sprintf(/* translators: %s: how many days ago the license ended. */ _n('%s day ago', '%s days ago', -days, 'wconvert-pro'), formatCount(-days));
+  if (days < 45) return sprintf(/* translators: %s: how many days until the date. */ _n('in %s day', 'in %s days', days, 'wconvert-pro'), formatCount(days));
   const months = Math.round(days / 30.4);
-  return sprintf(/* translators: %d: how many months until the date. */ _n('in %d month', 'in %d months', months, 'wconvert-pro'), months);
+  return sprintf(/* translators: %s: how many months until the date. */ _n('in %s month', 'in %s months', months, 'wconvert-pro'), formatCount(months));
 }

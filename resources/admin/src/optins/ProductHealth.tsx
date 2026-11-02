@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import { readProductHealth, type ProductHealth } from './api';
+import { formatCount } from '../lib/format';
 
 /** Check only displayed campaigns, bounded batches, and discard superseded reads. */
 export function useProductHealth(ids: string, refresh: number) {
@@ -45,7 +46,7 @@ export function useProductHealth(ids: string, refresh: number) {
 export function productHealthLabel(health?: ProductHealth): string | null {
   if (!health) return null;
   const warnings = health.checks.filter(check => check.state === 'warning').length;
-  if (warnings) return sprintf(/* translators: %d: how many product checks gave a warning. */ _n('%d product warning', '%d product warnings', warnings, 'wconvert'), warnings);
+  if (warnings) return sprintf(/* translators: %s: how many product checks gave a warning. */ _n('%s product warning', '%s product warnings', warnings, 'wconvert'), formatCount(warnings));
   if (health.checks.some(check => check.state === 'unknown')) return __('Products not checked', 'wconvert');
   if (health.checks.some(check => check.state === 'context')) return __('Check a sample basket', 'wconvert');
   return null;
@@ -64,13 +65,13 @@ export function ProductHealthDetails({ health, loading, failed, onRecheck, onRev
         {loading ? __('Checking products…', 'wconvert') : __('Check products again', 'wconvert')}
       </Button>
     </div>
-    {loading ? <p role="status" className="sr-only">{__('Checking products…', 'wconvert')}</p> : failed ? <p role="alert">{__('Products couldn’t be checked.', 'wconvert')}</p> : health && <>
+    {loading ? <p role="status" className="sr-only">{__('Checking products…', 'wconvert')}</p> : failed ? <p role="alert">{__('Products could not be checked.', 'wconvert')}</p> : health && <>
       <p className="wconvert-product-health-scope">{health.basis === 'published' ? __('Checks the published version against today’s catalog.', 'wconvert') : __('Checks the saved draft against today’s catalog.', 'wconvert')}</p>
       <ul>{health.checks.map((check, index) => <li key={index} data-state={check.state}>
         <strong>{check.label}</strong>
         <p>{check.message}</p>
       </li>)}</ul>
-      {onReview && health.checks.some(check => check.state === 'warning' || check.state === 'context') && <Button disabled={reviewDisabled} onClick={onReview}>{__('Review products', 'wconvert')}</Button>}
+      {onReview && health.checks.some(check => check.state === 'warning' || check.state === 'context') && <Button variant="outline" disabled={reviewDisabled} onClick={onReview}>{__('Review products', 'wconvert')}</Button>}
     </>}
   </section>;
 }

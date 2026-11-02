@@ -7,8 +7,10 @@ import { destinationsAfter, type DestinationsPayload } from '../destinations/api
 import { issueCount } from '../destinations/issueCount';
 import { sendingIssuesHref } from '../nav';
 import { Region, RegionHeader, RegionBody, RegionErrorState } from '../shell/Region';
+import { RegionSkeleton } from '../shell/RegionSkeleton';
+import { Reread } from '../shell/skeletonDelay';
 import { Button } from '../components/ui/button';
-import { formatWhen } from '../lib/format';
+import { formatCount, formatWhen } from '../lib/format';
 import { wallKey } from '../lib/wallTime';
 /** Current operational evidence stays separate from historical performance windows. */
 export function DeliveryAttention() {
@@ -22,7 +24,10 @@ export function DeliveryAttention() {
     return () => { active = false; };
   }, [retry]);
   if (failed && !data) return <Region><RegionHeader title={__('Sending needs attention', 'wconvert')} icon={<Send />} /><RegionErrorState message={__('Could not check how sending is going.', 'wconvert')} onRetry={() => setRetry(n => n + 1)} /></Region>;
-  if (!data || issueCount(data) === 0) return null;
+  // Most reads land as nothing at all, so this waits as a re-read does: a quick
+  // all-clear never flashes a card above the numbers and drops them back.
+  if (!data) return <Reread.Provider value><RegionSkeleton label={__('Sending status', 'wconvert')} className="wa-report" icon={<Send />} lines={2} /></Reread.Provider>;
+  if (issueCount(data) === 0) return null;
   // Stored times are site wall times; the newest across the three sources wins.
   const lastIssue = (id: string) => {
     const destination = data.destinations.find(d => d.id === id)!;
@@ -32,7 +37,7 @@ export function DeliveryAttention() {
   };
   const affected = data.destinations.filter(d => d.health.consecutive_failures > 0 || d.health.skipped_captures > 0 || d.availability !== 'ready' || data.failures.some(f => f.destination === d.id));
   return <Region className="wa-report"><RegionHeader title={__('Sending needs attention', 'wconvert')} icon={<Send />} />
-    <RegionBody className="wa-report-setting"><div><strong>{sprintf(/* translators: %d: how many destinations need review. */ _n('%d destination needs review', '%d destinations need review', issueCount(data), 'wconvert'), issueCount(data))}</strong><p className="wa-muted">{__('Current status, not limited to the report dates.', 'wconvert')}</p></div>
+    <RegionBody className="wa-report-setting"><div><strong>{sprintf(/* translators: %s: how many destinations need review. */ _n('%s destination needs review', '%s destinations need review', issueCount(data), 'wconvert'), formatCount(issueCount(data)))}</strong><p className="wa-muted">{__('Current status, not limited to the report dates.', 'wconvert')}</p></div>
       <div className="wconvert-toolbar"><Button variant="outline" asChild><a href={sendingIssuesHref()}>{__('Review sending issues', 'wconvert')}</a></Button></div>
     </RegionBody>
     <ReportDisclosure title={__('Affected destinations', 'wconvert')}>

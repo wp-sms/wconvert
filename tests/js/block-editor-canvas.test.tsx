@@ -291,7 +291,7 @@ describe('when the list never arrived', () => {
   it('says so in two sentences, and that the page is unaffected', () => {
     draw(NEWSLETTER);
 
-    expect(screen.getByText('Your campaigns couldn’t be loaded here. Blocks already on the page still work. Reload the editor.')).toBeInTheDocument();
+    expect(screen.getByText('Your campaigns could not be loaded here. Blocks already on the page still work. Try Refresh campaigns.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Refresh campaigns' })).toBeEnabled();
   });
 
@@ -301,6 +301,6 @@ describe('when the list never arrived', () => {
     draw(NEWSLETTER);
 
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-    expect(screen.getByText(/couldn’t be loaded here/)).toBeInTheDocument();
+    expect(screen.getByText(/could not be loaded here/)).toBeInTheDocument();
   });
 });

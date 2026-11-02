@@ -1,14 +1,14 @@
 import { useState, type ReactNode, type RefObject } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { KeyRound, Search, User } from 'lucide-react';
+import { KeyRound, User } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { DataTable, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '@/shell/DataTable';
+import { PickerSearch } from '@/discovery/PickerSearch';
+import { DataTable, DataTableActions, DataTableActionsColumn, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '@/shell/DataTable';
 import { Disclosure } from '@/shell/Disclosure';
 import { FactList } from '@/shell/FactList';
 import { Region, RegionBody, RegionFooter, RegionHeader } from '@/shell/Region';
-import { formatShortDay } from '@/lib/format';
+import { formatCount, formatShortDay } from '@/lib/format';
 import { type LicensePayload, type LicenseSite } from './describeLicense';
 import { Ext, KeyField } from './parts';
 
@@ -42,44 +42,43 @@ export function SitesCard({ license, onRemove, busy, result, headingRef, now = D
     .sort((a, b) => order(a) - order(b));
 
   return (
-    <Region label={__('Sites', 'wconvert-pro')}>
+    <Region>
       {/* The status card's "Manage sites" scrolls here and moves focus to the heading. */}
       <div ref={headingRef} tabIndex={-1} className="wconvert-license-anchor">
         <RegionHeader title={__('Sites', 'wconvert-pro')} trailing={
           <span className="wconvert-license-muted" data-over={over ? '' : undefined}>
             {max === null
-              ? sprintf(/* translators: %d: how many sites this license is active on. */ _n('%d site · Unlimited', '%d sites · Unlimited', used, 'wconvert-pro'), used)
-              : sprintf(/* translators: 1: how many sites this license is active on, 2: how many sites the license allows. */ __('%1$d of %2$d used', 'wconvert-pro'), used, max)}
+              ? sprintf(/* translators: %s: how many sites this license is active on. */ _n('%s site · Unlimited', '%s sites · Unlimited', used, 'wconvert-pro'), formatCount(used))
+              : sprintf(/* translators: 1: how many sites this license is active on, 2: how many sites the license allows. */ __('%1$s of %2$s used', 'wconvert-pro'), formatCount(used), formatCount(max))}
           </span>
         } />
       </div>
       {max !== null && max > 1 && (
-        <div className="wconvert-license-meter-wrap">
+        <RegionBody className="wconvert-license-meter-wrap">
           <span className="wconvert-license-meter" aria-hidden="true">
             {Array.from({ length: Math.max(max, used) }).map((_, i) => <i key={i} data-on={i < used && i < max ? '' : undefined} data-over={i >= max ? '' : undefined} />)}
           </span>
           {license.sites.some((site) => site.dev) && <span className="wconvert-license-hint">{__('Dev sites, like staging and local copies, are free.', 'wconvert-pro')}</span>}
-        </div>
+        </RegionBody>
       )}
       {license.sites.length > SEARCH_FROM && (
-        <div className="wconvert-license-search">
-          <Search aria-hidden="true" />
-          <Input type="search" aria-label={__('Search sites', 'wconvert-pro')} placeholder={__('Search sites', 'wconvert-pro')} value={query} onChange={(event) => setQuery(event.target.value)} />
+        <div className="wconvert-toolbar wconvert-license-search">
+          <PickerSearch label={__('Search sites', 'wconvert-pro')} value={query} onChange={setQuery} />
         </div>
       )}
-      {result && <div className="wconvert-license-card__result">{result}</div>}
-      <DataTable className="wconvert-license-sites" label={__('Sites on this license', 'wconvert-pro')}>
+      {result && <RegionBody>{result}</RegionBody>}
+      <DataTable label={__('Sites on this license', 'wconvert-pro')}>
         <DataTableHead>
           <DataTableColumn>{__('Site', 'wconvert-pro')}</DataTableColumn>
           <DataTableColumn>{__('Added', 'wconvert-pro')}</DataTableColumn>
-          <DataTableColumn><span className="sr-only">{__('Actions', 'wconvert-pro')}</span></DataTableColumn>
+          <DataTableActionsColumn>{__('Actions', 'wconvert-pro')}</DataTableActionsColumn>
         </DataTableHead>
         <DataTableBody>
           {shown.map((site) => {
             const stale = site.last_seen !== null && now - Date.parse(site.last_seen) > STALE_DAYS * 86_400_000;
             return (
               <DataTableRow key={site.domain}>
-                <DataTableCell label={__('Site', 'wconvert-pro')}>
+                <DataTableCell label={__('Site', 'wconvert-pro')} heading>
                   <span className="wconvert-license-site">
                     <span className="wconvert-license-domain">{site.domain}</span>
                     {site.here && <Badge variant="secondary">{__('This site', 'wconvert-pro')}</Badge>}
@@ -88,25 +87,25 @@ export function SitesCard({ license, onRemove, busy, result, headingRef, now = D
                   </span>
                 </DataTableCell>
                 <DataTableCell label={__('Added', 'wconvert-pro')} className="wconvert-license-num">{site.added ? formatShortDay(site.added) : '—'}</DataTableCell>
-                <DataTableCell label={__('Actions', 'wconvert-pro')} className="wconvert-license-act-cell">
+                <DataTableActions>
                   {!site.here && (
-                    <Button variant="ghost" size="sm" aria-disabled={busy !== null || undefined}
+                    <Button variant="ghost" disabled={busy !== null}
                       aria-label={sprintf(/* translators: %s: a site's domain, e.g. “example.com”. */ __('Remove %s', 'wconvert-pro'), site.domain)}
-                      onClick={() => busy === null && onRemove(site)}>
+                      onClick={() => onRemove(site)}>
                       {busy === `site:${site.domain}` ? __('Removing…', 'wconvert-pro') : __('Remove', 'wconvert-pro')}
                     </Button>
                   )}
-                </DataTableCell>
+                </DataTableActions>
               </DataTableRow>
             );
           })}
           {shown.length === 0 && (
-            <DataTableRow><DataTableCell label={__('Site', 'wconvert-pro')} className="wconvert-license-muted">{sprintf(/* translators: %s: the text typed into the site search. */ __('No site matches “%s”.', 'wconvert-pro'), query)}</DataTableCell></DataTableRow>
+            <DataTableRow><DataTableCell label={__('Site', 'wconvert-pro')} heading className="wconvert-license-muted">{sprintf(/* translators: %s: the text typed into the site search. */ __('No site matches “%s”.', 'wconvert-pro'), query)}</DataTableCell></DataTableRow>
           )}
         </DataTableBody>
       </DataTable>
       {max !== null && (
-        <RegionFooter>{__('Need more sites?', 'wconvert-pro')} <Ext href={license.urls.upgrade ?? '#'}>{__('Upgrade', 'wconvert-pro')}</Ext></RegionFooter>
+        <RegionFooter>{__('Need more sites?', 'wconvert-pro')} <Ext href={license.urls.upgrade}>{__('Upgrade', 'wconvert-pro')}</Ext></RegionFooter>
       )}
     </Region>
   );
@@ -127,7 +126,7 @@ export function KeyCard({ license, busy, onReplace, replaceError, onRemove }: {
   const masked = license.key.masked;
 
   return (
-    <Region label={__('License key', 'wconvert-pro')}>
+    <Region>
       <RegionHeader title={__('License key', 'wconvert-pro')} />
       <RegionBody className="wconvert-license-card__body">
         <FactList facts={[
@@ -141,12 +140,12 @@ export function KeyCard({ license, busy, onReplace, replaceError, onRemove }: {
               ? sprintf(/* translators: %s: the current license key with all but its last four characters hidden, e.g. “••••7F3A”. */ __('Activates the new key first, then releases %s. Updates don’t pause.', 'wconvert-pro'), masked)
               : __('Activates the new key on this site.', 'wconvert-pro')} />
         </Disclosure>
-        <div className="wconvert-license-danger">
+        <div className="wconvert-license-danger wconvert-toolbar">
           <div>
             <b>{__('Remove from this site', 'wconvert-pro')}</b>
             <p className="wconvert-license-hint">{__('Frees a site on your license.', 'wconvert-pro')}</p>
           </div>
-          <Button variant="outline" size="sm" aria-disabled={busy !== null || undefined} onClick={() => busy === null && onRemove()}>
+          <Button variant="outline" disabled={busy !== null} onClick={() => onRemove()}>
             {busy === 'remove' ? __('Removing…', 'wconvert-pro') : __('Remove', 'wconvert-pro')}
           </Button>
         </div>

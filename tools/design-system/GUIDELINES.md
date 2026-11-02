@@ -119,7 +119,8 @@ colour.
   - **Citron `#E2F475`** is the brand. It fills the `brand` button, on an
     espresso edge, once per screen, and it is the signal on the espresso
     frame: the active tab, the unread dot and focus. It is never text on a
-    light surface.
+    light surface. `--brand-surface` and `--brand-edge` are its solid colours
+    for the getting-started checklist's current step (ADR 0176).
   - **Ice blue `#E0EFF3`** is selection, info and the paid plan.
 
   The canvas is a near-neutral warm white, **`#F6F5F1`**, and work surfaces
@@ -155,7 +156,11 @@ colour.
 Shared shadow tokens are `none`. Use surface contrast and fine borders for depth,
 with 6px control corners and 8px work surfaces. No gradients or decorative motion,
 and that includes a loading placeholder: skeletons are static, never pulsing (§12).
-This supersedes the earlier hard-offset shadow direction (ADR 0097).
+This supersedes the earlier hard-offset shadow direction (ADR 0097). A ring or
+rail drawn with `box-shadow` has no blur and casts nothing, so it is a line and
+not a shadow: a selected state, a hairline around something clipped, the §15
+rail. The one cast shadow is the phone on the stage's ghost page (ADR 0170).
+`tests/js/admin-guidelines.test.ts` tells the two apart by shape.
 
 Expanded destination settings remain white. Place usage notices inside the form's
 padding, on a solid `--surface` inset, and keep fields on the card surface. Do not
@@ -165,6 +170,8 @@ stack edge-to-edge tinted panels or repeat the same shared-change warning.
 
 - `RegionHeader` owns symmetric header padding and its optional leading icon.
   Do not target descendant headings with screen-specific padding overrides.
+  The destination card draws its own in the same slot and type roles, because
+  its description carries a link and `RegionHeader`'s is a string (ADR 0182).
 - `DialogContent` and `AlertDialogContent` default to `--card`, including portals
   outside the admin mount. Popovers and menus use the white `--popover` surface.
   Neutral inset notices use solid `--surface`, not translucent `bg-muted/*` fills.
@@ -214,11 +221,14 @@ the window and its dates ("Last 30 days · Sep 9 – Oct 8"), opening presets as
 native radios, Custom dates, and anything that qualifies the window. No screen
 draws its own period select or date card.
 
+**Font rows stay in a popover** (ADRs 0042 and 0054): a font is previewed in its
+own face, which the option menu's rows do not draw (ADR 0182).
+
 **Three one-of-N shapes, and no fourth** (ADR 0131):
 
 | Shape | For |
 |---|---|
-| `shell/OptionStrip` chips | page toolbars and dialogs — period, compare, device |
+| `shell/OptionStrip` chips | page toolbars and dialogs — period, compare, device, view; an option may draw an icon in place of its word, which stays its name |
 | `.wconvert-choice-set` | compact inspector settings |
 | `.wconvert-radio-card` | a choice that needs a sentence of its own — retention, transfer, graph insert, capture mode, recommendations |
 
@@ -275,11 +285,16 @@ Every settings section has an explicit Save; nothing autosaves a setting.
 
 **No ID on any screen** (ADR 0131). A missing name reads "Deleted campaign",
 "Removed destination" or "Unnamed", never a ULID. Search still accepts a
-pasted ID. There are two exceptions. Campaign Details' closed "For developers"
+pasted ID. There are three exceptions. Campaign Details' closed "For developers"
 disclosure shows the campaign ID with Copy, because the free page events
 identify a campaign by nothing else. The inline campaign's shortcode (the
 "WConvert campaign" block and manual placement) carries it too, because it is
-how a campaign is placed outside the block editor.
+how a campaign is placed outside the block editor. The display rules' page
+picker (`rules/ObjectPicker`, `rules/Where`) keeps a page's or term's WordPress
+ID beside its title, as the merchant decided in the admin-guidelines audit
+(ADR 0182), because two pages genuinely can share a title and a rule targets
+exactly one of them. A product has no such
+excuse: an unnamed one reads "Unnamed product".
 
 **Data is shown once, one way** (`lib/format.ts`): dates in the site's locale
 and timezone — "Today, 2:22 PM", "Yesterday", "Oct 3" in a list, "Oct 9, 2026,
@@ -309,17 +324,29 @@ browser, since a class-name test cannot establish the final cascade.
 | Medium | 48rem | details — a lead, a campaign |
 | Large | 80rem | pickers, the journey, preview |
 
-- **Header:** the title is the subject itself (a person, a campaign), an
-  optional status badge, and one muted meta line. Titles truncate before ✕.
+No fourth width. A dialog that changes job changes size with it: importing a
+template is Small until it has a file and Large once it shows the preview, and
+Change goal is Large while it picks and Small once it confirms. One picker is
+deliberately Medium: `builder/AddDestinationPicker`, a short list to read rather
+than a gallery to browse, whose rows would otherwise run 80rem with a route's
+status a screen away from its name (ADR 0182).
+
+- **Header:** the title is the subject itself (a person, a campaign, a form), an
+  optional status badge, and one muted meta line. Titles truncate before ✕. A
+  picker with nothing chosen yet has no subject to name, so its title is the
+  action: Change template, Change goal, Add a destination.
 - **Body:** the only part that scrolls.
 - **Footer:** fixed. Back or Cancel at the start (or a secondary way out such as
   Review & publish's Preview, ADR 0138), an optional short note, the
   primary action at the end, and an error beside the actions. Footer controls
-  take the toolbar scope.
+  take the toolbar scope. A read-only dialog has nothing to cancel: its way out
+  is **Done**, at the start. "Close" is the ✕'s name, so a second button saying
+  it would be two buttons with one word (ADR 0182).
 - **Dirty:** Escape, an outside click or ✕ asks "Discard changes?" only when
   something was typed (`dirty`), and the question is drawn inside the dialog.
 - **Never nested.** A dialog that leads to another view opens it in place with
-  Back. A destructive confirm is an `AlertDialog` that says what survives; red
+  Back: one modal, its body swapped. The caret lands on the new view's name and
+  Back returns it to the control that opened the view. A destructive confirm is an `AlertDialog` that says what survives; red
   is for delete and remove only. A status change asked from a details dialog
   (Publish, Unpublish) confirms in the footer's place — the footer becomes the
   question — rather than in a second dialog (ADR 0137).
@@ -337,8 +364,11 @@ browser, since a class-name test cannot establish the final cascade.
 
 Template discovery dialogs are `PickerDialogContent` — a Large `AdminDialog` —
 with a single scroll body and a separate action footer. Back and Use/Install
-stay reachable in short and phone windows. Pack and collection pagination stays
-outside the scroll body. Use-case choices and screen exploration belong to
+stay reachable in short and phone windows. Change template's review, its What
+changes and its inspection are in-place views over a grid that stays mounted:
+Escape steps back one view, as each view's Back does, and only the grid's Escape
+closes the modal; ✕ and an outside click leave from any view (ADR 0182). Pack
+and collection pagination stays outside the scroll body. Use-case choices and screen exploration belong to
 inspection, never dropdowns on result cards. A single result keeps the ordinary
 card size. Long placement, measurement and journey guidance uses labeled
 progressive disclosure beside the preview. Inspection is for looking: the
@@ -364,9 +394,9 @@ each filter More filters holds — then the grid. A card is the stage, the name
 and ★, one row of chips (format; what it asks for — Email, Phone, Name, or
 Button; Recommended or a grey lock with the plan's name), and one action. No
 sort, no Start here, no comparison. A card's stage opens inspection: Desktop |
-Mobile, Fit | Actual size, its screens, the gist and the same action. Errors and
-recovery actions belong in the active modal, including an uncertain creation
-result. Country choices use names and searchable selection, not code entry.
+Mobile, Fit | Actual size, its screens and the gist, with the same action in the
+footer beside Back to templates. Errors and recovery actions belong in the
+active modal, beside that action, including an uncertain creation result. Country choices use names and searchable selection, not code entry.
 Keep collection introductions concise: one description in the header, stage
 and search controls alongside each other when space allows, and no redundant
 format filter for a single-format collection. Keep the page count visible for
@@ -408,7 +438,25 @@ does not exist is not reachable from it.
 
 An empty state says **what will fill it and when**. It is not an apology and not
 an onboarding tour. Every list screen has one and a merchant meets it before
-they meet the full version, so it is designed first, not last.
+they meet the full version, so it is designed first, not last. It is
+`shell/EmptyState`, and its Create is one form: a plus and **Create campaign**.
+A line of figures with nothing to do about them is not a list, so Spam
+protection's *No activity yet* stays a line.
+
+**Situations the screens share, and the one answer to each:**
+
+- **A search** is `PickerSearch`: a magnifier in the field, the label for a
+  screen reader, and **Search …** as its name. It applies as typed where the
+  screen already holds the list. Leads applies on Enter, with a Search button,
+  because each apply is a server query and a half-typed address reads as a
+  different filter from a whole one. Help's plain GET form is ADR 0144's.
+- **A way back** is `PageBack`: one ghost link above the title. Leads hides the
+  section's description on purpose (ADR 0091).
+- **A settings footer** is, in order: the error, `SaveStatus`, **Cancel changes**
+  while dirty, Save. A save's error goes beside Save and nowhere else.
+- **A re-read that keeps its rows** dims them under a status line (§12).
+- **A campaign row's text action** is `nextActionOf`, wherever campaigns are
+  listed.
 
 ## 12. Loading
 
@@ -458,7 +506,8 @@ had them: a bare table that grew filters above it, a full-width card that became
 a rail and a column. So the skeleton lives in an **eager** file outside the
 chunk (`stats/AnalyticsSkeleton`, `leads/LeadLogSkeleton`,
 `settings-page/SettingsSkeleton`, `goals/GoalStepSkeleton`,
-`occasions/OccasionSkeleton`, `shell/BuilderSkeleton`), the section draws it as
+`occasions/OccasionSkeleton`, `shell/BuilderSkeleton`,
+`license/LicenseSkeleton` in Pro), the section draws it as
 its fallback, and the screen imports it back for its first read. A test asserts
 the two are the same component. **Any CSS the skeleton needs is eager CSS too**
 — a skeleton styled by the stylesheet of the chunk it stands in for is
@@ -482,6 +531,9 @@ the placeholder replaces, and the caller is the one who knows, so it is a flag:
   (`RegionSkeleton` and the four above) waits. A re-read that keeps its rows
   on screen, as Leads' filters do, dims them under *Updating…* and draws no
   skeleton at all.
+- **A region that usually lands as nothing waits too.** Analytics' *Sending needs
+  attention* is absent on a healthy site, so it wraps its first read in `Reread`:
+  drawn at once, its shape would flash and drop the numbers back on every visit.
 
 `shell/skeletonDelay.ts` is where that line lives, so a new skeleton chooses
 rather than copies.
@@ -559,6 +611,10 @@ screen-reader-only status (§12). Placeholders stay static; a pending read must 
 claim that there are no results. Empty campaigns explain the goal → design →
 publish sequence and offer the first action.
 
+**Refresh is a door only where the data can change without the merchant.**
+Sending issues has one, because a queued send retries in the background; every
+other Destinations action re-reads on its own (ADR 0182).
+
 **A region's error carries no dismiss control.** It clears when the next fetch
 succeeds, so there is no path where a merchant hides a failure and then reads
 the stale data underneath it as current.
@@ -578,7 +634,7 @@ had grown, in four families — and the one a merchant is most likely to feel.
 settings_list` to `offer | upsell | explain | hide`, and **no surface ever
 renders `unavailable` as an upsell**. That half is load-bearing: a paying
 customer must never be shown an advertisement for Pro, and we must never offer
-to sell a merchant a WooCommerce licence we do not have.
+to sell a merchant a WooCommerce license we do not have.
 
 **`locked` and `unavailable` never collapse into one sentence.** They mean
 opposite things — *you have not bought the tier* and *this site is missing
@@ -592,7 +648,7 @@ Three places had collapsed them.
 | **Amber** (`warning`) | **The site is holding this back.** | Suspended, *Paused*, *Needs X* |
 | **Grey** (`secondary`) + a lock | It costs money. | every Pro upsell |
 | Muted note, ink link — **no badge, no lock** | Pro has this; this install doesn't. | the Pro hint, free only (ADR 0147) |
-| **Green** (`success`) | It is working. | *Delivering* |
+| **Green** (`success`) | It is working. | *Working* (a destination: the badge answers the merchant's question, the record is the "Last sent" line beside it; ADR 0182) |
 | **Red** (`destructive`) | It is broken. | *Failing* |
 
 Amber previously meant *suspended*, *paused*, *needs a plugin* **and** *buy Pro*
@@ -666,6 +722,9 @@ component, `:dir(rtl)` in the stylesheet. There was no `rtl:` variant, no
 so `OptinList`'s `CornerDownRight` — the entire visual grammar of the nesting —
 pointed away from the row it belonged to on every RTL install.
 
+**An arrow inside a translated sentence stays text**, such as a menu path
+("Settings → AI agents"), because only a translator can place it (ADR 0182).
+
 **A glyph that is symmetric, or that means up or down, is left alone.** Up is up
 in Persian: a list runs top to bottom whichever way the words run, which is why
 `BlockTree.mirrored()` swaps ← and → and nothing else.
@@ -735,9 +794,14 @@ Not gaps. Each was decided:
 | Decorative shadows, gradients and motion | Harbor uses solid surfaces and clear hierarchy |
 | A dismiss control on a region's error | it clears when the next fetch succeeds |
 | A loading spinner for a region | a skeleton mirrors what is coming |
-| An ID on a screen | names, or "Deleted campaign"; the developer disclosure is the one exception |
+| An ID on a screen | names, or "Deleted campaign"; the developer disclosure, the inline shortcode and the page picker are the exceptions (§8) |
 
 ## 19. Changing the system
+
+- **The rules are guarded** (ADR 0182). ESLint refuses the raw controls and the
+  physical sides; `tests/js/admin-guidelines.test.ts` holds the words, strings,
+  colours and shadows, against an exact allowlist. Adding to that list is a
+  decision, so say why in the same change.
 
 - Components are **vendored from shadcn upstream** and then become WConvert's
   own files. Never copied from WP SMS.
@@ -766,7 +830,7 @@ Not gaps. Each was decided:
   confirmation uses the primary action; deletion and replacement use destructive
   actions. A known missing design explains why publication is disabled.
 - Campaigns, results, previews and vocabulary can fail independently. Draw the
-  failed concern with a shared error and Retry. Keep accepted results, dates and
+  failed concern with a shared error and Try again. Keep accepted results, dates and
   links together during loading or failure. Skeletons reserve the upcoming
   thumbnail and field layout in either view.
 - Busy state belongs to the affected campaign family. Navigation waits for
@@ -782,10 +846,13 @@ Not gaps. Each was decided:
   list: Look, Screen, Line, Follow-up question, Only if…, Form, All other
   answers, Then. `tests/js/flow-words.test.ts` refuses the retired ones. Domain nouns (campaign, goal, lead,
   destination) are lowercase mid-sentence; capitals start a title, a button
-  or a sentence. US spelling.
+  or a sentence. US spelling. **Basket** is what a shopper holds, in every
+  sentence (ADR 0120); **cart** stays only where it is a name: Add to cart, the
+  display rules' catalogue and the cart-return Goal's metric (`CONTEXT.md`).
 - **More than two row actions go in a ⋯ menu**, with icons and labels. A
-  row menu holds actions on that row. A list's foot is one line: its count,
-  dates and pages (ADR 0132).
+  row menu holds actions on that row. A list's foot is one line, `ListFoot`:
+  its count, dates and pages (ADR 0132). The pages are a `nav` with a live
+  position and arrows.
 - **An inline disclosure's chevron sits beside its words**, not at the far end
   of the row; a card disclosure keeps the whole-row trigger (ADR 0132).
 - **One primary action per screen, even when empty.** An empty list carries

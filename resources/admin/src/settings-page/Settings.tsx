@@ -4,9 +4,9 @@ import { isFreeInstall } from '../goals/availability';
 import { MoreWithPro } from './MoreWithPro';
 import { Fragment, useEffect, useId, useState } from 'react';
 import { __ } from '@wordpress/i18n';
-import { ArrowRight, ChartColumn, Database, Eye, Mail, Plug, Search, Shield } from 'lucide-react';
+import { ArrowRight, ChartColumn, Database, Eye, Mail, Plug, Shield } from 'lucide-react';
 import { EmailReports } from './EmailReports';
-import { Input } from '../components/ui/input';
+import { PickerSearch } from '../discovery/PickerSearch';
 import { NativeSelect } from '../components/ui/native-select';
 import { clearRequestedSetting, focusSetting, matchSettings, requestedSetting, requestSetting, settingsIndex, type SettingEntry } from './settingsIndex';
 import { settingsHref, type SettingsGroup } from '../nav';
@@ -107,16 +107,12 @@ export function Settings({
           >
             {categories.map(({ id: value, label }) => <option key={value} value={value}>{label}</option>)}
           </NativeSelect>
-          <div className="relative min-w-0 flex-1">
-            <Search className="pointer-events-none absolute start-3 top-3 size-4 text-muted-foreground" aria-hidden="true" />
-            <Input
-              className="ps-9"
-              type="search"
-              aria-label={__('Find a setting', 'wconvert')}
+          <div className="min-w-0 flex-1">
+            <PickerSearch
+              label={__('Search settings', 'wconvert')}
               aria-controls={searching ? `${id}-results` : undefined}
-              placeholder={__('Find a setting…', 'wconvert')}
               value={search}
-              onChange={(event) => setSearch(event.target.value)}
+              onChange={setSearch}
               onKeyDown={(event) => {
                 // Enter opens the first result, as a search box that lists
                 // places is expected to.

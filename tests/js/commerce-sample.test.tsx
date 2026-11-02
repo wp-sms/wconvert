@@ -61,12 +61,27 @@ it('waits for the basket check, then takes its answer, and checks again after a 
   await waitFor(() => expect(resolvers).toHaveLength(1));
   await act(async () => resolvers[0]({ ...response(true), rules: { 'sample-required-cart': false } }));
   expect(status).toHaveTextContent('Doesn’t open');
-  expect(status).toHaveTextContent('This basket does not meet the campaign’s cart requirements');
+  expect(status).toHaveTextContent('This basket does not meet the campaign’s basket requirements');
   fireEvent.change(screen.getByRole('spinbutton', { name: 'Merchandise amount after discounts' }), { target: { value: '100' } });
   expect(status).toHaveTextContent('Checking…');
   await waitFor(() => expect(resolvers).toHaveLength(2));
   await act(async () => resolvers[1]({ ...response(true), rules: { 'sample-required-cart': true } }));
   expect(status).toHaveTextContent('Opens after 15 seconds');
+});
+
+it('gives a basket check that failed its one door, and that door checks again', async () => {
+  vi.mocked(apiFetch).mockRejectedValueOnce(new Error('offline')).mockResolvedValue({ ...response(true), rules: { 'sample-required-cart': true } });
+  render(<SampleVisit cartRequired vocabulary={ruleTypes()} onClose={vi.fn()} value={{
+    display_rules: { audience: { mode: 'everyone' }, opening: { mode: 'automatic', match: 'all', minimum_seconds: 0, rules: [{ id: 'time', type: 'time_on_page', seconds: 15 }] } },
+    targeting: {}, frequency: {}, schedule: {}, priority: 0,
+  }} />);
+  const status = screen.getByRole('status');
+  expect(await screen.findByRole('alert')).toHaveTextContent('Could not test this basket.');
+  expect(status).toHaveTextContent('The sample basket could not be checked.');
+  fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+  expect(status).toHaveTextContent('Checking…');
+  await waitFor(() => expect(status).toHaveTextContent('Opens after 15 seconds'));
+  expect(screen.queryByRole('alert')).toBeNull();
 });
 
 it('invalidates the sample when its viewed product changes, independently of the empty basket', async () => {

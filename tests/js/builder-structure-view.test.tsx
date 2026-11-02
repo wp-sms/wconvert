@@ -689,7 +689,7 @@ describe('deleting a block', () => {
     const remove = screen.getByRole('menuitem', { name: /Delete/ });
     expect(remove).not.toHaveAttribute('aria-disabled', 'true');
     await userEvent.click(remove);
-    expect(await screen.findByRole('dialog', { name: /^Remove the (email|phone) form\?$/ })).toBeInTheDocument();
+    expect(await screen.findByRole('dialog', { name: /^(Email|Phone) form$/ })).toBeInTheDocument();
   });
 });
 
@@ -1031,7 +1031,7 @@ describe('the inspector', () => {
     await userEvent.clear(label);
     await userEvent.type(label, 'Where do we send it?');
 
-    await userEvent.click(screen.getByRole('button', { name: 'Capture something else' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Ask for something else' }));
     await userEvent.click(await screen.findByRole('menuitemradio', { name: /Phone number/ }));
 
     expect(screen.getByRole('status', { name: 'Layer changes' })).toHaveTextContent('Changed to Phone number');
@@ -1070,18 +1070,18 @@ describe('the inspector', () => {
     await structure();
     await select('Headline');
 
-    expect(screen.queryByRole('button', { name: /Capture something else|Change what/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: /Ask for something else|Change what/ })).toBeNull();
 
     await select('Row');
 
-    expect(screen.queryByRole('button', { name: /Capture something else|Change what/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: /Ask for something else|Change what/ })).toBeNull();
   });
 
   it('sends the swapped field when the merchant saves', async () => {
     await structure();
     await select('Email address');
 
-    await userEvent.click(screen.getByRole('button', { name: 'Capture something else' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Ask for something else' }));
     await userEvent.click(await screen.findByRole('menuitemradio', { name: /Phone number/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
@@ -1418,7 +1418,7 @@ describe('undo and redo, where they act on the whole draft', () => {
       only thing about this case that changed: it is still one history entry
       and still undone from the tab it was applied on.
     */
-    await userEvent.click(screen.getByRole('button', { name: /Midnight/ }));
+    await userEvent.click(screen.getByRole('radio', { name: /Midnight/ }));
 
     await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
@@ -2114,8 +2114,8 @@ describe('adaptive editor and signup deletion', () => {
     await userEvent.click(await screen.findByRole('tab', { name: 'Edit' }));
     await userEvent.click(within(screen.getByRole('navigation', { name: 'Campaign' })).getByRole('button', { name: /^Optional SMS signup/ }));
     await userEvent.click(screen.getByRole('button', { name: /^Actions for / }));
-    await userEvent.click(screen.getByRole('menuitem', { name: 'Remove optional signup' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Remove signup' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Remove optional form' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Remove form' }));
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
     expect(savedTree().submissions).toHaveLength(1);
     expect(builder.saveOptin.mock.calls.at(-1)?.[2].submission_settings).toEqual({});

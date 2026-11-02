@@ -433,6 +433,12 @@
   --link: var(--action);
   /* Citron, for the one brand action per screen. Always on an espresso edge. */
   --brand: #e2f475;
+  /*
+   * The getting-started checklist's current step: citron as a surface and an
+   * edge, in the solid colours the approved wash came to (§5).
+   */
+  --brand-surface: #f9fde1;
+  --brand-edge: #d1dd7e;
   /* The site's ice blue: its Pro card, and here the paid plan and info. */
   --ice: #e0eff3;
   /* Dims the page under a dialog without turning it grey. */
@@ -455,7 +461,7 @@
   --recommended-foreground: #485000;
   /* A saved template's star (ADR 0171): gold, not the warning amber. */
   --saved: #b7791f;
-  /* The open collection and its tile: the action colour, barely there. */
+  /* The action colour, barely there: the open collection and its tile, a draft's date bar, a group of follow-up screens. */
   --action-surface: #f5fafb;
   --action-border: #c6dfe6;
   /* An ice chip's edge and hover, a step deeper than --ice. */
@@ -1014,25 +1020,18 @@ body:has(#wconvert-admin) #wpbody-content {
  * same reason: they now have an important declaration to beat.
  *
  * ---------------------------------------------------------------------------
- * **IT OWNS THE HEIGHT AND NOT THE SHAPE, WHICH IS WHY `size` STILL APPEARS.**
+ * **IT OWNS THE HEIGHT, AND A CONTROL TAKES THE DEFAULT SHAPE (GUIDELINES §3).**
  *
- * A `size="sm"` on a `Button` inside one of these strips looks redundant and is
- * not: the vendored variant is `h-8 gap-1.5 px-3` and the default is
- * `h-9 gap-2 px-4`, so deleting the prop leaves the height exactly where this
- * rule puts it and widens the control by 8px. On the Optin list that is three
- * row actions in a column sized `inline-size: 1%` — 24px taken from the data
- * columns to remove a prop that was not lying. `size="icon-sm"` is stronger
- * still: `size-8` is both dimensions, and this rule sets neither inline size.
+ * The vendored `sm` is `h-8 gap-1.5 px-3` and the default is `h-9 gap-2 px-4`,
+ * so a button that drops `size="sm"` for a strip stands where this rule puts it
+ * and is 8px wider. That width used to be the argument for keeping the prop at
+ * the call site, and two heights in one row came back with it, so ESLint now
+ * refuses it (ADR 0182). `size="icon-sm"` stays: `size-8` is both dimensions, an
+ * icon's shape rather than a density, and this rule sets neither inline size.
  *
- * `SelectTrigger` is the one that IS purely redundant — its `size` toggles
- * `h-8` against `h-9` and touches nothing else — which is why the Leads filter
- * passes none and the buttons beside it still do.
- *
- * So: pass no `size` where a strip states the height and the default shape is
- * wanted; pass one where the control's PADDING is the point. What must never
- * appear is a `size` this rule then overrides — see `ReadinessDialog`, which
- * spelled `sm` into `.wconvert-page-actions` and rendered 36px for as long as
- * it existed.
+ * `ReadinessDialog` is why a `size` this rule overrides is worse than none: it
+ * spelled `sm` into `.wconvert-page-actions` and rendered 36px for as long as it
+ * existed.
  * ------------------------------------------------------------------------- */
 @layer utilities {
   /*
@@ -1045,8 +1044,7 @@ body:has(#wconvert-admin) #wpbody-content {
    *
    * **The HEIGHT is not stated for the footer**, only the wrapping — see the
    * override below, and `RegionFooter`'s own docblock. A step's action is the
-   * tall control and a card's repair action is the small one, and that is the
-   * caller's `size` because it is a question about scope.
+   * tall control and a card's repair action is the small one.
    */
   :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
     :is(.wconvert-page-actions, .wconvert-toolbar, .wconvert-table, .wconvert-footer)
@@ -1343,40 +1341,6 @@ body:has(#wconvert-admin) #wpbody-content {
   accent-color: var(--action);
 }
 
-/*
- * ---------------------------------------------------------------------------
- * THE VENDORED CHECKBOX IS 16px DRAWN AND 24px TO A POINTER.
- *
- * WCAG 2.2 SC 2.5.8 asks for 24 × 24 CSS px, and `size-4` is 16. The Leads
- * toolbar's *"Group submissions that share an email or phone"* is the one in
- * this admin, and none of the exceptions rescues it: there is no equivalent
- * control on the screen doing the same job, and the Spacing exception is about
- * an undersized target with 24px of clearance rather than about a small one on
- * its own.
- *
- * **A pseudo-element rather than a bigger box**, so what is drawn is unchanged:
- * a 24px checkbox beside a 20px `Select` in the same toolbar would be the
- * heaviest thing on a row of filters.
- *
- * **And not by wrapping the pair in one `<label>`**, which is the obvious fix
- * and is wrong here: Radix draws the checkbox as `<button role="checkbox">`,
- * and a `<label>` around a labelable element forwards its click to it — so a
- * press on the box itself is a press the label also forwards, and the merchant
- * toggles twice. `htmlFor` keeps the text clickable without that; this grows
- * the box's own target; and the run is given a 24px line below so the LABEL
- * clears the same bar.
- * ------------------------------------------------------------------------- */
-#wconvert-admin [data-slot="checkbox"] {
-  position: relative;
-}
-
-#wconvert-admin [data-slot="checkbox"]::after {
-  content: "";
-  position: absolute;
-  /* 16px drawn + 4px each side = 24px of target. */
-  inset: -0.25rem;
-}
-
 #wconvert-admin .wconvert-check {
   display: flex;
   align-items: center;
@@ -1468,7 +1432,7 @@ body:has(#wconvert-admin) #wpbody-content {
   .wconvert-picker[data-slot="dialog-content"] {
     display: flex !important;
     flex-direction: column !important;
-    inline-size: min(var(--wconvert-picker-width, 80rem), calc(100vw - 2rem)) !important;
+    inline-size: min(80rem, calc(100vw - 2rem)) !important;
     max-inline-size: calc(100vw - 2rem) !important;
   }
 
@@ -1642,10 +1606,6 @@ body:has(#wconvert-admin) #wpbody-content {
  * fights it on specificity is a pair only one reader at a time understands.
  * `.wconvert-token__exact` at (0,1,0) lost to this at (1,2,0) and stood 32px
  * beside its 24px slider until the exclusion was written.
- *
- * This also lands the media picker's `Button size="sm"` at the height of the
- * input beside it in `.wconvert-slot__media`, which is what a control paired
- * with a field should have been all along.
  *
  * **The `.button` classes are here because `DevExport` uses them.** *Load this
  * design* is a raw wp-admin button under a `<textarea>` inside the library-entry
@@ -1872,20 +1832,6 @@ body:has(#wconvert-admin) #wpbody-content {
 .wconvert-picker__identity h2 { margin: 0; }
 .wconvert-picker__identity [data-slot="dialog-title"]:focus { outline: none; }
 .wconvert-picker__identity { display: flex; align-items: center; flex-wrap: wrap; gap: 0.625rem; }
-:is(.wconvert-picker, .wconvert-creation) select.wconvert-picker__select {
-  min-block-size: var(--control-height-sm);
-  block-size: var(--control-height-sm);
-  margin: 0;
-  padding-block: 0;
-  padding-inline-start: 0.625rem;
-  padding-inline-end: 1.75rem;
-  border: 1px solid var(--input);
-  border-radius: var(--radius-md);
-  background-color: var(--card);
-  color: var(--foreground);
-  font: inherit;
-  font-size: var(--text-note);
-}
 .wconvert-picker__header > [role="group"] { flex: none; }
 .wconvert-picker__header > [data-slot="dialog-description"] { flex-basis: 100%; order: 2; }
 .wconvert-preview-controls__screen { display: inline-flex; align-items: center; gap: .5rem; min-inline-size: 0; }
@@ -1923,14 +1869,12 @@ body:has(#wconvert-admin) #wpbody-content {
 .wconvert-goal-card p { margin: 0; }
 .wconvert-goal-card .wconvert-goal-card__action { position: static; inline-size: 100%; }
 .wconvert-goal-card__action:not([aria-disabled='true'])::after { content: ''; position: absolute; inset: 0; border-radius: var(--radius-md); }
-.wconvert-goal-card:has(.wconvert-goal-card__action:not([aria-disabled='true'])):hover { box-shadow: 0 3px 12px color-mix(in srgb, var(--action) 8%, transparent); }
 .wconvert-goal-card:has(.wconvert-goal-card__action:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
 .wconvert-goal-card--locked .wconvert-goal-card__icon { color: var(--muted-foreground); }
 .wconvert-creation .wconvert-picker__search { min-inline-size: 0; }
 @media (max-width: 640px) {
 .wconvert-creation > .wconvert-creation__steps { padding: 1rem 1rem 0; }
 .wconvert-creation__steps ol { gap: 1rem; }
-.wconvert-creation select.wconvert-picker__select { min-inline-size: 0; max-inline-size: 100%; }
 }
 
 /* Match the layer of the shared components’ important Tailwind utilities. */
@@ -2357,8 +2301,8 @@ body:has(#wconvert-admin) #wpbody-content {
   #wconvert-admin .wconvert-inspector__head [data-slot="tabs-trigger"] {
     block-size: var(--control-height-xs) !important;
     padding-inline: 0.375rem !important;
-    font-size: var(--text-meta) !important;
-    line-height: var(--text-meta--line-height) !important;
+    font-size: var(--text-micro) !important;
+    line-height: var(--text-micro--line-height) !important;
     letter-spacing: 0.02em !important;
   }
 }
@@ -2794,7 +2738,7 @@ body:has(#wconvert-admin) #wpbody-content {
  * the other.
  */
 .wconvert-block[data-selected='true'] {
-  background: color-mix(in srgb, var(--ring) 12%, transparent);
+  background: var(--secondary);
   box-shadow: inset 2px 0 0 0 var(--ring);
 }
 
@@ -3084,10 +3028,10 @@ body:has(#wconvert-admin) #wpbody-content {
    * head with three words in it, and a chip is one lowercase word in a 6rem
    * space.
    */
-  font-size: var(--text-meta);
-  line-height: var(--text-meta--line-height);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
   letter-spacing: 0.02em;
-  font-weight: var(--text-meta--font-weight);
+  font-weight: var(--text-micro--font-weight);
   white-space: nowrap;
 }
 
@@ -3361,6 +3305,7 @@ body:has(#wconvert-admin) #wpbody-content {
  * refuses to grow clips it.
  */
 .wconvert-theme {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.375rem;
@@ -3384,7 +3329,7 @@ body:has(#wconvert-admin) #wpbody-content {
  * is a different shape and a different colour from the ring on the input beside
  * them, and inside a scroll container can be clipped at its edge.
  */
-.wconvert-theme:focus-visible,
+.wconvert-theme:has(> input:focus-visible),
 .wconvert-swatch:focus-visible {
   border-color: var(--ring);
   box-shadow: 0 0 0 1px var(--ring);
@@ -3393,11 +3338,11 @@ body:has(#wconvert-admin) #wpbody-content {
 }
 
 /*
- * The applied one is stated rather than merely darker: `aria-pressed` is what
- * a screen reader reads, and the ring is the same one every selected thing in
- * this admin wears.
+ * The applied one is stated rather than merely darker: the radio's `checked` is
+ * what a screen reader reads, and the ring is the same one every selected thing
+ * in this admin wears.
  */
-.wconvert-theme[aria-pressed="true"] {
+.wconvert-theme:has(> input:checked) {
   border-color: var(--action);
   box-shadow: 0 0 0 1px var(--action);
 }
@@ -3594,8 +3539,8 @@ body:has(#wconvert-admin) #wpbody-content {
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--muted-foreground);
-  font-size: var(--text-label);
-  line-height: var(--text-label--line-height);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
 }
 
 .wconvert-swatch__value {
@@ -3603,8 +3548,8 @@ body:has(#wconvert-admin) #wpbody-content {
   text-overflow: ellipsis;
   white-space: nowrap;
   font-family: var(--font-mono);
-  font-size: var(--text-label);
-  line-height: var(--text-label--line-height);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
 }
 
 .wconvert-color-picker {
@@ -3775,8 +3720,8 @@ body:has(#wconvert-admin) #wpbody-content {
  * wrong for a sentence-case caption.
  */
 .wconvert-token__axis-name {
-  font-size: var(--text-meta);
-  line-height: var(--text-meta--line-height);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
   color: var(--muted-foreground);
 }
 
@@ -4403,10 +4348,10 @@ body:has(#wconvert-admin) #wpbody-content {
  */
 #wconvert-admin
   :is(.wconvert-slot__key, .wconvert-token) {
-  font-size: var(--text-label);
-  line-height: var(--text-label--line-height);
-  letter-spacing: var(--text-label--letter-spacing);
-  font-weight: var(--text-label--font-weight);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
+  letter-spacing: var(--text-micro--letter-spacing);
+  font-weight: var(--text-micro--font-weight);
 }
 
 /*
@@ -5174,21 +5119,6 @@ body:has(#wconvert-admin) #wpbody-content {
   gap: 0.75rem;
 }
 
-/*
- * What a control has to say for itself beyond its name — the referrer's
- * one-hop caveat, and whose clock a daily window is on (`controls.tsx`).
- *
- * A BLOCK on its own line, and measured: it is a sentence rather than a label,
- * so left inline it would run off the end of a rule row that already carries a
- * name, three checkboxes and a column of inputs.
- */
-.wconvert-param__hint {
-  display: block;
-  max-inline-size: 46ch;
-  margin-block-start: 0.25rem;
-  color: var(--muted-foreground);
-}
-
 .wconvert-export {
   margin-block-start: 1.5rem;
 }
@@ -5307,31 +5237,9 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
  * ------------------------------------------------------------------------- */
 
 /*
- * The tree's keyboard contract, said once, under the toolbar and over all three
- * panes — because it is about none of them and true of the tab.
- *
- * **It carries the id**, or `#wconvert-admin :is(p, li, td, th, …)` at (1,1,0)
- * forces `font-size: inherit` over a bare class and this renders at body size.
- * That trap is documented five times in this file and has been walked into
- * every one of them.
- */
-#wconvert-admin .wconvert-hint {
-  margin: 0;
-  padding-block: 0.25rem;
-  padding-inline: var(--wconvert-gutter);
-  border-block-end: 1px solid var(--border);
-  color: var(--muted-foreground);
-  font-size: var(--text-meta);
-  line-height: var(--text-meta--line-height);
-  letter-spacing: 0.02em;
-  text-wrap: pretty;
-}
-
-/*
  * The one sentence this tab prints that a merchant did NOT ask for — *Headline,
  * moved down, 3 of 6* — drawn only while there is one. It is the visible half
- * of the live region, so it takes the size of something read rather than the
- * hint's, and it sits in the same band.
+ * of the live region, so it takes the size of something read.
  */
 #wconvert-admin .wconvert-said {
   margin: 0;
@@ -5362,114 +5270,6 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 }
 
 /* ---------------------------------------------------------------------------
- * WHAT WAS LOOKED AT — SIX CHIPS, DRAWN WHETHER THEY PASSED OR NOT.
- *
- * A list, because it is a set of countable statements and a screen reader
- * should say how many; a list with no markers, because a bullet in a toolbar
- * row is a bullet in a toolbar row. `#wconvert-admin :not(.wconvert-editor) >
- * ul > li` at (1,1,2) is what a bare class here would lose to, which is the
- * trap `.wconvert-readiness__list` already documents four screens up.
- * ------------------------------------------------------------------------- */
-#wconvert-admin .wconvert-checks {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.25rem;
-  margin: 0;
-  /*
-   * **A band at the foot of the card rather than a row at the top of it**
-   * (ADR 0066). The padding and the rule above it are what make it one: it is a
-   * sibling of `.wconvert-panes` inside the same `Region`, so it spans all
-   * three columns and divides from them the way the toolbar divides from above.
-   */
-  min-block-size: var(--control-height-sm);
-  padding-block: 0.25rem;
-  padding-inline: var(--wconvert-gutter);
-  border-block-start: 1px solid var(--border);
-  background: var(--surface);
-  list-style: none;
-}
-
-#wconvert-admin .wconvert-checks > li {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-/*
- * **Passing is quiet and failing is not, and the difference is not colour
- * alone.** The icon changes with the state — a tick for a pass, a triangle for
- * a fail — so the strip is readable in greyscale and to anyone who cannot tell
- * the two grounds apart (ADR 0038).
- */
-.wconvert-checks__chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  /*
-   * **A failing chip is a button, and it had no floor at all.** Six chips of
-   * 9px and 11px text came to about 20px tall, which is under SC 2.5.8's 24 —
-   * and the failing ones are the pressable ones, so the smallest target on the
-   * strip was the only one anybody needs to hit. The passing chips take it too:
-   * a strip whose height changes with its state is a strip that moves the card
-   * under it every time a check flips.
-   */
-  min-block-size: var(--control-height-xs);
-  padding-block: 0.125rem;
-  padding-inline: 0.375rem;
-  border: 0;
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--muted-foreground);
-  /*
-   * **The WORD is `label` and the source under it is `meta`**, which is the
-   * whole shape of a chip here: *Readable* is what the check is called and
-   * `contrast.ts` is what enforces it, and one is read while the other is
-   * glanced at. They were both `micro`, so the source competed with the name it
-   * qualifies on a strip of six.
-   */
-  font-size: var(--text-label);
-  line-height: var(--text-label--line-height);
-  letter-spacing: var(--text-label--letter-spacing);
-  font-weight: var(--text-label--font-weight);
-  white-space: nowrap;
-}
-
-.wconvert-checks__chip > svg {
-  flex: none;
-  inline-size: 0.75rem;
-  block-size: 0.75rem;
-}
-
-.wconvert-checks__chip[data-state='pass'] > svg {
-  color: var(--success);
-}
-
-/*
- * Amber is the reserved meaning it carries everywhere else in this admin: not
- * an error, something the merchant should look at. A failing check is exactly
- * that — the design still renders, publishes and runs.
- */
-.wconvert-checks__chip[data-state='fail'] {
-  background: var(--warning-surface);
-  color: var(--warning);
-}
-
-/*
- * The button variant is a chip that goes somewhere, and it says so under the
- * pointer. The blanket `cursor: pointer` for `button` already covers the hand;
- * this is the ring, which is the same treatment every other control here has.
- */
-.wconvert-checks__chip:is(button):hover {
-  background: color-mix(in srgb, var(--warning) 14%, var(--warning-surface));
-}
-
-.wconvert-checks__chip:is(button):focus-visible {
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
-}
-
-/* ---------------------------------------------------------------------------
  * WHAT THIS DESIGN COSTS A VISITOR.
  *
  * A label rather than a bar, because the number a merchant acts on is a share
@@ -5480,8 +5280,8 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-meter {
   flex: none;
   color: var(--muted-foreground);
-  font-size: var(--text-meta);
-  line-height: var(--text-meta--line-height);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
   letter-spacing: 0.02em;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -5589,8 +5389,8 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
    * and its job is to be noticed rather than to be read at length — the press
    * beside it is what a merchant actually acts on.
    */
-  font-size: var(--text-meta);
-  line-height: var(--text-meta--line-height);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
   letter-spacing: 0.02em;
 }
 
@@ -5616,8 +5416,8 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 #wconvert-admin .wconvert-scope__contrast > li {
   margin: 0;
   padding: 0;
-  font-size: var(--text-meta);
-  line-height: var(--text-meta--line-height);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
   letter-spacing: 0.02em;
   list-style: none;
 }
@@ -5638,73 +5438,9 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
  * "this is the thing" colour, which the selected-block rail already uses.
  */
 .wconvert-block__chip--sets {
-  background: color-mix(in srgb, var(--ring) 12%, transparent);
+  background: var(--secondary);
   color: var(--ring);
   font-variant-numeric: tabular-nums;
-}
-
-/*
- * The class or ADR that enforces a check, beside the words for it.
- *
- * **Quieter than the check's own name, and the claim that it could not be
- * quieter was invented.**
- *
- * *This read: "it takes the muted colour and keeps the size — a `--text-micro`
- * that is already this admin's floor (ADR 0038, and the 9px in the reference
- * tool fails the bar)."* **ADR 0038 states no minimum font size.** Its floors
- * are contrast ratios, a blocking `jsx-a11y` lint, 24 × 24 pointer targets and
- * the reading/editor viewports — and none of them is about type. The citation was
- * wrong, and it is the reason the whole strip stayed a wall of monospace across
- * the top of the tab for one release longer than it had to.
- *
- * It is `--text-meta` — the reference editor's own 9px — and the two things
- * that make that legible are stated rather than assumed: it carries the muted
- * colour at full opacity against `--surface`, and every source is repeated in
- * the chip's `title` in full. Nothing here is the only copy of anything.
- *
- * **And the container query that hid half the strip is gone with it.** At 9px
- * six sources fit on one line at every width the tab has, so there is nothing
- * left to hide — which is the better answer to "it wraps onto three lines" than
- * removing the information was.
- */
-.wconvert-checks__source {
-  color: var(--muted-foreground);
-  font-family: var(--font-mono);
-  font-size: var(--text-meta);
-  line-height: var(--text-meta--line-height);
-  letter-spacing: 0.02em;
-}
-
-/*
- * What is stored for this box, as data.
- *
- * `<details>` closed, so it costs one line until it is asked for — the panel
- * above it is what a merchant reads and this is what an author checks.
- */
-.wconvert-scope__json > summary {
-  color: var(--muted-foreground);
-  font-size: var(--text-meta);
-  line-height: var(--text-meta--line-height);
-  letter-spacing: var(--text-meta--letter-spacing);
-  font-weight: var(--text-meta--font-weight);
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-#wconvert-admin .wconvert-scope__json > pre {
-  margin: 0.375rem 0 0;
-  padding-block: 0.5rem;
-  padding-inline: var(--wconvert-gutter);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--foreground);
-  font-family: var(--font-mono);
-  font-size: var(--text-label);
-  line-height: var(--text-label--line-height);
-  /* A bag of 24 tokens is taller than the pane; the scroll is the readout's. */
-  max-block-size: 14rem;
-  overflow: auto;
-  white-space: pre;
 }
 
 .wconvert-report-attention { padding: 1rem; border-radius: 0.375rem; background: var(--warning-surface); color: var(--foreground); border-inline-start: 3px solid var(--warning); }
@@ -5745,14 +5481,17 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 }
 
 /* Shared pointer floor: scope controls own density; coarse pointers need room.
- * Keep this in the same important layer as control scope rules so it wins. */
+ * Keep this in the same important layer as control scope rules so it wins.
+ * Native fields are listed by what they are not: a raw `input` of any text-like
+ * type or a `textarea` is a target too (§3), and a box, a dot or a slider's
+ * target is its own. */
 @layer utilities {
   @media (pointer: coarse) {
     :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
       :is(.wconvert-page-actions, .wconvert-toolbar, .wconvert-table, .wconvert-footer)
       :is([data-slot="button"], [data-slot="select-trigger"], [data-slot="input"], select, input[type="search"]),
     :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"], [data-slot="popover-content"], [data-slot="dropdown-menu-content"])
-      :is([data-slot="button"], [data-slot="dropdown-menu-item"], [data-slot="select-trigger"], [data-slot="input"], button, input[type="search"], select, label:has(input:is([type="radio"], [type="checkbox"])), .wconvert-masthead a) {
+      :is([data-slot="button"], [data-slot="dropdown-menu-item"], [data-slot="select-trigger"], [data-slot="input"], button, input:not([type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"], [type="hidden"]), textarea, select, label:has(input:is([type="radio"], [type="checkbox"])), .wconvert-masthead a) {
       min-block-size: 2.75rem !important;
     }
     #wconvert-admin :is(button, .wconvert-campaign-layout label) {
@@ -5818,7 +5557,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 }
 #wconvert-admin .wconvert-phone-country-picker__label {
   color: var(--muted-foreground);
-  font-size: var(--text-label);
+  font-size: var(--text-micro);
   font-weight: 600;
 }
 #wconvert-admin .wconvert-phone-country-picker__trigger {
@@ -5826,74 +5565,21 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   min-inline-size: 0;
   text-align: start;
 }
-.wconvert-phone-country-picker__popup {
-  padding: 0.5rem;
-}
-/* Button and Popover supply important width/alignment utilities. */
+/* Button supplies important alignment utilities. */
 @layer utilities {
   #wconvert-admin .wconvert-phone-country-picker__trigger {
     justify-content: space-between !important;
     font-weight: 400 !important;
   }
-  .wconvert-phone-country-picker__popup {
-    inline-size: min(24rem, calc(100vw - 2rem)) !important;
-  }
 }
-.wconvert-phone-country-picker__popup > input {
-  display: block;
-  inline-size: 100%;
-  min-block-size: 2.25rem;
-  margin: 0;
-  padding: 0.4rem 0.65rem;
-  border: 1px solid var(--input);
-  border-radius: var(--radius);
-  background: var(--card);
-  color: var(--foreground);
-  line-height: 1.25;
-}
-.wconvert-phone-country-picker__popup > input:focus-visible {
-  border-color: var(--ring);
-  outline: 2px solid var(--ring);
-  outline-offset: 1px;
-}
-.wconvert-phone-country-picker__results {
-  max-block-size: min(18rem, 45vh);
-  overflow-y: auto;
-  margin-block-start: 0.35rem;
-}
-.wconvert-phone-country-picker__results > button {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  inline-size: 100%;
-  min-block-size: 2rem;
-  margin: 0;
-  padding: 0.35rem 0.6rem;
-  border: 0;
-  border-radius: var(--radius);
-  background: transparent;
-  color: var(--foreground);
-  text-align: start;
-  cursor: pointer;
-}
-.wconvert-phone-country-picker__results > button:hover,
-.wconvert-phone-country-picker__results > button:focus-visible {
-  background: var(--accent);
-  outline: none;
-}
-.wconvert-phone-country-picker__results > p {
-  margin: 0;
-  padding: 0.5rem;
-  color: var(--muted-foreground);
-}
-
 /* Discovery controls qualify the library: use the shared compact toolbar scope. */
 .wconvert-picker__search { min-inline-size: 0; }
 .wconvert-picker__search input { box-sizing: border-box; }
 .wconvert-picker__notice { margin: 1.25rem 1.5rem; }
 
 .wconvert-picker__notice { border: 1px solid var(--border); background: var(--surface); border-radius: var(--radius); padding: 1rem; font-size: var(--text-note); }
+/* A list's foot is one line: its count, dates and pages (§20, `shell/ListFoot`). */
+.wconvert-list-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem .75rem; padding: .625rem 1rem; border-block-start: 1px solid var(--border); color: var(--muted-foreground); font-size: var(--text-note); }
 .wconvert-picker__pagination { display: flex; flex: none; flex-wrap: wrap; align-items: center; justify-content: center; gap: .75rem; padding: .75rem 1rem; border-block-start: 1px solid var(--border); background: var(--card); font-size: var(--text-note); }
 
 /* Shared fitting is used by setup inspection, editor replacement and pack previews. */
@@ -5947,7 +5633,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 }
 @media (pointer: coarse) { .wconvert-option-strip > label { min-block-size: 2.75rem; } }
 
-.wconvert-comparison-tray { position: sticky; inset-block-end: 0; z-index: 1; display: flex; flex: none; flex-wrap: wrap; align-items: center; gap: .75rem; padding: .75rem 1rem; border-block-start: 1px solid var(--border); background: var(--card); box-shadow: 0 -2px 8px oklch(0 0 0 / .04); }
+.wconvert-comparison-tray { position: sticky; inset-block-end: 0; z-index: 1; display: flex; flex: none; flex-wrap: wrap; align-items: center; gap: .75rem; padding: .75rem 1rem; border-block-start: 1px solid var(--border); background: var(--card); }
 .wconvert-comparison-tray__selection { flex: 1 1 14rem; min-inline-size: 0; display: grid; gap: .25rem; font-size: var(--text-note); }
 .wconvert-comparison-tray__selection > span { color: var(--muted-foreground); overflow-wrap: anywhere; }
 
@@ -5981,9 +5667,6 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-facts__links { display: grid; gap: .25rem; margin: .25rem 0 0; padding: 0; list-style: none; color: var(--muted-foreground); font-size: var(--text-note); overflow-wrap: anywhere; text-align: start; }
 @media (max-width: 479px) { .wconvert-facts > div { grid-template-columns: minmax(0, 1fr); gap: .125rem; } }
 .wconvert-setup-glance h3 { margin: 0 0 .5rem; font-size: var(--text-heading); font-weight: 600; }
-.wconvert-setup-todo { display: grid; gap: .375rem; margin: 0 !important; padding-inline-start: 1.25rem; list-style: disc; }
-.wconvert-setup-todo li { margin: 0 !important; font-size: var(--text-body); }
-.wconvert-setup-todo li::marker { color: var(--muted-foreground); }
 .wconvert-setup-optional { margin: 0; color: var(--muted-foreground); font-size: var(--text-note); }
 .wconvert-setup-optional > strong { font-weight: 500; color: var(--foreground); }
 
@@ -6133,7 +5816,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 :where(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"], [data-slot="popover-content"])
   label > input:is([type="checkbox"], [type="radio"]):not(.sr-only) { margin-block-start: max(0px, calc((1lh - 18px) / 2)); }
 :where(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"], [data-slot="popover-content"])
-  label:where(:has(> input:is([type="checkbox"], [type="radio"]):disabled:not(.sr-only))) { cursor: default; opacity: .6; }
+  label:where(:not([data-refused]):has(> input:is([type="checkbox"], [type="radio"]):is(:disabled, [aria-disabled="true"]):not(.sr-only))) { cursor: default; opacity: .6; }
 
 /* The one radio card (ADR 0131): a choice that needs a sentence of its own —
  * retention, transfer content, graph insert, capture mode, recommendations.
@@ -6143,7 +5826,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-radio-card:hover { background: var(--accent); }
 .wconvert-radio-card:has(> input:checked) { border-color: var(--action); background: var(--secondary); box-shadow: inset 0 0 0 1px var(--action); }
 .wconvert-radio-card:has(> input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
-.wconvert-radio-card:has(> input:disabled) { opacity: .6; cursor: default; }
+.wconvert-radio-card:has(> input:is(:disabled, [aria-disabled="true"])) { opacity: .6; cursor: default; }
 .wconvert-radio-card > span { display: grid; gap: 2px; min-inline-size: 0; }
 .wconvert-radio-card > span > :first-child { font-weight: 500; }
 .wconvert-radio-card > span > :not(:first-child) { font-size: var(--text-note); font-weight: 400; color: var(--muted-foreground); }
@@ -6207,7 +5890,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   min-block-size: 560px;
   gap: 0;
   overflow: hidden;
-  background: #fff;
+  background: var(--card);
   font-size: var(--text-note);
 }
 body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
@@ -6396,11 +6079,11 @@ body .wconvert-pro-hint-item .wconvert-option-menu__trail > svg { color: var(--l
 body .wconvert-option-menu__control { display: grid; gap: 8px; padding-block: 8px 10px; padding-inline: 10px; }
 body .wconvert-option-menu__list + .wconvert-option-menu__control { border-block-start: 1px solid var(--border); }
 body .wconvert-option-menu__control .wconvert-param { display: grid; gap: 6px; margin: 0; font-size: var(--text-note); }
-body .wconvert-option-menu__control .wconvert-param > label, body .wconvert-option-menu__control .wconvert-param__name { font-size: var(--text-note); font-weight: 500; }
+body .wconvert-option-menu__control .wconvert-field-heading > :is(label, span:first-child), body .wconvert-option-menu__control .wconvert-param__name { font-size: var(--text-note); font-weight: 500; }
 body .wconvert-option-menu__control :is(input[type='text'], input[type='number'], input[type='time']) { min-block-size: 32px; max-inline-size: 100%; }
 body .wconvert-option-menu__done { justify-self: end; min-block-size: 28px; margin: 0; padding-block: 2px; padding-inline: 12px; border: 1px solid var(--input); border-radius: var(--radius-md); background: var(--card); color: var(--foreground); font-size: var(--text-note); font-weight: 500; cursor: pointer; }
 body .wconvert-option-menu__done:is(:hover, :focus-visible) { background: var(--accent); }
-body .wconvert-rule-row__check { display: flex; align-items: center; gap: 8px; font-size: var(--text-note); }
+body .wconvert-rule-row__check { font-size: var(--text-note); }
 /* Add element's own header: a title and where the element goes. */
 body .wconvert-option-menu__head { display: grid; gap: 6px; flex: none; padding-block: 10px 4px; padding-inline: 10px; }
 body .wconvert-option-menu__head > strong { font-size: var(--text-body); font-weight: 600; }

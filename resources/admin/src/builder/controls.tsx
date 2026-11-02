@@ -4,6 +4,9 @@ import { __, sprintf } from '@wordpress/i18n';
 import { ObjectPicker } from './rules/ObjectPicker';
 import { NativeSelect } from '../components/ui/native-select';
 import type { RuleParam } from './api';
+import { CheckRow } from '../shell/CheckRow';
+import { FieldHeading, PanelField, PanelHint } from './PanelSection';
+import { formatCount } from '../lib/format';
 
 /**
  * One control per param kind — the whole of what the rules UI can draw.
@@ -73,18 +76,43 @@ export function ParamControl({ id, param, value, onChange, variant, words, label
         </NativeSelect>
       );
 
+    // A count of seconds is typed: an hour is 3600 stops, too many for a slider.
     case 'seconds':
-    case 'percent':
       return (
         <input
           id={id}
           type="number"
           className="small-text"
           min={1}
-          max={param.control === 'percent' ? 100 : 3600}
+          max={3600}
           value={typeof value === 'number' ? value : ''}
           onChange={(event) => onChange(event.target.value === '' ? undefined : Number(event.target.value))}
         />
+      );
+
+    // A share of the page is a measure, so it is a slider (GUIDELINES §7), with the box beside it for the exact number.
+    case 'percent':
+      return (
+        <span className="wconvert-token__row">
+          <input
+            type="range"
+            className="wconvert-token__slider"
+            aria-label={param.label}
+            min={1}
+            max={100}
+            value={typeof value === 'number' ? value : 1}
+            onChange={(event) => onChange(Number(event.target.value))}
+          />
+          <input
+            id={id}
+            type="number"
+            className="small-text"
+            min={1}
+            max={100}
+            value={typeof value === 'number' ? value : ''}
+            onChange={(event) => onChange(event.target.value === '' ? undefined : Number(event.target.value))}
+          />
+        </span>
       );
 
     /**
@@ -185,11 +213,8 @@ function OptionSet({ id, param, value, onChange }: ParamControlProps) {
   return (
     <span className="wconvert-option-set" role="group" aria-labelledby={id}>
       {param.options.map((option) => (
-        <label key={option.value}>
-          <input
-            type="checkbox"
-            checked={chosen.includes(option.value)}
-            onChange={(event) =>
+        <CheckRow key={option.value} checked={chosen.includes(option.value)} label={option.label}
+          onChange={(event) =>
               onChange(
                 event.target.checked
                   ? // Rebuilt in the option order rather than appended, so two
@@ -199,10 +224,7 @@ function OptionSet({ id, param, value, onChange }: ParamControlProps) {
                     param.options.map((each) => each.value).filter((each) => each === option.value || chosen.includes(each))
                   : chosen.filter((each) => each !== option.value),
               )
-            }
-          />{' '}
-          {option.label}
-        </label>
+            } />
       ))}
     </span>
   );
@@ -247,21 +269,15 @@ function SourceSet({ id, param, value, onChange }: ParamControlProps) {
       aria-describedby={`${id}-hint`}
     >
       {param.options.map((option) => (
-        <label key={option.value}>
-          <input
-            type="checkbox"
-            checked={sources.includes(option.value)}
-            onChange={(event) =>
+        <CheckRow key={option.value} checked={sources.includes(option.value)} label={option.label}
+          onChange={(event) =>
               write(
                 event.target.checked
                   ? [...sources, option.value]
                   : sources.filter((each) => each !== option.value),
                 sites,
               )
-            }
-          />{' '}
-          {option.label}
-        </label>
+            } />
       ))}
       {/*
         A lead-in rather than a bare column of inputs, because a text box with
@@ -371,7 +387,7 @@ function ValueList({ id, label, value, onChange }: Omit<ParamControlProps, 'para
             type="text"
             className="regular-text"
             id={`${id}-value-${index}`}
-            aria-label={row === '' ? sprintf(/* translators: %s: a targeting rule setting's label, e.g. “Referring site”. */ __('Add a value for %s', 'wconvert'), label) : sprintf(/* translators: 1: a targeting rule setting's label, e.g. “Referring site”, 2: the value's position in its list, e.g. 2. */ __('%1$s, value %2$d', 'wconvert'), label, index + 1)}
+            aria-label={row === '' ? sprintf(/* translators: %s: a targeting rule setting's label, e.g. “Referring site”. */ __('Add a value for %s', 'wconvert'), label) : sprintf(/* translators: 1: a targeting rule setting's label, e.g. “Referring site”, 2: the value's position in its list, e.g. 2. */ __('%1$s, value %2$s', 'wconvert'), label, formatCount(index + 1))}
             placeholder={__('Type a value…', 'wconvert')}
             value={row}
             onChange={(event) => write(index, event.target.value)}
@@ -472,24 +488,17 @@ export function ParamField({ id, param, value, onChange }: ParamControlProps) {
 
   if (GROUPS.has(param.control)) {
     return (
-      <span className="wconvert-param">
-        <span id={id} className="wconvert-param__name">
-          {param.label}
-        </span>{' '}
+      <div className="wconvert-panel-field wconvert-param">
+        <FieldHeading as="span" label={param.label} labelId={id} />
         {control}
-        {hint !== undefined && (
-          <span id={`${id}-hint`} className="wconvert-param__hint text-note">
-            {hint()}
-          </span>
-        )}
-      </span>
+        {hint !== undefined && <PanelHint id={`${id}-hint`}>{hint()}</PanelHint>}
+      </div>
     );
   }
 
   return (
-    <span className="wconvert-param">
-      <label htmlFor={id}>{param.label}</label> {control}
-      {hint && <span id={`${id}-hint`} className="wconvert-param__hint text-note">{hint()}</span>}
-    </span>
+    <PanelField className="wconvert-param" label={param.label} htmlFor={id} hint={hint?.()} hintId={`${id}-hint`}>
+      {control}
+    </PanelField>
   );
 }

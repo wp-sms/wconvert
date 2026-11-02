@@ -24,7 +24,9 @@ is the thing they came for the most visible thing, with one way forward?
 4. **A row menu holds actions on that row.** Check visibility left the row
    menus; after review the owner removed the list's door to it too, and the
    list's foot is one line: the count, the dates and the pages (amends
-   [0048](0048-the-eligibility-inspector-runs-on-the-real-page.md)).
+   [0048](0048-the-eligibility-inspector-runs-on-the-real-page.md)). *Extended
+   by the guidelines audit ([ADR 0182](0182-the-written-rules-are-held-by-guards.md)): every list's foot, drawn by `shell/ListFoot`
+   (GUIDELINES §20).*
 5. The owner chose not to add a "Today" line to Campaigns. *(Amended by
    [0177](0177-reports-include-today.md): there is still no Today line, but the
    cards' "Last 7/30 days" now include today.)*

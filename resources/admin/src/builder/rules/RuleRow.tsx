@@ -10,6 +10,7 @@ import type { Rule, RuleParam, RulePreset, RuleType } from '../api';
 import { isFreeInstall, tierProductName } from '../../goals/availability';
 import { ruleIcon } from './ruleIcon';
 import { valueText } from './sentence';
+import { CheckRow } from '../../shell/CheckRow';
 
 /**
  * One client rule — a [[Trigger]] or a [[Condition]] — as ONE SENTENCE of
@@ -156,11 +157,9 @@ export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
         ? params.find(other => type.params[other].control === 'boolean') : undefined;
       parts.push(<ValuePill key={param} label={declared.label} text={valueText(declared, shown[param])}>
         {field(param)}
-        {qualifier !== undefined && <label className="wconvert-rule-row__check">
-          {/* Unticked is a stored false: the rule needs a yes or a no (#362). */}
-          <input type="checkbox" checked={shown[qualifier] === true} onChange={event => write(qualifier, event.target.checked)} />
-          {type.params[qualifier].label}
-        </label>}
+        {/* Unticked is a stored false: the rule needs a yes or a no (#362). */}
+        {qualifier !== undefined && <CheckRow className="wconvert-rule-row__check" checked={shown[qualifier] === true}
+          onChange={event => write(qualifier, event.target.checked)} label={type.params[qualifier].label} />}
       </ValuePill>);
     }
   }
@@ -168,11 +167,11 @@ export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
   // The rule this one stands in for, by its own name where this install knows
   // it. `RuleCatalogue` describes a `locked` type rather than filtering it out
   // — the rules panel explains a gap rather than hiding one (ADR 0026) — so
-  // the words for "Exit intent" are here even on a free install. The raw type
-  // is the fallback for a marker naming something this build has never heard
-  // of, which is the only honest thing left to show.
+  // the words for "Exit intent" are here even on a free install. A marker naming
+  // something this build has never heard of reads as a neutral word: its raw
+  // type is a stored key, which no screen prints (GUIDELINES §8).
   const substitutedFor =
-    degradedFrom === null ? null : (types.find((each) => each.type === degradedFrom)?.label ?? degradedFrom);
+    degradedFrom === null ? null : (types.find((each) => each.type === degradedFrom)?.label ?? __('Another rule', 'wconvert'));
 
   return (
     <div className="wconvert-rule-row">

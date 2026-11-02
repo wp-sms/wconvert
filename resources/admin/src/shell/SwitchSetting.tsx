@@ -37,7 +37,7 @@ export function SwitchSetting({
   title: string;
   label: string;
   hint: string;
-  /** The `data-setting` that Find a setting jumps to. */
+  /** The `data-setting` that Search settings jumps to. */
   setting: string;
   saveLabel: string;
   read: () => Promise<{ enabled: boolean }>;

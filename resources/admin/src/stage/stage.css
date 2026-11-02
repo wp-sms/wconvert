@@ -32,7 +32,8 @@
 }
 .wconvert-stage[data-device='mobile'] .wconvert-stage__page {
   border-radius: 22px;
-  box-shadow: 0 0 0 1px var(--border), 0 10px 30px -14px rgb(48 39 32 / 0.4);
+  /* The phone is an object on the page, and the one thing here that casts a shadow (§6). */
+  box-shadow: 0 0 0 1px var(--border), 0 10px 30px -14px color-mix(in srgb, var(--foreground) 40%, transparent);
 }
 
 .wconvert-stage__dim { position: absolute; inset: 0; background: var(--ghost-dim); }

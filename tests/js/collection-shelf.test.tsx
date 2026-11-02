@@ -17,10 +17,13 @@ it('filters by a collection and shows every template again when pressed twice', 
   const { rerender } = render(<CollectionShelf {...props} onOpen={onOpen} />);
   const tile = screen.getByRole('button', { name: 'Useful starts, 2 templates' });
 
-  expect(tile).toHaveAttribute('aria-pressed', 'false');
+  expect(tile).not.toHaveAttribute('aria-current');
+  expect(tile).not.toHaveAttribute('aria-pressed');
   await userEvent.click(tile);
   expect(onOpen).toHaveBeenLastCalledWith('useful');
   rerender(<CollectionShelf {...props} onOpen={onOpen} active="useful" />);
+  // One tile is the open one, not a pressed toggle, and it stays a button so a second press clears it (ADR 0171).
+  expect(screen.getByRole('button', { name: 'Useful starts, 2 templates' })).toHaveAttribute('aria-current', 'true');
   await userEvent.click(screen.getByRole('button', { name: 'Useful starts, 2 templates' }));
   expect(onOpen).toHaveBeenLastCalledWith(null);
 });

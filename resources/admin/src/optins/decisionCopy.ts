@@ -47,7 +47,7 @@ export function decisionCopy(kind: DecisionKind, arm: boolean, name: string, var
     case 'winner':
       return {
         title: __('Use this variant?', 'wconvert'),
-        description: __('This variant becomes the campaign. The other variants stop showing; their leads and results are kept.', 'wconvert'),
+        description: __('This variant becomes the campaign. The other variants stop showing; their leads and results are kept. This is your choice, not a statistically proven winner, and an unpublished design stays unpublished.', 'wconvert'),
         confirmLabel: __('Use this variant', 'wconvert'),
       };
     case 'publish':

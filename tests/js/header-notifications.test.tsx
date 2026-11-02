@@ -63,7 +63,7 @@ it('offers one way to try again when the read fails', async () => {
   api.listOptins.mockRejectedValueOnce(new Error('Offline'));
   await userEvent.click(screen.getByRole('button', { name: 'Notifications' }));
   const popover = await screen.findByRole('dialog');
-  expect(await within(popover).findByRole('alert')).toHaveTextContent('Notifications couldn’t load: Offline');
+  expect(await within(popover).findByRole('alert')).toHaveTextContent('Notifications could not load: Offline');
   await userEvent.click(within(popover).getByRole('button', { name: 'Try again' }));
   // Spam protection was not read here, so the bell does not claim everything.
   expect(await within(popover).findByText('No campaign or sending issues.')).toBeInTheDocument();

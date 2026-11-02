@@ -185,7 +185,7 @@ test('post authors refresh ready Campaigns without losing unsaved content or gai
   await other.close();
   await page.getByRole('button', { name: 'Refresh campaigns', exact: true }).click();
   await expect(page.getByText('Campaign choices updated.', { exact: true })).toBeVisible();
-  await expect(editor.getByText(/no longer published as inline/)).toBeVisible();
+  await expect(editor.getByText(/no longer published inline/)).toBeVisible();
   expect(await page.evaluate(() => window.wp.blocks.serialize(window.wp.data.select('core/block-editor').getBlocks()))).toBe(original.markup);
   await expect(page.locator('.wconvert-lock-picker__selected')).toContainText('Previously selected campaign');
   await page.getByRole('button', { name: 'Change campaign', exact: true }).click();
@@ -303,11 +303,11 @@ test('writers insert a divider, keep ordinary blocks, move it, save and remove i
   // Setup remains available when the sidebar is closed, including on narrow screens.
   await page.getByRole('button', { name: 'Lock from here', exact: true }).click();
   await expect(page.getByRole('combobox', { name: 'Campaign', exact: true })).toHaveCount(0);
-  await marker.getByRole('button', { name: 'Choose campaign', exact: true }).click();
+  await marker.getByRole('button', { name: 'Choose a campaign', exact: true }).click();
   await expect(page.getByRole('combobox', { name: 'Campaign', exact: true })).toBeFocused();
   await page.setViewportSize({ width: 420, height: 900 });
   await page.evaluate(() => window.wp.data.dispatch('core/interface').disableComplementaryArea('core'));
-  await marker.getByRole('button', { name: 'Choose campaign', exact: true }).click();
+  await marker.getByRole('button', { name: 'Choose a campaign', exact: true }).click();
   await expect(page.getByRole('combobox', { name: 'Campaign', exact: true })).toBeFocused();
   await editorScreenshot(page, info.outputPath('divider-empty-sidebar.png'));
   const initialPicker = page.getByRole('combobox', { name: 'Campaign', exact: true });
@@ -327,7 +327,7 @@ test('writers insert a divider, keep ordinary blocks, move it, save and remove i
   await expect(page.getByRole('button', { name: 'Change campaign', exact: true })).toBeFocused();
   await page.getByRole('button', { name: 'Clear campaign', exact: true }).click();
   await expect(page.getByRole('combobox', { name: 'Campaign', exact: true })).toBeFocused();
-  await expect(marker.getByText('Not set up', { exact: true })).toBeVisible();
+  await expect(marker.getByText('No campaign chosen', { exact: true })).toBeVisible();
   await page.getByRole('combobox', { name: 'Campaign', exact: true }).fill('divider');
   await page.getByRole('option', { name: 'Content lock divider', exact: true }).click();
   await expect(marker.getByText('2 blocks below', { exact: true })).toBeVisible();

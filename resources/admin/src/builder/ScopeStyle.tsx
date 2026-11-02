@@ -25,6 +25,9 @@ import { isColor } from './themes';
 import { Description } from '../shell/Description';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Template, Tokens } from '@renderer/types';
+import { messageOf } from '../shell/loadable';
+import { formatCount } from '../lib/format';
+import { Arrow } from './flow/FlowCard';
 
 export function ScopeStyle({
   template,
@@ -80,7 +83,7 @@ export function ScopeStyle({
       const next = withGoogleFont({ ...template, tree: withScopeToken(template.tree, here.path, name, value, width) }, font);
       setFontError('');
       onChange(next, coalesce);
-    } catch (cause) { setFontError(cause instanceof Error ? cause.message : String(cause)); }
+    } catch (cause) { setFontError(messageOf(cause)); }
   };
 
   const mobileOverrides = Object.keys(here.narrow);
@@ -89,7 +92,7 @@ export function ScopeStyle({
 
   const mobile = width === 'narrow';
   const pasteSaid = copied === null ? __('Paste styles', 'wconvert')
-    : sprintf(/* translators: %d: how many style settings were copied. */ _n('Paste %d setting', 'Paste %d settings', Object.keys(copied).length, 'wconvert'), Object.keys(copied).length);
+    : sprintf(/* translators: %s: how many style settings were copied. */ _n('Paste %s setting', 'Paste %s settings', Object.keys(copied).length, 'wconvert'), formatCount(Object.keys(copied).length));
   return (
     <div className="wconvert-scope">
       {fontError && <p role="alert">{fontError}</p>}
@@ -104,8 +107,8 @@ export function ScopeStyle({
         <span>{mobile
           ? __('Follows desktop unless changed', 'wconvert')
           : mobileOverrides.length > 0
-            ? sprintf(/* translators: 1: how many settings differ on mobile. 2: their names, e.g. “Padding, Text size”. */ _n('%1$d mobile change: %2$s', '%1$d mobile changes: %2$s', mobileOverrides.length, 'wconvert'),
-              mobileOverrides.length, mobileOverrides.map(token => nameOf(labels.tokens, token)).join(', '))
+            ? sprintf(/* translators: 1: how many settings differ on mobile. 2: their names, e.g. “Padding, Text size”. */ _n('%1$s mobile change: %2$s', '%1$s mobile changes: %2$s', mobileOverrides.length, 'wconvert'),
+              formatCount(mobileOverrides.length), mobileOverrides.map(token => nameOf(labels.tokens, token)).join(', '))
             : __('No mobile changes', 'wconvert')}</span>
         {onWidth && <button type="button" className="wconvert-panel-link" onClick={() => onWidth(mobile ? 'tokens' : 'narrow')}>{mobile ? __('Edit desktop', 'wconvert') : __('Edit mobile', 'wconvert')}</button>}
       </div>
@@ -250,7 +253,7 @@ function SourceNote({
             'wconvert',
           )}
         >
-          {sprintf(/* translators: %s: the palette color it would follow, e.g. “Button color”. */ __('→ %s', 'wconvert'), nameOf(labels.tokens, follows(token) ?? ''))}
+          <Arrow /> {nameOf(labels.tokens, follows(token) ?? '')}
         </button>
       )}
     </p>

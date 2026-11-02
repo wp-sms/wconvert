@@ -15,6 +15,13 @@
   font-weight: 600;
   margin: 0;
 }
+/* A heading between the overview's reports, which are h2 too: order is the level, the look stays the h3's. */
+.wconvert-analytics .wa-section-heading h2 {
+  font-size: var(--text-body);
+  letter-spacing: normal;
+  line-height: inherit;
+  margin: 0;
+}
 /* Fills the row with however many headlines apply: zero ones are hidden and a store adds Linked sales (ADR 0132). */
 .wa-impact-grid {
   display: grid;

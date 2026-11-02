@@ -6,6 +6,7 @@ import { addGraphConnection, canAddGraphConnection, canTargetGraphScreen, reconn
 import { upgradeToGraph, graphDisplayOrder, skipEdge } from '@/builder/structure/graph';
 import { conditionText } from '@/builder/structure/conditionText';
 import { followupGroups } from '@/builder/structure/followupGroups';
+import { NativeSelect } from '@/components/ui/native-select';
 
 /** "Then": the select that chooses where a screen with no answer lines goes next. */
 export function ThenSelect({ tree, step, onChange, onUpgrade, onBranch }: {
@@ -40,10 +41,10 @@ export function ThenSelect({ tree, step, onChange, onUpgrade, onBranch }: {
   const skipTo = graph && next?.when ? skipEdge(graph, next.id)?.to : undefined;
   return <>
     <FactRow label={__('Then', 'wconvert-pro')} htmlFor={`${id}-then`}>
-      <select id={`${id}-then`} data-then value={nextId ?? ''} onChange={event => choose(event.target.value)}>
+      <NativeSelect id={`${id}-then`} data-then value={nextId ?? ''} onChange={event => choose(event.target.value)}>
         {nextId === undefined && <option value="">{__('Choose a screen', 'wconvert-pro')}</option>}
         {order.map(index => <option key={tree.steps[index].id} value={tree.steps[index].id} disabled={!reachable(tree.steps[index].id)}>{tree.steps[index].name}</option>)}
-      </select>
+      </NativeSelect>
     </FactRow>
     {box ? <PanelHint>{sprintf(/* translators: %s: a screen's name. */ __('Visitors with any matching answer go through the follow-ups. The rest go straight to “%s”.', 'wconvert-pro'), tree.steps.find(item => item.id === box.next)?.name ?? '')}</PanelHint>
       : next?.when && skipTo && <PanelHint>{sprintf(/* translators: 1: a rule. 2, 3: screen names. */ __('Only visitors with %1$s see “%2$s”. All other answers go to “%3$s”.', 'wconvert-pro'),

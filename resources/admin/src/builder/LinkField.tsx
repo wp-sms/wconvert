@@ -2,8 +2,10 @@ import { forwardRef, useId, useRef, useState } from 'react';
 import { __, sprintf, _n } from '@wordpress/i18n';
 import { Popover, PopoverAnchor, PopoverContent } from '../components/ui/popover';
 import { Button } from '../components/ui/button';
+import { Skeleton } from '../components/ui/skeleton';
 import { searchLinks, type LinkHit } from './rules/objects';
 import { useObjectSearch } from './rules/useObjectSearch';
+import { formatCount } from '../lib/format';
 
 /**
  * A link: type a page name, or paste an address.
@@ -125,7 +127,7 @@ export const LinkField = forwardRef<HTMLInputElement, LinkFieldProps>(function L
   };
 
   const note = searching ? __('Searching…', 'wconvert')
-    : failed ? __('Search couldn’t be completed. Retry, or press Enter in the link field.', 'wconvert')
+    : failed ? __('Search could not be completed. Try again, or press Enter in the link field.', 'wconvert')
       : hits.length === 0 ? __('No published page, post or product matches. Try another name, or paste a link.', 'wconvert')
         : '';
 
@@ -166,13 +168,14 @@ export const LinkField = forwardRef<HTMLInputElement, LinkFieldProps>(function L
         onOpenAutoFocus={(event) => event.preventDefault()}
         onCloseAutoFocus={(event) => event.preventDefault()}
       >
-        <p role="status" id={noteId} className={note ? 'wconvert-object-picker__empty text-note text-muted-foreground' : 'sr-only'}>
+        <p role="status" id={noteId} className={note && !searching ? 'wconvert-object-picker__empty text-note text-muted-foreground' : 'sr-only'}>
           {note || countOf(hits.length)}
         </p>
-        {failed && <Button type="button" variant="outline" size="sm" tabIndex={-1}
+        {searching && <div aria-hidden="true" className="wconvert-object-picker__empty text-note"><Skeleton className="h-[1lh] w-40 max-w-full" /></div>}
+        {failed && <Button type="button" variant="outline" tabIndex={-1}
           aria-describedby={noteId}
           onMouseDown={(event) => event.preventDefault()} onClick={retry}>
-          {__('Retry search', 'wconvert')}
+          {__('Try again', 'wconvert')}
         </Button>}
         <div role="listbox" id={listId} aria-busy={searching} aria-label={__('Matching pages, posts and products', 'wconvert')}>
           {hits.map((hit, at) => (
@@ -208,7 +211,7 @@ const kindOf = (subtype: string): string =>
 
 const countOf = (count: number): string =>
   sprintf(
-    /* translators: %d: how many matches the search found. */
-    _n('%d result', '%d results', count, 'wconvert'),
-    count,
+    /* translators: %s: how many matches the search found. */
+    _n('%s result', '%s results', count, 'wconvert'),
+    formatCount(count),
   );

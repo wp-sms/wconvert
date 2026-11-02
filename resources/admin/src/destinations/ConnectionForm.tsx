@@ -4,7 +4,9 @@ import { Button } from '../components/ui/button';
 import { AdminDialogBody, AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
 import { Input } from '../components/ui/input';
 import { Field } from '../shell/Field';
+import { LineSkeleton } from '../shell/LineSkeleton';
 import { messageOf } from '../shell/loadable';
+import { refusable } from '../lib/refusable';
 import { saveConnection, type HeaderPair } from './api';
 import { connectionSetup, type ConnectionFormProps } from './connectionSetup';
 import { HeadersEditor, headerProblem, headersToSend, storedHeaders } from './HeadersEditor';
@@ -30,7 +32,7 @@ export function ConnectionForm(props: ConnectionFormProps) {
   // A registered form may be lazy: the header stays while its code loads.
   return <Suspense fallback={<>
     {props.title !== undefined && <AdminDialogHeader title={props.title} meta={props.meta} />}
-    <AdminDialogBody><p role="status" className="m-0 text-note text-muted-foreground">{__('Loading…', 'wconvert')}</p></AdminDialogBody>
+    <AdminDialogBody><LineSkeleton lines={3} status={__('Loading the connection form…', 'wconvert')} /></AdminDialogBody>
   </>}><Own {...props} /></Suspense>;
 }
 
@@ -55,10 +57,13 @@ function GenericConnectionForm({ type, account, title, meta, back, onSaved, onCa
     || credentials[key]?.trim() || account?.credentials[key]);
   const refused = fields.some(([key, field]) => field.type === 'headers'
     && (headers[key] ?? []).some((pair) => headerProblem(pair, headers[key], field, stored(key)) !== null));
+  const reason = label.trim() === '' ? __('Name this account first.', 'wconvert')
+    : !filled ? __('Fill in the required fields first.', 'wconvert')
+      : refused ? __('Fix the headers above first.', 'wconvert') : null;
 
   return <form className="flex min-h-0 flex-1 flex-col" onSubmit={(event) => {
     event.preventDefault();
-    if (busy) return;
+    if (busy || reason !== null) return;
     setBusy(true);
     setError(null);
     void saveConnection({
@@ -94,8 +99,9 @@ function GenericConnectionForm({ type, account, title, meta, back, onSaved, onCa
     <AdminDialogFooter
       back={back ?? <Button type="button" variant="outline" disabled={busy} onClick={onCancel}>{__('Cancel', 'wconvert')}</Button>}
       error={error}
+      note={reason && <span id={id('reason')}>{reason}</span>}
     >
-      <Button type="submit" disabled={busy || label.trim() === '' || !filled || refused}>
+      <Button type="submit" disabled={busy} {...refusable(reason === null ? null : id('reason'))}>
         {busy ? __('Checking…', 'wconvert') : __('Check and save account', 'wconvert')}
       </Button>
     </AdminDialogFooter>

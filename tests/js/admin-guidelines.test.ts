@@ -1,0 +1,173 @@
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { join, relative, resolve } from 'node:path';
+import { describe, expect, it } from 'vitest';
+
+/**
+ * The written rules, held against the source (ADR 0182).
+ *
+ * The ADR 0131 audit fixed these drifts once and nothing stopped them coming
+ * back, because GUIDELINES.md is prose. ESLint holds the rules that are about
+ * one JSX element, and this holds the ones about a word or a string. What a rule
+ * allows is in `admin-guidelines-allow.json`, and the reason is in ADR 0182, so an
+ * exception is a decision somebody wrote down rather than a line nobody looked at.
+ *
+ * Reads source, so it proves a call site uses the shared thing and nothing about
+ * how that thing renders (§21): the browser pass still owns that.
+ */
+const REPO = resolve(__dirname, '../..');
+const ALLOW_PATH = resolve(__dirname, 'admin-guidelines-allow.json');
+const allowFile = JSON.parse(readFileSync(ALLOW_PATH, 'utf8')) as Record<string, Record<string, number>>;
+
+/** Every admin surface this project wrote, free and Pro. The renderer and loader are not one. */
+function adminRoots(): string[] {
+  const modules = resolve(REPO, 'pro/modules');
+  return [
+    'resources/admin/src',
+    'resources/blocks',
+    'pro/resources/admin/src',
+    ...readdirSync(modules).flatMap((name) => [`pro/modules/${name}/admin`, `pro/modules/${name}/block`]),
+  ].filter((root) => existsSync(resolve(REPO, root)));
+}
+
+function walk(directory: string, extension: RegExp): string[] {
+  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(directory, entry.name);
+    if (entry.isDirectory()) return entry.name === 'node_modules' || entry.name === '__tests__' ? [] : walk(path, extension);
+    return extension.test(entry.name) && !/\.test\./.test(entry.name) ? [path] : [];
+  });
+}
+
+const sources = adminRoots().flatMap((root) => walk(resolve(REPO, root), /\.tsx?$/)).map((path) => ({
+  path: relative(REPO, path),
+  // Comments explain the rules, and quote what they forbid.
+  code: readFileSync(path, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, ''),
+}));
+
+/** The strings handed to a gettext call: its text, and a plural's second form. */
+export function gettextStrings(source: string): string[] {
+  const text = String.raw`'((?:[^'\\]|\\.)*)'|"((?:[^"\\]|\\.)*)"`;
+  const call = new RegExp(String.raw`\b(?:__|_x)\(\s*(?:${text})|\b_n\(\s*(?:${text})\s*,\s*(?:${text})`, 'g');
+  return [...source.matchAll(call)].flatMap((match) => match.slice(1).filter((part) => part !== undefined));
+}
+
+const inStrings = (test: RegExp) => (code: string) => gettextStrings(code).filter((text) => test.test(text)).length;
+const matches = (test: RegExp) => (code: string) => [...code.matchAll(test)].length;
+
+const RULES: Record<string, { why: string; count: (code: string) => number; owners?: RegExp }> = {
+  dates: {
+    why: '§8: dates and numbers go through lib/format.ts',
+    count: matches(/\bIntl\.|\.toLocale(?:Date|Time)?String\(/g),
+    // These need a named timezone or calendar, which format.ts's helpers do not take.
+    owners: /(?:lib\/format\.ts|lib\/wallTime\.ts|leads\/calendar\.ts|discovery\/model\.ts)$/,
+  },
+  errors: {
+    why: '§13: messageOf() is the one place a thrown thing becomes a sentence',
+    count: matches(/instanceof Error\s*\?[^:;]*\.message/g),
+    owners: /shell\/loadable\.ts$/,
+  },
+  digits: {
+    why: '§8: %d prints ASCII digits on a translated site; use %s and formatCount()',
+    count: inStrings(/%(?:\d\$)?d/),
+  },
+  type: {
+    why: '§4: a Tailwind size outside the shared roles',
+    count: matches(/\btext-(?:xs|sm|base|lg|xl|[2-9]xl)\b/g),
+    owners: /components\/ui\//,
+  },
+  retry: {
+    why: '§13: "Try again" is the one retry word',
+    count: inStrings(/\bretry(?:ing)?\b/i),
+  },
+  tiers: {
+    why: '§14: tierName() and tierProductName(), so renaming the product is a manifest edit',
+    count: inStrings(/\bPro\b/),
+  },
+  pressed: {
+    why: '§7: aria-pressed is an independent toggle and never one-of-N; each use here was read and is one',
+    count: matches(/aria-pressed/g),
+  },
+};
+
+function found(rule: { count: (code: string) => number; owners?: RegExp }): Record<string, number> {
+  return Object.fromEntries(
+    sources
+      .filter(({ path }) => !rule.owners?.test(path))
+      .map(({ path, code }) => [path, rule.count(code)] as const)
+      .filter(([, count]) => count > 0)
+      .sort(([a], [b]) => a.localeCompare(b)),
+  );
+}
+
+/**
+ * The CSS half: a literal colour outside a token's definition (§5), and a shadow
+ * that casts anything (§6). Every sheet this project wrote is read.
+ *
+ * What the allowlist keeps of these is meant to stay. The two block sheets hold
+ * `colours` because the block editor does not load the admin's tokens, so they
+ * write one set by value. `stage.css` holds `shadows` for the phone standing on
+ * the ghost page (ADR 0170), the one object in the admin that casts one.
+ */
+const sheets = adminRoots().flatMap((root) => walk(resolve(REPO, root), /\.css$/));
+function cssFound(test: (selector: string, declaration: string) => boolean): Record<string, number> {
+  const result: [string, number][] = [];
+  for (const path of sheets) {
+    const css = readFileSync(path, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    let count = 0;
+    // Innermost rule at a time, so an at-rule's wrapper is not read as a selector.
+    for (const [, selector, body] of css.matchAll(/([^{};]+)\{([^{}]*)\}/g)) {
+      for (const declaration of body.split(';')) if (test(selector, declaration.trim())) count += 1;
+    }
+    if (count > 0) result.push([relative(REPO, path), count]);
+  }
+  return Object.fromEntries(result.sort(([a], [b]) => a.localeCompare(b)));
+}
+const LITERAL_COLOUR = /#[0-9a-f]{3,8}\b|\brgba?\(|\bhsla?\(|:\s*(?:white|black)\b/i;
+/**
+ * A ring or a rail: no blur, and nothing cast past the box. A ring is a selected
+ * state or a hairline a clip would cut from a border; a rail is §15's, or a drop
+ * edge. Either is a line drawn without moving layout, which is not a shadow.
+ */
+const LINE = /^(?:inset\s+)?0\s+0\s+0\s+[\d.]+px\b|^inset\s+-?[\d.]+(?:px)?\s+-?[\d.]+(?:px)?\s+0(?:px)?(?:\s+0(?:px)?)?\s+[^\d\s-]/;
+function castsShadow(declaration: string): boolean {
+  // Out from the innermost, because a colour's own commas are not layers.
+  let layers = declaration.replace(/^box-shadow\s*:\s*/, '');
+  while (layers.includes('(')) layers = layers.replace(/\([^()]*\)/g, '');
+  return layers.split(',').some((layer) => !LINE.test(layer.trim()));
+}
+const CSS_RULES: Record<string, { why: string; test: (selector: string, declaration: string) => boolean }> = {
+  colours: {
+    why: '§5: colours are tokens',
+    test: (_selector, declaration) => !declaration.startsWith('--') && LITERAL_COLOUR.test(declaration),
+  },
+  shadows: {
+    why: '§6: shadow tokens are none; a ring or a rail is a line, and casts nothing',
+    test: (selector, declaration) => /^box-shadow\s*:/.test(declaration) && !/:\s*(?:none|inherit)\b/.test(declaration) && !/focus|:dir\(/.test(selector) && castsShadow(declaration),
+  },
+};
+
+function holdsTo(name: string, actual: Record<string, number>) {
+  const allowed = allowFile[name] ?? {};
+  const over = Object.entries(actual).filter(([path, count]) => count > (allowed[path] ?? 0));
+  expect(over.map(([path, count]) => `${path}: ${count}, allowed ${allowed[path] ?? 0}`)).toEqual([]);
+  // A fixed file leaves the list, so the list never allows what has been fixed.
+  expect(actual).toEqual(Object.fromEntries(Object.entries(allowed).sort(([a], [b]) => a.localeCompare(b))));
+}
+
+describe('the admin guidelines', () => {
+  it('reads every admin surface, free and Pro', () => {
+    expect(sources.length).toBeGreaterThan(300);
+    expect(sources.some(({ path }) => path.startsWith('pro/modules/journeys/admin/'))).toBe(true);
+    expect(sources.some(({ path }) => path.startsWith('pro/resources/admin/src/license/'))).toBe(true);
+    expect(gettextStrings(`__('Only %d', 'wconvert'); _n("%d line", '%d lines', n, 'wconvert')`)).toEqual(['Only %d', '%d line', '%d lines']);
+  });
+
+  for (const [name, rule] of Object.entries(RULES)) {
+    it(`${name} — ${rule.why}`, () => holdsTo(name, found(rule)));
+  }
+
+  for (const [name, rule] of Object.entries(CSS_RULES)) {
+    it(`${name} — ${rule.why}`, () => holdsTo(name, cssFound(rule.test)));
+  }
+
+});
+

@@ -220,7 +220,7 @@ describe('where the switch is offered (G1, G2)', () => {
   it('says in one line why it is not offered', () => {
     expect(ask(pro('space-planner').tree, 'find_match')).toEqual({ offered: false, reason: 'Quizzes have their own result setting.' });
     expect(ask(design('centred-card').tree, 'deliver_lead_magnet')).toEqual({ offered: false, reason: 'A lead magnet needs the email form to deliver the file.' });
-    expect(ask(design('offer-receipt').tree, 'recover_cart')).toEqual({ offered: false, reason: 'Cart recovery sends shoppers to their cart, so it has no form.' });
+    expect(ask(design('offer-receipt').tree, 'recover_cart')).toEqual({ offered: false, reason: 'Cart recovery sends shoppers to their basket, so it has no form.' });
     expect(ask(design('centred-card').tree, 'grow_email_list', { content_lock: { selector: 'main' } })).toEqual({ offered: false, reason: 'A content lock always needs its form.' });
     const products = { ...design('offer-receipt').tree, steps: [{ ...design('offer-receipt').tree.steps[0], content: { type: 'products', id: 'p', action: 'link' } }] } as unknown as TemplateTree;
     expect(ask(products, 'promote_offer')).toEqual({ offered: false, reason: 'Product recommendations can’t take a contact form.' });
@@ -232,7 +232,7 @@ describe('where the switch is offered (G1, G2)', () => {
     const flow = upgradeToGraph(design('journey-email-then-sms').tree);
     expect(ask(flow, 'grow_email_list')).toEqual({ offered: true, state: 'email' });
     const branches = { ...flow, graph: { ...flow.graph!, edges: [...flow.graph!.edges, { id: 'extra', from: flow.graph!.entry, to: 'received', kind: 'default' as const }] } };
-    expect(ask(branches, 'grow_email_list')).toEqual({ offered: false, reason: 'This campaign has branches. Edit its screens directly.' });
+    expect(ask(branches, 'grow_email_list')).toEqual({ offered: false, reason: 'This campaign sends some answers to different screens. Edit its screens directly.' });
   });
 });
 

@@ -1,0 +1,27 @@
+{
+  "dates": {},
+  "errors": {},
+  "digits": {},
+  "type": {},
+  "retry": {
+    "resources/admin/src/builder/JourneyTest.tsx": 2
+  },
+  "tiers": {},
+  "pressed": {
+    "resources/admin/src/builder/advanced.tsx": 1,
+    "resources/admin/src/builder/BlockInspector.tsx": 1,
+    "resources/admin/src/builder/Fullscreen.tsx": 1,
+    "resources/admin/src/builder/JourneyEditor.tsx": 1,
+    "resources/admin/src/builder/SentenceEditor.tsx": 3,
+    "resources/admin/src/builder/ShadowField.tsx": 1,
+    "resources/admin/src/builder/SpacingField.tsx": 2,
+    "resources/admin/src/gallery/GalleryCard.tsx": 1
+  },
+  "colours": {
+    "pro/modules/content-lock/block/editor.css": 9,
+    "resources/blocks/inline-optin/src/editor.css": 3
+  },
+  "shadows": {
+    "resources/admin/src/stage/stage.css": 1
+  }
+}

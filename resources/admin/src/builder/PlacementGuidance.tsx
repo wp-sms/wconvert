@@ -70,9 +70,9 @@ export function PlacementGuidance({ optinId, optinName, displayType, placement, 
       )}
       {siteCheck !== null && (
         <div className="wconvert-placement__check">
-          <Button asChild variant="outline" size="sm">
+          <Button asChild variant="outline">
             <a href={siteCheck} target="_blank" rel="noopener noreferrer" aria-describedby={`${id}-check-note`}>
-              {everywhere ? __('Check your homepage', 'wconvert') : __('Check your site', 'wconvert')}<ExternalLink aria-hidden="true" />
+              {everywhere ? __('Check your homepage', 'wconvert') : __('Check your site', 'wconvert')}<ExternalLink aria-hidden="true" className="rtl:-scale-x-100" />
             </a>
           </Button>
           <p id={`${id}-check-note`} className="text-note text-muted-foreground">

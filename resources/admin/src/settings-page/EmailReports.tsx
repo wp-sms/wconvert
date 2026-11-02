@@ -7,6 +7,7 @@ import { Field } from '../shell/Field';
 import { Region, RegionBody, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
 import { SettingsRegionSkeleton } from './SettingsSkeleton';
 import { SaveStatus, useSaveStatus } from '../shell/SaveStatus';
+import { formatWhen } from '../lib/format';
 import { messageOf } from '../shell/loadable';
 import { useSettingsEditing, type SettingsEditing } from './useSettingsEditing';
 import { readWeeklySummary, saveWeeklySummary, sendTestSummary, type WeeklySummarySetting } from './emailReportsApi';
@@ -90,6 +91,7 @@ export function EmailReports({ onEditingStateChange }: { onEditingStateChange?: 
   };
 
   const edited = () => { setError(null); setTested(null); status.clear(); };
+  const cancel = () => { setEnabled(saved.enabled); setRecipients(saved.recipients); edited(); };
 
   return (
     <Region>
@@ -114,23 +116,24 @@ export function EmailReports({ onEditingStateChange }: { onEditingStateChange?: 
             {saved.waiting_for_publish
               ? __('The first one goes out the Monday after your first campaign is published.', 'wconvert')
               : saved.next_send
-                ? sprintf(/* translators: %s: a weekday, date and time, e.g. “Monday, November 2, 2026, 9:00 am”. */ __('Next summary: %s, in your site’s time zone.', 'wconvert'), saved.next_send)
+                ? sprintf(/* translators: %s: a date and time, e.g. “Nov 2, 2026, 9:00 AM”. */ __('Next summary: %s, in your site’s time zone.', 'wconvert'), formatWhen(saved.next_send, 'detail'))
                 : null}
           </p>
         </>}
       </RegionBody>
       <RegionFooter className="flex flex-wrap items-center justify-end gap-3">
-        {error !== null && <p role="alert" className="m-0 me-auto text-note text-destructive">{error}</p>}
         <p role="status" className="m-0 min-w-0 flex-1 basis-64 text-note text-muted-foreground">
           {tested !== null && sprintf(/* translators: %s: the addresses the test went to. */ __('Test sent to %s. Not there in a few minutes? Check spam, then your site’s email setup.', 'wconvert'), tested)}
         </p>
         <div className="ms-auto flex flex-wrap items-center justify-end gap-3">
-          <SaveStatus saved={status.saved} />
           {enabled && (
             <Button type="button" variant="outline" disabled={testing || saving} data-setting="weekly-summary-test" onClick={() => { void test(); }}>
               {testing ? __('Sending…', 'wconvert') : __('Send a test email', 'wconvert')}
             </Button>
           )}
+          {error !== null && <p role="alert" className="m-0 text-note text-destructive">{error}</p>}
+          <SaveStatus saved={status.saved} />
+          {dirty && <Button type="button" variant="outline" disabled={saving} onClick={cancel}>{__('Cancel changes', 'wconvert')}</Button>}
           <Button type="button" disabled={!dirty || saving} onClick={() => { void save(); }}>
             {saving ? __('Saving…', 'wconvert') : __('Save email reports', 'wconvert')}
           </Button>

@@ -6,8 +6,8 @@ import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 import { Dialog } from '../components/ui/dialog';
-import { AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
-import { PickerDialogContent, PickerDialogBody } from '../discovery/PickerDialog';
+import { AdminDialogContent, AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
+import { PickerDialogBody } from '../discovery/PickerDialog';
 import { TryAgain } from '../shell/Region';
 import { PreviewControls } from '../discovery/PreviewControls';
 import { PreviewFrame } from '../discovery/PreviewFrame';
@@ -17,6 +17,8 @@ import {
   transferStatus, uploadDesign, prepareImport, applyImport, cancelImport, downloadDesign, importImage, withPreviewImages,
   type TransferDesign, type TransferStatus, type TransferPreview, type Config,
 } from '../templates/transfer';
+import { NativeSelect } from '../components/ui/native-select';
+import { CheckRow } from '../shell/CheckRow';
 
 export default function TemplateTransferDialog({ action, design, config, optin, onClose, onApply }: {
   action: 'import' | 'export'; design: TransferDesign; config: Config; optin: string;
@@ -32,6 +34,7 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
   const [preview, setPreview] = useState<TransferPreview | null>(null);
   const [mode, setMode] = useState<'file' | 'keep'>('file');
   const [links, setLinks] = useState<Record<string, string>>({});
+  const [linksEdited, setLinksEdited] = useState(false);
   const [reviewed, setReviewed] = useState(false);
   const [images, setImages] = useState<Record<string, string>>({});
   const [step, setStep] = useState(0);
@@ -46,7 +49,8 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
   const committedLinks = useRef<Record<string, string>>({});
   const urls = useRef<Record<string, string>>({});
   const alive = useRef(true);
-  const title = action === 'export' ? __('Export as template', 'wconvert') : __('Import template', 'wconvert');
+  // The design, or the file's once one is chosen. Until then there is no subject, only the action.
+  const title = action === 'export' ? design.name || __('Export as template', 'wconvert') : importName || __('Import template', 'wconvert');
   const readStatus = () => {
     setStatusFailed(false); setError(null);
     transferStatus().then(value => { if (alive.current) setStatus(value); })
@@ -95,6 +99,7 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
     Object.entries(urls.current).forEach(([id, url]) => { if (!(id in loaded)) URL.revokeObjectURL(url); });
     urls.current = loaded; setImages(loaded);
     committedLinks.current = replacements;
+    setLinksEdited(Object.keys(replacements).length > 0);
     setPreview(next); setLinks({}); setStep(0); setResult(0);
   };
   const upload = (file: File | undefined) => {
@@ -122,6 +127,8 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
   const showWorkspace = action === 'export' || !!session.current;
   const busyLabel = action === 'export' ? __('Creating your file…', 'wconvert') : preview ? __('Adding template to draft…', 'wconvert') : __('Preparing your preview…', 'wconvert');
   const reasonId = `${contentId}-reason`;
+  // Typed link edits, whether or not the preview has caught up with them.
+  const dirty = changingLinks || linksEdited;
   // Busy is `disabled`; a refusal is `aria-disabled` with the reason in the footer note (§9).
   const applyRefusal = !preview ? null
     : changingLinks ? __('Update the preview to apply your changed links.', 'wconvert')
@@ -129,9 +136,10 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
     : null;
 
   return <Dialog open onOpenChange={open => { if (!open) close(); }}>
-    <PickerDialogContent className={`wconvert-transfer-dialog ${showWorkspace ? 'wconvert-transfer-dialog--workspace' : ''}`} showCloseButton={!busy}
+    {/* Choosing a file is a short form; once there is one, this is a preview (§9). */}
+    <AdminDialogContent size={showWorkspace ? 'lg' : 'sm'} className="wconvert-transfer-dialog" dirty={dirty && !busy} showCloseButton={!busy}
       onEscapeKeyDown={event => { if (busy) event.preventDefault(); }} onInteractOutside={event => { if (busy) event.preventDefault(); }}>
-      <AdminDialogHeader title={title} meta={action === 'export'
+      <AdminDialogHeader title={<bdi>{title}</bdi>} meta={action === 'export'
         ? __('Take this campaign’s look to another WConvert site as a template.', 'wconvert')
         : __('Bring a template from another WConvert site into this campaign.', 'wconvert')} />
       <PickerDialogBody className="wconvert-transfer" aria-busy={busy}>
@@ -158,7 +166,7 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
             <div className="wconvert-transfer__preview-heading"><span>{__('Template preview', 'wconvert')}</span><Badge variant="outline">{action === 'export' ? __('Current draft', 'wconvert') : __('Before you apply', 'wconvert')}</Badge></div>
             {rendered ? <>
               <PreviewControls mobile={mobile} onMobile={setMobile} template={rendered} step={step} onStep={value => { setStep(value); setResult(0); }} fitHeight={fitHeight} onFitHeight={setFitHeight} disabled={busy} />
-              {results.length > 0 && <label className="wconvert-transfer__result">{__('Result to preview', 'wconvert')}<select className="wconvert-picker__select" value={result} onChange={event => setResult(Number(event.target.value))}>{results.map((item, index) => <option key={item.id} value={index}>{item.heading || sprintf(/* translators: %d: the result's position in the list, starting at 1. */ __('Result %d', 'wconvert'), index + 1)}</option>)}</select></label>}
+              {results.length > 0 && <label className="wconvert-transfer__result">{__('Result to preview', 'wconvert')}<NativeSelect className="text-note" value={result} onChange={event => setResult(Number(event.target.value))}>{results.map((item, index) => <option key={item.id} value={index}>{item.heading || sprintf(/* translators: %s: the result's position in the list, starting at 1. */ __('Result %s', 'wconvert'), formatCount(index + 1))}</option>)}</NativeSelect></label>}
               <PreviewFrame template={rendered} displayType={action === 'export' ? design.display_type : preview!.patch.display_type} mobile={mobile} step={step} result={results[result]} fitHeight={fitHeight} />
             </> : busy ? <div role="status" className="wconvert-transfer__placeholder"><span className="sr-only">{__('Preparing your preview…', 'wconvert')}</span><Skeleton aria-hidden="true" className="h-full min-h-[20rem] w-full" /></div>
               : <div className="wconvert-transfer__placeholder"><FileArchive aria-hidden="true" /><p>{__('The preview could not be prepared.', 'wconvert')}</p><TryAgain onClick={() => void run(() => prepare(session.current!))} /></div>}
@@ -187,13 +195,13 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
               {preview && <>
                 {notices.length > 0 && <section className="wconvert-transfer__warning"><h3><TriangleAlert aria-hidden="true" />{__('Needs review', 'wconvert')}</h3><ul>{notices.map(note => <li key={note}>{note}</li>)}</ul></section>}
                 {preview.links.length > 0 && <section className="wconvert-transfer__section"><h3><Link aria-hidden="true" />{__('Review links', 'wconvert')}<Badge variant="outline">{preview.links.length}</Badge></h3><p>{__('Keep these addresses or update them for this site.', 'wconvert')}</p>
-                  {preview.links.map((link, index) => <label className="wconvert-transfer__link" key={link.url} htmlFor={`${contentId}-link-${index}`}><span><strong>{sprintf(/* translators: %s: the link's position in the list, starting at 1. */ __('Link %s', 'wconvert'), String(index + 1))}</strong><small>{sprintf(/* translators: %s: how many places in the design use this link. */ _n('Used in %s place', 'Used in %s places', link.uses, 'wconvert'), formatCount(link.uses))}</small></span>
+                  {preview.links.map((link, index) => <label className="wconvert-transfer__link" key={link.url} htmlFor={`${contentId}-link-${index}`}><span><strong>{sprintf(/* translators: %s: the link's position in the list, starting at 1. */ __('Link %s', 'wconvert'), formatCount(index + 1))}</strong><small>{sprintf(/* translators: %s: how many places in the design use this link. */ _n('Used in %s place', 'Used in %s places', link.uses, 'wconvert'), formatCount(link.uses))}</small></span>
                     <Input id={`${contentId}-link-${index}`} type="text" value={links[link.url] ?? link.url} disabled={busy} aria-label={sprintf(/* translators: %s: the link's web address, e.g. “https://example.com/offer”. */ __('Link: %s', 'wconvert'), link.url)} onChange={event => { setLinks(current => ({ ...current, [link.url]: event.target.value })); setReviewed(false); }} />
                   </label>)}
                   <p className="wconvert-transfer__hint">{__('Linked files are not included.', 'wconvert')}</p>
                 </section>}
                 {changingLinks ? <div className="wconvert-transfer__update"><p>{__('Update the preview to review your changed links.', 'wconvert')}</p><Button variant="outline" disabled={busy} onClick={() => { if (session.current) void run(() => prepare(session.current!)); }}>{__('Update preview', 'wconvert')}</Button></div>
-                  : hasReview && <label className="wconvert-transfer__review"><input type="checkbox" checked={reviewed} disabled={busy} onChange={event => setReviewed(event.target.checked)} /><span>{preview.links.length > 0 ? __('Keep these links and apply the reviewed changes', 'wconvert') : __('Apply the reviewed changes', 'wconvert')}</span></label>}
+                  : hasReview && <CheckRow className="wconvert-transfer__review" checked={reviewed} disabled={busy} onChange={event => setReviewed(event.target.checked)} label={preview.links.length > 0 ? __('Keep these links and apply the reviewed changes', 'wconvert') : __('Apply the reviewed changes', 'wconvert')} />}
                 <>{preview.assets.length > 0 && <p className="wconvert-transfer__hint">{__('Included images are added to your Media Library when you apply.', 'wconvert')}</p>}</>
               </>}
             </>}
@@ -219,6 +227,6 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
             });
           }}>{busy && preview ? __('Applying…', 'wconvert') : __('Apply to draft', 'wconvert')}</Button>}
       </AdminDialogFooter>
-    </PickerDialogContent>
+    </AdminDialogContent>
   </Dialog>;
 }

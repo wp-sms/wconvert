@@ -25,7 +25,7 @@ it('says the editor did not load and keeps the way back, instead of a blank scre
 
   expect(await screen.findByText('Part of WConvert didn’t load.')).toBeInTheDocument();
   expect(screen.getByText('Reload the page. If it keeps happening, reinstall the plugin.')).toBeInTheDocument();
-  await userEvent.click(screen.getByRole('button', { name: 'Back to Campaigns' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Back to campaigns' }));
   expect(onClose).toHaveBeenCalled();
 });
 

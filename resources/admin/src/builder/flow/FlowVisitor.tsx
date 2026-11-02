@@ -7,6 +7,7 @@ import { journeyTraceEdges } from '../structure/journeyTraceEdges';
 import { walkNodes } from '../structure/journey';
 import { CheckRow } from '../../shell/CheckRow';
 import { NativeSelect } from '../../components/ui/native-select';
+import { formatCount } from '../../lib/format';
 
 export interface VisitorTrace {
   readonly screens: readonly number[];
@@ -60,7 +61,7 @@ export function FlowVisitor({ tree, answers, trace, onAnswers, onStop }: {
             {question.options?.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
           </NativeSelect></span>)}
     </div>
-    <p role="status">{[sprintf(/* translators: %d: how many screens this visitor sees. */ __('Sees %d screens', 'wconvert'), trace.screens.length),
+    <p role="status">{[sprintf(/* translators: %s: how many screens this visitor sees. */ __('Sees %s screens', 'wconvert'), formatCount(trace.screens.length)),
       ...(trace.skipped.length ? [sprintf(/* translators: %s: screen names. */ __('skips %s', 'wconvert'), trace.skipped.map(screen => sprintf(/* translators: %s: a screen's name. */ __('“%s”', 'wconvert'), name(screen))).join(__(', ', 'wconvert')))] : []),
       ...(trace.result ? [sprintf(/* translators: %s: a result's heading. */ __('result: %s', 'wconvert'), trace.result.heading)] : [])].join(' · ')}</p>
     <button type="button" className="wconvert-panel-link" onClick={onStop}>{__('Stop', 'wconvert')}</button>

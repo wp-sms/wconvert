@@ -112,7 +112,7 @@ describe('When', () => {
     const field = screen.getByRole('spinbutton', { name: 'Seconds before it opens' });
     await userEvent.clear(field);
     await userEvent.type(field, '5000');
-    expect(screen.getByRole('alert')).toHaveTextContent('Enter a number from 1 to 3600.');
+    expect(screen.getByRole('alert')).toHaveTextContent('Enter a number from 1 to 3,600.');
     expect(within(menu()).getByRole('button', { name: /When does it open/ })).toHaveTextContent('Needs attention');
   });
 
@@ -180,12 +180,15 @@ describe('When', () => {
     const leave = pick('When does it open?', /When they try to leave/);
     expect(leave).toHaveAttribute('aria-disabled', 'true');
     expect(leave.closest('label')).toHaveTextContent('Pro');
+    // Its own reason, heard before it is pressed.
+    expect(leave).toHaveAccessibleDescription('“When they try to leave” is part of WConvert Pro.');
+    expect(document.querySelector('.wconvert-quick-picks__reason')).toBeEmptyDOMElement();
     await userEvent.click(leave);
     expect(changed).not.toHaveBeenCalled();
     expect(pick('When does it open?', /After 15 seconds/)).toBeChecked();
     expect(document.querySelector('.wconvert-quick-picks__reason')).toHaveTextContent('“When they try to leave” is part of WConvert Pro. Compare plans');
     expect(screen.getByRole('link', { name: 'Compare plans' })).toHaveAttribute('href', 'https://wconvert.io/pricing/');
-    expect(leave).toHaveAccessibleDescription('“When they try to leave” is part of WConvert Pro. Compare plans');
+    expect(leave).toHaveAccessibleDescription('“When they try to leave” is part of WConvert Pro.');
   });
 
   it('reads a stored rule this install cannot run as Custom, so its row explains it', async () => {
@@ -320,9 +323,10 @@ describe('Who', () => {
     const changed = setup(simple, { pro: 'unavailable' }); await section('Who sees it?');
     const cart = pick('Who sees it?', /Shoppers with items in their cart/);
     expect(cart.closest('label')).toHaveTextContent('Needs WooCommerce');
+    expect(cart).toHaveAccessibleDescription('“Shoppers with items in their cart” needs the WooCommerce plugin on this site.');
     await userEvent.click(cart);
     expect(changed).not.toHaveBeenCalled();
-    expect(screen.getByText('“Shoppers with items in their cart” needs the WooCommerce plugin on this site.')).toBeInTheDocument();
+    expect(document.querySelector('.wconvert-quick-picks__reason')).toHaveTextContent('“Shoppers with items in their cart” needs the WooCommerce plugin on this site.');
   });
 
   it('keeps the goal’s audience requirement above the picks', async () => {
@@ -381,7 +385,7 @@ describe('How often', () => {
 
   it('keeps priority in a card that names its value while closed', async () => {
     setup({ ...initial, priority: 4 }); await section('How often?');
-    expect(screen.getByText('If several popups are ready at once').closest('summary')).toHaveTextContent('Shows before others (4)');
+    expect(screen.getByText('Popup priority').closest('summary')).toHaveTextContent('Shows before others (4)');
   });
 });
 

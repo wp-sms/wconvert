@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import {
-  ArrowLeft,
-  ArrowRight,
   CalendarDays,
   ChevronDown,
   Copy,
@@ -32,9 +30,9 @@ import type { Occasion } from '../discovery/api';
 import { readOccasions, type OccasionNotice } from '../occasions/api';
 import { OccasionNoticeView } from '../occasions/Notice';
 import { GettingStarted, useChecklist } from './GettingStarted';
-import { readDashboard, type DashboardPayload } from '../stats/api';
-import { rowResultOf, shownLine } from './rowResult';
-import { formatCount, formatRange, labelOf } from '../lib/format';
+import { periodOf, readDashboard, readReport, type DashboardPayload, type PeriodQuery } from '../stats/api';
+import { nextActionOf, rowResultOf, shownLine } from './rowResult';
+import { formatCount, formatRange, labelOf, siteDay } from '../lib/format';
 import {
   campaignName,
   createVariant,
@@ -61,12 +59,14 @@ import { StatusBadge } from './StatusBadge';
 import { GuideLink, SuspensionGuideLink } from '../shell/GuideLink';
 import { GUIDES, docsUrl } from '../shell/docs';
 import { CheckRow } from '../shell/CheckRow';
+import { ListFoot, ListPages } from '../shell/ListFoot';
 import { ToolbarCount } from '../shell/Toolbar';
 import { groupConfirmCopy, plan, reduceResult, resultSentence, startResult, type ConfirmedAction, type GroupAction, type GroupPlan, type GroupResult } from './groupActions';
 import './campaigns.css';
 
 import { productHealthLabel, ProductHealthDetails, useProductHealth } from './ProductHealth';
 import { CampaignThumbnail } from './designChunks';
+import { DateRangePicker, type DateRange } from '../shell/DateRangePicker';
 
 const PAGE_SIZE = 12;
 type Decision = {
@@ -112,7 +112,7 @@ export function OptinList({
   const [report, setReport] = useState<DashboardPayload | null>(null);
   const [reportError, setReportError] = useState<string | null>(null);
   const [reportLoading, setReportLoading] = useState(true);
-  const [days, setDays] = useState(30);
+  const [range, setRange] = useState<DateRange>({ preset: '30' });
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<Set<string>>(new Set());
   const busyRef = useRef(new Set<string>());
@@ -188,7 +188,7 @@ export function OptinList({
     let active = true;
     setReportLoading(true);
     setReportError(null);
-    void readDashboard(days)
+    void (range.preset === 'custom' ? readReport({ from: range.from, to: range.to }) : readDashboard(Number(range.preset)))
       .then((data) => {
         if (active) setReport(data);
       })
@@ -201,7 +201,7 @@ export function OptinList({
     return () => {
       active = false;
     };
-  }, [days, refreshKey]);
+  }, [range, refreshKey]);
 
   const numbers = useMemo(
     () =>
@@ -397,7 +397,10 @@ export function OptinList({
     setSelected(null);
     onEdit(id);
   };
-  const period = report ? { days: report.days } : { days };
+  // The window of the numbers on screen, so a link opens what they count. Before
+  // any have landed, what was asked for.
+  const period: PeriodQuery = report ? periodOf(report)
+    : range.preset === 'custom' ? { from: range.from, to: range.to } : { days: Number(range.preset) };
   const reportReady = report !== null;
   // A key the registry does not name is "Unknown goal", never the stored key.
   const goalOf = (row: OptinSummary): string | null =>
@@ -407,9 +410,9 @@ export function OptinList({
   const occasionOf = (row: OptinSummary): Occasion | undefined => row.occasion === null ? undefined : occasions?.find((item) => item.id === row.occasion);
   const resultsOf = (row: OptinSummary): CampaignResults =>
     report
-      ? { status: 'ready', days: report.days, from: report.from, to: report.to, result: numbers[row.id] }
+      ? { status: 'ready', days: report.days, from: report.from, to: report.to, custom: report.custom, result: numbers[row.id] }
       : reportError
-        ? { status: 'failed' }
+        ? { status: 'failed', onRetry: () => setRefreshKey((n) => n + 1) }
         : { status: 'loading' };
   const filters = [
     ['all', __('All', 'wconvert')],
@@ -446,13 +449,6 @@ export function OptinList({
       testing = parent.arms.length > 0,
       name = nameOf(row),
       variants = parent.arms.length + 1;
-    const nextLabel = row.has_unpublished_changes
-      ? __('Review changes', 'wconvert')
-      : status === 'suspended'
-        ? __('Review issue', 'wconvert')
-        : status === 'draft'
-          ? __('Continue editing', 'wconvert')
-          : __('Edit', 'wconvert');
     return (
       <CampaignRow key={row.id} name={name} arm={arm}>
         <DataTableCell label={__('Select', 'wconvert')} className="wconvert-campaign-select">
@@ -504,7 +500,7 @@ export function OptinList({
                   })
                 }
               >
-                {sprintf(/* translators: %d: how many variants the A/B test has. */ _n('A/B test · %d variant', 'A/B test · %d variants', variants, 'wconvert'), variants)}
+                {sprintf(/* translators: %s: how many variants the A/B test has. */ _n('A/B test · %s variant', 'A/B test · %s variants', variants, 'wconvert'), formatCount(variants))}
                 <ChevronDown aria-hidden="true" className="wconvert-family-toggle__chevron" />
               </button>
             )}
@@ -550,7 +546,7 @@ export function OptinList({
         </DataTableCell>
         <DataTableActions className="wconvert-campaign-row-actions">
           <Button variant="ghost" className="text-action" disabled={busy.size > 0} onClick={() => onEdit(row.id)}>
-            {nextLabel}
+            {nextActionOf(row)}
           </Button>
           <CampaignMenu
             row={row}
@@ -562,7 +558,7 @@ export function OptinList({
             missingDesign={previews[row.id]?.template === null}
             result={result}
             reportReady={reportReady}
-            days={period.days}
+            period={period}
             range={report ? { from: report.from, to: report.to } : undefined}
             onDetails={(trigger) => openDetails(row, trigger)}
             onDuplicate={() => duplicate(row, parent)}
@@ -623,14 +619,14 @@ export function OptinList({
             ))}
             {(reportError || previewError || labelsError) && <RegionError
               message={[
-                reportError && (report ? __('Results couldn’t refresh. The previous period and results remain below.', 'wconvert') : __('Results couldn’t load.', 'wconvert')),
-                previewError && __('Design previews couldn’t load.', 'wconvert'),
-                labelsError && __('Goal names couldn’t load.', 'wconvert'),
+                reportError && (report ? __('Results could not refresh. The previous period and results remain below.', 'wconvert') : __('Results could not load.', 'wconvert')),
+                previewError && __('Design previews could not load.', 'wconvert'),
+                labelsError && __('Goal names could not load.', 'wconvert'),
               ].filter(Boolean).join(' ')}
               onRetry={() => setRefreshKey((n) => n + 1)}
             />}
             {productChecks && productHealth.failed && (
-              <RegionError message={__('Products couldn’t be checked.', 'wconvert')} onRetry={productHealth.recheck} />
+              <RegionError message={__('Products could not be checked.', 'wconvert')} onRetry={productHealth.recheck} />
             )}
             {/* In the page from the moment the rows are, so a result is announced when it arrives. */}
             {list.status === 'ready' && !empty && <p role="status" className="wconvert-campaign-group-result">{groupResult && resultSentence(groupResult)}</p>}
@@ -660,13 +656,15 @@ export function OptinList({
                       }))
                       .filter((option) => option.value === 'all' || option.value === filter || option.count !== 0)}
                   />
-                  <label className="wconvert-campaign-period">
-                    {__('Results period', 'wconvert')}
-                    <NativeSelect value={days} onChange={(e) => setDays(Number(e.target.value))}>
-                      <option value={30}>{__('Last 30 days', 'wconvert')}</option>
-                      <option value={7}>{__('Last 7 days', 'wconvert')}</option>
-                    </NativeSelect>
-                  </label>
+                  <DateRangePicker
+                    label={__('Results period', 'wconvert')}
+                    value={range}
+                    presets={['30', '7']}
+                    summary={report ? formatRange(report.from, report.to) : null}
+                    today={siteDay()}
+                    maxDays={366}
+                    onChange={setRange}
+                  />
                 </div>
                 <div className="wconvert-toolbar wconvert-campaign-toolbar">
                   <PickerSearch
@@ -708,16 +706,16 @@ export function OptinList({
                       <option value="name">{__('Name A–Z', 'wconvert')}</option>
                       <option value="results">{__('Most results', 'wconvert')}</option>
                     </NativeSelect>
-                    <div className="wconvert-campaign-layout" role="group" aria-label={__('Campaign layout', 'wconvert')}>
-                      <label>
-                        <input type="radio" name="campaign-layout" aria-label={__('List view', 'wconvert')} checked={layout === 'list'} onChange={() => setLayout('list')} />
-                        <List aria-hidden="true" />
-                      </label>
-                      <label>
-                        <input type="radio" name="campaign-layout" aria-label={__('Gallery view', 'wconvert')} checked={layout === 'gallery'} onChange={() => setLayout('gallery')} />
-                        <LayoutGrid aria-hidden="true" />
-                      </label>
-                    </div>
+                    <OptionStrip
+                      className="wconvert-campaign-layout"
+                      label={__('Campaign layout', 'wconvert')}
+                      value={layout}
+                      options={[
+                        { value: 'list', label: __('List view', 'wconvert'), icon: List },
+                        { value: 'gallery', label: __('Gallery view', 'wconvert'), icon: LayoutGrid },
+                      ]}
+                      onChange={(next) => setLayout(next as typeof layout)}
+                    />
                   </div>
                 </div>
               </>
@@ -732,7 +730,7 @@ export function OptinList({
                   onCreate && (
                     <Button ref={createFocus} onClick={onCreate}>
                       <Plus aria-hidden="true" />
-                      {__('Create your first campaign', 'wconvert')}
+                      {__('Create campaign', 'wconvert')}
                     </Button>
                   )
                 }
@@ -799,7 +797,7 @@ export function OptinList({
               <aside className="wconvert-comparison-tray wconvert-toolbar wconvert-campaign-tray" aria-label={__('Selected campaigns', 'wconvert')}>
                 <div className="wconvert-comparison-tray__selection">
                   <ToolbarCount live>
-                    {sprintf(/* translators: %d: how many campaigns are ticked. */ _n('%d campaign selected', '%d campaigns selected', tickedRows.length, 'wconvert'), tickedRows.length)}
+                    {sprintf(/* translators: %s: how many campaigns are ticked. */ _n('%s campaign selected', '%s campaigns selected', tickedRows.length, 'wconvert'), formatCount(tickedRows.length))}
                   </ToolbarCount>
                 </div>
                 {/* Beside the count and apart from the safe actions (ADR 0039). */}
@@ -819,33 +817,19 @@ export function OptinList({
               </aside>
             )}
             {/* One line: how many and over which dates, then the pages. */}
-            {list.status === 'ready' && !empty && <div className="wconvert-footer wconvert-campaign-footer">
-              <span>
-                {sprintf(/* translators: %d: how many campaigns are listed. */ _n('%d campaign', '%d campaigns', visible.length, 'wconvert'), visible.length)}
-                {report && <> · {formatRange(report.from, report.to)}</>}
-              </span>
-              {lastPage > 0 && (
-                <nav className="wconvert-toolbar wconvert-campaign-pagination" aria-label={__('Campaign pages', 'wconvert')}>
-                  <Button variant="outline" disabled={currentPage === 0} onClick={() => setPage(currentPage - 1)}>
-                    <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
-                    {__('Previous', 'wconvert')}
-                  </Button>
-                  <span aria-live="polite" aria-atomic="true">
-                    {sprintf(/* translators: 1: this page's number, 2: how many pages. */ __('Page %1$d of %2$d', 'wconvert'), currentPage + 1, lastPage + 1)}
-                  </span>
-                  <Button variant="outline" disabled={currentPage === lastPage} onClick={() => setPage(currentPage + 1)}>
-                    {__('Next', 'wconvert')}
-                    <ArrowRight aria-hidden="true" className="rtl:-scale-x-100" />
-                  </Button>
-                </nav>
-              )}
+            {list.status === 'ready' && !empty && <ListFoot
+              className="wconvert-campaign-footer"
+              count={sprintf(/* translators: %s: how many campaigns are listed. */ _n('%s campaign', '%s campaigns', visible.length, 'wconvert'), formatCount(visible.length))}
+              dates={report && formatRange(report.from, report.to)}
+              pages={lastPage > 0 && <ListPages label={__('Campaign pages', 'wconvert')} page={currentPage} pages={lastPage + 1} onChange={setPage} />}
+            >
               {shown.some((c) => c.arms.length > 0) && (
                 <p className="wconvert-campaign-test-note">
                   {__('A/B tests split visitors by browser, not by person.', 'wconvert')}{' '}
                   <GuideLink href={docsUrl(GUIDES.abTest, 'check-the-split')}>{__('How the split works', 'wconvert')}</GuideLink>
                 </p>
               )}
-            </div>}
+            </ListFoot>}
           </>
         )}
       </Region>

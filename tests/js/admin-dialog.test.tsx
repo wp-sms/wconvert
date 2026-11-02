@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
@@ -14,7 +16,7 @@ function Harness({ dirty }: { dirty: boolean }) {
       <AdminDialogContent size="sm" dirty={dirty}>
         <AdminDialogHeader title="jane@example.com" meta="Jane · 3 submissions" />
         <AdminDialogBody>Body</AdminDialogBody>
-        <AdminDialogFooter error="Couldn’t save.">
+        <AdminDialogFooter error="Could not save.">
           <button type="button">Save</button>
         </AdminDialogFooter>
       </AdminDialogContent>
@@ -27,7 +29,7 @@ describe('the one modal', () => {
     render(<Harness dirty={false} />);
     const dialog = screen.getByRole('dialog', { name: 'jane@example.com' });
     expect(dialog).toHaveAccessibleDescription('Jane · 3 submissions');
-    expect(screen.getByRole('alert')).toHaveTextContent('Couldn’t save.');
+    expect(screen.getByRole('alert')).toHaveTextContent('Could not save.');
   });
 
   it('closes on Escape when nothing was typed', async () => {
@@ -47,6 +49,14 @@ describe('the one modal', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Close' }));
     await userEvent.click(screen.getByRole('button', { name: 'Discard' }));
     expect(screen.getByText('closed')).toBeInTheDocument();
+  });
+});
+
+describe('its three sizes', () => {
+  it('has no way left to set a fourth width on a picker', () => {
+    for (const sheet of ['index.css', 'builder/editor.css', 'gallery/gallery.css']) {
+      expect(readFileSync(resolve(import.meta.dirname, `../../resources/admin/src/${sheet}`), 'utf8'), sheet).not.toContain('--wconvert-picker-width');
+    }
   });
 });
 

@@ -2,11 +2,13 @@ import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'rea
 import { __, sprintf } from '@wordpress/i18n';
 import { ArrowLeft, Code, TriangleAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Alert, AlertTitle } from '@/components/ui/alert';
 import { AdminDialogBody, AdminDialogFooter, AdminDialogHeader } from '@/components/ui/admin-dialog';
 import { Input } from '@/components/ui/input';
 import { Field } from '@/shell/Field';
 import { GuideLink } from '@/shell/GuideLink';
 import { messageOf } from '@/shell/loadable';
+import { refusable } from '@/lib/refusable';
 import { regenerateConnection, saveConnection, type HeaderPair } from '@/destinations/api';
 import type { ConnectionFormProps } from '@/destinations/connectionSetup';
 import { HeadersEditor, headerProblem, headersToSend, storedHeaders } from '@/destinations/HeadersEditor';
@@ -115,6 +117,12 @@ export function WebhookConnectionForm({ type, account, title, meta, back, onSave
   const listed = [...own, ...extra];
   const headerRefused = listed.some((pair) => headerProblem(pair, listed, headersField, editing ? stored.map((known) => known.name) : []) !== null);
   const urlMissing = !editing && url.trim() === '';
+  const authMissing = receiver === 'n8n' && !editing && authName.trim() !== '' && authValue.trim() === '';
+  const refusal = label.trim() === '' ? __('Name this account first.', 'wconvert-pro')
+    : urlMissing ? __('Add the webhook URL first.', 'wconvert-pro')
+      // Before the headers: an n8n name with no value is also a header with no value.
+      : authMissing ? __('Enter the value n8n expects.', 'wconvert-pro')
+        : headerRefused ? __('Fix the headers above first.', 'wconvert-pro') : null;
   const warnPlain = insecure(url) && (headers.length > 0 || (editing && stored.length > 0));
 
   const save = () => {
@@ -165,7 +173,7 @@ export function WebhookConnectionForm({ type, account, title, meta, back, onSave
   }
 
   const field = (key: string) => `${id}-${key}`;
-  return <form className="flex min-h-0 flex-1 flex-col" onSubmit={(event) => { event.preventDefault(); if (!confirming) save(); }}>
+  return <form className="flex min-h-0 flex-1 flex-col" onSubmit={(event) => { event.preventDefault(); if (!confirming && refusal === null) save(); }}>
     {editing ? header(title, meta) : header(
       <span className="wconvert-webhook-heading"><ReceiverMark receiver={receiver} /><span>{receiver === 'code'
         ? sprintf(/* translators: %s: a service, e.g. “Webhook”. */ __('Connect %s', 'wconvert-pro'), type.label)
@@ -189,12 +197,12 @@ export function WebhookConnectionForm({ type, account, title, meta, back, onSave
             aria-describedby={[field('url-hint'), warnPlain ? field('url-warn') : ''].filter(Boolean).join(' ')}
             onChange={(event) => setUrl(event.target.value)} />
         </Field>
-        {warnPlain && <p id={field('url-warn')} className="wconvert-webhook-warning">
+        {warnPlain && <Alert id={field('url-warn')} role="status" className="border-warning/30 bg-warning-surface text-warning">
           <TriangleAlert aria-hidden="true" />
-          <span>{__('http:// isn’t encrypted, so your header and every lead travel readable. Use https://.', 'wconvert-pro')}</span>
-        </p>}
+          <AlertTitle className="line-clamp-none">{__('http:// isn’t encrypted, so your header and every lead travel readable. Use https://.', 'wconvert-pro')}</AlertTitle>
+        </Alert>}
 
-        {!editing && receiver === 'make' && <Field label={<>{__('API key', 'wconvert-pro')} <span className="wconvert-webhook-optional">{__('· optional', 'wconvert-pro')}</span></>}
+        {!editing && receiver === 'make' && <Field label={__('API key (optional)', 'wconvert-pro')}
           htmlFor={field('make-key')} hintId={field('make-key-hint')}
           hint={<>{sprintf(/* translators: %s: a header name, x-make-apikey. */ __('Sent as the %s header.', 'wconvert-pro'), MAKE_KEY_HEADER)}{' '}
             {!otherHeaders && <OtherHeaders onOpen={() => setOtherHeaders(true)} />}</>}>
@@ -203,7 +211,7 @@ export function WebhookConnectionForm({ type, account, title, meta, back, onSave
         </Field>}
 
         {!editing && receiver === 'n8n' && <div className="wconvert-webhook-pair">
-          <Field label={<>{__('Header Auth name', 'wconvert-pro')} <span className="wconvert-webhook-optional">{__('· optional', 'wconvert-pro')}</span></>} htmlFor={field('auth-name')}>
+          <Field label={__('Header Auth name (optional)', 'wconvert-pro')} htmlFor={field('auth-name')}>
             <Input id={field('auth-name')} dir="ltr" autoComplete="off" spellCheck={false} value={authName} placeholder="X-N8N-Auth"
               onChange={(event) => setAuthName(event.target.value)} />
           </Field>
@@ -211,7 +219,7 @@ export function WebhookConnectionForm({ type, account, title, meta, back, onSave
             <Input id={field('auth-value')} type="password" dir="ltr" autoComplete="off" value={authValue} disabled={authName.trim() === ''}
               onChange={(event) => setAuthValue(event.target.value)} />
           </Field>
-          {authName.trim() !== '' && authValue.trim() === '' && <p className="wconvert-webhook-problem">{__('Enter the value n8n expects.', 'wconvert-pro')}</p>}
+          {authMissing && <p className="wconvert-webhook-problem">{__('Enter the value n8n expects.', 'wconvert-pro')}</p>}
         </div>}
 
         {(editing || receiver === 'code' || otherHeaders)
@@ -225,7 +233,7 @@ export function WebhookConnectionForm({ type, account, title, meta, back, onSave
             <div className="wconvert-webhook-secret__label">{secretField?.label ?? __('Signing secret', 'wconvert-pro')}</div>
             <div className="wconvert-webhook-secret__state">{__('Stored. Shown only when it is made.', 'wconvert-pro')}</div>
           </div>
-          <Button type="button" variant="outline" aria-pressed={confirming} onClick={() => { setError(null); setConfirming(true); }}>
+          <Button type="button" variant="outline" onClick={() => { setError(null); setConfirming(true); }}>
             {__('Regenerate', 'wconvert-pro')}
           </Button>
         </div>}
@@ -240,12 +248,11 @@ export function WebhookConnectionForm({ type, account, title, meta, back, onSave
           {busy ? __('Regenerating…', 'wconvert-pro') : __('Regenerate secret', 'wconvert-pro')}
         </Button>
       </AdminDialogFooter>
-      : <AdminDialogFooter error={error} note={editing ? undefined : __('Creates a signing secret', 'wconvert-pro')}
+      : <AdminDialogFooter error={error} note={refusal ? <span id={field('refused')}>{refusal}</span> : editing ? undefined : __('Creates a signing secret', 'wconvert-pro')}
         back={editing ? cancel : <Button type="button" variant="outline" disabled={busy} onClick={() => { setError(null); setStep('choose'); }}>
           <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back', 'wconvert-pro')}
         </Button>}>
-        <Button type="submit" disabled={busy || label.trim() === '' || urlMissing || headerRefused
-          || (receiver === 'n8n' && !editing && authName.trim() !== '' && authValue.trim() === '')}>
+        <Button type="submit" disabled={busy} {...refusable(refusal ? field('refused') : null)}>
           {busy ? __('Checking…', 'wconvert-pro') : __('Check and save account', 'wconvert-pro')}
         </Button>
       </AdminDialogFooter>}

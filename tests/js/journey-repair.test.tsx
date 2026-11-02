@@ -39,10 +39,16 @@ it('allows removal of obsolete choices without hiding their presence', async () 
 it('can clear an invalid required rule with no sources without crashing or making it match everyone', async () => {
   const user = userEvent.setup();
   render(<Rule sources={[]} initial={{ match: 'all', clauses: [{ question: 'deleted', operator: 'is', values: ['old'] }] }} />);
-  expect(screen.getByRole('button', { name: 'Add another condition' })).toBeDisabled();
+  const another = screen.getByRole('button', { name: 'Add another condition' });
+  expect(another).toHaveAttribute('aria-disabled', 'true');
+  expect(another).toHaveAccessibleDescription('Add a choice question on an earlier screen to use conditions.');
   await user.click(screen.getByRole('button', { name: 'Remove' }));
   expect(JSON.parse(screen.getByTestId('condition').textContent!).clauses).toEqual([]);
-  expect(screen.getByRole('button', { name: 'Add condition' })).toBeDisabled();
+  const add = screen.getByRole('button', { name: 'Add condition' });
+  expect(add).toHaveAttribute('aria-disabled', 'true');
+  expect(add).toHaveAccessibleDescription('Add a choice question on an earlier screen to use conditions.');
+  await user.click(add);
+  expect(JSON.parse(screen.getByTestId('condition').textContent!).clauses).toEqual([]);
 });
 
 /** ADR 0135: a missing continuation is the only repair; the skip edge is an override chosen afterwards. */
@@ -60,7 +66,7 @@ it('repairs a missing continuation through controls, and offers the skip overrid
   const repaired = JSON.parse(screen.getByTestId('tree').textContent!) as TemplateTree;
   expect(repaired.graph?.edges.filter(edge => edge.from === 'garden')).toEqual([expect.objectContaining({ kind: 'default', to: 'indoors' })]);
   expect(journeyReadinessIssues(repaired)).toEqual([]);
-  await user.click(screen.getByRole('button', { name: 'Show answer lines' }));
+  await user.click(screen.getByText('Answer lines'));
   await user.selectOptions(screen.getByRole('combobox', { name: 'If skipped' }), 'contact');
   const tree = JSON.parse(screen.getByTestId('tree').textContent!) as TemplateTree;
   expect(tree.graph?.edges.filter(edge => edge.from === 'garden')).toEqual([
@@ -111,7 +117,7 @@ it('reviews a save bypass without disconnecting screens and returns focus after 
       <output data-testid="tree">{JSON.stringify(tree)}</output></>;
   }
   render(<Routes />);
-  await user.click(screen.getByRole('button', { name: 'Show answer lines' }));
+  await user.click(screen.getByText('Answer lines'));
   const hiddenDestination = screen.getByRole('combobox', { name: 'If skipped' });
   await user.selectOptions(hiddenDestination, 'received');
   expect(screen.getByRole('alertdialog')).toHaveTextContent('could reach “Received” without saving at “One enquiry”');

@@ -54,3 +54,20 @@ it('still shows activity a removed module left behind', async () => {
   api.mockResolvedValue(data); render(<ProductActivityReport id="campaign" period={period} />);
   expect(await screen.findByText('Coffee filter')).toBeTruthy();
 });
+it('keeps the rows and their dates while another period loads, and when it fails', async () => {
+  api.mockResolvedValueOnce(data);
+  const view = render(<ProductActivityReport id="campaign" period={period} />);
+  expect(await screen.findByText('Coffee filter')).toBeTruthy();
+  let refuse: (cause: unknown) => void = () => {};
+  api.mockImplementationOnce(() => new Promise((_resolve, reject) => { refuse = reject; }));
+  view.rerender(<ProductActivityReport id="campaign" period={{ days: 7, from: '2026-09-29', to: '2026-10-05' }} />);
+  expect(screen.getByText('Coffee filter')).toBeTruthy();
+  expect(screen.getByRole('status')).toHaveTextContent('Updating… Previous dates shown.');
+  await act(async () => refuse({ message: 'Away' }));
+  expect(screen.getByRole('alert')).toHaveTextContent('Could not refresh product activity. The activity below keeps its dates.');
+  expect(screen.getByText('Coffee filter')).toBeTruthy();
+  api.mockResolvedValueOnce({ ...data, from: '2026-09-29', days: 7, rows: [{ ...data.rows[0], name: 'Grinder' }] });
+  await act(async () => { screen.getByRole('button', { name: 'Try again' }).click(); });
+  expect(await screen.findByText('Grinder')).toBeTruthy();
+  expect(screen.queryByRole('alert')).toBeNull();
+});

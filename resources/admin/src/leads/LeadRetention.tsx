@@ -14,7 +14,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Field } from '../shell/Field';
 import { OptionStrip } from '../shell/OptionStrip';
-import { Region, RegionBody, RegionError, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
+import { Region, RegionBody, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
 import { SettingsRegionSkeleton } from '../settings-page/SettingsSkeleton';
 import { SaveStatus, useSaveStatus } from '../shell/SaveStatus';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
@@ -131,9 +131,9 @@ export function LeadRetention({ onEditingStateChange }: { onEditingStateChange?:
     const days = Number(draft.days);
     if (draft.days.trim() === '' || !Number.isInteger(days) || days < 1 || days > period.max_days) {
       setValidation(sprintf(
-        /* translators: %d: the longest time submissions can be kept, in days. */
-        __('Enter a whole number from 1 to %d days.', 'wconvert'),
-        period.max_days,
+        /* translators: %s: the longest time submissions can be kept, in days. */
+        __('Enter a whole number from 1 to %s days.', 'wconvert'),
+        formatCount(period.max_days),
       ));
       daysInput.current?.focus();
       return;
@@ -169,7 +169,6 @@ export function LeadRetention({ onEditingStateChange }: { onEditingStateChange?:
                 formatCount(retention.data.days),
               )}
         />
-        {error !== null && confirmDays === null && <RegionError message={error} />}
         <RegionBody className="flex flex-col gap-3">
           <p className="m-0 text-note text-muted-foreground" id={`${id}-scope`}>
             {__('Applies to submissions from every campaign. Copies already sent to destinations or exported aren’t affected.', 'wconvert')}{' '}
@@ -249,6 +248,7 @@ export function LeadRetention({ onEditingStateChange }: { onEditingStateChange?:
           </fieldset>
         </RegionBody>
         <RegionFooter className="flex flex-wrap items-center justify-end gap-3">
+          {error !== null && confirmDays === null && <p role="alert" className="m-0 text-note text-destructive">{error}</p>}
           <SaveStatus saved={saved} />
           {dirty && (
             <Button variant="outline" disabled={saving} onClick={cancelChanges}>
@@ -286,8 +286,8 @@ export function LeadRetention({ onEditingStateChange }: { onEditingStateChange?:
             </AlertDialogDescription>
           </AlertDialogHeader>
           <p className="m-0 text-note text-muted-foreground">{__('Campaign totals in analytics stay. Copies already sent to destinations or exported aren’t affected.', 'wconvert')}</p>
-          {error !== null && <p role="alert" className="m-0 text-note text-destructive">{error}</p>}
           <AlertDialogFooter>
+            {error !== null && <p role="alert" className="m-0 text-note text-destructive sm:flex-1 sm:self-center">{error}</p>}
             <AlertDialogCancel disabled={saving}>{__('Cancel', 'wconvert')}</AlertDialogCancel>
             <AlertDialogAction
               variant="destructive"

@@ -1,0 +1,11 @@
+/*
+ * The License page's frame: its width, the gap between cards, and the Sites and
+ * License key columns. Eager, not in license.css, because {@see LicenseSkeleton}
+ * draws this frame while the page's chunk, and that sheet with it, downloads.
+ */
+#wconvert-admin .wconvert-license { display:grid; gap:20px; max-inline-size:72rem; }
+#wconvert-admin .wconvert-license--narrow { max-inline-size:44rem; }
+#wconvert-admin .wconvert-license-grid { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(0,1fr); gap:20px; align-items:start; }
+@media (max-width:900px) {
+  #wconvert-admin .wconvert-license-grid { grid-template-columns:minmax(0,1fr); }
+}

@@ -1,20 +1,18 @@
 import { useState, type ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
-import { CircleHelp, MousePointer2, X } from 'lucide-react';
+import { MousePointer2, X } from 'lucide-react';
 import { OptionStrip } from '../shell/OptionStrip';
-import { Popover, PopoverTrigger, PopoverContent } from '../components/ui/popover';
-import { Button } from '../components/ui/button';
+import { InfoTip } from '../shell/InfoTip';
 import { DesignStage } from '../stage/DesignStage';
 import { resolvedPlacement } from './PlacementControl';
 import { resolvedToken } from './panel';
 import type { SlotKey } from './slots';
 import type { Template } from '@renderer/types';
+import { NativeSelect } from '../components/ui/native-select';
 
 export type PreviewWidth = 'own' | 'narrow';
 export function MobileAppearanceNote() {
-  return <Popover><PopoverTrigger asChild><Button type="button" variant="ghost" size="icon-sm" aria-label={__('About mobile editing', 'wconvert')}><CircleHelp aria-hidden="true" /></Button></PopoverTrigger>
-    <PopoverContent className="text-note" align="end">{__('Editing mobile appearance. Text and blocks are shared across sizes.', 'wconvert')}</PopoverContent>
-  </Popover>;
+  return <InfoTip label={__('About mobile editing', 'wconvert')}>{__('Editing mobile appearance. Text and blocks are shared across sizes.', 'wconvert')}</InfoTip>;
 }
 
 export function DeviceControls({
@@ -73,16 +71,16 @@ export function EditorCanvas({
       <div className="wconvert-canvas__bar">
         {screen?.label ? <span>{screen.label}</span> : hint ? <span className="wconvert-canvas__hint-line"><MousePointer2 aria-hidden="true" />{hint}</span> : <span>{template.tree.steps[shown]?.name}</span>}
         {tools}
-        <div className="wconvert-canvas__view">
+        <div className="wconvert-canvas__view wconvert-toolbar">
           {view}
           <label>
             <span className="sr-only">{__('Canvas zoom', 'wconvert')}</span>
-            <select value={zoom} onChange={(event) => setZoom(event.target.value === 'actual' ? 'actual' : 'fit')}>
+            <NativeSelect className="text-note" value={zoom} onChange={(event) => setZoom(event.target.value === 'actual' ? 'actual' : 'fit')}>
               <option value="fit">
                 {__('Fit', 'wconvert')} · {Math.round(scale * 100)}%
               </option>
               <option value="actual">100%</option>
-            </select>
+            </NativeSelect>
           </label>
         </div>
       </div>
@@ -135,5 +133,5 @@ export function EditorCanvas({
 function closeLook(tokens: Template['tokens']) {
   const look = (part: string) => resolvedToken(tokens, `close-${part}`);
 
-  return { color: look('fg'), background: look('bg'), border: `1px solid ${look('border')}`, borderRadius: look('radius'), boxShadow: 'none' };
+  return { color: look('fg'), background: look('bg'), border: `1px solid ${look('border')}`, borderRadius: look('radius') };
 }

@@ -1,14 +1,30 @@
+import { useState } from 'react';
 import { __ } from '@wordpress/i18n';
-import type { DestinationUsage } from './api';
+import { TryAgain } from '../shell/Region';
+import { readDestinations, type DestinationUsage } from './api';
 
 /**
  * Saved bindings only: the shared route is not part of any Optin's Undo. A
  * campaign with no name reads "Unnamed campaign", never its ID (ADR 0131).
  */
-export function DestinationUsageNotice({ usage }: { usage: readonly DestinationUsage[] | null | undefined }) {
+export function DestinationUsageNotice({ id, usage: given }: { id: string; usage: readonly DestinationUsage[] | null | undefined }) {
+  // Its own read, because the builder's dialog holds the destination it opened
+  // with: a fresher payload there would never reach this notice.
+  const [read, setRead] = useState<readonly DestinationUsage[] | null>(null);
+  const [reading, setReading] = useState(false);
+  const usage = read ?? given;
+  const tryAgain = () => {
+    setReading(true);
+    void readDestinations()
+      .then((payload) => setRead(payload.destinations.find((each) => each.id === id)?.usage ?? null), () => undefined)
+      .finally(() => setReading(false));
+  };
   return <div className="flex flex-col gap-2 rounded-md border border-border bg-surface p-4 text-note leading-relaxed">
     <p className="m-0 font-medium">{__('Campaigns using this destination', 'wconvert')}</p>
-    {usage == null ? <p className="m-0">{__('Couldn’t read which campaigns use it. Refresh before changing shared settings.', 'wconvert')}</p>
+    {usage == null ? <div className="flex flex-col items-start gap-2">
+      <p className="m-0">{__('Could not read which campaigns use it. Try again before changing shared settings.', 'wconvert')}</p>
+      <TryAgain onClick={tryAgain} busy={reading} />
+    </div>
       : usage.length === 0 ? <p className="m-0">{__('No saved campaign uses it yet.', 'wconvert')}</p>
         : <ul className="m-0 list-none space-y-1 ps-0">
           {usage.map((optin) => <li key={optin.id} className="flex flex-wrap justify-between gap-x-3 gap-y-1">

@@ -4,6 +4,7 @@ import { Maximize2, Minimize2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { OptionStrip } from '../shell/OptionStrip';
 import type { Template } from '@renderer/types';
+import { NativeSelect } from '../components/ui/native-select';
 
 /**
  * Device and fit for a full inspection, with the fit following the device:
@@ -33,7 +34,7 @@ export function PreviewControls({ mobile, onMobile, template, step, onStep, disa
     <OptionStrip label={__('Preview size', 'wconvert')} value={mobile ? 'mobile' : 'desktop'} disabled={disabled}
       options={[{value:'desktop',label:__('Desktop','wconvert')},{value:'mobile',label:__('Mobile','wconvert')}]}
       onChange={value => onMobile(value === 'mobile')} />
-    {screens.length > 4 ? <label className="wconvert-preview-controls__screen">{__('Screen', 'wconvert')}<select className="wconvert-picker__select" disabled={disabled} value={shown} onChange={event=>onStep(Number(event.target.value))}>{screens.map((screen,index)=><option key={index} value={index}>{screen.name || __('Screen','wconvert')}</option>)}</select></label>
+    {screens.length > 4 ? <label className="wconvert-preview-controls__screen">{__('Screen', 'wconvert')}<NativeSelect className="text-note" disabled={disabled} value={shown} onChange={event=>onStep(Number(event.target.value))}>{screens.map((screen,index)=><option key={index} value={index}>{screen.name || __('Screen','wconvert')}</option>)}</NativeSelect></label>
       : screens.length > 1 && <div className="wconvert-preview-controls__screen">
         {/* A visible name, so the screens read as a choice of what to look at rather than as tabs. */}
         <span aria-hidden="true">{__('Screen', 'wconvert')}</span>

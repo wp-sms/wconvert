@@ -1,4 +1,3 @@
-import { __ } from '@wordpress/i18n';
 import { Skeleton } from '../components/ui/skeleton';
 import { DataTableBody, DataTableCell, DataTableRow } from './DataTable';
 import { useShownAfterDelay } from './skeletonDelay';
@@ -13,13 +12,19 @@ import { useShownAfterDelay } from './skeletonDelay';
  *
  * `aria-hidden` and a `role="status"` sentence beside it, rather than a grid of
  * announced placeholders — a screen reader has nothing to gain from seven empty
- * cells and everything to gain from the word "Loading".
+ * cells and everything to gain from one sentence naming what is on its way.
  *
  * `wait` is for a re-read over rows the merchant was already reading, and
  * nothing else: a first fill paints at once, because a
  * blank region has nothing to flicker against ({@see useShownAfterDelay}).
  */
-export function TableSkeleton({ columns, rows = 4, wait = false }: { columns: number; rows?: number; wait?: boolean }) {
+export function TableSkeleton({ columns, rows = 4, wait = false, status }: {
+  columns: number;
+  rows?: number;
+  wait?: boolean;
+  /** What is loading, said once: "Loading submissions…". */
+  status: string;
+}) {
   const shown = useShownAfterDelay(wait);
 
   if (!shown) {
@@ -40,7 +45,7 @@ export function TableSkeleton({ columns, rows = 4, wait = false }: { columns: nu
               */}
               {row === 0 && column === 0 ? (
                 <span role="status" className="inline-flex items-center">
-                  <span className="sr-only">{__('Loading…', 'wconvert')}</span>
+                  <span className="sr-only">{status}</span>
                   <Skeleton aria-hidden="true" className="h-4 w-40 max-w-full" />
                 </span>
               ) : (

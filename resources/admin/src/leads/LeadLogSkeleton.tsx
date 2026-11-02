@@ -29,7 +29,7 @@ export function LeadLogSkeleton() {
             {['w-36', 'w-28', 'w-24'].map((width) => <span key={width}>{bar(width, 'var(--control-height-sm)')}</span>)}
           </div>
           <div className="flex flex-wrap items-end gap-3">
-            <div className="flex min-w-0 flex-1 basis-full flex-col gap-1.5 sm:basis-64">{label}<div className="flex gap-2">{bar('min-w-0 flex-1')}{bar('w-24 shrink-0 max-sm:w-9')}</div></div>
+            <div className="flex min-w-0 flex-1 basis-full gap-2 sm:basis-64">{bar('min-w-0 flex-1')}{bar('w-24 shrink-0 max-sm:w-9')}</div>
             <div className="flex min-w-0 grow basis-28 flex-col gap-1.5 sm:grow-0 sm:basis-auto">{label}{bar('w-full sm:w-64')}</div>
             <div className="flex min-w-0 flex-col gap-1.5">{label}{bar('w-32')}</div>
           </div>
@@ -60,7 +60,7 @@ export function LeadLogSkeleton() {
             </DataTableCell>
             <DataTableCell label=""><Skeleton className="h-[1lh] w-24 max-w-full" /></DataTableCell>
             <DataTableCell label=""><Skeleton className="h-[1lh] w-28 max-w-full" /></DataTableCell>
-            <DataTableActions><Skeleton className="w-16" style={{ blockSize: 'var(--control-height)' }} /></DataTableActions>
+            <DataTableActions><Skeleton className="size-8" /></DataTableActions>
           </DataTableRow>)}
         </DataTableBody>
       </DataTable>

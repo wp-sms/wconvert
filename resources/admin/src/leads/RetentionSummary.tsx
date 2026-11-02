@@ -1,42 +1,46 @@
 import { useEffect, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { Skeleton } from '../components/ui/skeleton';
-import { TryAgain } from '../shell/Region';
+import { PageError } from '../shell/Region';
 import { readRetention, type Retention } from './api';
 import { formatCount } from '../lib/format';
 import { settingsHref } from '../nav';
-import { messageOf } from '../shell/loadable';
+import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 
-/** A saved-policy summary, never a destructive control beside the submission log. */
+/**
+ * A saved-policy summary, never a destructive control beside the submission log.
+ *
+ * `PageError`, because this line stands below the log's region rather than in
+ * one, and a `RegionError` band would draw a rule above a sentence.
+ */
 export function RetentionSummary({ refreshKey = 0 }: { refreshKey?: number }) {
-  const [period, setPeriod] = useState<Retention | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [period, setPeriod] = useState<Loadable<Retention>>(LOADING);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
   const [retry, setRetry] = useState(0);
   useEffect(() => {
     let active = true;
+    setRefreshError(null);
+    setPeriod((current) => (current.status === 'ready' ? current : LOADING));
     readRetention()
       .then((next) => {
-        if (active) { setPeriod(next); setError(null); }
+        if (active) setPeriod(ready(next));
       })
       .catch((cause: unknown) => {
-        if (active) setError(messageOf(cause));
+        if (!active) return;
+        setRefreshError(messageOf(cause));
+        setPeriod((current) => (current.status === 'ready' ? current : failed(cause)));
       });
     return () => {
       active = false;
     };
   }, [refreshKey, retry]);
 
-  if (error !== null) {
-    return (
-      <div className="flex flex-wrap items-center gap-3 text-note">
-        <p role="alert" className="m-0 text-destructive">
-          {sprintf(/* translators: %s: the error message explaining why it failed to load. */ __('How long submissions are kept couldn’t be loaded: %s', 'wconvert'), error)}
-        </p>
-        <TryAgain onClick={() => setRetry((value) => value + 1)} />
-      </div>
-    );
+  const tryAgain = () => setRetry((value) => value + 1);
+
+  if (period.status === 'failed') {
+    return <PageError message={sprintf(/* translators: %s: the error message explaining why it failed to load. */ __('How long submissions are kept could not be loaded: %s', 'wconvert'), period.message)} onRetry={tryAgain} />;
   }
-  if (period === null) {
+  if (period.status === 'loading') {
     return (
       <div className="text-note">
         <span role="status" className="sr-only">{__('Loading how long submissions are kept…', 'wconvert')}</span>
@@ -44,22 +48,26 @@ export function RetentionSummary({ refreshKey = 0 }: { refreshKey?: number }) {
       </div>
     );
   }
+  const { days } = period.data;
   return (
-    <p className="m-0 text-note text-muted-foreground">
-      {period.days === null
-        ? __('Submissions are kept until you delete them.', 'wconvert')
-        : sprintf(
-            /* translators: %s: how many days submissions are kept, e.g. “90”. */ _n(
-              'Submissions are deleted automatically after %s day.',
-              'Submissions are deleted automatically after %s days.',
-              period.days,
-              'wconvert',
-            ),
-            formatCount(period.days),
-          )}{' '}
-      <a className="underline underline-offset-2" href={settingsHref('data')}>
-        {__('Change retention', 'wconvert')}
-      </a>
-    </p>
+    <>
+      {refreshError !== null && <PageError message={sprintf(/* translators: %s: the error message explaining why it failed to refresh. */ __('How long submissions are kept could not be refreshed. This is the last policy read: %s', 'wconvert'), refreshError)} onRetry={tryAgain} />}
+      <p className="m-0 text-note text-muted-foreground">
+        {days === null
+          ? __('Submissions are kept until you delete them.', 'wconvert')
+          : sprintf(
+              /* translators: %s: how many days submissions are kept, e.g. “90”. */ _n(
+                'Submissions are deleted automatically after %s day.',
+                'Submissions are deleted automatically after %s days.',
+                days,
+                'wconvert',
+              ),
+              formatCount(days),
+            )}{' '}
+        <a className="underline underline-offset-2" href={settingsHref('data')}>
+          {__('Change retention', 'wconvert')}
+        </a>
+      </p>
+    </>
   );
 }

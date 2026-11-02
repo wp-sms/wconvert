@@ -963,6 +963,15 @@ The design-wide appearance of a campaign: its colors, fonts, format and position
 and its reopen button. One pinned row in the Edit tree and one panel. Not a
 [[Template]] — a Template is the arrangement; the Look is how it is dressed.
 
+### Basket
+
+What a shopper holds, in every merchant-facing sentence ([ADR 0120](docs/adr/0120-recommendations-distinguish-product-pages-from-baskets.md)):
+Increase basket value, Basket additions, Items added to basket, the sample
+basket. **Cart** stays only as a name: WooCommerce's Add to cart, the display
+rules' own catalogue ("Cart total", "their cart is empty"), and the cart-return
+Goal's metric ("Cart return clicks"). Those are server-owned labels, some with
+visitor copy beside them, and renaming them is a separate decision.
+
 ### Screen
 
 One step a visitor sees in a [[Capture journey]]: a message, a [[Form]], a

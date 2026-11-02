@@ -12,12 +12,9 @@ import {
 } from '../components/ui/admin-dialog';
 import {
   DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu';
+import { OptionItem, OptionMenuContent, OptionSeparator, refusal } from '../components/ui/option-menu';
 import { Disclosure } from '../shell/Disclosure';
 import { RowsSkeleton } from '../shell/RowsSkeleton';
 import type { GoalEntry } from '../goals/api';
@@ -160,7 +157,7 @@ export function CampaignDetailsDialog({
               goalId={goalId}
               results={results}
               status={status}
-              howItRuns={<ChunkBoundary><Suspense fallback={<RowsSkeleton rows={4} />}><Facts key={row.id} id={row.id} /></Suspense></ChunkBoundary>}
+              howItRuns={<ChunkBoundary><Suspense fallback={<RowsSkeleton rows={4} status={__('Loading how it runs…', 'wconvert')} />}><Facts key={row.id} id={row.id} /></Suspense></ChunkBoundary>}
               productCheck={productCheck}
               developers={<ForDevelopers key={row.id} value={row.id} variant={row.parent_id !== null} />}
             />
@@ -189,38 +186,18 @@ export function CampaignDetailsDialog({
                     <MoreHorizontal aria-hidden="true" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" side="top" sideOffset={5} className="wconvert-campaign-menu">
+                <OptionMenuContent align="start" side="top" sideOffset={5} className="wconvert-campaign-menu">
                   {canUnpublish(status) && (
-                    <DropdownMenuItem onSelect={() => setAsking('pause')}>
-                      <EyeOff aria-hidden="true" />
-                      {arm ? __('Unpublish variant', 'wconvert') : __('Unpublish campaign', 'wconvert')}
-                    </DropdownMenuItem>
+                    <OptionItem icon={EyeOff} name={arm ? __('Unpublish variant', 'wconvert') : __('Unpublish campaign', 'wconvert')} onSelect={() => setAsking('pause')} />
                   )}
                   {publishes && (
-                    <DropdownMenuItem disabled={missingDesign} onSelect={() => setAsking('publish')}>
-                      <Upload aria-hidden="true" />
-                      {__('Publish saved draft', 'wconvert')}
-                    </DropdownMenuItem>
+                    <OptionItem icon={Upload} name={__('Publish saved draft', 'wconvert')} onSelect={() => setAsking('publish')}
+                      refused={missingDesign ? refusal(__('Choose a template first', 'wconvert'), __('Choose a template in the editor before publishing.', 'wconvert')) : null} />
                   )}
-                  {publishes && missingDesign && (
-                    <DropdownMenuLabel className="wconvert-menu-note text-micro font-normal text-muted-foreground">
-                      {__('Choose a template in the editor before publishing.', 'wconvert')}
-                    </DropdownMenuLabel>
-                  )}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onSelect={onDuplicate}>
-                    <Copy aria-hidden="true" />
-                    {__('Duplicate as draft', 'wconvert')}
-                  </DropdownMenuItem>
-                  {leadsLink && (
-                    <DropdownMenuItem asChild>
-                      <a href={leadsLink}>
-                        <Inbox aria-hidden="true" />
-                        {__('View submissions', 'wconvert')}
-                      </a>
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
+                  <OptionSeparator />
+                  <OptionItem icon={Copy} name={__('Duplicate as draft', 'wconvert')} onSelect={onDuplicate} />
+                  {leadsLink && <OptionItem icon={Inbox} name={__('View submissions', 'wconvert')} href={leadsLink} />}
+                </OptionMenuContent>
               </DropdownMenu>
             )}
           >
@@ -290,7 +267,7 @@ export function ForDevelopers({ value, variant }: { value: string; variant: bool
       </p>
       {copy === 'failed' && (
         <p role="alert" className="m-0 text-note text-destructive">
-          {__('Couldn’t copy. The ID is selected; copy it with your keyboard.', 'wconvert')}
+          {__('Could not copy. The ID is selected; copy it with your keyboard.', 'wconvert')}
         </p>
       )}
     </Disclosure>

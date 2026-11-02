@@ -513,7 +513,7 @@ describe('the three states of the destinations read', () => {
   /** The announcement arrives after `RowsSkeleton`'s anti-flash delay. */
   it('says it is loading only while the read is in flight', async () => {
     editor(LOADING);
-    expect(await screen.findByRole('status')).toHaveTextContent('Loading…');
+    expect(await screen.findByRole('status')).toHaveTextContent('Loading services…');
     expect(screen.queryByRole('article')).toBeNull();
   });
 
@@ -521,7 +521,7 @@ describe('the three states of the destinations read', () => {
     const onRefresh = vi.fn();
     editor(failed(new Error('The site did not answer.')), [], [], { onRefresh });
     expect(screen.getByText('The site did not answer.')).toBeInTheDocument();
-    expect(screen.queryByText('Loading…')).toBeNull();
+    expect(screen.queryByText('Loading services…')).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     expect(onRefresh).toHaveBeenCalledOnce();
   });

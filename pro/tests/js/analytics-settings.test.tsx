@@ -58,7 +58,7 @@ it('sets up Plausible without Google fields and asks for a fresh consent choice 
   expect(screen.getByRole('radio', { name: 'WP Consent API' })).toBeChecked();
   expect(screen.getByRole('radio', { name: 'Existing tracker' })).not.toBeChecked();
   // The site's guide, not one bundled in the plugin (ADR 0145).
-  expect(screen.getByRole('link', { name: 'Plausible setup' })).toHaveAttribute('href', 'https://wconvert.io/docs/external-analytics-reference/#plausible');
+  expect(screen.getByRole('link', { name: /^Plausible setup.*opens in a new tab/ })).toHaveAttribute('href', 'https://wconvert.io/docs/external-analytics-reference/#plausible');
   vi.mocked(apiFetch).mockResolvedValueOnce({ ...on, settings: { ...on.settings, route: 'plausible' } });
   fireEvent.click(screen.getByRole('button', { name: 'Save analytics integration' }));
   await waitFor(() => expect(screen.getByRole('button', { name: 'Save analytics integration' })).toBeDisabled());
@@ -89,7 +89,7 @@ it('shows only the switch, one line and the guide while off, and keeps the draft
   render(<Settings />);
   await screen.findByLabelText('Enable analytics integration');
   expect(screen.getByText('Off. Campaign events aren’t sent to Google Analytics, GTM or Plausible.')).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: 'Setup guide' })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /^Setup guide.*opens in a new tab/ })).toBeInTheDocument();
   expect(screen.queryByRole('group', { name: 'Connection method' })).not.toBeInTheDocument();
   expect(screen.queryByLabelText('Measurement ID', { exact: true })).not.toBeInTheDocument();
   expect(screen.queryByRole('button', { name: 'Test setup' })).not.toBeInTheDocument();

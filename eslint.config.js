@@ -34,6 +34,35 @@ const i18nRules = (domain) => ({
   '@wordpress/i18n-no-placeholders-only': 'error',
 });
 
+/*
+ * The controls every admin surface draws through a shared component (GUIDELINES
+ * §§3, 7, 15, 21; ADR 0182). `admin-guidelines.test.ts` holds the rules about
+ * words and CSS; these are about one JSX element, so they fire in the editor.
+ *
+ * The owners are the components that ARE the rule, and they are the only files
+ * exempt.
+ */
+const rawControl = (element, message) => ({ selector: `JSXOpeningElement[name.name="${element}"]`, message });
+const guidelineRules = {
+  'no-restricted-syntax': ['error',
+    rawControl('select', 'A select is components/ui/native-select (GUIDELINES §7).'),
+    rawControl('textarea', 'A textarea is components/ui/textarea (GUIDELINES §7).'),
+    rawControl('details', 'A collapsible is shell/Disclosure (GUIDELINES §21).'),
+    {
+      selector: 'JSXOpeningElement[name.name="input"]:has(JSXAttribute[name.name="type"][value.value="checkbox"])',
+      message: 'A checkbox is shell/CheckRow (GUIDELINES §7).',
+    },
+    {
+      selector: 'JSXOpeningElement[name.name="Button"]:has(JSXAttribute[name.name="size"][value.value="sm"])',
+      message: 'A scope decides a control\'s height; add .wconvert-toolbar to the row rather than size="sm" (GUIDELINES §3).',
+    },
+    {
+      selector: 'JSXAttribute[name.name="side"][value.value=/^(left|right)$/]',
+      message: 'A physical side ignores the mirrored layout; resolve it from the direction (GUIDELINES §15).',
+    },
+  ],
+};
+
 export default [
   {
     // `dist/` is build OUTPUT — a staged copy of the same TypeScript that is
@@ -154,6 +183,11 @@ export default [
     files: ['pro/**/*.{ts,tsx}'],
     plugins: { '@wordpress': wordpress },
     rules: i18nRules('wconvert-pro'),
+  },
+  {
+    files: ['resources/admin/src/**/*.tsx', 'resources/blocks/**/*.tsx', 'pro/resources/admin/src/**/*.tsx', 'pro/modules/*/admin/**/*.tsx', 'pro/modules/*/block/**/*.tsx'],
+    ignores: ['**/*.test.tsx', '**/__tests__/**', 'resources/admin/src/components/ui/**', 'resources/admin/src/shell/CheckRow.tsx', 'resources/admin/src/shell/Disclosure.tsx'],
+    rules: guidelineRules,
   },
   {
     // A test asserts on the English a component renders, through a mocked

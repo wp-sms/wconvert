@@ -22,6 +22,8 @@ import { graphDisplayOrder } from './structure/graph';
 import { walkNodes } from './structure/journey';
 import { conditionText } from './structure/conditionText';
 import { testCaptureSnapshot, type TestCaptureSnapshot } from './structure/journeyTestState';
+import { CheckRow } from '../shell/CheckRow';
+import { formatCount } from '../lib/format';
 
 type ProductState = 'selected' | 'empty' | 'error';
 
@@ -29,11 +31,12 @@ function TestProducts({ count, state, onRetry }: { count: number; state: Product
   const status = useRef<HTMLParagraphElement>(null);
   return <>
     <p ref={status} role="status" tabIndex={-1}>{state === 'selected'
-      ? sprintf(/* translators: %d: how many products the result shows. */ _n('%d selected product would be checked for current price and availability.', '%d selected products would be checked for current price and availability.', count, 'wconvert'), count)
+      ? sprintf(/* translators: %s: how many products the result shows. */ _n('%s selected product would be checked for current price and availability.', '%s selected products would be checked for current price and availability.', count, 'wconvert'), formatCount(count))
       : state === 'empty' ? __('These products are unavailable right now. Please use the link below.', 'wconvert')
         : __('Products could not load. You can still use the link below.', 'wconvert')}</p>
     {state === 'error' && <button type="button" className="wc-button" onClick={() => {
-      // This same status stays mounted when Retry disappears.
+      // This same status stays mounted when Retry disappears. The words are the
+      // visitor's (journeys/loader/products.ts), so §13's one retry word does not apply.
       status.current?.focus(); onRetry();
     }}>{__('Retry products', 'wconvert')}</button>}
   </>;
@@ -214,7 +217,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
         const draft = saveDraft();
         if (button.dataset.action === 'submit') {
           const id = button.dataset.submission ?? '';
-          if (failNextRef.current) { setAnswers(currentAnswers); failNextRef.current = false; setFailNext(false); setFeedback(__('Submission not confirmed. The visitor stays here and can retry.', 'wconvert')); return; }
+          if (failNextRef.current) { setAnswers(currentAnswers); failNextRef.current = false; setFailNext(false); setFeedback(__('Submission not confirmed. The visitor stays here and can try again.', 'wconvert')); return; }
           const snapshot = testCaptureSnapshot(tree, step, id, currentAnswers, draft);
           if (!snapshot) { setAnswers(currentAnswers); setFeedback(__('This save is incomplete or was not reached in this visit. Check its contact fields and submission settings before testing again.', 'wconvert')); return; }
           setAccepted(previous => previous.includes(id) ? previous : [...previous, id]);
@@ -262,8 +265,8 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
         ? sprintf(/* translators: %s: the screen's show condition, e.g. “Budget is Under $50”. */ __('Hidden because %s did not match', 'wconvert'), conditionText(tree, source.when))
         : __('Hidden screen continues', 'wconvert')
         : decision.kind === 'answer' ? edge?.when
-          ? sprintf(/* translators: 1: the answer line's position, starting at 1, 2: its condition, e.g. “Budget is Under $50”. */ __('First matching line %1$d: %2$s', 'wconvert'), (decision.priority ?? 0) + 1, conditionText(tree, edge.when))
-          : sprintf(/* translators: %d: the answer line's position on its screen, starting at 1. */ __('Answer line %d', 'wconvert'), (decision.priority ?? 0) + 1)
+          ? sprintf(/* translators: 1: the answer line's position, starting at 1, 2: its condition, e.g. “Budget is Under $50”. */ __('First matching line %1$s: %2$s', 'wconvert'), formatCount((decision.priority ?? 0) + 1), conditionText(tree, edge.when))
+          : sprintf(/* translators: %s: the answer line's position on its screen, starting at 1. */ __('Answer line %s', 'wconvert'), formatCount((decision.priority ?? 0) + 1))
           : branches ? __('All other answers: no answer line matched', 'wconvert') : __('Continue', 'wconvert');
       return [{ id: decision.edge, label: sprintf(/* translators: 1: the screen a visitor left, 2: the screen they reached, 3: why. */ __('%1$s to %2$s: %3$s', 'wconvert'), from, to, action) }];
     }
@@ -271,7 +274,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
     const from = tree.steps[decision.from]?.name ?? '';
     const to = tree.steps[Number(decision.to)]?.name ?? '';
     const action = decision.kind === 'hidden' ? __('Hidden screen continues', 'wconvert')
-      : decision.kind === 'route' ? sprintf(/* translators: %d: the answer line's position on its screen, starting at 1. */ __('Answer line %d', 'wconvert'), (decision.priority ?? 0) + 1)
+      : decision.kind === 'route' ? sprintf(/* translators: %s: the answer line's position on its screen, starting at 1. */ __('Answer line %s', 'wconvert'), formatCount((decision.priority ?? 0) + 1))
         : __('Continue', 'wconvert');
     return [{ id: `${decision.from}-${decision.to}`, label: sprintf(/* translators: 1: the screen a visitor left, 2: the screen they reached, 3: why, e.g. “Answer line 2”. */ __('%1$s to %2$s: %3$s', 'wconvert'), from, to, action) }];
   });
@@ -299,11 +302,11 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
     <section className="wconvert-journey-test__visitor" aria-label={__('Interactive preview', 'wconvert')}>
       <div className="wconvert-preview-test__toolbar"><span>{sprintf(
         /* translators: 1: how many screens this run has reached, 2: the screen on show, e.g. “Your result”. */
-        __('Screen %1$d · %2$s', 'wconvert'), visited.length, tree.steps[step].name)}</span><PreviewWidth mobile={mobile} onChange={setMobile} /></div>
+        __('Screen %1$s · %2$s', 'wconvert'), formatCount(visited.length), tree.steps[step].name)}</span><PreviewWidth mobile={mobile} onChange={setMobile} /></div>
       <PreviewDeadlineStatus />
       <div className="wconvert-journey-test__canvas"><div ref={anchor} data-mobile={mobile} className="wconvert-journey-test__stage" /></div>
       {feedback && <p className="wconvert-journey-test__feedback" role="status">{feedback}</p>}
-      <div className="wconvert-preview-test__screen-actions"><Button variant="ghost" size="sm" disabled={visited.length < 2} onClick={() => backAction.current()}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Previous screen', 'wconvert')}</Button><Button variant="ghost" size="sm" onClick={() => onEdit(step)}>{__('Edit this screen', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button></div>
+      <div className="wconvert-preview-test__screen-actions"><Button variant="ghost" disabled={visited.length < 2} onClick={() => backAction.current()}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Previous screen', 'wconvert')}</Button><Button variant="ghost" onClick={() => onEdit(step)}>{__('Edit this screen', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button></div>
     </section>
     {productHost && (shownResult?.product_ids?.length || shownResult?.product_filter) && createPortal(<>{shownResult.product_filter && productState === 'selected' ? <LiveProductMatches filter={shownResult.product_filter} /> : <TestProducts count={shownResult.product_filter ? 3 : shownResult.product_ids?.length ?? 0}
       state={productState} onRetry={() => setProductState('selected')} />}{shownResult.product_action === 'add_to_cart' && productState === 'selected' && <TestCartAction key={shownResult.id} />}</>, productHost)}
@@ -315,7 +318,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
         {visited.map((at, index) => <li key={tree.steps[at].id} data-current={at === step} aria-current={at === step ? 'step' : undefined}>
           <span className="wconvert-journey-test__number" aria-hidden="true">{at === step ? index + 1 : <Check size={12} />}</span>
           <div><strong>{tree.steps[at].name}</strong><small>{at === step ? __('Current screen', 'wconvert') : __('Visited', 'wconvert')}</small>
-          {at === step && followups && <small>{sprintf(/* translators: 1: this follow-up screen's position, 2: how many follow-up screens these answers lead to. */ __('Follow-up %1$d of %2$d for these answers', 'wconvert'), followups.indexOf(step) + 1, followups.length)}</small>}
+          {at === step && followups && <small>{sprintf(/* translators: 1: this follow-up screen's position, 2: how many follow-up screens these answers lead to. */ __('Follow-up %1$s of %2$s for these answers', 'wconvert'), formatCount(followups.indexOf(step) + 1), formatCount(followups.length))}</small>}
           {at === step && shownResult && <small>{sprintf(/* translators: %s: the heading of the result on show. */ __('Result shown: %s', 'wconvert'), shownResult.heading)}</small>}</div>
         </li>)}
       </ol>
@@ -324,7 +327,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
         // Screens off this path are one muted line each, never a list to open (ADR 0138).
         return screens.length > 0 && <div key={category} className="wconvert-journey-test__others" data-category={category}>
           <span>{category === 'pending' ? __('Not reached yet:', 'wconvert') : __('Skipped:', 'wconvert')}</span>
-          <ul>{screens.map((at, position) => <li key={tree.steps[at].id} data-current="false" title={progress.states[at] === 'pending' ? __('Not reached yet', 'wconvert') : progress.states[at] === 'bypassed' ? __('Skipped by another line', 'wconvert') : __('Show condition did not match', 'wconvert')}>
+          <ul>{screens.map((at, position) => <li key={tree.steps[at].id} data-current="false" title={progress.states[at] === 'pending' ? __('Not reached yet', 'wconvert') : progress.states[at] === 'bypassed' ? __('Skipped by another line', 'wconvert') : __('Only if… did not match', 'wconvert')}>
             <bdi>{tree.steps[at].name}</bdi>
             {category === 'skipped' && <button type="button" onClick={() => onEdit(at, progress.states[at] === 'hidden' ? 'condition' : undefined)}>{progress.states[at] === 'hidden' ? __('Edit condition', 'wconvert') : __('Review screen', 'wconvert')}</button>}
             {/* translators: follows each but the last screen name in a one-line list. */ position < screens.length - 1 && __(',', 'wconvert')}
@@ -333,17 +336,17 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
       })}
       {routeSteps.length > 0 && <Disclosure variant="inline" className="wconvert-journey-test__route" title={__('Why these screens?', 'wconvert')}>
         <ol>{routeSteps.map(item => <li key={item.id} data-edge-id={item.id}>{item.label}</li>)}</ol></Disclosure>}
-      {onShowPath && visited.length > 1 && <Button variant="link" size="sm" className="wconvert-journey-test__map self-start px-0" onClick={() => onShowPath(visited, journeyTraceEdges(tree, progress.decisions))}>{__('Show this visit on the map', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button>}
+      {onShowPath && visited.length > 1 && <Button variant="link" className="wconvert-journey-test__map self-start px-0" onClick={() => onShowPath(visited, journeyTraceEdges(tree, progress.decisions))}>{__('Show this visit on the map', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button>}
       {shownSubmissions.length > 0 && <section className="wconvert-journey-test__capture"><h4>{__('Test submissions', 'wconvert')}</h4>
         <ol>{shownSubmissions.map(submission => <li key={submission.id} className="wconvert-journey-test__checkpoint"><div><strong>{tree.steps.find(screen => walkNodes(screen.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit' && 'submission' in node && node.submission === submission.id))?.name ?? __('Signup', 'wconvert')}</strong><span>{accepted.includes(submission.id) ? __('Accepted in test', 'wconvert') : __('Skipped', 'wconvert')}</span></div>
           {accepted.includes(submission.id) && <>
             <small>{deliveryMode === 'connected' ? delivery[submission.id] === 'failed'
-              ? __('Destination delivery failed in this simulation. The accepted save remains; retry delivery without resubmitting.', 'wconvert')
+              ? __('Destination delivery failed in this simulation. The accepted save remains; try delivery again without resubmitting.', 'wconvert')
               : __('Destination delivery is queued in this simulation.', 'wconvert')
               : deliveryMode === 'local' ? __('This would be stored in WConvert only.', 'wconvert')
                 : __('No destination is configured for this test.', 'wconvert')}</small>
             {deliveryMode === 'connected' && delivery[submission.id] === 'failed' && <button type="button" onClick={() => setDelivery(previous => ({ ...previous, [submission.id]: 'queued' }))}>
-              {__('Simulate delivery retry', 'wconvert')}</button>}
+              {__('Try delivery again', 'wconvert')}</button>}
             {snapshots[submission.id] && <Disclosure variant="inline" title={__('Submitted answers', 'wconvert')}><dl>
               {Object.entries(snapshots[submission.id].values).map(([id, value]) => <div key={id}><dt>{nodeLabel(id)}</dt><dd>{typeof value === 'boolean'
                 ? value ? __('Agreed', 'wconvert') : __('Not agreed', 'wconvert') : answerText(id, value)}</dd></div>)}
@@ -357,12 +360,12 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
       {/* Every way to make the run go wrong, folded into one place (ADR 0138). */}
       {(failable || hasProducts) && <Disclosure variant="inline" className="wconvert-test-diagnostics" title={__('Simulate a problem', 'wconvert')}>
         {failable && <>
-          <p>{__('Applies to the next submission only. A failed save keeps the visitor here so they can retry.', 'wconvert')}</p>
-          <label><input type="checkbox" checked={failNext} onChange={event => { failNextRef.current = event.target.checked; setFailNext(event.target.checked); }} />{__('Simulate failure on next submission', 'wconvert')}</label>
-          {deliveryMode === 'connected' && <label><input type="checkbox" checked={failDeliveryNext} onChange={event => { failDeliveryNextRef.current = event.target.checked; setFailDeliveryNext(event.target.checked); }} />{__('Simulate delivery failure after next accepted save', 'wconvert')}</label>}
+          <p>{__('Applies to the next submission only. A failed save keeps the visitor here so they can try again.', 'wconvert')}</p>
+          <CheckRow checked={failNext} onChange={event => { failNextRef.current = event.target.checked; setFailNext(event.target.checked); }} label={__('Simulate failure on next submission', 'wconvert')} />
+          {deliveryMode === 'connected' && <CheckRow checked={failDeliveryNext} onChange={event => { failDeliveryNextRef.current = event.target.checked; setFailDeliveryNext(event.target.checked); }} label={__('Simulate delivery failure after next accepted save', 'wconvert')} />}
         </>}
         {hasProducts && <fieldset><legend>{__('Products on this result', 'wconvert')}</legend>
-          {(['selected', 'empty', 'error'] as const).map(value => <label key={value}><input type="radio" name="product-state" checked={productState === value} onChange={() => setProductState(value)} />{value === 'selected' ? __('Available', 'wconvert') : value === 'empty' ? __('None available', 'wconvert') : __('Loading error', 'wconvert')}</label>)}
+          {(['selected', 'empty', 'error'] as const).map(value => <CheckRow key={value} type="radio" name="product-state" checked={productState === value} onChange={() => setProductState(value)} label={value === 'selected' ? __('Available', 'wconvert') : value === 'empty' ? __('None available', 'wconvert') : __('Loading error', 'wconvert')} />)}
           <p>{shownResult?.product_filter ? __('Available shows live matches. The other options simulate problems. No activity is counted.', 'wconvert') : __('This test does not fetch your catalog. Retry simulates a successful response; check actual prices and stock on your website.', 'wconvert')}</p>
         </fieldset>}
       </Disclosure>}
@@ -370,9 +373,9 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
         /* translators: %s: where this campaign's leads go, e.g. “Mailchimp”. */
         __('Checks screens, answers and required fields. Destination setup: %s; delivery here is simulated.', 'wconvert'), destinationSummary) : __('Checks screens, answers and required fields. Nothing is saved, sent or counted.', 'wconvert')}</p>
     </aside>
-    <AdminDialogFooter className="wconvert-preview-test__footer" note={__('Uses your unsaved draft.', 'wconvert')}>
+    <AdminDialogFooter className="wconvert-preview-test__footer" note={__('Uses your unsaved draft.', 'wconvert')}
+      back={onClose && <Button variant="outline" onClick={onClose}>{__('Done', 'wconvert')}</Button>}>
       <Button variant="outline" onClick={reset}><RotateCcw aria-hidden="true" />{__('Start over', 'wconvert')}</Button>
-      {onClose && <Button onClick={onClose}>{__('Done', 'wconvert')}</Button>}
     </AdminDialogFooter>
   </div>;
 }

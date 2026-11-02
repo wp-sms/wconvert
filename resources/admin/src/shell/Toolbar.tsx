@@ -14,7 +14,8 @@ import type { ReactNode } from 'react';
  * **Filters lead, the count trails.** A count is a fact about the set the region
  * is showing and changes when the filters change, so the two belong on one line
  * with the controls that move the number on the left of it — reading order,
- * cause then effect.
+ * cause then effect. A list's count is the exception: it sits in the list's foot
+ * with its dates and pages ({@see ListFoot}).
  *
  * `.wconvert-toolbar` is what sizes the controls inside it to
  * `--control-height-sm`; see `index.css`. The class is the rule's subject, so a

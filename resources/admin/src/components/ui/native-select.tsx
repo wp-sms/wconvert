@@ -22,6 +22,11 @@ import { cn } from "@/lib/utils"
  *
  * The variants' look is `index.css`'s, beside the global select restyle it
  * has to outrank.
+ *
+ * **It states its minimum as well as its height.** wp-admin's `forms.css` gives a
+ * select a 40px `min-height`, and `index.css` only resets that inside the mount,
+ * so a dialog portaled out of it drew a 40px select beside a 36px input. Measured
+ * in WordPress: a class test cannot see the cascade.
  */
 function NativeSelect({
   className,
@@ -36,7 +41,7 @@ function NativeSelect({
       data-variant={variant}
       className={cn(
         variant === "default"
-          ? "h-(--control-height) max-w-full min-w-0 rounded-md border border-input bg-card ps-3 pe-9 text-body text-foreground outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-default disabled:opacity-60 aria-invalid:border-destructive"
+          ? "h-(--control-height) min-h-(--control-height) max-w-full min-w-0 rounded-md border border-input bg-card ps-3 pe-9 text-body text-foreground outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-default disabled:opacity-60 aria-invalid:border-destructive"
           : "wconvert-select-word max-w-full min-w-0 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
         className
       )}

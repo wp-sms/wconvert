@@ -6,6 +6,7 @@ import { nodeAt, nodesOf, withRemoved, type Block } from './tree';
 import type { ConvertingAct } from './catalogue';
 import type { Path } from '../panel';
 import type { TemplateNode, TemplateTree } from '@renderer/types';
+import { formatCount } from '../../lib/format';
 
 /**
  * The safety net: **what an editor with a Delete key must not let a merchant
@@ -148,7 +149,7 @@ export function removalRefusal(tree: TemplateTree, path: Path, countsNothing = f
   }
 
   if (convertingActOf(after).includes('submit') && fieldsIn(after) === 0 && fieldsIn(tree) > 0) {
-    return { short: __('The form’s only field', 'wconvert'), reason: __('The only field. A form with none captures nothing.', 'wconvert') };
+    return { short: __('The form’s only field', 'wconvert'), reason: __('The only field. A form with none collects nothing.', 'wconvert') };
   }
 
   return null;
@@ -211,9 +212,9 @@ export function whatRemovalTakes(block: Block): string | null {
   return block.holds === 0
     ? null
     : sprintf(
-        /* translators: %d: how many blocks sit inside the one being removed. */
-        _n('This takes the %d block inside it too.', 'This takes the %d blocks inside it too.', block.holds, 'wconvert'),
-        block.holds,
+        /* translators: %s: how many blocks sit inside the one being removed. */
+        _n('This takes the %s block inside it too.', 'This takes the %s blocks inside it too.', block.holds, 'wconvert'),
+        formatCount(block.holds),
       );
 }
 

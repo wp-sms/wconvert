@@ -5,11 +5,9 @@ import { CircleMinus, MoreHorizontal, Pencil, Send } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import {
   DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu';
+import { OptionItem, OptionMenuContent, OptionSeparator, refusal } from '../components/ui/option-menu';
 import { Description } from '../shell/Description';
 import { ProviderMark } from '../destinations/ProviderMark';
 import { targetShown } from '../destinations/settings';
@@ -81,10 +79,10 @@ export function DestinationCard({
             : automatic.length > 0 && status.state !== 'needs_setup' &&
             <Description className="mt-1 [overflow-wrap:anywhere]">{sprintf(/* translators: %s: contact fields, e.g. “email and name”. */ __('Sends %s automatically.', 'wconvert'), listWithAnd(automatic))}</Description>}
         </div>
-        <div className="wconvert-destination-card__side">
+        <div className="wconvert-destination-card__side wconvert-toolbar">
           {status.badge}
           {/* Review & publish asks for a test before launch, so the door is on the card, not in a menu. */}
-          {runnable && <Button type="button" variant="outline" size="sm" aria-describedby={`${id}-name`} onClick={(event) => onTest(event.currentTarget)}>
+          {runnable && <Button type="button" variant="outline" aria-describedby={`${id}-name`} onClick={(event) => onTest(event.currentTarget)}>
             <Send aria-hidden="true" />{__('Send a test', 'wconvert')}
           </Button>}
           <DropdownMenu modal={false}>
@@ -93,30 +91,15 @@ export function DestinationCard({
                 <MoreHorizontal aria-hidden="true" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" sideOffset={5}>
-              <DropdownMenuItem onSelect={() => onEdit(actions.current)}>
-                <Pencil aria-hidden="true" />{__('Edit settings', 'wconvert')}
-              </DropdownMenuItem>
-              {/*
-                **`aria-disabled`, not `disabled`.** Radix skips a disabled item
-                in keyboard navigation, which hides the reason with the action.
-              */}
-              <DropdownMenuItem aria-disabled={runnable ? undefined : true} aria-describedby={runnable ? undefined : `${id}-test-blocked`}
-                className={runnable ? undefined : 'text-muted-foreground'}
-                onSelect={(event) => { if (!runnable) { event.preventDefault(); return; } onTest(actions.current); }}>
-                <Send aria-hidden="true" />
-                <span className="flex flex-col">
-                  {__('Send a test', 'wconvert')}
-                  {!runnable && <span id={`${id}-test-blocked`} className="text-note">{destination.availability === 'ready'
-                    ? __('Finish setup first.', 'wconvert')
-                    : __('Not running on this site.', 'wconvert')}</span>}
-                </span>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onSelect={onRemove}>
-                <CircleMinus aria-hidden="true" />{__('Remove from this campaign', 'wconvert')}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
+            <OptionMenuContent align="end" sideOffset={5}>
+              <OptionItem icon={Pencil} name={__('Edit settings', 'wconvert')} onSelect={() => onEdit(actions.current)} />
+              <OptionItem icon={Send} name={__('Send a test', 'wconvert')} onSelect={() => onTest(actions.current)}
+                refused={runnable ? null : refusal(destination.availability === 'ready'
+                  ? __('Finish setup first.', 'wconvert')
+                  : __('Not running on this site.', 'wconvert'))} />
+              <OptionSeparator />
+              <OptionItem icon={CircleMinus} name={__('Remove from this campaign', 'wconvert')} onSelect={onRemove} />
+            </OptionMenuContent>
           </DropdownMenu>
         </div>
       </div>
@@ -125,12 +108,12 @@ export function DestinationCard({
         <div className={`wconvert-destination-card__issue wconvert-destination-card__issue--${status.state === 'failing' ? 'bad' : 'warn'}`}>
           <p className="m-0">{status.issue}</p>
           {status.state === 'needs_setup' && <div>
-            <Button type="button" variant="outline" size="sm" onClick={(event) => onEdit(event.currentTarget, firstField)}>
+            <Button type="button" variant="outline" onClick={(event) => onEdit(event.currentTarget, firstField)}>
               {__('Finish setup', 'wconvert')}
             </Button>
           </div>}
           {status.state === 'failing' && <div>
-            <Button asChild variant="outline" size="sm"><a href={sendingIssuesHref()}>{__('View sending issues', 'wconvert')}</a></Button>
+            <Button asChild variant="outline"><a href={sendingIssuesHref()}>{__('View sending issues', 'wconvert')}</a></Button>
           </div>}
         </div>
       ) : fit.length > 0 && (

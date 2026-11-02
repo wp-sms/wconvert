@@ -17,6 +17,7 @@ import { sampleQuestions } from './answerSources';
 import type { Loadable } from '../shell/loadable';
 import type { Connection, Destination, DestinationType } from '../destinations/api';
 import type { Template } from '@renderer/types';
+import { formatCount } from '../lib/format';
 
 /**
  * Where one save point of this [[Optin]] sends its [[Lead]]s, and whether that
@@ -129,7 +130,7 @@ export function DestinationsEditor({
     setPicking(true);
   };
   const add = (
-    <Button ref={addButton} variant="outline" size="sm" disabled={available.status !== 'ready'} onClick={(event) => openPicker(event.currentTarget)}>
+    <Button ref={addButton} variant="outline" disabled={available.status !== 'ready'} onClick={(event) => openPicker(event.currentTarget)}>
       <Plus aria-hidden="true" />{__('Add destination', 'wconvert')}
     </Button>
   );
@@ -170,7 +171,7 @@ export function DestinationsEditor({
           </div>}
 
           {/* Kept local, the services stay one choice away: choosing one connects (ADR 0133). */}
-          {available.status === 'loading' ? <RowsSkeleton />
+          {available.status === 'loading' ? <RowsSkeleton status={__('Loading services…', 'wconvert')} />
             : available.status === 'failed' ? <RegionErrorState message={available.message} hint={__('Your draft is unchanged.', 'wconvert')} onRetry={onRefresh} />
             : site.length === 0 ? (
               <div className="flex flex-col gap-2">
@@ -197,7 +198,7 @@ export function DestinationsEditor({
           {missing.length > 0 && !local &&
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-warning/30 bg-warning-surface p-3">
               <div>
-                <p className="m-0 font-medium">{sprintf(/* translators: %d: how many of the campaign's chosen destinations have been deleted. */ _n('%d selected destination has been deleted.', '%d selected destinations have been deleted.', missing.length, 'wconvert'), missing.length)}</p>
+                <p className="m-0 font-medium">{sprintf(/* translators: %s: how many of the campaign's chosen destinations have been deleted. */ _n('%s selected destination has been deleted.', '%s selected destinations have been deleted.', missing.length, 'wconvert'), formatCount(missing.length))}</p>
                 <Description>{__('Remove deleted destinations, then choose replacements if needed.', 'wconvert')}</Description>
               </div>
               <Button variant="outline" onClick={() => onChange(bound.filter((id) => !missing.includes(id)))}>

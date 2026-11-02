@@ -1,16 +1,18 @@
 import { useId, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ChartColumn, Eye, EyeOff, Split } from 'lucide-react';
+import { Eye, EyeOff, Search, Split } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { NativeSelect } from '../components/ui/native-select';
-import { PageError, Region } from '../shell/Region';
+import { PickerSearch } from '../discovery/PickerSearch';
+import { ListFoot } from '../shell/ListFoot';
+import { OptionStrip } from '../shell/OptionStrip';
+import { Region, RegionBody, RegionError, TryAgain } from '../shell/Region';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { DataTable, DataTableActions, DataTableActionsColumn, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '../shell/DataTable';
 import { EmptyState } from '../shell/EmptyState';
-import { Toolbar, ToolbarCount } from '../shell/Toolbar';
+import { Toolbar } from '../shell/Toolbar';
 import { messageOf } from '../shell/loadable';
 import { StatusBadge } from '../optins/StatusBadge';
+import { decisionCopy } from '../optins/decisionCopy';
 import type { OptinStatus } from '../optins/api';
 import {
   destinationHref,
@@ -25,7 +27,7 @@ import { periodOf, type DashboardPayload, type GoalReport, type Numbers, type Op
 import { formatCount, formatRate } from './format';
 import { countsNothing } from '../goals/countsNothing';
 import { formatDecimal } from '../lib/format';
-import { families } from './reporting';
+import { families, rangeLabel } from './reporting';
 import { ActivityChart } from './ActivityChart';
 
 /**
@@ -378,52 +380,44 @@ export function CampaignTable({
   query: ReportQuery;
 }) {
   const [search, setSearch] = useState(''),
-    [status, setStatus] = useState('all');
-  const groups = cards
-    .flatMap((card) => families(card).map((family) => ({ card, ...family })))
-    .filter((f) =>
-      f.arms.some(
-        (a) =>
-          a.name.toLocaleLowerCase().includes(search.toLocaleLowerCase()) &&
-          (status === 'all' || a.status === status),
-      ),
-    );
+    [status, setStatus] = useState<'all' | OptinReport['status']>('all');
+  const all = cards.flatMap((card) => families(card).map((family) => ({ card, ...family })));
+  const groups = all.filter((f) =>
+    f.arms.some(
+      (a) =>
+        a.name.toLocaleLowerCase().includes(search.toLocaleLowerCase()) &&
+        (status === 'all' || a.status === status),
+    ),
+  );
+  const filters = [
+    ['all', __('All', 'wconvert')],
+    ['published', __('Published', 'wconvert')],
+    ['paused', __('Drafts', 'wconvert')],
+    ['historical', __('Deleted', 'wconvert')],
+  ] as const;
   return (
     <Region label={__('Campaign contributions', 'wconvert')} className="wa-campaigns">
-      <Toolbar
-        trailing={
-          <ToolbarCount>
-            {sprintf(
-              /* translators: %s: how many campaigns are listed. */
-              _n('%s campaign', '%s campaigns', groups.length, 'wconvert'),
-              formatCount(groups.length),
-            )}
-          </ToolbarCount>
-        }
-      >
-        <Input
-          type="search"
-          className="w-64 max-w-full"
-          aria-label={__('Find a campaign', 'wconvert')}
-          placeholder={__('Find a campaign…', 'wconvert')}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <NativeSelect
-          aria-label={__('Campaign status', 'wconvert')}
+      <Toolbar>
+        <PickerSearch label={__('Search campaigns', 'wconvert')} value={search} onChange={setSearch} />
+        <OptionStrip
+          label={__('Filter campaigns by status', 'wconvert')}
           value={status}
-          onChange={(e) => setStatus(e.target.value)}
-        >
-          <option value="all">{__('All statuses', 'wconvert')}</option>
-          <option value="published">{__('Published', 'wconvert')}</option>
-          <option value="paused">{__('Draft', 'wconvert')}</option>
-          <option value="historical">{__('Deleted', 'wconvert')}</option>
-        </NativeSelect>
+          onChange={(value) => setStatus(value as typeof status)}
+          // As on Campaigns: a status nothing is in filters nothing, so only All
+          // and the statuses in use are offered, and the selected one (§20).
+          options={filters
+            .map(([id, label]) => ({
+              value: id,
+              label,
+              count: all.filter((f) => id === 'all' || f.arms.some((a) => a.status === id)).length,
+            }))
+            .filter((option) => option.value === 'all' || option.value === status || option.count !== 0)}
+        />
       </Toolbar>
       {groups.length === 0 ? (
         <EmptyState
-          icon={ChartColumn}
-          title={__('No campaigns match', 'wconvert')}
+          icon={Search}
+          title={__('No campaigns found', 'wconvert')}
           action={
             <Button
               variant="outline"
@@ -435,8 +429,11 @@ export function CampaignTable({
               {__('Clear filters', 'wconvert')}
             </Button>
           }
-        />
+        >
+          {__('Try another name or clear your filters.', 'wconvert')}
+        </EmptyState>
       ) : (
+        <>
         <DataTable label={__('Campaign contributions', 'wconvert')}>
           <DataTableHead>
             <DataTableColumn>{__('Campaign', 'wconvert')}</DataTableColumn>
@@ -488,15 +485,17 @@ export function CampaignTable({
                 </DataTableCell>
                 <DataTableActions>
                   {arms.length > 1 && (
-                    <Button asChild variant="ghost">
+                    <Button asChild variant="ghost" size="icon-sm">
                       <a
+                        aria-label={sprintf(/* translators: %s: a campaign's name. */ __('Compare variants of %s', 'wconvert'), root.name)}
+                        title={sprintf(/* translators: %s: a campaign's name. */ __('Compare variants of %s', 'wconvert'), root.name)}
                         href={reportHref({
                           ...periodOf(payload),
                           experiment: root.id,
                           compare: query.compare,
                         })}
                       >
-                        {__('Compare variants', 'wconvert')}
+                        <Split aria-hidden="true" />
                       </a>
                     </Button>
                   )}
@@ -505,6 +504,15 @@ export function CampaignTable({
             ))}
           </DataTableBody>
         </DataTable>
+        <ListFoot
+          count={sprintf(
+            /* translators: %s: how many campaigns are listed. */
+            _n('%s campaign', '%s campaigns', groups.length, 'wconvert'),
+            formatCount(groups.length),
+          )}
+          dates={rangeLabel(payload.from, payload.to)}
+        />
+        </>
       )}
     </Region>
   );
@@ -523,6 +531,8 @@ function CampaignActions({
   const trigger = useRef<HTMLButtonElement>(null);
   const reason = useId();
   const draft = optin.status === 'paused';
+  // One decision, one wording: the campaign list asks this question too (ADR 0137).
+  const words = decisionCopy(draft ? 'publish' : 'pause', optin.parent_id !== null, optin.name, 0);
   const run = async () => {
     setBusy(true);
     setError(null);
@@ -536,8 +546,13 @@ function CampaignActions({
       setBusy(false);
     }
   };
+  // A deleted campaign with no submissions to open has nothing to act on, and an empty card says nothing.
+  if (card.action !== 'submit' && optin.status === 'historical') return null;
   return (
     <>
+      <Region label={__('Campaign actions', 'wconvert')} className="wa-panel wa-campaign-actions">
+      {error && <RegionError message={error} action={<TryAgain busy={busy} onClick={() => void run()} />} />}
+      <RegionBody>
       <div className="wa-actions">
         {card.action === 'submit' &&
           (payload.days === 0 ? (
@@ -577,43 +592,24 @@ function CampaignActions({
                 ? draft
                   ? __('Publishing…', 'wconvert')
                   : __('Unpublishing…', 'wconvert')
-                : draft
-                  ? __('Publish campaign', 'wconvert')
-                  : __('Unpublish campaign', 'wconvert')}
+                : words.confirmLabel}
             </Button>
           </>
         )}
       </div>
       {card.action === 'submit' && payload.days === 0 && (
-        <p id={reason} className="wa-muted">
+        <p id={reason} className="wa-muted mb-0 mt-3">
           {__('Submissions open once this month has a complete day.', 'wconvert')}
         </p>
       )}
-      {error && <PageError message={error} />}
+      </RegionBody>
+      </Region>
       <ConfirmDialog
         open={confirm}
         onOpenChange={setConfirm}
-        title={
-          draft
-            ? __('Publish this campaign?', 'wconvert')
-            : __('Unpublish this campaign?', 'wconvert')
-        }
-        description={
-          draft
-            ? __(
-                'This publishes the latest saved draft, including any edits made since it was unpublished. Its results stay in this report.',
-                'wconvert',
-              )
-            : __(
-                'It stops showing on your site. Its results stay in this report, and other A/B variants keep their own state.',
-                'wconvert',
-              )
-        }
-        confirmLabel={
-          draft
-            ? __('Publish campaign', 'wconvert')
-            : __('Unpublish campaign', 'wconvert')
-        }
+        title={words.title}
+        description={words.description}
+        confirmLabel={words.confirmLabel}
         onConfirm={() => {
           void run();
         }}
@@ -636,7 +632,8 @@ export function Experiment({
   );
   const [chosen, setChosen] = useState<OptinReport | null>(null),
     [busy, setBusy] = useState(false),
-    [error, setError] = useState<string | null>(null);
+    // Which variant's choice failed: the failure is drawn on that variant's card.
+    [failure, setFailure] = useState<{ arm: OptinReport; message: string } | null>(null);
   const trigger = useRef<HTMLButtonElement | null>(null);
   if (!family || family.arms.length < 2)
     return (
@@ -653,15 +650,15 @@ export function Experiment({
     adminSettings()?.variants?.availability === 'ready' &&
     live.length > 1 &&
     family.root.status !== 'historical';
-  const choose = async () => {
-    if (!chosen) return;
+  const words = decisionCopy('winner', true, chosen?.name ?? '', 0);
+  const choose = async (arm: OptinReport) => {
     setBusy(true);
-    setError(null);
+    setFailure(null);
     try {
-      await declareWinner(family.root.id, chosen.id);
+      await declareWinner(family.root.id, arm.id);
       onRefresh();
     } catch (cause) {
-      setError(messageOf(cause));
+      setFailure({ arm, message: messageOf(cause) });
     } finally {
       setBusy(false);
       setChosen(null);
@@ -685,6 +682,7 @@ export function Experiment({
       <div className="wa-experiment-grid">
         {arms.map((arm) => (
           <div className="wa-panel wa-arm" key={arm.id}>
+            {failure?.arm.id === arm.id && <RegionError message={failure.message} action={<TryAgain busy={busy} onClick={() => void choose(arm)} />} />}
             <div className="wa-detail-heading">
               <h3><bdi>{arm.name}</bdi></h3>
               <Status value={arm.status} />
@@ -729,20 +727,16 @@ export function Experiment({
           'wconvert',
         )}
       </p>
-      {error && <PageError message={error} />}
       <ConfirmDialog
         open={chosen !== null}
         onOpenChange={(open) => {
           if (!open) setChosen(null);
         }}
-        title={sprintf(/* translators: %s: an A/B test variant's name. */ __('Use %s?', 'wconvert'), chosen?.name ?? '')}
-        description={__(
-          'This design becomes the campaign and the other variants are retired. Their results stay in this report. This is your choice, not a statistically proven winner, and an unpublished design stays unpublished.',
-          'wconvert',
-        )}
-        confirmLabel={__('Use selected variant', 'wconvert')}
+        title={words.title}
+        description={words.description}
+        confirmLabel={words.confirmLabel}
         onConfirm={() => {
-          void choose();
+          if (chosen) void choose(chosen);
         }}
         returnFocusTo={trigger}
       />

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { act, render, screen, within } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type {
   DashboardPayload,
@@ -387,7 +387,7 @@ describe('Goal and campaign reports', () => {
     expect(screen.queryByText('Historical')).toBeNull();
     expect(screen.queryByRole('link', { name: 'Open editor' })).toBeNull();
     expect(
-      screen.queryByRole('button', { name: 'Publish campaign' }),
+      screen.queryByRole('button', { name: 'Publish saved draft' }),
     ).toBeNull();
     expect(
       screen.getByRole('link', { name: 'View submissions' }),
@@ -413,18 +413,15 @@ describe('Goal and campaign reports', () => {
     render(<Dashboard query={{ goal: 'grow_email_list' }} />);
     await screen.findByRole('heading', { name: 'Grow my email list' });
     await userEvent.type(
-      screen.getByRole('searchbox', { name: 'Find a campaign' }),
+      screen.getByRole('searchbox', { name: 'Search campaigns' }),
       'Old',
     );
     expect(
       screen.queryByRole('link', { name: 'Newsletter footer' }),
     ).toBeNull();
     expect(screen.getByRole('link', { name: 'Old form' })).toBeInTheDocument();
-    await userEvent.selectOptions(
-      screen.getByRole('combobox', { name: 'Campaign status' }),
-      'published',
-    );
-    expect(screen.getByText('No campaigns match')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('radio', { name: 'Published' }));
+    expect(screen.getByText('No campaigns found')).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
     expect(
       screen.getByRole('link', { name: 'Newsletter footer' }),
@@ -480,7 +477,7 @@ describe('Goal and campaign reports', () => {
     );
     render(<Dashboard query={{ optinId: 'email' }} />);
     await userEvent.click(
-      await screen.findByRole('button', { name: 'Publish campaign' }),
+      await screen.findByRole('button', { name: 'Publish saved draft' }),
     );
     expect(screen.getByRole('alertdialog')).toHaveTextContent(
       'latest saved draft',
@@ -488,15 +485,22 @@ describe('Goal and campaign reports', () => {
     expect(api.publishOptin).not.toHaveBeenCalled();
     await userEvent.click(
       within(screen.getByRole('alertdialog')).getByRole('button', {
-        name: 'Publish campaign',
+        name: 'Publish saved draft',
       }),
     );
     expect(
       await screen.findByText('Complete the destination first'),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Publish campaign' }),
+      screen.getByRole('button', { name: 'Publish saved draft' }),
     ).toBeInTheDocument();
+    // The failure's door runs the decision already confirmed, as the list's does.
+    api.publishOptin.mockResolvedValueOnce({});
+    const failure = screen.getByText('Complete the destination first').closest<HTMLElement>('[data-slot="alert"]')!;
+    await userEvent.click(within(failure).getByRole('button', { name: 'Try again' }));
+    expect(api.publishOptin).toHaveBeenCalledTimes(2);
+    expect(screen.queryByRole('alertdialog')).toBeNull();
+    await waitFor(() => expect(screen.queryByText('Complete the destination first')).toBeNull());
   });
   it('exports scoped raw arm rows, dates and safe merchant text', () => {
     const data = payload();
@@ -524,7 +528,7 @@ describe('Goal and campaign reports', () => {
       }),
     );
     expect(
-      await screen.findByRole('button', { name: 'Publish campaign' }),
+      await screen.findByRole('button', { name: 'Publish saved draft' }),
     ).toBeInTheDocument();
     expect(api.unpublishOptin).toHaveBeenCalledWith('email');
   });
@@ -592,17 +596,22 @@ describe('Goal and campaign reports', () => {
       name: 'Use this variant',
     });
     await userEvent.click(choices[1]);
-    expect(screen.getByRole('alertdialog')).toHaveTextContent(
-      'not a statistically proven winner',
-    );
+    // The campaign list's words for the same decision (ADR 0137).
+    expect(screen.getByRole('alertdialog')).toHaveTextContent('Use this variant?');
     expect(api.declareWinner).not.toHaveBeenCalled();
     await userEvent.click(
-      screen.getByRole('button', { name: 'Use selected variant' }),
+      within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Use this variant' }),
     );
     expect(
       await screen.findByText('The comparison has already ended'),
     ).toBeInTheDocument();
     expect(api.declareWinner).toHaveBeenCalledWith('email', 'arm');
+    // Drawn on the variant whose choice failed, with its door.
+    api.declareWinner.mockResolvedValueOnce({});
+    const failure = screen.getByText('The comparison has already ended').closest<HTMLElement>('[data-slot="alert"]')!;
+    await userEvent.click(within(failure).getByRole('button', { name: 'Try again' }));
+    expect(api.declareWinner).toHaveBeenCalledTimes(2);
+    expect(api.declareWinner).toHaveBeenLastCalledWith('email', 'arm');
   });
 });
 
@@ -793,4 +802,53 @@ it('unpublishes with a visibility icon, not a pause', async () => {
   const button = await screen.findByRole('button', { name: 'Unpublish campaign' });
   expect(button.querySelector('.lucide-eye-off')).not.toBeNull();
   expect(button.querySelector('.lucide-pause')).toBeNull();
+});
+
+it('offers only the status chips that would filter to something, as Campaigns does', async () => {
+  api.readReport.mockResolvedValue({
+    ...payload(),
+    goals: [goal([row(), { ...row('second', 'paused'), name: 'Old form' }])],
+  });
+  render(<Dashboard query={{ goal: 'grow_email_list' }} />);
+  const chips = await screen.findByRole('group', { name: 'Filter campaigns by status' });
+  expect(within(chips).getAllByRole('radio').map((radio) => radio.closest('label')?.querySelector('span')?.textContent))
+    .toEqual(['All', 'Published', 'Drafts']);
+  expect(within(chips).queryByRole('radio', { name: 'Deleted' })).toBeNull();
+  await userEvent.click(within(chips).getByRole('radio', { name: 'Drafts' }));
+  expect(screen.queryByRole('link', { name: 'Newsletter footer' })).toBeNull();
+  expect(screen.getByRole('link', { name: 'Old form' })).toBeInTheDocument();
+});
+
+it('states the report table’s count and dates in its foot', async () => {
+  render(<Dashboard query={{ goal: 'grow_email_list' }} />);
+  const table = await screen.findByRole('table', { name: 'Campaign contributions' });
+  const foot = table.parentElement!.querySelector('.wconvert-list-foot')!;
+  expect(foot).toHaveTextContent(/^1 campaign · /);
+  expect(foot).toHaveTextContent('2026');
+});
+
+it('dims the report under its line while a new period is read', async () => {
+  const { rerender } = render(<Dashboard query={{ days: 30 }} />);
+  await screen.findByRole('region', { name: 'Overall impact' });
+  expect(document.querySelector('.wa-report-sheet')).not.toHaveClass('opacity-60');
+  api.readReport.mockReturnValueOnce(new Promise(() => undefined));
+  rerender(<Dashboard query={{ days: 7 }} />);
+  expect(await screen.findByText('Updating report…')).toBeInTheDocument();
+  const sheet = document.querySelector('.wa-report-sheet')!;
+  expect(sheet).toHaveClass('opacity-60');
+  expect(sheet).toHaveAttribute('aria-busy', 'true');
+  expect(within(sheet as HTMLElement).getByRole('region', { name: 'Overall impact' })).toBeInTheDocument();
+});
+
+it('keeps the overview’s reports at one heading level under the page', async () => {
+  render(<Dashboard query={{}} />);
+  expect(await screen.findByRole('heading', { name: 'Results by goal', level: 2 })).toBeInTheDocument();
+  expect(screen.queryByRole('heading', { level: 3, name: 'Results by goal' })).toBeNull();
+});
+
+it('draws no empty actions card for a deleted campaign with nothing to act on', async () => {
+  api.readReport.mockResolvedValue({ ...payload(), goals: [{ ...goal([row('email', 'historical')]), action: 'click' }] });
+  render(<Dashboard query={{ optinId: 'email' }} />);
+  await screen.findByText('This campaign was deleted. Its results stay here, and it can no longer be edited.');
+  expect(screen.queryByRole('region', { name: 'Campaign actions' })).toBeNull();
 });

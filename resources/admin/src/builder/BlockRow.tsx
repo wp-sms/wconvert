@@ -6,6 +6,7 @@ import { isConvertingAct } from './structure/guards';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Block } from './structure/tree';
 import type { BlockDrag } from './useBlockDrag';
+import { formatCount } from '../lib/format';
 
 /**
  * One row of the block tree: what this block is, and what it says.
@@ -336,30 +337,30 @@ export function BlockRow({
                       ? sprintf(
                           /* translators: 1: how many style settings this block carries. 2: how many more it carries for narrow widths. */
                           __(
-                            'This block sets %1$d thing(s) about how it and everything inside it looks, and %2$d more when the design is narrow.',
+                            'This block sets %1$s thing(s) about how it and everything inside it looks, and %2$s more when the design is narrow.',
                             'wconvert',
                           ),
-                          block.sets,
-                          block.setsNarrow,
+                          formatCount(block.sets),
+                          formatCount(block.setsNarrow),
                         )
                       : sprintf(
-                          /* translators: %d: how many style settings this block carries. */
+                          /* translators: %s: how many style settings this block carries. */
                           __(
-                            'This block sets %d thing(s) about how it and everything inside it looks.',
+                            'This block sets %s thing(s) about how it and everything inside it looks.',
                             'wconvert',
                           ),
-                          block.sets,
+                          formatCount(block.sets),
                         )
                   }
                 >
                   {block.setsNarrow > 0
                     ? sprintf(
                         /* translators: 1: a count of style settings. 2: a count of extra settings for narrow widths. Kept as digits because it is on every row of a scanned list. */
-                        __('%1$d+%2$d', 'wconvert'),
-                        block.sets,
-                        block.setsNarrow,
+                        __('%1$s+%2$s', 'wconvert'),
+                        formatCount(block.sets),
+                        formatCount(block.setsNarrow),
                       )
-                    : String(block.sets)}
+                    : formatCount(block.sets)}
                 </span>
               )}
               {/*
@@ -451,7 +452,7 @@ function Control({
  */
 export function nameOfBlock(block: Block, labels: TemplateLabels): string {
   if (block.level === 1) {
-    return block.screenName || sprintf(/* translators: %d: the screen's position in the campaign, e.g. “2”. */ __('Screen %d', 'wconvert'), block.position);
+    return block.screenName || sprintf(/* translators: %s: the screen's position in the campaign, e.g. “2”. */ __('Screen %s', 'wconvert'), formatCount(block.position));
   }
 
   if (block.role !== null) {
@@ -505,9 +506,9 @@ export function summaryOf(block: Block, labels: TemplateLabels): string | null {
   return block.holds === 0
     ? __('Empty — add a block inside it.', 'wconvert')
     : sprintf(
-        /* translators: %d: how many blocks sit inside this one, at any depth. */
-        _n('%d block inside', '%d blocks inside', block.holds, 'wconvert'),
-        block.holds,
+        /* translators: %s: how many blocks sit inside this one, at any depth. */
+        _n('%s block inside', '%s blocks inside', block.holds, 'wconvert'),
+        formatCount(block.holds),
       );
 }
 

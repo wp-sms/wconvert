@@ -5,6 +5,8 @@ import { Button } from '../../components/ui/button';
 import { resolveObjects, searchObjects, type ObjectHit, type ObjectKind } from './objects';
 import { useObjectSearch } from './useObjectSearch';
 import { Skeleton } from '../../components/ui/skeleton';
+import { TryAgain } from '../../shell/Region';
+import { formatCount } from '../../lib/format';
 
 /**
  * Targeting a page by its NAME.
@@ -187,14 +189,14 @@ export function ObjectPicker({ id, kind, value, onChange }: ObjectPickerProps) {
   const resolutionNote = resolving
     ? __('Loading the saved selection’s name…', 'wconvert')
     : resolutionFailed
-      ? sprintf(/* translators: %s: the saved page, post, category or tag's ID number. */ __('Couldn’t load the saved selection’s name. This rule still uses #%s.', 'wconvert'), value)
+      ? sprintf(/* translators: %s: the saved page, post, category or tag's ID number. */ __('Could not load the saved selection’s name. This rule still uses #%s.', 'wconvert'), value)
       : missing
         ? kind === 'post'
           ? sprintf(/* translators: %s: the page or post's ID number. */ __('Page or post #%s is not available by name. It may be unpublished, deleted or unavailable in WordPress search. This rule still uses it.', 'wconvert'), value)
           : sprintf(/* translators: %s: the category or tag's ID number. */ __('Category or tag #%s is not available by name. It may have been deleted or be unavailable in WordPress search. This rule still uses it.', 'wconvert'), value)
         : '';
   const searchNote = searching ? __('Searching…', 'wconvert')
-    : searchFailed ? __('Search couldn’t be completed. Retry, or press Enter in the search field.', 'wconvert')
+    : searchFailed ? __('Search could not be completed. Try again, or press Enter in the search field.', 'wconvert')
       : hits.length === 0 ? kind === 'post'
         ? __('No matching pages or posts. Try another name. Only published items can be found by name.', 'wconvert')
         : __('No matching categories or tags. Try another name.', 'wconvert')
@@ -249,10 +251,7 @@ export function ObjectPicker({ id, kind, value, onChange }: ObjectPickerProps) {
           {/* While the name is read the note is a bar of its line; the words stay for `aria-describedby`. */}
           {resolutionNote && <span id={selectedNoteId} className={resolving ? 'sr-only' : 'block mt-1 text-micro text-muted-foreground'}>{resolutionNote}</span>}
           {resolving && <Skeleton aria-hidden="true" className="mt-1 h-[1lh] w-40 max-w-full text-micro" />}
-          {resolutionFailed && <Button type="button" variant="outline" size="sm" className="mt-2"
-            onClick={() => { setResolutionAttempt((attempt) => attempt + 1); input.current?.focus(); }}>
-            {__('Retry name lookup', 'wconvert')}
-          </Button>}
+          {resolutionFailed && <span className="mt-2 block"><TryAgain onClick={() => { setResolutionAttempt((attempt) => attempt + 1); input.current?.focus(); }} /></span>}
         </span>
       </PopoverAnchor>
 
@@ -267,11 +266,12 @@ export function ObjectPicker({ id, kind, value, onChange }: ObjectPickerProps) {
         onOpenAutoFocus={(event) => event.preventDefault()}
         onCloseAutoFocus={(event) => event.preventDefault()}
       >
-        {searchNote && <p id={searchNoteId} className="wconvert-object-picker__empty text-note text-muted-foreground">{searchNote}</p>}
-        {searchFailed && <Button type="button" variant="outline" size="sm" tabIndex={-1}
+        {searchNote && <p id={searchNoteId} className={searching ? 'sr-only' : 'wconvert-object-picker__empty text-note text-muted-foreground'}>{searchNote}</p>}
+        {searching && <div aria-hidden="true" className="wconvert-object-picker__empty text-note"><Skeleton className="h-[1lh] w-40 max-w-full" /></div>}
+        {searchFailed && <Button type="button" variant="outline" tabIndex={-1}
           aria-describedby={searchNoteId}
           onMouseDown={(event) => event.preventDefault()} onClick={retrySearch}>
-          {__('Retry search', 'wconvert')}
+          {__('Try again', 'wconvert')}
         </Button>}
         <div role="listbox" id={listId} aria-busy={searching} aria-label={kind === 'post' ? __('Matching pages and posts', 'wconvert') : __('Matching categories and tags', 'wconvert')}>
         {
@@ -328,7 +328,7 @@ const displayed = (chosen: ObjectHit | null, value: string): string =>
 
 const countOf = (count: number): string =>
   sprintf(
-    /* translators: %d: how many matches the search found. */
-    _n('%d result', '%d results', count, 'wconvert'),
-    count,
+    /* translators: %s: how many matches the search found. */
+    _n('%s result', '%s results', count, 'wconvert'),
+    formatCount(count),
   );

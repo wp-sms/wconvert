@@ -190,7 +190,7 @@ describe('provider-declared destination requirements', () => {
       connections={[]} busy={false} error={null} onCancel={vi.fn()} onConfirm={vi.fn()} />);
     expect(screen.getByRole('combobox', { name: 'Interest field' })).toHaveValue('cf_99');
     expect(screen.getByText(/The selected field for Interest is unavailable/)).toBeInTheDocument();
-    expect(screen.getByText(/Couldn’t read which campaigns use it/)).toBeInTheDocument();
+    expect(screen.getByText(/Could not read which campaigns use it/)).toBeInTheDocument();
   });
   it('requires an explicitly entered interest sample and describes the new-subscriber effect before sending', async () => {
     render(<SendTestDialog destination={{ ...route, settings: { lists: ['3'], interest_field: 'cf_7' } }} type={type}

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { formatCount } from '../lib/format';
+import { formatCount, formatRate } from '../lib/format';
 import { adminSettings } from '../settings';
+import { LineSkeleton } from '../shell/LineSkeleton';
 import type { Template } from '@renderer/types';
 
 /**
@@ -31,7 +32,8 @@ import type { Template } from '@renderer/types';
  *
  * Where the browser has no `CompressionStream`, the meter draws NOTHING rather
  * than falling back to raw bytes under the same label. There is no honest way
- * to print a figure in the wrong unit beside a budget.
+ * to print a figure in the wrong unit beside a budget. A browser that has it and
+ * fails says so, and the next edit measures again.
  */
 export function PayloadMeter({ template }: { template: Template }) {
   const budget = adminSettings()?.designBudget;
@@ -39,6 +41,14 @@ export function PayloadMeter({ template }: { template: Template }) {
 
   if (budget === undefined || bytes === null) {
     return null;
+  }
+
+  if (bytes === 'measuring') {
+    return <span className="wconvert-meter"><LineSkeleton inline status={__('Measuring the design’s size…', 'wconvert')} className="w-24" /></span>;
+  }
+
+  if (bytes === 'failed') {
+    return <span role="status" className="wconvert-meter" title={__('It is measured again when you next edit the design.', 'wconvert')}>{__('Size not measured', 'wconvert')}</span>;
   }
 
   const share = bytes / budget;
@@ -60,17 +70,18 @@ export function PayloadMeter({ template }: { template: Template }) {
       )}
     >
       {sprintf(
-        /* translators: %d: what share of the per-design size budget this design uses, as a percentage. */
-        __('%d%% of the size budget', 'wconvert'),
-        Math.round(share * 100),
+        /* translators: %s: what share of the per-design size budget this design uses, e.g. “42%”. */
+        __('%s of the size budget', 'wconvert'),
+        formatRate(Math.round(share * 100) / 100),
       )}
     </span>
   );
 }
 
 /**
- * The design's snapshot, gzipped, in bytes — or null while it is being measured
- * and on a browser that cannot.
+ * The design's snapshot, gzipped, in bytes; `'measuring'` until the first answer,
+ * `'failed'` if measuring threw, and null on a browser that cannot measure. A
+ * re-measure keeps the last figure on screen until the new one lands.
  *
  * **It measures the same two keys the payload carries** — `tree` and `tokens` —
  * rather than the whole config, because the rest of an Optin's config is rules
@@ -82,9 +93,9 @@ export function PayloadMeter({ template }: { template: Template }) {
  * preview remounting on every keystroke is: the work is proportional to one
  * design, and `CompressionStream` does it off the main thread.
  */
-function useGzippedSize(template: Template): number | null {
+function useGzippedSize(template: Template): number | 'measuring' | 'failed' | null {
   const json = JSON.stringify({ tree: template.tree, tokens: template.tokens });
-  const [size, setSize] = useState<number | null>(null);
+  const [size, setSize] = useState<number | 'measuring' | 'failed' | null>('measuring');
 
   useEffect(() => {
     let live = true;
@@ -95,14 +106,9 @@ function useGzippedSize(template: Template): number | null {
           setSize(bytes);
         }
       })
-      /*
-        A meter is not worth an error surface. The one failure mode is a browser
-        with no `CompressionStream`, which is a browser this cannot honestly
-        measure on — so it draws nothing, which is what `null` already means.
-      */
       .catch(() => {
         if (live) {
-          setSize(null);
+          setSize('failed');
         }
       });
 

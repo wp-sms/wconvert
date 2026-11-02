@@ -33,6 +33,9 @@ export interface ChangeGoalDialogProps {
  * The save runs **inside** the dialog (ADR 0131, §9): it used to close first
  * and report a refusal on the page behind it, so a refused change or an
  * unconfirmed copy surfaced somewhere the merchant was no longer looking.
+ *
+ * Large while it is a picker, Small once it is a confirm. The picker's title
+ * stays the action: nothing has been chosen yet to name.
  */
 export function ChangeGoalDialog({ open, onOpenChange, goals, current, duplicate = false, onChange, onRetry, returnFocusTo }: ChangeGoalDialogProps) {
   const [picked, setPicked] = useState<GoalEntry | null>(null);
@@ -54,7 +57,7 @@ export function ChangeGoalDialog({ open, onOpenChange, goals, current, duplicate
   };
 
   return <AdminDialog open={open} onOpenChange={close}>
-    <AdminDialogContent size="md" showCloseButton={!saving} onCloseAutoFocus={returnFocusTo ? event => { event.preventDefault(); returnFocusTo.current?.focus(); } : undefined}>
+    <AdminDialogContent size={picked === null ? 'lg' : 'sm'} showCloseButton={!saving} onCloseAutoFocus={returnFocusTo ? event => { event.preventDefault(); returnFocusTo.current?.focus(); } : undefined}>
       {picked === null ? <>
         <AdminDialogHeader
           title={duplicate ? __('Duplicate for another goal', 'wconvert') : __('Change goal', 'wconvert')}
