@@ -28,7 +28,7 @@ describe('the Edit tree', () => {
     expect(home.parentElement).not.toHaveTextContent('Your business interests');
     expect(within(home).getByText('If “Garden landscaping” is selected')).toBeInTheDocument();
     expect(within(business).queryByText('Garden landscaping details')).toBeNull();
-    for (const item of tree.steps) expect(screen.getAllByText(item.name, { exact: true })).toHaveLength(1);
+    for (const item of tree.steps) expect(screen.getAllByText(item.name, { exact: true, selector: 'strong' })).toHaveLength(1);
     const button = within(home).getByRole('button', { name: /Garden landscaping details/ });
     expect(button).toHaveAttribute('aria-current', 'true');
     fireEvent.click(button);
