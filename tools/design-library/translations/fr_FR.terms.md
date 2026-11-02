@@ -57,6 +57,7 @@ A button stays an instruction: `Send me the guide` → `Recevoir le guide`.
 | discount, % off | réduction, `-10 %` |
 | UP TO 40% OFF | JUSQU’À -40 % |
 | offer | offre |
+| Offer (a screen's name) | Deal, because one design is at its byte cap |
 | Selected items | Articles sélectionnés |
 | Exclusions apply | Exclusions possibles |
 | Offer terms apply | Conditions de l’offre applicables |
