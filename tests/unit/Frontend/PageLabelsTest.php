@@ -6,6 +6,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Frontend\PageLabels;
 use WConvert\Pro\Frontend\ProPageLabels;
+use WConvert\Template\DesignWords;
 
 /**
  * The renderer's own words, translated in PHP and read in TypeScript BY
@@ -118,5 +119,62 @@ final class PageLabelsTest extends TestCase
         add_filter('wconvert_page_labels', static fn (array $labels): array => [0 => 'Schließen', 101 => 'Produkte werden geladen…'] + $labels);
 
         $this->assertSame('{"0":"Schließen","101":"Produkte werden geladen…"}', PageLabels::attribute());
+    }
+
+    public function testASiteInALanguageReadsItsLabelFileWhereWordPressLeftEnglish(): void
+    {
+        $GLOBALS['wconvertTestLocale'] = 'de_DE';
+
+        try {
+            $labels = PageLabels::differing();
+        } finally {
+            unset($GLOBALS['wconvertTestLocale']);
+        }
+
+        $this->assertSame('Weiter', $labels[array_search('Continue', PageLabels::ENGLISH, true)]);
+        $this->assertSame('Schließen', $labels[0]);
+        $this->assertSame(array_keys(array_filter(PageLabels::ENGLISH, static fn (string $word): bool => $word !== 'Name')), array_keys($labels), 'in English\'s order, every position but the word German spells the same');
+    }
+
+    public function testALanguagePacksWordStaysAsThePackHasIt(): void
+    {
+        $GLOBALS['wconvertTestLocale'] = 'de_DE';
+        $GLOBALS['wconvertTestTranslations']['Close'] = 'Zumachen';
+
+        try {
+            $labels = PageLabels::differing();
+        } finally {
+            unset($GLOBALS['wconvertTestLocale'], $GLOBALS['wconvertTestTranslations']['Close']);
+        }
+
+        $this->assertSame('Zumachen', $labels[0]);
+    }
+
+    public function testASiteInEnglishTouchesNoFile(): void
+    {
+        $this->assertSame([], DesignWords::labelsFor(WCONVERT_DIR, 'en_US'));
+        $this->assertSame([], DesignWords::labelsFor(WCONVERT_DIR, 'en_GB'));
+        $this->assertSame([], DesignWords::labelsFor('/nowhere', 'de_DE'));
+    }
+
+    public function testProsLabelsReadProsFile(): void
+    {
+        $GLOBALS['wconvertTestLocale'] = 'de_DE';
+
+        try {
+            $labels = ProPageLabels::add([]);
+        } finally {
+            unset($GLOBALS['wconvertTestLocale']);
+        }
+
+        $this->assertSame('%s ansehen', $labels[ProPageLabels::FIRST + array_search('View %s', ProPageLabels::ENGLISH, true)]);
+    }
+
+    public function testALabelFileIsSmallAndHoldsOnlyLabels(): void
+    {
+        foreach (glob(dirname(__DIR__, 3) . '/resources/templates/words/labels/*.json') ?: [] as $file) {
+            $this->assertLessThan(4096, filesize($file), basename($file) . ' is read on every visitor page');
+            $this->assertEmpty(array_diff(array_keys((array) json_decode((string) file_get_contents($file), true)), PageLabels::ENGLISH));
+        }
     }
 }

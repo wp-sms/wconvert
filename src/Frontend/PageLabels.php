@@ -2,6 +2,8 @@
 
 namespace WConvert\Frontend;
 
+use WConvert\Template\DesignWords;
+
 defined('ABSPATH') || exit;
 
 /**
@@ -102,15 +104,21 @@ final class PageLabels
      * from position 100 through `wconvert_page_labels`.
      *
      * Only the differing ones, so an untranslated site prints nothing at all
-     * and a translated one prints only what changes.
+     * and a translated one prints only what changes. A word WordPress leaves in
+     * English reads through the small label file for the site's language, so a
+     * German campaign does not end in an English "Continue" (ADR 0183). A language
+     * pack's word stays as it has it.
      *
      * @return array<int, string>
      */
     public static function differing(): array
     {
         $labels = [];
+        $words = DesignWords::labelsFor(WCONVERT_DIR);
 
         foreach (self::translated() as $index => $label) {
+            $label = $label === self::ENGLISH[$index] ? ($words[$label] ?? $label) : $label;
+
             if ($label !== self::ENGLISH[$index]) {
                 $labels[$index] = $label;
             }

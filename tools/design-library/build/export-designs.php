@@ -283,7 +283,7 @@ if (($input['mode'] ?? '') === 'validate') {
 
 if (($input['mode'] ?? '') === 'words') {
     $manifest = TemplateManifest::load($root);
-    $sets = ['free' => [], 'pro' => [], 'hosted' => []];
+    $sets = ['free' => [], 'pro' => [], 'hosted' => [], 'labels' => [], 'pro-labels' => []];
     $add = static function (string $set, array $words, string $file) use (&$sets, $root): void {
         foreach ($words as $english => $word) {
             $known = $sets[$set][$english] ?? ['limit' => PHP_INT_MAX, 'kind' => $word['kind'], 'refs' => []];
@@ -292,6 +292,11 @@ if (($input['mode'] ?? '') === 'words') {
             $sets[$set][$english] = $known;
         }
     };
+    // What the popup writes itself, in a small file of its own for visitor pages.
+    require_once $root . '/pro/src/Frontend/ProPageLabels.php';
+    $label = static fn (array $english): array => array_fill_keys(array_values(array_filter($english, DesignWords::isWord(...))), ['limit' => 2000, 'kind' => 'a word the popup writes itself']);
+    $add('labels', $label(\WConvert\Frontend\PageLabels::ENGLISH), $root . '/src/Frontend/PageLabels.php');
+    $add('pro-labels', $label(\WConvert\Pro\Frontend\ProPageLabels::ENGLISH), $root . '/pro/src/Frontend/ProPageLabels.php');
     foreach (glob($root . '/resources/templates/library/*.json') ?: [] as $file) {
         $add('free', DesignWords::wordsOfTemplate(json_decode((string) file_get_contents($file), true, 512, JSON_THROW_ON_ERROR), $manifest), $file);
     }

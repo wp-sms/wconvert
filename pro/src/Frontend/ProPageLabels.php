@@ -2,6 +2,8 @@
 
 namespace WConvert\Pro\Frontend;
 
+use WConvert\Template\DesignWords;
+
 defined('ABSPATH') || exit;
 
 /**
@@ -44,8 +46,11 @@ final class ProPageLabels
     public static function add($labels): array
     {
         $labels = is_array($labels) ? $labels : [];
+        $words = DesignWords::labelsFor(WCONVERT_PRO_DIR);
 
         foreach (self::translated() as $offset => $label) {
+            $label = $label === self::ENGLISH[$offset] ? ($words[$label] ?? $label) : $label;
+
             if ($label !== self::ENGLISH[$offset]) {
                 $labels[self::FIRST + $offset] = $label;
             }

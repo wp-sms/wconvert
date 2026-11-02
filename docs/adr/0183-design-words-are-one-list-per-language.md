@@ -79,6 +79,11 @@ word shared with the admin would drag the admin's language along.
     A card's name is translated and search reads it, so searching a translated online
     design's English name does not match.
 
+13. **The words the popup writes itself have a small file of their own**
+    (`words/labels/<locale>.json`, one each for Free and Pro), read through
+    `PageLabels` when WordPress returns English. A visitor page never reads a full list,
+    and a site in English touches nothing and prints nothing extra.
+
 ## Consequences
 
 - Pro now calls a Free class that `free-v1.0.0` lacks, so a Pro release carrying this

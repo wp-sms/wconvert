@@ -936,7 +936,7 @@ function wconvert_test_translate(string $text): string
         ));
     }
 
-    return $text;
+    return $GLOBALS['wconvertTestTranslations'][$text] ?? $text;
 }
 
 if (!function_exists('__')) {
@@ -1234,6 +1234,13 @@ if (!function_exists('_x')) {
     function _x(string $text, string $context, string $domain = 'default'): string
     {
         return wconvert_test_translate($text);
+    }
+}
+
+if (!function_exists('get_locale')) {
+    function get_locale(): string
+    {
+        return $GLOBALS['wconvertTestLocale'] ?? '';
     }
 }
 

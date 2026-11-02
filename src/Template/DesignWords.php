@@ -115,6 +115,19 @@ final class DesignWords
         return self::fileFor(rtrim($pluginDir, '/') . '/' . self::PATH, $locale);
     }
 
+    /**
+     * The few words the popup writes itself, for visitor pages: a small file beside
+     * the list, never the list. A site in English touches nothing at all.
+     *
+     * @return array<string, string>
+     */
+    public static function labelsFor(string $pluginDir, ?string $locale = null): array
+    {
+        $locale ??= self::siteLocale();
+
+        return explode('_', $locale)[0] === 'en' ? [] : self::fileFor(rtrim($pluginDir, '/') . '/' . self::PATH . '/labels', $locale);
+    }
+
     public static function siteLocale(): string
     {
         return function_exists('get_locale') ? get_locale() : 'en_US';
