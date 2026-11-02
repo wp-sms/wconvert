@@ -54,36 +54,36 @@ export function InterestOptions({ value, onEdit, onChange }: {
     let next = options.length + 1;
     while (options.some((option) => option.value === `option-${next}`)) next++;
     focusAfterChange.current = options.length;
-    onChange([...options, { value: `option-${next}`, label: sprintf(/* translators: %d: the new answer choice's position in the list, e.g. 3. Used as its starting label. */ __('Option %d', 'wconvert'), next) }]);
+    onChange([...options, { value: `option-${next}`, label: sprintf(/* translators: %s: the new answer choice's position in the list, e.g. 3. Used as its starting label. */ __('Option %s', 'wconvert'), formatCount(next)) }]);
   }
 
   // In the panel grammar (ADR 0136): a field heading with its help as an InfoTip, and one line about the limit.
   return <fieldset className="wconvert-panel-field m-0 min-w-0 border-0 p-0">
     <legend className="sr-only">{__('Choices', 'wconvert')}</legend>
     <FieldHeading as="span" label={__('Choices', 'wconvert')}
-      tip={sprintf(/* translators: %d: the most choices a field may offer. */ __('Visitors choose one answer. Up to %d choices; answers stay in your capture history, so check that your destination forwards them.', 'wconvert'), optionLimits.max_items)} />
+      tip={sprintf(/* translators: %s: the most choices a field may offer. */ __('Visitors choose one answer. Up to %s choices; answers stay with the lead in WConvert, so check that your destination forwards them.', 'wconvert'), formatCount(optionLimits.max_items))} />
     {options.map((option, at) => <div key={at} className="space-y-2 rounded-md border border-border p-3">
-      <label className="wconvert-slot__key">{sprintf(/* translators: %d: the answer choice's position in the list, e.g. 1. */ __('Choice %d', 'wconvert'), at + 1)}
+      <label className="wconvert-slot__key">{sprintf(/* translators: %s: the answer choice's position in the list, e.g. 1. */ __('Choice %s', 'wconvert'), formatCount(at + 1))}
         <input ref={(input) => { labels.current[at] = input; }} type="text" value={option.label} maxLength={optionLimits.label_max_length} onChange={(event) => update(at, 'label', event.target.value)} />
       </label>
       <Disclosure variant="inline" className="text-note text-muted-foreground" title={sprintf(/* translators: %s: the value stored and sent for the choice, e.g. “option-1”, or “not set”. */ __('Saved as: %s', 'wconvert'), option.value || __('not set', 'wconvert'))}>
-        <label className="wconvert-slot__key mt-2">{sprintf(/* translators: %d: the answer choice's position in the list, e.g. 1. */ __('Value sent for choice %d', 'wconvert'), at + 1)}
+        <label className="wconvert-slot__key mt-2">{sprintf(/* translators: %s: the answer choice's position in the list, e.g. 1. */ __('Value sent for choice %s', 'wconvert'), formatCount(at + 1))}
           <input type="text" value={option.value} pattern={optionLimits.value_pattern} onChange={(event) => update(at, 'value', event.target.value)} />
         </label>
         <PanelHint>{__('Lowercase letters, numbers, hyphens or underscores. Changing it affects future submissions.', 'wconvert')}</PanelHint>
       </Disclosure>
       <div className="flex flex-wrap gap-2">
-        <Button type="button" variant="ghost" disabled={at === 0} aria-label={sprintf(/* translators: %d: the answer choice's position in the list, e.g. 2. */ __('Move choice %d up', 'wconvert'), at + 1)} onClick={() => {
+        <Button type="button" variant="ghost" disabled={at === 0} aria-label={sprintf(/* translators: %s: the answer choice's position in the list, e.g. 2. */ __('Move choice %s up', 'wconvert'), formatCount(at + 1))} onClick={() => {
           focusAfterChange.current = at - 1;
           const moved = [...options]; [moved[at - 1], moved[at]] = [moved[at], moved[at - 1]]; onChange(moved);
         }}>{__('Move up', 'wconvert')}</Button>
-        <Button type="button" variant="ghost" aria-label={sprintf(/* translators: %d: the answer choice's position in the list, e.g. 2. */ __('Remove choice %d', 'wconvert'), at + 1)} onClick={() => {
+        <Button type="button" variant="ghost" aria-label={sprintf(/* translators: %s: the answer choice's position in the list, e.g. 2. */ __('Remove choice %s', 'wconvert'), formatCount(at + 1))} onClick={() => {
           focusAfterChange.current = Math.min(at, options.length - 2);
           onChange(options.filter((_, index) => index !== at));
         }}>{__('Remove', 'wconvert')}</Button>
       </div>
     </div>)}
-    {!validInterestOptions(value) && <p role="status" className="text-sm text-destructive">{__('Add at least one choice. Each choice needs a label and a unique valid sent value.', 'wconvert')}</p>}
+    {!validInterestOptions(value) && <p role="status" className="text-note text-destructive">{__('Add at least one choice. Each choice needs a label and a unique valid sent value.', 'wconvert')}</p>}
     <button ref={addButton} type="button" className="wconvert-panel-link" {...refusable(full ? fullId : null, add)}>{__('Add choice', 'wconvert')}</button>
     {full && <PanelHint id={fullId}>{sprintf(/* translators: %s: the most choices a field may offer. */ __('Up to %s choices. Remove one to add another.', 'wconvert'), formatCount(optionLimits.max_items))}</PanelHint>}
   </fieldset>;

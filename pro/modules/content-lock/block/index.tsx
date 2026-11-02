@@ -43,10 +43,10 @@ registerBlockType(LOCK_BLOCK, {
       <BlockControls group="other">
         <ToolbarButton disabled={!canUnwrap} onClick={() => replaceBlocks(clientId, content)}>{__('Remove lock, keep content', 'wconvert-pro')}</ToolbarButton>
       </BlockControls>
-      <div className="wconvert-lock-editor__boundary"><strong>{__('Content lock starts', 'wconvert-pro')}</strong><span>{boundaryLabel(value, state, __('Choose a campaign', 'wconvert-pro'))}</span></div>
-      {!value ? <Button variant="secondary" onClick={openSettings}>{__('Choose campaign', 'wconvert-pro')}</Button> : <CampaignStatus value={value} state={state} />}
-      {count > 1 && <Notice status="warning" isDismissible={false}>{__('Use one content lock region per page. Additional regions stay readable. Remove extra locks while keeping their content.', 'wconvert-pro')}</Notice>}
-      {!supportedContent(content) && <Notice status="warning" isDismissible={false}>{__('This region includes unsupported blocks. Keep forms, media embeds and complex layouts outside the lock.', 'wconvert-pro')}</Notice>}
+      <div className="wconvert-lock-editor__boundary"><strong>{__('Content lock starts', 'wconvert-pro')}</strong><span>{boundaryLabel(value, state, __('No campaign chosen', 'wconvert-pro'))}</span></div>
+      {!value ? <Button variant="secondary" onClick={openSettings}>{__('Choose a campaign', 'wconvert-pro')}</Button> : <CampaignStatus value={value} state={state} />}
+      {count > 1 && <Notice status="warning" isDismissible={false}>{__('Use one content lock section per page. Additional sections stay readable. Remove extra locks while keeping their content.', 'wconvert-pro')}</Notice>}
+      {!supportedContent(content) && <Notice status="warning" isDismissible={false}>{__('This section includes unsupported blocks. Keep forms, media embeds and complex layouts outside the lock.', 'wconvert-pro')}</Notice>}
       <InnerBlocks allowedBlocks={ALLOWED_BLOCKS} template={[["core/paragraph", { placeholder: __('Write or paste the content to reveal…', 'wconvert-pro') }]]} />
       <div className="wconvert-lock-editor__boundary wconvert-lock-editor__end">{__('Content lock ends', 'wconvert-pro')}</div>
     </div>;

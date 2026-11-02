@@ -17,7 +17,7 @@ import { PageError, Region, RegionErrorState } from '../shell/Region';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
 import { reportHref } from '../nav';
 import { messageOf } from '../shell/loadable';
-import { formatDay, formatRange, siteLocale } from '../lib/format';
+import { formatDay, formatMonth, formatRange } from '../lib/format';
 import { formatCount } from './format';
 import {
   readMonthlyTargets,
@@ -69,14 +69,6 @@ export function useMonthlyTargets(enabled: boolean) {
     setLoading(false);
   };
   return { data, error, loading, refresh, accept };
-}
-
-export function monthLabel(month: string): string {
-  return new Intl.DateTimeFormat(siteLocale(), {
-    month: 'long',
-    year: 'numeric',
-    timeZone: 'UTC',
-  }).format(new Date(`${month}-01T12:00:00Z`));
 }
 
 /** Calendar days from `from` to `to`, both counted; zone-free like the server's. */
@@ -152,7 +144,7 @@ export function MonthlyTargets({
           <header className="wa-targets-heading">
             <div>
               <h2 id="wa-targets-heading">
-                {sprintf(/* translators: %s: a month and year, e.g. “October 2026”. */ __('%s targets', 'wconvert'), monthLabel(data.month))}
+                {sprintf(/* translators: %s: a month and year, e.g. “October 2026”. */ __('%s targets', 'wconvert'), formatMonth(data.month))}
               </h2>
               <p className="wa-muted">
                 {formatRange(data.from, data.end)} ·{' '}
@@ -385,7 +377,7 @@ function TargetEditor({
         }}
       >
         <AdminDialogHeader
-          title={sprintf(/* translators: %s: a month and year, e.g. “October 2026”. */ __('%s targets', 'wconvert'), monthLabel(context.month))}
+          title={sprintf(/* translators: %s: a month and year, e.g. “October 2026”. */ __('%s targets', 'wconvert'), formatMonth(context.month))}
           meta={`${formatRange(context.from, context.end)} · ${__('all campaigns', 'wconvert')}`}
         />
         <form className="flex min-h-0 flex-1 flex-col" onSubmit={submit} noValidate>

@@ -184,6 +184,6 @@ export function CampaignPickerFields<C extends PickerCampaign>({ value, onChange
         : data && !data.manageUrl && (nothingToPlace || (value && !placeable)) ? <p>{rules.askAdministrator}</p> : null}
     </div>
     {result === 'updated' && <p role="status">{__('Campaign choices updated.', 'wconvert')}</p>}
-    {result === 'error' && <Notice status="error" isDismissible={false}>{__('Could not refresh campaigns. Your selection is unchanged. Try again.', 'wconvert')}</Notice>}
+    {result === 'error' && <Notice status="error" isDismissible={false}>{__('Could not refresh campaigns. Your selection is unchanged. Try Refresh campaigns again.', 'wconvert')}</Notice>}
   </div>;
 }

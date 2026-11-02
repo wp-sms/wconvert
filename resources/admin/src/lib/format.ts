@@ -32,6 +32,10 @@ export const anyOf = (items: readonly string[]): string =>
 export const allOf = (items: readonly string[]): string =>
   new Intl.ListFormat(siteLocale(), { type: 'conjunction' }).format(items);
 
+/** A list read as separate names — "A, B, C" — with no conjunction, in the site's language. */
+export const plainList = (items: readonly string[]): string =>
+  new Intl.ListFormat(siteLocale(), { style: 'long', type: 'unit' }).format(items);
+
 type Wall = { day: string; time: string | null };
 
 /** Splits any stored date into the site's calendar day and wall clock. */
@@ -153,11 +157,21 @@ export function formatDateTick(day: string, withMonth: boolean): string {
     .format(new Date(`${day}T12:00:00Z`));
 }
 
+/** A `YYYY-MM` month with its year, e.g. "October 2026". */
+export function formatMonth(month: string): string {
+  return new Intl.DateTimeFormat(siteLocale(), { month: 'long', year: 'numeric', timeZone: 'UTC' })
+    .format(new Date(`${month}-01T12:00:00Z`));
+}
+
 /** A count in the site's digits and grouping. */
 export const formatCount = (count: number) => new Intl.NumberFormat(siteLocale()).format(count);
 
 /** A number to at most one decimal, in the site's digits — e.g. a difference in percentage points. */
 export const formatDecimal = (value: number) => new Intl.NumberFormat(siteLocale(), { maximumFractionDigits: 1 }).format(value);
+
+/** Milliseconds as seconds, to the tenth; anything quicker than a tenth reads as one. */
+export const formatSeconds = (milliseconds: number) =>
+  new Intl.NumberFormat(siteLocale(), { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(Math.max(milliseconds, 100) / 1000);
 
 /** A 0–1 rate as a percentage to one decimal, or an em dash where there is none. */
 export const formatRate = (rate: number | null) =>

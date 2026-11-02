@@ -2330,8 +2330,8 @@ body:has(#wconvert-admin) #wpbody-content {
   #wconvert-admin .wconvert-inspector__head [data-slot="tabs-trigger"] {
     block-size: var(--control-height-xs) !important;
     padding-inline: 0.375rem !important;
-    font-size: var(--text-meta) !important;
-    line-height: var(--text-meta--line-height) !important;
+    font-size: var(--text-micro) !important;
+    line-height: var(--text-micro--line-height) !important;
     letter-spacing: 0.02em !important;
   }
 }
@@ -3057,10 +3057,10 @@ body:has(#wconvert-admin) #wpbody-content {
    * head with three words in it, and a chip is one lowercase word in a 6rem
    * space.
    */
-  font-size: var(--text-meta);
-  line-height: var(--text-meta--line-height);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
   letter-spacing: 0.02em;
-  font-weight: var(--text-meta--font-weight);
+  font-weight: var(--text-micro--font-weight);
   white-space: nowrap;
 }
 
@@ -3568,8 +3568,8 @@ body:has(#wconvert-admin) #wpbody-content {
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--muted-foreground);
-  font-size: var(--text-label);
-  line-height: var(--text-label--line-height);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
 }
 
 .wconvert-swatch__value {
@@ -3577,8 +3577,8 @@ body:has(#wconvert-admin) #wpbody-content {
   text-overflow: ellipsis;
   white-space: nowrap;
   font-family: var(--font-mono);
-  font-size: var(--text-label);
-  line-height: var(--text-label--line-height);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
 }
 
 .wconvert-color-picker {
@@ -3749,8 +3749,8 @@ body:has(#wconvert-admin) #wpbody-content {
  * wrong for a sentence-case caption.
  */
 .wconvert-token__axis-name {
-  font-size: var(--text-meta);
-  line-height: var(--text-meta--line-height);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
   color: var(--muted-foreground);
 }
 
@@ -4377,10 +4377,10 @@ body:has(#wconvert-admin) #wpbody-content {
  */
 #wconvert-admin
   :is(.wconvert-slot__key, .wconvert-token) {
-  font-size: var(--text-label);
-  line-height: var(--text-label--line-height);
-  letter-spacing: var(--text-label--letter-spacing);
-  font-weight: var(--text-label--font-weight);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
+  letter-spacing: var(--text-micro--letter-spacing);
+  font-weight: var(--text-micro--font-weight);
 }
 
 /*
@@ -5439,8 +5439,8 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-meter {
   flex: none;
   color: var(--muted-foreground);
-  font-size: var(--text-meta);
-  line-height: var(--text-meta--line-height);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
   letter-spacing: 0.02em;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -5548,8 +5548,8 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
    * and its job is to be noticed rather than to be read at length — the press
    * beside it is what a merchant actually acts on.
    */
-  font-size: var(--text-meta);
-  line-height: var(--text-meta--line-height);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
   letter-spacing: 0.02em;
 }
 
@@ -5575,8 +5575,8 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 #wconvert-admin .wconvert-scope__contrast > li {
   margin: 0;
   padding: 0;
-  font-size: var(--text-meta);
-  line-height: var(--text-meta--line-height);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
   letter-spacing: 0.02em;
   list-style: none;
 }
@@ -5780,7 +5780,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 }
 #wconvert-admin .wconvert-phone-country-picker__label {
   color: var(--muted-foreground);
-  font-size: var(--text-label);
+  font-size: var(--text-micro);
   font-weight: 600;
 }
 #wconvert-admin .wconvert-phone-country-picker__trigger {

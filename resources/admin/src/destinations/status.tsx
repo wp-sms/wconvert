@@ -4,7 +4,7 @@ import { CircleAlert, CircleCheck, Info, Lock, type LucideIcon } from 'lucide-re
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 import { Badge } from '../components/ui/badge';
 import { isFreeInstall, tierName, tierProductName } from '../goals/availability';
-import { formatCount, siteLocale } from '../lib/format';
+import { formatCount, formatSeconds } from '../lib/format';
 import { cn } from '../lib/utils';
 import { settingsProblems } from './requirements';
 import type { Connection, Destination, DestinationType, TestReport } from './api';
@@ -155,11 +155,8 @@ export function TestReportAlert({ report, className }: { report: TestReport; cla
       <AlertTitle className="line-clamp-none">{report.message}</AlertTitle>
       {/* What the receiver answered, under the sentence and never instead of it (ADR 0042). */}
       {report.status !== undefined && report.ms !== undefined && <AlertDescription className="text-note text-current">
-        {sprintf(/* translators: 1: an HTTP status code, e.g. 200. 2: seconds, e.g. “0.4”. */ __('Answered %1$d in %2$s s.', 'wconvert'), report.status, seconds(report.ms))}
+        {sprintf(/* translators: 1: an HTTP status code, e.g. 200. 2: seconds, e.g. “0.4”. */ __('Answered %1$s in %2$s s.', 'wconvert'), formatCount(report.status), formatSeconds(report.ms))}
       </AlertDescription>}
     </Alert>
   );
 }
-
-/** Milliseconds as tenths of a second; anything quicker than a tenth reads as one. */
-const seconds = (ms: number) => new Intl.NumberFormat(siteLocale(), { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(Math.max(ms, 100) / 1000);

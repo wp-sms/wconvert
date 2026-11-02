@@ -95,7 +95,7 @@ describe('the chunk fallback is the screen’s own first-load state', () => {
   it('the builder', async () => {
     const { OptinBuilder: Lazy } = await import('../../resources/admin/src/builder/lazy');
     const { OptinBuilder } = await import('../../resources/admin/src/builder/OptinBuilder');
-    const props = { id: '01J0000000AAAAAAAAAAAAAAAA', onClose: () => undefined, backLabel: 'Back to Campaigns' };
+    const props = { id: '01J0000000AAAAAAAAAAAAAAAA', onClose: () => undefined, backLabel: 'Back to campaigns' };
     expectHandOff(markup(<Lazy {...props} />), markup(<OptinBuilder {...props} />));
   });
 });

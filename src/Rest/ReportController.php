@@ -62,7 +62,7 @@ final class ReportController implements RestController
             'recipients' => implode(', ', $this->settings->chosen() ?: [$this->settings->defaultRecipient()]),
             'default_recipient' => $this->settings->defaultRecipient(),
             'waiting_for_publish' => $this->milestones->firstPublish() === null,
-            'next_send' => $next === false ? null : wp_date('l, ' . get_option('date_format') . ', ' . get_option('time_format'), $next),
+            'next_send' => $next === false ? null : wp_date('Y-m-d H:i:s', $next),
         ]);
     }
 
@@ -91,7 +91,7 @@ final class ReportController implements RestController
         if (!$this->job->sendTest($parsed)) {
             return new WP_Error(
                 'wconvert_summary_not_sent',
-                __('WordPress couldn’t send the email. Check your site’s email setup, then try again.', 'wconvert'),
+                __('WordPress could not send the email. Check your site’s email setup, then try again.', 'wconvert'),
                 ['status' => 502]
             );
         }

@@ -57,7 +57,7 @@ it('names the exact graph path with an unfinished answer and its repair target',
 it('locates a disconnected screen by stable ID even when names can change', () => {
   const tree: TemplateTree = { ...base, graph: { ...base.graph!, edges: base.graph!.edges.filter(edge => edge.id !== 'submitted') } };
   expect(journeyReadinessIssues(tree)).toContainEqual({ key: 'unreachable:received',
-    said: 'No line reaches “Received”. Connect one to it, or delete it.',
+    said: 'No line reaches “Received”. Add one, or delete it.',
     repair: { screenId: 'received', section: 'content' } });
 });
 

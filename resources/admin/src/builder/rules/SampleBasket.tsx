@@ -53,7 +53,7 @@ export function SampleBasket({ value, onChange, result, error, onRetry, products
   };
   return <section aria-labelledby="wconvert-sample-basket" className="space-y-3">
     <h3 id="wconvert-sample-basket">{__('Sample basket', 'wconvert')}</h3>
-    <p className="wconvert-sample-help">{__('These are pretend basket contents and totals. Product categories, relationships and availability come from your store. Nothing is added to a real cart.', 'wconvert')}</p>
+    <p className="wconvert-sample-help">{__('These are pretend basket contents and totals. Product categories, relationships and availability come from your store. Nothing is added to a real basket.', 'wconvert')}</p>
     <label>{__('Basket status', 'wconvert')}<NativeSelect value={value.state} onChange={event => onChange({ ...value, state: event.target.value as Basket['state'] })}>
       <option value="known">{__('Known basket', 'wconvert')}</option><option value="unknown">{__('Basket unavailable', 'wconvert')}</option><option value="blocked">{__('Consent not given', 'wconvert')}</option>
     </NativeSelect></label>
@@ -63,7 +63,7 @@ export function SampleBasket({ value, onChange, result, error, onRetry, products
         onChange={event => onChange({ ...value, items: value.items.map(item => item.id === id ? { ...item, quantity: Math.max(1, Math.min(10000, Math.floor(Number(event.target.value) || 1))) } : item) })} /></label>} />
     <label>{__('Merchandise amount after discounts', 'wconvert')}<Input type="number" min={0} max={1000000000} step="any" value={value.amount} onChange={event => onChange({ ...value, amount: Number(event.target.value) })} /></label>
     <p className="wconvert-sample-help">{result?.currency ?? ''} · {__('Enter a pretend amount, excluding shipping and tax. It is not calculated from product prices.', 'wconvert')}</p>
-    {legacyTotal && <label>{__('Cart total including shipping and tax', 'wconvert')}<Input type="number" min={0} max={1000000000} step="any" value={value.total} onChange={event => onChange({ ...value, total: Number(event.target.value) })} /></label>}
+    {legacyTotal && <label>{__('Basket total including shipping and tax', 'wconvert')}<Input type="number" min={0} max={1000000000} step="any" value={value.total} onChange={event => onChange({ ...value, total: Number(event.target.value) })} /></label>}
     {/* The verdict beside this says "Checking…", so the wait has no second voice here. */}
     {error && <div role="alert" className="flex flex-wrap items-center gap-3"><span>{__('Could not test this basket. Review the values, then try again.', 'wconvert')}</span><TryAgain onClick={onRetry} /></div>}
     {products && <div className="space-y-3"><h4>{__('Recommendations for this sample visit', 'wconvert')}</h4>

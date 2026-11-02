@@ -150,7 +150,7 @@ export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
         <span className="wconvert-already-bought">
           {__('Already bought?', 'wconvert')}{' '}
           <a href={PORTAL_DOWNLOADS_URL} target="_blank" rel="noreferrer">
-            {__('Download it', 'wconvert')}<span aria-hidden="true"> ↗</span>
+            {__('Download it', 'wconvert')}<span aria-hidden="true"> <span className="inline-block rtl:-scale-x-100">↗</span></span>
             <span className="sr-only">{__('(opens in a new tab)', 'wconvert')}</span>
           </a>
         </span>
@@ -180,7 +180,7 @@ export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
             className="wconvert-notifications-trigger"
             aria-label={
               count > 0
-                ? sprintf(/* translators: %d: how many issues the notifications list holds. */ _n('Notifications, %d issue', 'Notifications, %d issues', count, 'wconvert'), count)
+                ? sprintf(/* translators: %s: how many issues the notifications list holds. */ _n('Notifications, %s issue', 'Notifications, %s issues', count, 'wconvert'), formatCount(count))
                 : __('Notifications', 'wconvert')
             }
           >
@@ -193,7 +193,7 @@ export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
           <h2>{__('Notifications', 'wconvert')}</h2>
           {error && (
             <div role="alert" className="wconvert-notification">
-              <p>{sprintf(/* translators: %s: the reason loading failed, as the server gave it. */ __('Notifications couldn’t load: %s', 'wconvert'), error)}</p>
+              <p>{sprintf(/* translators: %s: the reason loading failed, as the server gave it. */ __('Notifications could not load: %s', 'wconvert'), error)}</p>
               <TryAgain onClick={() => void load()} busy={loading} />
             </div>
           )}
@@ -229,14 +229,14 @@ export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
                     <strong>{__('Sending needs attention', 'wconvert')}</strong>
                     <p>
                       {sprintf(
-                        /* translators: %d: how many destinations have a known sending issue. */
+                        /* translators: %s: how many destinations have a known sending issue. */
                         _n(
-                          '%d destination has a known issue.',
-                          '%d destinations have known issues.',
+                          '%s destination has a known issue.',
+                          '%s destinations have known issues.',
                           notices.sending,
                           'wconvert',
                         ),
-                        notices.sending,
+                        formatCount(notices.sending),
                       )}
                     </p>
                     <a href={sendingIssuesHref()}>{__('Review sending issues', 'wconvert')}</a>
@@ -262,7 +262,7 @@ export function HelpLinks({ currentPage }: { currentPage?: string } = {}) {
   const out = (href: string, Icon: typeof Rocket, label: string) => (
     <a href={href} target="_blank" rel="noreferrer">
       <Icon aria-hidden="true" />{label}
-      <ArrowUpRight aria-hidden="true" className="wconvert-help-links__out" />
+      <ArrowUpRight aria-hidden="true" className="wconvert-help-links__out rtl:-scale-x-100" />
       <span className="sr-only">{__('(opens in a new tab)', 'wconvert')}</span>
     </a>
   );
@@ -287,7 +287,7 @@ export function HelpLinks({ currentPage }: { currentPage?: string } = {}) {
         </PopoverClose>
       )}
       <a className="wconvert-help-links__site" href="https://wconvert.io/" target="_blank" rel="noreferrer">
-        {__('WConvert website', 'wconvert')} <ExternalLink aria-hidden="true" />
+        {__('WConvert website', 'wconvert')} <ExternalLink aria-hidden="true" className="rtl:-scale-x-100" />
       </a>
     </div>
   </>;

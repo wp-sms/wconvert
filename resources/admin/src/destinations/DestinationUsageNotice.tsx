@@ -22,7 +22,7 @@ export function DestinationUsageNotice({ id, usage: given }: { id: string; usage
   return <div className="flex flex-col gap-2 rounded-md border border-border bg-surface p-4 text-note leading-relaxed">
     <p className="m-0 font-medium">{__('Campaigns using this destination', 'wconvert')}</p>
     {usage == null ? <div className="flex flex-col items-start gap-2">
-      <p className="m-0">{__('Couldn’t read which campaigns use it. Try again before changing shared settings.', 'wconvert')}</p>
+      <p className="m-0">{__('Could not read which campaigns use it. Try again before changing shared settings.', 'wconvert')}</p>
       <TryAgain onClick={tryAgain} busy={reading} />
     </div>
       : usage.length === 0 ? <p className="m-0">{__('No saved campaign uses it yet.', 'wconvert')}</p>

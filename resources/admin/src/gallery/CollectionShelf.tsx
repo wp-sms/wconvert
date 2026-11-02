@@ -3,7 +3,7 @@ import { X } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { OptionStrip } from '../shell/OptionStrip';
 import { DesignStage } from '../stage/DesignStage';
-import { daysBetween, formatCount, siteLocale } from '../lib/format';
+import { daysBetween, formatCount, formatDateTick } from '../lib/format';
 import { lastDay } from '../discovery/model';
 import type { Template } from '@renderer/types';
 import type { Collection } from '../discovery/api';
@@ -91,12 +91,7 @@ function seasonWords(event: NonNullable<Collection['event']>, today: string): st
   }
   const last = lastDay(event.end_exclusive);
   if (last === today) return __('Ends today', 'wconvert');
-  return sprintf(/* translators: %s: the last day of a seasonal collection, e.g. “31 Oct”. */ __('Until %s', 'wconvert'), dayAndMonth(last));
-}
-
-/** A day as the site's language says it, without the year: "31 Oct". */
-function dayAndMonth(day: string): string {
-  return new Intl.DateTimeFormat(siteLocale(), { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(`${day}T12:00:00Z`));
+  return sprintf(/* translators: %s: the last day of a seasonal collection, e.g. “31 Oct”. */ __('Until %s', 'wconvert'), formatDateTick(last, true));
 }
 
 /** The shelf when it is off: a line that brings it back. */

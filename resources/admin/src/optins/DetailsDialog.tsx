@@ -267,7 +267,7 @@ export function ForDevelopers({ value, variant }: { value: string; variant: bool
       </p>
       {copy === 'failed' && (
         <p role="alert" className="m-0 text-note text-destructive">
-          {__('Couldn’t copy. The ID is selected; copy it with your keyboard.', 'wconvert')}
+          {__('Could not copy. The ID is selected; copy it with your keyboard.', 'wconvert')}
         </p>
       )}
     </Disclosure>

@@ -14,6 +14,7 @@ import type { ContactChannel } from './structure/captureWording';
 import { walkNodes } from './structure/journey';
 import { messageOf } from '../shell/loadable';
 import { CheckRow } from '../shell/CheckRow';
+import { formatCount } from '../lib/format';
 
 /**
  * ============================================================================
@@ -140,17 +141,17 @@ function changeWords(before: Template, effective: CaptureTarget, copy: boolean) 
   const removing = effective.capture === 'none';
   const signups = before.tree.submissions.length;
   const channelForm = effective.capture === 'phone' ? __('Phone form', 'wconvert') : __('Email form', 'wconvert');
-  const title = copy ? (adding ? __('Signup copy', 'wconvert') : __('Offer copy', 'wconvert'))
+  const title = copy ? (adding ? __('Form copy', 'wconvert') : __('Offer copy', 'wconvert'))
     : !removing ? channelForm
       : signups > 1 ? __('Both forms', 'wconvert') : was === 'phone' ? __('Phone form', 'wconvert') : __('Email form', 'wconvert');
   const code = before.tree.steps.some(screen => walkNodes(screen.content).some(node => node.type === 'code'));
   const meta = copy ? __('The original keeps its published version and all its results.', 'wconvert')
     : adding ? (code ? __('Visitors sign up first, then see the code.', 'wconvert') : __('Visitors sign up first, then see the thank-you screen.', 'wconvert'))
       : removing ? (before.tree.steps.length > 2
-        ? sprintf(/* translators: %d: how many screens go. */ _n('A campaign without a form is one screen, so %d screen goes.', 'A campaign without a form is one screen, so %d screens go.', before.tree.steps.length - 1, 'wconvert'), before.tree.steps.length - 1)
+        ? sprintf(/* translators: %s: how many screens go. */ _n('A campaign without a form is one screen, so %s screen goes.', 'A campaign without a form is one screen, so %s screens go.', before.tree.steps.length - 1, 'wconvert'), formatCount(before.tree.steps.length - 1))
         : code ? __('Visitors see the offer and the code straight away.', 'wconvert') : __('Visitors see the offer straight away.', 'wconvert'))
         : __('The screens stay the same. Only the field and its consent change.', 'wconvert');
-  const confirm = copy ? (adding ? __('Create signup copy', 'wconvert') : __('Create offer copy', 'wconvert'))
+  const confirm = copy ? (adding ? __('Create form copy', 'wconvert') : __('Create offer copy', 'wconvert'))
     : adding ? (effective.capture === 'phone' ? __('Add phone form', 'wconvert') : __('Add email form', 'wconvert'))
       : removing ? (signups > 1 ? __('Remove both', 'wconvert') : __('Remove form', 'wconvert'))
         : effective.capture === 'phone' ? __('Ask for phone', 'wconvert') : __('Ask for email', 'wconvert');

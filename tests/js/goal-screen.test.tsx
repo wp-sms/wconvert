@@ -525,7 +525,7 @@ describe('the online library', () => {
     await pickGoal();
     await useTemplate('Online welcome-online');
     const card = await cardOf('Online welcome-online');
-    expect(await within(card).findByRole('alert')).toHaveTextContent('Couldn’t add this template.');
+    expect(await within(card).findByRole('alert')).toHaveTextContent('Could not add this template.');
     expect(goals.prefill).not.toHaveBeenCalled();
     await userEvent.click(within(card).getByRole('button', { name: 'Try again' }));
     await waitFor(() => expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, 'setup-1-welcome-online'));

@@ -147,7 +147,7 @@ describe('finding a page', () => {
     await waitFor(() => expect(box()).toHaveValue('Pricing (#42)'));
     await type('new page');
     const retry = await screen.findByRole('button', { name: 'Try again' });
-    expect(screen.getByRole('status')).toHaveTextContent('Search couldn’t be completed');
+    expect(screen.getByRole('status')).toHaveTextContent('Search could not be completed');
     expect(retry).toHaveAccessibleDescription(/press Enter/);
     expect(within(screen.getByRole('listbox')).queryByRole('button')).toBeNull();
     expect(screen.queryByText(/No matching pages/)).toBeNull();
@@ -359,7 +359,7 @@ describe('a value already stored', () => {
 
     await waitFor(() => expect(box()).toHaveValue('#42'));
     expect(await screen.findByRole('button', { name: 'Try again' })).toBeInTheDocument();
-    expect(box()).toHaveAccessibleDescription(/Couldn’t load.*still uses #42/);
+    expect(box()).toHaveAccessibleDescription(/Could not load.*still uses #42/);
   });
 
   it('retries a saved name lookup by keyboard, retaining its id and restoring input focus', async () => {

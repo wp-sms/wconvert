@@ -4,6 +4,7 @@ import type { TemplateTree } from '@renderer/types';
 import { nodesOf, nodeAt } from './structure/tree';
 import { withValue } from './panel';
 import { Textarea } from '../components/ui/textarea';
+import { formatCount } from '../lib/format';
 
 /** Edit existing content in place: preserve layout, IDs, tokens and button actions. */
 export function JourneyScreenContent({ tree, step, onChange }: {
@@ -28,11 +29,11 @@ export function JourneyScreenContent({ tree, step, onChange }: {
       const count = (counts.get(label) ?? 0) + 1; counts.set(label, count);
       const key = button ? 'label' : 'text';
       const value = key in node ? String((node as unknown as Record<string, unknown>)[key] ?? '') : '';
-      return <label key={block.path.join('.')}>{count > 1 ? sprintf(/* translators: 1: a text field's label, e.g. “Heading” or “Button text”, 2: which one of that kind it is on the screen, e.g. 2. */ __('%1$s %2$d', 'wconvert'), label, count) : label}
+      return <label key={block.path.join('.')}>{count > 1 ? sprintf(/* translators: 1: a text field's label, e.g. “Heading” or “Button text”, 2: which one of that kind it is on the screen, e.g. 2. */ __('%1$s %2$s', 'wconvert'), label, formatCount(count)) : label}
         <Textarea rows={button ? 1 : node.type === 'heading' ? 2 : 3} value={value}
           onChange={event => onChange(withValue(tree, block.path, key, event.target.value), `journey:${tree.steps[step].id}:copy:${block.path.join('.')}`)} />
       </label>;
     })}
   </section>;
-  return hasQuestions ? <Disclosure variant="inline" className="wconvert-journey-copy-options" title={__('Heading, message & buttons', 'wconvert')}>{content}</Disclosure> : content;
+  return hasQuestions ? <Disclosure variant="inline" className="wconvert-journey-copy-options" title={__('Words and buttons', 'wconvert')}>{content}</Disclosure> : content;
 }

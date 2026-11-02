@@ -45,7 +45,7 @@ export function CaptureSwitch({ state, copy, published, onChoose, sectionRef }: 
         : __('This campaign is part of an A/B test, and both versions must count the same thing. The change goes into a new, separate campaign instead. The test stays as it is.', 'wconvert')}</InfoTip></span>}
     </div>
     {copy ? <Button type="button" variant="outline" onClick={() => onChoose(state === 'none' ? 'email' : 'none')}>
-      {state === 'none' ? __('Make a signup copy', 'wconvert') : __('Make an offer copy', 'wconvert')}
+      {state === 'none' ? __('Make a form copy', 'wconvert') : __('Make an offer copy', 'wconvert')}
     </Button> : <OptionStrip label={__('Contact form', 'wconvert')} value={state}
       options={[{ value: 'none', label: __('None', 'wconvert') }, { value: 'email', label: __('Email', 'wconvert') }, { value: 'phone', label: __('Phone', 'wconvert') }]}
       onChange={value => onChoose(value as CaptureChoice)} />}

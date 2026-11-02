@@ -5,6 +5,7 @@ import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-d
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/utils/combine';
 import type { Template } from '@renderer/types';
 import { DesignStage } from '../stage/DesignStage';
+import { formatCount } from '../lib/format';
 
 /** Pointer dragging supplements the same move operation used by the arrow buttons. */
 export function JourneyScreenCard({ template, displayType, index, ordinal, selected, scope, label, condition, onSelect, onMove }: {
@@ -35,7 +36,7 @@ export function JourneyScreenCard({ template, displayType, index, ordinal, selec
   }, [scope, screen.id, terminal, movable]);
   return <li ref={card} className="wconvert-journey-card" data-selected={selected} data-dragging={dragging} data-drop-target={over}>
     <div className="wconvert-journey-card__head">
-      <span>{sprintf(/* translators: %d: the screen's position in the campaign, e.g. “2”. */ __('Screen %d', 'wconvert'), ordinal ?? index + 1)}</span>
+      <span>{sprintf(/* translators: %s: the screen's position in the campaign, e.g. “2”. */ __('Screen %s', 'wconvert'), formatCount(ordinal ?? index + 1))}</span>
       {onMove && <span ref={grip} className="wconvert-journey-card__grip" aria-hidden="true">{terminal ? __('Last', 'wconvert') : <GripVertical size={16} />}</span>}
     </div>
     <div className="wconvert-journey-card__preview" aria-hidden="true"><DesignStage size="thumb" displayType={displayType} step={index} source={{ live: { template } }} /></div>

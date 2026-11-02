@@ -129,7 +129,7 @@ it('Free explains manual placement without carrying the premium controls', () =>
 /** Settings saved under Pro are explained without naming a product (ADR 0116). */
 it('Free explains retained automatic placement and content lock without selling either', () => {
   render(<InlinePlacementSettings optinId="example" published config={{ inline_placement: { position: 'after_content' }, content_lock: { mode: 'hide' } }} vocabulary={vocabulary} onChange={() => undefined} />);
-  expect(screen.getByText('Content lock isn’t available on this site. The selected region stays readable.')).toBeInTheDocument();
+  expect(screen.getByText('Content lock isn’t available on this site. The selected section stays readable.')).toBeInTheDocument();
   expect(screen.getByText('Automatic placement isn’t available on this site. You can still place this campaign manually with its block or shortcode.')).toBeInTheDocument();
   expect(screen.queryByText(/Pro/)).toBeNull();
 });

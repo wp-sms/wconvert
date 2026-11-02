@@ -6,6 +6,7 @@ import { ArrowRight, CircleHelp, Flag, LayoutTemplate, Send } from 'lucide-react
 import { followupGroups, followupGroupSource } from '@/builder/structure/followupGroups';
 import { conditionText } from '@/builder/structure/conditionText';
 import { walkNodes } from '@/builder/structure/journey';
+import { Arrow } from '@/builder/flow/FlowCard';
 import { gatesOf } from '@/builder/structure/gateEndings';
 import { graphReaches } from '@/builder/structure/graph';
 import { Input } from '@/components/ui/input';
@@ -13,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { AdminDialogBody, AdminDialogFooter, AdminDialogHeader } from '@/components/ui/admin-dialog';
 import { graphInsertionLocations, insertionUnavailable, type GraphScreenKind } from './structure/graphInsertion';
 import { canAddGraphConnection, canTargetGraphScreen, graphChoiceSources } from '@/builder/structure/graphConnections';
-import { anyOf } from '@/lib/format';
+import { anyOf, formatCount } from '@/lib/format';
 import { NativeSelect } from '@/components/ui/native-select';
 import { Field } from '@/shell/Field';
 
@@ -75,7 +76,7 @@ export function GraphScreenInsert({ tree, source, kind: initialKind, initialLoca
   const refusal = canInsert ? null
     : capture ? __('Choose how to collect details above.', 'wconvert-pro')
     : !conditionReady ? __('Choose the answer that shows this screen.', 'wconvert-pro')
-    : existing ? __('Choose a screen to connect to.', 'wconvert-pro')
+    : existing ? __('Choose the screen this line goes to.', 'wconvert-pro')
     : unavailable ? unavailable
     : __('Write the question first.', 'wconvert-pro');
   return <>
@@ -89,8 +90,8 @@ export function GraphScreenInsert({ tree, source, kind: initialKind, initialLoca
         {!existing && kind !== 'ending' && <><ArrowRight aria-hidden="true" size={14} className="rtl:-scale-x-100"/><span>{group ? __('Other matching follow-ups', 'wconvert-pro') : tree.steps.find(screen => screen.id === location.target)?.name}</span></>}
       </div>
       {!existing && intent === 'continue' && location.id !== 'entry' && <small>{locationEdge?.kind === 'answer' && locationEdge.when ? sprintf(/* translators: %s: the line's answer, e.g. “Interests includes Growing”. */ __('Only visitors on the “%s” line see it.', 'wconvert-pro'), pathName) : locationEdge?.kind === 'hidden' ? __('Only visitors who skip that screen see it.', 'wconvert-pro') : __('Everyone on this line sees it.', 'wconvert-pro')}</small>}
-      {group && <small>{sprintf(/* translators: 1: the new follow-up's position in its group, 2: how many follow-ups the group will have. */ __('Follow-up %1$d of %2$d in this group', 'wconvert-pro'), group.screens.findIndex(at => tree.steps[at].id === location?.target) < 0 ? group.screens.length + 1 : group.screens.findIndex(at => tree.steps[at].id === location?.target) + 1, group.screens.length + 1)}</small>}
-      {intent === 'followup' && <small>{group ? sprintf(/* translators: %s: a screen's name. */ __('Then → %s. Only matching questions are asked.', 'wconvert-pro'), tree.steps.find(screen => screen.id === group.next)?.name ?? '') : __('Other matching follow-ups are still asked.', 'wconvert-pro')}</small>}
+      {group && <small>{sprintf(/* translators: 1: the new follow-up's position in its group, 2: how many follow-ups the group will have. */ __('Follow-up %1$s of %2$s in this group', 'wconvert-pro'), formatCount(group.screens.findIndex(at => tree.steps[at].id === location?.target) < 0 ? group.screens.length + 1 : group.screens.findIndex(at => tree.steps[at].id === location?.target) + 1), formatCount(group.screens.length + 1))}</small>}
+      {intent === 'followup' && <small>{group ? <>{__('Then', 'wconvert-pro')} <Arrow /> <bdi>{tree.steps.find(screen => screen.id === group.next)?.name ?? ''}</bdi>. {__('Only matching questions are asked.', 'wconvert-pro')}</> : __('Other matching follow-ups are still asked.', 'wconvert-pro')}</small>}
       {intent === 'branch' && <small>{sprintf(/* translators: %s: a screen's name. */ __('Checked after the existing lines. All other answers still go to %s.', 'wconvert-pro'), tree.steps.find(screen => screen.id === location.target)?.name ?? '')}</small>}
     </div>}
       {(!initialAnswer || advanced) && <fieldset className="wconvert-graph-insert__intents wconvert-radio-cards"><legend>{__('Who sees it', 'wconvert-pro')}</legend>
@@ -124,7 +125,7 @@ export function GraphScreenInsert({ tree, source, kind: initialKind, initialLoca
             onChange={event => setAnswers(event.target.checked ? [...answers, option.value] : answers.filter(value => value !== option.value))} />)}
         </fieldset>
       </>}
-      {existing ? <><Field label={__('Connect to', 'wconvert-pro')} htmlFor={`${id}-target`}><NativeSelect id={`${id}-target`} value={target} onChange={event => setTarget(event.target.value)}><option value="">{__('Choose a screen…', 'wconvert-pro')}</option>{validTargets.map(screen => <option key={screen.id} value={screen.id}>{screen.name}</option>)}</NativeSelect></Field><p>{!validTargets.length ? __('No other screen can follow this line without making a loop. Add a new screen instead.', 'wconvert-pro') : __('Screens that would make a loop aren’t listed. You’ll check any screens or forms this change skips before it applies.', 'wconvert-pro')}</p></> : <>
+      {existing ? <><Field label={__('Line goes to', 'wconvert-pro')} htmlFor={`${id}-target`}><NativeSelect id={`${id}-target`} value={target} onChange={event => setTarget(event.target.value)}><option value="">{__('Choose a screen…', 'wconvert-pro')}</option>{validTargets.map(screen => <option key={screen.id} value={screen.id}>{screen.name}</option>)}</NativeSelect></Field><p>{!validTargets.length ? __('No other screen can follow this line without making a loop. Add a new screen instead.', 'wconvert-pro') : __('Screens that would make a loop aren’t listed. You’ll check any screens or forms this change skips before it applies.', 'wconvert-pro')}</p></> : <>
         {(!initialAnswer || advanced) && <div className="wconvert-graph-insert__types wconvert-radio-cards" role="group" aria-label={__('Screen type', 'wconvert-pro')}>
           {([
             ['input', CircleHelp, __('Ask a question', 'wconvert-pro'), __('Learn something before continuing', 'wconvert-pro')],
@@ -145,7 +146,7 @@ export function GraphScreenInsert({ tree, source, kind: initialKind, initialLoca
         {capture ? <div className="wconvert-graph-insert__summary"><strong>{__('Contact collection', 'wconvert-pro')}</strong>
           <p>{captures.length ? __('Use an existing form to keep one combined submission. You’ll check any follow-ups this line skips.', 'wconvert-pro') : __('Contact fields need a form and consent settings. They cannot be added as an ordinary question.', 'wconvert-pro')}</p>
           {captures.map(screen => <button type="button" key={screen.id} onClick={() => { if (screen.id === location?.target) { onEditCapture?.(screen.id); return; } setCapture(false); setExisting(true); setTarget(screen.id); }} disabled={screen.id === location?.target && !onEditCapture}>{sprintf(screen.id === location?.target ? /* translators: %s: the name of a screen with a form, e.g. “Get your results”. */ __('Edit existing %s', 'wconvert-pro') : /* translators: %s: the name of a screen with a form, e.g. “Get your results”. */ __('Use %s', 'wconvert-pro'), screen.name)}<ArrowRight aria-hidden="true" size={14} className="rtl:-scale-x-100"/></button>)}
-          {onCapture && <Button type="button" variant="outline" onClick={onCapture}>{__('Set up optional signup', 'wconvert-pro')}</Button>}
+          {onCapture && <Button type="button" variant="outline" onClick={onCapture}>{__('Set up optional form', 'wconvert-pro')}</Button>}
           {!captures.length && !onCapture && <p>{__('Select your existing contact screen to edit its fields, or choose a signup starting point for a new campaign.', 'wconvert-pro')}</p>}
         </div> : <>
         <Field label={kind === 'input' ? __('Question', 'wconvert-pro') : __('Screen name', 'wconvert-pro')} htmlFor={`${id}-name`}><Input id={`${id}-name`} maxLength={120} value={name} placeholder={intent === 'followup' ? __('Relevant follow-up', 'wconvert-pro') : kind === 'content' ? __('A helpful message', 'wconvert-pro') : kind === 'ending' ? __('All done', 'wconvert-pro') : __('A follow-up question', 'wconvert-pro')} onChange={event => setName(event.target.value)} /></Field>
@@ -155,7 +156,7 @@ export function GraphScreenInsert({ tree, source, kind: initialKind, initialLoca
         {unavailable && <div role="status"><p>{unavailable}</p>{suggested && <Button type="button" variant="outline" onClick={() => { setLocationId(suggested.id); setChangeLocation(false); }}>{sprintf(/* translators: %s: a screen's name, e.g. “Skin type”. */ __('Add before %s', 'wconvert-pro'), tree.steps.find(screen => screen.id === suggested.target)?.name ?? '')}</Button>}</div>}
         </>}
       </>}
-      {onExisting && (!initialAnswer || advanced) && <button type="button" className="wconvert-insert-existing" onClick={() => { setExisting(value => !value); setCapture(false); if (!existing && intent === 'followup') setIntent('continue'); }}>{existing ? __('Create a new screen instead', 'wconvert-pro') : __('Connect an existing screen instead…', 'wconvert-pro')}</button>}
+      {onExisting && (!initialAnswer || advanced) && <button type="button" className="wconvert-insert-existing" onClick={() => { setExisting(value => !value); setCapture(false); if (!existing && intent === 'followup') setIntent('continue'); }}>{existing ? __('Create a new screen instead', 'wconvert-pro') : __('Add a line to an existing screen instead…', 'wconvert-pro')}</button>}
 
     </AdminDialogBody>
     <AdminDialogFooter back={<Button type="button" variant="outline" onClick={onCancel}>{__('Cancel', 'wconvert-pro')}</Button>}
@@ -164,7 +165,7 @@ export function GraphScreenInsert({ tree, source, kind: initialKind, initialLoca
         if (refusal !== null) return;
         if (existing) onExisting?.(target, when(), intent === 'continue' ? locationId.slice(5) : undefined);
         else onInsert(locationId, effectiveKind, name.trim(), when(), !!location?.sharedHidden && includeHidden, intent === 'branch', kind === 'input' ? answerType : undefined);
-      }}>{existing ? __('Connect screen', 'wconvert-pro') : initialAnswer ? __('Add follow-up', 'wconvert-pro') : __('Add screen here', 'wconvert-pro')}</Button>
+      }}>{existing ? __('Add line', 'wconvert-pro') : initialAnswer ? __('Add follow-up', 'wconvert-pro') : __('Add screen here', 'wconvert-pro')}</Button>
     </AdminDialogFooter>
   </>;
 }

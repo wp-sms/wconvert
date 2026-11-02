@@ -4,6 +4,7 @@ import type { Destination } from '../destinations/api';
 import { compatibilityProblems, type CapturedField, type MappingsByDestination } from '../destinations/requirements';
 import { walkNodes } from './structure/journey';
 import type { Template, TemplateTree } from '@renderer/types';
+import { formatCount } from '../lib/format';
 
 /**
  * What the builder says about this [[Optin]]'s [[Destination]]s: where the
@@ -149,13 +150,13 @@ export function destinationsSaid(
         sprintf(
           /* translators: 1: a destination's name. 2: how many pushes failed in a row. */
           _n(
-            '%1$s has failed %2$d time in a row.',
-            '%1$s has failed %2$d times in a row.',
+            '%1$s has failed %2$s time in a row.',
+            '%1$s has failed %2$s times in a row.',
             destination.health.consecutive_failures,
             'wconvert',
           ),
           destination.label,
-          destination.health.consecutive_failures,
+          formatCount(destination.health.consecutive_failures),
         ),
       );
     }
@@ -170,14 +171,14 @@ export function destinationsSaid(
   if (missing > 0) {
     problems.push(
       sprintf(
-        /* translators: %d: how many destinations an Optin points at that no longer exist. */
+        /* translators: %s: how many destinations an Optin points at that no longer exist. */
         _n(
-          'It points at %d destination that has been deleted.',
-          'It points at %d destinations that have been deleted.',
+          'It points at %s destination that has been deleted.',
+          'It points at %s destinations that have been deleted.',
           missing,
           'wconvert',
         ),
-        missing,
+        formatCount(missing),
       ),
     );
   }
@@ -202,9 +203,9 @@ export function destinationsSaid(
 
 const countOfDestinations = (count: number): string =>
   sprintf(
-    /* translators: %d: a number of destinations. */
-    _n('%d destination', '%d destinations', count, 'wconvert'),
-    count,
+    /* translators: %s: a number of destinations. */
+    _n('%s destination', '%s destinations', count, 'wconvert'),
+    formatCount(count),
   );
 
 /** `integration_mappings`: submission id → destination id → mapping source → destination field. */

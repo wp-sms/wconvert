@@ -25,7 +25,7 @@ export default function LockSettings({ optinId, published }: InlinePlacementProp
         </div>
       </div>
       {published && <div className="wconvert-placement-row">
-        <ShortcodeCopy value={shortcode} label={__('Classic editor shortcode', 'wconvert-pro')} help={__('Replace the ellipsis with your content. Keep both shortcode tags around the complete region.', 'wconvert-pro')} />
+        <ShortcodeCopy value={shortcode} label={__('Classic editor shortcode', 'wconvert-pro')} help={__('Replace the ellipsis with your content. Keep both shortcode tags around the complete section.', 'wconvert-pro')} />
       </div>}
     </div>
     <ul className="wconvert-placement-facts">

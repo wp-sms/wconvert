@@ -348,9 +348,9 @@ export function ReadinessDialog({
                     <h3 id={`${reasonId}-blockers`}>
                       <TriangleAlert aria-hidden="true" />
                       {sprintf(
-                        /* translators: %d: how many items block publishing. */
-                        _n('%d thing to fix before publishing', '%d things to fix before publishing', blocking.length, 'wconvert'),
-                        blocking.length,
+                        /* translators: %s: how many items block publishing. */
+                        _n('%s thing to fix before publishing', '%s things to fix before publishing', blocking.length, 'wconvert'),
+                        formatCount(blocking.length),
                       )}
                     </h3>
                     <ul>
@@ -419,9 +419,9 @@ export function ReadinessDialog({
                 {warnings.length > 0 && (
                   <ReviewSection
                     title={sprintf(
-                      /* translators: %d: how many warnings to look at before publishing; none of them block it. */
-                      _n('%d thing to review', '%d things to review', warnings.length, 'wconvert'),
-                      warnings.length,
+                      /* translators: %s: how many warnings to look at before publishing; none of them block it. */
+                      _n('%s thing to review', '%s things to review', warnings.length, 'wconvert'),
+                      formatCount(warnings.length),
                     )}
                   >
                     <ul className="wconvert-launch-review__warnings">

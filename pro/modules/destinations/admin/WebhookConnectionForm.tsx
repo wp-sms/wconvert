@@ -202,7 +202,7 @@ export function WebhookConnectionForm({ type, account, title, meta, back, onSave
           <AlertTitle className="line-clamp-none">{__('http:// isn’t encrypted, so your header and every lead travel readable. Use https://.', 'wconvert-pro')}</AlertTitle>
         </Alert>}
 
-        {!editing && receiver === 'make' && <Field label={<>{__('API key', 'wconvert-pro')} <span className="wconvert-webhook-optional">{__('· optional', 'wconvert-pro')}</span></>}
+        {!editing && receiver === 'make' && <Field label={__('API key (optional)', 'wconvert-pro')}
           htmlFor={field('make-key')} hintId={field('make-key-hint')}
           hint={<>{sprintf(/* translators: %s: a header name, x-make-apikey. */ __('Sent as the %s header.', 'wconvert-pro'), MAKE_KEY_HEADER)}{' '}
             {!otherHeaders && <OtherHeaders onOpen={() => setOtherHeaders(true)} />}</>}>
@@ -211,7 +211,7 @@ export function WebhookConnectionForm({ type, account, title, meta, back, onSave
         </Field>}
 
         {!editing && receiver === 'n8n' && <div className="wconvert-webhook-pair">
-          <Field label={<>{__('Header Auth name', 'wconvert-pro')} <span className="wconvert-webhook-optional">{__('· optional', 'wconvert-pro')}</span></>} htmlFor={field('auth-name')}>
+          <Field label={__('Header Auth name (optional)', 'wconvert-pro')} htmlFor={field('auth-name')}>
             <Input id={field('auth-name')} dir="ltr" autoComplete="off" spellCheck={false} value={authName} placeholder="X-N8N-Auth"
               onChange={(event) => setAuthName(event.target.value)} />
           </Field>

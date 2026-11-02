@@ -67,7 +67,7 @@ export function CampaignStatus({ value, state }: { value: string; state: LockSta
   return <>
     {data === null && <Notice status="warning" isDismissible={false}>{__('Campaign choices could not be loaded. Try Refresh campaigns.', 'wconvert-pro')}</Notice>}
     {value && data !== null && selected?.status !== 'ready' && <Notice status="warning" isDismissible={false}>{!selected
-      ? __('This campaign is no longer published as inline. Choose another or republish it. Content stays public.', 'wconvert-pro')
+      ? __('This campaign is no longer published inline. Choose another or republish it. Content stays public.', 'wconvert-pro')
       : selected.status === 'disabled'
         ? __('Turn on content lock and republish this campaign, or choose another. Content stays public.', 'wconvert-pro')
         : __('This campaign is unavailable. Content stays public.', 'wconvert-pro')}</Notice>}

@@ -93,7 +93,7 @@ async function resize(width: number) {
 describe('App navigation through the real lazy editor', () => {
   it('retains unsaved work after browser Back and Keep editing, then discards through the real confirmation', async () => {
     const name = await openEditor();
-    expect(screen.getByRole('button', { name: 'Back to Analytics' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Back to analytics' })).toBeInTheDocument();
     await userEvent.type(name, ' revised');
     await back();
     await screen.findByRole('alertdialog', { name: 'Leave without saving?' });
@@ -115,7 +115,7 @@ describe('App navigation through the real lazy editor', () => {
   it('uses one confirmation for the editor Back button and returns to the exact report', async () => {
     const name = await openEditor();
     await userEvent.type(name, ' revised');
-    await userEvent.click(screen.getByRole('button', { name: 'Back to Analytics' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Back to analytics' }));
     expect(await screen.findAllByRole('alertdialog')).toHaveLength(1);
     await userEvent.click(screen.getByRole('button', { name: 'Discard changes' }));
     await screen.findByText('Report content');
@@ -136,7 +136,7 @@ describe('App navigation through the real lazy editor', () => {
     await userEvent.click(undo);
     expect(name).toHaveValue('Welcome offer');
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
-    await userEvent.click(screen.getByRole('button', { name: 'Back to Analytics' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Back to analytics' }));
     await screen.findByText('Report content');
     expect(screen.queryByRole('alertdialog')).toBeNull();
   });
@@ -167,7 +167,7 @@ describe('App navigation through the real lazy editor', () => {
 
   it('restores the current duplicate history entry when Back crosses the same editor URL twice', async () => {
     await openEditor();
-    await userEvent.click(screen.getByRole('button', { name: 'Back to Analytics' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Back to analytics' }));
     await screen.findByText('Report content');
     await act(async () => { window.location.hash = EDITOR; });
     const name = await screen.findByRole('textbox', { name: 'Name' });
@@ -195,7 +195,7 @@ describe('App navigation through the real lazy editor', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Discard changes' }));
     await waitFor(() => expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue('Welcome offer'));
     expect(window.location.hash).toBe(other);
-    expect(screen.getByRole('button', { name: 'Back to Leads' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Back to leads' })).toBeInTheDocument();
     await userEvent.type(screen.getByRole('textbox', { name: 'Name' }), ' another edit');
     await back();
     expect(await screen.findByRole('alertdialog')).toBeInTheDocument();
@@ -231,7 +231,7 @@ describe('App navigation through the real lazy editor', () => {
     const name = await openEditor();
     await userEvent.type(name, ' revised');
     await resize(600);
-    const backButton = screen.getByRole('button', { name: 'Back to Analytics' });
+    const backButton = screen.getByRole('button', { name: 'Back to analytics' });
     await userEvent.click(backButton);
     await userEvent.click(await screen.findByRole('button', { name: 'Keep editing' }));
     await waitFor(() => expect(window.location.hash).toBe(EDITOR));
@@ -240,7 +240,7 @@ describe('App navigation through the real lazy editor', () => {
     expect(screen.getByRole('textbox', { name: 'Name' })).toBe(name);
     expect(name).toHaveValue('Welcome offer revised');
     await resize(600);
-    await userEvent.click(screen.getByRole('button', { name: 'Back to Analytics' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Back to analytics' }));
     await userEvent.click(await screen.findByRole('button', { name: 'Discard changes' }));
     await screen.findByText('Report content');
     expect(window.location.hash).toBe(REPORT);
@@ -269,6 +269,6 @@ it('opens display rules from analytics and returns to the same report', async ()
   render(<App />);
   const tab = await screen.findByRole('tab', { name: 'Display rules' });
   expect(tab).toHaveAttribute('aria-selected', 'true');
-  await userEvent.click(screen.getByRole('button', { name: 'Back to Analytics' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Back to analytics' }));
   await waitFor(() => expect(window.location.hash).toBe(REPORT));
 });

@@ -40,7 +40,7 @@ it('shows affected destination count only for known problems and returns from di
   expect(await screen.findByText('Sending diagnostics')).toBeInTheDocument();
   expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Sending issues');
   // One way back on every screen: above the title, not among its actions.
-  const back = screen.getByRole('link', { name: 'Back to Leads' });
+  const back = screen.getByRole('link', { name: 'Back to leads' });
   expect(back.closest('.wconvert-page-copy')).not.toBeNull();
   await userEvent.click(back);
   expect(await screen.findByText('Submission table')).toBeInTheDocument();
@@ -72,6 +72,6 @@ it('keeps bookmarked diagnostics reachable with a way back even without a known 
   window.history.replaceState({}, '', '#leads?view=issues');
   render(<App />);
   expect(screen.getByText('Sending diagnostics')).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: 'Back to Leads' })).toHaveAttribute('href', '#leads');
+  expect(screen.getByRole('link', { name: 'Back to leads' })).toHaveAttribute('href', '#leads');
   expect(screen.queryByRole('link', { name: 'Sending setup' })).toBeNull();
 });

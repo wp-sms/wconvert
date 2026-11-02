@@ -275,11 +275,16 @@ Every settings section has an explicit Save; nothing autosaves a setting.
 
 **No ID on any screen** (ADR 0131). A missing name reads "Deleted campaign",
 "Removed destination" or "Unnamed", never a ULID. Search still accepts a
-pasted ID. There are two exceptions. Campaign Details' closed "For developers"
+pasted ID. There are three exceptions. Campaign Details' closed "For developers"
 disclosure shows the campaign ID with Copy, because the free page events
 identify a campaign by nothing else. The inline campaign's shortcode (the
 "WConvert campaign" block and manual placement) carries it too, because it is
-how a campaign is placed outside the block editor.
+how a campaign is placed outside the block editor. The display rules' page
+picker (`rules/ObjectPicker`, `rules/Where`) keeps a page's or term's WordPress
+ID beside its title, as the merchant decided in the admin-guidelines audit
+(ADR 0182), because two pages genuinely can share a title and a rule targets
+exactly one of them. A product has no such
+excuse: an unnamed one reads "Unnamed product".
 
 **Data is shown once, one way** (`lib/format.ts`): dates in the site's locale
 and timezone — "Today, 2:22 PM", "Yesterday", "Oct 3" in a list, "Oct 9, 2026,
@@ -615,7 +620,7 @@ had grown, in four families — and the one a merchant is most likely to feel.
 settings_list` to `offer | upsell | explain | hide`, and **no surface ever
 renders `unavailable` as an upsell**. That half is load-bearing: a paying
 customer must never be shown an advertisement for Pro, and we must never offer
-to sell a merchant a WooCommerce licence we do not have.
+to sell a merchant a WooCommerce license we do not have.
 
 **`locked` and `unavailable` never collapse into one sentence.** They mean
 opposite things — *you have not bought the tier* and *this site is missing
@@ -772,7 +777,7 @@ Not gaps. Each was decided:
 | Decorative shadows, gradients and motion | Harbor uses solid surfaces and clear hierarchy |
 | A dismiss control on a region's error | it clears when the next fetch succeeds |
 | A loading spinner for a region | a skeleton mirrors what is coming |
-| An ID on a screen | names, or "Deleted campaign"; the developer disclosure is the one exception |
+| An ID on a screen | names, or "Deleted campaign"; the developer disclosure, the inline shortcode and the page picker are the exceptions (§8) |
 
 ## 19. Changing the system
 
@@ -819,7 +824,9 @@ Not gaps. Each was decided:
   list: Look, Screen, Line, Follow-up question, Only if…, Form, All other
   answers, Then. `tests/js/flow-words.test.ts` refuses the retired ones. Domain nouns (campaign, goal, lead,
   destination) are lowercase mid-sentence; capitals start a title, a button
-  or a sentence. US spelling.
+  or a sentence. US spelling. **Basket** is what a shopper holds, in every
+  sentence (ADR 0120); **cart** stays only where it is a name: Add to cart, the
+  display rules' catalogue and the cart-return Goal's metric (`CONTEXT.md`).
 - **More than two row actions go in a ⋯ menu**, with icons and labels. A
   row menu holds actions on that row. A list's foot is one line, `ListFoot`:
   its count, dates and pages (ADR 0132). The pages are a `nav` with a live

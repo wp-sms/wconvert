@@ -129,7 +129,7 @@ function storedRows(data: DataMap): Stored[] {
     } : null,
     data.browser.cart_recovery !== null ? {
       key: 'cart',
-      what: __('The cart’s item count and total', 'wconvert'),
+      what: __('The basket’s item count and total', 'wconvert'),
       where: browser,
       why: __('For cart display rules', 'wconvert'),
       kept: __('Until the WooCommerce cart session ends', 'wconvert'),
@@ -138,7 +138,7 @@ function storedRows(data: DataMap): Stored[] {
       key: 'beacon',
       what: __('A one-way code made from the IP address, not the address itself', 'wconvert'),
       where: here,
-      why: __('Stops one view being counted twice', 'wconvert'),
+      why: __('Stops one showing being counted twice', 'wconvert'),
       kept: duration(data.beacon_rate_limit_seconds),
     },
     {

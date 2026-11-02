@@ -69,7 +69,7 @@ describe('the retention line', () => {
     expect(await screen.findByText(/deleted automatically after 90 days/)).toBeInTheDocument();
 
     view.rerender(<RetentionSummary refreshKey={1} />);
-    expect(await screen.findByRole('alert')).toHaveTextContent('couldn’t be refreshed');
+    expect(await screen.findByRole('alert')).toHaveTextContent('could not be refreshed');
     expect(screen.getByText(/deleted automatically after 90 days/)).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
@@ -80,7 +80,7 @@ describe('the retention line', () => {
   it('has nothing to keep on a first failure, and says so with its door', async () => {
     vi.mocked(readRetention).mockRejectedValueOnce({ message: 'Away' }).mockResolvedValue({ days: null } as never);
     render(<RetentionSummary />);
-    expect(await screen.findByRole('alert')).toHaveTextContent('couldn’t be loaded: Away');
+    expect(await screen.findByRole('alert')).toHaveTextContent('could not be loaded: Away');
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     expect(await screen.findByText(/kept until you delete them/)).toBeInTheDocument();
   });

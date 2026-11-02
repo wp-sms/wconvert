@@ -8,6 +8,7 @@ import { SiteLimitsNote } from './SiteLimitsNote';
 import type { Frequency } from '../api';
 import type { ConvertingAct } from '../structure/catalogue';
 import { CheckRow } from '../../shell/CheckRow';
+import { formatCount } from '../../lib/format';
 
 export interface HowOftenProps {
   readonly frequency: Frequency;
@@ -70,10 +71,10 @@ export function HowOften({ frequency, priority, overlay, custom, reopenEnabled, 
         label={<>{before}<TotalField value={frequency.maxImpressions} disabled={!capped} onChange={count => setCount('maxImpressions', count)} />{after}</>} />
     </div>
     {frequency.maxPerSession !== undefined && frequency.stopAfterDismiss !== false && <p className="wconvert-display-hint">{__('Closing it stops it for good, not just for this visit.', 'wconvert')}</p>}
-    {reopenEnabled && <p className="wconvert-display-hint">{__('Your reopen button skips automatic view limits, waiting periods and closing restrictions. Completion stops it; closing the reminder stops this campaign for the visit.', 'wconvert')}</p>}
+    {reopenEnabled && <p className="wconvert-display-hint">{__('Your reopen button skips automatic display limits, waiting periods and closing restrictions. Completion stops it; closing the reminder stops this campaign for the visit.', 'wconvert')}</p>}
 
-    {overlay && <DisclosureCard title={__('If several popups are ready at once', 'wconvert')}
-      current={priority === 0 ? __('Opens in the usual order', 'wconvert') : sprintf(/* translators: %d: a priority number. */ __('Shows before others (%d)', 'wconvert'), priority)}>
+    {overlay && <DisclosureCard title={__('Popup priority', 'wconvert')}
+      current={priority === 0 ? __('Opens in the usual order', 'wconvert') : sprintf(/* translators: %s: a priority number. */ __('Shows before others (%s)', 'wconvert'), formatCount(priority))}>
       <label className="wconvert-display-inline-field" htmlFor="wconvert-priority">{__('Show this one first', 'wconvert')}
         <Input id="wconvert-priority" className="w-24" type="number" value={priority === 0 ? '' : priority} aria-describedby="wconvert-priority-help"
           onChange={event => { const next = Number(event.target.value); onPriority(event.target.value === '' || !Number.isFinite(next) ? 0 : Math.trunc(next)); }} />

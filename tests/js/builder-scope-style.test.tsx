@@ -484,7 +484,7 @@ describe('a scoped color that follows the palette', () => {
       *Button*. The identity is the one mapping that cannot be written:
       `--wc-bg: var(--wc-bg)` is a cycle CSS discards.
     */
-    await userEvent.click(screen.getByRole('button', { name: /→ Button/ }));
+    await userEvent.click(screen.getAllByTitle(/Follow the palette/).find(button => button.textContent?.includes('Button'))!);
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
     const panel = (saved().tree.steps[0].content as unknown as {
@@ -523,7 +523,7 @@ describe('a scoped color that follows the palette', () => {
 
     await style(/Colored box/);
 
-    expect(screen.queryByRole('button', { name: /→ / })).toBeNull();
+    expect(screen.queryByTitle(/Follow the palette/)).toBeNull();
   });
 });
 

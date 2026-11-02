@@ -8,6 +8,7 @@ import { availabilityOf, halves, picksIn, type Pick, type PickParam, type Sectio
 import { portableSelector } from './validation';
 import type { DisplayRulesValue } from './summaries';
 import type { RuleVocabulary } from '../api';
+import { formatCount } from '../../lib/format';
 
 export interface QuickPicksProps {
   readonly section: SectionId;
@@ -88,9 +89,13 @@ function sentenceFor({ pick, availability, rendering }: { pick: Pick; availabili
     ? unlessFree(sprintf(
       /* translators: 1: a choice, e.g. “When they try to leave”. 2: a product name, e.g. “WConvert Pro”. */
       __('“%1$s” is part of %2$s.', 'wconvert'), pick.label(value), tierProductName(availability.tier)))
-    : sprintf(
-      /* translators: 1: a choice, e.g. “Shoppers with items in their cart”. 2: a plugin's name, e.g. “WooCommerce”. */
-      __('“%1$s” needs the %2$s plugin on this site.', 'wconvert'), pick.label(value), availability.requires_label ?? __('another', 'wconvert'));
+    : availability.requires_label
+      ? sprintf(
+        /* translators: 1: a choice, e.g. “Shoppers with items in their cart”. 2: a plugin's name, e.g. “WooCommerce”. */
+        __('“%1$s” needs the %2$s plugin on this site.', 'wconvert'), pick.label(value), availability.requires_label)
+      : sprintf(
+        /* translators: %s: a choice, e.g. “Shoppers with items in their cart”. */
+        __('“%s” needs another plugin on this site.', 'wconvert'), pick.label(value));
 }
 
 /** An unchosen chip reads the number choosing it would write. */
@@ -98,7 +103,7 @@ function wordsOf(pick: Pick, shown: Pick, value: DisplayRulesValue): string {
   if (pick.param === undefined) return pick.template();
   if (pick.param.kind !== 'number') return pick.label(value);
   const n = (shown.param?.key === pick.param.key ? shown.param.read(value) : undefined) ?? pick.param.default;
-  return halves(pick.template(Number(n))).join(String(n));
+  return halves(pick.template(Number(n))).join(formatCount(Number(n)));
 }
 
 /**
@@ -123,8 +128,8 @@ function Inline({ template, param, value, onChange, onError, errorId }: {
     ? (draft.trim() !== '' && !portableSelector(draft) ? __('Use an ID, class, tag or attribute selector, such as #signup or .offer-button.', 'wconvert') : null)
     : draft === '' || !inRange(param, number)
       ? sprintf(param.whole
-        ? /* translators: 1: the lowest number allowed. 2: the highest. */ __('Enter a whole number from %1$d to %2$d.', 'wconvert')
-        : /* translators: 1: the lowest number allowed. 2: the highest. */ __('Enter a number from %1$d to %2$d.', 'wconvert'), param.min ?? 0, param.max ?? 0) : null;
+        ? /* translators: 1: the lowest number allowed. 2: the highest. */ __('Enter a whole number from %1$s to %2$s.', 'wconvert')
+        : /* translators: 1: the lowest number allowed. 2: the highest. */ __('Enter a number from %1$s to %2$s.', 'wconvert'), formatCount(param.min ?? 0), formatCount(param.max ?? 0)) : null;
   useEffect(() => { onError(error); }, [error, onError]);
   useEffect(() => () => onError(null), [onError]);
 

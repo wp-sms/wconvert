@@ -2,6 +2,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { ArrowUpRight } from 'lucide-react';
 import { OptionItem } from '../components/ui/option-menu';
 import { tierProductName } from '../goals/availability';
+import { plainList } from '../lib/format';
 import { interpolate } from '../lib/interpolate';
 import { adminSettings } from '../settings';
 import { PLUGINS_URL, proUrl, type ProMedium } from './HeaderTools';
@@ -22,7 +23,7 @@ import { PLUGINS_URL, proUrl, type ProMedium } from './HeaderTools';
 export function ProHint({ medium, features, className }: { medium: ProMedium; features: readonly string[]; className?: string }) {
   if (!proHintsShown() || features.length === 0) return null;
   const product = tierProductName('pro');
-  const list = listOf(features);
+  const list = plainList(features);
   if (adminSettings()?.proInstalledInactive) {
     return <p className={classes(className)}>
       {interpolate(/* translators: 1: the product, e.g. “WConvert Pro”. 2: features, e.g. “Floating bar, Slide-in, Fullscreen”. 3: “Activate it”, a link to Plugins. */
@@ -45,8 +46,8 @@ export function ProHintItem({ medium, features }: { medium: ProMedium; features:
   if (!proHintsShown() || features.length === 0) return null;
   const inactive = adminSettings()?.proInstalledInactive === true;
   const name = inactive
-    ? sprintf(/* translators: 1: the product. 2: features. */ __('Also in %1$s, which is installed: %2$s. Activate it', 'wconvert'), tierProductName('pro'), listOf(features))
-    : sprintf(/* translators: 1: the product. 2: features, e.g. “A/B testing”. */ __('Also in %1$s: %2$s.', 'wconvert'), tierProductName('pro'), listOf(features));
+    ? sprintf(/* translators: 1: the product. 2: features. */ __('Also in %1$s, which is installed: %2$s. Activate it', 'wconvert'), tierProductName('pro'), plainList(features))
+    : sprintf(/* translators: 1: the product. 2: features, e.g. “A/B testing”. */ __('Also in %1$s: %2$s.', 'wconvert'), tierProductName('pro'), plainList(features));
   return <OptionItem className="wconvert-pro-hint-item" name={name} href={inactive ? PLUGINS_URL : proUrl(medium)} newTab={!inactive}
     trail={inactive ? undefined : <ArrowUpRight aria-hidden="true" className="rtl:-scale-x-100" />} />;
 }
@@ -62,12 +63,3 @@ function ProLink({ medium, children }: { medium: ProMedium; children: string }) 
 }
 
 const classes = (extra?: string) => extra ? `wconvert-pro-hint ${extra}` : 'wconvert-pro-hint';
-
-/** Feature names joined the admin's way, comma-separated as the prototype shows. */
-export function listOf(features: readonly string[]): string {
-  try {
-    return new Intl.ListFormat(document.documentElement.lang || undefined, { style: 'long', type: 'unit' }).format(features);
-  } catch {
-    return features.join(', ');
-  }
-}

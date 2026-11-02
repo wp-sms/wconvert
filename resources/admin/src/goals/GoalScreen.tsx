@@ -225,7 +225,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
     } catch (cause) {
       busy.current = false;
       if (active.current && request === operation.current) {
-        setInstallFailed({ key: card.key, message: __('Couldn’t add this template.', 'wconvert') + ' ' + messageOf(cause) });
+        setInstallFailed({ key: card.key, message: __('Could not add this template.', 'wconvert') + ' ' + messageOf(cause) });
       }
     } finally {
       if (active.current) setAdding(null);
@@ -240,7 +240,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
       await installSetup(card.newerRevision.id, card.newerRevision.sha256);
       if (active.current) { previews.reset(); setGalleryRetry(value => value + 1); }
     } catch (cause) {
-      if (active.current) setInstallFailed({ key: card.key, message: __('Couldn’t add this template.', 'wconvert') + ' ' + messageOf(cause) });
+      if (active.current) setInstallFailed({ key: card.key, message: __('Could not add this template.', 'wconvert') + ' ' + messageOf(cause) });
     } finally {
       if (active.current) setAdding(null);
     }
@@ -309,7 +309,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
       {goals.status === 'failed' ? <RegionErrorState message={goals.message} onRetry={() => setGoalsRetry((value) => value + 1)} />
         : <RegionBody className="wconvert-creation__goals">{shown.length === 0 ?
         <EmptyState icon={Sparkles} title={__('No goals available', 'wconvert')}
-          action={onCheckOptins && <Button variant="outline" onClick={onCheckOptins}>{__('Back to Campaigns', 'wconvert')}</Button>}>
+          action={onCheckOptins && <Button variant="outline" onClick={onCheckOptins}>{__('Back to campaigns', 'wconvert')}</Button>}>
           {__('Goals come from WConvert and the plugins that extend it.', 'wconvert')}
         </EmptyState> : <ChoiceGrid>{shown.map((entry) => <GoalCard key={entry.id} goal={entry}
           surface="creation_flow" choose={__('Choose', 'wconvert')} onChoose={choose} />)}</ChoiceGrid>}

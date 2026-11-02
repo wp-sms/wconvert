@@ -93,11 +93,11 @@ function Results({ results, status, rateLabel }: { results: CampaignResults; sta
         ? results.custom ? formatRange(results.from, results.to) : sprintf(
             /* translators: 1: the period, e.g. “Last 30 days”. 2: its dates, e.g. “Sep 10 – Oct 9”. */
             __('%1$s · %2$s', 'wconvert'),
-            /* translators: %d: how many days the period covers. */
-            sprintf(_n('Last %d day', 'Last %d days', results.days, 'wconvert'), results.days),
+            /* translators: %s: how many days the period covers. */
+            sprintf(_n('Last %s day', 'Last %s days', results.days, 'wconvert'), formatCount(results.days)),
             formatRange(results.from, results.to),
           )
-        : sprintf(/* translators: %d: how many days the period covers. */ _n('Last %d day', 'Last %d days', results.days, 'wconvert'), results.days)
+        : sprintf(/* translators: %s: how many days the period covers. */ _n('Last %s day', 'Last %s days', results.days, 'wconvert'), formatCount(results.days))
       : __('Results', 'wconvert');
   const result = results.status === 'ready' ? results.result : undefined;
   return (
@@ -114,7 +114,7 @@ function Results({ results, status, rateLabel }: { results: CampaignResults; sta
         </div>
       ) : results.status === 'failed' ? (
         <div className="grid justify-items-start gap-2">
-          <p role="alert">{__('Results couldn’t load.', 'wconvert')}</p>
+          <p role="alert">{__('Results could not load.', 'wconvert')}</p>
           {results.onRetry && <TryAgain onClick={results.onRetry} />}
         </div>
       ) : result ? (
@@ -129,7 +129,7 @@ function Results({ results, status, rateLabel }: { results: CampaignResults; sta
             <span>{__('Shown', 'wconvert')}</span>
             {/* Submissions with no views read as a fault unless something says why. */}
             {result.shown === 0 && result.count > 0 && (
-              <small>{__('Views are counted only from the published version.', 'wconvert')}</small>
+              <small>{__('Shown counts only the published version.', 'wconvert')}</small>
             )}
           </p>
           {result.counted === false ? <p>

@@ -8,7 +8,7 @@ import { DataTable, DataTableActions, DataTableActionsColumn, DataTableBody, Dat
 import { Disclosure } from '@/shell/Disclosure';
 import { FactList } from '@/shell/FactList';
 import { Region, RegionBody, RegionFooter, RegionHeader } from '@/shell/Region';
-import { formatShortDay } from '@/lib/format';
+import { formatCount, formatShortDay } from '@/lib/format';
 import { type LicensePayload, type LicenseSite } from './describeLicense';
 import { Ext, KeyField } from './parts';
 
@@ -48,8 +48,8 @@ export function SitesCard({ license, onRemove, busy, result, headingRef, now = D
         <RegionHeader title={__('Sites', 'wconvert-pro')} trailing={
           <span className="wconvert-license-muted" data-over={over ? '' : undefined}>
             {max === null
-              ? sprintf(/* translators: %d: how many sites this license is active on. */ _n('%d site · Unlimited', '%d sites · Unlimited', used, 'wconvert-pro'), used)
-              : sprintf(/* translators: 1: how many sites this license is active on, 2: how many sites the license allows. */ __('%1$d of %2$d used', 'wconvert-pro'), used, max)}
+              ? sprintf(/* translators: %s: how many sites this license is active on. */ _n('%s site · Unlimited', '%s sites · Unlimited', used, 'wconvert-pro'), formatCount(used))
+              : sprintf(/* translators: 1: how many sites this license is active on, 2: how many sites the license allows. */ __('%1$s of %2$s used', 'wconvert-pro'), formatCount(used), formatCount(max))}
           </span>
         } />
       </div>

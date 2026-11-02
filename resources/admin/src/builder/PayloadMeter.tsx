@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { formatCount } from '../lib/format';
+import { formatCount, formatRate } from '../lib/format';
 import { adminSettings } from '../settings';
 import { LineSkeleton } from '../shell/LineSkeleton';
 import type { Template } from '@renderer/types';
@@ -70,9 +70,9 @@ export function PayloadMeter({ template }: { template: Template }) {
       )}
     >
       {sprintf(
-        /* translators: %d: what share of the per-design size budget this design uses, as a percentage. */
-        __('%d%% of the size budget', 'wconvert'),
-        Math.round(share * 100),
+        /* translators: %s: what share of the per-design size budget this design uses, e.g. “42%”. */
+        __('%s of the size budget', 'wconvert'),
+        formatRate(Math.round(share * 100) / 100),
       )}
     </span>
   );

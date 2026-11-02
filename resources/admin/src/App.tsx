@@ -104,8 +104,8 @@ export function App() {
   if (route.editId !== undefined) {
     return <>
       <OptinBuilder key={navigation.hash} id={route.editId} initialTab={route.editorTab}
-        backLabel={route.returnTo.startsWith('#analytics') ? __('Back to Analytics', 'wconvert')
-          : route.returnTo.startsWith('#leads') ? __('Back to Leads', 'wconvert') : __('Back to Campaigns', 'wconvert')}
+        backLabel={route.returnTo.startsWith('#analytics') ? __('Back to analytics', 'wconvert')
+          : route.returnTo.startsWith('#leads') ? __('Back to leads', 'wconvert') : __('Back to campaigns', 'wconvert')}
         onEditingStateChange={navigation.onEditingStateChange}
         onCreated={(createdId) => navigate(editorHref(createdId, route.returnTo))}
         onClose={() => navigate(route.returnTo)} />
@@ -159,7 +159,7 @@ export function App() {
           <Badge variant="warning" className="tabular-nums">{sendingCount}</Badge>
         </a></Button>
         : undefined}>
-      {section === 'leads' && route.leadsView === 'issues' && <PageBack href={leadsHref(route.leads)}>{__('Back to Leads', 'wconvert')}</PageBack>}
+      {section === 'leads' && route.leadsView === 'issues' && <PageBack href={leadsHref(route.leads)}>{__('Back to leads', 'wconvert')}</PageBack>}
       {/* A backstop: each chunk Campaigns loads has its own boundary (a
           thumbnail falls back to its box), but nothing here may blank the admin. */}
       {section === 'optins' && <ChunkBoundary>

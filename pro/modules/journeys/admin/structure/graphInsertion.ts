@@ -4,6 +4,7 @@ import { graphDisplayOrder, graphEdgeId, graphReaches, insertOnGraphEdge } from 
 import { graphChoiceSources } from '@/builder/structure/graphConnections';
 import { conditionText } from '@/builder/structure/conditionText';
 import { freshScreen, walkNodes, withBackButton } from '@/builder/structure/journey';
+import { formatCount } from '@/lib/format';
 
 export type GraphScreenKind = 'content' | 'input' | 'followup' | 'ending';
 interface InsertionLocation {
@@ -28,7 +29,7 @@ export function graphInsertionLocations(tree: TemplateTree) {
       const target = tree.steps.find(screen => screen.id === edge.to);
       if (!target) continue;
       const path = edge.kind === 'hidden' ? __('If skipped', 'wconvert-pro') : edge.kind === 'answer'
-        ? sprintf(/* translators: %d: the line's position among this screen's answer lines, starting at 1. */ __('Answer line %d', 'wconvert-pro'), answers.indexOf(edge) + 1)
+        ? sprintf(/* translators: %s: the line's position among this screen's answer lines, starting at 1. */ __('Answer line %s', 'wconvert-pro'), formatCount(answers.indexOf(edge) + 1))
         : answers.length ? __('All other answers', 'wconvert-pro') : __('Continue', 'wconvert-pro');
       locations.push({ id: `edge:${edge.id}`, source: source.id, target: target.id,
         sharedHidden: edge.kind === 'default' && outgoing.some(item => item.kind === 'hidden' && item.to === edge.to),

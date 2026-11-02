@@ -16,7 +16,7 @@ function Harness({ dirty }: { dirty: boolean }) {
       <AdminDialogContent size="sm" dirty={dirty}>
         <AdminDialogHeader title="jane@example.com" meta="Jane · 3 submissions" />
         <AdminDialogBody>Body</AdminDialogBody>
-        <AdminDialogFooter error="Couldn’t save.">
+        <AdminDialogFooter error="Could not save.">
           <button type="button">Save</button>
         </AdminDialogFooter>
       </AdminDialogContent>
@@ -29,7 +29,7 @@ describe('the one modal', () => {
     render(<Harness dirty={false} />);
     const dialog = screen.getByRole('dialog', { name: 'jane@example.com' });
     expect(dialog).toHaveAccessibleDescription('Jane · 3 submissions');
-    expect(screen.getByRole('alert')).toHaveTextContent('Couldn’t save.');
+    expect(screen.getByRole('alert')).toHaveTextContent('Could not save.');
   });
 
   it('closes on Escape when nothing was typed', async () => {

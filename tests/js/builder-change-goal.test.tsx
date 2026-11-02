@@ -254,11 +254,11 @@ describe('the numbers in Campaign details', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
     const details = within(await screen.findByRole('dialog', { name: 'Welcome discount' }));
-    const alert = await details.findByText('Results couldn’t load.');
+    const alert = await details.findByText('Results could not load.');
     expect(alert).toHaveAttribute('role', 'alert');
     // Each failed read in the dialog carries its own door, beside its own sentence.
     await userEvent.click(within(alert.parentElement!).getByRole('button', { name: 'Try again' }));
-    await waitFor(() => expect(details.queryByText('Results couldn’t load.')).toBeNull());
+    await waitFor(() => expect(details.queryByText('Results could not load.')).toBeNull());
     expect(stats.readDashboard).toHaveBeenCalledTimes(2);
   });
 });

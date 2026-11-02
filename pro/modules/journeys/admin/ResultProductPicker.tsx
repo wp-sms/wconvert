@@ -5,6 +5,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { TryAgain } from '@/shell/Region';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { formatMoney } from '@/lib/format';
 
 interface Product { id: number; name: string; is_in_stock?: boolean; images?: { thumbnail?: string }[]; prices?: { price?: string; currency_code?: string; currency_minor_unit?: number } }
 function productPrice(product: Product): string {
@@ -12,8 +13,7 @@ function productPrice(product: Product): string {
   if (!price?.price || !price.currency_code || !Number.isInteger(price.currency_minor_unit)) return '';
   const amount = Number(price.price) / Math.pow(10, price.currency_minor_unit!);
   if (!Number.isFinite(amount)) return '';
-  try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: price.currency_code }).format(amount); }
-  catch { return `${amount} ${price.currency_code}`; }
+  return formatMoney(amount, price.currency_code, price.currency_minor_unit);
 }
 export function ProductPicker({ ids, onChange, max = 6, ordered = true, allowUnavailable = false, label, help, actionLabel = __('Add', 'wconvert-pro') }: {
   ids: readonly number[]; onChange(ids: number[]): void; max?: number; ordered?: boolean; allowUnavailable?: boolean; label?: string; help?: string; actionLabel?: string;
@@ -35,7 +35,7 @@ export function ProductPicker({ ids, onChange, max = 6, ordered = true, allowUna
       .catch(() => { if (!controller.signal.aborted) setNamesFailed(true); });
     return () => controller.abort();
   }, [selectedKey, max, namesRetry]);
-  const productName = (id: number) => [...found, ...selected].find(product => product.id === id)?.name ?? sprintf(/* translators: %d: a product's ID number, shown when its name could not load. */ __('Product #%d', 'wconvert-pro'), id);
+  const productName = (id: number) => [...found, ...selected].find(product => product.id === id)?.name ?? __('Unnamed product', 'wconvert-pro');
   const move = (index: number, direction: -1 | 1) => { const next = [...ids]; [next[index], next[index + direction]] = [next[index + direction], next[index]]; onChange(next); };
   const search = async () => {
     if (!query.trim()) return;
@@ -57,8 +57,8 @@ export function ProductPicker({ ids, onChange, max = 6, ordered = true, allowUna
     {ids.length >= max && <p id={`${helpId}-full`}>{__('Selection full. Remove a product to choose another.', 'wconvert-pro')}</p>}
     {namesFailed && <div className="wconvert-result-filter__body"><p role="alert">{__('Product names could not load. Your selection is kept.', 'wconvert-pro')}</p><TryAgain onClick={() => setNamesRetry(n => n + 1)} /></div>}
     {!!ids.length && <ol aria-label={ordered ? __('Selected products, in display order', 'wconvert-pro') : __('Selected products', 'wconvert-pro')}>{ids.map((id, index) => <li key={id} className="wconvert-result-picker__selection"><span>{productName(id)}</span><div className="wconvert-result-picker__actions">
-      {ordered && ids.length > 1 && <Button variant="outline" type="button" disabled={index === 0} onClick={() => move(index, -1)} aria-label={`${__('Move earlier', 'wconvert-pro')}: ${productName(id)}`}>{__('Earlier', 'wconvert-pro')}</Button>}
-      {ordered && ids.length > 1 && <Button variant="outline" type="button" disabled={index === ids.length - 1} onClick={() => move(index, 1)} aria-label={`${__('Move later', 'wconvert-pro')}: ${productName(id)}`}>{__('Later', 'wconvert-pro')}</Button>}
+      {ordered && ids.length > 1 && <Button variant="outline" type="button" disabled={index === 0} onClick={() => move(index, -1)} aria-label={`${__('Move up', 'wconvert-pro')}: ${productName(id)}`}>{__('Earlier', 'wconvert-pro')}</Button>}
+      {ordered && ids.length > 1 && <Button variant="outline" type="button" disabled={index === ids.length - 1} onClick={() => move(index, 1)} aria-label={`${__('Move down', 'wconvert-pro')}: ${productName(id)}`}>{__('Later', 'wconvert-pro')}</Button>}
       <Button variant="outline" type="button" data-destructive="true" aria-label={`${__('Remove', 'wconvert-pro')}: ${productName(id)}`} onClick={() => onChange(ids.filter(item => item !== id))}>{__('Remove', 'wconvert-pro')}</Button></div></li>)}</ol>}
     {!!found.length && <ul aria-label={__('Search results', 'wconvert-pro')}>{found.map(product => <li key={product.id}>
       {product.images?.[0]?.thumbnail && <img alt="" src={product.images[0].thumbnail} width="36" height="36" />}

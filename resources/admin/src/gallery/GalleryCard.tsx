@@ -95,7 +95,7 @@ export function TemplateAction({ card, describedBy, busy = false, disabled = fal
     return card.previewUrl ? (
       <Button asChild variant="outline">
         <a href={card.previewUrl} target="_blank" rel="noopener noreferrer" aria-describedby={describedBy}>
-          {__('See this template', 'wconvert')}<ExternalLink aria-hidden="true" />
+          {__('See this template', 'wconvert')}<ExternalLink aria-hidden="true" className="rtl:-scale-x-100" />
         </a>
       </Button>
     ) : null;

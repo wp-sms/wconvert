@@ -460,10 +460,10 @@ export function captureSwitch(config: Config, goal: string, goals: readonly Goal
   }
   if (outcome?.action === 'add_to_cart' || all.some(node => node.type === 'products')) return refuse(__('Product recommendations can’t take a contact form.', 'wconvert'));
   if (outcome?.destination_type) return refuse(__('A lead magnet needs the email form to deliver the file.', 'wconvert'));
-  if (outcome?.action === 'click' && !outcome.link_required) return refuse(__('Cart recovery sends shoppers to their cart, so it has no form.', 'wconvert'));
+  if (outcome?.action === 'click' && !outcome.link_required) return refuse(__('Cart recovery sends shoppers to their basket, so it has no form.', 'wconvert'));
   if (config.content_lock != null) return refuse(__('A content lock always needs its form.', 'wconvert'));
   const flat = simpleShape(tree);
-  if (!flat) return refuse(__('This campaign has branches. Edit its screens directly.', 'wconvert'));
+  if (!flat) return refuse(__('This campaign sends some answers to different screens. Edit its screens directly.', 'wconvert'));
   const state = captureState(flat);
   if (state === 'other') return refuse(__('This form asks for neither an email nor a phone number.', 'wconvert'));
   if (state === 'none' && flat.steps.length !== 1) return refuse(__('Only a one-screen design can take a form.', 'wconvert'));

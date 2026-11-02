@@ -119,7 +119,7 @@ it('a first results failure fills the region, and a later one keeps the numbers 
   stats.readReport.mockRejectedValueOnce({ code: 'x', message: 'No report today.' });
   await userEvent.click(results().getByRole('button', { name: /Results period/ }));
   await userEvent.click(await screen.findByRole('radio', { name: 'Last 7 days' }));
-  expect(await results().findByRole('alert')).toHaveTextContent('Results couldn’t refresh. The previous period and results remain below.');
+  expect(await results().findByRole('alert')).toHaveTextContent('Results could not refresh. The previous period and results remain below.');
   expect(screen.queryByText('No report today.')).toBeNull();
   // The picker's dates stay those of the numbers on screen.
   expect(results().getByRole('button', { name: /Results period: .*Nov 20/ })).toBeInTheDocument();
@@ -128,9 +128,9 @@ it('a first results failure fills the region, and a later one keeps the numbers 
 it('draws a preview that could not be read, with a way to read it again', async () => {
   optins.readCampaignPreviews.mockRejectedValueOnce({ code: 'x', message: 'No previews.' });
   page();
-  expect(await screen.findByText('Design previews couldn’t load.')).toBeInTheDocument();
+  expect(await screen.findByText('Design previews could not load.')).toBeInTheDocument();
   await userEvent.click(within(screen.getByRole('region', { name: 'Campaigns' })).getByRole('button', { name: 'Try again' }));
-  await vi.waitFor(() => expect(screen.queryByText('Design previews couldn’t load.')).toBeNull());
+  await vi.waitFor(() => expect(screen.queryByText('Design previews could not load.')).toBeNull());
   expect(optins.readCampaignPreviews).toHaveBeenCalledTimes(2);
 });
 

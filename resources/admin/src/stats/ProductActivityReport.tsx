@@ -77,7 +77,7 @@ export function ProductActivityReport({ id, period }: { id: string; period?: Rep
       <ReportDisclosure title={__('What these numbers mean', 'wconvert')}>
         <p>{__('Shown counts a visible product card. Clicked counts a product-page link. Each counts once per product each time the campaign is shown. Added counts WooCommerce-confirmed additions, not button presses or purchases.', 'wconvert')}</p>
         <p>{__('These are recorded actions, not unique shoppers. Totals can differ from campaign results. Product names are current; sales remain at campaign level.', 'wconvert')}</p>
-        <p>{sprintf(/* translators: %d: how many days product activity is kept. */ __('Product activity is kept for %d days. Tracking can miss activity when blocked or inactive; the first day may be partial. Older campaign totals stay unchanged.', 'wconvert'), report.retention_days)}</p>
+        <p>{sprintf(/* translators: %s: how many days product activity is kept. */ __('Product activity is kept for %s days. Tracking can miss activity when blocked or inactive; the first day may be partial. Older campaign totals stay unchanged.', 'wconvert'), formatCount(report.retention_days))}</p>
       </ReportDisclosure>
     </>}
   </Region></ReportTarget>;

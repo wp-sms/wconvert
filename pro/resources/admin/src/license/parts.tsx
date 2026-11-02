@@ -25,7 +25,7 @@ export function cleanKey(raw: string, full = true): string {
 export function Ext({ href, children, variant }: { href: string | undefined; children: ReactNode; variant?: 'brand' | 'outline' | 'link' }) {
   if (!href) return null;
 
-  const label = <>{children} <span aria-hidden="true">↗</span><span className="sr-only"> {__('(opens in a new tab)', 'wconvert-pro')}</span></>;
+  const label = <>{children} <span aria-hidden="true" className="inline-block rtl:-scale-x-100">↗</span><span className="sr-only"> {__('(opens in a new tab)', 'wconvert-pro')}</span></>;
 
   if (variant === undefined || variant === 'link') {
     return <a className="wconvert-license-ext" href={href} target="_blank" rel="noreferrer">{label}</a>;

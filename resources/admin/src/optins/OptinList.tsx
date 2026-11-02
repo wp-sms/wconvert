@@ -500,7 +500,7 @@ export function OptinList({
                   })
                 }
               >
-                {sprintf(/* translators: %d: how many variants the A/B test has. */ _n('A/B test · %d variant', 'A/B test · %d variants', variants, 'wconvert'), variants)}
+                {sprintf(/* translators: %s: how many variants the A/B test has. */ _n('A/B test · %s variant', 'A/B test · %s variants', variants, 'wconvert'), formatCount(variants))}
                 <ChevronDown aria-hidden="true" className="wconvert-family-toggle__chevron" />
               </button>
             )}
@@ -619,14 +619,14 @@ export function OptinList({
             ))}
             {(reportError || previewError || labelsError) && <RegionError
               message={[
-                reportError && (report ? __('Results couldn’t refresh. The previous period and results remain below.', 'wconvert') : __('Results couldn’t load.', 'wconvert')),
-                previewError && __('Design previews couldn’t load.', 'wconvert'),
-                labelsError && __('Goal names couldn’t load.', 'wconvert'),
+                reportError && (report ? __('Results could not refresh. The previous period and results remain below.', 'wconvert') : __('Results could not load.', 'wconvert')),
+                previewError && __('Design previews could not load.', 'wconvert'),
+                labelsError && __('Goal names could not load.', 'wconvert'),
               ].filter(Boolean).join(' ')}
               onRetry={() => setRefreshKey((n) => n + 1)}
             />}
             {productChecks && productHealth.failed && (
-              <RegionError message={__('Products couldn’t be checked.', 'wconvert')} onRetry={productHealth.recheck} />
+              <RegionError message={__('Products could not be checked.', 'wconvert')} onRetry={productHealth.recheck} />
             )}
             {/* In the page from the moment the rows are, so a result is announced when it arrives. */}
             {list.status === 'ready' && !empty && <p role="status" className="wconvert-campaign-group-result">{groupResult && resultSentence(groupResult)}</p>}
@@ -797,7 +797,7 @@ export function OptinList({
               <aside className="wconvert-comparison-tray wconvert-toolbar wconvert-campaign-tray" aria-label={__('Selected campaigns', 'wconvert')}>
                 <div className="wconvert-comparison-tray__selection">
                   <ToolbarCount live>
-                    {sprintf(/* translators: %d: how many campaigns are ticked. */ _n('%d campaign selected', '%d campaigns selected', tickedRows.length, 'wconvert'), tickedRows.length)}
+                    {sprintf(/* translators: %s: how many campaigns are ticked. */ _n('%s campaign selected', '%s campaigns selected', tickedRows.length, 'wconvert'), formatCount(tickedRows.length))}
                   </ToolbarCount>
                 </div>
                 {/* Beside the count and apart from the safe actions (ADR 0039). */}
@@ -819,7 +819,7 @@ export function OptinList({
             {/* One line: how many and over which dates, then the pages. */}
             {list.status === 'ready' && !empty && <ListFoot
               className="wconvert-campaign-footer"
-              count={sprintf(/* translators: %d: how many campaigns are listed. */ _n('%d campaign', '%d campaigns', visible.length, 'wconvert'), visible.length)}
+              count={sprintf(/* translators: %s: how many campaigns are listed. */ _n('%s campaign', '%s campaigns', visible.length, 'wconvert'), formatCount(visible.length))}
               dates={report && formatRange(report.from, report.to)}
               pages={lastPage > 0 && <ListPages label={__('Campaign pages', 'wconvert')} page={currentPage} pages={lastPage + 1} onChange={setPage} />}
             >

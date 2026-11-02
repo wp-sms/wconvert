@@ -5,6 +5,7 @@ import { ConfirmDialog } from '@/shell/ConfirmDialog';
 import { PageError, Region, RegionErrorState } from '@/shell/Region';
 import { LicenseSkeleton } from './LicenseSkeleton';
 import { LOADING, failed, messageOf, ready, type Loadable } from '@/shell/loadable';
+import { tierProductName } from '@/goals/availability';
 import { setPlanBadge } from '@/shell/planBadge';
 import { markSubmenuCurrent } from '@/shell/menuHighlight';
 import {
@@ -17,10 +18,13 @@ import { ResultAlert, type ResultTone } from './parts';
 import { ActivateCard, Ways } from './ActivateCard';
 import { StatusCard } from './StatusCard';
 import { KeyCard, SitesCard } from './SitesCard';
+import { formatCount } from '@/lib/format';
 import './license.css';
 
 /** The focus refresh asks at most this often; the server holds the same line. */
 const FOCUS_CHECK_MS = 60_000;
+
+const activatedHere = () => sprintf(/* translators: %s: the paid product's name, e.g. “WConvert Pro”. */ __('%s is activated on this site', 'wconvert-pro'), tierProductName('pro'));
 
 type KeyField = 'activate' | 'replace' | 'rekey';
 
@@ -146,11 +150,11 @@ export function LicensePage() {
   const data = license.data;
   const notice = result && <ResultAlert key={result.id} tone={result.tone} title={result.title} focus>{result.body}</ResultAlert>;
   const refreshFailure = refreshError !== null && <PageError onRetry={() => void load(true)}
-    message={sprintf(/* translators: %s: the reason the check failed, as the server gave it. */ __('Couldn’t check the license just now. %s', 'wconvert-pro'), refreshError)} />;
+    message={sprintf(/* translators: %s: the reason the check failed, as the server gave it. */ __('Could not check the license just now. %s', 'wconvert-pro'), refreshError)} />;
 
   const activate = (key: string) => {
     lastKey.current.activate = key;
-    void run('activate', () => activateKey(key), () => say('success', __('WConvert Pro is activated on this site', 'wconvert-pro')), 'activate');
+    void run('activate', () => activateKey(key), () => say('success', activatedHere()), 'activate');
   };
 
   const replace = (key: string, field: 'replace' | 'rekey') => {
@@ -158,7 +162,7 @@ export function LicensePage() {
     void run(field, () => replaceKey(key), (answer) => say(
       answer.released?.removed_remotely === false ? 'warning' : 'success',
       __('The new key is active', 'wconvert-pro'),
-      answer.released?.removed_remotely === false ? __('The old key’s site couldn’t be freed. Free it from your account.', 'wconvert-pro') : undefined,
+      answer.released?.removed_remotely === false ? __('The old key’s site could not be freed. Free it from your account.', 'wconvert-pro') : undefined,
     ), field);
   };
 
@@ -184,7 +188,7 @@ export function LicensePage() {
         <ActivateCard license={data} busy={busy} keyError={errors.activate ?? null}
           onActivateKey={activate}
           onKeyEdit={() => setErrors((current) => (current.activate ? { ...current, activate: undefined } : current))}
-          onChanged={(answer) => { settle(answer); say('success', __('WConvert Pro is activated on this site', 'wconvert-pro')); }} />
+          onChanged={(answer) => { settle(answer); say('success', activatedHere()); }} />
       </div>
     );
   }
@@ -193,7 +197,7 @@ export function LicensePage() {
   const was = data.domain_change?.was ?? '';
   const used = data.plan?.used ?? data.sites.filter((site) => !site.dev).length;
   const max = data.plan?.max ?? null;
-  const ofPlan = max === null ? sprintf(/* translators: %d: how many sites would use the license, counting this one. */ __('%d in use', 'wconvert-pro'), used + 1) : sprintf(/* translators: 1: how many sites would use the license, counting this one, 2: how many sites the plan allows. */ __('%1$d of %2$d in use', 'wconvert-pro'), used + 1, max);
+  const ofPlan = max === null ? sprintf(/* translators: %s: how many sites would use the license, counting this one. */ __('%s in use', 'wconvert-pro'), formatCount(used + 1)) : sprintf(/* translators: 1: how many sites would use the license, counting this one, 2: how many sites the plan allows. */ __('%1$s of %2$s in use', 'wconvert-pro'), formatCount(used + 1), formatCount(max));
 
   const move = (keepOld?: boolean) => {
     // A staging copy (no "keep" either way): the SDK decides, and a copy uses no site.
@@ -208,16 +212,16 @@ export function LicensePage() {
       : { title: sprintf(/* translators: %s: this site's new domain, e.g. “example.com”. */ __('Move the license to %s?', 'wconvert-pro'), here),
         description: data.domain_change?.was_dev
           ? <>{sprintf(/* translators: 1: this site's new domain, e.g. “example.com”, 2: sites in use, e.g. “3 of 5 in use”. */ __('%1$s will use one site on your license: %2$s.', 'wconvert-pro'), here, ofPlan)} {sprintf(/* translators: %s: the site's previous domain, e.g. “staging.example.com”. */ __('%s stays as a dev site, which is free.', 'wconvert-pro'), was)}</>
-          : sprintf(/* translators: %s: the site's previous domain, e.g. “old-example.com”. */ __('Frees %s. It stops getting updates; its Pro features keep working.', 'wconvert-pro'), was),
+          : sprintf(/* translators: 1: the site's previous domain, e.g. “old-example.com”. 2: the paid product's name, e.g. “WConvert Pro”. */ __('Frees %1$s. It stops getting updates; its %2$s features keep working.', 'wconvert-pro'), was, tierProductName('pro')),
         confirm: __('Move license here', 'wconvert-pro'),
         run: () => void run('move', () => moveLicense(false), (answer) => say(answer.released?.removed_remotely === false ? 'warning' : 'success',
           sprintf(/* translators: %s: this site's new domain, e.g. “example.com”. */ __('The license is on %s now', 'wconvert-pro'), here),
-          answer.released?.removed_remotely === false ? sprintf(/* translators: %s: the site's previous domain, e.g. “old-example.com”. */ __('%s couldn’t be freed right now. Free it from your account.', 'wconvert-pro'), was) : undefined)) });
+          answer.released?.removed_remotely === false ? sprintf(/* translators: %s: the site's previous domain, e.g. “old-example.com”. */ __('%s could not be freed right now. Free it from your account.', 'wconvert-pro'), was) : undefined)) });
   };
 
   const removeOne = (site: LicenseSite) => setConfirm({
     title: sprintf(/* translators: %s: a site's domain on the license, e.g. “example.com”. */ __('Remove %s?', 'wconvert-pro'), site.domain),
-    description: sprintf(/* translators: %s: a site's domain on the license, e.g. “example.com”. */ __('Frees one site on your license. %s stops getting updates; its Pro features keep working.', 'wconvert-pro'), site.domain),
+    description: sprintf(/* translators: 1: a site's domain on the license, e.g. “example.com”. 2: the paid product's name, e.g. “WConvert Pro”. */ __('Frees one site on your license. %1$s stops getting updates; its %2$s features keep working.', 'wconvert-pro'), site.domain, tierProductName('pro')),
     confirm: __('Remove', 'wconvert-pro'),
     destructive: true,
     run: () => {
@@ -230,11 +234,11 @@ export function LicensePage() {
 
   const removeHere = () => setConfirm({
     title: __('Remove the license from this site?', 'wconvert-pro'),
-    description: __('Frees one site on your license. Pro features keep working; updates stop.', 'wconvert-pro'),
+    description: sprintf(/* translators: %s: the paid product's name, e.g. “WConvert Pro”. */ __('Frees one site on your license. %s features keep working; updates stop.', 'wconvert-pro'), tierProductName('pro')),
     confirm: __('Remove from this site', 'wconvert-pro'),
     destructive: true,
     run: () => void run('remove', removeLicense, (answer) => answer.released?.removed_remotely === false
-      ? say('warning', __('Removed from this site', 'wconvert-pro'), __('The license server couldn’t be reached, so the site may still count. Free it from your account.', 'wconvert-pro'))
+      ? say('warning', __('Removed from this site', 'wconvert-pro'), __('The license server could not be reached, so the site may still count. Free it from your account.', 'wconvert-pro'))
       : say('success', __('Removed from this site', 'wconvert-pro'), __('One site on your license is free.', 'wconvert-pro'))),
   });
 
@@ -246,7 +250,7 @@ export function LicensePage() {
         busy, checking, updatesFailed, onCheck: () => void checkNow(), onMove: move,
         onSites: () => { sitesHeading.current?.scrollIntoView({ block: 'start', behavior: 'smooth' }); sitesHeading.current?.focus({ preventScroll: true }); },
         onRekey: (key) => replace(key, 'rekey'), rekeyError: errorFor('rekey'),
-        onReactivate: () => void run('reactivate', reactivate, () => say('success', __('WConvert Pro is activated on this site', 'wconvert-pro'))),
+        onReactivate: () => void run('reactivate', reactivate, () => say('success', activatedHere())),
       }} />
       {data.managed ? (
         <p className="wconvert-license-managed"><Info aria-hidden="true" />{__('To change or remove the license, edit WCONVERT_LICENSE_KEY in wp-config.php.', 'wconvert-pro')}</p>

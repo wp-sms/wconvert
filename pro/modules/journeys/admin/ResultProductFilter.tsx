@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { LiveProductMatches } from '@/builder/ResultProductFilter';
 import { ProductPicker } from './ResultProductPicker';
 import { NativeSelect } from '@/components/ui/native-select';
+import { formatCount } from '@/lib/format';
 
 interface Choice { id: string; name: string }
 function CatalogChoice({ label, taxonomy, value, onChange }: { label: string; taxonomy: string; value: string; onChange(value: string): void }) {
@@ -58,16 +59,16 @@ export function ResultProductFilter({ value, onChange }: { value: Filter; onChan
     </NativeSelect></label>
     {!!value.attributes.length && <p>{__('Products must match every filter.', 'wconvert-pro')}</p>}
     {value.attributes.map((filter, index) => <fieldset key={index}>
-      <legend>{sprintf(/* translators: %d: the product filter's position in the list, e.g. 1. */ __('Filter %d', 'wconvert-pro'), index + 1)}</legend>
+      <legend>{sprintf(/* translators: %s: the product filter's position in the list, e.g. 1. */ __('Filter %s', 'wconvert-pro'), formatCount(index + 1))}</legend>
       <CatalogChoice label={__('Attribute', 'wconvert-pro')} taxonomy="attributes" value={filter.taxonomy} onChange={taxonomy => edit(index, { taxonomy, term_id: 0 })} />
       {!!filter.taxonomy && <CatalogChoice key={filter.taxonomy} label={__('Value', 'wconvert-pro')} taxonomy={filter.taxonomy} value={filter.term_id ? String(filter.term_id) : ''} onChange={id => edit(index, { ...filter, term_id: Number(id) })} />}
-      <Button variant="ghost" aria-label={sprintf(/* translators: %d: the product filter's position in the list, e.g. 1. */ __('Remove filter %d', 'wconvert-pro'), index + 1)} onClick={() => onChange({ ...value, attributes: value.attributes.filter((_, at) => at !== index) })}>{__('Remove filter', 'wconvert-pro')}</Button>
+      <Button variant="ghost" aria-label={sprintf(/* translators: %s: the product filter's position in the list, e.g. 1. */ __('Remove filter %s', 'wconvert-pro'), formatCount(index + 1))} onClick={() => onChange({ ...value, attributes: value.attributes.filter((_, at) => at !== index) })}>{__('Remove filter', 'wconvert-pro')}</Button>
     </fieldset>)}
     {value.attributes.length < 3 && <Button variant="outline" disabled={!value.category_id || value.attributes.some(item => !item.taxonomy || !item.term_id)} onClick={() => onChange({ ...value, attributes: [...value.attributes, { taxonomy: '', term_id: 0 }] })}>{__('Add attribute filter', 'wconvert-pro')}</Button>}
     <small>{__('Uses global WooCommerce attributes. Shoppers choose size or other options on the product page.', 'wconvert-pro')}</small>
     {new Set(value.attributes.map(item => item.taxonomy)).size < value.attributes.length && <p role="alert">{__('Use each attribute only once.', 'wconvert-pro')}</p>}
-    <Disclosure variant="inline" onToggle={setCuration} title={__('Pin or exclude products', 'wconvert-pro')}
-      summary={sprintf(/* translators: 1: how many products are pinned to show first for this quiz result, 2: how many products are left out of it. */ __('%1$d pinned, %2$d excluded', 'wconvert-pro'), value.pinned_ids?.length ?? 0, value.excluded_ids?.length ?? 0)}>
+    <Disclosure variant="inline" onToggle={setCuration} title={__('Pin or exclude', 'wconvert-pro')}
+      summary={sprintf(/* translators: 1: how many products are pinned to show first for this quiz result, 2: how many products are left out of it. */ __('%1$s pinned, %2$s excluded', 'wconvert-pro'), formatCount(value.pinned_ids?.length ?? 0), formatCount(value.excluded_ids?.length ?? 0))}>
       {curation && <div className="wconvert-result-filter__body"><fieldset><legend>{__('Pinned products', 'wconvert-pro')}</legend>
         <ProductPicker ids={value.pinned_ids ?? []} max={3} label={__('Find products to pin', 'wconvert-pro')} actionLabel={__('Pin', 'wconvert-pro')} help={__('Choose up to three. Shown first when available and matching all filters.', 'wconvert-pro')} onChange={pinned_ids => onChange({ ...value, pinned_ids })} />
       </fieldset>

@@ -9,6 +9,8 @@ import { graphChangeImpact } from './structure/graphChangeImpact';
 import { followupGroups } from './structure/followupGroups';
 import { conditionText } from './structure/conditionText';
 import { NativeSelect } from '../components/ui/native-select';
+import { formatCount } from '../lib/format';
+import { Arrow } from './flow/FlowCard';
 
 /**
  * A destructive confirm, so it is the body of an `AlertDialog` the host owns
@@ -43,13 +45,13 @@ export function GraphScreenRemove({ tree, screenId, journeys = true, onRemove, o
     <div className="wconvert-graph-insert__body wconvert-graph-remove__body">
       {plan.reason ? <p id={`${id}-refusal`} role="status">{plan.reason}</p> : <>
         {plan.needsDestination ? <>
-          {destination && <div className="wconvert-graph-insert__outcome" aria-label={__('After removing', 'wconvert')}><strong>{__('After removing', 'wconvert')}</strong><p>{group && destination === plan.preferred ? sprintf(/* translators: %s: the name of the screen after the follow-ups, e.g. “Your result”. */ __('Check the remaining matching follow-ups, then continue to %s.', 'wconvert'), name(group.next)) : sprintf(/* translators: %s: the name of the screen visitors go to instead, e.g. “Your result”. */ __('Then → %s.', 'wconvert'), name(destination))}</p></div>}
-          {plan.preferred ? <Disclosure variant="inline" title={__('Change where they go', 'wconvert')} open={custom} onToggle={setCustom}>{custom && choice}</Disclosure> : choice}
+          {destination && <div className="wconvert-graph-insert__outcome" aria-label={__('After removing', 'wconvert')}><strong>{__('After removing', 'wconvert')}</strong><p>{group && destination === plan.preferred ? sprintf(/* translators: %s: the name of the screen after the follow-ups, e.g. “Your result”. */ __('Check the remaining matching follow-ups, then continue to %s.', 'wconvert'), name(group.next)) : <>{__('Then', 'wconvert')} <Arrow /> <bdi>{name(destination)}</bdi></>}</p></div>}
+          {plan.preferred ? <Disclosure variant="inline" title={__('Where they go', 'wconvert')} open={custom} onToggle={setCustom}>{custom && choice}</Disclosure> : choice}
           {(!group || custom) && <><p>{plan.isEntry ? __('Visitors will start at the chosen screen. Its Back button will be removed.', 'wconvert')
             : __('Those lines keep their answers and order, and go to the chosen screen:', 'wconvert')}</p>
           {!!plan.incoming.length && <ul>{plan.incoming.map(edge => <li key={edge.id}>
             <strong>{name(edge.from)}</strong>{' — '}{edge.kind === 'hidden' ? __('If skipped', 'wconvert')
-              : edge.kind === 'answer' && edge.when ? sprintf(/* translators: 1: the answer line's position on its screen, starting at 1, 2: its condition, e.g. “Budget is Under $50”. */ __('%1$d. %2$s', 'wconvert'), answersFrom(edge.from).findIndex(item => item.id === edge.id) + 1, conditionText(tree, edge.when))
+              : edge.kind === 'answer' && edge.when ? sprintf(/* translators: 1: the answer line's position on its screen, starting at 1, 2: its condition, e.g. “Budget is Under $50”. */ __('%1$s. %2$s', 'wconvert'), formatCount(answersFrom(edge.from).findIndex(item => item.id === edge.id) + 1), conditionText(tree, edge.when))
                 : answersFrom(edge.from).length ? __('All other answers', 'wconvert') : __('Then', 'wconvert')}
           </li>)}</ul>}</>}
         </> : <p>{__('No line reaches it, so nothing else changes.', 'wconvert')}</p>}

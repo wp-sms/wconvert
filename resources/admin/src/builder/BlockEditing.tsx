@@ -1,4 +1,5 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useDirection } from '../hooks/useDirection';
 import { __, sprintf } from '@wordpress/i18n';
 import { ArrowDown, ArrowUp, Copy, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -44,6 +45,7 @@ import { useCountsNothing } from './countsNothing';
 import { useCaptureRequest } from './CaptureSwitch';
 import { captureState, takesTheForm } from './structure/captureConversion';
 import type { CaptureChoice } from './CaptureSwitch';
+import { formatCount } from '../lib/format';
 
 /** The channel a contact field added to a design with no form switches it to, where the switch is offered (ADR 0163). */
 function switchesTo(tree: TemplateTree, requestCapture: ((choice: CaptureChoice) => void) | null, type: string, capture: string | undefined): 'email' | 'phone' | null {
@@ -137,11 +139,11 @@ export function useBlockEdits({ template, labels, act, step, selected, onSelect,
       control,
       sprintf(
         /* translators: 1: the block that moved, e.g. “Heading”, with its words when it has any, 2: “up” or “down”, 3: its new position, 4: how many blocks sit beside it, itself included. */
-        __('%1$s, moved %2$s, %3$d of %4$d', 'wconvert'),
+        __('%1$s, moved %2$s, %3$s of %4$s', 'wconvert'),
         sentenceFor(block, labels),
         by < 0 ? __('up', 'wconvert') : __('down', 'wconvert'),
-        spot.index + by + 1,
-        block.setSize,
+        formatCount(spot.index + by + 1),
+        formatCount(block.setSize),
       ),
     );
   };
@@ -367,7 +369,7 @@ export function RowAction({
             <OptionItem icon={Trash2} destructive refused={removal} onSelect={() => onRemove(block)}
               name={block.holds === 0
                 ? __('Delete', 'wconvert')
-                : sprintf(/* translators: %d: how many blocks the deleted one holds. */ __('Delete, with %d inside', 'wconvert'), block.holds)} />
+                : sprintf(/* translators: %s: how many blocks the deleted one holds. */ __('Delete, with %s inside', 'wconvert'), formatCount(block.holds))} />
           </>
         )}
       </OptionMenuContent>
@@ -419,6 +421,7 @@ export function AddElementPicker({ block, tree, act, labels, onAdd }: {
   onAdd: (at: Spot, type: string, capture?: string) => void;
 }) {
   const requestCapture = useCaptureRequest();
+  const direction = useDirection();
   const id = useId();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -445,7 +448,7 @@ export function AddElementPicker({ block, tree, act, labels, onAdd }: {
     .filter(group => group.choices.length > 0);
   return <Popover open={open} onOpenChange={next => { setOpen(next); if (next) { setSearch(''); added.current = false; } }}>
     <PopoverTrigger asChild><button type="button" className="wconvert-tree-add"><Plus aria-hidden="true" />{__('Add element', 'wconvert')}</button></PopoverTrigger>
-    <OptionListContent side="right" align="start" collisionPadding={12} aria-label={__('Add element', 'wconvert')}
+    <OptionListContent side={direction === 'rtl' ? 'left' : 'right'} align="start" collisionPadding={12} aria-label={__('Add element', 'wconvert')}
       onCloseAutoFocus={event => { if (added.current) event.preventDefault(); }}>
       <OptionList
         header={<div className="wconvert-option-menu__head">

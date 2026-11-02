@@ -62,6 +62,11 @@ found the system intact and its application drifted:
    nothing but its ID. Everything else in the block editor still names a
    campaign by its name; an unnamed one reads "Unnamed campaign" and one that
    no longer resolves reads "This campaign", never its ID.*
+   *Amended by ADR 0182: a third exception. The display rules'
+   page picker (`rules/ObjectPicker`, `rules/Where`) keeps a page's or term's
+   WordPress ID, as the merchant decided, because two pages can share a title and
+   a rule targets exactly one. Products do not: their fallback is "Unnamed
+   product".*
 5. **Naming.** A **lead** is the person a row is about; a **submission** is one
    form fill (one [[Lead]] record — the domain term is unchanged, see
    `CONTEXT.md`). "Email or phone", not "identifier". **Send** and **send

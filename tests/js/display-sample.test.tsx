@@ -29,8 +29,8 @@ describe('Test a visit', () => {
     render(<SampleVisit cartRequired vocabulary={ruleTypes({ pro: availability })} onClose={vi.fn()} value={{
       display_rules: { audience: { mode: 'everyone' }, opening: after15 }, targeting: {}, frequency: { maxPerSession: 1 }, schedule: {}, priority: 0,
     }} />);
-    expect(screen.getByText(/Cart testing/)).toHaveTextContent(says);
-    expect(screen.getByText(/Cart testing/)).not.toHaveTextContent(never);
+    expect(screen.getByText(/Basket testing/)).toHaveTextContent(says);
+    expect(screen.getByText(/Basket testing/)).not.toHaveTextContent(never);
   });
 
   it('asks only what this campaign’s rules use', () => {

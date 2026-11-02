@@ -27,6 +27,7 @@ import { RouteEditor } from './RouteEditor';
 import { ThenSelect } from './ThenSelect';
 import { BranchNudge } from './BranchNudge';
 import { AnswerFollowup } from './AnswerFollowup';
+import { formatCount } from '@/lib/format';
 
 /**
  * Journey authoring inside free's screens editor (ADR 0147): adding questions
@@ -190,7 +191,7 @@ export function useJourneyAuthoring(ctx: JourneyEditorContext): JourneyAuthoring
     followup: (questionId, option) => <AnswerFollowup question={questionId} option={option} onFollowup={startFollowup} />,
     followupOrder: currentFollowups && <PanelSection title={__('Follow-up order', 'wconvert-pro')}
       tip={followupSource === undefined ? __('Other lines lead into these follow-ups. Check them in Flow before changing the order.', 'wconvert-pro') : __('Visitors see matching questions in this order. Other lines stay the same.', 'wconvert-pro')}>
-      <FactList><FactRow label={__('Position', 'wconvert-pro')}>{sprintf(/* translators: 1: this follow-up's place. 2: how many follow-ups match. */ __('%1$d of %2$d', 'wconvert-pro'), currentFollowups.screens.indexOf(step) + 1, currentFollowups.screens.length)}</FactRow></FactList>
+      <FactList><FactRow label={__('Position', 'wconvert-pro')}>{sprintf(/* translators: 1: this follow-up's place. 2: how many follow-ups match. */ __('%1$s of %2$s', 'wconvert-pro'), formatCount(currentFollowups.screens.indexOf(step) + 1), formatCount(currentFollowups.screens.length))}</FactRow></FactList>
       <div className="wconvert-panel-actions">{([-1, 1] as const).map(direction => <Button key={direction} type="button" variant="outline" disabled={moveFollowup(tree, current.id, direction) === tree} onClick={() => { onChange(moveFollowup(tree, current.id, direction)); say(__('Follow-up order updated. Try it with several answers picked.', 'wconvert-pro')); }}>{direction === -1 ? __('Move up', 'wconvert-pro') : __('Move down', 'wconvert-pro')}</Button>)}
         {followupSource === undefined && <Button type="button" variant="ghost" onClick={ctx.showFlow}>{__('Review in Flow', 'wconvert-pro')}</Button>}</div>
     </PanelSection>,
@@ -210,7 +211,7 @@ export function useJourneyAuthoring(ctx: JourneyEditorContext): JourneyAuthoring
         </div>
         {!tree.graph && tree.steps.some(screen => screen.paths?.length) && <PanelHint id={`${id}-access-lines`}>{__('Remove answer lines before changing when results appear.', 'wconvert-pro')}</PanelHint>}
         {tree.submissions.length > 1 && <PanelHint id={`${id}-access-one`}>{__('Keep one signup to choose when contact details are requested.', 'wconvert-pro')}</PanelHint>}
-        {tree.submissions.length === 0 && <PanelHint id={`${id}-access-signup`}>{__('Add a signup screen first to make contact details required.', 'wconvert-pro')} {(!tree.graph || canAddGraphResultSignup) && <button type="button" className="wconvert-panel-link" onClick={ctx.addOptional}>{__('Add optional signup', 'wconvert-pro')}</button>}</PanelHint>}
+        {tree.submissions.length === 0 && <PanelHint id={`${id}-access-signup`}>{__('Add a signup screen first to make contact details required.', 'wconvert-pro')} {(!tree.graph || canAddGraphResultSignup) && <button type="button" className="wconvert-panel-link" onClick={ctx.addOptional}>{__('Add optional form', 'wconvert-pro')}</button>}</PanelHint>}
         {resultAccessIssue && <div className="wconvert-panel-warn"><span id={`${id}-access-issue`}>{resultAccessIssue.message}</span>{resultAccessIssue.screenId && <button type="button" className="wconvert-panel-link" onClick={() => {
           const index = tree.steps.findIndex(screen => screen.id === resultAccessIssue.screenId);
           if (index >= 0) { select(index); ctx.showSection(resultAccessIssue.section); requestAnimationFrame(() => settingsHeading.current?.focus()); }
@@ -218,8 +219,8 @@ export function useJourneyAuthoring(ctx: JourneyEditorContext): JourneyAuthoring
       </PanelSection>}
     </>,
     nextSummary: !slim && (tree.graph ? tree.graph.edges.some(edge => edge.from === current.id) : step < tree.steps.length - 1) && <button type="button" className="wconvert-journey-next-summary" onClick={() => ctx.showSection('paths')}>
-      <strong>{remainingFollowups ? __('Check remaining follow-ups', 'wconvert-pro') : tree.graph ? branchCount ? sprintf(/* translators: %d: how many answers on this screen have their own line. */ _n('%d answer line and all other answers', '%d answer lines and all other answers', branchCount, 'wconvert-pro'), branchCount) : sprintf(/* translators: %s: where visitors go next, usually a screen's name, e.g. “Thank you”. */ __('Then: %s', 'wconvert-pro'), nextGroup ? __('Every matching follow-up', 'wconvert-pro') : tree.steps.find(item => item.id === nextId)?.name ?? __('Choose a line', 'wconvert-pro'))
-        : current.paths?.length && current.paths.length > 1 ? sprintf(/* translators: %d: how many answers on this screen have their own line. */ _n('%d answer line and all other answers', '%d answer lines and all other answers', branchCount, 'wconvert-pro'), branchCount)
+      <strong>{remainingFollowups ? __('Check remaining follow-ups', 'wconvert-pro') : tree.graph ? branchCount ? sprintf(/* translators: %s: how many answers on this screen have their own line. */ _n('%s answer line and all other answers', '%s answer lines and all other answers', branchCount, 'wconvert-pro'), formatCount(branchCount)) : sprintf(/* translators: %s: where visitors go next, usually a screen's name, e.g. “Thank you”. */ __('Then: %s', 'wconvert-pro'), nextGroup ? __('Every matching follow-up', 'wconvert-pro') : tree.steps.find(item => item.id === nextId)?.name ?? __('Choose a line', 'wconvert-pro'))
+        : current.paths?.length && current.paths.length > 1 ? sprintf(/* translators: %s: how many answers on this screen have their own line. */ _n('%s answer line and all other answers', '%s answer lines and all other answers', branchCount, 'wconvert-pro'), formatCount(branchCount))
           : sprintf(/* translators: %s: where visitors go next, usually a screen's name, e.g. “Thank you”. */ __('Then: %s', 'wconvert-pro'), tree.steps.find(item => item.id === current.paths?.[0]?.to)?.name ?? tree.steps[step + 1].name)}</strong>
       <small>{remainingFollowups ? sprintf(/* translators: %s: where visitors go next, usually a screen's name, e.g. “Thank you”. */ __('Then: %s', 'wconvert-pro'), tree.steps.find(item => item.id === remainingFollowups.next)?.name ?? '') : __('Review where visitors go next', 'wconvert-pro')}</small>
     </button>,

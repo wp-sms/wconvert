@@ -175,7 +175,7 @@ it('selects the campaign ID for manual copying when clipboard permission is refu
   await user.click(await screen.findByRole('button', { name: OPTIN.name }));
   await user.click(screen.getByText('For developers'));
   await user.click(screen.getByRole('button', { name: 'Copy ID' }));
-  expect(await screen.findByRole('alert')).toHaveTextContent('Couldn’t copy');
+  expect(await screen.findByRole('alert')).toHaveTextContent('Could not copy');
   const field = screen.getByRole('textbox', { name: 'Campaign ID' }) as HTMLInputElement;
   expect(field).toHaveFocus(); expect(field.value).toBe(OPTIN.id);
   expect(field.selectionStart).toBe(0); expect(field.selectionEnd).toBe(OPTIN.id.length);
@@ -729,13 +729,13 @@ it('draws Details as the campaign, its numbers, and the footer’s ways out', as
   expect(onEdit).toHaveBeenCalledWith(OPTIN.id);
 });
 
-it('explains a missing rate and views counted only from the published version', async () => {
+it('explains a missing rate and Shown counting only the published version', async () => {
   stats.readDashboard.mockResolvedValue({ days: 30, from: '2026-08-16', to: '2026-09-14', goals: [{ action: 'submit', result_label: 'Submissions', optins: [{ id: OPTIN.id, conversions: 1, impressions: 0, conversion_rate: null }] }] });
   render(<OptinList onEdit={() => undefined} />);
   await userEvent.click(await screen.findByRole('button', { name: OPTIN.name }));
   const dialog = await screen.findByRole('dialog', { name: OPTIN.name });
   expect(await within(dialog).findByText('Shows once it has been shown')).toBeInTheDocument();
-  expect(within(dialog).getByText(/Views are counted only from the published version/)).toBeInTheDocument();
+  expect(within(dialog).getByText(/Shown counts only the published version/)).toBeInTheDocument();
 });
 
 /**
@@ -799,7 +799,7 @@ describe('the Campaigns workspace', () => {
     stats.readDashboard.mockRejectedValue(new Error('Stats unavailable'));
     const onEdit = vi.fn();
     render(<OptinList onEdit={onEdit} />);
-    expect(await screen.findByText(/Results couldn’t load/)).toBeInTheDocument();
+    expect(await screen.findByText(/Results could not load/)).toBeInTheDocument();
     await userEvent.click(await screen.findByRole('button', { name: 'Continue editing' }));
     expect(onEdit).toHaveBeenCalledWith(OPTIN.id);
   });
@@ -881,7 +881,7 @@ it('makes preview and vocabulary failures recoverable without presenting missing
   optins.readCampaignPreviews.mockRejectedValueOnce(new Error('Offline')).mockResolvedValue([]);
   goals.listGoals.mockRejectedValueOnce(new Error('Offline')).mockResolvedValue([{ id: OPTIN.goal, label: 'Grow my email list' }]);
   render(<OptinList onEdit={() => undefined} />);
-  expect(await screen.findByText(/Design previews couldn’t load/)).toHaveTextContent('Goal names couldn’t load');
+  expect(await screen.findByText(/Design previews could not load/)).toHaveTextContent('Goal names could not load');
   expect(screen.getByText('Goal unavailable')).toBeInTheDocument();
   expect(screen.queryByText(OPTIN.goal)).toBeNull();
   await userEvent.click(screen.getByRole('button', { name: 'Try again' }));

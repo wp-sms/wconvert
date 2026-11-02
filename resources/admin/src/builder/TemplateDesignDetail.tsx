@@ -22,6 +22,7 @@ import { walkNodes } from './structure/journey';
 import type { PreparedTemplate, TemplateIndexEntry, TemplateLabelsWithFacets } from '../templates/api';
 import type { Template } from '@renderer/types';
 import { NativeSelect } from '../components/ui/native-select';
+import { formatCount } from '../lib/format';
 
 export type TemplateContentMode = 'keep' | 'sample';
 export type PrepareDesign = (id: string, mode: TemplateContentMode, sample: Template) => Promise<PreparedTemplate>;
@@ -206,7 +207,7 @@ export function TemplateDesignDetail({
             <div className="wconvert-design-detail__controls wconvert-toolbar">
               <PreviewControls fitHeight={fitHeight} onFitHeight={setFitHeight} mobile={mobile} onMobile={setMobile}
                 template={template} step={shown} onStep={value => { setStep(value); setResultId(''); }} />
-              {resultScreen?.results && resultScreen.results.length > 0 && <label className="text-note">{__('Result to inspect','wconvert')}<NativeSelect className="text-note" value={result?.id} onChange={event => setResultId(event.target.value)}>{resultScreen.results.map((value, index) => <option key={value.id} value={value.id}>{value.heading || sprintf(/* translators: %d: the result's position. */ __('Result %d', 'wconvert'), index + 1)}</option>)}</NativeSelect></label>}
+              {resultScreen?.results && resultScreen.results.length > 0 && <label className="text-note">{__('Result to inspect','wconvert')}<NativeSelect className="text-note" value={result?.id} onChange={event => setResultId(event.target.value)}>{resultScreen.results.map((value, index) => <option key={value.id} value={value.id}>{value.heading || sprintf(/* translators: %s: the result's position. */ __('Result %s', 'wconvert'), formatCount(index + 1))}</option>)}</NativeSelect></label>}
             </div>
             <PreviewFrame template={template} displayType={entry.display_type} mobile={mobile} step={shown} result={result} fitHeight={fitHeight}>
               {loadError || preparationError !== undefined ? (
@@ -246,7 +247,7 @@ export function TemplateDesignDetail({
             {mode === 'keep' && template && whatNeedsOfferAmount(template).map(problem => <p key={problem.said} role="status" className="text-note text-warning">{problem.said}</p>)}
             {mode === 'keep' && candidate?.value?.transfer !== undefined && (candidate.value.transfer.unplaced > 0 || candidate.value.transfer.unverified > 0) && (
               <div role="status" className="rounded-md border border-warning p-3 text-note">
-                {candidate.value.transfer.unplaced > 0 && <p className="m-0">{sprintf(/* translators: %d: how many of the campaign's pictures cannot be moved into the new design. */ _n('%d picture has no clear matching place in this template and will not carry over. Check the preview before applying.', '%d pictures have no clear matching place in this template and will not carry over. Check the preview before applying.', candidate.value.transfer.unplaced, 'wconvert'), candidate.value.transfer.unplaced)}</p>}
+                {candidate.value.transfer.unplaced > 0 && <p className="m-0">{sprintf(/* translators: %s: how many of the campaign's pictures cannot be moved into the new design. */ _n('%s picture has no clear matching place in this template and will not carry over. Check the preview before applying.', '%s pictures have no clear matching place in this template and will not carry over. Check the preview before applying.', candidate.value.transfer.unplaced, 'wconvert'), formatCount(candidate.value.transfer.unplaced))}</p>}
                 {candidate.value.transfer.unverified > 0 && <p className="m-0">{__('The original template is unavailable, so we cannot identify your picture changes. Re-add your pictures after applying, or keep your current template.', 'wconvert')}</p>}
               </div>
             )}

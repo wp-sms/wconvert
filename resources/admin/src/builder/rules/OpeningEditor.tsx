@@ -5,6 +5,7 @@ import type { RuleType } from '../api';
 import { DisclosureCard } from './DisclosureCard';
 import { GroupEditor } from './GroupEditor';
 import { InfoTip } from '../../shell/InfoTip';
+import { formatCount } from '../../lib/format';
 
 /**
  * When it opens, under Custom…: the whole opening, any mode.
@@ -34,10 +35,10 @@ export function OpeningEditor({ value, types, onChange, heldBy }: { value: Openi
       label={__('What opens it', 'wconvert')}
       match={value.mode === 'automatic' ? { before: __('Opens when', 'wconvert'), after: __('of these happen', 'wconvert'), label: __('Opens when any or all of these happen', 'wconvert'), order: ['any', 'all'] } : undefined}
       onChange={group => onChange(value.mode === 'click' ? { ...value, rules: group.rules } : { ...value, match: group.match, rules: group.rules })} />}
-    {value.mode === 'automatic' && <DisclosureCard title={__('Minimum time on the page', 'wconvert')} open={!!value.minimum_seconds}
+    {value.mode === 'automatic' && <DisclosureCard title={__('Minimum page time', 'wconvert')} open={!!value.minimum_seconds}
       current={value.minimum_seconds ? sprintf(
-        /* translators: %d: a number of seconds. */
-        _n('Not before %d second', 'Not before %d seconds', value.minimum_seconds, 'wconvert'), value.minimum_seconds) : __('None', 'wconvert')}>
+        /* translators: %s: a number of seconds. */
+        _n('Not before %s second', 'Not before %s seconds', value.minimum_seconds, 'wconvert'), formatCount(value.minimum_seconds)) : __('None', 'wconvert')}>
       <label className="wconvert-display-inline-field">{__('Never open before', 'wconvert')}
         <input type="number" min={0} max={3600} value={value.minimum_seconds ?? 0} onChange={event => onChange({ ...value, minimum_seconds: Number(event.target.value) })} />
         {__('seconds on the page', 'wconvert')}</label>

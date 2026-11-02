@@ -53,7 +53,7 @@ it('changes ordering without losing filters and loads curation only when opened'
   await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Product order' }), 'price_low');
   expect(onChange).toHaveBeenCalledWith({ ...original, order: 'price_low' });
   expect(vi.mocked(apiFetch).mock.calls.some(([args]) => args.path?.includes('/wc/store/'))).toBe(false);
-  await userEvent.click(screen.getByText('Pin or exclude products'));
+  await userEvent.click(screen.getByText('Pin or exclude'));
   expect(await screen.findByLabelText('Find products to pin')).toBeInTheDocument();
   expect(screen.getByLabelText('Find products to exclude')).toBeInTheDocument();
 });
@@ -62,7 +62,7 @@ it('reorders pins, removes a pin and enforces the pin limit', async () => {
   vi.mocked(apiFetch).mockResolvedValue([{ id: 1, name: 'One' }, { id: 2, name: 'Two' }, { id: 3, name: 'Three' }, { id: 4, name: 'Four' }]);
   function Harness() { const [ids, setIds] = useState([1, 2, 3]); return <><ProductPicker ids={ids} onChange={setIds} max={3} /><output>{ids.join(',')}</output></>; }
   render(<Harness />);
-  await userEvent.click(await screen.findByRole('button', { name: 'Move earlier: Two' }));
+  await userEvent.click(await screen.findByRole('button', { name: 'Move up: Two' }));
   expect(screen.getByRole('status')).toHaveTextContent('2,1,3');
   await userEvent.type(screen.getByLabelText('Find products'), 'Four');
   await userEvent.click(screen.getByRole('button', { name: 'Search catalog' }));
@@ -85,7 +85,7 @@ it('allows excluding out-of-stock products without ordering controls', async () 
   await userEvent.click(screen.getByRole('button', { name: 'Search catalog' }));
   await userEvent.click(await screen.findByRole('button', { name: /^Add:/ }));
   expect(onChange).toHaveBeenCalledWith([4]);
-  expect(screen.queryByRole('button', { name: /Move earlier/ })).toBeNull();
+  expect(screen.queryByRole('button', { name: /Move up/ })).toBeNull();
 });
 
 it('explains missing pins but ignores intentionally excluded pins', async () => {
@@ -128,7 +128,7 @@ it('keeps the selection when names cannot load and retries in place', async () =
   const onChange = vi.fn();
   render(<ProductPicker ids={[3]} onChange={onChange} />);
   expect(await screen.findByRole('alert')).toHaveTextContent('Your selection is kept');
-  expect(screen.getByRole('button', { name: 'Remove: Product #3' })).toBeEnabled();
+  expect(screen.getByRole('button', { name: 'Remove: Unnamed product' })).toBeEnabled();
   vi.mocked(apiFetch).mockResolvedValueOnce([{ id: 3, name: 'Recovered name' }]);
   await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
   expect(await screen.findByRole('button', { name: 'Remove: Recovered name' })).toBeEnabled();

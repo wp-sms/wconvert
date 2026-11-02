@@ -619,7 +619,7 @@ describe('the design’s fonts in the editor preview', () => {
     deadlineRequest.mockRejectedValueOnce(new Error('offline')).mockResolvedValue({ fonts: [], bundled_fonts: [], google_fonts_enabled: false });
     render(<Preview template={withFont} onSelect={() => undefined} />);
     const alert = await screen.findByRole('alert');
-    expect(alert).toHaveTextContent('This design’s fonts couldn’t load');
+    expect(alert).toHaveTextContent('This design’s fonts could not load');
     fireEvent.click(within(alert).getByRole('button', { name: 'Try again' }));
     await waitFor(() => expect(screen.queryByRole('alert')).toBeNull());
   });

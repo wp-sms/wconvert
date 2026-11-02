@@ -30,6 +30,7 @@ import { onlyForSignups, submissionScreen } from './structure/journey';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Template } from '@renderer/types';
 import { NativeSelect } from '../components/ui/native-select';
+import { formatCount } from '../lib/format';
 
 export interface BlockInspectorProps {
   readonly template: Template;
@@ -141,8 +142,8 @@ export function BlockInspector({
   const node = nodeAt(template.tree, path) as { answer_type?: string; options?: readonly unknown[]; captures?: string } | null;
   const caption = block.type === 'button' && slot !== null ? buttonDoes(buttonActionOf(slot))
     : block.type === 'question' ? node?.answer_type === 'text' ? answerTypeName('text')
-      : sprintf(/* translators: 1: an answer type, e.g. “Choose one”. 2: how many choices. */ _n('%1$s · %2$d choice', '%1$s · %2$d choices', node?.options?.length ?? 0, 'wconvert'),
-        answerTypeName(node?.answer_type ?? 'single'), node?.options?.length ?? 0)
+      : sprintf(/* translators: 1: an answer type, e.g. “Choose one”. 2: how many choices. */ _n('%1$s · %2$s choice', '%1$s · %2$s choices', node?.options?.length ?? 0, 'wconvert'),
+        answerTypeName(node?.answer_type ?? 'single'), formatCount(node?.options?.length ?? 0))
     : box ? sprintf(/* translators: %s: a box's name, e.g. “Colored box”. */ __('In %s', 'wconvert'), nameOfBlock(box, labels)) : null;
   const screenName = template.tree.steps[Number(path[0])]?.name ?? '';
   // Back to the screen where there is one to go back to; the Design tab's
@@ -312,7 +313,7 @@ function contentBody({
         <NativeSelect id={`form-${path.join('-')}`} value={node?.submission ?? ''} onChange={e => onChange({ ...template, tree: withValue(template.tree, path, 'submission', e.target.value) })}>
           <option value="">{__('Choose a form', 'wconvert')}</option>
           {template.tree.submissions.filter(s => node?.action !== 'skip' || !s.required).map((s, index) => <option key={s.id} value={s.id}>
-            {template.tree.steps[submissionScreen(template.tree, s.id)]?.name ?? sprintf(/* translators: %d: the form's position in the design, starting at 1. */ __('Form %d', 'wconvert'), index + 1)}
+            {template.tree.steps[submissionScreen(template.tree, s.id)]?.name ?? sprintf(/* translators: %s: the form's position in the design, starting at 1. */ __('Form %s', 'wconvert'), formatCount(index + 1))}
           </option>)}
         </NativeSelect>
       </PanelField>}

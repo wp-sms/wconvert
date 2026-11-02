@@ -14,7 +14,7 @@ it('refreshes published choices without changing the saved selection or offering
   expect(screen.queryByText('Ordinary form')).toBeNull();
   vi.mocked(apiFetch).mockResolvedValue({ campaigns: [{ id: 'new', name: 'New bonus', status: 'ready' }], manageUrl: null });
   await userEvent.click(screen.getByRole('button', { name: 'Refresh campaigns' }));
-  expect(await screen.findByText(/no longer published as inline/i)).toBeVisible();
+  expect(await screen.findByText(/no longer published inline/i)).toBeVisible();
   expect(screen.getByText('Previously selected campaign')).toBeVisible();
   expect(screen.queryByRole('combobox', { name: 'Campaign' })).toBeNull();
   expect(change).not.toHaveBeenCalled();

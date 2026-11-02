@@ -7,6 +7,7 @@ import { Field } from '../shell/Field';
 import { Region, RegionBody, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
 import { SettingsRegionSkeleton } from './SettingsSkeleton';
 import { SaveStatus, useSaveStatus } from '../shell/SaveStatus';
+import { formatWhen } from '../lib/format';
 import { messageOf } from '../shell/loadable';
 import { useSettingsEditing, type SettingsEditing } from './useSettingsEditing';
 import { readWeeklySummary, saveWeeklySummary, sendTestSummary, type WeeklySummarySetting } from './emailReportsApi';
@@ -115,7 +116,7 @@ export function EmailReports({ onEditingStateChange }: { onEditingStateChange?: 
             {saved.waiting_for_publish
               ? __('The first one goes out the Monday after your first campaign is published.', 'wconvert')
               : saved.next_send
-                ? sprintf(/* translators: %s: a weekday, date and time, e.g. “Monday, November 2, 2026, 9:00 am”. */ __('Next summary: %s, in your site’s time zone.', 'wconvert'), saved.next_send)
+                ? sprintf(/* translators: %s: a date and time, e.g. “Nov 2, 2026, 9:00 AM”. */ __('Next summary: %s, in your site’s time zone.', 'wconvert'), formatWhen(saved.next_send, 'detail'))
                 : null}
           </p>
         </>}

@@ -188,14 +188,14 @@ describe('the Contact form switch', () => {
     await userEvent.click(control.getByRole('button', { name: 'Why a copy' }));
     expect(await screen.findByText(/This campaign is published, so what it counts can’t change/)).toBeInTheDocument();
     await userEvent.keyboard('{Escape}');
-    await userEvent.click(control.getByRole('button', { name: 'Make a signup copy' }));
-    const box = within(await screen.findByRole('dialog', { name: 'Signup copy' }));
+    await userEvent.click(control.getByRole('button', { name: 'Make a form copy' }));
+    const box = within(await screen.findByRole('dialog', { name: 'Form copy' }));
     // Native radios in a named group: the set is announced as a set (GUIDELINES §7).
     expect(within(box.getByRole('group', { name: 'What the copy asks for' })).getAllByRole('radio')).toHaveLength(2);
     await userEvent.click(box.getByRole('radio', { name: 'Ask for phone' }));
-    await userEvent.click(box.getByRole('button', { name: 'Create signup copy' }));
+    await userEvent.click(box.getByRole('button', { name: 'Create form copy' }));
     await waitFor(() => expect(onCreated).toHaveBeenCalledWith('COPIED'));
-    expect(copies.createOptin).toHaveBeenCalledWith('Welcome offer (signup)', 'grow_sms_list', expect.objectContaining({ template_id: OFFER.id, analytics: { label: '' } }));
+    expect(copies.createOptin).toHaveBeenCalledWith('Welcome offer (form)', 'grow_sms_list', expect.objectContaining({ template_id: OFFER.id, analytics: { label: '' } }));
     expect(tree(copies.createOptin.mock.calls[0][2]).submissions).toHaveLength(1);
     expect(builder.saveOptin).not.toHaveBeenCalled();
   });

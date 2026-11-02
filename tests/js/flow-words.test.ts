@@ -12,6 +12,8 @@ const repo = resolve(__dirname, '../..');
 const root = resolve(repo, 'resources/admin/src');
 /** Pro's journeys, license and panels, which merchants read as the same admin. */
 const proRoots = [
+  // The block editor's own screens, which merchants read as the same product.
+  resolve(repo, 'resources/blocks'),
   resolve(repo, 'pro/resources/admin/src'),
   ...readdirSync(resolve(repo, 'pro/modules')).flatMap(name => [
     resolve(repo, 'pro/modules', name, 'admin'),
@@ -31,12 +33,29 @@ const retired: readonly [RegExp, string][] = [
   [/\bjourney\b/i, 'campaign, screens or line'],
   // A URL's path ("/pricing/") is another thing; a way between screens is a line.
   [/\bpaths?\b(?! such as)/i, 'line'],
+  [/\bConnect screen\b/i, 'Add line'],
+  [/\bConnect to\b/, 'Line goes to'],
+  [/\bNot connected\b/, 'No line reaches this screen'],
+  [/\bbranch(?:es)?\b/i, 'line, or send answers to different screens'],
+  [/\bcapture history\b/i, 'the lead'],
+  [/\bcapture (?:point|requirement)\b/i, 'form, or contact details'],
+  [/\bShow condition\b/, 'Only if…'],
+  // ADR 0131: Shown is the one name for impressions; "first view" is ADR 0176's own wording.
+  [/\bViews\b/, 'Shown'],
+  [/\blicen[c]e\b/i, 'license'],
+  [/\bBack to (?:Campaigns|Leads|Analytics)\b/, 'a lowercase noun'],
+  [/\bcouldn[’']t\b/i, 'could not'],
+  [/\b(?:Not set up|Choose campaign)\b/, 'No campaign chosen, or Choose a campaign'],
+  [/\bMove (?:earlier|later)\b/, 'Move up, or Move down'],
+  [/· optional\b/, '(optional)'],
+  [/\bpublished as inline\b/, 'published inline'],
 ];
 
 function files(directory: string): string[] {
   return readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
     const path = join(directory, entry.name);
-    return entry.isDirectory() ? files(path) : /\.tsx?$/.test(entry.name) ? [path] : [];
+    if (entry.isDirectory()) return entry.name === 'node_modules' ? [] : files(path);
+    return /\.tsx?$/.test(entry.name) ? [path] : [];
   });
 }
 

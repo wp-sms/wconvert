@@ -202,7 +202,7 @@ function rules(): PickerRules<InlineCampaign> {
  */
 function instructionsFor(data: InlineChoices | null): string {
   if (data === null) {
-    return __('Your campaigns couldn’t be loaded here. Blocks already on the page still work. Reload the editor.', 'wconvert');
+    return __('Your campaigns could not be loaded here. Blocks already on the page still work. Try Refresh campaigns.', 'wconvert');
   }
 
   if (!data.campaigns.some((campaign) => campaign.status === 'published')) {

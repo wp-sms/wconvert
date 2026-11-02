@@ -173,7 +173,7 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onLibraryCh
       await onLibraryChanged();
       review(installed.template_id);
     } catch (cause) {
-      setInstallFailed({ key: card.key, message: __('Couldn’t add this template.', 'wconvert') + ' ' + messageOf(cause) });
+      setInstallFailed({ key: card.key, message: __('Could not add this template.', 'wconvert') + ' ' + messageOf(cause) });
     } finally { setInstalling(null); }
   };
   const adopt = (card: Card) => {

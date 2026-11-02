@@ -23,6 +23,7 @@ import { walkNodes } from './structure/journey';
 import { conditionText } from './structure/conditionText';
 import { testCaptureSnapshot, type TestCaptureSnapshot } from './structure/journeyTestState';
 import { CheckRow } from '../shell/CheckRow';
+import { formatCount } from '../lib/format';
 
 type ProductState = 'selected' | 'empty' | 'error';
 
@@ -30,7 +31,7 @@ function TestProducts({ count, state, onRetry }: { count: number; state: Product
   const status = useRef<HTMLParagraphElement>(null);
   return <>
     <p ref={status} role="status" tabIndex={-1}>{state === 'selected'
-      ? sprintf(/* translators: %d: how many products the result shows. */ _n('%d selected product would be checked for current price and availability.', '%d selected products would be checked for current price and availability.', count, 'wconvert'), count)
+      ? sprintf(/* translators: %s: how many products the result shows. */ _n('%s selected product would be checked for current price and availability.', '%s selected products would be checked for current price and availability.', count, 'wconvert'), formatCount(count))
       : state === 'empty' ? __('These products are unavailable right now. Please use the link below.', 'wconvert')
         : __('Products could not load. You can still use the link below.', 'wconvert')}</p>
     {state === 'error' && <button type="button" className="wc-button" onClick={() => {
@@ -264,8 +265,8 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
         ? sprintf(/* translators: %s: the screen's show condition, e.g. “Budget is Under $50”. */ __('Hidden because %s did not match', 'wconvert'), conditionText(tree, source.when))
         : __('Hidden screen continues', 'wconvert')
         : decision.kind === 'answer' ? edge?.when
-          ? sprintf(/* translators: 1: the answer line's position, starting at 1, 2: its condition, e.g. “Budget is Under $50”. */ __('First matching line %1$d: %2$s', 'wconvert'), (decision.priority ?? 0) + 1, conditionText(tree, edge.when))
-          : sprintf(/* translators: %d: the answer line's position on its screen, starting at 1. */ __('Answer line %d', 'wconvert'), (decision.priority ?? 0) + 1)
+          ? sprintf(/* translators: 1: the answer line's position, starting at 1, 2: its condition, e.g. “Budget is Under $50”. */ __('First matching line %1$s: %2$s', 'wconvert'), formatCount((decision.priority ?? 0) + 1), conditionText(tree, edge.when))
+          : sprintf(/* translators: %s: the answer line's position on its screen, starting at 1. */ __('Answer line %s', 'wconvert'), formatCount((decision.priority ?? 0) + 1))
           : branches ? __('All other answers: no answer line matched', 'wconvert') : __('Continue', 'wconvert');
       return [{ id: decision.edge, label: sprintf(/* translators: 1: the screen a visitor left, 2: the screen they reached, 3: why. */ __('%1$s to %2$s: %3$s', 'wconvert'), from, to, action) }];
     }
@@ -273,7 +274,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
     const from = tree.steps[decision.from]?.name ?? '';
     const to = tree.steps[Number(decision.to)]?.name ?? '';
     const action = decision.kind === 'hidden' ? __('Hidden screen continues', 'wconvert')
-      : decision.kind === 'route' ? sprintf(/* translators: %d: the answer line's position on its screen, starting at 1. */ __('Answer line %d', 'wconvert'), (decision.priority ?? 0) + 1)
+      : decision.kind === 'route' ? sprintf(/* translators: %s: the answer line's position on its screen, starting at 1. */ __('Answer line %s', 'wconvert'), formatCount((decision.priority ?? 0) + 1))
         : __('Continue', 'wconvert');
     return [{ id: `${decision.from}-${decision.to}`, label: sprintf(/* translators: 1: the screen a visitor left, 2: the screen they reached, 3: why, e.g. “Answer line 2”. */ __('%1$s to %2$s: %3$s', 'wconvert'), from, to, action) }];
   });
@@ -301,7 +302,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
     <section className="wconvert-journey-test__visitor" aria-label={__('Interactive preview', 'wconvert')}>
       <div className="wconvert-preview-test__toolbar"><span>{sprintf(
         /* translators: 1: how many screens this run has reached, 2: the screen on show, e.g. “Your result”. */
-        __('Screen %1$d · %2$s', 'wconvert'), visited.length, tree.steps[step].name)}</span><PreviewWidth mobile={mobile} onChange={setMobile} /></div>
+        __('Screen %1$s · %2$s', 'wconvert'), formatCount(visited.length), tree.steps[step].name)}</span><PreviewWidth mobile={mobile} onChange={setMobile} /></div>
       <PreviewDeadlineStatus />
       <div className="wconvert-journey-test__canvas"><div ref={anchor} data-mobile={mobile} className="wconvert-journey-test__stage" /></div>
       {feedback && <p className="wconvert-journey-test__feedback" role="status">{feedback}</p>}
@@ -317,7 +318,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
         {visited.map((at, index) => <li key={tree.steps[at].id} data-current={at === step} aria-current={at === step ? 'step' : undefined}>
           <span className="wconvert-journey-test__number" aria-hidden="true">{at === step ? index + 1 : <Check size={12} />}</span>
           <div><strong>{tree.steps[at].name}</strong><small>{at === step ? __('Current screen', 'wconvert') : __('Visited', 'wconvert')}</small>
-          {at === step && followups && <small>{sprintf(/* translators: 1: this follow-up screen's position, 2: how many follow-up screens these answers lead to. */ __('Follow-up %1$d of %2$d for these answers', 'wconvert'), followups.indexOf(step) + 1, followups.length)}</small>}
+          {at === step && followups && <small>{sprintf(/* translators: 1: this follow-up screen's position, 2: how many follow-up screens these answers lead to. */ __('Follow-up %1$s of %2$s for these answers', 'wconvert'), formatCount(followups.indexOf(step) + 1), formatCount(followups.length))}</small>}
           {at === step && shownResult && <small>{sprintf(/* translators: %s: the heading of the result on show. */ __('Result shown: %s', 'wconvert'), shownResult.heading)}</small>}</div>
         </li>)}
       </ol>
@@ -326,7 +327,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
         // Screens off this path are one muted line each, never a list to open (ADR 0138).
         return screens.length > 0 && <div key={category} className="wconvert-journey-test__others" data-category={category}>
           <span>{category === 'pending' ? __('Not reached yet:', 'wconvert') : __('Skipped:', 'wconvert')}</span>
-          <ul>{screens.map((at, position) => <li key={tree.steps[at].id} data-current="false" title={progress.states[at] === 'pending' ? __('Not reached yet', 'wconvert') : progress.states[at] === 'bypassed' ? __('Skipped by another line', 'wconvert') : __('Show condition did not match', 'wconvert')}>
+          <ul>{screens.map((at, position) => <li key={tree.steps[at].id} data-current="false" title={progress.states[at] === 'pending' ? __('Not reached yet', 'wconvert') : progress.states[at] === 'bypassed' ? __('Skipped by another line', 'wconvert') : __('Only if… did not match', 'wconvert')}>
             <bdi>{tree.steps[at].name}</bdi>
             {category === 'skipped' && <button type="button" onClick={() => onEdit(at, progress.states[at] === 'hidden' ? 'condition' : undefined)}>{progress.states[at] === 'hidden' ? __('Edit condition', 'wconvert') : __('Review screen', 'wconvert')}</button>}
             {/* translators: follows each but the last screen name in a one-line list. */ position < screens.length - 1 && __(',', 'wconvert')}

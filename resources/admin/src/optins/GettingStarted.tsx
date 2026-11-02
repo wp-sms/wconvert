@@ -4,7 +4,7 @@ import { ArrowUpRight, Check, CirclePlay, Plus, X } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { adminSettings } from '../settings';
 import { WALKTHROUGH_VIDEO, GUIDES, docsUrl } from '../shell/docs';
-import { formatDay } from '../lib/format';
+import { formatCount, formatDay } from '../lib/format';
 import type { GoalEntry } from '../goals/api';
 import type { OptinSummary } from './api';
 import { actionFor, checklistOf, type Checklist, type Milestones, type StepId } from './checklist';
@@ -140,7 +140,7 @@ export function GettingStarted({
 }) {
   const homeUrl = adminSettings()?.homeUrl;
   const view = checklist.result === 'view';
-  const external = <><ArrowUpRight aria-hidden="true" className="wconvert-checklist__ext" /><span className="sr-only">{__('(opens in a new tab)', 'wconvert')}</span></>;
+  const external = <><ArrowUpRight aria-hidden="true" className="wconvert-checklist__ext rtl:-scale-x-100" /><span className="sr-only">{__('(opens in a new tab)', 'wconvert')}</span></>;
 
   const hide = () => {
     onHide();
@@ -172,7 +172,7 @@ export function GettingStarted({
         </div>
         <div className="wconvert-checklist__meter">
           <span className="wconvert-checklist__count">
-            {sprintf(/* translators: %d: how many of the three steps are done. */ __('%d of 3 done', 'wconvert'), checklist.done)}
+            {sprintf(/* translators: %s: how many of the three steps are done. */ __('%s of 3 done', 'wconvert'), formatCount(checklist.done))}
           </span>
           <span className="wconvert-checklist__bar" aria-hidden="true">
             {checklist.steps.map((step) => <i key={step.id} data-on={step.state === 'done' || undefined} />)}

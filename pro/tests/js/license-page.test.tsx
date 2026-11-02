@@ -142,7 +142,7 @@ it('a check that fails keeps the page and says so', async () => {
   render(<LicensePage />);
   await userEvent.click(await screen.findByRole('button', { name: 'Check now' }));
 
-  expect(await screen.findByText('Couldn’t check the license just now. No route')).toBeInTheDocument();
+  expect(await screen.findByText('Could not check the license just now. No route')).toBeInTheDocument();
   expect(checks).toBe(1);
   expect(screen.getByRole('heading', { name: 'Your license expired' })).toBeInTheDocument();
 });
@@ -160,7 +160,7 @@ it('a check that fails on coming back to the tab says so without moving focus, a
   await act(async () => { window.dispatchEvent(new Event('focus')); });
 
   const alert = await screen.findByRole('alert');
-  expect(alert).toHaveTextContent('Couldn’t check the license just now.');
+  expect(alert).toHaveTextContent('Could not check the license just now.');
   expect(check).toHaveFocus();
   await userEvent.click(within(alert).getByRole('button', { name: 'Try again' }));
   await waitFor(() => expect(screen.queryByRole('alert')).toBeNull());
@@ -186,7 +186,7 @@ it('an action that fails keeps its door, and Try again repeats that action', asy
   await userEvent.click(within(await screen.findByRole('alertdialog')).getByRole('button', { name: 'Remove' }));
 
   const alert = await screen.findByRole('alert');
-  expect(alert).toHaveTextContent('Couldn’t reach the license server.');
+  expect(alert).toHaveTextContent('Could not reach the license server.');
   expect(within(alert).getByRole('link', { name: /Troubleshooting guide/ })).toBeInTheDocument();
   await userEvent.click(within(alert).getByRole('button', { name: 'Try again' }));
   await waitFor(() => expect(screen.getByText('shop.example.com was removed. One more site is free.')).toBeInTheDocument());

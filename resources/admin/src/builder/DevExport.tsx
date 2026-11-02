@@ -66,7 +66,7 @@ export function DevExport({ entry, onChange }: { entry: TemplateEntry; onChange:
         >
           {__('Load this design', 'wconvert')}
         </button>{' '}
-        {refused && <span className="description">{__('That is not a library entry.', 'wconvert')}</span>}
+        {refused && <span className="description">{__('That is not a library entry. Paste an exported entry here, then load it again.', 'wconvert')}</span>}
       </p>
     </Disclosure>
   );

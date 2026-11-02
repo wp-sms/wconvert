@@ -15,7 +15,8 @@ import { connectionSetup } from '@/destinations/connectionSetup';
 import { registerPage } from '@/extraPages';
 import { lazyScreen } from '@/lib/requestActivity';
 import { renderExtensions } from '@/renderExtensions';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
+import { tierProductName } from '@/goals/availability';
 import { LicenseSkeleton } from './license/LicenseSkeleton';
 
 // The License page (ADR 0143): a registered page in the one shared bundle
@@ -23,7 +24,7 @@ import { LicenseSkeleton } from './license/LicenseSkeleton';
 registerPage({
   id: 'license',
   title: __('License', 'wconvert-pro'),
-  description: __('Updates and support for WConvert Pro.', 'wconvert-pro'),
+  description: sprintf(/* translators: %s: the paid product's name, e.g. “WConvert Pro”. */ __('Updates and support for %s.', 'wconvert-pro'), tierProductName('pro')),
   Component: lazyScreen(() => import('./license/LicensePage').then((module) => ({ default: module.LicensePage }))),
   skeleton: LicenseSkeleton,
 });

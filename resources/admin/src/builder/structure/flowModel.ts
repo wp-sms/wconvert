@@ -5,7 +5,7 @@ import { followupGroups, followupGroupSource } from './followupGroups';
 import { earlyEnding, type SkippedGate } from './gateEndings';
 import { graphDisplayOrder } from './graph';
 import { questionsIn, unreachableScreenIds, walkNodes } from './journey';
-import { anyOf } from '../../lib/format';
+import { anyOf, formatCount } from '../../lib/format';
 
 /**
  * What the Flow map draws (ADR 0142), worked out once from the tree and never
@@ -383,8 +383,8 @@ export function flowModel(tree: TemplateTree, { selectedQuestion }: { selectedQu
     const optional = !!submit && 'submission' in submit && tree.submissions.find(item => item.id === submit.submission)?.required === false;
     const skip = screen.when && !splits(screen.id) ? skipTarget(screen.id) : undefined;
     const onlyIf = screen.when ? { text: conditionText(tree, screen.when), color: colorOf(screen.when) } : undefined;
-    const linesText = leaving.length > 1 ? sprintf(/* translators: 1: how many lines leave a screen. 2: “first match wins”, or their answers. */ _n('%1$d line · %2$s', '%1$d lines · %2$s', leaving.length, 'wconvert'),
-      leaving.length, answers.length ? __('first match wins', 'wconvert') : leaving.map(line => line.label).filter(Boolean).join(', ')) : undefined;
+    const linesText = leaving.length > 1 ? sprintf(/* translators: 1: how many lines leave a screen. 2: “first match wins”, or their answers. */ _n('%1$s line · %2$s', '%1$s lines · %2$s', leaving.length, 'wconvert'),
+      formatCount(leaving.length), answers.length ? __('first match wins', 'wconvert') : leaving.map(line => line.label).filter(Boolean).join(', ')) : undefined;
     const then = fallback ? { target: fallback.to, name: targetName(nodeOf(fallback.to)), priority: Number(fallback.priority) } : undefined;
     const skipped = kind === 'ending' ? earlyEnding(tree, screen.id) : [];
     const endsWithout = skipped.length ? skipped : undefined;

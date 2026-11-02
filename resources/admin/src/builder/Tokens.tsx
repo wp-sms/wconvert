@@ -3,6 +3,7 @@ import { GOOGLE_FONTS, withGoogleFont } from './googleFonts';
 import { FontNotice } from './FontNotice';
 import type { GoogleFont } from '@renderer/types';
 import { useId, useState, type ReactNode } from 'react';
+import { useDirection } from '../hooks/useDirection';
 import { __, sprintf } from '@wordpress/i18n';
 import { TryAgain } from '../shell/Region';
 import { SpacingField } from './SpacingField';
@@ -1022,6 +1023,7 @@ function FontField({
   onOpenChange: (open: boolean) => void;
   onChange: (value: string, font?: GoogleFont) => void;
 }) {
+  const direction = useDirection();
   const named = `${id}-name`;
   const [site, setSite] = useState<readonly SiteFont[] | null>(null);
   const [search, setSearch] = useState('');
@@ -1091,7 +1093,7 @@ function FontField({
             </button>
           </PopoverTrigger>
 
-          <PopoverContent align="end" side="left" collisionPadding={12} className="wconvert-font-popover">
+          <PopoverContent align="end" side={direction === 'rtl' ? 'right' : 'left'} collisionPadding={12} className="wconvert-font-popover">
             <label className="wconvert-font-search">{__('Find a font', 'wconvert')}<input type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder={__('Search fonts…', 'wconvert')} /></label>
             {site === null && <LineSkeleton status={__('Loading site fonts…', 'wconvert')} lines={3} />}
             {fontError && <p role="status">{__('Site fonts could not load.', 'wconvert')} <TryAgain onClick={read} /></p>}

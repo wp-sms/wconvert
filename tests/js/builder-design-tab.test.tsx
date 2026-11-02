@@ -530,7 +530,7 @@ describe('the library entry', () => {
     await userEvent.type(screen.getByLabelText('Library entry JSON'), 'not json');
     await userEvent.click(screen.getByRole('button', { name: 'Load this design' }));
 
-    expect(screen.getByText('That is not a library entry.')).toBeInTheDocument();
+    expect(screen.getByText('That is not a library entry. Paste an exported entry here, then load it again.')).toBeInTheDocument();
     expect(changed).not.toHaveBeenCalled();
   });
 });

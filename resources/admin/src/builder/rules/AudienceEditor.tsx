@@ -6,6 +6,7 @@ import { Button } from '../../components/ui/button';
 import { InfoTip } from '../../shell/InfoTip';
 import { GroupEditor } from './GroupEditor';
 import { emptyGroup } from './plan';
+import { formatCount } from '../../lib/format';
 
 /** The most groups an audience holds; `DisplayPlan` refuses a sixth. */
 const MAX_GROUPS = 5;
@@ -26,7 +27,7 @@ export function AudienceEditor({ value, types, onChange }: { value: Audience; ty
 
   return <div className="wconvert-display-groups">
     {groups.map((group, index) => {
-      const title = sprintf(/* translators: %d: a group's number, from 1. */ __('Group %d', 'wconvert'), index + 1);
+      const title = sprintf(/* translators: %s: a group's number, from 1. */ __('Group %s', 'wconvert'), formatCount(index + 1));
 
       return <div key={group.id ?? index}>
         {index > 0 && <div className="wconvert-display-or" role="separator" aria-label={__('or', 'wconvert')}><b aria-hidden="true">{__('OR', 'wconvert')}</b></div>}

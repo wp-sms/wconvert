@@ -2,11 +2,12 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Region, RegionBody, RegionFooter, RegionHeader, TryAgain } from '@/shell/Region';
 import { GuideLink } from '@/shell/GuideLink';
 import { __, _n, sprintf } from '@wordpress/i18n';
+import { tierName, tierProductName } from '@/goals/availability';
 import { KeyRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { refusable } from '@/lib/refusable';
 import { Disclosure } from '@/shell/Disclosure';
-import { formatWhen } from '@/lib/format';
+import { formatCount, formatWhen } from '@/lib/format';
 import { asLicenseError, chooseLicense, goSignIn, readAccount, signOut, type Account, type Changed, type LicenseError } from './api';
 import { type LicensePayload } from './describeLicense';
 import { formatShortDay } from '@/lib/format';
@@ -94,7 +95,7 @@ export function ActivateCard({ license, onActivateKey, onKeyEdit, onChanged, bus
     const copy = error ? errorCopy(error, { fromConfig: true }) : null;
     return (
       <Region>
-        <RegionHeader title={__('Activate WConvert Pro', 'wconvert-pro')} description={__('Your license key is set in wp-config.php.', 'wconvert-pro')} icon={<KeyRound />} />
+        <RegionHeader title={sprintf(/* translators: %s: the paid product's name, e.g. “WConvert Pro”. */ __('Activate %s', 'wconvert-pro'), tierProductName('pro'))} description={__('Your license key is set in wp-config.php.', 'wconvert-pro')} icon={<KeyRound />} />
         {error && copy && (
           <RegionBody>
             <ResultAlert tone="danger" title={__('It didn’t activate', 'wconvert-pro')}>
@@ -112,9 +113,9 @@ export function ActivateCard({ license, onActivateKey, onKeyEdit, onChanged, bus
   if (account?.signed_in && choices.length === 0) {
     return (
       <Region>
-        <RegionHeader title={__('Activate WConvert Pro', 'wconvert-pro')} />
+        <RegionHeader title={sprintf(/* translators: %s: the paid product's name, e.g. “WConvert Pro”. */ __('Activate %s', 'wconvert-pro'), tierProductName('pro'))} />
         <RegionBody>
-          <ResultAlert tone="warning" title={sprintf(/* translators: %s: the account's email address, partly hidden, e.g. “n***@example.com”. */ __('This account (%s) has no WConvert Pro license', 'wconvert-pro'), account.email_masked ?? '')}>
+          <ResultAlert tone="warning" title={sprintf(/* translators: 1: the account's email address, partly hidden, e.g. “n***@example.com”. 2: the paid product's name, e.g. “WConvert Pro”. */ __('This account (%1$s) has no %2$s license', 'wconvert-pro'), account.email_masked ?? '', tierProductName('pro'))}>
             <div className="wconvert-license-actions">
               <Button variant="outline" onClick={leave}>{__('Sign out and use another account', 'wconvert-pro')}</Button>
               <Ext href={license.urls.checkout}>{__('See plans', 'wconvert-pro')}</Ext>
@@ -144,11 +145,11 @@ export function ActivateCard({ license, onActivateKey, onKeyEdit, onChanged, bus
                   aria-disabled={choice.full || undefined} aria-describedby={choice.full ? `wconvert-license-full-${choice.id}` : undefined}
                   onChange={() => !choice.full && setChosen(choice.id)} />
                 <span>
-                  <b>{sprintf(/* translators: %s: the license's plan size, e.g. “5 sites” or “Unlimited”. */ __('Pro · %s', 'wconvert-pro'), planName(choice.max))}</b>
+                  <b>{sprintf(/* translators: 1: the tier's short name, e.g. “Pro”. 2: the license's plan size, e.g. “5 sites” or “Unlimited”. */ __('%1$s · %2$s', 'wconvert-pro'), tierName('pro'), planName(choice.max))}</b>
                   <span>{[
                     choice.key_masked,
                     choice.ends_at ? sprintf(/* translators: %s: the day the license ends, e.g. “Mar 3, 2027”. */ __('Ends %s', 'wconvert-pro'), formatShortDay(choice.ends_at)) : null,
-                    choice.max === null ? sprintf(/* translators: %d: how many sites use this unlimited license. */ _n('%d site', '%d sites', choice.used, 'wconvert-pro'), choice.used) : sprintf(/* translators: 1: how many sites use this license, 2: how many sites the plan allows. */ __('%1$d of %2$d used', 'wconvert-pro'), choice.used, choice.max),
+                    choice.max === null ? sprintf(/* translators: %s: how many sites use this unlimited license. */ _n('%s site', '%s sites', choice.used, 'wconvert-pro'), formatCount(choice.used)) : sprintf(/* translators: 1: how many sites use this license, 2: how many sites the plan allows. */ __('%1$s of %2$s used', 'wconvert-pro'), formatCount(choice.used), formatCount(choice.max)),
                   ].filter(Boolean).join(' · ')}</span>
                   {choice.full && <span className="wconvert-license-why" id={`wconvert-license-full-${choice.id}`}>{__('No free site', 'wconvert-pro')}</span>}
                 </span>
@@ -176,7 +177,7 @@ export function ActivateCard({ license, onActivateKey, onKeyEdit, onChanged, bus
 
   return (
     <Region>
-      <RegionHeader title={__('Activate WConvert Pro', 'wconvert-pro')} description={__('Activate to get updates and support. Pro features already work.', 'wconvert-pro')} icon={<KeyRound />} />
+      <RegionHeader title={sprintf(/* translators: %s: the paid product's name, e.g. “WConvert Pro”. */ __('Activate %s', 'wconvert-pro'), tierProductName('pro'))} description={sprintf(/* translators: %s: the paid product's name, e.g. “WConvert Pro”. */ __('Activate to get updates and support. %s features already work.', 'wconvert-pro'), tierProductName('pro'))} icon={<KeyRound />} />
       <RegionBody className="wconvert-license-card__body">
         <div className="wconvert-license-actions">
           <Button variant="brand" disabled={opening} aria-describedby={signError ? 'wconvert-license-sign-error' : 'wconvert-license-sign-hint'} onClick={() => startSignIn()}>
@@ -202,7 +203,7 @@ export function ActivateCard({ license, onActivateKey, onKeyEdit, onChanged, bus
 
 function planName(max: number | null): string {
   if (max === null) return __('Unlimited', 'wconvert-pro');
-  return sprintf(/* translators: %d: how many sites the plan allows. */ _n('%d site', '%d sites', max, 'wconvert-pro'), max);
+  return sprintf(/* translators: %s: how many sites the plan allows. */ _n('%s site', '%s sites', max, 'wconvert-pro'), formatCount(max));
 }
 
 /** The ways forward from a refusal: links to the store, Try again, Sign in. */

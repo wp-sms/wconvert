@@ -8,7 +8,7 @@ vi.mock('../../resources/admin/src/settings-page/emailReportsApi', () => api);
 
 const { EmailReports } = await import('../../resources/admin/src/settings-page/EmailReports');
 
-const SAVED = { enabled: true, recipients: 'owner@example.com', default_recipient: 'owner@example.com', waiting_for_publish: false, next_send: 'Monday, November 2, 2026, 9:00 am' };
+const SAVED = { enabled: true, recipients: 'owner@example.com', default_recipient: 'owner@example.com', waiting_for_publish: false, next_send: '2026-11-02 09:00:00' };
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -20,7 +20,7 @@ it('is on, to the admin email, and says when the next one goes', async () => {
 
   expect(await screen.findByRole('checkbox', { name: /Send me a weekly summary/ })).toBeChecked();
   expect(screen.getByLabelText('Send to')).toHaveValue('owner@example.com');
-  expect(screen.getByText('Next summary: Monday, November 2, 2026, 9:00 am, in your site’s time zone.')).toBeInTheDocument();
+  expect(screen.getByText(/^Next summary: Nov 2, 2026, 9:00\sAM, in your site’s time zone\.$/)).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Save email reports' })).toBeDisabled();
 });
 

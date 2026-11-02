@@ -69,7 +69,7 @@ export function captureReadiness(template: Template, primaryChannel?: string | n
     if (!ownership) continue;
     const name = tree.steps[Number(block.path[0])].name;
     if (block.hidden) {
-      if (ownership.owners.length) add(sprintf(/* translators: %s: the name of the screen the consent checkbox is on. */ __('Show the consent checkbox on “%s”, or remove its save assignment if it is no longer needed.', 'wconvert'), name), block.path);
+      if (ownership.owners.length) add(sprintf(/* translators: %s: the name of the screen the consent checkbox is on. */ __('Show the consent checkbox on “%s”, or take it off its form if it is no longer needed.', 'wconvert'), name), block.path);
       continue;
     }
     if (!node.text?.trim()) add(sprintf(/* translators: %s: the name of the screen the consent checkbox is on. */ __('Write the consent wording on “%s” so visitors know what they are agreeing to.', 'wconvert'), name), block.path);

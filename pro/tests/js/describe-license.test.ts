@@ -109,14 +109,14 @@ describe('describeLicense', () => {
   it('M2: payment failed — amber, update payment by the grace date', () => {
     const d = at(base({ state: 'payment_failed', renewal: { mode: 'manual', trial_ends_at: null, grace_ends_at: '2026-10-16T12:00:00+00:00', offer: null } }));
     expect(d).toMatchObject({ tone: 'warning', headline: 'Your payment didn’t go through', door: 'payment' });
-    expect(d.body).toBe('Update it by Oct 16, 2026 to keep updates and support. Pro features keep working.');
+    expect(d.body).toBe('Update it by Oct 16, 2026 to keep updates and support. WConvert Pro features keep working.');
     expect(d.facts[2]).toMatchObject({ label: 'Renewal', value: 'Payment failed', tone: 'warning' });
   });
 
   it('M3: expired — red, renew, the coupon, and Pro features keep working', () => {
     const d = at(base({ state: 'expired', days_left: -12, expires_at: '2026-09-30T00:00:00+00:00', renewal: { mode: 'manual', trial_ends_at: null, grace_ends_at: null, offer: { code: 'RENEW20', percent: 20, until: null } } }));
     expect(d).toMatchObject({ tone: 'danger', headline: 'Your license expired', door: 'renew', stopped: true });
-    expect(d.body).toBe('Updates and support stopped on Sep 30, 2026. Pro features keep working.');
+    expect(d.body).toBe('Updates and support stopped on Sep 30, 2026. WConvert Pro features keep working.');
     expect(facts(base({ state: 'expired', expires_at: '2026-09-30T00:00:00+00:00' }))).toEqual([['Updates', 'Stopped'], ['Support', 'Ended']]);
   });
 
@@ -158,7 +158,7 @@ describe('describeLicense', () => {
     expect(managed('active', null, null)).toMatchObject({ tone: 'success', headline: 'Updates are on', body: 'Your site developer manages this license.', door: null, chip: 'Pro' });
     expect(managed('active', 'Acme Studio', 'help@acme.studio').body).toBe('Acme Studio manages this license.');
     expect(managed('stopped', 'Acme Studio', 'help@acme.studio')).toMatchObject({ tone: 'warning', headline: 'Updates stopped', door: 'contact' });
-    expect(managed('stopped', 'Acme Studio', null).body).toBe('Pro features keep working. Contact Acme Studio to turn updates back on.');
+    expect(managed('stopped', 'Acme Studio', null).body).toBe('WConvert Pro features keep working. Contact Acme Studio to turn updates back on.');
     expect(managed('active', 'Acme Studio', null).facts.map((f) => [f.label, f.value])).toEqual([['Updates', 'On'], ['Managed by', 'Acme Studio'], ['License key', 'Set in wp-config.php']]);
   });
 });

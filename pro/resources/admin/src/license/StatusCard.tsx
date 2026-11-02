@@ -1,12 +1,13 @@
 import { useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
+import { tierProductName } from '@/goals/availability';
 import { AlertTriangle, CalendarClock, CircleAlert, CircleCheck, Clock, Copy, Check, Download, Globe, Info, KeyRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Disclosure } from '@/shell/Disclosure';
 import { GuideLink } from '@/shell/GuideLink';
 import { Region, RegionBody, RegionFooter, RegionHeader, TryAgain } from '@/shell/Region';
-import { formatShortDay, formatWhen } from '@/lib/format';
+import { formatRate, formatShortDay, formatWhen } from '@/lib/format';
 import { describeLicense, type Door, type Icon, type LicensePayload } from './describeLicense';
 import { Ext, KeyField, KeyHint } from './parts';
 import { GUIDES, docsUrl } from '@/shell/docs';
@@ -76,7 +77,7 @@ export function StatusCard({ license, actions }: { license: LicensePayload; acti
         {/* Announced, so Check now's answer is heard as well as seen. */}
         <div className="wconvert-license-foot" aria-live="polite">
           <div className="wconvert-license-updates">{actions.updatesFailed
-            ? <span className="wconvert-license-line"><CircleAlert className="wconvert-license-bad" aria-hidden="true" />{__('Couldn’t check for updates.', 'wconvert-pro')}<TryAgain onClick={actions.onCheck} busy={actions.checking} /></span>
+            ? <span className="wconvert-license-line"><CircleAlert className="wconvert-license-bad" aria-hidden="true" />{__('Could not check for updates.', 'wconvert-pro')}<TryAgain onClick={actions.onCheck} busy={actions.checking} /></span>
             : <UpdatesLine license={license} stopped={d.stopped} elsewhere={d.elsewhere} />}</div>
           <div><CheckLine license={license} checking={actions.checking} onCheck={actions.onCheck} /></div>
         </div>
@@ -95,7 +96,7 @@ function doorsOf(door: Door | null, license: LicensePayload, actions: StatusActi
     case 'account': return drawn(out(urls.account, __('Manage account', 'wconvert-pro')));
     case 'renew_soon': return drawn(out(urls.renew, __('Renew', 'wconvert-pro'), 'outline'), out(urls.account, __('Manage account', 'wconvert-pro')));
     case 'renewal_on': return drawn(out(urls.account, __('Turn renewal back on', 'wconvert-pro'), 'outline'));
-    case 'buy': return drawn(out(urls.checkout, __('Buy WConvert Pro', 'wconvert-pro'), 'brand'));
+    case 'buy': return drawn(out(urls.checkout, sprintf(/* translators: %s: the paid product's name, e.g. “WConvert Pro”. */ __('Buy %s', 'wconvert-pro'), tierProductName('pro')), 'brand'));
     case 'renew': return drawn(out(urls.renew, __('Renew', 'wconvert-pro'), 'brand'));
     case 'payment': return drawn(out(urls.payment, __('Update payment', 'wconvert-pro'), 'brand'));
     case 'support': return drawn(out(urls.support, __('Contact support', 'wconvert-pro'), 'outline'));
@@ -117,7 +118,7 @@ function Coupon({ code, percent, until }: { code: string; percent: number | null
 
   return (
     <div className="wconvert-license-coupon wconvert-toolbar">
-      <span>{percent !== null ? sprintf(/* translators: %d: a discount percentage, e.g. “20”. A coupon code follows the sentence. */ __('%d%% off your renewal with', 'wconvert-pro'), percent) : __('Your renewal coupon', 'wconvert-pro')}</span>
+      <span>{percent !== null ? sprintf(/* translators: %s: a discount percentage, e.g. “20%”. A coupon code follows the sentence. */ __('%s off your renewal with', 'wconvert-pro'), formatRate(percent / 100)) : __('Your renewal coupon', 'wconvert-pro')}</span>
       <code>{code}</code>
       <Button variant="outline" onClick={copy}>{copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}{copied ? __('Copied', 'wconvert-pro') : __('Copy', 'wconvert-pro')}</Button>
       {until && <span className="wconvert-license-muted">{sprintf(/* translators: %s: the day the coupon ends, e.g. “Oct 12”. */ __('until %s', 'wconvert-pro'), formatShortDay(until))}</span>}
@@ -162,8 +163,8 @@ function UpdatesLine({ license, stopped, elsewhere }: { license: LicensePayload;
           <Disclosure variant="inline" title={__('Update by hand', 'wconvert-pro')}>
             <ol className="wconvert-license-steps">
               {license.managed
-                ? <li>{sprintf(/* translators: 1: who manages the license, an agency's name or “your site developer”, 2: the newest WConvert Pro version, e.g. “2.4.0”. */ __('Ask %1$s for WConvert Pro %2$s.', 'wconvert-pro'), license.managed.by ?? __('your site developer', 'wconvert-pro'), latest)}</li>
-                : <li><Ext href={license.urls.downloads}>{sprintf(/* translators: %s: the newest WConvert Pro version, e.g. “2.4.0”. */ __('Download WConvert Pro %s from your account', 'wconvert-pro'), latest)}</Ext></li>}
+                ? <li>{sprintf(/* translators: 1: who manages the license, an agency's name or “your site developer”, 2: the paid product's name, e.g. “WConvert Pro”, 3: its newest version, e.g. “2.4.0”. */ __('Ask %1$s for %2$s %3$s.', 'wconvert-pro'), license.managed.by ?? __('your site developer', 'wconvert-pro'), tierProductName('pro'), latest)}</li>
+                : <li><Ext href={license.urls.downloads}>{sprintf(/* translators: 1: the paid product's name, e.g. “WConvert Pro”, 2: its newest version, e.g. “2.4.0”. */ __('Download %1$s %2$s from your account', 'wconvert-pro'), tierProductName('pro'), latest)}</Ext></li>}
               <li>{__('In Plugins → Add New Plugin → Upload Plugin, choose the ZIP.', 'wconvert-pro')}</li>
               <li>{__('Choose Replace current with uploaded.', 'wconvert-pro')}</li>
             </ol>
@@ -197,7 +198,7 @@ function CheckLine({ license, checking, onCheck }: { license: LicensePayload; ch
   );
 
   if (license.reach === 'unreachable') {
-    return <span className="wconvert-license-line"><Info className="wconvert-license-act" aria-hidden="true" />{sprintf(/* translators: %s: when the license was last checked successfully, e.g. “Oct 12, 2026, 9:14 AM”, or “—” if never. */ __('Couldn’t reach the license server. Showing details from %s.', 'wconvert-pro'), when(license.last_success_at) ?? '—')}<TryAgain onClick={onCheck} busy={checking} /></span>;
+    return <span className="wconvert-license-line"><Info className="wconvert-license-act" aria-hidden="true" />{sprintf(/* translators: %s: when the license was last checked successfully, e.g. “Oct 12, 2026, 9:14 AM”, or “—” if never. */ __('Could not reach the license server. Showing details from %s.', 'wconvert-pro'), when(license.last_success_at) ?? '—')}<TryAgain onClick={onCheck} busy={checking} /></span>;
   }
 
   const checked = when(license.last_checked_at);

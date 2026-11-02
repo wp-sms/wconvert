@@ -12,6 +12,7 @@ import type { FollowupNode, FieldNode } from '@renderer/types';
 import type { Template } from '@renderer/types';
 import { phoneSiteCountry } from '../../phoneSiteCountry';
 import { asksForPolicy } from '../policy';
+import { formatCount } from '../../lib/format';
 
 /**
  * What is wrong with this design **right now**, as sentences a merchant can act
@@ -274,7 +275,7 @@ function whatCapturesNothing(template: Template): Problem[] {
   });
   return stranded.map(block => ({
     said: boundaries.every(at => at < 0)
-      ? __('This design captures something but has no button that submits, so what a visitor types goes nowhere.', 'wconvert')
+      ? __('This design has a field but no button that submits, so what a visitor types goes nowhere.', 'wconvert')
       : template.tree.graph && template.tree.submissions.some(submission => submission.fields.includes((nodeAt(template.tree, block.path) as FieldNode).id ?? ''))
       ? __('Every line to this field’s form must pass its screen. Move the field onto the form’s screen or change the lines.', 'wconvert')
       : __('Assign this field to a submission after its screen so the answer can be saved.', 'wconvert'),
@@ -349,14 +350,14 @@ function whatLosesWords(template: Template): Problem[] {
   return [
     {
       said: sprintf(
-        /* translators: %d: how many blocks have no Slot Role of their own. */
+        /* translators: %s: how many blocks have no Slot Role of their own. */
         _n(
-          '%d block has no name of its own, so what you typed in it is lost if you switch design.',
-          '%d blocks have no name of their own, so what you typed in them is lost if you switch design.',
+          '%s block has no name of its own, so what you typed in it is lost if you switch design.',
+          '%s blocks have no name of their own, so what you typed in them is lost if you switch design.',
           at.length,
           'wconvert',
         ),
-        at.length,
+        formatCount(at.length),
       ),
       path: at[0].path,
       check: 'words',

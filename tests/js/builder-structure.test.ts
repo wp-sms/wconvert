@@ -602,7 +602,7 @@ describe('the safety net', () => {
       ],
     });
 
-    expect(whyRemovalIsRefused(loose, [0, 'children', 0])).toMatch(/captures nothing/i);
+    expect(whyRemovalIsRefused(loose, [0, 'children', 0])).toMatch(/collects nothing/i);
   });
 
   it('allows removing anything that is neither', () => {

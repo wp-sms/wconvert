@@ -38,7 +38,7 @@ export function RetentionSummary({ refreshKey = 0 }: { refreshKey?: number }) {
   const tryAgain = () => setRetry((value) => value + 1);
 
   if (period.status === 'failed') {
-    return <PageError message={sprintf(/* translators: %s: the error message explaining why it failed to load. */ __('How long submissions are kept couldn’t be loaded: %s', 'wconvert'), period.message)} onRetry={tryAgain} />;
+    return <PageError message={sprintf(/* translators: %s: the error message explaining why it failed to load. */ __('How long submissions are kept could not be loaded: %s', 'wconvert'), period.message)} onRetry={tryAgain} />;
   }
   if (period.status === 'loading') {
     return (
@@ -51,7 +51,7 @@ export function RetentionSummary({ refreshKey = 0 }: { refreshKey?: number }) {
   const { days } = period.data;
   return (
     <>
-      {refreshError !== null && <PageError message={sprintf(/* translators: %s: the error message explaining why it failed to refresh. */ __('How long submissions are kept couldn’t be refreshed. This is the last policy read: %s', 'wconvert'), refreshError)} onRetry={tryAgain} />}
+      {refreshError !== null && <PageError message={sprintf(/* translators: %s: the error message explaining why it failed to refresh. */ __('How long submissions are kept could not be refreshed. This is the last policy read: %s', 'wconvert'), refreshError)} onRetry={tryAgain} />}
       <p className="m-0 text-note text-muted-foreground">
         {days === null
           ? __('Submissions are kept until you delete them.', 'wconvert')

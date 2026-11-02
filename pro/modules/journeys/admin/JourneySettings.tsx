@@ -34,6 +34,7 @@ import { answerTypeName } from '@/builder/answerType';
 import type { QuestionReviewContext } from '@/journeyAuthoring';
 import { NativeSelect } from '@/components/ui/native-select';
 import { Field } from '@/shell/Field';
+import { formatCount } from '@/lib/format';
 
 type ChoiceQuestion = QuestionNode & { id: string };
 
@@ -160,7 +161,7 @@ export function RouteSettings({ tree, step, focusPath = null, onChange, onInsert
     {screen.when && screen.paths && <PanelHint>{__('Skipped visitors go on to the following screen without checking these lines.', 'wconvert-pro')}</PanelHint>}
     {/* eslint-disable-next-line jsx-a11y/no-redundant-roles -- Preserve list semantics in WebKit when list-style is none. */}
     <ol ref={list} className="wconvert-journey-routes__list" role="list">{paths.map((path, index) => <li key={`${index}-${path.to}`} data-path-priority={index}>
-      <strong>{index === paths.length - 1 ? __('All other answers', 'wconvert-pro') : sprintf(/* translators: %d: the line's place. */ __('Line %d', 'wconvert-pro'), index + 1)}</strong>
+      <strong>{index === paths.length - 1 ? __('All other answers', 'wconvert-pro') : sprintf(/* translators: %s: the line's place. */ __('Line %s', 'wconvert-pro'), formatCount(index + 1))}</strong>
       <label>{__('Then', 'wconvert-pro')}<NativeSelect value={path.to} onChange={event => write(paths.map((item, at) => at === index ? { ...item, to: event.target.value } : item))}>
         {targets.map(target => <option key={target.id} value={target.id} disabled={paths.some((item, at) => at !== index && item.to === target.id)}>{target.name}</option>)}
       </NativeSelect></label>
@@ -291,7 +292,7 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
             const followups = tree.steps.map((item, index) => ({ item, index })).filter(({ item }) => item.when?.clauses.some(clause => clause.question === question.id && clause.values.includes(option.value)));
             const uses = answerReferences(tree, question.id, option.value).length;
             const used = protectedValues.has(option.value);
-            return <div key={option.value} className="wconvert-journey-settings__choice"><span aria-hidden="true">{at + 1}</span><Input aria-label={`${__('Choice', 'wconvert-pro')} ${at + 1}`} value={option.label} maxLength={120}
+            return <div key={option.value} className="wconvert-journey-settings__choice"><span aria-hidden="true">{formatCount(at + 1)}</span><Input aria-label={sprintf(/* translators: %s: the choice's position in the list, e.g. 1. */ __('Choice %s', 'wconvert-pro'), formatCount(at + 1))} value={option.label} maxLength={120}
               onChange={event => change(question.id, node => ({ ...node, options: node.options?.map((old, i) => i === at ? { ...old, label: event.target.value } : old) }), `choice:${option.value}`)} />
               <DropdownMenu><DropdownMenuTrigger asChild><button type="button" className="wconvert-choice-menu" aria-label={sprintf(/* translators: %s: a choice's words. */ __('More for “%s”', 'wconvert-pro'), option.label)} title={sprintf(/* translators: %s: a choice's words. */ __('More for “%s”', 'wconvert-pro'), option.label)}><MoreHorizontal aria-hidden="true" /></button></DropdownMenuTrigger>
                 <OptionMenuContent align="end" aria-label={sprintf(/* translators: %s: a choice's words. */ __('More for “%s”', 'wconvert-pro'), option.label)}>
@@ -335,7 +336,7 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
           hint={question.answer_type === 'multi' ? __('Visitors can choose several answers and see every relevant follow-up.', 'wconvert-pro') : undefined}>
           <Input id={`${question.id}-help`} value={question.help ?? ''} maxLength={300} placeholder={__('Optional', 'wconvert-pro')} onChange={event => change(question.id, node => ({ ...node, help: event.target.value }), 'help')} />
         </PanelField>
-        {refs.length > 0 && <Disclosure variant="inline" className="wconvert-journey-used-by" title={__('Used by', 'wconvert-pro')} summary={sprintf(/* translators: %d: how many rules use these answers. */ _n('%d rule', '%d rules', refs.length, 'wconvert-pro'), refs.length)}>
+        {refs.length > 0 && <Disclosure variant="inline" className="wconvert-journey-used-by" title={__('Used by', 'wconvert-pro')} summary={sprintf(/* translators: %s: how many rules use these answers. */ _n('%s rule', '%s rules', refs.length, 'wconvert-pro'), formatCount(refs.length))}>
           {refs.map(reference => <button type="button" key={reference.key} onClick={() => openReference(reference)}><strong>{reference.label}</strong>{' '}<small>{reference.detail} <ArrowRight aria-hidden="true" className="inline size-3 rtl:-scale-x-100" /></small></button>)}
         </Disclosure>}
       </div>;
@@ -406,7 +407,7 @@ export function ResultSettings({ tree, step, onChange: change, onAction, repairR
     setSelectedId(id); setDraftResult(null);
   };
   const productsSummary = (variant: ResultVariant) => variant.product_filter ? __('By category', 'wconvert-pro')
-    : variant.product_ids?.length ? sprintf(/* translators: %d: how many products are chosen. */ _n('%d chosen', '%d chosen', variant.product_ids.length, 'wconvert-pro'), variant.product_ids.length) : __('None', 'wconvert-pro');
+    : variant.product_ids?.length ? sprintf(/* translators: %s: how many products are chosen. */ _n('%s chosen', '%s chosen', variant.product_ids.length, 'wconvert-pro'), formatCount(variant.product_ids.length)) : __('None', 'wconvert-pro');
   /*
     Results in the panel grammar (ADR 0136): the order rule is the InfoTip's,
     a result's row is its heading and its rule, and what acts on one result —
@@ -421,7 +422,7 @@ export function ResultSettings({ tree, step, onChange: change, onAction, repairR
     <div className="wconvert-journey-results" role="group" aria-label={__('Possible results', 'wconvert-pro')}>
       {variants.map((variant, at) => <div className="wconvert-journey-result-card" key={variant.id}><button className="wconvert-journey-result-summary" type="button" id={`${tabsId}-result-${at}`} aria-controls={`${tabsId}-panel-${at}`}
         aria-expanded={selected?.id === variant.id} onClick={() => setSelectedId(selected?.id === variant.id ? null : variant.id)}>
-        <strong><span className="wconvert-flow-dot" data-color={answerColorOf(resultColors, variant.when)} aria-hidden="true" />{at === variants.length - 1 ? __('All other answers', 'wconvert-pro') : variant.heading || sprintf(/* translators: %d: the result's position in the list, starting at 1. */ __('Result %d', 'wconvert-pro'), at + 1)}</strong>
+        <strong><span className="wconvert-flow-dot" data-color={answerColorOf(resultColors, variant.when)} aria-hidden="true" />{at === variants.length - 1 ? __('All other answers', 'wconvert-pro') : variant.heading || sprintf(/* translators: %s: the result's position in the list, starting at 1. */ __('Result %s', 'wconvert-pro'), formatCount(at + 1))}</strong>
         <span>{at === variants.length - 1 ? __('When no other result matches', 'wconvert-pro')
           : variant.when ? sprintf(/* translators: %s: the answers that pick this result, e.g. “Budget is Under $50”. */ __('If %s', 'wconvert-pro'), conditionText(tree, variant.when)) : __('Set a condition', 'wconvert-pro')}</span><ChevronDown aria-hidden="true" className="wconvert-journey-result-chevron" />
       </button>
@@ -451,11 +452,11 @@ export function ResultSettings({ tree, step, onChange: change, onAction, repairR
       </Disclosure>
       {selectedAt < variants.length - 1 && <ConditionSettings required value={selected.when} sources={sources} onChange={when => { if (when) edit(selectedAt, { when }); }} />}
       {selectedAt < variants.length - 1 && <div className="wconvert-journey-result-actions">
-        <DropdownMenu><DropdownMenuTrigger asChild><button type="button" className="wconvert-choice-menu" aria-label={sprintf(/* translators: %s: a result's heading. */ __('More for “%s”', 'wconvert-pro'), selected.heading || sprintf(/* translators: %d: the result's position in the list, starting at 1. */ __('Result %d', 'wconvert-pro'), selectedAt + 1))}><MoreHorizontal aria-hidden="true" /></button></DropdownMenuTrigger>
-          <OptionMenuContent align="end" aria-label={sprintf(/* translators: %s: a result's heading. */ __('More for “%s”', 'wconvert-pro'), selected.heading || sprintf(/* translators: %d: the result's position in the list, starting at 1. */ __('Result %d', 'wconvert-pro'), selectedAt + 1))}>
-            {variants.length > 2 && <OptionItem icon={ArrowUp} name={__('Move earlier', 'wconvert-pro')} onSelect={() => move(selectedAt, selectedAt - 1)}
+        <DropdownMenu><DropdownMenuTrigger asChild><button type="button" className="wconvert-choice-menu" aria-label={sprintf(/* translators: %s: a result's heading. */ __('More for “%s”', 'wconvert-pro'), selected.heading || sprintf(/* translators: %s: the result's position in the list, starting at 1. */ __('Result %s', 'wconvert-pro'), formatCount(selectedAt + 1)))}><MoreHorizontal aria-hidden="true" /></button></DropdownMenuTrigger>
+          <OptionMenuContent align="end" aria-label={sprintf(/* translators: %s: a result's heading. */ __('More for “%s”', 'wconvert-pro'), selected.heading || sprintf(/* translators: %s: the result's position in the list, starting at 1. */ __('Result %s', 'wconvert-pro'), formatCount(selectedAt + 1)))}>
+            {variants.length > 2 && <OptionItem icon={ArrowUp} name={__('Move up', 'wconvert-pro')} onSelect={() => move(selectedAt, selectedAt - 1)}
               refused={selectedAt === 0 ? refusal(__('Already first', 'wconvert-pro')) : null} />}
-            {variants.length > 2 && <OptionItem icon={ArrowDown} name={__('Move later', 'wconvert-pro')} onSelect={() => move(selectedAt, selectedAt + 1)}
+            {variants.length > 2 && <OptionItem icon={ArrowDown} name={__('Move down', 'wconvert-pro')} onSelect={() => move(selectedAt, selectedAt + 1)}
               refused={selectedAt >= variants.length - 2 ? refusal(__('All other answers stays last', 'wconvert-pro'), __('The result for all other answers stays last.', 'wconvert-pro')) : null} />}
             <OptionItem icon={Trash2} destructive name={__('Remove result', 'wconvert-pro')} onSelect={() => { setSelectedId(null); setVariants(variants.filter((_, index) => index !== selectedAt)); }} />
           </OptionMenuContent>

@@ -50,7 +50,7 @@ describe('a page rule', () => {
     expect(screen.queryByText('#70')).toBeNull();
 
     await act(async () => refuse(new Error('offline')));
-    expect(screen.getByRole('alert')).toHaveTextContent('Couldn’t load the saved selection’s name. This rule still uses #70.');
+    expect(screen.getByRole('alert')).toHaveTextContent('Could not load the saved selection’s name. This rule still uses #70.');
     expect(screen.getByRole('button', { name: 'value: #70' })).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));

@@ -8,9 +8,9 @@ afterEach(() => { delete window.wconvertAdmin; });
 const CANT_DISPLAY = 'This template uses elements this site can’t display.';
 
 it('a free install names no product when it explains an absence (ADR 0116 §3)', () => {
-  expect(unlessFree('Cart testing requires WConvert Pro and WooCommerce.')).toBe(CANT_DISPLAY);
+  expect(unlessFree('Basket testing requires WConvert Pro and WooCommerce.')).toBe(CANT_DISPLAY);
   window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
-  expect(unlessFree('Cart testing requires WConvert Pro and WooCommerce.')).toBe('Cart testing requires WConvert Pro and WooCommerce.');
+  expect(unlessFree('Basket testing requires WConvert Pro and WooCommerce.')).toBe('Basket testing requires WConvert Pro and WooCommerce.');
 });
 
 it('a quiz cart result left on a free install says what is missing, not what to buy', () => {

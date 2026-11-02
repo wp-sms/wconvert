@@ -180,7 +180,7 @@ describe('using a template', () => {
     render(<Editor entries={[CENTRED, hosted('supper', 'Supper menu', 'install')]} />);
     await userEvent.click(within(cardFor('Supper menu')).getByRole('button', { name: 'Use template' }));
     const alert = await within(cardFor('Supper menu')).findByRole('alert');
-    expect(alert).toHaveTextContent('Couldn’t add this template. The library is unreachable.');
+    expect(alert).toHaveTextContent('Could not add this template. The library is unreachable.');
     catalog.installDesign.mockResolvedValue({ template_id: 'design-1-supper' });
     await userEvent.click(within(alert).getByRole('button', { name: 'Try again' }));
     expect(catalog.installDesign).toHaveBeenCalledTimes(2);
@@ -285,7 +285,7 @@ describe('one modal, its body swapped (GUIDELINES §9)', () => {
     await userEvent.click(within(cardFor('Supper menu')).getByRole('button', { name: 'Preview Supper menu' }));
     const footer = screen.getByRole('dialog').querySelector('footer')!;
     await userEvent.click(within(footer).getByRole('button', { name: 'Use template' }));
-    expect(await within(footer).findByRole('alert')).toHaveTextContent('Couldn’t add this template. The library is unreachable.');
+    expect(await within(footer).findByRole('alert')).toHaveTextContent('Could not add this template. The library is unreachable.');
     expect(screen.getByRole('dialog')).toHaveAccessibleName('Supper menu');
     await userEvent.click(within(footer).getByRole('button', { name: 'Use template' }));
     expect(await screen.findByRole('button', { name: 'Use this template' })).toBeInTheDocument();

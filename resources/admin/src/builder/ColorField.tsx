@@ -1,4 +1,5 @@
 import { createContext, useContext, useId, type CSSProperties } from 'react';
+import { useDirection } from '../hooks/useDirection';
 import { __, sprintf } from '@wordpress/i18n';
 import { RgbaStringColorPicker } from 'react-colorful';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
@@ -66,6 +67,7 @@ export function ColorField({
 }) {
   // Empty means "whatever the design says", so the swatch and the picker both
   // open on the design's own value while the STORED value stays empty.
+  const direction = useDirection();
   const shown = value === '' ? fallback : value;
   const painted = paint(shown);
   const pickerColor = rgbaForPicker(painted);
@@ -103,7 +105,7 @@ export function ColorField({
           </span>
         </button>
       </PopoverTrigger>
-      <PopoverContent align="end" side="left" collisionPadding={12} className="wconvert-color-popover" onEscapeKeyDown={(event) => {
+      <PopoverContent align="end" side={direction === 'rtl' ? 'right' : 'left'} collisionPadding={12} className="wconvert-color-popover" onEscapeKeyDown={(event) => {
         // Radix handles Escape during capture, before the input can cancel its draft.
         if (event.target instanceof HTMLInputElement && event.target.dataset.styleValuePending === 'true') event.preventDefault();
       }}>

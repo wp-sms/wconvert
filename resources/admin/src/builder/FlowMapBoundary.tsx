@@ -19,7 +19,7 @@ export class FlowMapBoundary extends Component<{ children: ReactNode }, { failed
   render() {
     if (!this.state.failed) return this.props.children;
     return <div className="wconvert-journey-map wconvert-flow-failed">
-      <RegionErrorState message={__('The Flow map couldn’t load. Canvas still works.', 'wconvert')}
+      <RegionErrorState message={__('The Flow map could not load. Canvas still works.', 'wconvert')}
         hint={__('Save your draft, then reload the page to try again.', 'wconvert')} />
     </div>;
   }

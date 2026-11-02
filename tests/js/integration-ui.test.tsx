@@ -43,11 +43,11 @@ describe('integration setup controls', () => {
     await user.click(screen.getByText('Field mapping'));
     const running = await screen.findByRole('combobox', { name: 'Interests — Running' });
     expect(within(running).queryByRole('option', { name: 'All answers' })).not.toBeInTheDocument();
-    const wholeAnswer = screen.getByText('Send all choices as text (optional)').closest('details');
+    const wholeAnswer = screen.getByText('Choices as text').closest('details');
     expect(wholeAnswer).not.toHaveAttribute('open');
-    await user.click(screen.getByText('Send all choices as text (optional)'));
+    await user.click(screen.getByText('Choices as text'));
     expect(within(screen.getByRole('combobox', { name: 'All selected choices — Interests' })).queryByRole('option', { name: 'Likes running' })).not.toBeInTheDocument();
-    await user.click(screen.getByText('Preview and test mapping'));
+    await user.click(screen.getByText('Test mapping'));
     await user.type(screen.getByRole('textbox', { name: 'Your test email' }), 'owner@example.com');
     await user.click(screen.getByRole('checkbox', { name: 'Sample answer: Interests — Running' }));
     await user.click(screen.getByRole('button', { name: 'Preview data' }));
@@ -70,7 +70,7 @@ describe('integration setup controls', () => {
       value={{ 'choice:n2:running': 'RUNNING' }} onChange={vi.fn()} />);
     await user.click(screen.getByText('Field mapping'));
     expect(await screen.findByRole('combobox', { name: 'Interests — Running' })).toHaveAttribute('aria-invalid', 'true');
-    expect(screen.queryByText('Preview and test mapping')).not.toBeInTheDocument();
+    expect(screen.queryByText('Test mapping')).not.toBeInTheDocument();
   });
 
   it('explains how to add a provider field when none can be mapped', async () => {
@@ -93,7 +93,7 @@ describe('integration setup controls', () => {
     await user.click(screen.getByText('Field mapping'));
     expect(await screen.findByRole('combobox', { name: 'Service needed' })).toHaveValue('SERVICE');
     expect(screen.queryByRole('button', { name: 'Send test contact' })).not.toBeInTheDocument();
-    await user.click(screen.getByText('Preview and test mapping'));
+    await user.click(screen.getByText('Test mapping'));
     await user.type(screen.getByRole('textbox', { name: 'Your test email' }), 'owner@example.com');
     await user.type(screen.getByRole('textbox', { name: 'Sample answer: Service needed' }), 'Repairs');
     await user.click(screen.getByRole('button', { name: 'Preview data' }));
@@ -116,7 +116,7 @@ describe('integration setup controls', () => {
     await user.click(screen.getByText('Field mapping'));
     const field = await screen.findByRole('combobox', { name: 'Service needed' });
     expect(field).toHaveAttribute('aria-invalid', 'true');
-    expect(screen.queryByText('Preview and test mapping')).not.toBeInTheDocument();
+    expect(screen.queryByText('Test mapping')).not.toBeInTheDocument();
     await user.selectOptions(field, '');
     expect(change).toHaveBeenCalledWith({});
   });
@@ -138,14 +138,14 @@ describe('integration setup controls', () => {
     const user = userEvent.setup();
     render(<ExtraAnswerMapping destination={destination} submissionId="signup-1" template={template} value={{ 'question-1': 'SERVICE' }} onChange={vi.fn()} />);
     await user.click(screen.getByText('Field mapping'));
-    await screen.findByText('Preview and test mapping');
+    await screen.findByText('Test mapping');
     await user.click(screen.getByRole('button', { name: 'Refresh fields' }));
     await screen.findByText(/Could not refresh fields/);
     expect(screen.getByRole('combobox', { name: 'Service needed' })).toHaveValue('SERVICE');
     expect(screen.getByRole('combobox', { name: 'Service needed' })).toBeDisabled();
-    expect(screen.queryByText('Preview and test mapping')).not.toBeInTheDocument();
+    expect(screen.queryByText('Test mapping')).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Try again' }));
-    expect(await screen.findByText('Preview and test mapping')).toBeVisible();
+    expect(await screen.findByText('Test mapping')).toBeVisible();
   });
 
   it('shows choices and setup guidance before boolean fields exist', async () => {
@@ -183,7 +183,7 @@ describe('integration setup controls', () => {
     const props = { destination, submissionId: 'signup-1', template, onChange: vi.fn() };
     const view = render(<ExtraAnswerMapping {...props} value={{ 'question-1': 'SERVICE' }} />);
     await user.click(screen.getByText('Field mapping'));
-    await user.click(await screen.findByText('Preview and test mapping'));
+    await user.click(await screen.findByText('Test mapping'));
     await user.type(screen.getByRole('textbox', { name: 'Your test email' }), 'owner@example.com');
     await user.click(screen.getByRole('button', { name: 'Preview data' }));
     expect(screen.getByRole('textbox', { name: 'Your test email' })).toBeDisabled();

@@ -35,7 +35,7 @@ export function GraphCaptureInsert({ tree, primaryChannel, source, onInsert, onC
     <AdminDialogFooter back={<Button type="button" variant="outline" onClick={onCancel}>{__('Cancel', 'wconvert-pro')}</Button>}
       note={refusal && !plan.reason && <span id={`${id}-refusal`}>{refusal}</span>}>
       <Button type="button" aria-disabled={refusal !== null || undefined} aria-describedby={refusal ? `${id}-refusal` : undefined}
-        onClick={() => { if (refusal === null) onInsert(locationId); }}>{__('Add signup', 'wconvert-pro')}</Button>
+        onClick={() => { if (refusal === null) onInsert(locationId); }}>{__('Add form', 'wconvert-pro')}</Button>
     </AdminDialogFooter>
   </>;
 }

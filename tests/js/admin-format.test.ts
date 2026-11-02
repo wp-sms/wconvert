@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { formatMoney, formatWhen, humanize, labelOf } from '../../resources/admin/src/lib/format';
+import { formatMonth, formatMoney, formatSeconds, formatWhen, humanize, labelOf, plainList } from '../../resources/admin/src/lib/format';
 
 // 2026-10-09 14:00 UTC.
 const NOW = Date.UTC(2026, 9, 9, 14, 0);
@@ -57,5 +57,20 @@ describe('the calendar', () => {
   it('stays Gregorian on a Persian site, so a month names the month it covers', () => {
     document.documentElement.lang = 'fa-IR';
     expect(formatWhen('2026-10-09 14:22:00', 'detail', NOW, 'UTC')).toContain('۲۰۲۶');
+  });
+});
+
+describe('the helpers that replaced ad hoc Intl', () => {
+  it('names a month with its year', () => {
+    expect(formatMonth('2026-10')).toBe('October 2026');
+  });
+
+  it('reads milliseconds as tenths of a second, never under a tenth', () => {
+    expect(formatSeconds(412)).toBe('0.4');
+    expect(formatSeconds(3)).toBe('0.1');
+  });
+
+  it('joins names with no conjunction', () => {
+    expect(plainList(['A/B testing', 'Exit intent'])).toBe('A/B testing, Exit intent');
   });
 });

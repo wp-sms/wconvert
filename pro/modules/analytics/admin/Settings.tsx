@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import apiFetch from '@wordpress/api-fetch';
 import { __, _n, sprintf } from '@wordpress/i18n';
+import { tierProductName } from '@/goals/availability';
 import { CircleAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -87,7 +88,7 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
       {/* A site problem, not a failed read: it stays until the files are restored. */}
       {!response.asset_available && <Alert variant="destructive" className="border-destructive/30 bg-destructive-surface">
         <CircleAlert />
-        <AlertTitle id={`${ids}-asset`} className="line-clamp-none">{__('The analytics script is missing. Reinstall WConvert Pro to restore it.', 'wconvert-pro')}</AlertTitle>
+        <AlertTitle id={`${ids}-asset`} className="line-clamp-none">{sprintf(/* translators: %s: the paid product's name, e.g. “WConvert Pro”. */ __('The analytics script is missing. Reinstall %s to restore it.', 'wconvert-pro'), tierProductName('pro'))}</AlertTitle>
       </Alert>}
       {/* What the SAVED setup is doing, so nobody opens the fields to find out. */}
       {live && <p className="m-0 font-medium">{live}</p>}

@@ -2,6 +2,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import { TriangleAlert } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import type { CampaignIssue } from './readiness/campaignIssues';
+import { formatCount } from '../lib/format';
 
 /**
  * A card's issues on the Flow map: the count, and on click every issue about
@@ -14,7 +15,7 @@ export function JourneyIssueMarker({ issues, onIssue, tabIndex }: {
   tabIndex?: number;
 }) {
   if (!issues?.length || !onIssue) return null;
-  const count = sprintf(/* translators: %d: how many issues the screen has. */ _n('%d issue', '%d issues', issues.length, 'wconvert'), issues.length);
+  const count = sprintf(/* translators: %s: how many issues the screen has. */ _n('%s issue', '%s issues', issues.length, 'wconvert'), formatCount(issues.length));
   return <Popover>
     <PopoverTrigger asChild>
       <button type="button" className="wconvert-flow-issue" tabIndex={tabIndex} aria-label={sprintf(/* translators: %s: “1 issue”, “3 issues”. */ __('%s on this screen. Show them', 'wconvert'), count)}>

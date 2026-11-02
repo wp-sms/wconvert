@@ -6,6 +6,7 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
 import { CampaignPickerFields, CampaignStatus, boundaryLabel, useCampaignChoices } from './CampaignPicker';
 import { ALLOWED_BLOCKS, DIVIDER_BLOCK, LOCK_BLOCK, lockCount, supportedContent } from './selection';
+import { formatCount } from '../../../../resources/admin/src/lib/format';
 
 registerBlockType(DIVIDER_BLOCK, {
   icon: 'minus',
@@ -49,11 +50,11 @@ registerBlockType(DIVIDER_BLOCK, {
         <p className="wconvert-lock-settings__hint">{__('Locks to the end of this article, including new content. For a section with public content after it, use the WConvert content lock block.', 'wconvert-pro')}</p>
       </PanelBody></InspectorControls>
       <BlockControls group="other"><ToolbarButton disabled={!canRemove} onClick={() => removeBlocks([clientId])}>{__('Remove divider, keep content', 'wconvert-pro')}</ToolbarButton></BlockControls>
-      <div className="wconvert-lock-editor__boundary"><strong>{__('Content lock starts here', 'wconvert-pro')}</strong><span>{boundaryLabel(value, state, __('Not set up', 'wconvert-pro'))}</span></div>
+      <div className="wconvert-lock-editor__boundary"><strong>{__('Content lock starts here', 'wconvert-pro')}</strong><span>{boundaryLabel(value, state, __('No campaign chosen', 'wconvert-pro'))}</span></div>
       <p className="wconvert-lock-divider__scope">{__('Everything below, to the end of this article.', 'wconvert-pro')}</p>
-      {!value ? <Button variant="secondary" onClick={openSettings}>{__('Choose campaign', 'wconvert-pro')}</Button> : <CampaignStatus value={value} state={state} />}
+      {!value ? <Button variant="secondary" onClick={openSettings}>{__('Choose a campaign', 'wconvert-pro')}</Button> : <CampaignStatus value={value} state={state} />}
       {problem ? <Notice status={hasContent ? 'warning' : 'info'} isDismissible={false}>{problem}{unsupported && <Button variant="secondary" onClick={() => selectBlock(unsupported.clientId)}>{__('Find unsupported block', 'wconvert-pro')}</Button>}</Notice>
-        : <span className="wconvert-lock-divider__count">{!hasContent ? __('Add content below to lock it.', 'wconvert-pro') : sprintf(/* translators: %d: how many blocks below the divider will be locked. */ _n('%d block below', '%d blocks below', remaining.length, 'wconvert-pro'), remaining.length)}</span>}
+        : <span className="wconvert-lock-divider__count">{!hasContent ? __('Add content below to lock it.', 'wconvert-pro') : sprintf(/* translators: %s: how many blocks below the divider will be locked. */ _n('%s block below', '%s blocks below', remaining.length, 'wconvert-pro'), formatCount(remaining.length))}</span>}
     </div>;
   },
   save: () => null,

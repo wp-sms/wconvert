@@ -20,7 +20,7 @@ export function GraphCaptureRemove({ tree, submissionId, onRemove, onCancel }: {
   const refusal = plan.reason ?? (removal ? null : __('Choose where visitors continue first.', 'wconvert'));
   return <>
     <AlertDialogHeader>
-      <AlertDialogTitle>{__('Remove this optional signup?', 'wconvert')}</AlertDialogTitle>
+      <AlertDialogTitle>{__('Remove this optional form?', 'wconvert')}</AlertDialogTitle>
       <AlertDialogDescription>{__('Removes the screens collecting this signup, with their contact fields, consent and save or skip buttons. Other screens and saved leads stay. Undo restores this draft edit.', 'wconvert')}</AlertDialogDescription>
     </AlertDialogHeader>
     <div className="wconvert-graph-insert__body wconvert-graph-remove__body">
@@ -42,7 +42,7 @@ export function GraphCaptureRemove({ tree, submissionId, onRemove, onCancel }: {
     <AlertDialogFooter>
       <AlertDialogCancel onClick={onCancel}>{__('Cancel', 'wconvert')}</AlertDialogCancel>
       <Button type="button" variant="destructive" aria-disabled={refusal !== null || undefined} aria-describedby={refusal ? `${id}-refusal` : undefined}
-        onClick={() => { if (removal && refusal === null) onRemove(removal.next, removal.destination); }}>{__('Remove signup', 'wconvert')}</Button>
+        onClick={() => { if (removal && refusal === null) onRemove(removal.next, removal.destination); }}>{__('Remove form', 'wconvert')}</Button>
     </AlertDialogFooter>
   </>;
 }

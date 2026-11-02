@@ -4,6 +4,7 @@ import { Plus, Trash2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import type { HeaderPair, SettingsField } from './api';
+import { formatCount } from '../lib/format';
 
 /** An HTTP token, as the server checks it. */
 const TOKEN = /^[A-Za-z0-9!#$%&'*+.^_`|~-]{1,64}$/;
@@ -58,7 +59,7 @@ export function HeadersEditor({ field, value, onChange, stored = [], label, hint
   return <fieldset className="m-0 flex min-w-0 flex-col gap-2 border-0 p-0">
     <legend className="mb-1.5 flex w-full flex-wrap items-baseline justify-between gap-x-3 p-0">
       <span className="font-medium">{label ?? field.label}</span>
-      <span className="text-note text-muted-foreground">{sprintf(/* translators: %d: most headers allowed. */ __('Optional · up to %d', 'wconvert'), max)}</span>
+      <span className="text-note text-muted-foreground">{sprintf(/* translators: %s: most headers allowed. */ __('Optional · up to %s', 'wconvert'), formatCount(max))}</span>
     </legend>
     {hint && <p className="m-0 text-note text-muted-foreground">{hint}</p>}
     {value.map((pair, index) => {

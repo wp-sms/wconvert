@@ -6,6 +6,7 @@ import type { CampaignIssue } from '../readiness/campaignIssues';
 import { endingWords, kindWord, type CardKind, type FlowCard as Card, type FlowGroupBox, type Priority } from '../structure/flowModel';
 import type { Rect } from '../structure/flowLayout';
 import type { TraceState } from './FlowLines';
+import { formatCount } from '../../lib/format';
 
 export const kindIcon = { question: CircleHelp, message: FileText, form: Send, result: Flag, ending: Check } satisfies Record<CardKind, unknown>;
 
@@ -41,7 +42,7 @@ export function FlowCard({ card, selected, destinationSummary, shownResult, box,
         {result.fallback && <small> · {__('all other answers', 'wconvert')}</small>}
         {result.needsCondition && <small data-problem="true"> · {__('needs a condition', 'wconvert')}</small>}</span>
       </span>)}
-      {(card.results?.length ?? 0) > 3 && <span className="wconvert-flow-card__sub">{sprintf(/* translators: %d: how many more results. */ __('+%d more · first match wins', 'wconvert'), card.results!.length - 3)}</span>}
+      {(card.results?.length ?? 0) > 3 && <span className="wconvert-flow-card__sub">{sprintf(/* translators: %s: how many more results. */ __('+%s more · first match wins', 'wconvert'), formatCount(card.results!.length - 3))}</span>}
     </button>
     {card.kind === 'ending' || card.kind === 'result' && !card.then && !card.linesText
       ? <span className="wconvert-flow-card__foot" data-early={card.endsWithout ? 'true' : undefined}>{endingWords(card.endsWithout)}</span>
@@ -69,11 +70,11 @@ export function FlowGroup({ group, selected, visited, box, rtl, state, active, i
     <span className="wconvert-flow-group__title"><span className="wconvert-flow-tile" data-kind="question" aria-hidden="true"><CircleHelp /></span><bdi>{group.title}</bdi></span>
     <span className="wconvert-flow-group__sub">{group.unreachable ? __('No line reaches these follow-ups', 'wconvert') : asked === undefined
       ? __('Every match, one at a time. Then all continue.', 'wconvert')
-      : sprintf(/* translators: 1: how many follow-ups this visitor is asked. 2: how many there are. */ __('This visitor is asked %1$d of %2$d.', 'wconvert'), asked, group.members.length)}</span>
+      : sprintf(/* translators: 1: how many follow-ups this visitor is asked. 2: how many there are. */ __('This visitor is asked %1$s of %2$s.', 'wconvert'), formatCount(asked), formatCount(group.members.length))}</span>
     {group.members.map((member, at) => <button key={member.id} ref={member === target ? focusRef : undefined} type="button" className="wconvert-flow-group__member"
       data-flow-key={member === target ? group.id : undefined} tabIndex={tab} aria-current={selected === member.index ? 'true' : undefined}
       data-state={visited ? visited.has(member.id) ? 'on' : 'off' : undefined} onClick={() => onSelect(member.index)} onFocus={onFocusNode}
-      aria-label={sprintf(/* translators: 1: its place. 2: how many. 3: its name. 4: its answer. */ __('Follow-up %1$d of %2$d: %3$s, only if %4$s', 'wconvert'), at + 1, group.members.length, member.name, member.answer)
+      aria-label={sprintf(/* translators: 1: its place. 2: how many. 3: its name. 4: its answer. */ __('Follow-up %1$s of %2$s: %3$s, only if %4$s', 'wconvert'), formatCount(at + 1), formatCount(group.members.length), member.name, member.answer)
         + (visited ? `, ${visited.has(member.id) ? __('asked in this trace', 'wconvert') : __('skipped in this trace', 'wconvert')}` : '')}>
       <span className="wconvert-flow-dot" data-color={member.color} aria-hidden="true" /><strong><bdi>{member.name}</bdi></strong><small><bdi>{member.answer}</bdi></small>
       {issues.some(issue => issue.screenId === member.id) && <span className="wconvert-flow-group__issue" aria-hidden="true">{issues.filter(issue => issue.screenId === member.id).length}</span>}

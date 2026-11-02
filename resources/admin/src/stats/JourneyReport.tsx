@@ -60,7 +60,7 @@ export function JourneyReport({ id, period }: { id: string; period?: ReportPerio
               const [, revision, screen] = scope.split(':');
               const definition = report.definitions[revision]?.[screen];
               const version = Object.keys(report.definitions).indexOf(revision) + 1;
-              return <DataTableRow key={scope}><DataTableCell label={__('Screen', 'wconvert')}><strong><bdi>{definition?.name || __('Removed screen', 'wconvert')}</bdi></strong><small className="block wa-muted">{version > 0 ? sprintf(/* translators: %d: which recorded version of the campaign the screen comes from, counting from 1. */ __('Version %d', 'wconvert'), version) : __('Earlier version', 'wconvert')}</small></DataTableCell>
+              return <DataTableRow key={scope}><DataTableCell label={__('Screen', 'wconvert')}><strong><bdi>{definition?.name || __('Removed screen', 'wconvert')}</bdi></strong><small className="block wa-muted">{version > 0 ? sprintf(/* translators: %s: which recorded version of the campaign the screen comes from, counting from 1. */ __('Version %s', 'wconvert'), formatCount(version)) : __('Earlier version', 'wconvert')}</small></DataTableCell>
                 {Object.entries({ screen_shown: __('Shown', 'wconvert'), screen_advanced: __('Completed', 'wconvert'), screen_skipped: __('Skipped', 'wconvert'), screen_dismissed: __('Dismissed', 'wconvert') }).map(([kind, label]) => <DataTableCell label={label} numeric key={kind}>{counts[kind] === undefined ? '—' : formatCount(counts[kind])}</DataTableCell>)}
               </DataTableRow>;
             })}</DataTableBody>

@@ -28,6 +28,7 @@ export function CommercePicker({ value, onChange, categories = false, max = 20, 
   const searchInput = useRef<HTMLInputElement>(null);
   useEffect(() => { if (changing) searchInput.current?.focus(); }, [changing]);
   const key = ids.join(',');
+  const nameOf = (id: number) => [...names, ...hits].find(hit => hit.id === id)?.name ?? (categories ? __('Unnamed category', 'wconvert') : __('Unnamed product', 'wconvert'));
   useEffect(() => {
     setNamesFailed(false);
     if (!key) return;
@@ -90,9 +91,9 @@ export function CommercePicker({ value, onChange, categories = false, max = 20, 
     <label>{categories ? __('Find categories', 'wconvert') : recommendations ? __('Find products', 'wconvert') : __('Find products or variations', 'wconvert')}<Input value={query} onChange={event => setQuery(event.target.value)} /></label>
     {searchFailure}
     {namesFailure}
-    <ol className="space-y-2">{ids.map((id, i) => <li className="flex flex-wrap items-center gap-2" key={id}>{[...names, ...hits].find(hit => hit.id === id)?.name ?? `#${id}`}
-      {itemControls?.(id, [...names, ...hits].find(hit => hit.id === id)?.name ?? `#${id}`)}
-      {recommendations && <Button variant="outline" type="button" disabled={i === 0} onClick={() => { const next = [...ids]; [next[i - 1], next[i]] = [next[i], next[i - 1]]; onChange(next); }}>{__('Move earlier', 'wconvert')}</Button>}
+    <ol className="space-y-2">{ids.map((id, i) => <li className="flex flex-wrap items-center gap-2" key={id}>{nameOf(id)}
+      {itemControls?.(id, nameOf(id))}
+      {recommendations && <Button variant="outline" type="button" disabled={i === 0} onClick={() => { const next = [...ids]; [next[i - 1], next[i]] = [next[i], next[i - 1]]; onChange(next); }}>{__('Move up', 'wconvert')}</Button>}
       <Button variant="outline" type="button" onClick={() => onChange(ids.filter(each => each !== id))}>{__('Remove', 'wconvert')}</Button></li>)}</ol>
     {ids.length >= max && <p id={fullId} className="wconvert-panel-hint">{__('Remove a product to add another.', 'wconvert')}</p>}
     <ul className="space-y-2">{hits.filter(hit => !ids.includes(hit.id)).map(hit => <li className="flex items-center justify-between gap-2" key={hit.id}><span>{hit.name}</span> <Button aria-label={sprintf(/* translators: %s: the name of a product, variation or category. */ __('Add %s', 'wconvert'), hit.name)} variant="outline" type="button" {...refusable(ids.length >= max ? fullId : null, () => onChange([...ids, hit.id]))}>{__('Add', 'wconvert')}</Button></li>)}</ul>

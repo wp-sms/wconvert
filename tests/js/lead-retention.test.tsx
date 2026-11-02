@@ -158,7 +158,7 @@ describe('explicit lead retention', () => {
     await userEvent.click(automatic());
     fireEvent.change(days(), { target: { value } });
     await userEvent.click(save());
-    expect(screen.getByRole('alert')).toHaveTextContent('Enter a whole number from 1 to 3650 days.');
+    expect(screen.getByRole('alert')).toHaveTextContent('Enter a whole number from 1 to 3,650 days.');
     expect(days()).toHaveAttribute('aria-invalid', 'true');
     expect(days()).toHaveFocus();
     expect(screen.queryByRole('alertdialog')).toBeNull();

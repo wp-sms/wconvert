@@ -1,5 +1,6 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { campaignName, statusOf, type OptinSummary } from './api';
+import { formatCount } from '../lib/format';
 
 /**
  * Publish, Pause, Duplicate and Delete over the ticked rows of the campaign list.
@@ -106,18 +107,18 @@ export function resultSentence(result: GroupResult): string {
   const count = result.done.length;
   const parts: string[] = [
     result.action === 'publish'
-      ? sprintf(/* translators: %d: how many campaigns were published. */ __('Published %d.', 'wconvert'), count)
+      ? sprintf(/* translators: %s: how many campaigns were published. */ __('Published %s.', 'wconvert'), formatCount(count))
       : result.action === 'pause'
-        ? sprintf(/* translators: %d: how many campaigns were unpublished. */ __('Unpublished %d.', 'wconvert'), count)
+        ? sprintf(/* translators: %s: how many campaigns were unpublished. */ __('Unpublished %s.', 'wconvert'), formatCount(count))
         : result.action === 'delete'
-          ? sprintf(/* translators: %d: how many campaigns were deleted. */ __('Deleted %d.', 'wconvert'), count)
-          : sprintf(/* translators: %d: how many campaigns were copied. */ _n('Copied %d as a draft.', 'Copied %d as drafts.', count, 'wconvert'), count),
+          ? sprintf(/* translators: %s: how many campaigns were deleted. */ __('Deleted %s.', 'wconvert'), formatCount(count))
+          : sprintf(/* translators: %s: how many campaigns were copied. */ _n('Copied %s as a draft.', 'Copied %s as drafts.', count, 'wconvert'), formatCount(count)),
   ];
   if (result.skipped.length) {
-    parts.push(sprintf(/* translators: 1: how many campaigns were skipped, 2: why and which, e.g. "A/B test: Spring sale". */ __('Skipped %1$d (%2$s).', 'wconvert'), result.skipped.length, skippedList(result.skipped)));
+    parts.push(sprintf(/* translators: 1: how many campaigns were skipped, 2: why and which, e.g. "A/B test: Spring sale". */ __('Skipped %1$s (%2$s).', 'wconvert'), formatCount(result.skipped.length), skippedList(result.skipped)));
   }
   if (result.failed.length) {
-    parts.push(sprintf(/* translators: %d: how many campaigns could not be changed. */ __('%d failed.', 'wconvert'), result.failed.length));
+    parts.push(sprintf(/* translators: %s: how many campaigns could not be changed. */ __('%s failed.', 'wconvert'), formatCount(result.failed.length)));
   }
   return parts.join(' ');
 }
@@ -126,24 +127,24 @@ export function resultSentence(result: GroupResult): string {
 export function groupConfirmCopy(action: ConfirmedAction, group: GroupPlan): { title: string; description: string; confirmLabel: string } {
   const n = group.run.length;
   const skipped = group.skipped.length
-    ? ' ' + sprintf(/* translators: 1: how many campaigns are left alone, 2: why and which, e.g. "A/B test: Spring sale". */ __('%1$d will be skipped (%2$s).', 'wconvert'), group.skipped.length, skippedList(group.skipped))
+    ? ' ' + sprintf(/* translators: 1: how many campaigns are left alone, 2: why and which, e.g. "A/B test: Spring sale". */ __('%1$s will be skipped (%2$s).', 'wconvert'), formatCount(group.skipped.length), skippedList(group.skipped))
     : '';
   if (action === 'delete') {
     return {
-      title: sprintf(/* translators: %d: how many campaigns. */ _n('Delete %d campaign?', 'Delete %d campaigns?', n, 'wconvert'), n),
+      title: sprintf(/* translators: %s: how many campaigns. */ _n('Delete %s campaign?', 'Delete %s campaigns?', n, 'wconvert'), formatCount(n)),
       description: __('They stop showing and leave this list. Their leads and results are kept.', 'wconvert') + skipped,
-      confirmLabel: sprintf(/* translators: %d: how many campaigns. */ _n('Delete %d campaign', 'Delete %d campaigns', n, 'wconvert'), n),
+      confirmLabel: sprintf(/* translators: %s: how many campaigns. */ _n('Delete %s campaign', 'Delete %s campaigns', n, 'wconvert'), formatCount(n)),
     };
   }
   return action === 'publish'
     ? {
-      title: sprintf(/* translators: %d: how many campaigns. */ _n('Publish %d campaign?', 'Publish %d campaigns?', n, 'wconvert'), n),
+      title: sprintf(/* translators: %s: how many campaigns. */ _n('Publish %s campaign?', 'Publish %s campaigns?', n, 'wconvert'), formatCount(n)),
       description: __('Each latest saved draft becomes what visitors see, subject to its display rules.', 'wconvert') + skipped,
-      confirmLabel: sprintf(/* translators: %d: how many campaigns. */ _n('Publish %d campaign', 'Publish %d campaigns', n, 'wconvert'), n),
+      confirmLabel: sprintf(/* translators: %s: how many campaigns. */ _n('Publish %s campaign', 'Publish %s campaigns', n, 'wconvert'), formatCount(n)),
     }
     : {
-      title: sprintf(/* translators: %d: how many campaigns. */ _n('Unpublish %d campaign?', 'Unpublish %d campaigns?', n, 'wconvert'), n),
+      title: sprintf(/* translators: %s: how many campaigns. */ _n('Unpublish %s campaign?', 'Unpublish %s campaigns?', n, 'wconvert'), formatCount(n)),
       description: __('They stop showing and return to Draft. Their saved drafts, leads and results are kept.', 'wconvert') + skipped,
-      confirmLabel: sprintf(/* translators: %d: how many campaigns. */ _n('Unpublish %d campaign', 'Unpublish %d campaigns', n, 'wconvert'), n),
+      confirmLabel: sprintf(/* translators: %s: how many campaigns. */ _n('Unpublish %s campaign', 'Unpublish %s campaigns', n, 'wconvert'), formatCount(n)),
     };
 }

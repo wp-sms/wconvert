@@ -131,9 +131,9 @@ export function LeadRetention({ onEditingStateChange }: { onEditingStateChange?:
     const days = Number(draft.days);
     if (draft.days.trim() === '' || !Number.isInteger(days) || days < 1 || days > period.max_days) {
       setValidation(sprintf(
-        /* translators: %d: the longest time submissions can be kept, in days. */
-        __('Enter a whole number from 1 to %d days.', 'wconvert'),
-        period.max_days,
+        /* translators: %s: the longest time submissions can be kept, in days. */
+        __('Enter a whole number from 1 to %s days.', 'wconvert'),
+        formatCount(period.max_days),
       ));
       daysInput.current?.focus();
       return;

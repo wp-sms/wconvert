@@ -213,7 +213,7 @@ function TargetRow({ id, type, value, onChange }: { id: string; type: RuleType; 
         : <ValuePill label={param.label} text={text} pending={loading ? __('Loading the saved selection’s name…', 'wconvert') : undefined}><ParamField id={id} param={param} value={value} onChange={onChange} /></ValuePill>}
     </div>
     {failed && <div role="alert" className="flex flex-wrap items-center gap-3 text-note text-destructive">
-      <span>{sprintf(/* translators: %s: the saved page, post, category or tag's ID number. */ __('Couldn’t load the saved selection’s name. This rule still uses #%s.', 'wconvert'), stored)}</span>
+      <span>{sprintf(/* translators: %s: the saved page, post, category or tag's ID number. */ __('Could not load the saved selection’s name. This rule still uses #%s.', 'wconvert'), stored)}</span>
       <TryAgain onClick={retry} />
     </div>}
   </div>;

@@ -398,6 +398,24 @@ describe('the direction convention', () => {
     }
   });
 
+  it('states no physical side through a shorthand either', () => {
+    /*
+      `margin: 2px 0 6px 18px` names a left and a right without saying either
+      word, so the test above cannot see it. Four values with different sides,
+      or corners that differ, are a direction written down.
+    */
+    const sheets = readdirSync(resolve(import.meta.dirname, '../../resources/admin/src/builder'))
+      .filter(name => name.endsWith('.css'))
+      .map(name => readFileSync(resolve(import.meta.dirname, '../../resources/admin/src/builder', name), 'utf8'));
+    const lopsided = sheets.join('\n').replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/(?:^|[\s;{])(margin|padding|inset|border-radius)\s*:\s*([^;{}()]+?)\s*(?:!important\s*)?[;}]/g);
+    const found = [...lopsided].filter(([, property, value]) => {
+      const parts = value.split(/\s+/);
+      if (property === 'border-radius') return parts.length > 1 && !parts.includes('/');
+      return parts.length === 4 && parts[1] !== parts[3];
+    }).map(([declaration]) => declaration.trim());
+    expect(found).toEqual([]);
+  });
+
   /**
    * `box-shadow` has no logical form, so the selected-block rail is physical by
    * necessity — and therefore owes the override that makes it right the other

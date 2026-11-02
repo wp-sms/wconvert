@@ -4,6 +4,7 @@ import { everyType, groupSummary } from './plan';
 import { customPacing, datesSummary, whereReading, type Summary } from './sentence';
 import { derive, type SectionId } from './picks';
 import type { Frequency, RuleVocabulary, Schedule, Targeting } from '../api';
+import { formatCount } from '../../lib/format';
 
 /**
  * The five questions, answered — **once, for every screen that asks them.**
@@ -88,8 +89,8 @@ export function summarise(
   if (opening?.mode === 'automatic' && (!Number.isFinite(opening.minimum_seconds ?? 0) || (opening.minimum_seconds ?? 0) < 0 || (opening.minimum_seconds ?? 0) > 3600)) when.attention = true;
   if (opening?.mode === 'automatic' && opening.minimum_seconds) {
     when.text += ` · ${sprintf(
-      /* translators: %d: a number of seconds. */
-      _n('not before %d second', 'not before %d seconds', opening.minimum_seconds, 'wconvert'), opening.minimum_seconds)}`;
+      /* translators: %s: a number of seconds. */
+      _n('not before %s second', 'not before %s seconds', opening.minimum_seconds, 'wconvert'), formatCount(opening.minimum_seconds))}`;
   }
   // The page lists are named rather than counted where that needs no lookup,
   // so Where reads its own answer rather than the pick's bare label.

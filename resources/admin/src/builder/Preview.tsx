@@ -523,7 +523,7 @@ export function Preview({ template, displayType = 'inline', step = 0, selected =
   return (
     <div>
       {fontsFailed && <div role="alert" className="wconvert-panel-warn">
-        <span>{__('This design’s fonts couldn’t load, so the preview may show others.', 'wconvert')}</span>
+        <span>{__('This design’s fonts could not load, so the preview may show others.', 'wconvert')}</span>
         <TryAgain onClick={() => setFontsAttempt(current => current + 1)} />
       </div>}
       <div

@@ -1,5 +1,6 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
 import type { LicenseError } from './api';
+import { formatCount } from '@/lib/format';
 
 /**
  * What a refusal from the store, the SDK or the route means to a person, and
@@ -42,12 +43,12 @@ export function errorCopy(error: LicenseError, { host = 'my.wconvert.io', fromCo
       return { text: __('This license was turned off.', 'wconvert-pro'), ways: ['support'] };
     case 'rate_limited': {
       const minutes = Math.max(1, Math.ceil((error.data?.retry_after ?? 60) / 60));
-      return { text: sprintf(/* translators: %d: how many minutes to wait before trying again. */ _n('Too many tries. Try again in %d minute.', 'Too many tries. Try again in %d minutes.', minutes, 'wconvert-pro'), minutes), ways: [] };
+      return { text: sprintf(/* translators: %s: how many minutes to wait before trying again. */ _n('Too many tries. Try again in %s minute.', 'Too many tries. Try again in %s minutes.', minutes, 'wconvert-pro'), formatCount(minutes)), ways: [] };
     }
     case 'network_error':
     case 'server_error':
     case 'invalid_response':
-      return { text: sprintf(/* translators: %s: the license server's address, e.g. “my.wconvert.io”. */ __('Couldn’t reach the license server. Some hosts block outgoing connections. Ask yours to allow %s.', 'wconvert-pro'), host), ways: ['retry', 'guide'] };
+      return { text: sprintf(/* translators: %s: the license server's address, e.g. “my.wconvert.io”. */ __('Could not reach the license server. Some hosts block outgoing connections. Ask yours to allow %s.', 'wconvert-pro'), host), ways: ['retry', 'guide'] };
     case 'account_expired':
     case 'token_expired':
       return { text: __('Your sign-in timed out. Sign in again.', 'wconvert-pro'), ways: [] };

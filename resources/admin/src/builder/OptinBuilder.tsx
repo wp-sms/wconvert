@@ -115,6 +115,7 @@ import { editorHref, reportHref } from '../nav';
 import { BrandMark } from '../shell/Brand';
 import type { EditingState } from '../hooks/useAdminNavigation';
 import type { Template, Tokens as TokenBag } from '@renderer/types';
+import { formatCount } from '../lib/format';
 
 export interface OptinBuilderProps {
   readonly id: string;
@@ -304,7 +305,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const captureMode = captureModeOf(config);
   const destinationSummary = captureMode === 'local' ? __('Keep in WConvert only', 'wconvert')
     : destinationNames.length === bound.length && bound.length > 0 ? destinationNames.join(' + ')
-      : bound.length > 0 ? sprintf(/* translators: %d: how many destinations the campaign sends leads to. */ _n('%d connected destination', '%d connected destinations', bound.length, 'wconvert'), bound.length)
+      : bound.length > 0 ? sprintf(/* translators: %s: how many destinations the campaign sends leads to. */ _n('%s connected destination', '%s connected destinations', bound.length, 'wconvert'), formatCount(bound.length))
         : __('No connected destinations', 'wconvert');
 
   const template = config?.template as Template | undefined;
@@ -728,7 +729,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
       said: result.goal !== goal && newGoal
         ? sprintf(/* translators: 1: what changed, e.g. “Email form added.” 2: the new goal's name. */ __('%1$s The goal is now “%2$s”.', 'wconvert'), done, newGoal.label) : done }));
   };
-  const signupCopy = () => sprintf(/* translators: %s: the campaign's name. A copy that asks for contact details. */ __('%s (signup)', 'wconvert'), name);
+  const signupCopy = () => sprintf(/* translators: %s: the campaign's name. A copy that asks for contact details. */ __('%s (form)', 'wconvert'), name);
   const offerCopy = () => sprintf(/* translators: %s: the campaign's name. A copy without a form. */ __('%s (offer)', 'wconvert'), name);
   const copyName = formState === 'none' ? signupCopy() : offerCopy();
   // The same create, confirmation and cleaning as Duplicate for another goal.
@@ -904,7 +905,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               template={template}
               bound={bound}
               local={localCapture}
-              title={template?.tree.submissions[1] ? __('Main signup', 'wconvert') : undefined}
+              title={template?.tree.submissions[1] ? __('Main form', 'wconvert') : undefined}
               available={routes}
               types={read(destinations)?.types ?? []}
               connections={read(destinations)?.connections ?? []}

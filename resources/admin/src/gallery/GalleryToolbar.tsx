@@ -1,5 +1,6 @@
 import { useId, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
+import { tierName } from '../goals/availability';
 import { SlidersHorizontal, X } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
@@ -88,7 +89,7 @@ export function GalleryToolbar({ cards, filters, choices, onChange, shown, total
             <NativeSelect className="text-note" value={choices.format} disabled={disabled} onChange={event => onChange({ format: event.target.value })}>
               <option value="all">{__('All formats', 'wconvert')}</option>
               {offered.map(type => <option key={type} value={type}>
-                {proOnly(type) ? sprintf(/* translators: %s: a format, e.g. “Slide-in”, offered only with the paid plan. */ __('%s · Pro', 'wconvert'), displayTypeLabel(type)) : displayTypeLabel(type)}
+                {proOnly(type) ? sprintf(/* translators: 1: a format, e.g. “Slide-in”, offered only with the paid plan. 2: that plan's short name, e.g. “Pro”. */ __('%1$s · %2$s', 'wconvert'), displayTypeLabel(type), tierName('pro')) : displayTypeLabel(type)}
               </option>)}
             </NativeSelect>
           </label>
@@ -97,7 +98,7 @@ export function GalleryToolbar({ cards, filters, choices, onChange, shown, total
         {showPlan && <div className="wconvert-gallery-toolbar__field">
           <span aria-hidden="true">{__('Plan', 'wconvert')}</span>
           <OptionStrip label={__('Plan', 'wconvert')} value={choices.plan} disabled={disabled}
-            options={[{ value: 'all', label: __('All', 'wconvert') }, { value: 'free', label: __('Free', 'wconvert') }, { value: 'pro', label: __('Pro', 'wconvert') }]}
+            options={[{ value: 'all', label: __('All', 'wconvert') }, { value: 'free', label: __('Free', 'wconvert') }, { value: 'pro', label: tierName('pro') }]}
             onChange={plan => onChange({ plan: plan as GalleryChoices['plan'] })} />
         </div>}
         <Popover>

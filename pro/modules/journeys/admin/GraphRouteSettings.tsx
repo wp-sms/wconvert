@@ -15,6 +15,7 @@ import { graphInsertionLocations } from './structure/graphInsertion';
 import { FieldHeading, PanelHint } from '@/builder/PanelSection';
 import { Disclosure } from '@/shell/Disclosure';
 import { NativeSelect } from '@/components/ui/native-select';
+import { formatCount } from '@/lib/format';
 
 /** A keyboard-complete editor for the actual v3 connections, not array order. */
 export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false, onChange, onInsert, onOpenInsert, onAdd, onSelect }: {
@@ -93,8 +94,8 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
       <Disclosure className="wconvert-journey-path-disclosure" bodyClassName="wconvert-journey-path-disclosure__body"
         open={(focusPath === priority || !answers.length) && !closedRoutes.has(priority)}
         onToggle={open => setClosedRoutes(current => { const next = new Set(current); if (open) next.delete(priority); else next.add(priority); return next; })}
-        title={<><span className="wconvert-journey-path-disclosure__priority">{edge.kind === 'answer' ? priority + 1 : '↳'}</span><span><strong>{edge.kind === 'answer' && <span className="wconvert-flow-dot" data-color={answerColorOf(colors, edge.when)} aria-hidden="true" />}{edge.kind === 'default' ? answers.length ? __('All other answers', 'wconvert-pro') : group && !memberGroup ? __('Any of these', 'wconvert-pro') : __('Everyone', 'wconvert-pro') : edge.when ? conditionText(tree, edge.when) : __('Choose an answer condition', 'wconvert-pro')}</strong><small>{sprintf(/* translators: %s: a screen's name. */ __('Then → %s', 'wconvert-pro'), tree.steps.find(item => item.id === edge.to)?.name ?? __('Choose a screen', 'wconvert-pro'))}</small></span></>}>
-      {edge.kind === 'answer' && <><strong>{sprintf(/* translators: 1: this line's place. 2: how many answer lines. */ __('Line %1$d of %2$d', 'wconvert-pro'), priority + 1, answers.length)}</strong>
+        title={<><span className="wconvert-journey-path-disclosure__priority">{edge.kind === 'answer' ? formatCount(priority + 1) : <span className="inline-block rtl:-scale-x-100">↳</span>}</span><span><strong>{edge.kind === 'answer' && <span className="wconvert-flow-dot" data-color={answerColorOf(colors, edge.when)} aria-hidden="true" />}{edge.kind === 'default' ? answers.length ? __('All other answers', 'wconvert-pro') : group && !memberGroup ? __('Any of these', 'wconvert-pro') : __('Everyone', 'wconvert-pro') : edge.when ? conditionText(tree, edge.when) : __('Answer condition', 'wconvert-pro')}</strong><small>{sprintf(/* translators: %s: a screen's name. */ __('Then → %s', 'wconvert-pro'), tree.steps.find(item => item.id === edge.to)?.name ?? __('Choose a screen', 'wconvert-pro'))}</small></span></>}>
+      {edge.kind === 'answer' && <><strong>{sprintf(/* translators: 1: this line's place. 2: how many answer lines. */ __('Line %1$s of %2$s', 'wconvert-pro'), formatCount(priority + 1), formatCount(answers.length))}</strong>
         <ConditionSettings required purpose="route" value={edge.when ?? { match: 'all', clauses: [] }} sources={sources}
           onChange={when => { if (when) write(answers.map(item => item.id === edge.id ? { ...item, when } : item)); }} />
       </>}
@@ -131,7 +132,7 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
       </NativeSelect></label>
     </li>}</ol>
     {overlap && <p className="wconvert-panel-warn" role="status">{overlap.answers[0] === overlap.answers[1]
-      ? sprintf(/* translators: 1: an answer. 2, 3: line numbers. */ __('Lines %2$d and %3$d both use “%1$s”. Visitors who pick it take line %2$d.', 'wconvert-pro'), overlap.answers[0], overlap.first + 1, overlap.second + 1)
+      ? sprintf(/* translators: 1: an answer. 2, 3: line numbers. */ __('Lines %2$s and %3$s both use “%1$s”. Visitors who pick it take line %2$s.', 'wconvert-pro'), overlap.answers[0], formatCount(overlap.first + 1), formatCount(overlap.second + 1))
       : sprintf(/* translators: 1, 2: answers. */ __('Someone who picks both “%1$s” and “%2$s” takes the first line: %1$s.', 'wconvert-pro'), overlap.answers[0], overlap.answers[1])}</p>}
     {questionAfterSave && <PanelHint>{__('Ask questions before this save so their answers are included.', 'wconvert-pro')}</PanelHint>}
     {fallback && sources.length > 0 && onAdd && <div className="wconvert-journey-next-actions"><button type="button" onClick={() => onAdd('followup')}>{__('Add a follow-up question', 'wconvert-pro')}</button><button type="button" onClick={() => onAdd('branch')}>{__('Send some answers to a different screen', 'wconvert-pro')}</button></div>}

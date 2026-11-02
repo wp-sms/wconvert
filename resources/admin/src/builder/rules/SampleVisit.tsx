@@ -3,7 +3,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { Check as CheckIcon, CheckCircle2, CircleAlert, Dot, X } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { AdminDialogBody, AdminDialogFooter } from '../../components/ui/admin-dialog';
-import { humanize } from '../../lib/format';
+import { labelOf } from '../../lib/format';
 import { audienceRules, type Answer } from '../../../../loader/src/display-rules';
 import { phraseOf } from './sentence';
 import type { Rule, RuleVocabulary } from '../api';
@@ -13,7 +13,7 @@ import type { ConvertingAct } from '../structure/catalogue';
 import type { Template, ProductsNode } from '@renderer/types';
 import { nodesOf, nodeAt } from '../structure/tree';
 import { adminSettings, commerceSupported } from '../../settings';
-import { tierProductName, unlessFree } from '../../goals/availability';
+import { isFreeInstall, tierProductName } from '../../goals/availability';
 import { wallKey, wallNow } from '../../lib/wallTime';
 import { everyType } from './plan';
 import { SampleBasket, emptyBasket, useBasketPreview } from './SampleBasket';
@@ -74,14 +74,14 @@ export default function SampleVisit({ value, vocabulary, onClose, onOpenSection,
     : !basketEnabled ? { status: 'fail', reason: cartType?.availability === 'unavailable'
       ? sprintf(
         /* translators: %s: a plugin's name, e.g. “WooCommerce”. */
-        __('Cart testing needs %s on this site.', 'wconvert'), cartType.requires_label ?? __('another plugin', 'wconvert'))
-      : unlessFree(sprintf(
-        /* translators: %s: the product that includes cart testing, e.g. “WConvert Pro”. */
-        __('Cart testing is included with %s.', 'wconvert'), tierProductName(cartType?.tier ?? 'pro'))) }
+        __('Basket testing needs %s on this site.', 'wconvert'), cartType.requires_label ?? __('another plugin', 'wconvert'))
+      : isFreeInstall() ? __('Basket testing isn’t available on this site.', 'wconvert') : sprintf(
+        /* translators: %s: the product that includes basket testing, e.g. “WConvert Pro”. */
+        __('Basket testing is included with %s.', 'wconvert'), tierProductName(cartType?.tier ?? 'pro')) }
       : preview.error ? { status: 'fail', reason: __('The sample basket could not be checked.', 'wconvert') }
         : !preview.result ? { status: 'checking' }
           : !preview.result.eligible || (cartRequired && preview.result.rules[requiredCartId] !== true)
-            ? { status: 'fail', reason: __('This basket does not meet the campaign’s cart requirements or has no eligible recommendations.', 'wconvert') }
+            ? { status: 'fail', reason: __('This basket does not meet the campaign’s basket requirements or has no eligible recommendations.', 'wconvert') }
             : { status: 'pass', answers: Object.fromEntries(cartRules.map(rule => [String(rule.id),
               preview.result!.state === 'blocked' ? 'blocked' : preview.result!.rules[String(rule.id)] ?? false] as [string, Answer])) };
   const result = checkVisit(value, vocabulary, visitor, basketCheck, act);
@@ -90,7 +90,8 @@ export default function SampleVisit({ value, vocabulary, onClose, onOpenSection,
   const others = audience.filter(rule => !NATURAL.includes(rule.type) && !rule.type.startsWith('cart_'));
   const asksAccount = has('logged_in') || has('role') || value.targeting.logged_in !== undefined || value.targeting.roles !== undefined;
   const asksRole = has('role') || value.targeting.roles !== undefined;
-  const roleLabel = (role: string) => roleParam?.options.find(option => option.value === role)?.label ?? humanize(role);
+  const roleLabels = Object.fromEntries((roleParam?.options ?? []).map(option => [option.value, option.label]));
+  const roleLabel = (role: string) => labelOf(role, roleLabels, __('Another role', 'wconvert'));
   const asked = questions();
   const checking = result.checking === true;
   const Headline = checking ? Dot : result.opens ? CheckCircle2 : CircleAlert;
