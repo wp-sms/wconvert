@@ -53,11 +53,12 @@ function Empty({ title, body, action }: { title: string; body: string; action: R
 
 /**
  * The grid's own shape while templates arrive (ADR 0039): a card of stage and
- * words, so nothing jumps when they land. It waits a beat, so a quick answer
- * never flashes it, and announces itself once.
+ * words, so nothing jumps when they land. It announces itself once. A first
+ * fill paints at once; `wait` is for a re-read over cards already shown, so a
+ * quick answer never flashes it ({@see useShownAfterDelay}).
  */
-export function GallerySkeleton({ cards = 6 }: { cards?: number }) {
-  if (!useShownAfterDelay()) return null;
+export function GallerySkeleton({ cards = 6, wait = false }: { cards?: number; wait?: boolean }) {
+  if (!useShownAfterDelay(wait)) return null;
 
   return (
     <>

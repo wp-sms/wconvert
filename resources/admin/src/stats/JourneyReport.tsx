@@ -32,7 +32,7 @@ export function JourneyReport({ id, period }: { id: string; period?: ReportPerio
       .catch(() => { if (!controller.signal.aborted) setFailed(true); }).finally(() => { if (!controller.signal.aborted) setUpdating(false); });
     return () => controller.abort();
   }, [id, windowQuery, from, to, retry]);
-  if (!report && !failed) return <RegionSkeleton label={__('Signup and screen activity', 'wconvert')} lines={3} />;
+  if (!report && !failed) return <RegionSkeleton label={__('Signup and screen activity', 'wconvert')} className="wa-report" icon={<Route />} description lines={3} />;
   const Failure = report ? RegionError : RegionErrorState;
   const channels = report?.rows.filter(row => row.scope.startsWith('channel:')) ?? [];
   const screens = new Map<string, Record<string, number>>();

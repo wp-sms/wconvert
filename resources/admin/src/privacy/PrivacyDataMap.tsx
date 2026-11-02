@@ -7,7 +7,7 @@ import { DataTable, DataTableBody, DataTableCell, DataTableColumn, DataTableHead
 import { Description } from '../shell/Description';
 import { Disclosure } from '../shell/Disclosure';
 import { Region, RegionBody, RegionErrorState, RegionHeader } from '../shell/Region';
-import { RegionSkeleton } from '../shell/RegionSkeleton';
+import { SettingsRegionSkeleton } from '../settings-page/SettingsSkeleton';
 import { failed, LOADING, ready, type Loadable } from '../shell/loadable';
 import { GuideLink } from '../shell/GuideLink';
 import { GUIDES, docsUrl } from '../shell/docs';
@@ -230,7 +230,7 @@ export function PrivacyDataMap() {
     return () => { active = false; };
   }, [retry]);
 
-  if (state.status === 'loading') return <RegionSkeleton label={title} lines={5} />;
+  if (state.status === 'loading') return <SettingsRegionSkeleton region="dataMap" />;
 
   if (state.status === 'failed') {
     return (

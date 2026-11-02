@@ -9,7 +9,7 @@ import { Input } from '../components/ui/input';
 import { NativeSelect } from '../components/ui/native-select';
 import { Textarea } from '../components/ui/textarea';
 import { Region, RegionBody, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
-import { RegionSkeleton } from '../shell/RegionSkeleton';
+import { SettingsRegionSkeleton } from './SettingsSkeleton';
 import { Description } from '../shell/Description';
 import { Disclosure } from '../shell/Disclosure';
 import { Field } from '../shell/Field';
@@ -79,7 +79,7 @@ export function SpamProtection({ onEditingStateChange }: { onEditingStateChange?
   const title = __('Spam protection', 'wconvert');
   if (!saved || !draft) return loadError
     ? <Region><RegionHeader title={title} /><RegionErrorState message={loadError} onRetry={() => setRetry(v => v + 1)} /></Region>
-    : <RegionSkeleton label={title} lines={3} />;
+    : <SettingsRegionSkeleton region="spam" />;
   const edit = (change: Partial<Draft>) => { setDraft({ ...draft, ...change }); status.clear(); setTestNotice(false); setError(null); };
   const reasons: Record<string, string> = {
     honeypot: __('Hidden-field rejections', 'wconvert'), rate_limit: __('Requests limited', 'wconvert'),

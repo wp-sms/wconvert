@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { Check, ChevronDown, Sparkles } from 'lucide-react';
+import { ChevronDown, Sparkles } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
 import { PinnedDesignNotice, usePinnedDesign } from '../templates/PinnedDesign';
 import { installSetup, refreshCatalog } from '../templates/catalog';
 import { fitsOutcome } from './outcome';
 import { Button } from '../components/ui/button';
-import { ChoiceGrid, ChoiceSkeleton } from '../shell/ChoiceGrid';
+import { ChoiceGrid } from '../shell/ChoiceGrid';
+import { GoalStepSkeleton, Step } from './GoalStepSkeleton';
 import { EmptyState } from '../shell/EmptyState';
 import { Region, RegionBody, RegionError, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
@@ -133,6 +134,9 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
    * library is the site's, not the goal's.
    */
   const checked = useRef(false);
+  // A gallery already drawn once: a Goal re-picked reads over it, so its skeleton waits.
+  const galleryShown = useRef(false);
+  if (gallery.status === 'ready') galleryShown.current = true;
   const library = gallery.status === 'ready' ? gallery.data.library : null;
   useEffect(() => {
     if (checked.current || library === null || !library.configured || library.consent !== 'yes') return;
@@ -294,12 +298,15 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
   if (goal === null) {
     // A linked design offers only the goals it can serve (ADR 0085).
     const shown = goals.status === 'ready' ? offerableGoals(goals.data, 'creation_flow').filter((entry) => !pinned || fitsOutcome(entry.outcome, pinned.facets)) : [];
+    const notice = pinnedState && <PinnedDesignNotice pinned={pinnedState} onReload={reloadPinned} onInstalled={reloadPinned} onClear={() => setUnpinned(true)} />;
+    // The same component the chunk's fallback drew, so the hand-off is one shape.
+    if (goals.status === 'loading') return <GoalStepSkeleton notice={notice} />;
     return <Region className="wconvert-creation wconvert-creation--goals">
       <Step at={1} />
       <RegionHeader title={__('What do you want to achieve?', 'wconvert')} />
-      {pinnedState && <PinnedDesignNotice pinned={pinnedState} onReload={reloadPinned} onInstalled={reloadPinned} onClear={() => setUnpinned(true)} />}
+      {notice}
       {goals.status === 'failed' ? <RegionErrorState message={goals.message} onRetry={() => setGoalsRetry((value) => value + 1)} />
-        : <RegionBody className="wconvert-creation__goals">{goals.status === 'loading' ? <ChoiceSkeleton /> : shown.length === 0 ?
+        : <RegionBody className="wconvert-creation__goals">{shown.length === 0 ?
         <EmptyState icon={Sparkles} title={__('No goals available', 'wconvert')}
           action={onCheckOptins && <Button variant="outline" onClick={onCheckOptins}>{__('Back to Campaigns', 'wconvert')}</Button>}>
           {__('Goals come from WConvert and the plugins that extend it.', 'wconvert')}
@@ -373,7 +380,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
           onHideAll={() => { prefer({ show_featured: false }); setCollectionId(null); }} />
         : <ShelfOff disabled={picker.saving} onShow={() => prefer({ show_featured: true })} />)}
       {gallery.status === 'failed' ? <RegionErrorState message={gallery.message} onRetry={() => setGalleryRetry((value) => value + 1)} />
-        : gallery.status === 'loading' ? <GallerySkeleton cards={3} />
+        : gallery.status === 'loading' ? <GallerySkeleton cards={3} wait={galleryShown.current} />
           : <>
             <GalleryToolbar cards={cards} filters={filters} choices={choices} onChange={change} onClear={clear} shown={shown.length} disabled={working}
               showPlan={proHints && cards.some(card => card.availability === 'locked')}
@@ -409,17 +416,6 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
       <Button variant="outline" disabled={working} onClick={() => { void start(); }}>{starting === 'scratch' ? __('Creating draft…', 'wconvert') : __('Start from a blank template', 'wconvert')}</Button>
     </RegionFooter>}
   </Region>;
-}
-
-function Step({ at }: { at: 1 | 2 }) {
-  return <nav className="wconvert-creation__steps" aria-label={sprintf(/* translators: 1: the current step's number, e.g. “1”, 2: how many steps there are, e.g. “2”. */ __('Choice %1$s of %2$s', 'wconvert'), String(at), '2')}>
-    <span className="sr-only">{sprintf(/* translators: 1: the current step's number, e.g. “1”, 2: how many steps there are, e.g. “2”. */ __('Choice %1$s of %2$s', 'wconvert'), String(at), '2')}</span>
-    <ol>
-      {[__('Choose a goal', 'wconvert'), __('Choose a template', 'wconvert')].map((label, index) => <li key={label} aria-current={at === index + 1 ? 'step' : undefined}>
-        <span className="wconvert-creation__step-number" aria-hidden="true">{index + 1 < at ? <Check size={14} /> : index + 1}</span>{label}
-      </li>)}
-    </ol>
-  </nav>;
 }
 
 /** An authored note's first sentence, or all of it when it has only one. */

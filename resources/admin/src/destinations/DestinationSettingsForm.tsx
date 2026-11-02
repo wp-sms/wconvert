@@ -16,6 +16,7 @@ import { settingsProblems } from './requirements';
 import { ConnectionForm } from './ConnectionForm';
 import { ProviderMark } from './ProviderMark';
 import { RevealedSecret } from './RevealedSecret';
+import { LineSkeleton } from '../shell/LineSkeleton';
 
 /**
  * The three questions, and the state behind them.
@@ -234,9 +235,8 @@ export function DestinationSettingsForm({
           )}
 
           {metadataError !== null && <PageError message={metadataError} onRetry={() => setRefreshSchema((old) => old + 1)} />}
-          {loadingSchema && <p role="status" className="m-0 text-note text-muted-foreground">
-            {sprintf(/* translators: %s: a service, e.g. “Mailchimp”. */ __('Loading choices from %s…', 'wconvert'), type.label)}
-          </p>}
+          {loadingSchema && <LineSkeleton lines={2}
+            status={sprintf(/* translators: %s: a service, e.g. “Mailchimp”. */ __('Loading choices from %s…', 'wconvert'), type.label)} />}
 
           {(!type.needs_connection || selectedConnection !== null) && fields.map(([key, field]) => {
             const required = type.requirements?.settings[key] !== undefined;

@@ -1,0 +1,185 @@
+/*
+ * The overview's frame: the impact cards, "Results by goal" and the goal
+ * cards. Eager, not in analytics.css, because {@see AnalyticsSkeleton} draws
+ * this frame while the Analytics chunk — and that sheet with it — downloads,
+ * and a skeleton styled by the chunk it stands in for is unstyled until the
+ * wait is over.
+ */
+.wconvert-analytics {
+  font-size: var(--text-body);
+  color: var(--foreground);
+  min-inline-size: 0;
+}
+.wconvert-analytics h3 {
+  font-size: var(--text-body);
+  font-weight: 600;
+  margin: 0;
+}
+/* Fills the row with however many headlines apply: zero ones are hidden and a store adds Linked sales (ADR 0132). */
+.wa-impact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 13px;
+  margin: 8px 0 28px;
+}
+.wa-impact {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none !important;
+  color: var(--foreground) !important;
+  text-align: start;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 2px);
+  padding: 20px;
+  min-block-size: 185px;
+}
+/* Linked sales jumps within the page, so it is a button dressed as its neighbours. */
+button.wa-impact {
+  font: inherit;
+  cursor: pointer;
+}
+.wa-impact-sales > .wa-change {
+  margin-block-start: 0;
+}
+.wa-impact:hover,
+.wa-goal-card:hover {
+  border-color: var(--action);
+}
+.wa-impact-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: var(--text-note);
+  font-weight: 500;
+}
+.wa-impact-label svg {
+  inline-size: 18px;
+  block-size: 18px;
+  color: var(--muted-foreground);
+  flex-shrink: 0;
+}
+.wa-impact strong {
+  font-size: var(--text-metric);
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: -1px;
+  font-variant-numeric: tabular-nums;
+  margin: 12px 0 4px;
+}
+.wa-impact small {
+  font-size: var(--text-note);
+  line-height: 1.5;
+  color: var(--muted-foreground);
+  margin-block-start: 14px;
+}
+.wa-impact-primary {
+  background: var(--card);
+}
+.wa-impact-primary strong {
+  color: var(--action);
+}
+/* A rise is good news; a fall is neutral text with its sign, never amber (§14). */
+.wa-change {
+  font-size: var(--text-micro);
+  color: var(--muted-foreground);
+}
+.wa-change-up {
+  color: var(--success);
+}
+.wa-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin: 24px 0 14px;
+}
+.wa-goal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.wa-goal-card {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 2px);
+  background: var(--card);
+  padding: 20px;
+  text-decoration: none !important;
+  color: var(--foreground) !important;
+}
+.wa-goal-icon {
+  display: grid;
+  place-items: center;
+  background: var(--secondary);
+  color: var(--action);
+  border-radius: calc(var(--radius) + 2px);
+  inline-size: 38px;
+  block-size: 38px;
+  flex-shrink: 0;
+}
+.wa-goal-icon svg {
+  inline-size: 20px;
+  block-size: 20px;
+}
+.wa-goal-card > span:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.wa-goal-card b {
+  font-size: var(--text-item);
+  font-weight: 600;
+}
+.wa-goal-card strong {
+  font-size: var(--text-result);
+  color: var(--foreground);
+  margin-inline-end: 4px;
+  font-weight: 600;
+}
+.wa-goal-card span > span {
+  font-size: var(--text-note);
+  color: var(--muted-foreground);
+}
+.wa-goal-card small {
+  font-size: var(--text-note);
+  color: var(--muted-foreground);
+}
+.wa-goal-arrow {
+  margin-inline-start: auto;
+  inline-size: 16px;
+  block-size: 16px;
+  flex-shrink: 0;
+  color: var(--muted-foreground);
+}
+@media (max-width: 1100px) {
+  .wa-impact-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 782px) {
+  .wa-goal-grid {
+    grid-template-columns: 1fr;
+  }
+  .wa-section-heading {
+    align-items: start;
+    flex-direction: column;
+  }
+}
+@media (max-width: 600px) {
+  .wa-impact {
+    padding: 16px;
+    min-block-size: 175px;
+  }
+  .wa-impact strong {
+    font-size: var(--text-metric);
+  }
+  .wa-impact-grid {
+    gap: 9px;
+  }
+  .wa-goal-card {
+    padding: 16px;
+  }
+}

@@ -44,7 +44,7 @@ export function ProductActivityReport({ id, period }: { id: string; period?: Rep
   // removed Pro left behind — so it waits quietly instead of flashing a
   // placeholder for a report that almost always stays away.
   const quiet = !productModuleActive();
-  if (!report && failure !== key) return quiet ? null : <RegionSkeleton label={__('Product activity', 'wconvert')} lines={3} />;
+  if (!report && failure !== key) return quiet ? null : <RegionSkeleton label={__('Product activity', 'wconvert')} className="wa-report" icon={<Package />} description lines={3} />;
   if (quiet && failure === key) return null;
   if (report && !report.available && failure !== key) return null;
   return <ReportTarget name="products" label={__('Product activity', 'wconvert')}><Region className="wa-report">

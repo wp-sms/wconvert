@@ -14,7 +14,7 @@ import { Disclosure } from '@/shell/Disclosure';
 import { Field } from '@/shell/Field';
 import { OptionStrip } from '@/shell/OptionStrip';
 import { Region, RegionBody, RegionError, RegionErrorState, RegionFooter, RegionHeader } from '@/shell/Region';
-import { RegionSkeleton } from '@/shell/RegionSkeleton';
+import { SettingsRegionSkeleton } from '@/settings-page/SettingsSkeleton';
 import { SaveStatus, useSaveStatus } from '@/shell/SaveStatus';
 import { failed, messageOf, type Loadable } from '@/shell/loadable';
 import { useSettingsEditing, type SettingsEditing } from '@/settings-page/useSettingsEditing';
@@ -59,7 +59,7 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
     <RegionHeader title={title} />
     <RegionErrorState message={loaded.message} onRetry={() => setRetry(n => n + 1)} />
   </Region>;
-  if (!response || !value) return <RegionSkeleton label={title} lines={4} />;
+  if (!response || !value) return <SettingsRegionSkeleton region="integrations" />;
 
   let testUrl = '';
   try {

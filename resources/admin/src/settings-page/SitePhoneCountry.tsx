@@ -3,7 +3,7 @@ import apiFetch from '@wordpress/api-fetch';
 import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import { Region, RegionBody, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
-import { RegionSkeleton } from '../shell/RegionSkeleton';
+import { SettingsRegionSkeleton } from './SettingsSkeleton';
 import { Description } from '../shell/Description';
 import { SaveStatus, useSaveStatus } from '../shell/SaveStatus';
 import { failed, LOADING, messageOf, ready, type Loadable } from '../shell/loadable';
@@ -61,7 +61,7 @@ export function SitePhoneCountry({ onEditingStateChange }: { onEditingStateChang
     } finally { setSaving(false); }
   };
   const title = __('Phone input', 'wconvert');
-  if (state.status === 'loading') return <RegionSkeleton label={title} lines={1} />;
+  if (state.status === 'loading') return <SettingsRegionSkeleton region="phone" />;
   if (state.status === 'failed') return <Region>
     <RegionHeader title={title} />
     <RegionErrorState message={state.message} onRetry={() => setRetry(value => value + 1)} />

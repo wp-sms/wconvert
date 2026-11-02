@@ -197,6 +197,8 @@ A region that fetches has three renderings and owes all three:
 - **Loading** is skeleton rows matching the region's own shape, and it is
   *never* the empty state. It carries a short delay before it appears, so a fast
   response does not flash a skeleton at somebody.
+  *Amended by [0181](0181-a-loading-screen-is-one-static-shape.md): only a
+  re-read waits; a first fill paints at once.*
 - **Empty** is inside the region, centred, one sentence and the action that
   fixes it. Inside, because an empty region with a page-level sentence beside it
   is a region that looks broken; with the action, because *"No Optins yet"* is a

@@ -76,11 +76,21 @@ different situations:
 `shell/skeletonDelay.ts` is where that line lives, so a new skeleton chooses
 rather than copies.
 
+*Amended by [0181](0181-a-loading-screen-is-one-static-shape.md): the line is
+now drawn by the caller. Every skeleton paints at once by default, and a re-read
+passes `wait` (or sits in a `Reread` boundary). `TableSkeleton`,
+`ChoiceSkeleton` and `GallerySkeleton` no longer wait on their own.*
+
 **The announcement belongs to the skeleton and never to the call site.** One
 `role="status"` reading *Loading…* per region, with every bar `aria-hidden` — a
 screen reader has nothing to gain from twenty-eight empty cells. Leaving it to
 callers is how three of the four choice-and-gallery loading states in this admin
 came to be silent.
+
+*Amended by [0181](0181-a-loading-screen-is-one-static-shape.md): the status is
+screen-reader only everywhere, names the region ("Loading answers…"), and a
+skeleton nested in one that has spoken stays quiet. Placeholders are static, in
+`--skeleton`.*
 
 **A busy control is `disabled`, and it is a different thing from a refused
 one** — see §3.
@@ -268,17 +278,24 @@ rather than clip.
 The artefact that answers *"do we deliver the same experience across the
 admin"*. Read down a column to find a gap.
 
+*Amended by [0181](0181-a-loading-screen-is-one-static-shape.md): the Loading
+column is now one component per screen, shared by the chunk fallback —
+Analytics is `AnalyticsSkeleton` (impact cards and goal cards), Leads is
+`LeadLogSkeleton` (filters, toolbar and table under its headings),
+Destinations is `DestinationsSkeleton`, creation's first step is
+`GoalStepSkeleton`; the rows below say so where they sit.*
+
 | Screen | Loading | Empty | Failed | Full |
 |---|---|---|---|---|
 | **Optins — list** | `TableSkeleton` | `EmptyState` + *Create an Optin* | `RegionErrorState`; refresh keeps rows under `RegionError` | table |
 | **Optins — allowance** | placeholders in its own grid | n/a — a setting is never empty | `RegionErrorState` | four controls |
-| **Analytics** | `RegionSkeleton` + `StatRowSkeleton` | `EmptyState` + *Go to Optins* | `RegionErrorState`; refresh keeps cards under `PageError` | a region per Goal |
+| **Analytics** | ~~`RegionSkeleton` + `StatRowSkeleton`~~ `AnalyticsSkeleton` ([0181](0181-a-loading-screen-is-one-static-shape.md)) | `EmptyState` + *Go to Optins* | `RegionErrorState`; refresh keeps cards under `PageError` | a region per Goal |
 | **Analytics — a Goal's Optins** | with the card | `EmptyState`, no action (the card above is the answer) | with the card | table |
-| **Leads — log** | `TableSkeleton` | `EmptyState` + *Go to Optins* / *Show every Optin* | `RegionErrorState`; refresh keeps rows under `RegionError` | table |
+| **Leads — log** | ~~`TableSkeleton`~~ `LeadLogSkeleton` ([0181](0181-a-loading-screen-is-one-static-shape.md)) | `EmptyState` + *Go to Optins* / *Show every Optin* | `RegionErrorState`; refresh keeps rows under `RegionError` | table |
 | **Leads — retention** | placeholders in its own layout | n/a | `RegionErrorState`, independently of the log | radios + a period |
-| **Destinations — routes** | `RegionSkeleton` | `EmptyState`, no action (the region below is the door) | `RegionErrorState`; refresh keeps cards under `PageError` | a region per route |
+| **Destinations — routes** | ~~`RegionSkeleton`~~ `DestinationsSkeleton` ([0181](0181-a-loading-screen-is-one-static-shape.md)) | `EmptyState`, no action (the region below is the door) | `RegionErrorState`; refresh keeps cards under `PageError` | a region per route |
 | **Destinations — types** | with the payload | `EmptyState`, no action (no door this admin owns) | with the payload | a list of types |
-| **Creation — Goal** | `ChoiceSkeleton` | `EmptyState` | `RegionErrorState` + Retry | `ChoiceGrid` of Goals |
+| **Creation — Goal** | `GoalStepSkeleton` around `ChoiceSkeleton` ([0181](0181-a-loading-screen-is-one-static-shape.md)) | `EmptyState` | `RegionErrorState` + Retry | `ChoiceGrid` of Goals |
 | **Creation — starting point** | `GallerySkeleton` | `EmptyState` + *Start with a blank draft* | `RegionErrorState` + Retry; creation failure stays on the choice | rendered Playbooks and effective setup facts |
 | **Creation — customize** | in-flight status on the chosen starting point | n/a | uncertain create asks to check Optins | created draft opens the editor |
 | **Builder — frame** | `BuilderSkeleton` (immediate; it holds the way out) | n/a | `RegionErrorState` | tabs |

@@ -1,4 +1,4 @@
-import type { Ref } from 'react';
+import { useEffect, type CSSProperties, type Ref } from 'react';
 import { __ } from '@wordpress/i18n';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -23,36 +23,75 @@ import { BrandMark } from './Brand';
  * itself for no reason a merchant can see, so {@see OptinBuilder} renders this
  * one too and the wait reads as one wait.
  *
- * The proportions are the builder's own: its header with the name, actions
- * and Back where they will be, the four tabs, and the screen list, canvas
- * and inspector under them (ADR 0132), so the editor lands without a jump. Nothing here is announced — the `role="status"`
- * sentence carries the whole of what a screen reader needs from a placeholder,
- * and a grid of announced boxes is a spinner read aloud.
+ * **The frame is the editor's own, not a copy of it.** The workspace box and
+ * its header band are `.wconvert-workspace` and `.wconvert-workspace__header`,
+ * whose rules are eager in `index.css` for exactly this, and the panes are
+ * laid out from the same `--editor-tree` and `--editor-panel` the Edit tab
+ * reads. So the header is the real one — the icon Back with its label, the
+ * mark, the name and status, the three tabs in line, the actions — and the
+ * Canvas/Flow row, screen tree, canvas and inspector sit where they will.
+ * Nothing but the status line is announced: a grid of announced boxes is a
+ * spinner read aloud.
  */
 export function BuilderSkeleton({ onClose, backLabel }: { onClose: () => void; backLabel?: string }) {
-  const bar = (className: string) => <Skeleton aria-hidden="true" className={className} />;
+  useEditingFrame();
+  const bar = (className: string, style?: CSSProperties) => <Skeleton className={className} style={style} />;
+  const back = backLabel ?? __('Back to campaigns', 'wconvert');
   return (
-    <div className="wconvert-builder-skeleton">
+    <div className="wconvert-workspace wconvert-builder-skeleton">
       <p role="status" className="sr-only">{__('Loading campaign builder…', 'wconvert')}</p>
-      <div className="wconvert-builder-skeleton__header">
-        <BackLink onClose={onClose} label={backLabel} className="wconvert-builder-skeleton__back" />
-        <BrandMark className="wconvert-builder-skeleton__mark" />
-        {bar('h-5 w-44')}
-        <span className="wconvert-builder-skeleton__spacer" />
-        {bar('wconvert-builder-skeleton__action h-9 w-28')}{bar('wconvert-builder-skeleton__action h-9 w-24')}{bar('h-9 w-36')}
-      </div>
-      <div className="wconvert-builder-skeleton__tabs" aria-hidden="true">
-        {[0, 1, 2, 3].map((tab) => <Skeleton key={tab} className="h-8 flex-1" />)}
-      </div>
+      <header className="wconvert-workspace__header">
+        <Button type="button" variant="ghost" size="icon-sm" aria-label={back} title={back} onClick={onClose}>
+          <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
+        </Button>
+        <BrandMark className="wconvert-workspace__brand-mark" />
+        <div className="wconvert-workspace__identity" aria-hidden="true">{bar('h-8 w-36')}{bar('h-5 w-10')}</div>
+        <div className="wconvert-workspace__navigation wconvert-builder-skeleton__tabs" aria-hidden="true">
+          {bar('w-11', { blockSize: 31 })}{bar('w-[103px]', { blockSize: 31 })}{bar('w-[101px]', { blockSize: 31 })}
+        </div>
+        <div className="wconvert-workspace__actions" aria-hidden="true">
+          {bar('wconvert-builder-skeleton__history h-8 w-[66px]')}
+          {bar('w-[102px]', { blockSize: 'var(--control-height)' })}{bar('w-[102px]', { blockSize: 'var(--control-height)' })}
+          {bar('w-[173px]', { blockSize: 'var(--control-height)' })}{bar('size-8')}
+        </div>
+      </header>
+      <div className="wconvert-builder-skeleton__view" aria-hidden="true">{bar('h-8 w-[66px]')}{bar('h-8 w-[50px]')}</div>
       <div className="wconvert-builder-skeleton__body" aria-hidden="true">
-        <div className="wconvert-builder-skeleton__list">{[0, 1, 2].map((row) => <Skeleton key={row} className="h-12 w-full" />)}</div>
-        <div className="wconvert-builder-skeleton__canvas"><Skeleton className="wconvert-builder-skeleton__design" /></div>
+        <div className="wconvert-builder-skeleton__tree">
+          {bar('h-10 w-full')}
+          {bar('mt-2 h-[83px] w-full')}
+          {[0, 1, 2, 3].map((row) => <Skeleton key={row} className={row === 0 ? 'mt-2 h-11 w-full' : 'h-8 w-full'} />)}
+        </div>
+        <div className="wconvert-builder-skeleton__canvas">
+          <div className="wconvert-builder-skeleton__bar">{bar('h-8 w-[74px]')}{bar('h-8 w-[62px]')}</div>
+          <div className="wconvert-builder-skeleton__stage">{bar('wconvert-builder-skeleton__design')}</div>
+        </div>
         <div className="wconvert-builder-skeleton__panel">
-          {[0, 1, 2, 3].map((field) => <div key={field} className="grid gap-2">{bar('h-3 w-24')}{bar('h-9 w-full')}</div>)}
+          <div className="wconvert-builder-skeleton__panel-head">{bar('size-8 shrink-0')}<span className="grid flex-1 gap-1.5">{bar('h-4 w-24')}{bar('h-3 w-14')}</span></div>
+          {[0, 1, 2, 3].map((field) => <div key={field} className="grid gap-2">{bar('h-3 w-24')}{bar('w-full', { blockSize: 'var(--control-height)' })}</div>)}
         </div>
       </div>
     </div>
   );
+}
+
+/**
+ * The editing frame on `<body>`: no footer, no bottom gutter, the phone
+ * margin WordPress takes back. Counted, because the skeleton and the editor
+ * both hold it across the hand-off — the editor mounts and holds it, then the
+ * skeleton inside it unmounts, and a plain add/remove pair would have taken
+ * the class off the editor that still needs it.
+ */
+let editingHolds = 0;
+export function useEditingFrame(): void {
+  useEffect(() => {
+    editingHolds += 1;
+    document.body.classList.add('wconvert-editing');
+    return () => {
+      editingHolds -= 1;
+      if (editingHolds === 0) document.body.classList.remove('wconvert-editing');
+    };
+  }, []);
 }
 
 /**

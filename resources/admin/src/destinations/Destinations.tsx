@@ -65,6 +65,7 @@ import {
   RegionHeader,
 } from '../shell/Region';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
+import { DestinationCardsSkeleton, DestinationsSkeleton } from './DestinationsSkeleton';
 import { PageAction } from '../shell/PageActions';
 import { SaveStatus, useSaveStatus } from '../shell/SaveStatus';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
@@ -400,19 +401,24 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
     && (data.connections.length > 0 || data.types.some((type) => type.needs_connection && type.availability === 'ready'));
   const issues = data === null ? 0 : issueCount(data);
 
+  /*
+    **Refresh is the Sending issues view's, not Settings'.** Every action
+    here re-reads on its own and the data loads on open, so on Settings the
+    button had no purpose — in a page header four other groups share. A
+    first load is not a refresh, so it never reads "Refreshing…".
+  */
+  const refreshAction = mode === 'issues' && <PageAction>
+    <Button variant="outline" disabled={refreshing || dirty || busyIds.size > 0} onClick={() => void refresh()}>
+      <RefreshCw aria-hidden="true" />{refreshing && data !== null ? __('Refreshing…', 'wconvert') : __('Refresh', 'wconvert')}
+    </Button>
+  </PageAction>;
+
+  // The first read draws what the chunk's fallback drew, so the hand-off is one shape.
+  if (data === null && fetchError === null) return <>{refreshAction}<DestinationsSkeleton mode={mode} /></>;
+
   return (
     <div className="flex flex-col gap-5">
-      {/*
-        **Refresh is the Sending issues view's, not Settings'.** Every action
-        here re-reads on its own and the data loads on open, so on Settings the
-        button had no purpose — in a page header four other groups share. A
-        first load is not a refresh, so it never reads "Refreshing…".
-      */}
-      {mode === 'issues' && <PageAction>
-        <Button variant="outline" disabled={refreshing || dirty || busyIds.size > 0} onClick={() => void refresh()}>
-          <RefreshCw aria-hidden="true" />{refreshing && data !== null ? __('Refreshing…', 'wconvert') : __('Refresh', 'wconvert')}
-        </Button>
-      </PageAction>}
+      {refreshAction}
       {/* A verdict first, then the evidence: how many, and since when (ADR 0132). */}
       {mode === 'issues' && data !== null && <IssuesVerdict data={data} />}
       {/*
@@ -450,7 +456,7 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
         three-column table, which this region does not contain in any state.
       */}
       {data === null ? (
-        <RegionSkeleton label={__('Destinations', 'wconvert')} lines={3} />
+        mode === 'settings' ? <DestinationCardsSkeleton /> : <RegionSkeleton label={__('Sending issues', 'wconvert')} description lines={3} />
       ) : (
         <>
           {data.destinations.length === 0 ? (
@@ -1090,7 +1096,7 @@ function RecentSendsDialog({ destination, returnFocusTo, onClose }: {
         <AdminDialogHeader title={<bdi>{destination.label}</bdi>} meta={__('Recent sends, newest first', 'wconvert')} />
         <AdminDialogBody>
           {recent.status === 'loading'
-            ? <p role="status" className="m-0 text-note text-muted-foreground">{__('Loading recent sends…', 'wconvert')}</p>
+            ? <RowsSkeleton rows={3} status={__('Loading recent sends…', 'wconvert')} />
             : recent.status === 'failed'
               ? <PageError message={recent.message} onRetry={() => { setRecent(LOADING); setAttempt((current) => current + 1); }} />
               : recent.data.length === 0

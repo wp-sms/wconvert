@@ -15,15 +15,12 @@ import { useShownAfterDelay } from './skeletonDelay';
  * announced placeholders — a screen reader has nothing to gain from seven empty
  * cells and everything to gain from the word "Loading".
  *
- * The delay lives in {@see useShownAfterDelay} rather than at every call site,
- * because "do not flash" is a property of the skeleton and not a decision each
- * screen should be able to get wrong. A caller renders it the moment it starts
- * fetching and that decides whether it is soon enough to be worth showing —
- * and that hook is where the line between a delaying skeleton and an immediate
- * one is now written down.
+ * `wait` is for a re-read over rows the merchant was already reading, and
+ * nothing else: a first fill paints at once, because a
+ * blank region has nothing to flicker against ({@see useShownAfterDelay}).
  */
-export function TableSkeleton({ columns, rows = 4 }: { columns: number; rows?: number }) {
-  const shown = useShownAfterDelay();
+export function TableSkeleton({ columns, rows = 4, wait = false }: { columns: number; rows?: number; wait?: boolean }) {
+  const shown = useShownAfterDelay(wait);
 
   if (!shown) {
     return null;

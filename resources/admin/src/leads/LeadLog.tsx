@@ -14,7 +14,6 @@ import { EmptyState } from '../shell/EmptyState';
 import { Field } from '../shell/Field';
 import { OptionStrip } from '../shell/OptionStrip';
 import { Region, RegionBody, RegionError, RegionErrorState, RegionFooter } from '../shell/Region';
-import { TableSkeleton } from '../shell/TableSkeleton';
 import { Toolbar, ToolbarCount } from '../shell/Toolbar';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { formatCount, formatDay, formatRange, formatWhen } from '../lib/format';
@@ -24,6 +23,7 @@ import { ExportMenu } from './ExportMenu';
 import { useNotSent, type NotSent } from './notSent';
 import { LeadDetail, framed, submissionCount, type CampaignName } from './LeadDetail';
 import { LeadHistory } from './LeadHistory';
+import { LeadLogSkeleton } from './LeadLogSkeleton';
 import { journeysSupported } from '../settings';
 import { RetentionSummary } from './RetentionSummary';
 import { flattened, listOptins, type OptinSummary } from '../optins/api';
@@ -220,6 +220,9 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
     return () => window.removeEventListener('focus', refresh);
   }, []);
 
+  // The first read draws what the chunk's fallback drew, so the hand-off is one shape.
+  if (log.status === 'loading') return <LeadLogSkeleton />;
+
   return <div className="flex flex-col gap-5">
     <Region label={__('Submissions', 'wconvert')}>
       {!neverCaptured && <RegionBody className="flex flex-col gap-4">
@@ -268,7 +271,7 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
       {/* Only beside a loaded log: while the log is still loading, a names door would re-read only the names. */}
       {namesError !== null && log.status === 'ready' && <RegionError message={sprintf(/* translators: %s: the error message. */ __('Campaign names couldn’t be loaded: %s', 'wconvert'), namesError)} onRetry={() => setNamesRetry((value) => value + 1)} />}
       <div aria-busy={updating || undefined} className={updating && !quiet && data !== null ? 'opacity-60' : undefined}>
-      {log.status === 'failed' ? <RegionErrorState message={log.message} onRetry={retryLog} /> : data === null ? <DataTable><TableSkeleton columns={5} /></DataTable> : rows === 0 ? (
+      {log.status === 'failed' ? <RegionErrorState message={log.message} onRetry={retryLog} /> : data === null ? null : rows === 0 ? (
         hasAppliedFilters ? <EmptyState icon={Inbox} title={applied.query.leadId ? __('Submission not found', 'wconvert') : __('No matching submissions', 'wconvert')}
           guide={applied.query.leadId ? docsUrl(GUIDES.missingSubmissions, 'find-missing-record') : undefined}
           guideLabel={__('What to check', 'wconvert')}

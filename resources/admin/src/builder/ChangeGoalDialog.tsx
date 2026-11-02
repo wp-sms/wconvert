@@ -62,7 +62,7 @@ export function ChangeGoalDialog({ open, onOpenChange, goals, current, duplicate
             ? __('Choose a goal for a new draft. The original keeps its published version and all its results.', 'wconvert')
             : __('Choose what this draft should achieve. You can adjust its design before publishing.', 'wconvert')} />
         <AdminDialogBody>
-          {goals.status === 'loading' ? <ChoiceSkeleton />
+          {goals.status === 'loading' ? <ChoiceSkeleton status={__('Loading goals…', 'wconvert')} />
             : goals.status === 'failed' ? <RegionErrorState message={__('The goals could not be loaded.', 'wconvert')} onRetry={onRetry} />
             : shown.length === 0
               ? <EmptyState icon={Sparkles} title={__('No other goals available', 'wconvert')}>{__('This site has no other goal this campaign can use.', 'wconvert')}</EmptyState>

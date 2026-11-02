@@ -18,6 +18,12 @@ export interface ExtraPage {
   readonly title: string;
   readonly description: string;
   readonly Component: ComponentType;
+  /**
+   * What stands in while the page's code downloads. The page's own first-load
+   * state, where it has one, so the two waits are one shape; a generic
+   * region otherwise.
+   */
+  readonly skeleton?: ComponentType;
 }
 
 const pages = new Map<string, ExtraPage>();

@@ -9,7 +9,7 @@ import {
   RegionFooter,
   RegionHeader,
 } from './Region';
-import { RegionSkeleton } from './RegionSkeleton';
+import { SwitchSettingSkeleton } from './SwitchSettingSkeleton';
 import { CheckRow } from './CheckRow';
 import { SaveStatus, useSaveStatus } from './SaveStatus';
 import { messageOf } from './loadable';
@@ -108,7 +108,7 @@ export function SwitchSetting({
       );
     }
 
-    return <RegionSkeleton label={title} lines={2} />;
+    return <SwitchSettingSkeleton title={title} />;
   }
 
   return (

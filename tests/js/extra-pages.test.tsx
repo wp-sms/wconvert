@@ -5,7 +5,8 @@ import { PlanBadge } from '../../resources/admin/src/shell/Brand';
 import { setPlanBadge } from '../../resources/admin/src/shell/planBadge';
 import { extraPageFor, registerPage } from '../../resources/admin/src/extraPages';
 
-vi.mock('@wordpress/api-fetch', () => ({ default: vi.fn(() => Promise.resolve([])) }));
+// The occasions read is an object; every other read here is a list.
+vi.mock('@wordpress/api-fetch', () => ({ default: vi.fn((options?: { path?: string }) => Promise.resolve(options?.path === '/wconvert/v1/occasions' ? { schema: 1, revision: 0, items: [] } : [])) }));
 
 /**
  * The two generic slots another bundle fills (ADR 0143): a page reached by its

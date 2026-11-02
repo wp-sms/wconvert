@@ -130,7 +130,7 @@ export function App() {
   if (page) {
     return (
       <Shell page={page}>
-        <Suspense fallback={<RegionSkeleton label={page.title} lines={5} />}>
+        <Suspense fallback={page.skeleton ? <page.skeleton /> : <RegionSkeleton label={page.title} lines={5} />}>
           <page.Component />
         </Suspense>
       </Shell>
@@ -186,7 +186,7 @@ export function App() {
       {section === 'leads' && <>
         {route.leadsView === 'issues' ? <SendingIssuesSection mode="issues" onIssueCount={setSendingCount} onEditingStateChange={navigation.onEditingStateChange} /> : <LeadsSection query={route.leads} onRefresh={() => setSendingRefresh((value) => value + 1)} onQueryChange={(query) => navigate(leadsHref(query))} />}
       </>}
-      {section === 'settings' && <SettingsSection key={navigation.hash} group={route.settingsGroup} destinationId={route.destinationId} onEditingStateChange={navigation.onEditingStateChange} />}
+      {section === 'settings' && <SettingsSection group={route.settingsGroup} destinationId={route.destinationId} onEditingStateChange={navigation.onEditingStateChange} />}
       <ConfirmDialog open={navigation.pending} onOpenChange={(open) => { if (!open) navigation.stay(); }}
         title={__('Leave without saving?', 'wconvert')} description={__('Changes since your last save will be lost. What you saved stays as it is.', 'wconvert')}
         confirmLabel={__('Discard changes', 'wconvert')} cancelLabel={__('Keep editing', 'wconvert')}

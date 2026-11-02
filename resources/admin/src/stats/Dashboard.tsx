@@ -21,8 +21,6 @@ import { Button } from '../components/ui/button';
 import { PageAction } from '../shell/PageActions';
 import { PageError, Region, RegionErrorState } from '../shell/Region';
 import { Disclosure } from '../shell/Disclosure';
-import { RegionSkeleton } from '../shell/RegionSkeleton';
-import { StatRowSkeleton } from '../shell/Stat';
 import { EmptyState } from '../shell/EmptyState';
 import { GUIDES, docsUrl } from '../shell/docs';
 import { CheckRow } from '../shell/CheckRow';
@@ -43,6 +41,7 @@ import { countsNothing } from '../goals/countsNothing';
 import { families, rangeLabel, reportCSV } from './reporting';
 import { CampaignTable, Change, changeOf, Experiment, GoalDetail } from './ReportDetails';
 import './analytics.css';
+import { AnalyticsSkeleton } from './AnalyticsSkeleton';
 import {
   MonthlyTargets,
   useMonthlyTargets,
@@ -324,11 +323,8 @@ function DashboardContent({
           />
         </Region>
       )}
-      {report.status === 'loading' && (
-        <RegionSkeleton label={__('Analytics', 'wconvert')}>
-          <StatRowSkeleton stats={4} />
-        </RegionSkeleton>
-      )}
+      {/* What the chunk's fallback drew, so the hand-off is one shape. */}
+      {report.status === 'loading' && <AnalyticsSkeleton />}
       {/* A window through today is compared while today is still running, so its changes read a little low (ADR 0177). */}
       {payload && previous && payload.complete_days === false && payload.goals.length > 0 && (
         <p className="wa-muted wa-compare-note">{__('Includes today so far', 'wconvert')}</p>
