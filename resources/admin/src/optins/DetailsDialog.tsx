@@ -55,7 +55,6 @@ export function CampaignDetailsDialog({
   missingDesign = false,
   results,
   goal,
-  goalId,
   productCheck,
   reportLink,
   leadsLink,
@@ -74,7 +73,6 @@ export function CampaignDetailsDialog({
   results: CampaignResults;
   /** The row's Goal, as the list read the registry. */
   goal: Loadable<GoalEntry | null>;
-  goalId: string;
   productCheck: ReactNode;
   reportLink: string;
   /** Its submissions for the period, only when it captures. */
@@ -128,7 +126,6 @@ export function CampaignDetailsDialog({
     >
       <AdminDialogContent
         size="md"
-        className="wconvert-campaign-detail"
         // Read-only facts come first; focus waits on the primary action rather
         // than on the first control in the body, which is the developer
         // disclosure at the bottom and would scroll the facts out of view.
@@ -154,7 +151,6 @@ export function CampaignDetailsDialog({
               notes={notes}
               thumbnail={thumbnail}
               goal={goal}
-              goalId={goalId}
               results={results}
               status={status}
               howItRuns={<ChunkBoundary><Suspense fallback={<RowsSkeleton rows={4} status={__('Loading how it runs…', 'wconvert')} />}><Facts key={row.id} id={row.id} /></Suspense></ChunkBoundary>}

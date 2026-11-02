@@ -352,9 +352,17 @@ status a screen away from its name (ADR 0182).
   question — rather than in a second dialog (ADR 0137).
 - **Facts are one icon list** — `shell/FactList`, a label beside a 16px icon
   and its answer, one line each, amber for one that needs a look. Details, the
-  setup preview and the design preview all use it (ADR 0137). **How it runs**
+  setup preview, the design preview and a lead's Came from and Consent all use
+  it (ADR 0137, ADR 0183). A label the merchant or visitor wrote (a lead's
+  Answers) has no icon to stand for it and stays a plain row. **How it runs**
   is one list, `optins/campaignFacts`, in Review & publish and both Details
   (ADR 0138).
+- **A campaign's dialog opens on its preview and its answer** —
+  `optins/CampaignOverview`: the 200 × 150 preview at the start, beside it what
+  that dialog opens to say (Review: what counts as success; Details: how it
+  did), stacked below 640px. A preview never stands alone on a row. The header
+  says the Goal and the row says its number, once; how that number is measured
+  is in ⓘ (ADR 0183).
 - **One body per subject.** Two dialogs about one thing share their body and
   differ only in header, footer and the sections only their host has: campaign
   Details is `optins/CampaignSummary` in the list and the editor (ADR 0138).

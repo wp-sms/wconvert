@@ -22,8 +22,9 @@ WConvert's starting settings.
    one "Start from scratch" writes: Who "Everyone", Where the entire site,
    Opens "Right away", How often once per visit (`maxPerSession: 1`,
    `stopAfterDismiss: false`), and leads kept in WConvert (`capture_mode`
-   local). It is a muted, neutral tag beside the value, with one line under the
-   list: "Rows marked Default use WConvert's starting settings." It describes
+   local). It is a muted, neutral tag beside the value~~, with one line under the
+   list: "Rows marked Default use WConvert's starting settings."~~ (*the line is
+   gone since [ADR 0183](0183-a-campaign-dialog-opens-on-its-preview-and-its-answer.md): the tag explains itself*). It describes
    the value, not whether anyone looked, so it needs no state: a Playbook's
    rules are tagged only where they equal the default, and a value kept on
    purpose is still tagged. A row that needs attention shows its problem, not a

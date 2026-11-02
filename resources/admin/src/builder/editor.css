@@ -512,13 +512,13 @@ body.wconvert-editing #wpfooter {
   white-space: nowrap;
 }
 /* Review & publish is the shared Medium dialog (ADR 0131); since ADR 0138 it
-   reads top to bottom: the blockers, what it is and what counts, How it runs
-   (the list's own fact list), then what to review. */
+   reads top to bottom: the blockers, the preview with what counts beside it
+   (ADR 0183), How it runs (the list's own fact list), then what to review. */
 .wconvert-launch-review__section { border-block-start: 1px solid var(--border); padding-block: 14px 4px; }
 .wconvert-launch-review__section:first-child { border-block-start: 0; padding-block-start: 0; }
+.wconvert-launch-review__overview { border-block-start: 0; padding-block: 0 20px; }
 .wconvert-launch-review__section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-block-end: 10px; }
 .wconvert-launch-review__section-head h3 { margin: 0; font-size: var(--text-heading); font-weight: 600; }
-.wconvert-launch-review__section-head [data-variant='link'] { block-size: auto; padding: 0; }
 .wconvert-launch-review__section p { margin: 8px 0 0; }
 .wconvert-launch-review__notice { padding: 12px; border-radius: 6px; background: var(--warning-surface); color: var(--foreground); margin-block: 0 12px; }
 .wconvert-launch-review__blockers { display: grid; gap: 10px; margin-block-end: 16px; padding: 14px 16px; border-radius: 6px; background: var(--warning-surface); }
@@ -527,13 +527,6 @@ body.wconvert-editing #wpfooter {
 .wconvert-launch-review__blockers ul { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
 .wconvert-launch-review__blockers li p { margin: 0 0 8px; }
 .wconvert-launch-review__fixes { display: flex; flex-wrap: wrap; gap: 8px; }
-.wconvert-launch-review__what { display: grid; gap: 14px; }
-.wconvert-launch-review .wconvert-campaign-thumbnail { inline-size: 200px; block-size: 150px; }
-.wconvert-launch-review__success-measure { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 10px; align-items: start; }
-.wconvert-launch-review__success-measure > svg { margin-block-start: 2px; color: var(--action); }
-.wconvert-launch-review__success-measure span { display: block; font-size: var(--text-note); color: var(--muted-foreground); }
-.wconvert-launch-review__success-measure strong { display: block; font-size: var(--text-heading); font-weight: 600; line-height: 1.4; }
-.wconvert-launch-review__success-measure p { margin: 2px 0 0; font-size: var(--text-note); color: var(--muted-foreground); }
 .wconvert-launch-review__warnings { display: grid; gap: 8px; margin: 0; padding-inline-start: 20px; list-style: disc; }
 /* An answer first, a way to its section second: quiet until hovered. */
 .wconvert-launch-review .wconvert-facts dd .wconvert-readiness__go { color: var(--foreground); text-align: start; text-decoration-color: var(--border); text-underline-offset: 3px; }

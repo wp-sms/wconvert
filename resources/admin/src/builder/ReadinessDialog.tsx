@@ -1,6 +1,6 @@
 import { useId, useRef, useState, type ReactNode } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ArrowLeft, Check, Eye, Target, TriangleAlert } from 'lucide-react';
+import { ArrowLeft, Check, Eye, TriangleAlert } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import {
   AdminDialog,
@@ -14,7 +14,6 @@ import { statusOf, type OptinState } from '../optins/api';
 import { FactList } from '../shell/FactList';
 import { GuideLink, SuspensionGuideLink } from '../shell/GuideLink';
 import { GUIDES, docsUrl } from '../shell/docs';
-import { LineSkeleton } from '../shell/LineSkeleton';
 import { campaignFacts, defaultRows, factAct, linksIn } from '../optins/campaignFacts';
 import { isFreeInstall } from '../goals/availability';
 import { formatCount, humanize, labelOf } from '../lib/format';
@@ -39,6 +38,7 @@ import { goalSaid } from '../goals/said';
 import type { GoalEntry } from '../goals/api';
 import type { Template } from '@renderer/types';
 import { CampaignThumbnail } from '../optins/designChunks';
+import { CampaignOverview, GoalMeasure } from '../optins/CampaignSummary';
 
 const handoffIssueOf = (issues: readonly CampaignIssue[]) => issues.some(issue => issue.key === ISSUE.handoff);
 
@@ -70,8 +70,6 @@ export interface ReadinessDialogProps {
   readonly busy: boolean;
   readonly goal: Loadable<GoalEntry | null>;
   readonly goalId: string;
-  readonly playbook: Loadable<string | null>;
-  readonly playbookId: string;
   readonly rules: DisplayRulesValue;
   readonly vocabulary: RuleVocabulary;
   readonly displayType: string;
@@ -116,8 +114,6 @@ export function ReadinessDialog({
   busy,
   goal,
   goalId,
-  playbook,
-  playbookId,
   rules,
   vocabulary,
   displayType,
@@ -199,7 +195,7 @@ export function ReadinessDialog({
     collects: captures.length > 0 ? captures.map((field) => labelOf(field, fieldLabels, humanize(field))).join(', ') : undefined,
     consent: reviewsPrivacy
       ? expectsConsent
-        ? visibleConsentPath === null ? { text: __('Not shown', 'wconvert'), attention: true } : { text: __('Shown', 'wconvert') }
+        ? visibleConsentPath === null ? { text: __('No checkbox on the form', 'wconvert'), attention: true } : { text: __('Checkbox on the form', 'wconvert') }
         : { text: __('Not asked on this form', 'wconvert') }
       : undefined,
   });
@@ -208,7 +204,6 @@ export function ReadinessDialog({
   // screen: until the blockers are fixed, or until the review is reopened.
   const [resume, setResume] = useState<'blocker' | 'row' | false>(false);
   const reviewCount = issues.length;
-  const startedFrom = playbookId !== '' && playbook.status === 'ready' ? playbook.data : null;
   const isPublished = optin.published_at !== null;
   const current = isPublished && !dirty && !optin.has_unpublished_changes;
 
@@ -312,13 +307,16 @@ export function ReadinessDialog({
           <AdminDialogHeader
             title={name || __('Untitled campaign', 'wconvert')}
             badge={<StatusBadge status={statusOf(optin)} />}
-            meta={!published && (dirty || optin.has_unpublished_changes)
-              ? sprintf(
-                  /* translators: %s: the campaign's goal, e.g. "Goal: Collect subscribers". */
-                  __('%s · Unpublished changes', 'wconvert'),
-                  goalSaid(goal, goalId),
-                )
-              : goalSaid(goal, goalId)}
+            // Its line is held while the registry answers, so the body does not move (ADR 0039).
+            meta={<span className="inline-block min-h-[1lh]">
+              {!published && (dirty || optin.has_unpublished_changes)
+                ? sprintf(
+                    /* translators: %s: the campaign's goal, e.g. "Grow my email list". */
+                    __('%s · Unpublished changes', 'wconvert'),
+                    goalSaid(goal, goalId),
+                  )
+                : goalSaid(goal, goalId)}
+            </span>}
           />
           <AdminDialogBody inert={publishing}>
             {optin.suspended !== null && (
@@ -369,41 +367,15 @@ export function ReadinessDialog({
                     <p><GuideLink href={docsUrl(GUIDES.publishBlocked, 'publication-blockers')}>{__('What each check means', 'wconvert')}</GuideLink></p>
                   </section>
                 )}
-                <section className="wconvert-launch-review__section wconvert-launch-review__what">
-                  {hasDesign
-                    ? <div className="wconvert-campaign-thumbnail"><CampaignThumbnail template={template} displayType={displayType} /></div>
-                    : <p>{__('No template chosen yet.', 'wconvert')} <Button type="button" variant="link" onClick={() => jump(onGoToDesign)}>{__('Browse templates', 'wconvert')}</Button></p>}
-                  {/* What counts as success, said where publishing is decided, never folded away. */}
-                  {goal.status === 'loading' && <div className="wconvert-launch-review__success-measure"><LineSkeleton lines={3} status={__('Loading what counts as success…', 'wconvert')} /></div>}
-                  {outcome && goal.status === 'ready' && goal.data && (
-                    <div className="wconvert-launch-review__success-measure">
-                      <Target aria-hidden="true" size={18} />
-                      <div>
-                        <span>{__('Counts as success', 'wconvert')}</span>
-                        <strong>{goal.data.headline_label}</strong>
-                        <p>{outcome.measurement}</p>
-                      </div>
-                    </div>
-                  )}
-                  {startedFrom !== null && (
-                    <p className="text-note text-muted-foreground">
-                      {sprintf(
-                        /* translators: %s: the name of the starting point this campaign was created from. */
-                        __('Template: %s', 'wconvert'),
-                        startedFrom,
-                      )}
-                    </p>
-                  )}
+                <section className="wconvert-launch-review__section wconvert-launch-review__overview">
+                  <CampaignOverview thumbnail={hasDesign && <div className="wconvert-campaign-thumbnail"><CampaignThumbnail template={template} displayType={displayType} /></div>}>
+                    {!hasDesign && <p>{__('No template chosen yet.', 'wconvert')} <Button type="button" variant="link" onClick={() => jump(onGoToDesign)}>{__('Browse templates', 'wconvert')}</Button></p>}
+                    {/* What counts as success, said where publishing is decided (ADR 0183). */}
+                    <GoalMeasure goal={goal} />
+                  </CampaignOverview>
                 </section>
-                <ReviewSection
-                  title={__('How it runs', 'wconvert')}
-                  action={__('Display rules', 'wconvert')}
-                  onAction={() => jump(() => onGoToRules('where'), 'row')}
-                >
+                <ReviewSection title={__('How it runs', 'wconvert')}>
                   <FactList facts={facts} />
-                  {facts.some(fact => fact.isDefault) && (
-                    <p className="text-note text-muted-foreground">{__('Rows marked Default use WConvert’s starting settings.', 'wconvert')}</p>
-                  )}
                   {displayType === 'fullscreen' && (
                     <p className="text-note text-muted-foreground">{__('Fullscreen covers the page until it is closed. Prefer a visitor action or real engagement over opening right away, and check it on mobile.', 'wconvert')}</p>
                   )}
@@ -460,7 +432,7 @@ export function ReadinessDialog({
                   ? __('Publishing saves your latest edits first.', 'wconvert')
                   : isPublished
                     ? __('This replaces the published version with your saved draft.', 'wconvert')
-                    : __('Visitors see it wherever its display rules allow.', 'wconvert'))}
+                    : null)}
               </span>
             )}
             error={error !== null && (
@@ -501,24 +473,11 @@ export function ReadinessDialog({
   );
 }
 
-function ReviewSection({
-  title,
-  action,
-  onAction,
-  children,
-}: {
-  readonly title: string;
-  readonly action?: string;
-  readonly onAction?: () => void;
-  readonly children: ReactNode;
-}) {
+function ReviewSection({ title, children }: { readonly title: string; readonly children: ReactNode }) {
   return (
     <section className="wconvert-launch-review__section">
       <div className="wconvert-launch-review__section-head">
         <h3>{title}</h3>
-        {action && (
-          <Button type="button" variant="link" onClick={onAction}>{action}</Button>
-        )}
       </div>
       {children}
     </section>

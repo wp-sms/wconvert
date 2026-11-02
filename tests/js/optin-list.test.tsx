@@ -709,11 +709,11 @@ it('draws Details as the campaign, its numbers, and the footer’s ways out', as
   const dialog = await screen.findByRole('dialog', { name: OPTIN.name });
   expect(dialog).toHaveAttribute('data-size', 'md');
   expect(within(dialog).getByText('Draft')).toBeInTheDocument();
-  // The Goal and what counts as its success, as the editor's Details says them (ADR 0138).
-  const goal = within(dialog).getByRole('region', { name: 'Goal' });
-  expect(within(goal).getByText('Grow my email list')).toBeInTheDocument();
-  expect(goal).toHaveTextContent('Counts as success: Email submissions');
-  expect(goal).toHaveTextContent('Counts submitted forms with an email address.');
+  // The header says the Goal; its first number says what counts as success (ADR 0183).
+  expect(dialog).toHaveAccessibleDescription(expect.stringContaining('Grow my email list'));
+  await userEvent.click(within(dialog).getByRole('button', { name: 'How Email submissions are counted' }));
+  expect(await screen.findByText('Counts submitted forms with an email address.')).toBeVisible();
+  await userEvent.keyboard('{Escape}');
   expect(within(dialog).getByRole('heading', { name: /^Last 30 days · / })).toBeInTheDocument();
   expect(within(dialog).getByText('Email submission rate')).toBeInTheDocument();
   expect(within(dialog).queryByText('Conversion rate')).toBeNull();

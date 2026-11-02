@@ -5658,7 +5658,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 /* FactList (ADR 0137): Details, the setup preview and the design preview read facts the same way. */
 .wconvert-facts { display: grid; gap: .5rem; margin: 0; }
 .wconvert-facts > div { display: grid; grid-template-columns: minmax(7.5rem, max-content) minmax(0, 1fr); align-items: baseline; gap: .75rem; }
-.wconvert-facts dt { display: flex; align-items: center; gap: .5rem; color: var(--muted-foreground); font-size: var(--text-note); }
+.wconvert-facts dt { display: flex; align-items: baseline; gap: .5rem; color: var(--muted-foreground); font-size: var(--text-note); }
 .wconvert-facts dt svg { flex: none; align-self: center; color: var(--action); }
 .wconvert-facts dd { margin: 0; color: var(--foreground); font-size: var(--text-body); overflow-wrap: anywhere; }
 .wconvert-facts > div[data-tone="warning"] dt svg { color: var(--warning); }

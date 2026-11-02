@@ -37,6 +37,7 @@ and none could be read at a glance:
    after the preview, names the rate in the Goal's words, and says a quiz's or
    basket's visitor action instead of calling it unfinished. How it runs is
    `optins/campaignFacts`, which Review & publish reads too.*
+   *Amended by [ADR 0183](0183-a-campaign-dialog-opens-on-its-preview-and-its-answer.md): the preview and the period's results share one row.*
    **Details reads top to bottom as the merchant asks.** One callout for
    anything that needs attention (no design, suspended, unpublished changes —
    the same sentences, merged); the preview; the period's results under one

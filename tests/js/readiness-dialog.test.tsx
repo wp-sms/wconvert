@@ -49,7 +49,6 @@ function props(overrides: Partial<ReviewProps> = {}): ReviewProps {
     optinId: '01JQ00000000000000000000AA',
     optin: { published_at: null, deleted_at: null, suspended: null, has_unpublished_changes: false },
     dirty: false, busy: false, goal: ready(GOAL), goalId: GOAL.id,
-    playbook: ready(null), playbookId: '',
     rules: { display_rules: { audience: { mode: 'everyone' }, opening: { mode: 'immediate' } }, targeting: {}, frequency: {}, schedule: {}, priority: 0 },
     vocabulary: ruleTypes(), displayType: 'popup', bound: [], template: FORM,
     destinations: [], captureMode: 'local', fieldLabels: { email: 'Email address', phone: 'Phone number' },
@@ -103,14 +102,17 @@ describe('reviewing before publishing', () => {
     expect(screen.queryByRole('dialog')).toBeNull();
   });
 
-  it('puts required fixes first, then what counts as success, never folded away', async () => {
+  it('puts required fixes first, then what counts as success, with how it is counted in ⓘ', async () => {
     const { supplied } = await open({ captureMode: 'connected' });
     const required = screen.getByRole('heading', { name: '1 thing to fix before publishing' });
     const runs = screen.getByRole('heading', { name: 'How it runs' });
     expect(required.compareDocumentPosition(runs) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(screen.getByText('Counts as success')).toBeVisible();
     expect(screen.getByText(GOAL.headline_label)).toBeVisible();
-    expect(screen.getByText(GOAL.outcome.measurement)).toBeVisible();
+    expect(screen.queryByText(GOAL.outcome.measurement)).toBeNull();
+    await userEvent.click(screen.getByRole('button', { name: `How ${GOAL.headline_label} are counted` }));
+    expect(await screen.findByText(GOAL.outcome.measurement)).toBeVisible();
+    await userEvent.keyboard('{Escape}');
     expect(screen.queryByText('Measurement & setup details')).toBeNull();
     for (const gone of ['Design', 'Placement & timing', 'Where leads go', 'Privacy']) expect(screen.queryByRole('heading', { name: gone })).toBeNull();
     expect(supplied.onPublish).not.toHaveBeenCalled();
@@ -289,7 +291,7 @@ describe('reviewing before publishing', () => {
     ] }, { type: 'stack', children: [] }] }) };
     const { supplied } = await open({ template, privacyGuidance: true, policyUrl: 'https://example.test/privacy/' });
 
-    expect(fact('Consent')).toHaveTextContent('Not shown');
+    expect(fact('Consent')).toHaveTextContent('No checkbox on the form');
     expect(fact('Consent').parentElement).toHaveAttribute('data-tone', 'warning');
     expect(screen.getByRole('button', { name: 'Publish campaign' })).not.toHaveAttribute('aria-disabled');
     await userEvent.click(screen.getByRole('button', { name: 'No consent checkbox is shown for this mailing list.' }));
@@ -305,7 +307,7 @@ describe('reviewing before publishing', () => {
     ] }, { type: 'stack', children: [] }] }) };
     await open({ template, privacyGuidance: true, policyUrl: 'https://example.test/privacy/' });
 
-    expect(fact('Consent')).toHaveTextContent(/^Shown$/);
+    expect(fact('Consent')).toHaveTextContent(/^Checkbox on the form$/);
     expect(screen.queryByText('No consent checkbox is shown for this mailing list.')).toBeNull();
   });
 
@@ -350,7 +352,7 @@ describe('publication progress and recovery', () => {
     expect(dialog).toBeInTheDocument();
     // The native inert region prevents interaction in the browser; the event
     // guard also protects against a queued action while publication is pending.
-    await userEvent.click(within(dialog).getByRole('button', { name: 'Display rules' }));
+    await userEvent.click(within(fact('Opens')).getByRole('button'));
     expect(supplied.onGoToRules).not.toHaveBeenCalled();
     expect(dialog).toBeInTheDocument();
     expect(onPublish).toHaveBeenCalledOnce();
@@ -449,7 +451,7 @@ it('says what a quiz counts and how it runs, in the list’s words', async () =>
     measurement: 'Counts quiz results shown. Product clicks and purchases are separate.' } };
   await open({ template, goal: ready(goal), goalId: goal.id });
   expect(screen.getByText('Counts as success')).toBeVisible();
-  expect(screen.getByText('Counts quiz results shown. Product clicks and purchases are separate.')).toBeVisible();
+  expect(screen.getByRole('button', { name: 'How Quiz completions are counted' })).toBeVisible();
   expect(fact('Visitor action')).toHaveTextContent('Shows a matching resultCounts Quiz completions');
   expect(fact('Visitor action').parentElement).not.toHaveAttribute('data-tone');
   expect(screen.getByRole('button', { name: 'Preview' })).toBeInTheDocument();
@@ -461,12 +463,12 @@ describe('rows still on their starting setting', () => {
     frequency: { maxPerSession: 1, stopAfterDismiss: false }, schedule: {}, priority: 0 };
   const tagged = (label: string) => within(fact(label)).queryByText('Default') !== null;
 
-  it('tags a fresh draft’s five defaults on Pro, with one line saying what the tag means', async () => {
+  it('tags a fresh draft’s five defaults on Pro, and the tag explains itself', async () => {
     window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
     await open({ rules: scratch });
     for (const label of ['Who', 'Where', 'Opens', 'How often', 'Leads go to']) expect(tagged(label), label).toBe(true);
     expect(tagged('Runs')).toBe(false);
-    expect(screen.getByText('Rows marked Default use WConvert’s starting settings.')).toBeInTheDocument();
+    expect(screen.queryByText(/Rows marked Default/)).toBeNull();
   });
 
   it('never tags where leads go on Free, which has nowhere else to send them, but still links it', async () => {
@@ -496,11 +498,18 @@ describe('rows still on their starting setting', () => {
   });
 });
 
-it('keeps the way back after How it runs’ own Display rules link', async () => {
+/**
+ * **Each line here cost a merchant a read and changed nothing they did** (ADR
+ * 0183). The preview shows the design, each row goes to its own setting, and a
+ * footer note is only for what is about to differ from what they expect.
+ */
+it('says nothing the screen already says', async () => {
   await open();
-  await userEvent.click(within(screen.getByRole('heading', { name: 'How it runs' }).closest('section')!).getByRole('button', { name: 'Display rules' }));
-  expect(screen.queryByRole('dialog')).toBeNull();
-  expect(await screen.findByRole('button', { name: 'Back to review' })).toBeInTheDocument();
+  const dialog = screen.getByRole('dialog');
+  expect(within(dialog).queryByText(/^Template:/)).toBeNull();
+  expect(within(dialog).queryByRole('button', { name: 'Display rules' })).toBeNull();
+  expect(within(dialog).queryByText('Visitors see it wherever its display rules allow.')).toBeNull();
+  expect(dialog).toHaveAccessibleDescription(GOAL.label);
 });
 
 describe('the first campaign’s Next button (ADR 0178)', () => {

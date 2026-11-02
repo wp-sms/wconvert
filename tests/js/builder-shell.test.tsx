@@ -1080,10 +1080,13 @@ describe('the summary', () => {
     await userEvent.click(goal);
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
     expect(await screen.findByRole('dialog', { name: 'Welcome discount' })).toBeVisible();
-    const section = screen.getByRole('region', { name: 'Goal' });
-    expect(within(section).getByText('Grow my email list')).toBeVisible();
-    expect(section).toHaveTextContent('Counts as success: Email submissions');
-    expect(section).toHaveTextContent(CAPTURE_OUTCOME.measurement);
+    const details = screen.getByRole('dialog', { name: 'Welcome discount' });
+    await waitFor(() => expect(details).toHaveAccessibleDescription('Grow my email list'));
+    expect(within(details).getByText('Counts as success')).toBeVisible();
+    expect(within(details).getByText('Email submissions')).toBeVisible();
+    await userEvent.click(within(details).getByRole('button', { name: 'How Email submissions are counted' }));
+    expect(await screen.findByText(CAPTURE_OUTCOME.measurement)).toBeVisible();
+    await userEvent.keyboard('{Escape}');
     await userEvent.keyboard('{Escape}');
     await waitFor(() => expect(goal).toHaveFocus());
   });
@@ -1100,11 +1103,12 @@ describe('the summary', () => {
 
     const dialog = await screen.findByRole('dialog');
 
-    expect(within(dialog).getByText('Grow my email list · counts Email submissions')).toBeInTheDocument();
+    expect(dialog).toHaveAccessibleDescription('Grow my email list');
+    expect(within(dialog).getByText('Email submissions')).toBeInTheDocument();
     expect(within(dialog).queryByText('Goal', { selector: 'dt' })).toBeNull();
   });
 
-  it('names the playbook it was started from', async () => {
+  it('does not name the playbook it was started from: the preview shows the design', async () => {
     builder.getOptin.mockResolvedValue(
       optin({
         config: { display_rules: displayPlan([{ type: 'page_load' }]),
@@ -1119,32 +1123,8 @@ describe('the summary', () => {
     await summary();
 
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
-    expect(screen.getByText('Template:', { exact: false })).toHaveTextContent('Welcome discount');
-  });
-
-  /**
-   * **A [[Playbook]] this build cannot name is left out, not shown as its id**
-   * (ADR 0131: no IDs on screen). A stored slug told a merchant nothing they
-   * could act on; the measurement line above still says what the goal counts.
-   */
-  it('shows no stored id where the playbook registry cannot name it (no IDs on screen)', async () => {
-    goals.listPlaybooks.mockResolvedValue([]);
-    builder.getOptin.mockResolvedValue(
-      optin({
-        config: { display_rules: displayPlan([{ type: 'page_load' }]),
-          template_id: 'centred-card',
-          playbook_id: 'welcome-discount',
-          template: { tree: ENTRY.tree, tokens: ENTRY.tokens },
-        },
-      }),
-    );
-
-    await open();
-    await summary();
-
-    expect(await screen.findByRole('dialog')).toBeInTheDocument();
-    expect(screen.queryByText(/Template:/)).toBeNull();
-    expect(screen.queryByText(/welcome-discount/)).toBeNull();
+    expect(screen.queryByText(/^Template:/)).toBeNull();
+    expect(screen.queryByText('welcome-discount')).toBeNull();
   });
 
   /**

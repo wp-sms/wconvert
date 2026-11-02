@@ -1,24 +1,14 @@
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import type { Loadable } from '../shell/loadable';
 import type { GoalEntry } from './api';
 
 /**
- * What an [[Optin]] is for, as one clause — **the sentence two surfaces say
- * and neither owns.**
+ * What an [[Optin]] is for, as one clause — **the sentence the review dialog
+ * and the editor's Details say in their headers and neither owns.**
  *
- * ============================================================================
- * IT LIVED IN `ReadinessDialog` AS `subject()`, AND THEN IT HAD TWO READERS.
- * ============================================================================
- * The review dialog and Campaign details say it (ADR 0087).
- * Two spellings of *"Goal · counts Word"*
- * would be two chances for the same Optin to be described differently on one
- * screen — the same argument that keeps the wording in PHP rather than in a
- * `match` over Goal ids here.
- *
- * **The Goal and the word for its number, as one fact.** A Goal named without
- * the number is half an answer: what a merchant is judged on is the pairing,
- * and *"counts Deliveries"* is the half that says the delivery — not the
- * Conversion before it — is the figure on the card.
+ * The Goal alone, since ADR 0183. It used to carry the word for its number too
+ * (*"Goal · counts Word"*), which the same dialog then said again a few lines
+ * down, beside the preview: the number's name is said there, once.
  *
  * An id with no registry entry behind it — a Goal whose plugin went away, or
  * a registry that could not be read — reads **"Goal unavailable"**, never the
@@ -34,10 +24,5 @@ export function goalSaid(goal: Loadable<GoalEntry | null>, goalId: string): stri
     return goal.status === 'loading' || goalId === '' ? '' : __('Goal unavailable', 'wconvert');
   }
 
-  return sprintf(
-    /* translators: 1: a Goal, e.g. “Grow my email list”. 2: what its number is called, e.g. “Conversions”. */
-    __('%1$s · counts %2$s', 'wconvert'),
-    entry.label,
-    entry.headline_label,
-  );
+  return entry.label;
 }

@@ -531,7 +531,7 @@ describe('capture history', () => {
 
   it('titles a phone-only lead by its phone and names a deleted campaign without linking it', async () => {
     log.readLog.mockResolvedValue({ ...SEVEN, leads: [{ ...CAPTURE, email: null, phone: '+96899123456', optin_id: 'GONE',
-      fields: { sms_consent_text: 'Text me offers.', sms_accepted_at: '2026-08-01T09:30:00Z' } }] });
+      fields: { sms_consent_text: 'Text me offers.', sms_accepted_at: '2026-08-01T18:45:00Z' } }] });
     render(<LeadLog />);
     await userEvent.click(await screen.findByRole('button', { name: 'Open submission from +96899123456' }));
     const dialog = within(screen.getByRole('dialog', { name: '+96899123456' }));
@@ -542,6 +542,38 @@ describe('capture history', () => {
     expect(dialog.getByRole('button', { name: 'See all 7 from +96899123456' })).toBeInTheDocument();
     expect(dialog.getByRole('button', { name: 'Delete all from this phone' })).toBeInTheDocument();
     expect(document.body.textContent).not.toContain('GONE');
+  });
+
+  /**
+   * **What does not change what a merchant does is not said** (ADR 0183): a lone
+   * submission is the one on screen, and agreeing as they submitted is When.
+   * What the consent record is, and is not, stays one click away in ⓘ.
+   */
+  it('says one submission, and an agreement made as they submitted, nowhere', async () => {
+    // `created_at` is the site's wall clock and `accepted_at` is UTC, so the two meet in its timezone.
+    window.wconvertAdmin = { timezone: 'UTC' } as typeof window.wconvertAdmin;
+    log.readLog.mockResolvedValue({ ...SEVEN, submissions: 1, leads: [{ ...CAPTURE,
+      fields: { email_consent_text: 'Email me offers.', email_accepted_at: '2026-08-01T09:30:00Z' } }] });
+    render(<LeadLog />);
+    await userEvent.click(await screen.findByRole('button', { name: 'Open submission from sarah@example.com' }));
+    const dialog = screen.getByRole('dialog', { name: 'sarah@example.com' });
+    await waitFor(() => expect(log.readLog).toHaveBeenCalledWith({ identifier: 'sarah@example.com' }));
+    expect(dialog).not.toHaveAccessibleDescription(/submission/);
+    expect(within(dialog).getByText('Email me offers.')).toBeVisible();
+    expect(within(dialog).queryByText(/^Agreed /)).toBeNull();
+    expect(within(dialog).queryByText(/not a current subscription/)).toBeNull();
+    await userEvent.click(within(dialog).getByRole('button', { name: 'About this consent record' }));
+    expect(await screen.findByText(/not a current subscription/)).toBeVisible();
+  });
+
+  it('draws where a lead came from as the icon list, and its answers as plain rows', async () => {
+    log.readLog.mockResolvedValue({ ...SEVEN, leads: [{ ...CAPTURE, fields: { message: 'Hello' } }] });
+    render(<LeadLog />);
+    await userEvent.click(await screen.findByRole('button', { name: 'Open submission from sarah@example.com' }));
+    const dialog = within(screen.getByRole('dialog', { name: 'sarah@example.com' }));
+    expect(dialog.getByText('Campaign', { selector: 'dt' }).querySelector('svg')).not.toBeNull();
+    expect(dialog.getByText('When', { selector: 'dt' }).querySelector('svg')).not.toBeNull();
+    expect(dialog.getByText('Message', { selector: 'dt' }).querySelector('svg')).toBeNull();
   });
 
   it('calls a lead with nothing to identify it an unnamed lead', async () => {
@@ -639,7 +671,8 @@ describe('capture history', () => {
     render(<LeadLog />);
     await userEvent.click(await screen.findByRole('button', { name: /^Open submission/ }));
     const dialog = screen.getByRole('dialog', { name: 'sarah@example.com' });
-    await waitFor(() => expect(dialog).toHaveAccessibleDescription('1 submission'));
+    await waitFor(() => expect(log.readLog).toHaveBeenCalledWith({ identifier: 'sarah@example.com' }));
+    expect(dialog).not.toHaveAccessibleDescription(/submission/);
     expect(within(dialog).queryByRole('button', { name: /See all/ })).not.toBeInTheDocument();
   });
 });
