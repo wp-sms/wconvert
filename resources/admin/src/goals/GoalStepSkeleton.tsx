@@ -37,6 +37,6 @@ export function GoalStepSkeleton({ notice }: { notice?: ReactNode }) {
     <Step at={1} />
     <RegionHeader title={__('What do you want to achieve?', 'wconvert')} />
     {notice}
-    <RegionBody className="wconvert-creation__goals"><ChoiceSkeleton /></RegionBody>
+    <RegionBody className="wconvert-creation__goals"><ChoiceSkeleton status={__('Loading goals…', 'wconvert')} /></RegionBody>
   </Region>;
 }

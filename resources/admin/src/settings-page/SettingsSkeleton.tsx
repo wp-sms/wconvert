@@ -91,14 +91,14 @@ function SettingsGroupSkeleton({ group }: { group: SettingsGroup }) {
 export function SettingsRegionSkeleton({ region }: { region: 'allowance' | 'phone' | 'spam' | 'retention' | 'dataMap' | 'reports' | 'integrations' }) {
   switch (region) {
     case 'allowance':
-      return <RegionSkeleton label={__('Display limits', 'wconvert')} description lines={4} />;
+      return <RegionSkeleton label={__('Display limits', 'wconvert')} description lines={4} footer />;
     case 'phone':
-      return <RegionSkeleton label={__('Phone input', 'wconvert')} description lines={1} />;
+      return <RegionSkeleton label={__('Phone input', 'wconvert')} description lines={1} footer />;
     case 'spam':
       // Two regions, as the loaded page has: the protection form and its activity.
       return <div className="grid gap-6">
         <RegionSkeleton label={__('Spam protection', 'wconvert')} description
-          trailing={<Skeleton aria-hidden="true" className="h-[1lh] w-40 text-note" />} lines={3} />
+          trailing={<Skeleton aria-hidden="true" className="h-[1lh] w-40 text-note" />} lines={3} footer />
         <RegionSkeleton label={__('Protection activity', 'wconvert')} description lines={2} />
       </div>;
     case 'retention':
@@ -114,9 +114,9 @@ export function SettingsRegionSkeleton({ region }: { region: 'allowance' | 'phon
     case 'dataMap':
       return <DataMapSkeleton />;
     case 'reports':
-      return <RegionSkeleton label={__('Weekly summary email', 'wconvert')} description lines={3} />;
+      return <RegionSkeleton label={__('Weekly summary email', 'wconvert')} description lines={3} footer />;
     case 'integrations':
-      return <RegionSkeleton label={__('Analytics integrations', 'wconvert')} description lines={4} />;
+      return <RegionSkeleton label={__('Analytics integrations', 'wconvert')} description lines={4} footer />;
   }
 }
 

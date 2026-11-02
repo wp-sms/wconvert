@@ -74,9 +74,12 @@ export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
   const tier = adminSettings()?.installedTier ?? 'free';
   const proInactive = adminSettings()?.proInstalledInactive === true;
   const [notices, setShownNotices] = useState<Notices | null>(() => lastNotices);
+  // Whether THIS header has read them: a remembered answer is not "checked just now".
+  const [fresh, setFresh] = useState(false);
   const setNotices = useCallback((next: Notices) => {
     lastNotices = next;
     setShownNotices(next);
+    setFresh(true);
   }, []);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -201,7 +204,7 @@ export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
                   <p className="wconvert-notification__clear">
                     <CircleCheck aria-hidden="true" />
                     {/* Only claim everything when everything was read. */}
-                    {notices.protectionChecked ? __('Everything is running. Checked just now.', 'wconvert') : __('No campaign or sending issues.', 'wconvert')}
+                    {notices.protectionChecked && fresh ? __('Everything is running. Checked just now.', 'wconvert') : __('No campaign or sending issues.', 'wconvert')}
                   </p>
                 )}
                 {notices.formsPaused && (

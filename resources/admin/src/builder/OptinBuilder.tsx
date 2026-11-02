@@ -35,6 +35,8 @@ import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { BackLink, BuilderSkeleton, useEditingFrame } from '../shell/BuilderSkeleton';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
+import { Dialog } from '../components/ui/dialog';
+import { PickerDialogBody, PickerDialogContent } from '../discovery/PickerDialog';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { EmptyState } from '../shell/EmptyState';
 import { PageAction } from '../shell/PageActions';
@@ -1415,12 +1417,12 @@ function entryFor(
  */
 function TransferSkeleton({ action, onClose }: { action: 'import' | 'export'; onClose: () => void }) {
   const title = action === 'export' ? __('Export as template', 'wconvert') : __('Import template', 'wconvert');
-  return <AdminDialog open onOpenChange={(open) => { if (!open) onClose(); }}>
-    <AdminDialogContent size="md">
+  return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
+    <PickerDialogContent className="wconvert-transfer-dialog">
       <AdminDialogHeader title={title} />
-      <AdminDialogBody><RegionSkeleton label={title} lines={4} /></AdminDialogBody>
-    </AdminDialogContent>
-  </AdminDialog>;
+      <PickerDialogBody className="wconvert-transfer"><RegionSkeleton label={title} lines={4} /></PickerDialogBody>
+    </PickerDialogContent>
+  </Dialog>;
 }
 
 function AttentionDot() {

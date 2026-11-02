@@ -150,7 +150,12 @@ export function ChoiceCard({
  * placeholder. Owning the grid is what makes there be exactly one of it, and
  * it is the shape {@see GallerySkeleton} already had.
  */
-export function ChoiceSkeleton({ cards = 4, wait = false }: { cards?: number; wait?: boolean }) {
+export function ChoiceSkeleton({ cards = 4, wait = false, status }: {
+  cards?: number;
+  wait?: boolean;
+  /** What is loading, named — "Loading goals…". Plain "Loading…" otherwise. */
+  status?: string;
+}) {
   /*
     `wait` when a filled grid goes back into `loading`, the flicker case
     {@see useShownAfterDelay} describes. Step one's first read paints at once, so the chunk's fallback and the
@@ -163,7 +168,7 @@ export function ChoiceSkeleton({ cards = 4, wait = false }: { cards?: number; wa
   return (
     <>
       <span role="status" className="sr-only">
-        {__('Loading…', 'wconvert')}
+        {status ?? __('Loading…', 'wconvert')}
       </span>
 
       <ChoiceGrid>

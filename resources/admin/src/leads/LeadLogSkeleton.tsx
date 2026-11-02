@@ -40,6 +40,8 @@ export function LeadLogSkeleton() {
           <span className="flex gap-3">{bar('w-32', 'var(--control-height-sm)')}{bar('w-28', 'var(--control-height-sm)')}</span>
         </div>
       </div>
+      {/* The status above speaks for it; a header row over empty bars is a table read aloud. */}
+      <div aria-hidden="true">
       <DataTable>
         <DataTableHead>
           <DataTableColumn>{__('Submitted by', 'wconvert')}</DataTableColumn>
@@ -62,6 +64,7 @@ export function LeadLogSkeleton() {
           </DataTableRow>)}
         </DataTableBody>
       </DataTable>
+      </div>
     </Region>
   </div>;
 }

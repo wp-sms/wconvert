@@ -123,7 +123,7 @@ export function StatRowSkeleton({
   return (
     <StatRow className={className}>
       {/* `<div>` and not `<span>`: a `<dl>`'s content model takes one. Inside a region skeleton the region has said it. */}
-      {!announced && <div className="sr-only">{status ?? __('Loading…', 'wconvert')}</div>}
+      {!announced && <div role="status" className="sr-only">{status ?? __('Loading…', 'wconvert')}</div>}
       {Array.from({ length: stats }, (_, index) => (
         <div key={index} className="flex flex-col-reverse gap-0.5">
           {/*
