@@ -62,6 +62,9 @@ After 0137 the editor was still hard to read in four places:
    **Consent**, and its problems are review items (the policy-page one links
    to its setting; a hidden consent checkbox opens on itself). The footer is
    Preview beside Publish.
+   *Amended by [ADR 0183](0183-a-campaign-dialog-opens-on-its-preview-and-its-answer.md): the thumbnail and Counts as success share one row, the
+   `measurement` sentence is folded into ⓘ, and Consent reads "Checkbox on the
+   form" or "No checkbox on the form".*
 4. **How it runs is one list** — `optins/campaignFacts.tsx`, read by Review
    and by both Details. Who, Where, Opens, How often, Runs from the rule
    summaries; then what the visitor does: **Leads go to** (with **Collects**
@@ -75,6 +78,8 @@ After 0137 the editor was still hard to read in four places:
    answers were links; "Leads go to" now links to Destinations too, and Review
    tags each value still on WConvert's starting setting "Default", because
    first users published without ever opening Display rules or Destinations.*
+   *Amended by [ADR 0183](0183-a-campaign-dialog-opens-on-its-preview-and-its-answer.md): Visitor action no longer adds "Counts
+   {headline_label}"; the row beside the preview says it.*
 5. **Details is one body** — `optins/CampaignSummary.tsx`: the notice, the
    thumbnail (the list's), the **Goal** (its label, "Counts as success:
    {headline_label}", the measurement, and Change goal in the editor), the
@@ -84,6 +89,9 @@ After 0137 the editor was still hard to read in four places:
    draft in hand. The editor keeps Analytics, Product activity, Journey report
    and Developer tools below the shared sections, and its footer is View
    report and Close; the list's stays ⋯, View report and the editor.
+   *Amended by [ADR 0183](0183-a-campaign-dialog-opens-on-its-preview-and-its-answer.md): both Details show the thumbnail with the results beside
+   it, the header says the Goal, and the first number stands in for the Goal
+   section wherever there is one to read.*
    *Amended by [ADR 0182](0182-the-written-rules-are-held-by-guards.md): the editor's is Done at the start, then View report.*
 
 ## Consequences

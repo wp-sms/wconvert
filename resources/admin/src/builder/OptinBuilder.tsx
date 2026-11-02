@@ -52,7 +52,7 @@ import { notePublished, sitePublishedBefore } from './firstPublish';
 import { captureModeOf, routedMode } from './captureMode';
 import { campaignIssues, followIssue, type IssueRoutes } from './readiness/campaignIssues';
 import { ForDevelopers } from '../optins/DetailsDialog';
-import { CampaignSummary, HowItRuns, type CampaignResults } from '../optins/CampaignSummary';
+import { CampaignSummary, HowItRuns, type CampaignResults, GoalLine } from '../optins/CampaignSummary';
 import { campaignFacts, factAct, linksIn } from '../optins/campaignFacts';
 import { CountsNothing } from './countsNothing';
 import { CaptureRequest, CaptureSwitch, type CaptureChoice } from './CaptureSwitch';
@@ -83,7 +83,8 @@ import { canRedo, canUndo, historyOf, redo, remember, undo, type History } from 
 import { nearestTo, samePath } from './structure/tree';
 import { convertingActOf } from './structure/guards';
 import type { ConvertingAct } from './structure/catalogue';
-import { listGoals, listPlaybooks, type GoalEntry } from '../goals/api';
+import { listGoals, type GoalEntry } from '../goals/api';
+import { CampaignThumbnail } from '../optins/designChunks';
 import { offerableGoals } from '../goals/GoalCard';
 import { countsNothing } from '../goals/countsNothing';
 import { ChangeGoalDialog } from './ChangeGoalDialog';
@@ -239,7 +240,6 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
 
   const [siblingAct, setSiblingAct] = useState<ConvertingAct | null>(null);
 
-  const [playbook, setPlaybook] = useState<Loadable<string | null>>(LOADING);
 
   const [destinations, setDestinations] = useState<Loadable<DestinationsPayload>>(LOADING);
   /** A re-read that failed while routes were on screen: they stay, and this says so (ADR 0060). */
@@ -393,24 +393,6 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
       .catch((cause: unknown) => setGoals(failed(cause)));
   }, []);
   useEffect(loadGoals, [loadGoals]);
-
-  useEffect(() => {
-    const from = config?.playbook_id;
-
-    if (typeof from !== 'string' || from === '') {
-      setPlaybook(ready(null));
-
-      return;
-    }
-
-    if (goal === null) {
-      return;
-    }
-
-    listPlaybooks(goal)
-      .then((entries) => setPlaybook(ready(entries.find((each) => each.id === from)?.name ?? null)))
-      .catch(() => setPlaybook(ready(null)));
-  }, [goal, config?.playbook_id]);
 
   const destinationRequest = useRef(0);
   const refreshDestinations = useCallback(() => {
@@ -1044,8 +1026,6 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             busy={busy}
             goal={readinessGoal}
             goalId={goal ?? ''}
-            playbook={playbook}
-            playbookId={typeof config.playbook_id === 'string' ? config.playbook_id : ''}
             rules={displayRules}
             vocabulary={vocabulary}
             displayType={displayTypeOf(config, templates)}
@@ -1153,22 +1133,24 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         </TabsContent>
       </div>
       <AdminDialog open={details} onOpenChange={setDetails}>
-        <AdminDialogContent size="md" className="wconvert-optin-details wconvert-campaign-detail" onCloseAutoFocus={(event) => {
+        <AdminDialogContent size="md" className="wconvert-optin-details" onCloseAutoFocus={(event) => {
           event.preventDefault();
           if (!changingGoal) detailsTrigger.current?.focus();
         }}>
           <AdminDialogHeader
             title={name || __('Untitled campaign', 'wconvert')}
             badge={<StatusBadge status={campaignStatus} />}
-            meta={dirty ? __('Unsaved changes', 'wconvert') : unpublishedChanges ? __('Unpublished changes', 'wconvert') : undefined}
+            meta={<GoalLine goal={goalEntry} goalId={goal ?? ''} also={dirty ? __('Unsaved changes', 'wconvert') : unpublishedChanges ? __('Unpublished changes', 'wconvert') : null} />}
           />
           <AdminDialogBody className="wconvert-campaign-detail__body">
             {/* The list's Details body, read live from this draft (ADR 0138); the editor's own sections follow it. */}
             <CampaignSummary
               notes={[suspended, publishedAt !== null && (dirty || unpublishedChanges) ? __('The previous version is still published. Review & publish to replace it.', 'wconvert') : null,
                 withdrawnNote(templateId === undefined ? undefined : gallery.withdrawn?.[templateId])].filter((note): note is string => !!note)}
+              thumbnail={template !== undefined && template.tree.steps.length > 0
+                ? <div className="wconvert-campaign-thumbnail"><CampaignThumbnail template={template} displayType={displayTypeOf(config, templates)} /></div>
+                : undefined}
               goal={goalEntry}
-              goalId={goal ?? ''}
               goalAction={goals.status === 'ready' && offerableGoals(goals.data, 'creation_flow', goal ?? '').length > 1 && (
                 <Button type="button" variant="outline" onClick={() => { setDetails(false); setChangingGoal(true); }}>
                   {canChangeGoal ? __('Change goal', 'wconvert') : __('Duplicate for another goal', 'wconvert')}
@@ -1182,7 +1164,6 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
                 act: factAct(template, entryOfGoal?.outcome),
                 forwarding: destinationsSaid(bound, read(destinations)?.destinations ?? null, capturedFields(template), primaryMappings(config.integration_mappings, template)),
                 links: linksIn(template),
-                counts: entryOfGoal?.headline_label ?? null,
               })} />}
               developers={<ForDevelopers value={id} variant={analyticsParent !== null} />}
             >

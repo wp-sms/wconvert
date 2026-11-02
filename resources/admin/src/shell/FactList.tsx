@@ -14,8 +14,8 @@ export interface Fact {
 
 /**
  * **Facts at a glance** — one icon line each (ADR 0137). Campaign Details, the
- * setup preview and the editor's design preview all read their facts through
- * this, so the three look and scan the same.
+ * setup preview, the editor's design preview and a lead's details (ADR 0183)
+ * all read their facts through this, so they look and scan the same.
  */
 export function FactList({ facts, className }: { facts: readonly Fact[]; className?: string }) {
   return <dl className={className ? `wconvert-facts ${className}` : 'wconvert-facts'}>

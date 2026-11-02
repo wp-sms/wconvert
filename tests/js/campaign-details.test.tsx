@@ -87,7 +87,7 @@ it('reads a quiz as showing a matching result, never as unfinished', async () =>
   api.getOptin.mockResolvedValue({ goal: 'quiz', config: { display_type: 'inline', template: { tokens: {}, tree: quiz } } });
   render(<CampaignDetails id="Q" />);
   await screen.findByRole('region', { name: 'How it runs' });
-  expect(fact('Visitor action')).toHaveTextContent(/^Shows a matching resultCounts Matches$/);
+  expect(fact('Visitor action')).toHaveTextContent(/^Shows a matching result$/);
   expect(fact('Visitor action').parentElement).not.toHaveAttribute('data-tone');
   expect(screen.queryByText(/Choose what a visitor does/)).toBeNull();
 });
@@ -97,7 +97,7 @@ it('reads a basket design as adding to the basket', async () => {
   ] }) } } });
   render(<CampaignDetails id="C" />);
   await screen.findByRole('region', { name: 'How it runs' });
-  expect(fact('Visitor action')).toHaveTextContent(/^Adds to the basketCounts Basket adds$/);
+  expect(fact('Visitor action')).toHaveTextContent(/^Adds to the basket$/);
 });
 it('still warns when nothing converts', async () => {
   api.getOptin.mockResolvedValue({ config: { display_type: 'inline', template: { tokens: {}, tree: treeFixture({ steps: [{ type: 'stack', children: [] }] }) } } });

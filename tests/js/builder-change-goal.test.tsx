@@ -282,9 +282,9 @@ describe('the goal in Optin details', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
-    const goal = await within(screen.getByRole('dialog')).findByRole('region', { name: 'Goal' });
-    expect(await within(goal).findByText('Grow my email list')).toBeInTheDocument();
-    expect(goal).toHaveTextContent('Counts as success: Conversions');
+    const dialog = screen.getByRole('dialog');
+    await waitFor(() => expect(dialog).toHaveAccessibleDescription('Grow my email list'));
+    expect(await within(dialog).findByText('Conversions')).toBeInTheDocument();
   });
 
   /**
@@ -337,7 +337,7 @@ describe('the goal in Optin details', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
-    await within(screen.getByRole('dialog')).findByText('Counts as success: Conversions');
+    await within(screen.getByRole('dialog')).findByText('Conversions');
 
     expect(screen.queryByRole('button', { name: 'Change goal' })).toBeNull();
   });

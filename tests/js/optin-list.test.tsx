@@ -709,11 +709,11 @@ it('draws Details as the campaign, its numbers, and the footer’s ways out', as
   const dialog = await screen.findByRole('dialog', { name: OPTIN.name });
   expect(dialog).toHaveAttribute('data-size', 'md');
   expect(within(dialog).getByText('Draft')).toBeInTheDocument();
-  // The Goal and what counts as its success, as the editor's Details says them (ADR 0138).
-  const goal = within(dialog).getByRole('region', { name: 'Goal' });
-  expect(within(goal).getByText('Grow my email list')).toBeInTheDocument();
-  expect(goal).toHaveTextContent('Counts as success: Email submissions');
-  expect(goal).toHaveTextContent('Counts submitted forms with an email address.');
+  // The header says the Goal; its first number says what counts as success (ADR 0183).
+  expect(dialog).toHaveAccessibleDescription(expect.stringContaining('Grow my email list'));
+  await userEvent.click(within(dialog).getByRole('button', { name: 'How Email submissions are counted' }));
+  expect(await screen.findByText('Counts submitted forms with an email address.')).toBeVisible();
+  await userEvent.keyboard('{Escape}');
   expect(within(dialog).getByRole('heading', { name: /^Last 30 days · / })).toBeInTheDocument();
   expect(within(dialog).getByText('Email submission rate')).toBeInTheDocument();
   expect(within(dialog).queryByText('Conversion rate')).toBeNull();
@@ -1112,4 +1112,20 @@ describe('group actions on ticked campaigns', () => {
     await user.type(screen.getByRole('searchbox', { name: 'Search campaigns' }), 'Campaign');
     expect(screen.getByRole('checkbox', { name: 'Select Campaign 1' })).not.toBeChecked();
   });
+});
+
+/**
+ * **A draft with nothing to show reads like Review & publish** (ADR 0183): what
+ * counts as success beside the preview, with no period to be empty over.
+ */
+it('names no period over a draft with no results, and says what counts instead', async () => {
+  stats.readDashboard.mockResolvedValue({ days: 30, from: '2026-08-16', to: '2026-09-14', goals: [] });
+  render(<OptinList onEdit={vi.fn()} />);
+  await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
+  await userEvent.click(await screen.findByRole('menuitem', { name: 'Details' }));
+  const dialog = within(await screen.findByRole('dialog', { name: OPTIN.name }));
+  expect(await dialog.findByText('No results yet.')).toBeVisible();
+  expect(dialog.getByText('Counts as success')).toBeVisible();
+  expect(dialog.getByRole('button', { name: 'How Email submissions are counted' })).toBeVisible();
+  expect(dialog.queryByRole('heading', { name: /^Last 30 days/ })).toBeNull();
 });

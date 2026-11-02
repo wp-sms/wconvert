@@ -841,7 +841,6 @@ export function OptinList({
         thumbnail={selected && previews[selected.id]?.template !== null && preview(selected)}
         missingDesign={selected !== null && previews[selected.id]?.template === null}
         results={selected ? resultsOf(selected) : { status: 'loading' }}
-        goalId={selected?.goal ?? ''}
         goal={goalEntries ? ready(goalEntries.find((entry) => entry.id === selected?.goal) ?? null) : labelsError ? failed(new Error(labelsError)) : LOADING}
         productCheck={selected && (
           <ProductHealthDetails

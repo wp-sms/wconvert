@@ -1,9 +1,11 @@
 import { useEffect, useState, type ReactNode, type Ref } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ArrowLeft, Trash2 } from 'lucide-react';
+import { ArrowLeft, CalendarDays, Globe, Megaphone, ShieldCheck, Target, Trash2 } from 'lucide-react';
 import { AdminDialogBody, AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
 import { Button } from '../components/ui/button';
 import { Disclosure } from '../shell/Disclosure';
+import { FactList, type Fact as IconFact } from '../shell/FactList';
+import { InfoTip } from '../shell/InfoTip';
 import { formatCount, formatWhen, humanize, labelOf } from '../lib/format';
 import { editorHref, sendingIssuesHref } from '../nav';
 import { readLog, type Lead } from './api';
@@ -109,14 +111,20 @@ function Sending({ notSent }: { notSent: readonly NotSent[] }) {
   );
 }
 
-function Group({ title, children }: { title: string; children: ReactNode }) {
+function Group({ title, tip, children }: { title: string; tip?: ReactNode; children: ReactNode }) {
   return (
     <section className="flex flex-col gap-3">
-      <h3 className="m-0 text-body font-semibold">{title}</h3>
+      <div className="wconvert-lead-group__head flex items-center gap-1">
+        <h3 className="m-0 text-body font-semibold">{title}</h3>
+        {tip}
+      </div>
       {children}
     </section>
   );
 }
+
+/** A value's own direction and line breaks, inside the shared icon list. */
+const asWritten = (value: ReactNode): ReactNode => <bdi dir="auto" className="break-words whitespace-pre-wrap">{value}</bdi>;
 
 /** How many retained submissions share this email or phone. The meta line simply goes without it on failure. */
 function useSubmissionsFrom(contact: string | null): number | null {
@@ -137,6 +145,10 @@ function useSubmissionsFrom(contact: string | null): number | null {
  * the email or phone, its meta line says who else the lead is, and the facts
  * are grouped as the merchant asks them — what they answered, where they came
  * from, what they agreed to. Tracking fields fold away under "Other details".
+ *
+ * Where they came from and what they agreed to are the shared icon list (ADR
+ * 0183). What they answered is not: its labels are the visitor's own questions,
+ * which no icon can stand for and which need the width.
  *
  * It renders the inside of an `AdminDialogContent`, so the same view serves
  * the log's own dialog and the in-place step of a lead's history. Opened from
@@ -183,7 +195,8 @@ export function LeadDetail({
   const meta: ReactNode[] = [];
   if (name !== null && name !== title) meta.push(<span key="name" dir="auto">{name}</span>);
   if (lead.phone && lead.phone !== title) meta.push(<bdi key="phone" dir="ltr">{lead.phone}</bdi>);
-  if (count !== null) meta.push(<span key="count">{submissionCount(count)}</span>);
+  // One is the submission on screen, so it is only news once there are more.
+  if (count !== null && count > 1) meta.push(<span key="count">{submissionCount(count)}</span>);
 
   const answers: Fact[] = [];
   if (fields.message) answers.push({ key: 'message', label: __('Message', 'wconvert'), value: fields.message });
@@ -200,26 +213,37 @@ export function LeadDetail({
     else answers.push({ key, label: humanize(key), value });
   }
 
-  const cameFrom: Fact[] = [
-    { key: 'campaign', label: __('Campaign', 'wconvert'), value: <CampaignLink id={lead.optin_id} name={campaign} returnTo={returnTo} /> },
-    ...(goal ? [{ key: 'goal', label: __('Goal', 'wconvert'), value: goal }] : []),
-    ...(fields.page_url ? [{ key: 'page', label: __('Page', 'wconvert'), value: <bdi dir="ltr" className="break-all">{fields.page_url}</bdi> }] : []),
-    { key: 'when', label: __('When', 'wconvert'), value: <time dateTime={lead.created_at.replace(' ', 'T')}>{formatWhen(lead.created_at, 'detail')}</time> },
+  const submitted = formatWhen(lead.created_at, 'detail');
+  const cameFrom: IconFact[] = [
+    { icon: Megaphone, label: __('Campaign', 'wconvert'), text: asWritten(<CampaignLink id={lead.optin_id} name={campaign} returnTo={returnTo} />) },
+    ...(goal ? [{ icon: Target, label: __('Goal', 'wconvert'), text: asWritten(goal) }] : []),
+    ...(fields.page_url ? [{ icon: Globe, label: __('Page', 'wconvert'), text: <bdi dir="ltr" className="break-all">{fields.page_url}</bdi> }] : []),
+    { icon: CalendarDays, label: __('When', 'wconvert'), text: <time dateTime={lead.created_at.replace(' ', 'T')}>{submitted}</time> },
   ];
 
   const channels = (['email', 'sms'] as const).filter((channel) => fields[`${channel}_consent_text`] || fields[`${channel}_accepted_at`]);
-  const consent: Fact[] = channels.length > 0
-    ? channels.map((channel) => ({
-      key: channel,
-      label: channel === 'email' ? __('Email signup', 'wconvert') : __('SMS signup', 'wconvert'),
-      value: <>
-        {fields[`${channel}_consent_text`] || __('No wording was recorded.', 'wconvert')}
-        {fields[`${channel}_accepted_at`] && <span className="mt-1 block text-note text-muted-foreground">
-          {sprintf(/* translators: %s: the date and time they agreed, e.g. “Oct 9, 2026, 2:22 PM”. */ __('Agreed %s', 'wconvert'), formatWhen(fields[`${channel}_accepted_at`], 'detail'))}
-        </span>}
-      </>,
-    }))
-    : fields.consent_text ? [{ key: 'consent', label: __('Agreed to', 'wconvert'), value: fields.consent_text }] : [];
+  // Agreeing as they submitted is When, above; only another moment is news.
+  const agreedAt = (channel: 'email' | 'sms'): string | null => {
+    const accepted = fields[`${channel}_accepted_at`];
+    if (!accepted) return null;
+    const agreed = formatWhen(accepted, 'detail');
+    return agreed === submitted ? null : agreed;
+  };
+  const consent: IconFact[] = channels.length > 0
+    ? channels.map((channel) => {
+      const agreed = agreedAt(channel);
+      return {
+        icon: ShieldCheck,
+        label: channel === 'email' ? __('Email signup', 'wconvert') : __('SMS signup', 'wconvert'),
+        text: <>
+          <span className="block">{asWritten(fields[`${channel}_consent_text`] || __('No wording was recorded.', 'wconvert'))}</span>
+          {agreed && <span className="mt-1 block text-note text-muted-foreground">
+            {sprintf(/* translators: %s: the date and time they agreed, e.g. “Oct 9, 2026, 2:22 PM”. */ __('Agreed %s', 'wconvert'), agreed)}
+          </span>}
+        </>,
+      };
+    })
+    : fields.consent_text ? [{ icon: ShieldCheck, label: __('Agreed to', 'wconvert'), text: asWritten(fields.consent_text) }] : [];
 
   return (
     <>
@@ -230,12 +254,14 @@ export function LeadDetail({
       <AdminDialogBody className="flex flex-col gap-6">
         {notSent.length > 0 && <Group title={__('Sending', 'wconvert')}><Sending notSent={notSent} /></Group>}
         {answers.length > 0 && <Group title={__('Answers', 'wconvert')}><Facts facts={answers} /></Group>}
-        <Group title={__('Came from', 'wconvert')}><Facts facts={cameFrom} /></Group>
-        <Group title={__('Consent', 'wconvert')}>
-          {consent.length > 0 ? <>
-            <Facts facts={consent} />
-            <p className="m-0 text-note text-muted-foreground">{__('The wording they agreed to, not a current subscription.', 'wconvert')}</p>
-          </> : <p className="m-0">{__('Not asked', 'wconvert')}</p>}
+        <Group title={__('Came from', 'wconvert')}><FactList className="wconvert-lead-facts" facts={cameFrom} /></Group>
+        <Group
+          title={__('Consent', 'wconvert')}
+          tip={consent.length > 0 && <InfoTip label={__('About this consent record', 'wconvert')}>{__('The wording they agreed to, not a current subscription.', 'wconvert')}</InfoTip>}
+        >
+          {consent.length > 0
+            ? <FactList className="wconvert-lead-facts" facts={consent} />
+            : <p className="m-0">{__('Not asked', 'wconvert')}</p>}
         </Group>
         {other.length > 0 && (
           <Disclosure variant="inline" title={__('Other details', 'wconvert')}>

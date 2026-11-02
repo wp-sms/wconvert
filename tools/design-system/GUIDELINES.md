@@ -177,7 +177,7 @@ stack edge-to-edge tinted panels or repeat the same shared-change warning.
   Neutral inset notices use solid `--surface`, not translucent `bg-muted/*` fills.
 - Native single-select fields share an explicit chevron, logical end padding and
   RTL placement. Multi-select/listbox controls keep their own affordance.
-- `InfoTip` owns contextual help in Analytics, Leads and the builder's panels (ADR 0136): a 16px Info glyph in a
+- `InfoTip` owns contextual help in Analytics, Leads, the builder's panels and campaign dialogs (ADR 0136, ADR 0183): a 16px Info glyph in a
   32px control, expanded for coarse pointers by the shared control rules. Its
   popover handles viewport edges, Escape dismissal and returning keyboard focus.
 - The header navigation divider spans the row; individual navigation and plan
@@ -352,9 +352,17 @@ status a screen away from its name (ADR 0182).
   question — rather than in a second dialog (ADR 0137).
 - **Facts are one icon list** — `shell/FactList`, a label beside a 16px icon
   and its answer, one line each, amber for one that needs a look. Details, the
-  setup preview and the design preview all use it (ADR 0137). **How it runs**
+  setup preview, the design preview and a lead's Came from and Consent all use
+  it (ADR 0137, ADR 0183). A label the merchant or visitor wrote (a lead's
+  Answers) has no icon to stand for it and stays a plain row. **How it runs**
   is one list, `optins/campaignFacts`, in Review & publish and both Details
   (ADR 0138).
+- **A campaign's dialog opens on its preview and its answer** —
+  `CampaignOverview` in `optins/CampaignSummary`: the 200 × 150 preview at the
+  start, beside it what that dialog opens to say (Review: what counts as
+  success; Details: how it did), stacked below 640px. An answer never sits on a
+  row of its own under the preview. The header says the Goal and the row says
+  its number, once; how that number is measured is in ⓘ (ADR 0183).
 - **One body per subject.** Two dialogs about one thing share their body and
   differ only in header, footer and the sections only their host has: campaign
   Details is `optins/CampaignSummary` in the list and the editor (ADR 0138).

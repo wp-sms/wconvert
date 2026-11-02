@@ -26,6 +26,8 @@ optional **Measurement & setup details**; the Goal stays in the status row.~~
 *Amended by [ADR 0138](0138-one-preview-one-review-one-details.md): **Counts as success** — the Goal's number and its
 measurement — sits under the thumbnail, never folded away; How it runs replaces
 the placement/timing and forwarding sections.*
+*Amended by [ADR 0183](0183-a-campaign-dialog-opens-on-its-preview-and-its-answer.md): the number sits beside the thumbnail and its measurement is
+in ⓘ. The setup origin is gone.*
 An unfinished required service choice says **No destination selected. Finish setup
 in Destinations.** It must not describe manual export as if collect-only was chosen.
 Spacing is reduced without reducing type sizes or hiding publishing controls.
