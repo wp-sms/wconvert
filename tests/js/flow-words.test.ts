@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
@@ -8,7 +8,16 @@ import { describe, expect, it } from 'vitest';
  * on screen. This reads every translatable string in the admin, so a new
  * file cannot bring one back unseen.
  */
-const root = resolve(__dirname, '../../resources/admin/src');
+const repo = resolve(__dirname, '../..');
+const root = resolve(repo, 'resources/admin/src');
+/** Pro's journeys, license and panels, which merchants read as the same admin. */
+const proRoots = [
+  resolve(repo, 'pro/resources/admin/src'),
+  ...readdirSync(resolve(repo, 'pro/modules')).flatMap(name => [
+    resolve(repo, 'pro/modules', name, 'admin'),
+    resolve(repo, 'pro/modules', name, 'block'),
+  ]).filter(existsSync),
+];
 const retired: readonly [RegExp, string][] = [
   [/Collect details/, 'Form'],
   [/Journey complete/, 'Ends the campaign'],
@@ -45,8 +54,8 @@ describe('the Flow word list', () => {
   });
 
   it('keeps retired words out of merchant-facing strings', () => {
-    const found = files(root).flatMap(path => strings(readFileSync(path, 'utf8'))
-      .flatMap(text => retired.filter(([word]) => word.test(text)).map(([, use]) => `${relative(root, path)}: “${text}” — say ${use}`)));
+    const found = [root, ...proRoots].flatMap(files).flatMap(path => strings(readFileSync(path, 'utf8'))
+      .flatMap(text => retired.filter(([word]) => word.test(text)).map(([, use]) => `${relative(repo, path)}: “${text}” — say ${use}`)));
     expect(found).toEqual([]);
   });
 });

@@ -26,7 +26,7 @@ import { describe, expect, it } from 'vitest';
  * Vitest 4's Browser Mode is what closes the gap properly, in a pull request of
  * its own.
  */
-const CSS = ['index.css', 'stage/stage.css', 'gallery/gallery.css', 'builder/editor.css', 'builder/preview-test.css', 'optins/campaigns.css', 'shell/header.css', 'stats/report.css', '../../../pro/modules/inline-placement/admin/placement.css'].map(file => readFileSync(resolve(import.meta.dirname, '../../resources/admin/src', file), 'utf8')).join('\n');
+const CSS = ['index.css', 'stage/stage.css', 'gallery/gallery.css', 'builder/editor.css', 'builder/preview-test.css', 'optins/campaigns.css', 'shell/header.css', 'stats/report.css', '../../../pro/modules/inline-placement/admin/placement.css', '../../../pro/resources/admin/src/license/license.css', '../../../pro/modules/destinations/admin/webhook.css', 'help/help.css', 'panel.css', 'stats/analytics.css', 'stats/analytics-frame.css', 'stats/monthly-targets.css'].map(file => readFileSync(resolve(import.meta.dirname, '../../resources/admin/src', file), 'utf8')).join('\n');
 
 describe('journey choices', () => {
   it('keeps unchecked controls wide enough when WordPress removes native appearance', () => {
@@ -354,9 +354,15 @@ describe('the rules panel against the editor’s blanket rules', () => {
  * were: that layer is where every RTL bug in this admin has been found, and
  * ADR 0036 holds those files are WConvert's from the moment they land.
  */
+/*
+ * The block sheets load in the block editor, where the admin's tokens and type
+ * roles do not exist, so they answer to direction and nothing else here.
+ */
+const BLOCK_CSS = ['resources/blocks/inline-optin/src/editor.css', 'pro/modules/content-lock/block/editor.css'].map(file => readFileSync(resolve(import.meta.dirname, '../..', file), 'utf8')).join('\n');
+
 describe('the direction convention', () => {
   /** Declarations only — a comment naming `left` is prose about one. */
-  const DECLARATIONS = CSS.replace(/\/\*[\s\S]*?\*\//g, '');
+  const DECLARATIONS = `${CSS}\n${BLOCK_CSS}`.replace(/\/\*[\s\S]*?\*\//g, '');
 
   it('states no physical direction property, and no physical value either', () => {
     /*
