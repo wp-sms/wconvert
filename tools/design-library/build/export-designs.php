@@ -246,6 +246,10 @@ if (($input['mode'] ?? '') === 'validate') {
         $catalog->installSetup($id, $setups[$id]['sha256']);
     }
     if (count($archive->playbooks()) !== count($input['setups'])) throw new RuntimeException('Not every installed setup registers a starting point');
+    // A design no setup pins is only previewed above, so it has no bytes here yet.
+    foreach ($status['designs'] as $row) {
+        if (in_array($row['id'], $input['designs'], true) && !$archive->hasDesign($row['id'], $row['revision'])) $catalog->install($row['id'], $row['sha256']);
+    }
     // Each language, past the validator a site's read path skips: a translated object
     // must be one that would have been accepted as it stands (ADR 0183).
     $packs = [];
