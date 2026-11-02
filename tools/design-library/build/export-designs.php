@@ -10,10 +10,12 @@
  *
  * Modes, read from a JSON object on stdin:
  *   designs  — {designs, setups, metadata, raster_sources, image_rights} → objects
- *   validate — {source, responses, designs, setups, empty_directory} → runs the
- *              shipping TemplateCatalog over an in-memory copy of the release
+ *   validate — {source, responses, designs, setups, empty_directory, words} → runs the
+ *              shipping TemplateCatalog over an in-memory copy of the release, then
+ *              the full validator over each object in each language
  *   words    — {translations} → every design's and setup's words by where they
  *              ship, and the translations a site would refuse (bin/template-words.mjs)
+ *   release-words — {designs, setups} → the words a release's public list holds
  */
 define('ABSPATH', '/');
 $root = isset($argv[1]) ? realpath($argv[1]) : dirname(__DIR__, 3);
@@ -244,13 +246,44 @@ if (($input['mode'] ?? '') === 'validate') {
         $catalog->installSetup($id, $setups[$id]['sha256']);
     }
     if (count($archive->playbooks()) !== count($input['setups'])) throw new RuntimeException('Not every installed setup registers a starting point');
+    // A design no setup pins is only previewed above, so it has no bytes here yet.
+    foreach ($status['designs'] as $row) {
+        if (in_array($row['id'], $input['designs'], true) && !$archive->hasDesign($row['id'], $row['revision'])) $catalog->install($row['id'], $row['sha256']);
+    }
+    // Each language, past the validator a site's read path skips: a translated object
+    // must be one that would have been accepted as it stands (ADR 0183).
+    $packs = [];
+    foreach ($archive->designs() as $design) {
+        $packs[$design['id'] . '@' . $design['revision']] = DesignObject::design((string) $archive->object('designs', $design['sha256']), $design['sha256'])['pack'];
+    }
+    foreach ($input['words'] ?? [] as $locale => $list) {
+        $words = new DesignWords(DesignWords::readList($list), TemplateManifest::load($root));
+        $english = [];
+        foreach ($packs as $key => $pack) {
+            $pack['templates'][0] = $words->templateOrEnglish($pack['templates'][0]);
+            if ($pack['templates'][0] === $packs[$key]['templates'][0]) $english[] = $key;
+            try { $validator->validate($pack); } catch (RuntimeException $error) { throw new RuntimeException($key . ' in ' . $locale . ': ' . $error->getMessage(), 0, $error); }
+        }
+        foreach ($input['setups'] as $id) {
+            $sha = $setups[$id]['sha256'];
+            $json = (string) $archive->object('setups', $sha);
+            $pin = json_decode($json, true, 48)['design'];
+            $pack = DesignObject::setup($json, $sha, $packs[$pin['id'] . '@' . $pin['revision']], $pin['revision'])['pack'];
+            $pack['templates'][0] = $words->templateOrEnglish($pack['templates'][0]);
+            $translated = $words->playbookOrEnglish($pack['playbooks'][0]);
+            if ($translated === $pack['playbooks'][0]) $english[] = $id;
+            $pack['playbooks'][0] = $translated;
+            try { $validator->validate($pack); } catch (RuntimeException $error) { throw new RuntimeException($id . ' in ' . $locale . ': ' . $error->getMessage(), 0, $error); }
+        }
+        echo $locale . ': ' . (count($packs) + count($input['setups']) - count($english)) . ' objects translated, ' . count($english) . " stay English" . ($english === [] ? '' : ' (' . implode(', ', array_slice($english, 0, 10)) . ')') . ".\n";
+    }
     echo 'Validated ' . count($input['designs']) . ' designs and ' . count($input['setups']) . " setups with the shipping catalogue reader.\n";
     exit;
 }
 
 if (($input['mode'] ?? '') === 'words') {
     $manifest = TemplateManifest::load($root);
-    $sets = ['free' => [], 'pro' => []];
+    $sets = ['free' => [], 'pro' => [], 'hosted' => []];
     $add = static function (string $set, array $words, string $file) use (&$sets, $root): void {
         foreach ($words as $english => $word) {
             $known = $sets[$set][$english] ?? ['limit' => PHP_INT_MAX, 'kind' => $word['kind'], 'refs' => []];
@@ -267,11 +300,14 @@ if (($input['mode'] ?? '') === 'words') {
         $add('pro', DesignWords::wordsOfTemplate(json_decode((string) file_get_contents($file), true, 512, JSON_THROW_ON_ERROR), $manifest), $file);
     }
     foreach (glob($root . '/pro/modules/*/playbooks/*.php') ?: [] as $file) $add('pro', DesignWords::wordsOfPlaybook(require $file), $file);
+    foreach (glob($root . '/tools/design-library/hosted/templates/*.json') ?: [] as $file) {
+        $add('hosted', DesignWords::wordsOfTemplate(json_decode((string) file_get_contents($file), true, 512, JSON_THROW_ON_ERROR), $manifest), $file);
+    }
     // A paid setup's words stay out of the public catalogue, so they reach a site in Pro's ZIP.
     foreach (glob($root . '/tools/design-library/hosted/playbooks/*.php') ?: [] as $file) {
         $setup = require $file;
         $design = json_decode((string) file_get_contents(source($root, 'design', $setup['template_id'])), true, 512, JSON_THROW_ON_ERROR);
-        if (setupPlan($setup, $design['tier'], $design['display_type'], $ruleDefinitions)['paid']) $add('pro', DesignWords::wordsOfPlaybook($setup), $file);
+        $add(setupPlan($setup, $design['tier'], $design['display_type'], $ruleDefinitions)['paid'] ? 'pro' : 'hosted', DesignWords::wordsOfPlaybook($setup), $file);
     }
     $limits = [];
     foreach ($sets as $words) foreach ($words as $english => $word) $limits[$english] = min($limits[$english] ?? PHP_INT_MAX, $word['limit']);
@@ -283,6 +319,22 @@ if (($input['mode'] ?? '') === 'words') {
         }
     }
     echo json_encode(['sets' => $sets, 'refused' => $refused], FLAGS);
+    exit;
+}
+
+if (($input['mode'] ?? '') === 'release-words') {
+    $manifest = TemplateManifest::load($root);
+    $public = [];
+    foreach ($input['designs'] as $json) {
+        $object = json_decode($json, true, 48, JSON_THROW_ON_ERROR);
+        // A paid object's name is public on its card; its words are not.
+        $public += $object['tier'] === 'free' ? DesignWords::wordsOfTemplate($object, $manifest) : DesignWords::wordsOfPlaybook(['name' => $object['name']]);
+    }
+    foreach ($input['setups'] as $json) {
+        $object = json_decode($json, true, 48, JSON_THROW_ON_ERROR);
+        $public += DesignWords::wordsOfPlaybook(['name' => $object['name']] + ($object['tier'] === 'free' ? $object['playbook'] : []));
+    }
+    echo json_encode(array_keys($public), FLAGS);
     exit;
 }
 

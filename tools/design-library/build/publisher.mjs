@@ -20,7 +20,7 @@ const KEY = /^v3\/(manifest\.json|releases\/[a-f0-9]{64}\.json|index\/[a-f0-9]{6
  * content-addressed; free objects are public and premium ones private.
  * The CLI separately runs the shipping PHP reader over the result.
  */
-export function buildRelease({ designs, setups = [], collections = [], taxonomy = {}, withdrawn = [], popularity = null, i18n = {}, bundledOnly = [] }) {
+export function buildRelease({ designs, setups = [], collections = [], taxonomy = {}, withdrawn = [], popularity = null, words = {}, bundledOnly = [] }) {
   check(designs.length > 0, 'A release needs at least one design');
   const objects = [];
   const put = (scope, key, bytes) => {
@@ -137,13 +137,31 @@ export function buildRelease({ designs, setups = [], collections = [], taxonomy 
       if (!row) break;
     }
   }
-  const sidecars = Object.fromEntries(Object.entries(i18n).map(([locale, words]) => [locale, index({ schema: 3, designs: words })]));
-  const release = Buffer.from(compact({ schema: 3, minor: 0, pages, details: detailPages, ...(Object.keys(sidecars).length ? { i18n: sidecars } : {}), taxonomy, collections }));
+  // Each language's list, in files a reader will take (ADR 0183). A frozen reader ignores the key.
+  const lists = Object.fromEntries(Object.entries(words).filter(([, list]) => Object.keys(list).length > 0)
+    .map(([locale, list]) => [locale, wordFiles(list).map(file => index(file))]));
+  for (const [locale, files] of Object.entries(lists)) check(files.length <= LIMITS.pages, `The ${locale} word list is ${files.length} files; the reader's budget is ${LIMITS.pages}`);
+  const release = Buffer.from(compact({ schema: 3, minor: 0, pages, details: detailPages, ...(Object.keys(lists).length ? { words: lists } : {}), taxonomy, collections }));
   check(release.length <= LIMITS.object, 'The release object exceeds its budget');
   const id = sha256(release);
   put('public', `v3/releases/${id}.json`, release);
   const pointer = buildPointer({ release: id, withdrawn, popularity: popularity === null ? null : index({ schema: 3, generated: popularity.generated, downloads: popularity.downloads }) });
   return { id, pointer, objects, designs: [...ids] };
+}
+
+/** A list as objects under the per-object budget, the same bytes for the same words. */
+export function wordFiles(list) {
+  const files = []; let file = {}; let bytes = 0;
+  const frame = compact({ schema: 3, words: {} }).length;
+  for (const english of Object.keys(list).sort()) {
+    const pair = Buffer.byteLength(`${compact(english)}:${compact(list[english])},`);
+    check(frame + pair <= LIMITS.object, 'One word exceeds the per-object budget');
+    if (frame + bytes + pair > LIMITS.object) { files.push(file); file = {}; bytes = 0; }
+    file[english] = list[english];
+    bytes += pair;
+  }
+  if (Object.keys(file).length) files.push(file);
+  return files.map(words => ({ schema: 3, words }));
 }
 
 /** The one mutable object. Withdrawal and popularity can move without a release. */

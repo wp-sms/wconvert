@@ -218,7 +218,7 @@ final class DesignWords
      * A design with every word the list has replaced, one word at a time: a word
      * the list lacks stays English beside its translated neighbours.
      *
-     * For what this ZIP ships, whose lists CI holds to every word.
+     * For what a ZIP ships, whose lists CI holds to every word.
      *
      * @param array<string, mixed> $entry
      * @return array<string, mixed>
@@ -237,6 +237,70 @@ final class DesignWords
     public function playbook(array $entry): array
     {
         return $this->words === [] ? $entry : self::walkPlaybook($entry, $this->replaceEach(...));
+    }
+
+    /**
+     * A design in the language only if every word has a translation; otherwise as
+     * it is, whole. For what arrives from the catalogue: half a popup in German is
+     * worse than an English one, and the release it came with may be older.
+     *
+     * @param array<string, mixed> $entry
+     * @return array<string, mixed>
+     */
+    public function templateOrEnglish(array $entry): array
+    {
+        if ($this->words === []) {
+            return $entry;
+        }
+
+        $complete = true;
+        $translated = self::walkTemplate($entry, $this->keys(), $this->replaceAll($complete));
+
+        return $complete ? $translated : $entry;
+    }
+
+    /**
+     * A setup in the language only if every word has a translation.
+     *
+     * @param array<string, mixed> $entry
+     * @return array<string, mixed>
+     */
+    public function playbookOrEnglish(array $entry): array
+    {
+        if ($this->words === []) {
+            return $entry;
+        }
+
+        $complete = true;
+        $translated = self::walkPlaybook($entry, $this->replaceAll($complete));
+
+        return $complete ? $translated : $entry;
+    }
+
+    /** A catalogue card's name, which stands alone. */
+    public function name(string $english): string
+    {
+        return self::isWord($english) ? $this->replaceEach($english, self::LIMIT_NAME) : $english;
+    }
+
+    /**
+     * This list with a newer one over it: a release's words outrank a ZIP's.
+     *
+     * @param array<string, string> $words
+     */
+    public function with(array $words): self
+    {
+        return new self($words + $this->words, $this->manifest);
+    }
+
+    private function replaceAll(bool &$complete): \Closure
+    {
+        return function (string $english, int $limit) use (&$complete): string {
+            $translated = $this->replaceEach($english, $limit);
+            $complete = $complete && ($translated !== $english || ($this->words[$english] ?? null) === $english);
+
+            return $translated;
+        };
     }
 
     private function replaceEach(string $english, int $limit): string

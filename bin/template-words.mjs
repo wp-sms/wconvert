@@ -14,6 +14,11 @@
 //   resources/templates/words/<locale>.json         Free's designs and setups
 //   pro/resources/templates/words/<locale>.json     Pro's, and the paid online setups
 //
+// The online library's public list is built from the same .po when a release is
+// published (`publish-local.mjs`, `publicWords` below). A word missing from it costs
+// its object's translation rather than an English word in a German popup, so it is
+// reported rather than refused.
+//
 // To add a language: create an empty <locale>.po, run this, translate what it
 // wrote. No code changes. Generated lists are never edited by hand.
 
@@ -71,6 +76,25 @@ export function wordsFile(words, translated) {
   const pairs = Object.keys(words).sort().filter(english => translated.has(english))
     .map(english => `${quote(english)}:${quote(translated.get(english))}`);
   return `{\n${pairs.join(',\n')}\n}\n`;
+}
+
+/**
+ * Every language's translations of a release's public words, and how many it lacks.
+ *
+ * @param english what `export-designs.php`'s release-words mode says the release holds
+ * @param root where the sources are
+ */
+export function publicWords(english, root = ROOT) {
+  const words = {}, missing = {}, all = {};
+  const sourceDir = join(root, SOURCE);
+  for (const file of existsSync(sourceDir) ? readdirSync(sourceDir).filter(name => name.endsWith('.po')).sort() : []) {
+    const locale = file.slice(0, -3);
+    const translated = readPo(readFileSync(join(sourceDir, file), 'utf8'));
+    words[locale] = Object.fromEntries(english.filter(word => translated.has(word)).map(word => [word, translated.get(word)]));
+    missing[locale] = english.filter(word => !translated.has(word)).length;
+    all[locale] = Object.fromEntries(translated);
+  }
+  return { words, missing, all };
 }
 
 function inventory(translations) {

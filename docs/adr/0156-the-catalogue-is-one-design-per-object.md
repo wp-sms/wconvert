@@ -153,6 +153,10 @@ design and setup digests; the Worker covers each object and its images.
 from the plugin's user agent, written before any lookup, with no identifier.
 A script turns it into the popularity sidecar.
 
+*Amended by [ADR 0183](0183-design-words-are-one-list-per-language.md): a release also
+lists each language's word files under `words`. The unused `i18n` sidecar this catalogue
+was designed with is gone, unpublished, and the objects themselves stay English.*
+
 **13. Authored catalogue words** — description, slug, industries, occasions,
 style, colour, family, aliases — live in `publishing/designs.json`, beside
 0043's derived facets, which the publisher also writes into each entry so a

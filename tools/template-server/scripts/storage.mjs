@@ -47,7 +47,7 @@ export function validatePopularity(bytes) {
 }
 
 /**
- * Walk one release's dependency closure: release → pages, details, i18n →
+ * Walk one release's dependency closure: release → pages, details, words →
  * designs and setups → bound images and thumbnails. `read(scope, key)` resolves
  * to the exact bytes or null. Premium objects must be absent from public
  * storage; without `withPrivate` their contents are not read.
@@ -69,9 +69,9 @@ export async function releaseClosure(id, read, { withPrivate = true } = {}) {
   check(release?.schema === 3 && Number.isSafeInteger(release.minor) && release.minor >= 0, 'Invalid release identity');
   const unique = list => Array.isArray(list) && list.every(digest) && new Set(list).size === list.length;
   check(unique(release.pages) && release.pages.length >= 1 && release.pages.length <= 16, 'Invalid release pages');
-  const details = release.details ?? [], i18n = release.i18n ?? {};
+  const details = release.details ?? [], words = release.words ?? {};
   check(unique(details) && details.length <= 64, 'Invalid release detail pages');
-  check(object(i18n) && Object.entries(i18n).every(([locale, sha]) => /^[a-z]{2,3}(?:_[A-Z]{2})?$/.test(locale) && digest(sha)), 'Invalid release i18n');
+  check(object(words) && Object.entries(words).every(([locale, files]) => /^[a-z]{2,3}(?:_[A-Z]{2})?$/.test(locale) && unique(files) && files.length >= 1 && files.length <= 16), 'Invalid release words');
   check(release.taxonomy === undefined || object(release.taxonomy), 'Invalid release taxonomy');
   check(release.collections === undefined || (Array.isArray(release.collections)
     && release.collections.every(item => identifier(item?.id)) && new Set(release.collections.map(item => item.id)).size === release.collections.length), 'Invalid release collections');
@@ -136,9 +136,9 @@ export async function releaseClosure(id, read, { withPrivate = true } = {}) {
     for (const [key, sha] of detailDependencies(page, seen)) await load('public', key, sha ?? undefined);
     gallery.push(...page.details);
   }
-  for (const sha of Object.values(i18n)) {
+  for (const sha of Object.values(words).flat()) {
     const data = parse(await load('public', `v3/index/${sha}.json`, sha), sha);
-    check(data?.schema === 3 && object(data.designs), 'Invalid i18n sidecar');
+    check(data?.schema === 3 && object(data.words), 'Invalid word list');
   }
   return { id, release, designs, setups, details: gallery, objects };
 }

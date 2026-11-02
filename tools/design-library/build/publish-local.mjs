@@ -9,7 +9,8 @@ import { loadReviews, reviewQueue } from './reviews.mjs';
 import { galleryArtwork } from './design-gallery.mjs';
 import { buildRelease, publishRelease } from './publisher.mjs';
 import { computeRevisions } from './catalogue-revisions.mjs';
-import { readJson } from './catalogue.mjs';
+import { exportObjects, readJson } from './catalogue.mjs';
+import { publicWords } from '../../../bin/template-words.mjs';
 import { literalColourReport } from './catalogue-lint.mjs';
 import { allowedPairs, nearDuplicates } from './near-duplicates.mjs';
 import { contrastReport } from './catalogue-contrast.mjs';
@@ -98,9 +99,13 @@ const duplicates = nearDuplicates(designs.map(design => JSON.parse(design.json))
 if (duplicates.length) throw new Error('These published designs are near-duplicates; change one, or list the pair with its reason in publishing/near-duplicates.json:\n'
   + duplicates.map(pair => `  ${pair.a} ~ ${pair.b} (structure ${pair.structure}%, palette ${pair.palette}, picture ${pair.picture ?? 'n/a'} bits)`).join('\n'));
 
+// Each language's public list (ADR 0183). A paid setup's words reach a site in Pro's ZIP.
+const { words, missing, all: everyWord } = publicWords(exportObjects(root, implementationRoot, { mode: 'release-words', designs: designs.map(design => design.json), setups: setups.map(setup => setup.json) }), root);
+for (const [locale, count] of Object.entries(missing)) if (count) console.warn(`${locale}: ${count} public words are untranslated, so the objects holding them stay English. Run npm run templates:words.`);
+
 const collections = releaseCollections(compiled, online);
 const release = buildRelease({
-  designs, setups, collections, withdrawn: plan.withdrawn,
+  designs, setups, collections, withdrawn: plan.withdrawn, words,
   taxonomy: metadata.taxonomy, bundledOnly: bundledArtwork.map(item => ({ id: item.id, gallery: item.gallery, name: item.pack.name, format: item.pack.templates[0].display_type, tier: item.pack.templates[0].tier, meta: metadata.designs?.[item.id] ?? {} })),
 });
 
@@ -119,7 +124,7 @@ responses[`${base}manifest.json`] = release.pointer.toString('utf8');
 const empty = mkdtempSync(join(tmpdir(), 'wconvert-release-validation-'));
 try {
   process.stdout.write(execFileSync('php', [resolve(implementationRoot, 'tools/design-library/build/export-designs.php'), root], {
-    input: JSON.stringify({ mode: 'validate', source: `${base}manifest.json`, responses, designs: designs.map(d => d.id), setups: setups.map(s => s.id), empty_directory: empty }),
+    input: JSON.stringify({ mode: 'validate', source: `${base}manifest.json`, responses, designs: designs.map(d => d.id), setups: setups.map(s => s.id), empty_directory: empty, words: everyWord }),
     encoding: 'utf8', maxBuffer: 512 * 1024 * 1024,
   }));
 } finally { rmSync(empty, { recursive: true, force: true }); }

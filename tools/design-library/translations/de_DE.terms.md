@@ -56,7 +56,7 @@ A button stays an instruction: `Send me the guide` → `Schick mir den Leitfaden
 | welcome code | Willkommenscode |
 | discount, % off | Rabatt, `10 % Rabatt` |
 | UP TO 40% OFF | BIS ZU 40 % RABATT |
-| offer | Angebot |
+| offer | Angebot (a screen named Offer: see the .po) |
 | Selected items | Ausgewählte Artikel |
 | Exclusions apply | Ausnahmen möglich |
 | Offer terms apply | Es gelten die Angebotsbedingungen |
