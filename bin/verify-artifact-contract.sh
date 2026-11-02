@@ -249,6 +249,8 @@ else
     # build names files this ZIP does not have, and every `.json` made from it
     # is one WordPress never asks for. Every `#:` reference into public/ has to
     # be a file that is here.
+    require_populated_dir "$TREE" resources/templates/words '*.json' "WConvert\\Template\\DesignWords reads Pro's list from it" || true
+
     if require_file resources/languages/wconvert-pro.pot "Pro ships its own catalogue template — run npm run build:pot:pro" ; then
         pot_js_refs="$(grep -oE '^#: .*' "$TREE/resources/languages/wconvert-pro.pot" | tr ' ' '\n' | grep -E '^public/.+\.js' | sed 's/:[0-9]*$//' | sort -u)" || true
 

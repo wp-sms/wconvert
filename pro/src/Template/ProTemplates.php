@@ -3,6 +3,7 @@
 namespace WConvert\Pro\Template;
 
 use WConvert\Template\BundledArtwork;
+use WConvert\Template\DesignWords;
 use WConvert\Template\JsonFile;
 use WConvert\Template\TemplateSource;
 
@@ -68,6 +69,7 @@ final class ProTemplates implements TemplateSource
 
     public function __construct(
         private readonly string $pluginDir = WCONVERT_PRO_DIR,
+        private readonly ?DesignWords $words = null,
     ) {
     }
 
@@ -100,6 +102,8 @@ final class ProTemplates implements TemplateSource
 
         // Pro's designs' names, in Pro's domain (`bin/template-labels.mjs`).
         $entries = \WConvert\Template\TemplateNames::apply($entries, rtrim($this->pluginDir, '/') . '/resources/templates/labels.php');
+        // After the names, so a word a translation file already covers stays as it has it (ADR 0183).
+        $entries = array_map(($this->words ?? DesignWords::bundled($this->pluginDir))->template(...), $entries);
 
         return \WConvert\Template\BundledRevisions::stamp($entries, \WConvert\Template\BundledRevisions::read(rtrim($this->pluginDir, '/') . '/' . self::REVISIONS));
     }

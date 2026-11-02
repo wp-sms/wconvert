@@ -83,7 +83,36 @@ final class DesignWords
      */
     public static function bundled(string $pluginDir = WCONVERT_DIR, ?string $locale = null): self
     {
-        return new self(self::fileFor(rtrim($pluginDir, '/') . '/' . self::PATH, $locale ?? self::siteLocale()));
+        return new self(self::listFor($pluginDir, $locale ?? self::siteLocale()));
+    }
+
+    /**
+     * Every list this site has, for words that arrived from outside any ZIP: an
+     * installed paid setup's words are in Pro's list, never in a public file.
+     */
+    public static function everyBundled(?string $locale = null): self
+    {
+        $locale ??= self::siteLocale();
+
+        /**
+         * Filters the words read over an installed design or setup.
+         *
+         * @param array<string, string> $words English => translation.
+         * @param string $locale The site's language.
+         */
+        $words = apply_filters('wconvert_design_words', self::listFor(WCONVERT_DIR, $locale), $locale);
+
+        return new self(self::readList($words));
+    }
+
+    /**
+     * One plugin's list for a language, or nothing where it carries none.
+     *
+     * @return array<string, string>
+     */
+    public static function listFor(string $pluginDir, string $locale): array
+    {
+        return self::fileFor(rtrim($pluginDir, '/') . '/' . self::PATH, $locale);
     }
 
     public static function siteLocale(): string

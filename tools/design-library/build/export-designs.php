@@ -113,9 +113,26 @@ function images(array $template, array $input): array
     return [['tree' => $design['tree'], 'tokens' => $design['tokens']] + $template, array_values($assets), $bindings, array_values($media)];
 }
 
+/**
+ * A setup's plan is the highest its design, Goal, format and rules need.
+ *
+ * @param array<string, mixed> $setup
+ * @param array<string, array<string, mixed>> $ruleDefinitions
+ * @return array{paid: bool, paid_rules: bool}
+ */
+function setupPlan(array $setup, string $designTier, string $format, array $ruleDefinitions): array
+{
+    $paidRules = false;
+    foreach (array_merge($setup['rules'], $setup['targeting']['include'] ?? [], $setup['targeting']['exclude'] ?? []) as $rule) {
+        $paidRules = $paidRules || ($ruleDefinitions[$rule['type']]['tier'] ?? 'free') !== 'free';
+    }
+    return ['paid' => $designTier !== 'free' || \WConvert\Goal\Goal::from($setup['goal'])->tier() !== Tier::Free || $paidRules || in_array($format, PRO_FORMATS, true), 'paid_rules' => $paidRules];
+}
+
+$ruleManifest = \WConvert\Rules\RuleManifest::load($root);
+$ruleDefinitions = $ruleManifest['triggers'] + $ruleManifest['conditions'] + $ruleManifest['targeting'];
+
 if (($input['mode'] ?? '') === 'designs') {
-    $ruleManifest = \WConvert\Rules\RuleManifest::load($root);
-    $ruleDefinitions = $ruleManifest['triggers'] + $ruleManifest['conditions'] + $ruleManifest['targeting'];
     $output = ['designs' => [], 'setups' => [], 'failures' => []];
     $packs = [];
     foreach ($input['designs'] as $request) {
@@ -175,12 +192,7 @@ if (($input['mode'] ?? '') === 'designs') {
             $designId = $setup['template_id'];
             if (!isset($packs[$designId])) throw new RuntimeException('Its design ' . $designId . ' is not exported in this release.');
             $design = array_values(array_filter($output['designs'], static fn (array $row): bool => $row['id'] === $designId))[0];
-            // A setup's plan is the highest its design, Goal, format and rules need.
-            $paidRules = false;
-            foreach (array_merge($setup['rules'], $setup['targeting']['include'] ?? [], $setup['targeting']['exclude'] ?? []) as $rule) {
-                $paidRules = $paidRules || ($ruleDefinitions[$rule['type']]['tier'] ?? 'free') !== 'free';
-            }
-            $paid = $design['tier'] !== 'free' || \WConvert\Goal\Goal::from($setup['goal'])->tier() !== Tier::Free || $paidRules || in_array($design['entry']['format'], PRO_FORMATS, true);
+            ['paid' => $paid, 'paid_rules' => $paidRules] = setupPlan($setup, $design['tier'], $design['entry']['format'], $ruleDefinitions);
             $capabilities = array_values(array_merge(['campaign-starts:1'], $paidRules ? ['paid-campaign-rules:1'] : []));
             $object = ['schema' => 3, 'minor' => DesignObject::MINOR, 'id' => $id, 'revision' => $request['revision'], 'name' => $setup['name'], 'tier' => $paid ? 'pro' : 'free',
                 'design' => ['id' => $designId, 'revision' => $design['revision']],
@@ -238,7 +250,7 @@ if (($input['mode'] ?? '') === 'validate') {
 
 if (($input['mode'] ?? '') === 'words') {
     $manifest = TemplateManifest::load($root);
-    $sets = ['free' => []];
+    $sets = ['free' => [], 'pro' => []];
     $add = static function (string $set, array $words, string $file) use (&$sets, $root): void {
         foreach ($words as $english => $word) {
             $known = $sets[$set][$english] ?? ['limit' => PHP_INT_MAX, 'kind' => $word['kind'], 'refs' => []];
@@ -251,6 +263,16 @@ if (($input['mode'] ?? '') === 'words') {
         $add('free', DesignWords::wordsOfTemplate(json_decode((string) file_get_contents($file), true, 512, JSON_THROW_ON_ERROR), $manifest), $file);
     }
     foreach (glob($root . '/resources/playbooks/*.php') ?: [] as $file) $add('free', DesignWords::wordsOfPlaybook(require $file), $file);
+    foreach (glob($root . '/pro/modules/*/templates/*.json') ?: [] as $file) {
+        $add('pro', DesignWords::wordsOfTemplate(json_decode((string) file_get_contents($file), true, 512, JSON_THROW_ON_ERROR), $manifest), $file);
+    }
+    foreach (glob($root . '/pro/modules/*/playbooks/*.php') ?: [] as $file) $add('pro', DesignWords::wordsOfPlaybook(require $file), $file);
+    // A paid setup's words stay out of the public catalogue, so they reach a site in Pro's ZIP.
+    foreach (glob($root . '/tools/design-library/hosted/playbooks/*.php') ?: [] as $file) {
+        $setup = require $file;
+        $design = json_decode((string) file_get_contents(source($root, 'design', $setup['template_id'])), true, 512, JSON_THROW_ON_ERROR);
+        if (setupPlan($setup, $design['tier'], $design['display_type'], $ruleDefinitions)['paid']) $add('pro', DesignWords::wordsOfPlaybook($setup), $file);
+    }
     $limits = [];
     foreach ($sets as $words) foreach ($words as $english => $word) $limits[$english] = min($limits[$english] ?? PHP_INT_MAX, $word['limit']);
     $refused = [];

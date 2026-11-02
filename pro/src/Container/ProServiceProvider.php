@@ -175,6 +175,9 @@ final class ProServiceProvider implements ServiceProvider
         // Existing claims must expire even after WooCommerce or the module that took them is disabled.
         \WConvert\Pro\Claims::hooks();
 
+        // An installed paid setup's words are in Pro's list, not the public catalogue (ADR 0183).
+        add_filter('wconvert_design_words', static fn (array $words, string $locale): array => $words + \WConvert\Template\DesignWords::listFor(WCONVERT_PRO_DIR, $locale), 10, 2);
+
         // The words Pro's loader writes itself, printed beside free's.
         \WConvert\Pro\Frontend\ProPageLabels::hooks();
         \WConvert\Pro\Frontend\ProInspectorLabels::hooks();

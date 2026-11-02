@@ -21,7 +21,12 @@ word shared with the admin would drag the admin's language along.
 
 2. **The source is one `.po` per language**, in `tools/design-library/translations/`,
    which never ships. `npm run templates:words` writes
-   `resources/templates/words/<locale>.json`. Each language also has a short term
+   `resources/templates/words/<locale>.json` for Free and
+   `pro/resources/templates/words/<locale>.json` for Pro, Pro's holding the words of
+   its designs and setups and of the paid setups the online library serves. Those stay
+   out of every public file, and reach an installed setup through the
+   `wconvert_design_words` filter. Each list is complete by itself, so neither ZIP
+   depends on the other's release. Each language also has a short term
    list (`<locale>.terms.md`) so a term reads one way across every design and
    follows the wording `CONTEXT.md` settles.
 
@@ -41,7 +46,7 @@ word shared with the admin would drag the admin's language along.
 6. **A translation must keep the marks.** Not empty, no markup, within the English's
    limit, and the same count of `%s`, `%b` and `%i`, or a privacy link could silently
    disappear. A pair that fails is dropped when a list is read and fails CI before
-   then. So does a Free word without a translation, because a list applies per word
+   then. So does a Free or Pro word without a translation, because a list applies per word
    and a gap is an English word in a German popup.
 
 7. **Existing campaigns never change.** Words are read into a design when the library
@@ -49,6 +54,8 @@ word shared with the admin would drag the admin's language along.
 
 ## Consequences
 
+- Pro now calls a Free class that `free-v1.0.0` lacks, so a Pro release carrying this
+  must raise `WCONVERT_MIN_CORE` to the Free release that ships it.
 - A new bundled word needs a translation in every shipped language in the same pull
   request: `npm run templates:words -- --check` says which. Adding a language is data
   only: an empty `.po`, a generator run, the translations.
