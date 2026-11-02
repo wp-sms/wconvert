@@ -185,7 +185,7 @@ test('post authors refresh ready Campaigns without losing unsaved content or gai
   await other.close();
   await page.getByRole('button', { name: 'Refresh campaigns', exact: true }).click();
   await expect(page.getByText('Campaign choices updated.', { exact: true })).toBeVisible();
-  await expect(editor.getByText(/no longer published as inline/)).toBeVisible();
+  await expect(editor.getByText(/no longer published inline/)).toBeVisible();
   expect(await page.evaluate(() => window.wp.blocks.serialize(window.wp.data.select('core/block-editor').getBlocks()))).toBe(original.markup);
   await expect(page.locator('.wconvert-lock-picker__selected')).toContainText('Previously selected campaign');
   await page.getByRole('button', { name: 'Change campaign', exact: true }).click();
