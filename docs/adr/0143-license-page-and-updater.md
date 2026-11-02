@@ -85,7 +85,7 @@ nothing, and asserts no file on the front-end read path touches it.
    with no licence. The bell is untouched: it belongs to notifications.
 8. **The page.** One status card — headline, one action, then Updates · Support
    · Renewal, with updates and *Check now* in its foot — then a Sites card and a
-   License key card. *Amended by ADR 0182: all of them are the shared `Region`,
+   License key card. *Amended by [ADR 0182](0182-the-written-rules-are-held-by-guards.md): all of them are the shared `Region`,
    `RegionHeader`, `RegionBody` and `RegionFooter`, like Settings, so the
    headline is the region's 16px heading with the state's icon beside it, and
    the page has no card drawing of its own. The structure and the words here

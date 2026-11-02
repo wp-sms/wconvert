@@ -189,9 +189,9 @@ export default function SampleVisit({ value, vocabulary, onClose, onOpenSection,
         </ul>
       </aside>
     </AdminDialogBody>
-    <AdminDialogFooter note={__('Uses your unsaved draft. Nothing opens on your site.', 'wconvert')}>
+    <AdminDialogFooter note={__('Uses your unsaved draft. Nothing opens on your site.', 'wconvert')}
+      back={<Button type="button" variant="outline" onClick={onClose}>{__('Done', 'wconvert')}</Button>}>
       <Button type="button" variant="outline" onClick={reset}>{__('Reset visitor', 'wconvert')}</Button>
-      <Button type="button" onClick={onClose}>{__('Done', 'wconvert')}</Button>
     </AdminDialogFooter>
   </>;
 }

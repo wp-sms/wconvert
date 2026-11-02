@@ -5,7 +5,6 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
 import globals from 'globals';
 import { fixupPluginRules } from '@eslint/compat';
 import wordpressPlugin from '@wordpress/eslint-plugin';
-import { readFileSync } from 'node:fs';
 
 // 23 is the last line without a Vite 7 peer; its translator-comments rule
 // still calls `context.getCommentsBefore()`, which ESLint 9 removed.
@@ -40,11 +39,9 @@ const i18nRules = (domain) => ({
  * §§3, 7, 15, 21; ADR 0182). `admin-guidelines.test.ts` holds the rules about
  * words and CSS; these are about one JSX element, so they fire in the editor.
  *
- * The owners are the components that ARE the rule. `eslint` in the allow file
- * is what is left to fix or recorded as an exception, and the test fails on a
- * file that no longer needs its place there.
+ * The owners are the components that ARE the rule, and they are the only files
+ * exempt.
  */
-const guidelineAllow = JSON.parse(readFileSync(new URL('./tests/js/admin-guidelines-allow.json', import.meta.url), 'utf8')).eslint;
 const rawControl = (element, message) => ({ selector: `JSXOpeningElement[name.name="${element}"]`, message });
 const guidelineRules = {
   'no-restricted-syntax': ['error',
@@ -189,7 +186,7 @@ export default [
   },
   {
     files: ['resources/admin/src/**/*.tsx', 'resources/blocks/**/*.tsx', 'pro/resources/admin/src/**/*.tsx', 'pro/modules/*/admin/**/*.tsx', 'pro/modules/*/block/**/*.tsx'],
-    ignores: ['**/*.test.tsx', '**/__tests__/**', 'resources/admin/src/components/ui/**', 'resources/admin/src/shell/CheckRow.tsx', 'resources/admin/src/shell/Disclosure.tsx', ...guidelineAllow],
+    ignores: ['**/*.test.tsx', '**/__tests__/**', 'resources/admin/src/components/ui/**', 'resources/admin/src/shell/CheckRow.tsx', 'resources/admin/src/shell/Disclosure.tsx'],
     rules: guidelineRules,
   },
   {

@@ -51,7 +51,8 @@ export function ProductPicker({ ids, onChange, max = 6, ordered = true, allowUna
   return <div className="wconvert-journey-settings__products">
     <p id={helpId}>{help ?? __('Up to 6. The first 3 available appear.', 'wconvert-pro')}</p>
     <label>{label ?? __('Find products', 'wconvert-pro')}<Input type="search" autoComplete="off" aria-describedby={helpId} value={query} onChange={event => { searchRequest.current?.abort(); setQuery(event.target.value); setFound([]); setError(''); setBusy(false); setSearched(false); }} onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); void search(); } }} /></label>
-    <Button variant="outline" type="button" onClick={() => void search()} disabled={busy || !query.trim()}>{busy ? __('Searching…', 'wconvert-pro') : __('Search catalog', 'wconvert-pro')}</Button>
+    <span id={`${helpId}-empty`} className="sr-only">{__('Type a name to search.', 'wconvert-pro')}</span>
+    <Button variant="outline" type="button" disabled={busy} {...refusable(query.trim() ? null : `${helpId}-empty`, () => void search())}>{busy ? __('Searching…', 'wconvert-pro') : __('Search catalog', 'wconvert-pro')}</Button>
     {error && <div className="wconvert-result-filter__body"><p role="alert">{error}</p><TryAgain onClick={() => void search()} busy={busy} /></div>}
     {searched && !found.length && <p role="status">{__('No products found. Try another name.', 'wconvert-pro')}</p>}
     {ids.length >= max && <p id={`${helpId}-full`}>{__('Selection full. Remove a product to choose another.', 'wconvert-pro')}</p>}

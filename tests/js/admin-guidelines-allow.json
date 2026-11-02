@@ -1,11 +1,10 @@
 {
-  "eslint": [],
   "dates": {},
   "errors": {},
   "digits": {},
   "type": {},
   "retry": {
-    "resources/admin/src/builder/JourneyTest.tsx": 6
+    "resources/admin/src/builder/JourneyTest.tsx": 2
   },
   "tiers": {},
   "pressed": {

@@ -107,8 +107,8 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
       }}>
         {targets.map(target => <option key={target.id} value={target.id}>{target.name}</option>)}
       </NativeSelect></label>
-      {onSelect && <div className="wconvert-journey-route-destination">
-        <button type="button" disabled={!tree.steps.some(item => item.id === edge.to)} onClick={() => onSelect(tree.steps.findIndex(item => item.id === edge.to))}>{sprintf(/* translators: %s: a screen's name. */ __('Open %s', 'wconvert-pro'), tree.steps.find(item => item.id === edge.to)?.name ?? '')}<ArrowRight aria-hidden="true" size={14} className="rtl:-scale-x-100"/></button>
+      {onSelect && tree.steps.some(item => item.id === edge.to) && <div className="wconvert-journey-route-destination">
+        <button type="button" onClick={() => onSelect(tree.steps.findIndex(item => item.id === edge.to))}>{sprintf(/* translators: %s: a screen's name. */ __('Open %s', 'wconvert-pro'), tree.steps.find(item => item.id === edge.to)?.name ?? '')}<ArrowRight aria-hidden="true" size={14} className="rtl:-scale-x-100"/></button>
       </div>}
       {tree.steps.find(item => item.id === edge.to)?.when && <p className="wconvert-journey-route-check">{sprintf(/* translators: %s: the screen's rule, e.g. “Interests includes Growing”. */ __('Only if %s', 'wconvert-pro'), conditionText(tree, tree.steps.find(item => item.id === edge.to)!.when!))}</p>}
       {onOpenInsert ? <button type="button" className="wconvert-journey-routes__insert" onClick={() => onOpenInsert(edge.id)}>{__('Add a screen on this line', 'wconvert-pro')}</button> : <>

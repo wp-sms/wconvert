@@ -4,7 +4,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { AdminDialog, AdminDialogBody, AdminDialogContent, AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
 import { Field } from '../shell/Field';
-import { siteLocale } from '../lib/format';
+import { formatCount, siteLocale } from '../lib/format';
 import { refusable } from '../lib/refusable';
 import { newAuthoringId } from '../authoringId';
 import { zoneName } from '../discovery/model';
@@ -56,7 +56,7 @@ export function NewOccasionDialog({ returnFocusTo, onClose, onCreated }: {
             <Field label={__('Last day', 'wconvert')} htmlFor={`${id}-end`}>
               <Input id={`${id}-end`} type="date" required min={start || undefined} value={end} onChange={(event) => setEnd(event.target.value)} />
             </Field>
-            {full && <p id={`${id}-full`} className="m-0 text-note text-muted-foreground">{sprintf(/* translators: %s: the most occasions you can keep, e.g. “50”. */ __('You can keep up to %s occasions. Delete one to add another.', 'wconvert'), String(MAX_OCCASIONS))}</p>}
+            {full && <p id={`${id}-full`} className="m-0 text-note text-muted-foreground">{sprintf(/* translators: %s: the most occasions you can keep, e.g. “50”. */ __('You can keep up to %s occasions. Delete one to add another.', 'wconvert'), formatCount(MAX_OCCASIONS))}</p>}
           </AdminDialogBody>
           <AdminDialogFooter error={picker.error} note={!full && unnamed ? <span id={`${id}-unnamed`}>{__('Name this occasion first.', 'wconvert')}</span> : undefined} back={<Button type="button" variant="outline" disabled={picker.saving} onClick={onClose}>{__('Cancel', 'wconvert')}</Button>}>
             <Button type="submit" disabled={picker.saving || !picker.data} {...refusable(refusedBy)}>{picker.saving ? __('Saving…', 'wconvert') : __('Add occasion', 'wconvert')}</Button>

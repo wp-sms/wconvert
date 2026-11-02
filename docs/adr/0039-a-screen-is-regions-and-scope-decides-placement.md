@@ -99,7 +99,7 @@ Refresh is gone, and per-destination Settings collapses with Send a test and
 Remove into each card's overflow menu, as the "one row" line above prescribes
 for more than two actions.*
 
-*Extended by the guidelines audit (GUIDELINES §11): Settings' **Accounts** region
+*Extended by the guidelines audit ([ADR 0182](0182-the-written-rules-are-held-by-guards.md)) (GUIDELINES §11): Settings' **Accounts** region
 puts **Connect an account** on its heading for the same reason, its only action
 in a toolbar of its own. With no accounts the empty state carries it instead
 (§20).*
@@ -169,7 +169,7 @@ below it is showing, and it changes when the filter changes. So it sits at the
 **trailing edge of that region's toolbar**, in tabular numerals, as **one text
 node**.
 
-*Amended by the guidelines audit, following [0132](0132-every-screen-answers-its-first-question.md)
+*Amended by the guidelines audit ([ADR 0182](0182-the-written-rules-are-held-by-guards.md)), following [0132](0132-every-screen-answers-its-first-question.md)
 decision 4: **a list's count sits in its foot**, with its dates and pages
 (`shell/ListFoot`, GUIDELINES §20). Still one text node, for the same reason.*
 

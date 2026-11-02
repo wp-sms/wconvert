@@ -1,4 +1,5 @@
 import { useId, useState } from 'react';
+import { refusable } from '../lib/refusable';
 import { __, sprintf } from '@wordpress/i18n';
 import type { TemplateTree } from '@renderer/types';
 import { Button } from '../components/ui/button';
@@ -62,8 +63,7 @@ export function GraphScreenRemove({ tree, screenId, journeys = true, onRemove, o
     {refusal && !plan.reason && <p id={`${id}-refusal`} className="m-0 text-note text-muted-foreground">{refusal}</p>}
     <AlertDialogFooter>
       <AlertDialogCancel onClick={onCancel}>{__('Cancel', 'wconvert')}</AlertDialogCancel>
-      <Button type="button" variant="destructive" aria-disabled={refusal !== null || undefined} aria-describedby={refusal ? `${id}-refusal` : undefined}
-        onClick={() => { if (removal && refusal === null) onRemove(removal.next, removal.destination); }}>{__('Delete screen', 'wconvert')}</Button>
+      <Button type="button" variant="destructive" {...refusable(refusal ? `${id}-refusal` : null, () => { if (removal) onRemove(removal.next, removal.destination); })}>{__('Delete screen', 'wconvert')}</Button>
     </AlertDialogFooter>
   </>;
 }

@@ -54,7 +54,7 @@ export function CommercePicker({ value, onChange, categories = false, max = 20, 
     const single = max === 1;
     const showSearch = !single || ids.length === 0 || changing;
     const matches = searched === query ? hits.filter(hit => !ids.includes(hit.id) && !excludeIds.includes(hit.id)) : [];
-    const nameOf = (id: number) => [...names, ...hits].find(hit => hit.id === id)?.name ?? `#${id}`;
+    const nameOf = (id: number) => [...names, ...hits].find(hit => hit.id === id)?.name ?? (categories ? __('Unnamed category', 'wconvert') : __('Unnamed product', 'wconvert'));
     const move = (index: number, by: number) => {
       const next = [...ids];
       [next[index], next[index + by]] = [next[index + by], next[index]];

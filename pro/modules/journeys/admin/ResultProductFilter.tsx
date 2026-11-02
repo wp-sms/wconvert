@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import apiFetch from '@wordpress/api-fetch';
 import { __, sprintf } from '@wordpress/i18n';
+import { refusable } from '@/lib/refusable';
 import { TryAgain } from '@/shell/Region';
 import { Disclosure } from '@/shell/Disclosure';
 import { LineSkeleton } from '@/shell/LineSkeleton';
@@ -45,6 +46,8 @@ function CatalogChoice({ label, taxonomy, value, onChange }: { label: string; ta
 }
 
 export function ResultProductFilter({ value, onChange }: { value: Filter; onChange(value: Filter): void }) {
+  const addReason = useId();
+  const addRefused = !value.category_id || value.attributes.some(item => !item.taxonomy || !item.term_id);
   const [preview, setPreview] = useState(false);
   const [curation, setCuration] = useState(false);
   const edit = (at: number, next: Filter['attributes'][number]) => onChange({ ...value, attributes: value.attributes.map((item, index) => index === at ? next : item) });
@@ -64,7 +67,10 @@ export function ResultProductFilter({ value, onChange }: { value: Filter; onChan
       {!!filter.taxonomy && <CatalogChoice key={filter.taxonomy} label={__('Value', 'wconvert-pro')} taxonomy={filter.taxonomy} value={filter.term_id ? String(filter.term_id) : ''} onChange={id => edit(index, { ...filter, term_id: Number(id) })} />}
       <Button variant="ghost" aria-label={sprintf(/* translators: %s: the product filter's position in the list, e.g. 1. */ __('Remove filter %s', 'wconvert-pro'), formatCount(index + 1))} onClick={() => onChange({ ...value, attributes: value.attributes.filter((_, at) => at !== index) })}>{__('Remove filter', 'wconvert-pro')}</Button>
     </fieldset>)}
-    {value.attributes.length < 3 && <Button variant="outline" disabled={!value.category_id || value.attributes.some(item => !item.taxonomy || !item.term_id)} onClick={() => onChange({ ...value, attributes: [...value.attributes, { taxonomy: '', term_id: 0 }] })}>{__('Add attribute filter', 'wconvert-pro')}</Button>}
+    {value.attributes.length < 3 && <>
+      {addRefused && <span id={addReason} className="sr-only">{value.category_id ? __('Finish this filter first.', 'wconvert-pro') : __('Choose a category first.', 'wconvert-pro')}</span>}
+      <Button variant="outline" {...refusable(addRefused ? addReason : null, () => onChange({ ...value, attributes: [...value.attributes, { taxonomy: '', term_id: 0 }] }))}>{__('Add attribute filter', 'wconvert-pro')}</Button>
+    </>}
     <small>{__('Uses global WooCommerce attributes. Shoppers choose size or other options on the product page.', 'wconvert-pro')}</small>
     {new Set(value.attributes.map(item => item.taxonomy)).size < value.attributes.length && <p role="alert">{__('Use each attribute only once.', 'wconvert-pro')}</p>}
     <Disclosure variant="inline" onToggle={setCuration} title={__('Pin or exclude', 'wconvert-pro')}

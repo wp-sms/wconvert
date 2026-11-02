@@ -1,4 +1,5 @@
 import { useId, useState } from 'react';
+import { refusable } from '../lib/refusable';
 import { __, sprintf } from '@wordpress/i18n';
 import type { TemplateTree } from '@renderer/types';
 import { Button } from '../components/ui/button';
@@ -41,8 +42,7 @@ export function GraphCaptureRemove({ tree, submissionId, onRemove, onCancel }: {
     {refusal && !plan.reason && <p id={`${id}-refusal`} className="m-0 text-note text-muted-foreground">{refusal}</p>}
     <AlertDialogFooter>
       <AlertDialogCancel onClick={onCancel}>{__('Cancel', 'wconvert')}</AlertDialogCancel>
-      <Button type="button" variant="destructive" aria-disabled={refusal !== null || undefined} aria-describedby={refusal ? `${id}-refusal` : undefined}
-        onClick={() => { if (removal && refusal === null) onRemove(removal.next, removal.destination); }}>{__('Remove form', 'wconvert')}</Button>
+      <Button type="button" variant="destructive" {...refusable(refusal ? `${id}-refusal` : null, () => { if (removal) onRemove(removal.next, removal.destination); })}>{__('Remove form', 'wconvert')}</Button>
     </AlertDialogFooter>
   </>;
 }

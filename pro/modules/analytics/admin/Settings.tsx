@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertTitle } from '@/components/ui/alert';
 import { AdminDialog, AdminDialogBody, AdminDialogClose, AdminDialogContent, AdminDialogFooter, AdminDialogHeader, AdminDialogTrigger } from '@/components/ui/admin-dialog';
+import { formatCount } from '@/lib/format';
 import { GuideLink } from '@/shell/GuideLink';
 import { InfoTip } from '@/shell/InfoTip';
 import { GUIDES, docsUrl } from '@/shell/docs';
@@ -134,7 +135,7 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
             {value.route === 'gtm' && <Field label={__('Data-layer name', 'wconvert-pro')} htmlFor={`${ids}-layer`}>
               <Input id={`${ids}-layer`} className="max-w-sm" value={value.data_layer} maxLength={40} dir="ltr" onChange={e => change({ data_layer: e.target.value })} />
             </Field>}
-            <p className="m-0 text-note text-muted-foreground">{__('Includes existing and future campaigns unless excluded in campaign details.', 'wconvert-pro')}{response.excluded > 0 && <> {sprintf(/* translators: %s: how many published campaigns are excluded from analytics. */ _n('%s published campaign is excluded.', '%s published campaigns are excluded.', response.excluded, 'wconvert-pro'), String(response.excluded))}</>}</p>
+            <p className="m-0 text-note text-muted-foreground">{__('Includes existing and future campaigns unless excluded in campaign details.', 'wconvert-pro')}{response.excluded > 0 && <> {sprintf(/* translators: %s: how many published campaigns are excluded from analytics. */ _n('%s published campaign is excluded.', '%s published campaigns are excluded.', response.excluded, 'wconvert-pro'), formatCount(response.excluded))}</>}</p>
           </Disclosure>
         </div>
         </>}

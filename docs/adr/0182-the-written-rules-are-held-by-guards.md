@@ -1,7 +1,8 @@
 # 0182: The written rules are held by guards
 
-Accepted 2026-11-02. Amends the sections of `tools/design-system/GUIDELINES.md`
-and the ADRs named inline in the commits below; each carries its own note.
+Accepted 2026-11-02. Amends sections of `tools/design-system/GUIDELINES.md` and
+ADRs 0039, 0060, 0069, 0091, 0131, 0132, 0137, 0138, 0143, 0163 and 0171, each with
+its own inline note.
 
 ## Context
 
@@ -38,8 +39,8 @@ until the next person who has not read it.
 3. **The allowlist is exact.** `tests/js/admin-guidelines-allow.json` states how
    many of each a file holds, and a fixed one has to leave the list, so it never
    allows what has been fixed. What is on it now is what was decided:
-   - `retry`: `JourneyTest.tsx`, which repeats the visitor's own "Retry products"
-     wording in a simulation of what a visitor sees.
+   - `retry`: `JourneyTest.tsx`'s "Retry products", which repeats the visitor's own
+     wording in a simulation of what a visitor sees, and the note explaining it.
    - `pressed`: each one read and an independent toggle.
    - `colours`: the two block sheets, because the block editor does not load the
      admin's tokens. They share one palette instead.
@@ -57,11 +58,33 @@ until the next person who has not read it.
      re-reads on its own.
    - The destination card draws its own header in `RegionHeader`'s slot, because
      its description carries a link (§6).
-   - Font rows stay in a popover (ADRs 0042 and 0054), unlike the option menu.
+   - Font rows stay in a popover (ADRs 0042 and 0054), unlike the option menu,
+     because each is set in its own face.
+   - Leads applies its search on Enter. Each apply is a server query, and a
+     half-typed address parses as a different filter from a whole one. Its anatomy
+     matches the others (§11).
+   - Spam protection's "No activity yet." stays a line in a readout, not an
+     `EmptyState` (§11).
+   - An arrow inside a translated sentence, such as a menu path, stays text, because
+     only a translator can place it. An arrow beside a value is `Arrow` (§15).
+   - Timezone arithmetic and zone names use `Intl` directly (`lib/wallTime.ts`,
+     `leads/calendar.ts`, `discovery/model.ts`), because `format.ts`'s helpers take
+     no named timezone.
 
 5. **The License page is drawn with shared regions** (amending ADR 0143
    decision 8). Its structure and words stay; its own cards, notice and 24px
    headings go, so it reads as the same product as Settings.
+
+6. **Dialog decisions the audit forced** (§9).
+   - The read-only exit is **Done**, at the start. ✕ keeps the word Close.
+   - A view opened in place steps back on Escape, one view at a time. ✕ and an
+     outside click still leave the modal.
+   - The template gallery's inspection and What changes open in place with Back.
+   - A title is the subject, except where the dialog's subject is the action and
+     nothing exists yet: Change template, Change goal, Add a destination.
+   - `AddDestinationPicker` stays Medium, because a short list's rows would run 80rem.
+   - "Whose content" is one shape and one set of words, "Keep my current content"
+     (amending ADRs 0069 and 0137).
 
 ## Consequences
 
@@ -78,5 +101,6 @@ until the next person who has not read it.
 
 - Other dead CSS found on the way (a pane family, `wconvert-pack*`, `contrast__*`,
   `readiness__*`) is unused and harmless, and was left out to keep this reviewable.
-- "Cart" stays where the server owns the name (rule catalogue, the recovery
-  Goal's copy, "Add to cart"). Admin sentences say "basket" (ADR 0120, `CONTEXT.md`).
+- "Cart" stays where the server owns the name or a metric carries it (rule
+  catalogue, the recovery Goal's copy, "Add to cart", "Cart return clicks"). Admin
+  sentences say "basket" (ADR 0120, `CONTEXT.md`).

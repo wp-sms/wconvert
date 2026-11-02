@@ -99,7 +99,7 @@ it('separates an accepted save from failed destination delivery and retries deli
   expect(screen.getByText(/Destination setup: MailPoet/)).toBeInTheDocument();
   await user.click(screen.getByText('Submitted answers'));
   expect(screen.getByText('visitor@example.com')).toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: 'Simulate delivery retry' }));
+  await user.click(screen.getByRole('button', { name: 'Try delivery again' }));
   expect(screen.getByText('Destination delivery is queued in this simulation.')).toBeInTheDocument();
   expect(screen.getByText('Accepted in test')).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'Back' }));

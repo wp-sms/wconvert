@@ -17,7 +17,10 @@ it('keeps an incomplete filter visible and changes its value without losing the 
   await waitFor(() => expect(screen.getByRole('option', { name: 'Blue' })).toBeInTheDocument());
   await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Value' }), '9');
   expect(onChange).toHaveBeenCalledWith({ category_id: 7, attributes: [{ taxonomy: 'pa_color', term_id: 9 }] });
-  expect(screen.getByRole('button', { name: 'Add attribute filter' })).toBeDisabled();
+  // Refused rather than disabled (§14): it keeps focus, and says why.
+  const add = screen.getByRole('button', { name: 'Add attribute filter' });
+  expect(add).toHaveAttribute('aria-disabled', 'true');
+  expect(add).toHaveAccessibleDescription('Finish this filter first.');
 });
 
 it('does not fetch incomplete matches and explains empty and failed reads', async () => {

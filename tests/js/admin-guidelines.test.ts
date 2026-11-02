@@ -7,16 +7,16 @@ import { describe, expect, it } from 'vitest';
  *
  * The ADR 0131 audit fixed these drifts once and nothing stopped them coming
  * back, because GUIDELINES.md is prose. ESLint holds the rules that are about
- * one JSX element, and this holds the ones about a word or a string. Each rule
- * lists what it allows with the reason beside it, so an exception is a decision
- * somebody wrote down rather than a line nobody looked at.
+ * one JSX element, and this holds the ones about a word or a string. What a rule
+ * allows is in `admin-guidelines-allow.json`, and the reason is in ADR 0182, so an
+ * exception is a decision somebody wrote down rather than a line nobody looked at.
  *
  * Reads source, so it proves a call site uses the shared thing and nothing about
  * how that thing renders (§21): the browser pass still owns that.
  */
 const REPO = resolve(__dirname, '../..');
 const ALLOW_PATH = resolve(__dirname, 'admin-guidelines-allow.json');
-const allowFile = JSON.parse(readFileSync(ALLOW_PATH, 'utf8')) as { eslint: string[] } & Record<string, Record<string, number>>;
+const allowFile = JSON.parse(readFileSync(ALLOW_PATH, 'utf8')) as Record<string, Record<string, number>>;
 
 /** Every admin surface this project wrote, free and Pro. The renderer and loader are not one. */
 function adminRoots(): string[] {
@@ -57,7 +57,7 @@ const RULES: Record<string, { why: string; count: (code: string) => number; owne
   dates: {
     why: '§8: dates and numbers go through lib/format.ts',
     count: matches(/\bIntl\.|\.toLocale(?:Date|Time)?String\(/g),
-    // Timezone arithmetic, which formats nothing a merchant reads.
+    // These need a named timezone or calendar, which format.ts's helpers do not take.
     owners: /(?:lib\/format\.ts|lib\/wallTime\.ts|leads\/calendar\.ts|discovery\/model\.ts)$/,
   },
   errors: {
@@ -97,9 +97,6 @@ function found(rule: { count: (code: string) => number; owners?: RegExp }): Reco
       .sort(([a], [b]) => a.localeCompare(b)),
   );
 }
-
-/** What the ESLint rules forbid, so a file that no longer breaks one leaves their ignore list. */
-const ESLINT_SHAPES = /<(?:select|textarea|details)\b|type="checkbox"|<Button\b[^>]*\bsize="sm"|\bside="(?:left|right)"/;
 
 /**
  * The CSS half: a literal colour outside a token's definition (§5), and a shadow
@@ -172,9 +169,5 @@ describe('the admin guidelines', () => {
     it(`${name} — ${rule.why}`, () => holdsTo(name, cssFound(rule.test)));
   }
 
-  it('lists no file in the ESLint ignore that no longer breaks a rule', () => {
-    const stale = allowFile.eslint.filter((path) => !ESLINT_SHAPES.test(readFileSync(resolve(REPO, path), 'utf8')));
-    expect(stale).toEqual([]);
-  });
 });
 

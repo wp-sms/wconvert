@@ -722,6 +722,9 @@ component, `:dir(rtl)` in the stylesheet. There was no `rtl:` variant, no
 so `OptinList`'s `CornerDownRight` — the entire visual grammar of the nesting —
 pointed away from the row it belonged to on every RTL install.
 
+**An arrow inside a translated sentence stays text**, such as a menu path
+("Settings → AI agents"), because only a translator can place it (ADR 0182).
+
 **A glyph that is symmetric, or that means up or down, is left alone.** Up is up
 in Persian: a list runs top to bottom whichever way the words run, which is why
 `BlockTree.mirrored()` swaps ← and → and nothing else.

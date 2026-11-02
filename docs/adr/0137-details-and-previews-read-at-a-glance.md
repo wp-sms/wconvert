@@ -58,7 +58,7 @@ and none could be read at a glance:
    becomes the question — the list's confirm title and description, with
    Cancel and the outcome-named action — because a dialog never stacks another.
    Confirming runs the list's own path and closes Details; Cancel and Escape
-   put the caret back on the ⋯. `optins/decisionCopy` (which the report's confirms read too, since the guidelines audit) holds the words both
+   put the caret back on the ⋯. `optins/decisionCopy` (which the report's confirms read too, since the guidelines audit ([ADR 0182](0182-the-written-rules-are-held-by-guards.md))) holds the words both
    read.
 5. **The setup preview is for looking.** One toolbar row: Desktop | Mobile, a
    visibly labelled **Screen** choice, and an icon toggle at the end that names
@@ -92,7 +92,7 @@ and none could be read at a glance:
    the Apply button is still described by it. *Amended by [ADR 0171](0171-one-template-gallery.md): the words are
    "template" now — "Current template", "Use the template's sample content",
    "Replaces this draft's template. You can undo.", "Use this template" — and
-   the library switch is the gallery's "Show" select.* *Amended by ADR 0182: a
+   the library switch is the gallery's "Show" select.* *Amended by [ADR 0182](0182-the-written-rules-are-held-by-guards.md): a
    draft with no template has no words to keep, so neither radio is drawn and
    the sample content's "Review its offers and links before publishing." stands
    alone. A control that can never work is hidden, not refused.* *Amended by ADR

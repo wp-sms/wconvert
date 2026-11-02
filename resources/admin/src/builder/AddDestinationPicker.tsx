@@ -1,8 +1,8 @@
 import { useId, useState, type RefObject } from 'react';
+import { PickerSearch } from '../discovery/PickerSearch';
 import { __ } from '@wordpress/i18n';
 import { AdminDialog, AdminDialogBody, AdminDialogContent, AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
 import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
 import { ProviderMark } from '../destinations/ProviderMark';
 import { ProviderTiles, channelRefusal, channels, type ChannelRule } from '../destinations/ProviderTiles';
 import { destinationStatus, setupProblems } from '../destinations/status';
@@ -50,8 +50,7 @@ export function AddDestinationPicker({
       <AdminDialogContent size="md"
         onCloseAutoFocus={(event) => { event.preventDefault(); returnFocusTo.current?.focus(); }}>
         <AdminDialogHeader title={__('Add a destination', 'wconvert')} meta={description}>
-          <Input type="search" className="mt-2" aria-label={__('Search destinations', 'wconvert')} placeholder={__('Search destinations', 'wconvert')}
-            value={query} onChange={(event) => setQuery(event.target.value)} />
+          <div className="mt-2"><PickerSearch label={__('Search destinations', 'wconvert')} value={query} onChange={setQuery} /></div>
         </AdminDialogHeader>
         <AdminDialogBody className="flex flex-col gap-5">
         {destinations.length > 0 && <section className="flex flex-col gap-2" aria-labelledby={`${id}-yours`}>
