@@ -9,16 +9,16 @@ import { useEffect, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import {
   ArrowDown,
-  ArrowLeft,
   ArrowUpRight,
   Download,
   Mail,
   Megaphone,
   MousePointerClick,
   ChartColumn,
+  Plus,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { PageAction } from '../shell/PageActions';
+import { PageAction, PageBack } from '../shell/PageActions';
 import { PageError, Region, RegionErrorState } from '../shell/Region';
 import { Disclosure } from '../shell/Disclosure';
 import { EmptyState } from '../shell/EmptyState';
@@ -325,6 +325,13 @@ function DashboardContent({
       )}
       {/* What the chunk's fallback drew, so the hand-off is one shape. */}
       {report.status === 'loading' && <AnalyticsSkeleton />}
+      {payload && !overview && (
+        <PageBack href={reportHref({ ...periodOf(payload), compare: selection.compare })}>
+          {__('Overall impact', 'wconvert')}
+        </PageBack>
+      )}
+      {/* A re-read keeps the report on screen, dimmed under its line, as Leads' rows do (§12). */}
+      <div className={updating && payload ? 'wa-report-sheet opacity-60' : 'wa-report-sheet'} aria-busy={(updating && payload !== null) || undefined}>
       {/* A window through today is compared while today is still running, so its changes read a little low (ADR 0177). */}
       {payload && previous && payload.complete_days === false && payload.goals.length > 0 && (
         <p className="wa-muted wa-compare-note">{__('Includes today so far', 'wconvert')}</p>
@@ -336,18 +343,6 @@ function DashboardContent({
             rangeLabel(payload.previous.from, payload.previous.to),
           )}
         </p>
-      )}
-      {payload && !overview && (
-        <a
-          className="wa-back"
-          href={reportHref({
-            ...periodOf(payload),
-            compare: selection.compare,
-          })}
-        >
-          <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
-          {__('Overall impact', 'wconvert')}
-        </a>
       )}
       {payload && payload.goals.length === 0 && overview ? (
         // Nothing to target, sell or compare yet: the one way forward is a campaign (ADR 0132).
@@ -362,7 +357,7 @@ function DashboardContent({
             guideLabel={__('How results are read', 'wconvert')}
             action={
               <Button asChild>
-                <a href={createHref()}>{__('Create campaign', 'wconvert')}</a>
+                <a href={createHref()}><Plus aria-hidden="true" />{__('Create campaign', 'wconvert')}</a>
               </Button>
             }
           >
@@ -413,9 +408,9 @@ function DashboardContent({
                 : __('Nothing was shown in this period.', 'wconvert')}
             </p>
           )}
-          <Insights items={insights} query={accepted} />
+          <Insights items={insights} query={accepted} level={2} />
           <div className="wa-section-heading">
-            <h3>{__('Results by goal', 'wconvert')}</h3>
+            <h2>{__('Results by goal', 'wconvert')}</h2>
           </div>
           <div className="wa-goal-grid">
             {payload.goals.map((g) => {
@@ -549,6 +544,7 @@ function DashboardContent({
           </dl>
         </Disclosure>
       )}
+      </div>
     </div>
   );
 }

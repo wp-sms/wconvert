@@ -99,6 +99,11 @@ Refresh is gone, and per-destination Settings collapses with Send a test and
 Remove into each card's overflow menu, as the "one row" line above prescribes
 for more than two actions.*
 
+*Extended by the guidelines audit (GUIDELINES §11): Settings' **Accounts** region
+puts **Connect an account** on its heading for the same reason, its only action
+in a toolbar of its own. With no accounts the empty state carries it instead
+(§20).*
+
 That table answers the open questions directly rather than by taste. Leads'
 Export CSV acts on the screen's whole log, so it is page-scoped and belongs
 beside the title. Analytics' range picker changes what one region shows, so it
@@ -163,6 +168,10 @@ filters, in bold. It is not a title — it is a fact about the set the region
 below it is showing, and it changes when the filter changes. So it sits at the
 **trailing edge of that region's toolbar**, in tabular numerals, as **one text
 node**.
+
+*Amended by the guidelines audit, following [0132](0132-every-screen-answers-its-first-question.md)
+decision 4: **a list's count sits in its foot**, with its dates and pages
+(`shell/ListFoot`, GUIDELINES §20). Still one text node, for the same reason.*
 
 One text node is a design decision *and* a test constraint, and they agree.
 `tests/js/lead-log.test.tsx` asserts `findByText('7 submissions')`; splitting the

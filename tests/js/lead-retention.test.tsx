@@ -104,6 +104,17 @@ describe('explicit lead retention', () => {
     expect(alert.closest('[data-slot="alert-dialog-footer"]')).not.toBeNull();
   });
 
+  it('says a refused save with no confirm beside Save, in the region’s footer', async () => {
+    api.readRetention.mockResolvedValue({ ...forever, days: 90 });
+    api.saveRetention.mockRejectedValueOnce(new Error('The site refused it.'));
+    render(<LeadRetention />);
+    await userEvent.click(await screen.findByRole('radio', { name: 'Keep them until I delete them' }));
+    await userEvent.click(save());
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('The site refused it.');
+    expect(alert.parentElement).toBe(save().parentElement);
+  });
+
   it('keeps a confirmation cancellation editable and restores focus without saving', async () => {
     await open();
     const dialog = await propose('45');

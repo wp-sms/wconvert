@@ -70,7 +70,7 @@ export function ProductHealthDetails({ health, loading, failed, onRecheck, onRev
         <strong>{check.label}</strong>
         <p>{check.message}</p>
       </li>)}</ul>
-      {onReview && health.checks.some(check => check.state === 'warning' || check.state === 'context') && <Button disabled={reviewDisabled} onClick={onReview}>{__('Review products', 'wconvert')}</Button>}
+      {onReview && health.checks.some(check => check.state === 'warning' || check.state === 'context') && <Button variant="outline" disabled={reviewDisabled} onClick={onReview}>{__('Review products', 'wconvert')}</Button>}
     </>}
   </section>;
 }

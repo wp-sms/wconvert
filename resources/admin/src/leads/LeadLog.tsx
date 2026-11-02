@@ -3,7 +3,6 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import { ChevronRight, Download, Inbox, Plus, Search, Trash2 } from 'lucide-react';
 import { InfoTip } from '../shell/InfoTip';
 import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
 import { NativeSelect } from '../components/ui/native-select';
 import { AdminDialog, AdminDialogContent } from '../components/ui/admin-dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../components/ui/alert-dialog';
@@ -13,11 +12,13 @@ import { DateRangePicker, presetLabel, type DateRange } from '../shell/DateRange
 import { EmptyState } from '../shell/EmptyState';
 import { Field } from '../shell/Field';
 import { OptionStrip } from '../shell/OptionStrip';
-import { Region, RegionBody, RegionError, RegionErrorState, RegionFooter } from '../shell/Region';
-import { Toolbar, ToolbarCount } from '../shell/Toolbar';
+import { Region, RegionBody, RegionError, RegionErrorState } from '../shell/Region';
+import { ListFoot, PageSteps } from '../shell/ListFoot';
+import { Toolbar } from '../shell/Toolbar';
 import { LineSkeleton } from '../shell/LineSkeleton';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { formatCount, formatDay, formatRange, formatWhen } from '../lib/format';
+import { PickerSearch } from '../discovery/PickerSearch';
 import { canExport, eraseIdentifier, exportLeads, readLog, type Lead, type LeadGroup, type LeadLog as LeadLogPayload, type LeadPage, type LeadQuery } from './api';
 import { EventTable } from './EventTable';
 import { ExportMenu } from './ExportMenu';
@@ -148,8 +149,6 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
   const questionCsv = csv && (journeysSupported() || data.leads.some((lead) => (lead.question_answers?.length ?? 0) > 0));
   const shownGrouped = applied.query.grouped === true;
   const hasAppliedFilters = queryKeyOf(applied.query) !== '{}';
-  // The selected purpose chip already carries this number; a narrower filter is what makes it worth repeating.
-  const narrowed = queryKeyOf({ ...applied.query, purpose: undefined }) !== '{}';
   // Nothing captured at all, not nothing matching: no filters, toolbar or zeros to sit around it.
   const neverCaptured = data !== null && data.submissions === 0 && !hasAppliedFilters && queryKey === '{}';
   // Soft-deleted campaigns are in the list; only a live published one can be filled in.
@@ -242,7 +241,6 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
         <HistoryFilters query={requested} optins={optins} onApply={changeQuery} />
       </RegionBody>}
       {!neverCaptured && <Toolbar trailing={data === null ? undefined : <div className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2 max-sm:justify-start">
-        {narrowed && <ToolbarCount hint={__('The total counts submissions, never people.', 'wconvert')}>{submissionCount(data.submissions)}</ToolbarCount>}
         {/* A small select beside the set it orders: the only thing More filters had left. */}
         <NativeSelect aria-label={__('Order', 'wconvert')} value={requested.order ?? 'newest'}
           onChange={(event) => changeQuery({ ...requested, order: event.target.value === 'oldest' ? 'oldest' : undefined })}>
@@ -295,19 +293,23 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
           <DataTableCell label={__('Email or phone', 'wconvert')} heading><bdi dir="ltr" className="break-all">{group.identifier}</bdi></DataTableCell>
           <DataTableCell label={__('Submissions', 'wconvert')} numeric>{formatCount(group.submissions)}</DataTableCell>
           <DataTableCell label={__('Last submitted', 'wconvert')}>{group.latest_at === null ? '—' : <time className="text-note" dateTime={group.latest_at.replace(' ', 'T')} title={formatWhen(group.latest_at, 'detail')}>{formatWhen(group.latest_at, 'list')}</time>}</DataTableCell>
-          <DataTableActions><Button variant="ghost" aria-label={sprintf(/* translators: %s: an email address or phone number. */ __('Open submissions from %s', 'wconvert'), group.identifier)} onClick={(event) => open({ kind: 'history', group, query: applied.query }, event.currentTarget)}>
-            {__('Open', 'wconvert')}<ChevronRight aria-hidden="true" className="size-4 rtl:-scale-x-100" />
+          <DataTableActions><Button variant="ghost" size="icon-sm" aria-label={sprintf(/* translators: %s: an email address or phone number. */ __('Open submissions from %s', 'wconvert'), group.identifier)} onClick={(event) => open({ kind: 'history', group, query: applied.query }, event.currentTarget)}>
+            <ChevronRight aria-hidden="true" className="size-4 rtl:-scale-x-100" />
           </Button></DataTableActions>
         </DataTableRow>)}</DataTableBody>
       </DataTable> : <EventTable leads={data.leads} nameOf={nameOf} notSentOf={notSentOf} returnTo={leadsHref(applied.query)} onOpen={(lead, button) => open({ kind: 'submission', lead }, button)} />}
       </div>
-      {data !== null && rows > 0 && (applied.page > 1 || data.next_cursor !== null) && <RegionFooter>
-        <div className="flex w-full flex-wrap items-center justify-between gap-3">
-          <span>{sprintf(/* translators: %s: the page number. */ __('Page %s', 'wconvert'), formatCount(applied.page))}</span>
-          <div className="flex gap-2"><Button variant="outline" disabled={updating || showingPrevious || applied.page <= 1} onClick={previous}>{oldestFirst ? __('Older', 'wconvert') : __('Newer', 'wconvert')}</Button>
-            <Button variant="outline" disabled={updating || showingPrevious || !data.next_cursor} onClick={next}>{oldestFirst ? __('Newer', 'wconvert') : __('Older', 'wconvert')}</Button></div>
-        </div>
-      </RegionFooter>}
+      {data !== null && rows > 0 && <ListFoot
+        count={submissionCount(data.submissions)}
+        hint={__('The total counts submissions, never people.', 'wconvert')}
+        dates={windowSummary(applied.query)}
+        pages={(applied.page > 1 || data.next_cursor !== null) && <PageSteps
+          label={__('Submission pages', 'wconvert')}
+          position={sprintf(/* translators: %s: the page number. */ __('Page %s', 'wconvert'), formatCount(applied.page))}
+          previous={{ label: oldestFirst ? __('Older', 'wconvert') : __('Newer', 'wconvert'), disabled: updating || showingPrevious || applied.page <= 1, onClick: previous }}
+          next={{ label: oldestFirst ? __('Newer', 'wconvert') : __('Older', 'wconvert'), disabled: updating || showingPrevious || !data.next_cursor, onClick: next }}
+        />}
+      />}
     </Region>
     {/* One outage is one door: the policy is read once the log has loaded, so
         a failure while the log is still loading cannot draw a second Try again
@@ -456,12 +458,10 @@ function HistoryFilters({ query, optins, onApply }: { query: LeadQuery; optins: 
   return <form className="flex flex-wrap items-end gap-3" aria-label={__('Filter submissions', 'wconvert')}
     onSubmit={(event) => { event.preventDefault(); if (event.target === event.currentTarget) apply(draft); }}>
     {/* Below `sm` the search takes the line, its button an icon so the placeholder is not cut off; the campaign and period share the next. */}
-    <Field label={__('Search submissions', 'wconvert')} htmlFor="wconvert-lead-search" className="flex-1 basis-full sm:basis-64">
-      <div className="flex gap-2">
-        <Input id="wconvert-lead-search" className="min-w-0 flex-1" type="search" maxLength={254} value={draft.search} onChange={(event) => setDraft({ ...draft, search: event.target.value })} placeholder={__('Name, email, phone or message', 'wconvert')} />
-        <Button type="submit" variant="outline"><Search aria-hidden="true" /><span className="max-sm:sr-only">{__('Search', 'wconvert')}</span></Button>
-      </div>
-    </Field>
+    <div className="flex min-w-0 flex-1 basis-full gap-2 sm:basis-64">
+      <PickerSearch id="wconvert-lead-search" label={__('Search submissions', 'wconvert')} maxLength={254} value={draft.search} onChange={(search) => setDraft({ ...draft, search })} placeholder={__('Name, email, phone or message', 'wconvert')} />
+      <Button type="submit" variant="outline"><Search aria-hidden="true" className="sm:hidden" /><span className="max-sm:sr-only">{__('Search', 'wconvert')}</span></Button>
+    </div>
     <Field label={__('Campaign', 'wconvert')} htmlFor="wconvert-lead-optin" className="grow basis-28 sm:grow-0 sm:basis-auto">
       <NativeSelect id="wconvert-lead-optin" className="w-full sm:w-64" value={draft.optinId} onChange={(event) => apply({ ...draft, optinId: event.target.value })}>
         <option value="">{__('All campaigns', 'wconvert')}</option>

@@ -78,7 +78,7 @@
     "resources/admin/src/optins/CampaignSummary.tsx": 4,
     "resources/admin/src/optins/GettingStarted.tsx": 1,
     "resources/admin/src/optins/groupActions.ts": 20,
-    "resources/admin/src/optins/OptinList.tsx": 7,
+    "resources/admin/src/optins/OptinList.tsx": 6,
     "resources/admin/src/optins/ProductHealth.tsx": 2,
     "resources/admin/src/shell/HeaderTools.tsx": 4,
     "resources/admin/src/stats/DeliveryAttention.tsx": 2,

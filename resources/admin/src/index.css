@@ -5801,6 +5801,8 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-picker__notice { margin: 1.25rem 1.5rem; }
 
 .wconvert-picker__notice { border: 1px solid var(--border); background: var(--surface); border-radius: var(--radius); padding: 1rem; font-size: var(--text-note); }
+/* A list's foot is one line: its count, dates and pages (§20, `shell/ListFoot`). */
+.wconvert-list-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem .75rem; padding: .625rem 1rem; border-block-start: 1px solid var(--border); color: var(--muted-foreground); font-size: var(--text-note); }
 .wconvert-picker__pagination { display: flex; flex: none; flex-wrap: wrap; align-items: center; justify-content: center; gap: .75rem; padding: .75rem 1rem; border-block-start: 1px solid var(--border); background: var(--card); font-size: var(--text-note); }
 
 /* Shared fitting is used by setup inspection, editor replacement and pack previews. */

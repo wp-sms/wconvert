@@ -63,7 +63,8 @@ export function Region({
  * here: they are page-scoped and belong in the page header, or region-scoped
  * and belong in a {@see Toolbar} (ADR 0039). One exception is recorded there:
  * the builder's destination regions put **Add destination** on the heading,
- * where a toolbar holding only it would repeat the region's own boundary.
+ * where a toolbar holding only it would repeat the region's own boundary, and
+ * Settings' Accounts region does the same with **Connect an account**.
  */
 export function RegionHeader({
   title,

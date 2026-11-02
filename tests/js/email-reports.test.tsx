@@ -66,3 +66,29 @@ it('shows the server’s reason when an address is refused', async () => {
 
   expect(await screen.findByRole('alert')).toHaveTextContent('Check these addresses: nope');
 });
+
+it('offers Cancel changes only while there is something to cancel, and puts it all back', async () => {
+  render(<EmailReports />);
+  const field = await screen.findByLabelText('Send to');
+  expect(screen.queryByRole('button', { name: 'Cancel changes' })).toBeNull();
+
+  await userEvent.type(field, ', me@example.com');
+  await userEvent.click(screen.getByRole('checkbox', { name: /Send me a weekly summary/ }));
+  await userEvent.click(screen.getByRole('button', { name: 'Cancel changes' }));
+
+  expect(screen.getByRole('checkbox', { name: /Send me a weekly summary/ })).toBeChecked();
+  expect(screen.getByLabelText('Send to')).toHaveValue('owner@example.com');
+  expect(screen.queryByRole('button', { name: 'Cancel changes' })).toBeNull();
+  expect(screen.getByRole('button', { name: 'Save email reports' })).toBeDisabled();
+  expect(api.saveWeeklySummary).not.toHaveBeenCalled();
+});
+
+it('says a refused save beside Save', async () => {
+  api.saveWeeklySummary.mockRejectedValue({ code: 'nope', message: 'The site refused it.' });
+  render(<EmailReports />);
+  await userEvent.type(await screen.findByLabelText('Send to'), ', nope');
+  const save = screen.getByRole('button', { name: 'Save email reports' });
+  await userEvent.click(save);
+
+  expect((await screen.findByRole('alert')).parentElement).toBe(save.parentElement);
+});

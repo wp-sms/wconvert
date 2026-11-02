@@ -165,7 +165,8 @@ export function HelpPage() {
             </span>
           </p>
         </div>
-        <Button asChild size="lg">
+        {/* The screen's one primary is its search; this is for when that did not help. */}
+        <Button asChild variant="outline">
           <a href={HELP_URLS.support} target="_blank" rel="noreferrer">
             {paid ? sprintf(/* translators: %s: the installed plan's name, e.g. “Pro”. */ __('Contact %s support', 'wconvert'), tierName(tier)) : __('Contact support', 'wconvert')}
             <ExternalLink aria-hidden="true" /><NewTab />

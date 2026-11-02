@@ -137,29 +137,12 @@
   line-height: 1.6;
   margin: 12px 0;
 }
-.wa-target-empty {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-.wa-target-empty h2 {
-  font-size: var(--text-heading);
-  font-weight: 600;
-  margin: 0 0 4px;
-}
-.wa-target-empty p {
-  font-size: var(--text-note);
-  color: var(--muted-foreground);
-  margin: 0;
-}
 /* The shared Input, at a width that fits the largest target. */
 .wa-target-input {
   max-inline-size: 10rem;
 }
 @media (max-width: 600px) {
-  .wa-targets-heading,
-  .wa-target-empty {
+  .wa-targets-heading {
     align-items: start;
     flex-wrap: wrap;
     gap: 12px;

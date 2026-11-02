@@ -29,18 +29,6 @@
 .wa-intro {
   padding: 24px 0 15px;
 }
-.wa-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: var(--text-note);
-  color: var(--action);
-  margin: 16px 0;
-}
-.wa-back svg {
-  width: 16px;
-  height: 16px;
-}
 .wa-header-actions {
   display: flex;
   align-items: center;
@@ -240,6 +228,9 @@
   gap: 10px;
   flex-wrap: wrap;
   margin: 18px 0;
+}
+.wa-campaign-actions .wa-actions {
+  margin: 0;
 }
 .wa-help {
   margin-top: 24px;

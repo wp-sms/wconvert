@@ -224,7 +224,7 @@ describe('the four situations this screen has to answer', () => {
     render(<OptinList onEdit={() => undefined} onCreate={() => undefined} />);
 
     expect(await screen.findByText('No campaigns yet')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Create your first campaign/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Create campaign' })).toBeInTheDocument();
   });
 
   /** On an empty site the checklist replaces the bare empty state (ADR 0176). */
@@ -917,7 +917,7 @@ it('asks for the empty list to carry the only Create button', async () => {
   optins.listOptins.mockResolvedValue([]);
   const onEmptyChange = vi.fn();
   render(<OptinList onEdit={() => undefined} onCreate={() => undefined} onEmptyChange={onEmptyChange} />);
-  await screen.findByRole('button', { name: /Create your first campaign/ });
+  await screen.findByRole('button', { name: 'Create campaign' });
   await waitFor(() => expect(onEmptyChange).toHaveBeenLastCalledWith(true));
 });
 

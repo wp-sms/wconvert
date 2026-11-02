@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ChevronDown, CircleCheck, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { ChevronDown, CircleCheck, MoreHorizontal, Pencil, Plug, Trash2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import {
@@ -19,6 +19,7 @@ import {
 } from '../components/ui/dropdown-menu';
 import { OptionItem, OptionMenuContent, OptionSeparator, refusal } from '../components/ui/option-menu';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
+import { EmptyState } from '../shell/EmptyState';
 import { Region, RegionBody, RegionHeader } from '../shell/Region';
 import { messageOf } from '../shell/loadable';
 import { formatCount, formatWhen } from '../lib/format';
@@ -98,24 +99,28 @@ export function AccountEditor({ types, connections, usage, onChange, onAddDestin
     }
   };
   const remoteTypes = types.filter((type) => type.needs_connection && type.availability === 'ready');
+  const connect = remoteTypes.length > 0 && <DropdownMenu modal={false}>
+    <DropdownMenuTrigger asChild>
+      <Button ref={connectMenu} variant="outline">
+        {__('Connect an account', 'wconvert')}<ChevronDown aria-hidden="true" />
+      </Button>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent align="end" sideOffset={5}>
+      {remoteTypes.map((type) => <DropdownMenuItem key={type.id}
+        onSelect={() => { trigger.current = connectMenu.current; open(type); }}>
+        <ProviderMark type={type} className="size-4 shrink-0" />{type.label}
+      </DropdownMenuItem>)}
+    </DropdownMenuContent>
+  </DropdownMenu>;
   return <Region>
+    {/* On the heading, where a toolbar holding only it would repeat the region's edge (ADR 0039); an empty list carries it instead (§20). */}
     <RegionHeader title={__('Accounts', 'wconvert')}
       description={__('Sign in once per service. Destinations above use these accounts.', 'wconvert')}
-      trailing={remoteTypes.length > 0 && <DropdownMenu modal={false}>
-        <DropdownMenuTrigger asChild>
-          <Button ref={connectMenu} variant="outline">
-            {__('Connect an account', 'wconvert')}<ChevronDown aria-hidden="true" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" sideOffset={5}>
-          {remoteTypes.map((type) => <DropdownMenuItem key={type.id}
-            onSelect={() => { trigger.current = connectMenu.current; open(type); }}>
-            <ProviderMark type={type} className="size-4 shrink-0" />{type.label}
-          </DropdownMenuItem>)}
-        </DropdownMenuContent>
-      </DropdownMenu>} />
+      trailing={connections.length > 0 && connect} />
     <RegionBody className="flex flex-col gap-3">
-    {connections.length === 0 ? <p className="m-0 text-note text-muted-foreground">{__('No accounts connected yet.', 'wconvert')}</p>
+    {connections.length === 0 ? <EmptyState icon={Plug} title={__('No accounts connected yet', 'wconvert')} action={connect}>
+      {__('Connect a service, and destinations can send to it.', 'wconvert')}
+    </EmptyState>
       : <ul className="m-0 list-none divide-y divide-border p-0">{connections.map((account) => {
         const type = types.find((candidate) => candidate.id === account.type);
         const usedBy = usage[account.id] ?? [];

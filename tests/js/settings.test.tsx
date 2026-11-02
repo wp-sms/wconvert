@@ -64,7 +64,7 @@ const paid = () => {
   window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
   onTestFinished(() => { delete window.wconvertAdmin; });
 };
-const search = () => screen.getByRole('searchbox', { name: 'Find a setting' });
+const search = () => screen.getByRole('searchbox', { name: 'Search settings' });
 
 it('finds settings, not categories, without replacing the active form', async () => {
   render(<Settings group="experience" />);

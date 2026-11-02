@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import {
-  ArrowLeft,
-  ArrowRight,
   CalendarDays,
   ChevronDown,
   Copy,
@@ -33,7 +31,7 @@ import { readOccasions, type OccasionNotice } from '../occasions/api';
 import { OccasionNoticeView } from '../occasions/Notice';
 import { GettingStarted, useChecklist } from './GettingStarted';
 import { periodOf, readDashboard, readReport, type DashboardPayload, type PeriodQuery } from '../stats/api';
-import { rowResultOf, shownLine } from './rowResult';
+import { nextActionOf, rowResultOf, shownLine } from './rowResult';
 import { formatCount, formatRange, labelOf, siteDay } from '../lib/format';
 import {
   campaignName,
@@ -61,6 +59,7 @@ import { StatusBadge } from './StatusBadge';
 import { GuideLink, SuspensionGuideLink } from '../shell/GuideLink';
 import { GUIDES, docsUrl } from '../shell/docs';
 import { CheckRow } from '../shell/CheckRow';
+import { ListFoot, ListPages } from '../shell/ListFoot';
 import { ToolbarCount } from '../shell/Toolbar';
 import { groupConfirmCopy, plan, reduceResult, resultSentence, startResult, type ConfirmedAction, type GroupAction, type GroupPlan, type GroupResult } from './groupActions';
 import './campaigns.css';
@@ -450,13 +449,6 @@ export function OptinList({
       testing = parent.arms.length > 0,
       name = nameOf(row),
       variants = parent.arms.length + 1;
-    const nextLabel = row.has_unpublished_changes
-      ? __('Review changes', 'wconvert')
-      : status === 'suspended'
-        ? __('Review issue', 'wconvert')
-        : status === 'draft'
-          ? __('Continue editing', 'wconvert')
-          : __('Edit', 'wconvert');
     return (
       <CampaignRow key={row.id} name={name} arm={arm}>
         <DataTableCell label={__('Select', 'wconvert')} className="wconvert-campaign-select">
@@ -554,7 +546,7 @@ export function OptinList({
         </DataTableCell>
         <DataTableActions className="wconvert-campaign-row-actions">
           <Button variant="ghost" className="text-action" disabled={busy.size > 0} onClick={() => onEdit(row.id)}>
-            {nextLabel}
+            {nextActionOf(row)}
           </Button>
           <CampaignMenu
             row={row}
@@ -738,7 +730,7 @@ export function OptinList({
                   onCreate && (
                     <Button ref={createFocus} onClick={onCreate}>
                       <Plus aria-hidden="true" />
-                      {__('Create your first campaign', 'wconvert')}
+                      {__('Create campaign', 'wconvert')}
                     </Button>
                   )
                 }
@@ -825,33 +817,19 @@ export function OptinList({
               </aside>
             )}
             {/* One line: how many and over which dates, then the pages. */}
-            {list.status === 'ready' && !empty && <div className="wconvert-footer wconvert-campaign-footer">
-              <span>
-                {sprintf(/* translators: %d: how many campaigns are listed. */ _n('%d campaign', '%d campaigns', visible.length, 'wconvert'), visible.length)}
-                {report && <> · {formatRange(report.from, report.to)}</>}
-              </span>
-              {lastPage > 0 && (
-                <nav className="wconvert-toolbar wconvert-campaign-pagination" aria-label={__('Campaign pages', 'wconvert')}>
-                  <Button variant="outline" disabled={currentPage === 0} onClick={() => setPage(currentPage - 1)}>
-                    <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
-                    {__('Previous', 'wconvert')}
-                  </Button>
-                  <span aria-live="polite" aria-atomic="true">
-                    {sprintf(/* translators: 1: this page's number, 2: how many pages. */ __('Page %1$d of %2$d', 'wconvert'), currentPage + 1, lastPage + 1)}
-                  </span>
-                  <Button variant="outline" disabled={currentPage === lastPage} onClick={() => setPage(currentPage + 1)}>
-                    {__('Next', 'wconvert')}
-                    <ArrowRight aria-hidden="true" className="rtl:-scale-x-100" />
-                  </Button>
-                </nav>
-              )}
+            {list.status === 'ready' && !empty && <ListFoot
+              className="wconvert-campaign-footer"
+              count={sprintf(/* translators: %d: how many campaigns are listed. */ _n('%d campaign', '%d campaigns', visible.length, 'wconvert'), visible.length)}
+              dates={report && formatRange(report.from, report.to)}
+              pages={lastPage > 0 && <ListPages label={__('Campaign pages', 'wconvert')} page={currentPage} pages={lastPage + 1} onChange={setPage} />}
+            >
               {shown.some((c) => c.arms.length > 0) && (
                 <p className="wconvert-campaign-test-note">
                   {__('A/B tests split visitors by browser, not by person.', 'wconvert')}{' '}
                   <GuideLink href={docsUrl(GUIDES.abTest, 'check-the-split')}>{__('How the split works', 'wconvert')}</GuideLink>
                 </p>
               )}
-            </div>}
+            </ListFoot>}
           </>
         )}
       </Region>

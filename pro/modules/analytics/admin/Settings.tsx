@@ -14,7 +14,7 @@ import { CheckRow } from '@/shell/CheckRow';
 import { Disclosure } from '@/shell/Disclosure';
 import { Field } from '@/shell/Field';
 import { OptionStrip } from '@/shell/OptionStrip';
-import { Region, RegionBody, RegionError, RegionErrorState, RegionFooter, RegionHeader } from '@/shell/Region';
+import { Region, RegionBody, RegionErrorState, RegionFooter, RegionHeader } from '@/shell/Region';
 import { SettingsRegionSkeleton } from '@/settings-page/SettingsSkeleton';
 import { SaveStatus, useSaveStatus } from '@/shell/SaveStatus';
 import { failed, messageOf, type Loadable } from '@/shell/loadable';
@@ -83,7 +83,6 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
 
   return <Region>
     <RegionHeader title={title} description={__('Track published campaigns through your existing analytics setup.', 'wconvert-pro')} />
-    {error && <RegionError message={error} />}
     <RegionBody className="grid gap-5">
       {/* A site problem, not a failed read: it stays until the files are restored. */}
       {!response.asset_available && <Alert variant="destructive" className="border-destructive/30 bg-destructive-surface">
@@ -148,8 +147,9 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
       </AdminDialog>}<GuideLink href={docsUrl(GUIDES.externalAnalytics)}>{__('Setup guide', 'wconvert-pro')}</GuideLink></div>
       <div className="flex flex-wrap items-center gap-3">
         {dirty && on && <span id={`${ids}-unsaved`} className="text-note text-muted-foreground">{__('Save changes before testing.', 'wconvert-pro')}</span>}
+        {error && <p role="alert" className="m-0 text-note text-destructive">{error}</p>}
         <SaveStatus saved={status.saved} />
-        {dirty && <Button variant="ghost" disabled={busy} onClick={() => { setValue(response.settings); setError(''); }}>{__('Cancel changes', 'wconvert-pro')}</Button>}
+        {dirty && <Button variant="outline" disabled={busy} onClick={() => { setValue(response.settings); setError(''); }}>{__('Cancel changes', 'wconvert-pro')}</Button>}
         <Button ref={saveButton} disabled={busy || (!dirty && !reconfirm)} aria-describedby={reconfirm ? `${ids}-review` : undefined} onClick={() => void save()}>{busy ? __('Saving…', 'wconvert-pro') : __('Save analytics integration', 'wconvert-pro')}</Button>
       </div>
     </RegionFooter>

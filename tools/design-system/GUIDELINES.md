@@ -423,7 +423,25 @@ does not exist is not reachable from it.
 
 An empty state says **what will fill it and when**. It is not an apology and not
 an onboarding tour. Every list screen has one and a merchant meets it before
-they meet the full version, so it is designed first, not last.
+they meet the full version, so it is designed first, not last. It is
+`shell/EmptyState`, and its Create is one form: a plus and **Create campaign**.
+A line of figures with nothing to do about them is not a list, so Spam
+protection's *No activity yet* stays a line.
+
+**Situations the screens share, and the one answer to each:**
+
+- **A search** is `PickerSearch`: a magnifier in the field, the label for a
+  screen reader, and **Search …** as its name. It applies as typed where the
+  screen already holds the list. Leads applies on Enter, with a Search button,
+  because each apply is a server query and a half-typed address reads as a
+  different filter from a whole one. Help's plain GET form is ADR 0144's.
+- **A way back** is `PageBack`: one ghost link above the title. Leads hides the
+  section's description on purpose (ADR 0091).
+- **A settings footer** is, in order: the error, `SaveStatus`, **Cancel changes**
+  while dirty, Save. A save's error goes beside Save and nowhere else.
+- **A re-read that keeps its rows** dims them under a status line (§12).
+- **A campaign row's text action** is `nextActionOf`, wherever campaigns are
+  listed.
 
 ## 12. Loading
 
@@ -803,8 +821,9 @@ Not gaps. Each was decided:
   destination) are lowercase mid-sentence; capitals start a title, a button
   or a sentence. US spelling.
 - **More than two row actions go in a ⋯ menu**, with icons and labels. A
-  row menu holds actions on that row. A list's foot is one line: its count,
-  dates and pages (ADR 0132).
+  row menu holds actions on that row. A list's foot is one line, `ListFoot`:
+  its count, dates and pages (ADR 0132). The pages are a `nav` with a live
+  position and arrows.
 - **An inline disclosure's chevron sits beside its words**, not at the far end
   of the row; a card disclosure keeps the whole-row trigger (ADR 0132).
 - **One primary action per screen, even when empty.** An empty list carries

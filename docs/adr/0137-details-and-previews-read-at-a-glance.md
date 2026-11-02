@@ -58,7 +58,7 @@ and none could be read at a glance:
    becomes the question — the list's confirm title and description, with
    Cancel and the outcome-named action — because a dialog never stacks another.
    Confirming runs the list's own path and closes Details; Cancel and Escape
-   put the caret back on the ⋯. `optins/decisionCopy` holds the words both
+   put the caret back on the ⋯. `optins/decisionCopy` (which the report's confirms read too, since the guidelines audit) holds the words both
    read.
 5. **The setup preview is for looking.** One toolbar row: Desktop | Mobile, a
    visibly labelled **Screen** choice, and an icon toggle at the end that names

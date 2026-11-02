@@ -1,5 +1,5 @@
 import { beforeEach, expect, it, onTestFinished, vi } from 'vitest';
-import { act, render, screen, within } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { OptinSummary } from '../../resources/admin/src/optins/api';
 
@@ -132,4 +132,27 @@ it('draws a preview that could not be read, with a way to read it again', async 
   await userEvent.click(within(screen.getByRole('region', { name: 'Campaigns' })).getByRole('button', { name: 'Try again' }));
   await vi.waitFor(() => expect(screen.queryByText('Design previews couldn’t load.')).toBeNull());
   expect(optins.readCampaignPreviews).toHaveBeenCalledTimes(2);
+});
+
+it('names a row’s next action as Campaigns does, under the same column', async () => {
+  optins.listOptins.mockResolvedValue([
+    row('01JBAR000000000000000000AA', 'Changed', { published_at: '2026-11-01 00:00:00', has_unpublished_changes: true }),
+    row('01JBAR000000000000000000AB', 'Stopped', { published_at: '2026-11-01 00:00:00', suspended: 'Needs a product.' }),
+    row('01JBAR000000000000000000AC', 'Draft'),
+    row('01JBAR000000000000000000AD', 'Live', { published_at: '2026-11-01 00:00:00' }),
+  ]);
+  page();
+  await screen.findByRole('button', { name: 'Review changes' });
+  expect(screen.getByRole('columnheader', { name: 'Next action' })).toBeInTheDocument();
+  for (const label of ['Review changes', 'Review issue', 'Continue editing', 'Edit']) {
+    expect(screen.getByRole('button', { name: label })).toHaveClass('text-action');
+  }
+});
+
+it('states the list’s count and the dates of its numbers in the foot', async () => {
+  // An occasion already over, so there is a window to read whatever day this runs.
+  occasionsApi.readOccasions.mockResolvedValue({ schema: 1, revision: 1, items: [{ ...BLACK_FRIDAY, start: '2020-01-01', end: '2020-02-01' }] });
+  page();
+  await screen.findByText('1 campaign');
+  await waitFor(() => expect(screen.getByText('1 campaign').closest('.wconvert-list-foot')).toHaveTextContent(/1 campaign · .*2026/));
 });

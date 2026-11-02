@@ -1526,6 +1526,8 @@ describe('destination recovery entry points', () => {
     expect(await screen.findByText('Rejected 0.')).toBeVisible();
     expect(screen.queryByText('Rejected 25.')).toBeNull();
     expect(screen.getByText('Page 1 of 2')).toBeVisible();
+    // One line: how many, across which days, and the pages (§20).
+    expect(screen.getByText('30 submissions').closest('.wconvert-list-foot')).toHaveTextContent(/30 submissions · Aug 25, 2026/);
     await userEvent.click(screen.getByRole('button', { name: 'Next' }));
     expect(screen.getByText('Rejected 25.')).toBeVisible();
     expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
@@ -1758,6 +1760,13 @@ describe('the order of the screen', () => {
    * dialog into nothing — the account sends nowhere until a destination runs
    * over it — so the result offers that destination, with the account chosen.
    */
+  it('lets an empty accounts list carry the way to connect one, once', async () => {
+    render(<Destinations />);
+    expect(await screen.findByText('No accounts connected yet')).toBeVisible();
+    expect(screen.getAllByRole('button', { name: 'Connect an account' })).toHaveLength(1);
+    expect(screen.getByRole('button', { name: 'Connect an account' }).closest('[data-slot="region-header"]')).toBeNull();
+  });
+
   it('connects an account from one menu, then offers a destination over it', async () => {
     const ACCOUNT = { id: 'account-1', type: 'mailchimp', label: 'Mailchimp', credentials: { api_key: true } };
     api.saveConnection.mockResolvedValue({ connection: ACCOUNT });

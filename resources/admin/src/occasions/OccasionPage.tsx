@@ -16,14 +16,15 @@ import { campaignName, deleteOptin, duplicateCampaign, listOptins, publishOptin,
 import { CampaignMenu } from '../optins/CampaignMenu';
 import { decisionCopy, type DecisionKind } from '../optins/decisionCopy';
 import { StatusBadge } from '../optins/StatusBadge';
-import { rowResultOf, shownLine } from '../optins/rowResult';
+import { nextActionOf, rowResultOf, shownLine } from '../optins/rowResult';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
-import { DataTable, DataTableActions, DataTableActionsColumn, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '../shell/DataTable';
+import { DataTable, DataTableActions, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '../shell/DataTable';
 import { DateRangePicker, type DateRange } from '../shell/DateRangePicker';
 import { EmptyState } from '../shell/EmptyState';
 import { Field } from '../shell/Field';
+import { ListFoot } from '../shell/ListFoot';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
-import { PageError, Region, RegionBody, RegionError, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
+import { PageError, Region, RegionBody, RegionError, RegionErrorState, RegionHeader } from '../shell/Region';
 import { Shell } from '../shell/Shell';
 import { Stat, StatRow, StatRowSkeleton } from '../shell/Stat';
 import { readReport, type DashboardPayload, type PeriodQuery } from '../stats/api';
@@ -134,13 +135,15 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
 
   if (occasions.status === 'failed' || list.status === 'failed') {
     const message = occasions.status === 'failed' ? occasions.message : list.status === 'failed' ? list.message : '';
-    return <Shell section="optins" pageTitle={__('Occasion', 'wconvert')} pageBack={back} hideDescription>
+    return <Shell section="optins" pageTitle={__('Occasion', 'wconvert')} hideDescription>
+      {back}
       <Region><RegionErrorState message={message} onRetry={() => setAttempt((n) => n + 1)} /></Region>
     </Shell>;
   }
   if (occasions.status === 'loading' || list.status === 'loading') return <OccasionSkeleton />;
   if (occasion === undefined) {
-    return <Shell section="optins" pageTitle={__('Occasion', 'wconvert')} pageBack={back} hideDescription>
+    return <Shell section="optins" pageTitle={__('Occasion', 'wconvert')} hideDescription>
+      {back}
       <Region>
         <EmptyState icon={CalendarDays} title={__('This occasion no longer exists', 'wconvert')}
           action={<Button asChild variant="outline"><a href={optinsHref()}>{__('Back to campaigns', 'wconvert')}</a></Button>}>
@@ -203,7 +206,7 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
     : query !== null && 'from' in query && query.from !== undefined && query.to !== undefined ? formatRange(query.from, query.to) : null;
 
   return (
-    <Shell section="optins" pageTitle={occasion.name} pageBack={back}
+    <Shell section="optins" pageTitle={occasion.name}
       pageDescription={[formatRange(occasion.start, occasion.end), phaseLine(occasionPhase(occasion, today))].join(' · ')}
       actions={<>
         <DropdownMenu modal={false}>
@@ -224,6 +227,7 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
         </DropdownMenu>
         {campaigns.length > 0 && newCampaign}
       </>}>
+      {back}
       <div className="flex flex-col gap-5">
         {notice && <OccasionNoticeView notice={notice} onDismiss={onDismissNotice} />}
         {error && <PageError message={error} />}
@@ -269,7 +273,7 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
                 <DataTableColumn>{__('Dates', 'wconvert')}</DataTableColumn>
                 <DataTableColumn>{__('Status', 'wconvert')}</DataTableColumn>
                 <DataTableColumn numeric>{__('Results', 'wconvert')}</DataTableColumn>
-                <DataTableActionsColumn>{__('Actions', 'wconvert')}</DataTableActionsColumn>
+                <DataTableColumn>{__('Next action', 'wconvert')}</DataTableColumn>
               </DataTableHead>
               <DataTableBody>
                 {campaigns.map((row) => {
@@ -301,8 +305,8 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
                           : <span>{status === 'draft' ? __('No results yet', 'wconvert') : __('No results in this period', 'wconvert')}</span>}
                       </DataTableCell>
                       <DataTableActions className="wconvert-campaign-row-actions">
-                        <Button variant="ghost" disabled={busy} onClick={() => onEdit(row.id)}>
-                          {status === 'draft' ? __('Continue editing', 'wconvert') : __('Edit', 'wconvert')}
+                        <Button variant="ghost" className="text-action" disabled={busy} onClick={() => onEdit(row.id)}>
+                          {nextActionOf(row)}
                         </Button>
                         <CampaignMenu
                           row={row}
@@ -325,7 +329,7 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
                 })}
               </DataTableBody>
             </DataTable>
-            <RegionFooter>{sprintf(/* translators: %d: how many campaigns are listed for this occasion. */ _n('%d campaign', '%d campaigns', campaigns.length, 'wconvert'), campaigns.length)}</RegionFooter>
+            <ListFoot count={sprintf(/* translators: %d: how many campaigns are listed for this occasion. */ _n('%d campaign', '%d campaigns', campaigns.length, 'wconvert'), campaigns.length)} dates={summary} />
           </Region>
         </>}
       </div>

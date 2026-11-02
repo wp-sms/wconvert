@@ -111,8 +111,8 @@ describe('capture history', () => {
     expect(screen.queryByText('More filters')).not.toBeInTheDocument();
     const filters = within(screen.getByRole('form', { name: 'Filter submissions' }));
     expect(filters.getByRole('button', { name: 'Period: Any time' })).toBeVisible();
-    // The chip already says 7; the toolbar repeats a count only under a narrower filter.
-    expect(screen.queryByText('7 submissions')).not.toBeInTheDocument();
+    // The count is the list foot's, and the toolbar does not repeat it (§20).
+    expect(screen.getByText('7 submissions').closest('.wconvert-list-foot')).not.toBeNull();
     expect(screen.getByLabelText('Order')).toBeVisible();
     await userEvent.selectOptions(screen.getByLabelText('Order'), 'oldest');
     await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ order: 'oldest' })));
@@ -281,6 +281,18 @@ describe('capture history', () => {
     render(<LeadLog />);
     expect(await screen.findByText(/Retention unavailable\./)).toBeInTheDocument();
     expect(screen.getByText('sarah@example.com')).toBeInTheDocument();
+  });
+
+  it('puts the count, the dates and the pages on the foot’s one line', async () => {
+    log.readLog.mockResolvedValue({ ...SEVEN, next_cursor: 'next-page' });
+    render(<LeadLog query={{ from: '2026-09-01', to: '2026-09-30' }} />);
+    const count = await screen.findByText('7 submissions');
+    const foot = count.closest('.wconvert-list-foot')!;
+    expect(foot).toHaveTextContent(/2026/);
+    const pages = within(foot as HTMLElement).getByRole('navigation', { name: 'Submission pages' });
+    expect(within(pages).getByText('Page 1')).toHaveAttribute('aria-live', 'polite');
+    expect(within(pages).getByRole('button', { name: 'Older' }).querySelector('svg')).not.toBeNull();
+    expect(within(pages).getByRole('button', { name: 'Newer' })).toBeDisabled();
   });
 
   it('keeps the headline as submissions when the grouping view changes', async () => {

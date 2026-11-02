@@ -87,7 +87,8 @@ navigation, subtitle or Sending setup shortcut occupies space above the table.
 A compact warning-styled Sending issues button appears beside the page actions
 only when the health read reports affected destinations. Loading/failed reads
 do not invent a count or action. The diagnostic route remains bookmarkable and
-has its own heading and Back to submissions action. Shared setup remains under
+has its own heading and Back to submissions action (*drawn since the guidelines
+audit as the one way back, above the title; GUIDELINES §11*). Shared setup remains under
 Settings; problem-specific destination links remain in diagnostics.
 
 This conditional diagnostic shortcut is a narrow exception to

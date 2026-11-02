@@ -2,7 +2,6 @@ import { useCallback, useEffect, useId, useRef, useState, type ReactNode, type R
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { missingSettings } from './requirements';
 import {
-  ArrowLeft,
   ArrowRight,
   CircleAlert,
   CircleCheck,
@@ -53,6 +52,7 @@ import {
 } from '../shell/DataTable';
 import { Description } from '../shell/Description';
 import { EmptyState } from '../shell/EmptyState';
+import { ListFoot, ListPages } from '../shell/ListFoot';
 import {
   PageError,
   Region,
@@ -67,7 +67,8 @@ import { DestinationCardsSkeleton, DestinationsSkeleton } from './DestinationsSk
 import { PageAction } from '../shell/PageActions';
 import { SaveStatus, useSaveStatus } from '../shell/SaveStatus';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
-import { formatCount, formatWhen } from '../lib/format';
+import { formatCount, formatRange, formatWhen } from '../lib/format';
+import { wallKey } from '../lib/wallTime';
 import {
   deleteDestination,
   readDestinations,
@@ -86,7 +87,7 @@ import {
 } from './api';
 import { hasSendingIssue, issueCount } from './issueCount';
 import { readLog, type Lead } from '../leads/api';
-import { LeadDetail } from '../leads/LeadDetail';
+import { LeadDetail, submissionCount } from '../leads/LeadDetail';
 import { campaignName, listOptins } from '../optins/api';
 import { RowsSkeleton } from '../shell/RowsSkeleton';
 import { GuideLink } from '../shell/GuideLink';
@@ -442,9 +443,11 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
         </Button>}
       </div>}
       {data !== null && destinationId !== undefined && !data.destinations.some((destination) => destination.id === destinationId) && (
-        <Region><RegionHeader title={__('This destination is no longer available', 'wconvert')}
-          description={__('It may have been removed. Other destinations are listed below.', 'wconvert')} />
-          <RegionFooter><Button asChild variant="outline"><a href={destinationHref()}>{__('Show all destinations', 'wconvert')}</a></Button></RegionFooter>
+        <Region>
+          <EmptyState icon={Plug} title={__('This destination is no longer available', 'wconvert')}
+            action={<Button asChild variant="outline"><a href={destinationHref()}>{__('Show all destinations', 'wconvert')}</a></Button>}>
+            {__('It may have been removed. Other destinations are listed below.', 'wconvert')}
+          </EmptyState>
         </Region>
       )}
 
@@ -1091,7 +1094,7 @@ function RecentSendsDialog({ destination, returnFocusTo, onClose }: {
             : recent.status === 'failed'
               ? <RegionErrorState message={recent.message} onRetry={() => { setRecent(LOADING); setAttempt((current) => current + 1); }} />
               : recent.data.length === 0
-                ? <p className="m-0 text-note text-muted-foreground">{__('No recent sends on record.', 'wconvert')}</p>
+                ? <EmptyState icon={History} title={__('No recent sends on record', 'wconvert')}>{__('Each send to this destination appears here.', 'wconvert')}</EmptyState>
                 : <ul className="m-0 list-none divide-y divide-border p-0">{recent.data.map((each) => (
                   <li key={each.id} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-2 text-note">
                     <span>
@@ -1111,6 +1114,12 @@ function RecentSendsDialog({ destination, returnFocusTo, onClose }: {
 
 
 const FAILURES_PER_PAGE = 25;
+
+/** The days the kept failures run across, oldest to newest, or null if none can be read. */
+function datesOf(failures: DestinationsPayload['failures']): string | null {
+  const days = failures.map((failure) => wallKey(failure.at)?.slice(0, 10)).filter((day) => day !== undefined).sort();
+  return days.length === 0 ? null : formatRange(days[0], days[days.length - 1]);
+}
 
 /**
  * The terminal-failure ring.
@@ -1170,19 +1179,11 @@ function Failures({ failures, destinations }: { failures: DestinationsPayload['f
         </DataTableBody>
       </DataTable>
       <SubmissionDialog leadId={opened} onClose={() => setOpened(null)} returnFocus={opener} />
-      {pages > 1 && <RegionFooter>
-        <nav className="flex flex-wrap items-center gap-2" aria-label={__('Pages of unsent submissions', 'wconvert')}>
-          <Button variant="outline" disabled={current === 0} onClick={() => setPage(current - 1)}>
-            <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Previous', 'wconvert')}
-          </Button>
-          <span aria-live="polite" aria-atomic="true">
-            {sprintf(/* translators: 1: this page's number, 2: how many pages. */ __('Page %1$s of %2$s', 'wconvert'), formatCount(current + 1), formatCount(pages))}
-          </span>
-          <Button variant="outline" disabled={current === pages - 1} onClick={() => setPage(current + 1)}>
-            {__('Next', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" />
-          </Button>
-        </nav>
-      </RegionFooter>}
+      <ListFoot
+        count={submissionCount(failures.length)}
+        dates={datesOf(failures)}
+        pages={pages > 1 && <ListPages label={__('Pages of unsent submissions', 'wconvert')} page={current} pages={pages} onChange={setPage} />}
+      />
     </Region>
   );
 }

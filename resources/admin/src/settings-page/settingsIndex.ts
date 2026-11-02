@@ -38,7 +38,7 @@ const control = (...starts: string[]): Finder => (root) =>
   }) ?? null;
 
 /**
- * **Find a setting finds settings** — about thirty real controls, each with the
+ * **Search settings finds settings** — about thirty real controls, each with the
  * group it lives in and a way to reach it. A static client list: every entry
  * is a control this admin already draws, so the index needs no server and no
  * build step, and a setting it misses is one line here.

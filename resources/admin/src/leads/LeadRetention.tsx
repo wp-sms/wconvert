@@ -14,7 +14,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Field } from '../shell/Field';
 import { OptionStrip } from '../shell/OptionStrip';
-import { Region, RegionBody, RegionError, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
+import { Region, RegionBody, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
 import { SettingsRegionSkeleton } from '../settings-page/SettingsSkeleton';
 import { SaveStatus, useSaveStatus } from '../shell/SaveStatus';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
@@ -169,7 +169,6 @@ export function LeadRetention({ onEditingStateChange }: { onEditingStateChange?:
                 formatCount(retention.data.days),
               )}
         />
-        {error !== null && confirmDays === null && <RegionError message={error} />}
         <RegionBody className="flex flex-col gap-3">
           <p className="m-0 text-note text-muted-foreground" id={`${id}-scope`}>
             {__('Applies to submissions from every campaign. Copies already sent to destinations or exported aren’t affected.', 'wconvert')}{' '}
@@ -249,6 +248,7 @@ export function LeadRetention({ onEditingStateChange }: { onEditingStateChange?:
           </fieldset>
         </RegionBody>
         <RegionFooter className="flex flex-wrap items-center justify-end gap-3">
+          {error !== null && confirmDays === null && <p role="alert" className="m-0 text-note text-destructive">{error}</p>}
           <SaveStatus saved={saved} />
           {dirty && (
             <Button variant="outline" disabled={saving} onClick={cancelChanges}>

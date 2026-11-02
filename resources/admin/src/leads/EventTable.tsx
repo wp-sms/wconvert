@@ -104,11 +104,12 @@ export function EventTable({
               <DataTableActions>
                 <Button
                   variant="ghost"
+                  size="icon-sm"
                   data-lead={lead.id}
                   aria-label={sprintf(/* translators: %s: the visitor's name, else their email address or phone number. */ __('Open submission from %s', 'wconvert'), lead.fields.name?.trim() || titleOf(lead))}
                   onClick={(event) => onOpen(lead, event.currentTarget)}
                 >
-                  {__('Open', 'wconvert')}<ChevronRight aria-hidden="true" className="size-4 rtl:-scale-x-100" />
+                  <ChevronRight aria-hidden="true" className="size-4 rtl:-scale-x-100" />
                 </Button>
               </DataTableActions>
             </DataTableRow>

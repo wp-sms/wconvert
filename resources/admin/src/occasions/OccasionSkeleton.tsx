@@ -1,20 +1,15 @@
 import { __ } from '@wordpress/i18n';
-import { ArrowLeft } from 'lucide-react';
-import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 import { optinsHref } from '../nav';
-import { DataTable, DataTableActions, DataTableActionsColumn, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '../shell/DataTable';
+import { DataTable, DataTableActions, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '../shell/DataTable';
+import { PageBack } from '../shell/PageActions';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
 import { Shell } from '../shell/Shell';
 import { StatRowSkeleton } from '../shell/Stat';
 
 /** The occasion page's way back to Campaigns. */
 export function OccasionBack() {
-  return (
-    <Button asChild variant="ghost" className="-ms-3 self-start">
-      <a href={optinsHref()}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Campaigns', 'wconvert')}</a>
-    </Button>
-  );
+  return <PageBack href={optinsHref()}>{__('Campaigns', 'wconvert')}</PageBack>;
 }
 
 /**
@@ -29,9 +24,10 @@ export function OccasionBack() {
  */
 export function OccasionSkeleton() {
   const control = (className: string) => <Skeleton aria-hidden="true" className={className} style={{ blockSize: 'var(--control-height)' }} />;
-  return <Shell section="optins" pageTitle={__('Occasion', 'wconvert')} pageBack={<OccasionBack />}
+  return <Shell section="optins" pageTitle={__('Occasion', 'wconvert')}
     pageDescription={<Skeleton inline aria-hidden="true" className="inline-block h-[1lh] w-full max-w-56 align-top" />}
     actions={<><Skeleton aria-hidden="true" className="size-12" /><Skeleton aria-hidden="true" className="h-12 w-[266px] min-w-0 shrink" /></>}>
+    <OccasionBack />
     <div className="flex flex-col gap-5">
       <RegionSkeleton label={__('Results', 'wconvert')} trailing={control('w-44')}>
         <StatRowSkeleton stats={3} />
@@ -54,7 +50,7 @@ export function OccasionSkeleton() {
             <DataTableColumn>{__('Dates', 'wconvert')}</DataTableColumn>
             <DataTableColumn>{__('Status', 'wconvert')}</DataTableColumn>
             <DataTableColumn numeric>{__('Results', 'wconvert')}</DataTableColumn>
-            <DataTableActionsColumn>{__('Actions', 'wconvert')}</DataTableActionsColumn>
+            <DataTableColumn>{__('Next action', 'wconvert')}</DataTableColumn>
           </DataTableHead>
           <DataTableBody>
             {[0, 1].map((row) => <DataTableRow key={row} className="wconvert-campaign-row">
