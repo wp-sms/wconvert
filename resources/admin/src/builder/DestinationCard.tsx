@@ -79,10 +79,10 @@ export function DestinationCard({
             : automatic.length > 0 && status.state !== 'needs_setup' &&
             <Description className="mt-1 [overflow-wrap:anywhere]">{sprintf(/* translators: %s: contact fields, e.g. “email and name”. */ __('Sends %s automatically.', 'wconvert'), listWithAnd(automatic))}</Description>}
         </div>
-        <div className="wconvert-destination-card__side">
+        <div className="wconvert-destination-card__side wconvert-toolbar">
           {status.badge}
           {/* Review & publish asks for a test before launch, so the door is on the card, not in a menu. */}
-          {runnable && <Button type="button" variant="outline" size="sm" aria-describedby={`${id}-name`} onClick={(event) => onTest(event.currentTarget)}>
+          {runnable && <Button type="button" variant="outline" aria-describedby={`${id}-name`} onClick={(event) => onTest(event.currentTarget)}>
             <Send aria-hidden="true" />{__('Send a test', 'wconvert')}
           </Button>}
           <DropdownMenu modal={false}>
@@ -108,12 +108,12 @@ export function DestinationCard({
         <div className={`wconvert-destination-card__issue wconvert-destination-card__issue--${status.state === 'failing' ? 'bad' : 'warn'}`}>
           <p className="m-0">{status.issue}</p>
           {status.state === 'needs_setup' && <div>
-            <Button type="button" variant="outline" size="sm" onClick={(event) => onEdit(event.currentTarget, firstField)}>
+            <Button type="button" variant="outline" onClick={(event) => onEdit(event.currentTarget, firstField)}>
               {__('Finish setup', 'wconvert')}
             </Button>
           </div>}
           {status.state === 'failing' && <div>
-            <Button asChild variant="outline" size="sm"><a href={sendingIssuesHref()}>{__('View sending issues', 'wconvert')}</a></Button>
+            <Button asChild variant="outline"><a href={sendingIssuesHref()}>{__('View sending issues', 'wconvert')}</a></Button>
           </div>}
         </div>
       ) : fit.length > 0 && (

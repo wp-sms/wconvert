@@ -11,7 +11,7 @@ import { StatRowSkeleton } from '../shell/Stat';
 /** The occasion page's way back to Campaigns. */
 export function OccasionBack() {
   return (
-    <Button asChild variant="ghost" size="sm" className="-ms-3 self-start">
+    <Button asChild variant="ghost" className="-ms-3 self-start">
       <a href={optinsHref()}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Campaigns', 'wconvert')}</a>
     </Button>
   );

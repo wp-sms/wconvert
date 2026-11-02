@@ -119,9 +119,9 @@ export function ActivateCard({ license, onActivateKey, onKeyEdit, onChanged, bus
         <div className="wconvert-license-card__body">
           <Notice tone="warning" title={sprintf(/* translators: %s: the account's email address, partly hidden, e.g. “n***@example.com”. */ __('This account (%s) has no WConvert Pro license', 'wconvert-pro'), account.email_masked ?? '')}
             actions={<>
-              <Button variant="outline" size="sm" onClick={leave}>{__('Sign out and use another account', 'wconvert-pro')}</Button>
+              <Button variant="outline" onClick={leave}>{__('Sign out and use another account', 'wconvert-pro')}</Button>
               <Ext href={license.urls.checkout ?? '#'}>{__('See plans', 'wconvert-pro')}</Ext>
-              <Button variant="link" size="sm" onClick={useKey}>{__('Use a key instead', 'wconvert-pro')}</Button>
+              <Button variant="link" onClick={useKey}>{__('Use a key instead', 'wconvert-pro')}</Button>
             </>} />
         </div>
       </section>
@@ -167,7 +167,7 @@ export function ActivateCard({ license, onActivateKey, onKeyEdit, onChanged, bus
           </div>
         </div>
         <div className="wconvert-license-card__foot">
-          {sprintf(/* translators: %s: the account's email address, partly hidden, e.g. “n***@example.com”. */ __('Signed in as %s', 'wconvert-pro'), account.email_masked ?? '')} · <Button variant="link" size="sm" onClick={leave}>{__('Sign out', 'wconvert-pro')}</Button>
+          {sprintf(/* translators: %s: the account's email address, partly hidden, e.g. “n***@example.com”. */ __('Signed in as %s', 'wconvert-pro'), account.email_masked ?? '')} · <Button variant="link" onClick={leave}>{__('Sign out', 'wconvert-pro')}</Button>
         </div>
       </section>
     );
@@ -213,9 +213,9 @@ export function Ways({ ways, license, retry, signIn: startSignIn }: { ways: Way[
   if (ways.length === 0) return null;
 
   const door: Record<Way, ReactNode> = {
-    sign_in: <Button key="sign_in" variant="link" size="sm" onClick={startSignIn}>{__('Sign in instead', 'wconvert-pro')}</Button>,
+    sign_in: <Button key="sign_in" variant="link" onClick={startSignIn}>{__('Sign in instead', 'wconvert-pro')}</Button>,
     find_key: <Ext key="find_key" href={license.urls.account ?? '#'}>{__('Find my WConvert key', 'wconvert-pro')}</Ext>,
-    renew: <Ext key="renew" href={license.urls.renew ?? license.urls.account ?? '#'} variant="outline" size="sm">{__('Renew', 'wconvert-pro')}</Ext>,
+    renew: <Ext key="renew" href={license.urls.renew ?? license.urls.account ?? '#'} variant="outline">{__('Renew', 'wconvert-pro')}</Ext>,
     sites: <Ext key="sites" href={license.urls.sites ?? '#'}>{__('Manage sites', 'wconvert-pro')}</Ext>,
     upgrade: <Ext key="upgrade" href={license.urls.upgrade ?? '#'}>{__('Upgrade', 'wconvert-pro')}</Ext>,
     retry: <TryAgain key="retry" onClick={retry} />,

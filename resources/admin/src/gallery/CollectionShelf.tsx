@@ -13,6 +13,10 @@ import { shelfCovers, type GalleryCard, type ShelfCollection } from './model';
  * The collections, on top of the grid (ADR 0171). A tile filters the grid to
  * its members; pressing it again shows every template. Each tile can be
  * hidden, and the whole shelf can be.
+ *
+ * The open tile is `aria-current`, not pressed (GUIDELINES §7): opening one
+ * replaces the other, so they are one-of-N, and a radio could not be pressed
+ * again to clear it.
  */
 export function CollectionShelf({ shelf, cards, trees, today, active, hidden, onOpen, onHide, onRestore, onHideAll, onNear, disabled = false }: {
   shelf: readonly ShelfCollection[];
@@ -36,12 +40,12 @@ export function CollectionShelf({ shelf, cards, trees, today, active, hidden, on
 
   return (
     <section className="wconvert-shelf" aria-labelledby="wconvert-shelf-title">
-      <div className="wconvert-shelf__head">
+      <div className="wconvert-shelf__head wconvert-toolbar">
         <h2 id="wconvert-shelf-title">{__('Collections', 'wconvert')}</h2>
-        {hidden > 0 && <Button variant="ghost" size="sm" disabled={disabled} onClick={onRestore}>
+        {hidden > 0 && <Button variant="ghost" disabled={disabled} onClick={onRestore}>
           {sprintf(/* translators: %s: how many collections are hidden. */ __('Show %s hidden', 'wconvert'), formatCount(hidden))}
         </Button>}
-        <Button variant="ghost" size="sm" disabled={disabled} onClick={onHideAll}>{__('Hide featured', 'wconvert')}</Button>
+        <Button variant="ghost" disabled={disabled} onClick={onHideAll}>{__('Hide featured', 'wconvert')}</Button>
       </div>
       <ul className="wconvert-shelf__row">
         {shelf.map(({ collection, members }) => {
@@ -49,7 +53,7 @@ export function CollectionShelf({ shelf, cards, trees, today, active, hidden, on
           const covers = shelfCovers(members, cards);
           return (
             <li key={collection.id} className="wconvert-shelf__tile" data-active={on || undefined}>
-              <button type="button" className="wconvert-shelf__open" disabled={disabled} aria-pressed={on} onClick={() => onOpen(on ? null : collection.id)}
+              <button type="button" className="wconvert-shelf__open" disabled={disabled} aria-current={on || undefined} onClick={() => onOpen(on ? null : collection.id)}
                 aria-label={sprintf(/* translators: 1: a collection's name, 2: how many templates it has here. */ _n('%1$s, %2$s template', '%1$s, %2$s templates', members.size, 'wconvert'), collection.name, formatCount(members.size))} />
               <div className="wconvert-shelf__cover" aria-hidden="true">
                 {covers.map(card => <div key={card.key}><DesignStage displayType={card.displayType} size="thumb" onNear={onNear && (() => onNear(card.key))}
@@ -98,9 +102,9 @@ function dayAndMonth(day: string): string {
 /** The shelf when it is off: a line that brings it back. */
 export function ShelfOff({ onShow, disabled = false }: { onShow: () => void; disabled?: boolean }) {
   return (
-    <p className="wconvert-shelf__off m-0">
+    <p className="wconvert-shelf__off wconvert-toolbar m-0">
       {__('Featured collections are hidden.', 'wconvert')}
-      <Button variant="ghost" size="sm" disabled={disabled} onClick={onShow}>{__('Show featured', 'wconvert')}</Button>
+      <Button variant="ghost" disabled={disabled} onClick={onShow}>{__('Show featured', 'wconvert')}</Button>
     </p>
   );
 }
@@ -118,7 +122,7 @@ export function CollectionBar({ shelf, stage, onStage, onClose, disabled = false
   const words = { before: __('Before', 'wconvert'), during: __('During', 'wconvert'), after: __('After', 'wconvert') };
 
   return (
-    <div className="wconvert-collection-bar">
+    <div className="wconvert-collection-bar wconvert-toolbar">
       <div className="wconvert-collection-bar__text">
         <strong>{shelf.collection.name}</strong>
         {shelf.collection.description && <span>{shelf.collection.description}</span>}
@@ -128,7 +132,7 @@ export function CollectionBar({ shelf, stage, onStage, onClose, disabled = false
         <OptionStrip label={__('When', 'wconvert')} value={stage} disabled={disabled}
           options={[{ value: 'any', label: __('Any time', 'wconvert') }, ...stages.map(value => ({ value, label: words[value] }))]} onChange={onStage} />
       </div>}
-      <Button variant="outline" size="sm" disabled={disabled} onClick={onClose}>{__('Show all templates', 'wconvert')}</Button>
+      <Button variant="outline" disabled={disabled} onClick={onClose}>{__('Show all templates', 'wconvert')}</Button>
     </div>
   );
 }

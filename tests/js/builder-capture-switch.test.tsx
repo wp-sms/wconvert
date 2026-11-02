@@ -162,6 +162,8 @@ describe('the Contact form switch', () => {
     await userEvent.keyboard('{Escape}');
     await userEvent.click(control.getByRole('button', { name: 'Make a signup copy' }));
     const box = within(await screen.findByRole('dialog', { name: 'Make a signup copy' }));
+    // Native radios in a named group: the set is announced as a set (GUIDELINES §7).
+    expect(within(box.getByRole('group', { name: 'What the copy asks for' })).getAllByRole('radio')).toHaveLength(2);
     await userEvent.click(box.getByRole('radio', { name: 'Ask for phone' }));
     await userEvent.click(box.getByRole('button', { name: 'Create signup copy' }));
     await waitFor(() => expect(onCreated).toHaveBeenCalledWith('COPIED'));

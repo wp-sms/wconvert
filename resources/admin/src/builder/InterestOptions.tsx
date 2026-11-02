@@ -73,11 +73,11 @@ export function InterestOptions({ value, onEdit, onChange }: {
         <PanelHint>{__('Lowercase letters, numbers, hyphens or underscores. Changing it affects future submissions.', 'wconvert')}</PanelHint>
       </Disclosure>
       <div className="flex flex-wrap gap-2">
-        <Button type="button" variant="ghost" size="sm" disabled={at === 0} aria-label={sprintf(/* translators: %d: the answer choice's position in the list, e.g. 2. */ __('Move choice %d up', 'wconvert'), at + 1)} onClick={() => {
+        <Button type="button" variant="ghost" disabled={at === 0} aria-label={sprintf(/* translators: %d: the answer choice's position in the list, e.g. 2. */ __('Move choice %d up', 'wconvert'), at + 1)} onClick={() => {
           focusAfterChange.current = at - 1;
           const moved = [...options]; [moved[at - 1], moved[at]] = [moved[at], moved[at - 1]]; onChange(moved);
         }}>{__('Move up', 'wconvert')}</Button>
-        <Button type="button" variant="ghost" size="sm" aria-label={sprintf(/* translators: %d: the answer choice's position in the list, e.g. 2. */ __('Remove choice %d', 'wconvert'), at + 1)} onClick={() => {
+        <Button type="button" variant="ghost" aria-label={sprintf(/* translators: %d: the answer choice's position in the list, e.g. 2. */ __('Remove choice %d', 'wconvert'), at + 1)} onClick={() => {
           focusAfterChange.current = Math.min(at, options.length - 2);
           onChange(options.filter((_, index) => index !== at));
         }}>{__('Remove', 'wconvert')}</Button>

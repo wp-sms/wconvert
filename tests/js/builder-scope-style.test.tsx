@@ -666,7 +666,8 @@ describe('full width', () => {
     await userEvent.click(toggle);
 
     expect(document.body).toHaveClass('wconvert-fullscreen');
-    expect(screen.getByRole('button', { name: 'Show the menu' })).toHaveAttribute(
+    // One name, pressed while on: a name that flips too reads "Show the menu, pressed".
+    expect(screen.getByRole('button', { name: 'Full width' })).toHaveAttribute(
       'aria-pressed',
       'true',
     );

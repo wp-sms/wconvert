@@ -18,14 +18,14 @@ export function cleanKey(raw: string, full = true): string {
 }
 
 /** A link to the store, which opens beside WordPress and says so. */
-export function Ext({ href, children, variant, size }: { href: string; children: ReactNode; variant?: 'brand' | 'outline' | 'link'; size?: 'sm' }) {
+export function Ext({ href, children, variant }: { href: string; children: ReactNode; variant?: 'brand' | 'outline' | 'link' }) {
   const label = <>{children} <span aria-hidden="true">↗</span><span className="sr-only"> {__('(opens in a new tab)', 'wconvert-pro')}</span></>;
 
   if (variant === undefined || variant === 'link') {
     return <a className="wconvert-license-ext" href={href} target="_blank" rel="noreferrer">{label}</a>;
   }
 
-  return <Button asChild variant={variant} size={size}><a href={href} target="_blank" rel="noreferrer">{label}</a></Button>;
+  return <Button asChild variant={variant}><a href={href} target="_blank" rel="noreferrer">{label}</a></Button>;
 }
 
 export type NoticeTone = 'success' | 'info' | 'warning' | 'danger';

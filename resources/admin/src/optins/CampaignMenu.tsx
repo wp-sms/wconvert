@@ -11,6 +11,7 @@ import { ProHintItem, proHintsShown } from '../shell/ProHint';
 import { draftPreviewUrl } from '../siteLinks';
 import { canUnpublish, statusOf, type OptinSummary } from './api';
 import type { DecisionKind } from './decisionCopy';
+import type { PeriodQuery } from '../stats/api';
 
 /** Every row action past the next one, with an icon and a label (GUIDELINES §20). */
 export function CampaignMenu({
@@ -23,7 +24,7 @@ export function CampaignMenu({
   missingDesign,
   result,
   reportReady,
-  days,
+  period,
   range,
   onDetails,
   onDuplicate,
@@ -39,7 +40,8 @@ export function CampaignMenu({
   missingDesign: boolean;
   result?: { capture: boolean };
   reportReady: boolean;
-  days: number;
+  /** The window of the results beside it, so the report opens on the same days. */
+  period: PeriodQuery;
   range?: { from: string; to: string };
   /** Absent where there is no Details dialog to open, as on an occasion's page. */
   onDetails?: (trigger: HTMLElement | null) => void;
@@ -84,7 +86,7 @@ export function CampaignMenu({
             <OptionItem icon={MonitorPlay} name={__('Preview on site', 'wconvert')} href={preview} newTab
               refused={missingDesign ? refusal(__('Choose a template first', 'wconvert'), __('Choose a template in the editor before previewing it on your site.', 'wconvert')) : null} />
           )}
-          <OptionItem icon={ChartNoAxesCombined} name={__('View report', 'wconvert')} href={reportHref({ optinId: row.id, days })} />
+          <OptionItem icon={ChartNoAxesCombined} name={__('View report', 'wconvert')} href={reportHref({ optinId: row.id, ...period })} />
           {reportReady && result?.capture && (
             <OptionItem icon={Inbox} name={__('View submissions', 'wconvert')} href={leadsHref({ optinId: row.id, ...range })} />
           )}

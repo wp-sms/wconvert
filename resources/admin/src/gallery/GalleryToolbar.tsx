@@ -8,6 +8,8 @@ import { OptionStrip } from '../shell/OptionStrip';
 import { DISPLAY_TYPES, displayTypeLabel } from '../displayTypes';
 import { formatCount } from '../lib/format';
 import { optionCounts, type GalleryCard, type GalleryFilters } from './model';
+import { NativeSelect } from '../components/ui/native-select';
+import { CheckRow } from '../shell/CheckRow';
 
 /** What the gallery's own controls choose; the editor adds its extras beside them. */
 export interface GalleryChoices {
@@ -77,18 +79,18 @@ export function GalleryToolbar({ cards, filters, choices, onChange, shown, total
 
   return (
     <div className="wconvert-gallery-toolbar">
-      <div className="wconvert-gallery-toolbar__row">
+      <div className="wconvert-gallery-toolbar__row wconvert-toolbar">
         <PickerSearch label={__('Search templates', 'wconvert')} placeholder={__('Search a need, e.g. a guide or quote…', 'wconvert')}
           value={choices.query} disabled={disabled} onChange={query => onChange({ query })} />
         {showFormat && (offered.length > 1 || choices.format !== 'all') && (
           <label className="wconvert-gallery-toolbar__field">
             <span className="sr-only">{__('Format', 'wconvert')}</span>
-            <select className="wconvert-picker__select" value={choices.format} disabled={disabled} onChange={event => onChange({ format: event.target.value })}>
+            <NativeSelect className="text-note" value={choices.format} disabled={disabled} onChange={event => onChange({ format: event.target.value })}>
               <option value="all">{__('All formats', 'wconvert')}</option>
               {offered.map(type => <option key={type} value={type}>
                 {proOnly(type) ? sprintf(/* translators: %s: a format, e.g. “Slide-in”, offered only with the paid plan. */ __('%s · Pro', 'wconvert'), displayTypeLabel(type)) : displayTypeLabel(type)}
               </option>)}
-            </select>
+            </NativeSelect>
           </label>
         )}
         {scope}
@@ -100,7 +102,7 @@ export function GalleryToolbar({ cards, filters, choices, onChange, shown, total
         </div>}
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" disabled={disabled}>
+            <Button variant="outline" disabled={disabled}>
               <SlidersHorizontal aria-hidden="true" />{__('More filters', 'wconvert')}
               {active.length > 0 && <span className="wconvert-gallery-toolbar__more-count">{formatCount(active.length)}</span>}
             </Button>
@@ -108,21 +110,18 @@ export function GalleryToolbar({ cards, filters, choices, onChange, shown, total
           <PopoverContent align="end" className="wconvert-gallery-more">
             {(askOptions.length > 2 || choices.asks !== 'any') && <label>
               <span>{__('Asks for', 'wconvert')}</span>
-              <select id={`${ids}-asks`} className="wconvert-picker__select" value={choices.asks} onChange={event => onChange({ asks: event.target.value as GalleryChoices['asks'] })}>
+              <NativeSelect id={`${ids}-asks`} value={choices.asks} onChange={event => onChange({ asks: event.target.value as GalleryChoices['asks'] })}>
                 {askOptions.map(option => <option key={option} value={option}>{askWords[option]}</option>)}
-              </select>
+              </NativeSelect>
             </label>}
             {businessOptions.length > 0 && <label>
               <span>{__('Business', 'wconvert')}</span>
-              <select className="wconvert-picker__select" value={choices.business} onChange={event => onChange({ business: event.target.value })}>
+              <NativeSelect value={choices.business} onChange={event => onChange({ business: event.target.value })}>
                 <option value="any">{__('Any business', 'wconvert')}</option>
                 {businessOptions.map(([id, label]) => <option key={id} value={id}>{label}</option>)}
-              </select>
+              </NativeSelect>
             </label>}
-            <label className="flex items-center gap-2">
-              <input type="checkbox" checked={choices.savedOnly} onChange={event => onChange({ savedOnly: event.target.checked })} />
-              {__('Saved only', 'wconvert')}
-            </label>
+            <CheckRow checked={choices.savedOnly} onChange={event => onChange({ savedOnly: event.target.checked })} label={__('Saved only', 'wconvert')} />
             {extras}
           </PopoverContent>
         </Popover>
@@ -130,12 +129,12 @@ export function GalleryToolbar({ cards, filters, choices, onChange, shown, total
           {sprintf(/* translators: 1: how many templates match, 2: how many there are. */ __('%1$s of %2$s', 'wconvert'), formatCount(shown), formatCount(total))}
         </span>
       </div>
-      {active.length > 0 && <div className="wconvert-gallery-active" role="group" aria-label={__('Active filters', 'wconvert')}>
+      {active.length > 0 && <div className="wconvert-gallery-active wconvert-toolbar" role="group" aria-label={__('Active filters', 'wconvert')}>
         {active.map(filter => <button key={filter.id} type="button" className="wconvert-gallery-active__chip" disabled={disabled} onClick={filter.remove}
           aria-label={sprintf(/* translators: %s: an active filter's label, e.g. “Asks for phone”. */ __('Remove filter: %s', 'wconvert'), filter.label)}>
           {filter.label}<X size={12} aria-hidden="true" />
         </button>)}
-        {active.length > 1 && <Button variant="ghost" size="sm" disabled={disabled} onClick={onClear}>{__('Clear filters', 'wconvert')}</Button>}
+        {active.length > 1 && <Button variant="ghost" disabled={disabled} onClick={onClear}>{__('Clear filters', 'wconvert')}</Button>}
       </div>}
     </div>
   );

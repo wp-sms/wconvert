@@ -171,7 +171,7 @@ export const LinkField = forwardRef<HTMLInputElement, LinkFieldProps>(function L
           {note || countOf(hits.length)}
         </p>
         {searching && <div aria-hidden="true" className="wconvert-object-picker__empty text-note"><Skeleton className="h-[1lh] w-40 max-w-full" /></div>}
-        {failed && <Button type="button" variant="outline" size="sm" tabIndex={-1}
+        {failed && <Button type="button" variant="outline" tabIndex={-1}
           aria-describedby={noteId}
           onMouseDown={(event) => event.preventDefault()} onClick={retry}>
           {__('Try again', 'wconvert')}

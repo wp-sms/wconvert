@@ -1,4 +1,6 @@
 import { useLayoutEffect, useRef, type Ref, type TextareaHTMLAttributes } from 'react';
+import { Textarea } from '../components/ui/textarea';
+import { cn } from '../lib/utils';
 
 /**
  * A text box as tall as its words (ADR 0136).
@@ -28,7 +30,7 @@ export function AutoGrowTextarea({ ref, value, className, ...props }: Omit<Texta
     watch.observe(element);
     return () => watch.disconnect();
   }, [value]);
-  return <textarea {...props} rows={1} value={value} className={['wconvert-autogrow', className].filter(Boolean).join(' ')} ref={element => {
+  return <Textarea {...props} rows={1} value={value} className={cn('wconvert-autogrow', className)} ref={element => {
     box.current = element;
     if (typeof ref === 'function') ref(element);
     else if (ref) ref.current = element;

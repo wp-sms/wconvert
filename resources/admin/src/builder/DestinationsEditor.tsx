@@ -129,7 +129,7 @@ export function DestinationsEditor({
     setPicking(true);
   };
   const add = (
-    <Button ref={addButton} variant="outline" size="sm" disabled={available.status !== 'ready'} onClick={(event) => openPicker(event.currentTarget)}>
+    <Button ref={addButton} variant="outline" disabled={available.status !== 'ready'} onClick={(event) => openPicker(event.currentTarget)}>
       <Plus aria-hidden="true" />{__('Add destination', 'wconvert')}
     </Button>
   );

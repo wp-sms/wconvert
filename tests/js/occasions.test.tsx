@@ -19,7 +19,7 @@ vi.mock('../../resources/admin/src/optins/api', async (importOriginal) => ({
   ...optins,
 }));
 const stats = vi.hoisted(() => ({ readDashboard: vi.fn() }));
-vi.mock('../../resources/admin/src/stats/api', () => stats);
+vi.mock('../../resources/admin/src/stats/api', async (original) => ({ ...await original<object>(), ...stats }));
 vi.mock('../../resources/admin/src/goals/api', () => ({ listGoals: vi.fn().mockResolvedValue([]) }));
 vi.mock('../../resources/admin/src/optins/CampaignDetails', () => ({ default: () => null }));
 

@@ -13,6 +13,7 @@ import { captureState, type CaptureTarget, type Change, type ChangeItem, type Co
 import type { ContactChannel } from './structure/captureWording';
 import { walkNodes } from './structure/journey';
 import { messageOf } from '../shell/loadable';
+import { CheckRow } from '../shell/CheckRow';
 
 /**
  * ============================================================================
@@ -194,10 +195,10 @@ export function CaptureChangeDialog({ open, onOpenChange, before, displayType, t
     <AdminDialogContent size="md" showCloseButton={!saving} onCloseAutoFocus={returnFocusTo ? event => { event.preventDefault(); returnFocusTo.current?.focus(); } : undefined}>
       <AdminDialogHeader title={title} meta={meta} />
       <AdminDialogBody className="wconvert-capture-box">
-        {copy && adding && <div className="wconvert-capture-box__choice" role="radiogroup" aria-label={__('What the copy asks for', 'wconvert')}>
-          {(['email', 'phone'] as const).map(value => <label key={value} data-checked={channel === value || undefined}>
-            <input type="radio" name={radioName} checked={channel === value} onChange={() => setChannel(value)} />
-            {value === 'email' ? __('Ask for email', 'wconvert') : __('Ask for phone', 'wconvert')}</label>)}
+        {copy && adding && <div className="wconvert-radio-cards wconvert-capture-box__channels" role="group" aria-label={__('What the copy asks for', 'wconvert')}>
+          {(['email', 'phone'] as const).map(value => <label key={value} className="wconvert-radio-card">
+            <input type="radio" name={radioName} aria-labelledby={`${radioName}-${value}`} checked={channel === value} onChange={() => setChannel(value)} />
+            <span><span id={`${radioName}-${value}`}>{value === 'email' ? __('Ask for email', 'wconvert') : __('Ask for phone', 'wconvert')}</span></span></label>)}
         </div>}
         {'reason' in result ? <p id={reasonId} role="alert">{result.reason}</p> : <>
           {/* Before and after, drawn small, for every change the box describes, copies included. */}
@@ -221,8 +222,7 @@ export function CaptureChangeDialog({ open, onOpenChange, before, displayType, t
             {copy && <Row label={__('Original', 'wconvert')}>{__('Stays live, unchanged.', 'wconvert')}</Row>}
           </dl>
           {needsLink && <div className="wconvert-capture-box__link">
-            <label><input type="checkbox" checked={withLink} onChange={event => setWithLink(event.target.checked)} />
-              <strong>{__('Add a “Shop now” button', 'wconvert')}</strong></label>
+            <CheckRow checked={withLink} onChange={event => setWithLink(event.target.checked)} label={<strong>{__('Add a “Shop now” button', 'wconvert')}</strong>} />
             {withLink && <div><label htmlFor={hrefId}>{__('Link', 'wconvert')}</label>
               <Input id={hrefId} type="url" dir="ltr" value={href} onChange={event => setHref(event.target.value)} />
               <small>{offer?.place === 'home' ? __('Your home page. Change it if the offer lives somewhere else.', 'wconvert')

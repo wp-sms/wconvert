@@ -540,7 +540,7 @@ describe('the builder shell', () => {
     // The template in use is marked, with nothing to press but its picture.
     expect(picker.queryByRole('button', { name: 'Use template' })).not.toBeInTheDocument();
     await userEvent.click(picker.getByRole('button', { name: `Preview ${ENTRY.name}` }));
-    expect(picker.getByRole('radio', { name: /Keep my words and images/ })).toBeChecked();
+    expect(picker.getByRole('radio', { name: /Keep my current content/ })).toBeChecked();
     expect(picker.queryByText(/Preview with (your|sample) content/)).toBeNull();
     const current = picker.getByRole('button', { name: 'Current template' });
     expect(current).toHaveAttribute('aria-disabled', 'true');

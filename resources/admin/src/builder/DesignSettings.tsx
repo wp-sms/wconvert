@@ -105,7 +105,7 @@ export function DesignSettings({
       {['popup', 'slide_in'].includes(displayType) && <ReopenSettings value={teaser} template={template} onChange={onTeaserChange} />}
       <PanelSection title={__('Template', 'wconvert')}>
         <FactList><FactRow label={__('Template', 'wconvert')}>{name}</FactRow></FactList>
-        <Button ref={browseRef} variant="outline" size="sm" className="justify-self-start" onClick={onBrowse}>
+        <Button ref={browseRef} variant="outline" className="justify-self-start" onClick={onBrowse}>
           <LayoutTemplate aria-hidden="true" />
           {__('Change template', 'wconvert')}
         </Button>

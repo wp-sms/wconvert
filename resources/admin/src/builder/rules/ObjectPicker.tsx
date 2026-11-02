@@ -267,7 +267,7 @@ export function ObjectPicker({ id, kind, value, onChange }: ObjectPickerProps) {
       >
         {searchNote && <p id={searchNoteId} className={searching ? 'sr-only' : 'wconvert-object-picker__empty text-note text-muted-foreground'}>{searchNote}</p>}
         {searching && <div aria-hidden="true" className="wconvert-object-picker__empty text-note"><Skeleton className="h-[1lh] w-40 max-w-full" /></div>}
-        {searchFailed && <Button type="button" variant="outline" size="sm" tabIndex={-1}
+        {searchFailed && <Button type="button" variant="outline" tabIndex={-1}
           aria-describedby={searchNoteId}
           onMouseDown={(event) => event.preventDefault()} onClick={retrySearch}>
           {__('Try again', 'wconvert')}

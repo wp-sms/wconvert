@@ -40,6 +40,7 @@ import { FieldHeading, PanelHint, PanelSection } from './PanelSection';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Template, Tokens as TokenMap } from '@renderer/types';
 import { LineSkeleton } from '../shell/LineSkeleton';
+import { NativeSelect } from '../components/ui/native-select';
 
 /**
  * ============================================================================
@@ -133,6 +134,7 @@ export function Themes({
   onChange: (template: Template) => void;
 }) {
   const presets = themePresets();
+  const looks = useId();
 
   const write = (tokens: Readonly<Record<string, string>>) =>
     onChange({
@@ -146,19 +148,20 @@ export function Themes({
   return (
     <PanelSection title={__('Ready-made looks', 'wconvert')}>
       {/*
-        None pressed is the answer for a design the merchant has since edited:
-        it matches no preset, and pressing the first would claim a palette they
-        are not on.
+        None checked is the answer for a design the merchant has since edited:
+        it matches no preset, and checking the first would claim a palette they
+        are not on. Native radios can have none, and one tab stop (GUIDELINES §7).
       */}
       <div className="wconvert-themes" role="group" aria-label={__('Ready-made looks', 'wconvert')}>
         {presets.map((preset) => (
-          <button
-            key={preset.id}
-            type="button"
-            className="wconvert-theme"
-            aria-pressed={isApplied(preset, template.tokens)}
-            onClick={() => write(preset.tokens)}
-          >
+          <label key={preset.id} className="wconvert-theme">
+            <input
+              type="radio"
+              className="sr-only"
+              name={looks}
+              checked={isApplied(preset, template.tokens)}
+              onChange={() => write(preset.tokens)}
+            />
             <span aria-hidden="true" className="wconvert-theme__swatches">
               {['bg', 'fg', 'accent'].map((token) => (
                 <span
@@ -169,7 +172,7 @@ export function Themes({
               ))}
             </span>
             {preset.label}
-          </button>
+          </label>
         ))}
       </div>
     </PanelSection>
@@ -612,10 +615,10 @@ export function TokenField({
       ? [[.85, __('Small', 'wconvert')], [1, __('Medium', 'wconvert')], [1.2, __('Large', 'wconvert')], [1.45, __('Extra large', 'wconvert')]]
       : [[.8, __('Smaller', 'wconvert')], [1, __('Design default', 'wconvert')], [1.2, __('Larger', 'wconvert')]];
     const presets = steps.map(([factor, name]) => ({ value: presetBase.map(part => `${Math.round(part.amount * factor * 100) / 100}${part.unit}`).join(' '), label: name }));
-    return <div className="wconvert-token"><FieldHeading label={label} htmlFor={field}>{reset}</FieldHeading><select id={field} value={shown} onChange={event => onChange(event.target.value)}>
+    return <div className="wconvert-token"><FieldHeading label={label} htmlFor={field}>{reset}</FieldHeading><NativeSelect id={field} value={shown} onChange={event => onChange(event.target.value)}>
       {!presets.some(preset => preset.value === shown) && <option value={shown}>{sprintf(/* translators: %s: a CSS length, e.g. “43rem”. */ __('Custom (%s)', 'wconvert'), shown)}</option>}
       {presets.filter((preset, index) => presets.findIndex(item => item.value === preset.value) === index).map(preset => <option key={preset.value} value={preset.value}>{preset.label}</option>)}
-      </select></div>;
+      </NativeSelect></div>;
   }
   const control = TOKENS.find(declaration => declaration.name === token)?.control;
   if (control === 'position') return <PositionField label={label} shown={shown} offered={offered ?? []}
@@ -937,13 +940,13 @@ function ChoiceField({
         <input type="radio" className="sr-only" name={id} checked={custom} onChange={() => setAsked(true)} />
         <span className="wconvert-choice__label"><CodeXml aria-hidden="true" /><span className="sr-only">{__('Custom', 'wconvert')}</span></span>
       </label>}
-    </span> : <select id={id} value={custom ? '__custom' : shown} onChange={event => {
+    </span> : <NativeSelect id={id} value={custom ? '__custom' : shown} onChange={event => {
       if (event.target.value === '__custom') setAsked(true);
       else choose(event.target.value);
     }}>
       {offered.map(choice => <option key={choice} value={choice}>{nameOf(labels.tokenValues, `${token}.${choice}`)}</option>)}
       {(advanced || custom) && <option value="__custom">{__('Custom…', 'wconvert')}</option>}
-    </select>}
+    </NativeSelect>}
     {custom && !advanced && <PanelHint>{cssOnlyNote()}</PanelHint>}
     {custom && advanced && <StyleValueInput type="text" className="wconvert-token__typed"
       aria-label={sprintf(/* translators: %s: a design setting, e.g. “Heading size”. */ __('%s value', 'wconvert'), label)} placeholder={fallback} value={value}
@@ -982,7 +985,7 @@ function ChoiceField({
  * as a set, all from the browser. A hand-authored `role="listbox"` would be
  * that behaviour rewritten, worse.
  *
- * **Rows rather than a `<select>`**, because the whole value of this control is
+ * **Rows rather than a `<NativeSelect>`**, because the whole value of this control is
  * reading *Georgia* set in Georgia, and `font-family` on an `<option>` is
  * unreliable across browsers (`index.css`). That was the argument for chips and
  * it is the argument for this: what changed is the count, not the reason.
@@ -1079,7 +1082,7 @@ function FontField({
             <button type="button" className="wconvert-font" aria-labelledby={named}>
               {/*
                 Set in the face it names, which is the whole point of this
-                control — and the one thing a `<select>` could not do.
+                control — and the one thing a `<NativeSelect>` could not do.
               */}
               <span className="wconvert-font__name" style={{ fontFamily: shown }}>
                 {nameOfStack(shown)}

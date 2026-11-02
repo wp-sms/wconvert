@@ -22,6 +22,7 @@ import { actWords } from '../optins/campaignFacts';
 import { walkNodes } from './structure/journey';
 import type { PreparedTemplate, TemplateIndexEntry, TemplateLabelsWithFacets } from '../templates/api';
 import type { Template } from '@renderer/types';
+import { NativeSelect } from '../components/ui/native-select';
 
 export type TemplateContentMode = 'keep' | 'sample';
 export type PrepareDesign = (id: string, mode: TemplateContentMode, sample: Template) => Promise<PreparedTemplate>;
@@ -194,7 +195,7 @@ export function TemplateDesignDetail({
             <div className="wconvert-design-detail__controls wconvert-toolbar">
               <PreviewControls fitHeight={fitHeight} onFitHeight={setFitHeight} mobile={mobile} onMobile={setMobile}
                 template={template} step={shown} onStep={value => { setStep(value); setResultId(''); }} />
-              {resultScreen?.results && resultScreen.results.length > 0 && <label className="text-note">{__('Result to inspect','wconvert')}<select className="wconvert-picker__select" value={result?.id} onChange={event => setResultId(event.target.value)}>{resultScreen.results.map((value, index) => <option key={value.id} value={value.id}>{value.heading || sprintf(/* translators: %d: the result's position. */ __('Result %d', 'wconvert'), index + 1)}</option>)}</select></label>}
+              {resultScreen?.results && resultScreen.results.length > 0 && <label className="text-note">{__('Result to inspect','wconvert')}<NativeSelect className="text-note" value={result?.id} onChange={event => setResultId(event.target.value)}>{resultScreen.results.map((value, index) => <option key={value.id} value={value.id}>{value.heading || sprintf(/* translators: %d: the result's position. */ __('Result %d', 'wconvert'), index + 1)}</option>)}</NativeSelect></label>}
             </div>
             <PreviewFrame template={template} displayType={entry.display_type} mobile={mobile} step={shown} result={result} fitHeight={fitHeight}>
               {loadError || preparationError !== undefined ? (
@@ -216,14 +217,18 @@ export function TemplateDesignDetail({
             {/* A draft with no template has no words to keep, so there is nothing to choose. */}
             {prepares && !hasCurrentDesign && <p className="m-0 text-note text-muted-foreground">{__('Review its offers and links before publishing.', 'wconvert')}</p>}
             {prepares && hasCurrentDesign && (
-              <fieldset className="wconvert-design-detail__content-choice" disabled={busy}>
-                <legend>{__('Content', 'wconvert')}</legend>
-                <CheckRow type="radio" name={`${id}-content`} value="keep" checked={mode === 'keep'}
-                  onChange={() => setMode('keep')} label={__('Keep my words and images', 'wconvert')}
-                  hint={__('Fitted into this layout; check each screen.', 'wconvert')} />
-                <CheckRow type="radio" name={`${id}-content`} value="sample" checked={mode === 'sample'}
-                  onChange={() => setMode('sample')} label={__('Use the template’s sample content', 'wconvert')}
-                  hint={__('Review its offers and links before publishing.', 'wconvert')} />
+              <fieldset className="wconvert-design-detail__content-choice wconvert-radio-cards" disabled={busy}>
+                <legend>{__('Content to use', 'wconvert')}</legend>
+                <label className="wconvert-radio-card">
+                  <input type="radio" name={`${id}-content`} value="keep" checked={mode === 'keep'} onChange={() => setMode('keep')}
+                    aria-labelledby={`${id}-keep-name`} aria-describedby={`${id}-keep-hint`} />
+                  <span><strong id={`${id}-keep-name`}>{__('Keep my current content', 'wconvert')}</strong><small id={`${id}-keep-hint`}>{__('Fit your existing content into the new design.', 'wconvert')}</small></span>
+                </label>
+                <label className="wconvert-radio-card">
+                  <input type="radio" name={`${id}-content`} value="sample" checked={mode === 'sample'} onChange={() => setMode('sample')}
+                    aria-labelledby={`${id}-sample-name`} aria-describedby={`${id}-sample-hint`} />
+                  <span><strong id={`${id}-sample-name`}>{__('Use the template’s sample content', 'wconvert')}</strong><small id={`${id}-sample-hint`}>{__('Review its offers and links before publishing.', 'wconvert')}</small></span>
+                </label>
               </fieldset>
             )}
             <FactList facts={facts} />

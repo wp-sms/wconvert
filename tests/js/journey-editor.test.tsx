@@ -103,7 +103,7 @@ it('leaves the saved Full width preference intact when exiting journey focus', a
   expect(document.body).not.toHaveClass('wconvert-journey-focus');
   expect(document.body).toHaveClass('wconvert-fullscreen');
   expect(localStorage.getItem('wconvert:fullscreen')).toBe(remembered);
-  await user.click(screen.getByRole('button', { name: 'Show the menu' }));
+  await user.click(screen.getByRole('button', { name: 'Full width' }));
 });
 function Editor({ initial = source.tree as TemplateTree }: { initial?: TemplateTree }) {
   const [tree, setTree] = useState(initial);
@@ -224,7 +224,7 @@ it('reviews newly unreachable screens before applying a changed line', async () 
   await user.click(await screen.findByRole('button', { name: 'Select interests' }));
   await user.click(screen.getByRole('radio', { name: 'Lines' }));
   // A follow-up box keeps its lines folded until asked.
-  await user.click(screen.getByRole('button', { name: 'Show answer lines' }));
+  await user.click(screen.getByText('Answer lines'));
   await user.selectOptions(screen.getByRole('combobox', { name: 'Then' }), 'contact');
   expect(screen.getByRole('heading', { name: 'Check this change' })).toBeInTheDocument();
   const explanation = screen.getByText(/These screens would become unreachable:/);
@@ -241,7 +241,7 @@ it('reviews a save bypass even when no screens are disconnected', async () => {
   await user.click(await screen.findByRole('button', { name: 'Select balcony' }));
   await user.click(screen.getByRole('radio', { name: 'Lines' }));
   // A follow-up box keeps its lines folded until asked.
-  await user.click(screen.getByRole('button', { name: 'Show answer lines' }));
+  await user.click(screen.getByText('Answer lines'));
   const skip = screen.getByRole('combobox', { name: 'If skipped' });
   await user.selectOptions(skip, 'received');
   expect(screen.getByRole('alertdialog')).toHaveTextContent('could reach “Received” without saving at “One enquiry”');
@@ -469,7 +469,25 @@ it('starts the embedded journey with a readable overview and can return to it af
   await user.click(screen.getByRole('button', { name: 'Close screen settings' }));
   expect(screen.getByRole('list', { name: 'All screens' })).toBeInTheDocument();
   expect(screen.queryByLabelText('Selected screen settings')).not.toBeInTheDocument();
-  await waitFor(() => expect(screen.getByRole('searchbox', { name: 'Find a screen' })).toHaveFocus());
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Find a screen' })).toHaveFocus());
+});
+
+it('finds a screen in the option menu, marks the current one, and leaves on Escape', async () => {
+  const user = userEvent.setup();
+  const onSelect = vi.fn();
+  render(<JourneyEditor displayType="popup" embedded tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={onSelect} />);
+  const trigger = screen.getByRole('button', { name: 'Find a screen' });
+  await user.click(trigger);
+  const search = screen.getByRole('searchbox', { name: 'Find a screen' });
+  expect(search).toHaveFocus();
+  const first = (source.tree as TemplateTree).steps[0].name;
+  expect(screen.getByRole('button', { name: first })).toHaveAttribute('aria-current', 'true');
+  await user.keyboard('{Escape}');
+  expect(screen.queryByRole('searchbox', { name: 'Find a screen' })).toBeNull();
+  expect(trigger).toHaveFocus();
+  await user.click(trigger);
+  await user.type(screen.getByRole('searchbox', { name: 'Find a screen' }), 'no screen is called this');
+  expect(screen.getByText('No matching screens')).toBeInTheDocument();
 });
 
 it('opens on the flow and creates an ordered answer path through the inspector', async () => {
@@ -1061,7 +1079,7 @@ it('reviews a shared follow-up continuation change and updates shown and skipped
   render(<Campaign />);
   // On the Edit tab a question's paths are on the question's own panel: "Where visitors go next" (ADR 0134).
   expect(screen.getByText('Follow-ups')).toBeInTheDocument();
-  expect(screen.queryByRole('combobox', { name: 'Then' })).toBeNull();
+  expect(screen.getByText('Answer lines').closest('details')).not.toHaveAttribute('open');
   await user.selectOptions(screen.getByRole('combobox', { name: 'After the follow-ups' }), 'received');
   expect(screen.getByRole('alertdialog', { name: 'Check this change' })).toBeInTheDocument();
   expect(draft()).toEqual(initial);

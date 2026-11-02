@@ -1,4 +1,4 @@
-import { createContext, useContext, type CSSProperties } from 'react';
+import { createContext, useContext, useId, type CSSProperties } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { RgbaStringColorPicker } from 'react-colorful';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
@@ -73,6 +73,7 @@ export function ColorField({
   // The plain view names the color; the hex is Advanced's (ADR 0135).
   const advanced = useAdvanced();
   const designColors = useContext(DesignColors).filter((color, at, all) => all.indexOf(color) === at);
+  const choice = useId();
 
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
@@ -110,10 +111,15 @@ export function ColorField({
           <strong>{label}</strong>
           {designColors.length > 0 && <div className="wconvert-color-picker__design" role="group" aria-label={__('This design’s colors', 'wconvert')}>
             <span aria-hidden="true">{__('This design’s colors', 'wconvert')}</span>
-            <div>{designColors.map(color => <button key={color} type="button" className="wconvert-color-picker__dot" aria-pressed={color.toLowerCase() === painted.toLowerCase()}
-              title={colorName(color)} aria-label={colorName(color)} style={{ '--wconvert-chip': color } as CSSProperties} onClick={() => onChange(color)} />)}</div>
+            {/* One name with None below, so they are one set; none checked is a color typed or picked by hand (GUIDELINES §7). */}
+            <div>{designColors.map(color => <label key={color} className="wconvert-color-picker__dot" title={colorName(color)} style={{ '--wconvert-chip': color } as CSSProperties}>
+              <input type="radio" className="sr-only" name={choice} aria-label={colorName(color)} checked={color.toLowerCase() === painted.toLowerCase()} onChange={() => onChange(color)} />
+            </label>)}</div>
           </div>}
-          {clearable && <button type="button" className="wconvert-panel-link" aria-pressed={clear} onClick={() => onChange('transparent')}>{__('None', 'wconvert')}</button>}
+          {clearable && <label className="wconvert-color-picker__none">
+            <input type="radio" className="sr-only" name={choice} checked={clear} onChange={() => onChange('transparent')} />
+            {__('None', 'wconvert')}
+          </label>}
           {pickerColor !== null ? <RgbaStringColorPicker color={pickerColor} onChange={onChange} />
             : <p>{advanced ? __('Use a hex or RGB color to get the picker.', 'wconvert') : cssOnlyNote()}</p>}
 

@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { LiveProductMatches } from '@/builder/ResultProductFilter';
 import { ProductPicker } from './ResultProductPicker';
+import { NativeSelect } from '@/components/ui/native-select';
 
 interface Choice { id: string; name: string }
 function CatalogChoice({ label, taxonomy, value, onChange }: { label: string; taxonomy: string; value: string; onChange(value: string): void }) {
@@ -30,11 +31,11 @@ function CatalogChoice({ label, taxonomy, value, onChange }: { label: string; ta
   // A bar in the control's place until the list can name what is chosen: an option cannot hold one.
   const waiting = state.busy && (!state.items.length || (!!value && !held));
   return <div className="wconvert-catalog-choice">
-    <label>{label}{waiting ? <LineSkeleton inline status={__('Loading choices…', 'wconvert-pro')} className="block h-9 w-full" /> : <select value={value} onChange={event => onChange(event.target.value)} disabled={state.error}>
+    <label>{label}{waiting ? <LineSkeleton inline status={__('Loading choices…', 'wconvert-pro')} className="block h-9 w-full" /> : <NativeSelect value={value} onChange={event => onChange(event.target.value)} disabled={state.error}>
       <option value="">{__('Choose…', 'wconvert-pro')}</option>
       {value && !held && <option value={value}>{__('Unavailable — choose again', 'wconvert-pro')}</option>}
       {state.items.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
-    </select>}</label>
+    </NativeSelect>}</label>
     {(state.more || state.items.length > 8 || !!search) && <Input type="search" aria-label={sprintf(/* translators: %s: what is being searched, in lowercase: “category”, “attribute” or “value”. */ __('Search %s', 'wconvert-pro'), label.toLowerCase())} placeholder={__('Search…', 'wconvert-pro')} value={search} maxLength={100} onChange={event => setSearch(event.target.value)} />}
     {state.more && <small>{__('Search to narrow the list.', 'wconvert-pro')}</small>}
     {!state.busy && !state.error && !state.items.length && <small>{__('No choices found. Try another search or add them in WooCommerce.', 'wconvert-pro')}</small>}
@@ -49,12 +50,12 @@ export function ResultProductFilter({ value, onChange }: { value: Filter; onChan
   return <div className="wconvert-result-filter">
     <CatalogChoice label={__('Category', 'wconvert-pro')} taxonomy="product_cat" value={value.category_id ? String(value.category_id) : ''} onChange={id => onChange({ ...value, category_id: Number(id) })} />
     <small>{__('Includes subcategories. Up to three available products appear.', 'wconvert-pro')}</small>
-    <label>{__('Product order', 'wconvert-pro')}<select value={value.order ?? 'oldest'} onChange={event => onChange({ ...value, order: event.target.value as Filter['order'] })}>
+    <label>{__('Product order', 'wconvert-pro')}<NativeSelect value={value.order ?? 'oldest'} onChange={event => onChange({ ...value, order: event.target.value as Filter['order'] })}>
       <option value="oldest">{__('Oldest first', 'wconvert-pro')}</option>
       <option value="newest">{__('Newest first', 'wconvert-pro')}</option>
       <option value="price_low">{__('Price: low to high', 'wconvert-pro')}</option>
       <option value="price_high">{__('Price: high to low', 'wconvert-pro')}</option>
-    </select></label>
+    </NativeSelect></label>
     {!!value.attributes.length && <p>{__('Products must match every filter.', 'wconvert-pro')}</p>}
     {value.attributes.map((filter, index) => <fieldset key={index}>
       <legend>{sprintf(/* translators: %d: the product filter's position in the list, e.g. 1. */ __('Filter %d', 'wconvert-pro'), index + 1)}</legend>

@@ -66,7 +66,7 @@ export function CommercePicker({ value, onChange, categories = false, max = 20, 
           {!single && <span className="wconvert-product-picker__number" aria-hidden="true">{i + 1}</span>}
           <span className="wconvert-product-picker__name">{nameOf(id)}</span>
           <span className="wconvert-product-picker__actions">
-            {single ? <Button type="button" variant="ghost" size="sm" aria-expanded={changing} aria-controls={changing ? inputId : undefined} onClick={() => setChanging(!changing)}>{changing ? __('Cancel', 'wconvert') : __('Change', 'wconvert')}</Button> : <>
+            {single ? <Button type="button" variant="ghost" aria-expanded={changing} aria-controls={changing ? inputId : undefined} onClick={() => setChanging(!changing)}>{changing ? __('Cancel', 'wconvert') : __('Change', 'wconvert')}</Button> : <>
               <Button type="button" variant="ghost" size="icon" disabled={i === 0} aria-label={sprintf(/* translators: %s: a product's name. */ __('Move %s up', 'wconvert'), nameOf(id))} title={__('Move up', 'wconvert')} onClick={() => move(i, -1)}><ArrowUp aria-hidden="true"/></Button>
               <Button type="button" variant="ghost" size="icon" disabled={i === ids.length - 1} aria-label={sprintf(/* translators: %s: a product's name. */ __('Move %s down', 'wconvert'), nameOf(id))} title={__('Move down', 'wconvert')} onClick={() => move(i, 1)}><ArrowDown aria-hidden="true"/></Button>
             </>}
@@ -80,7 +80,7 @@ export function CommercePicker({ value, onChange, categories = false, max = 20, 
         {searchFailure || query.trim() && <div role="status" className="wconvert-panel-hint">{searched !== query ? <><span className="sr-only">{__('Searching…', 'wconvert')}</span><Skeleton aria-hidden="true" className="h-[1lh] w-40 max-w-full" /></> : matches.length === 0 ? __('No matching products.', 'wconvert') : null}</div>}
         {matches.length > 0 && <ul className="wconvert-product-picker__results" aria-label={__('Matching products', 'wconvert')}>{matches.map(hit => <li key={hit.id}>
           <span className="wconvert-product-picker__name">{hit.name}</span>
-          <Button type="button" variant="outline" size="sm" aria-label={sprintf(single ? /* translators: %s: a product's name. */ __('Use %s', 'wconvert') : /* translators: %s: a product's name. */ __('Add %s', 'wconvert'), hit.name)} {...refusable(!single && ids.length >= max ? fullId : null, () => { setNames(current => [...current.filter(item => item.id !== hit.id), hit]); onChange(single ? [hit.id] : [...ids, hit.id]); setQuery(''); setChanging(false); })}>{single ? __('Use', 'wconvert') : __('Add', 'wconvert')}</Button>
+          <Button type="button" variant="outline" aria-label={sprintf(single ? /* translators: %s: a product's name. */ __('Use %s', 'wconvert') : /* translators: %s: a product's name. */ __('Add %s', 'wconvert'), hit.name)} {...refusable(!single && ids.length >= max ? fullId : null, () => { setNames(current => [...current.filter(item => item.id !== hit.id), hit]); onChange(single ? [hit.id] : [...ids, hit.id]); setQuery(''); setChanging(false); })}>{single ? __('Use', 'wconvert') : __('Add', 'wconvert')}</Button>
         </li>)}</ul>}
         {!single && ids.length >= max && <p id={fullId} className="wconvert-panel-hint">{__('Remove a product to add another.', 'wconvert')}</p>}
       </div>}
@@ -92,10 +92,10 @@ export function CommercePicker({ value, onChange, categories = false, max = 20, 
     {namesFailure}
     <ol className="space-y-2">{ids.map((id, i) => <li className="flex flex-wrap items-center gap-2" key={id}>{[...names, ...hits].find(hit => hit.id === id)?.name ?? `#${id}`}
       {itemControls?.(id, [...names, ...hits].find(hit => hit.id === id)?.name ?? `#${id}`)}
-      {recommendations && <Button variant="outline" size="sm" type="button" disabled={i === 0} onClick={() => { const next = [...ids]; [next[i - 1], next[i]] = [next[i], next[i - 1]]; onChange(next); }}>{__('Move earlier', 'wconvert')}</Button>}
-      <Button variant="outline" size="sm" type="button" onClick={() => onChange(ids.filter(each => each !== id))}>{__('Remove', 'wconvert')}</Button></li>)}</ol>
+      {recommendations && <Button variant="outline" type="button" disabled={i === 0} onClick={() => { const next = [...ids]; [next[i - 1], next[i]] = [next[i], next[i - 1]]; onChange(next); }}>{__('Move earlier', 'wconvert')}</Button>}
+      <Button variant="outline" type="button" onClick={() => onChange(ids.filter(each => each !== id))}>{__('Remove', 'wconvert')}</Button></li>)}</ol>
     {ids.length >= max && <p id={fullId} className="wconvert-panel-hint">{__('Remove a product to add another.', 'wconvert')}</p>}
-    <ul className="space-y-2">{hits.filter(hit => !ids.includes(hit.id)).map(hit => <li className="flex items-center justify-between gap-2" key={hit.id}><span>{hit.name}</span> <Button aria-label={sprintf(/* translators: %s: the name of a product, variation or category. */ __('Add %s', 'wconvert'), hit.name)} variant="outline" size="sm" type="button" {...refusable(ids.length >= max ? fullId : null, () => onChange([...ids, hit.id]))}>{__('Add', 'wconvert')}</Button></li>)}</ul>
+    <ul className="space-y-2">{hits.filter(hit => !ids.includes(hit.id)).map(hit => <li className="flex items-center justify-between gap-2" key={hit.id}><span>{hit.name}</span> <Button aria-label={sprintf(/* translators: %s: the name of a product, variation or category. */ __('Add %s', 'wconvert'), hit.name)} variant="outline" type="button" {...refusable(ids.length >= max ? fullId : null, () => onChange([...ids, hit.id]))}>{__('Add', 'wconvert')}</Button></li>)}</ul>
   </div>;
 }
 

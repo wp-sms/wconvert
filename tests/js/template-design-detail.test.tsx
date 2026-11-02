@@ -63,7 +63,7 @@ describe('inspecting a design before replacing the draft', () => {
     const { onChoose } = detail({ onPrepare, hasCurrentDesign: false });
     // No words to keep, so no choice to make: nothing is drawn that could never be pressed.
     expect(await screen.findByText('Review its offers and links before publishing.')).toBeVisible();
-    expect(screen.queryByRole('radio', { name: /Keep my words and images/ })).toBeNull();
+    expect(screen.queryByRole('radio', { name: /Keep my current content/ })).toBeNull();
     expect(screen.queryByRole('radio', { name: /Use the template’s sample content/ })).toBeNull();
     await waitFor(() => expect(screen.getByRole('button', { name: 'Use this template' })).toBeEnabled());
     expect(onPrepare).toHaveBeenCalledExactlyOnceWith(ENTRY.id, 'sample', TEMPLATE);
@@ -86,7 +86,7 @@ describe('inspecting a design before replacing the draft', () => {
     const carried = JSON.parse(JSON.stringify(TEMPLATE).replace('Get 10% off your first order', 'My own invitation')) as Template;
     const onPrepare = vi.fn().mockResolvedValue(carried);
     const { onChoose } = detail({ onPrepare });
-    expect(screen.getByRole('radio', { name: /Keep my words and images/ })).toBeChecked();
+    expect(screen.getByRole('radio', { name: /Keep my current content/ })).toBeChecked();
     expect(screen.getByRole('button', { name: 'Use this template' })).toHaveAttribute('aria-disabled', 'true');
     await waitFor(() => expect(within(drawn()).getByText('My own invitation')).toBeInTheDocument());
     expect(onPrepare).toHaveBeenCalledExactlyOnceWith(ENTRY.id, 'keep', TEMPLATE);

@@ -314,7 +314,7 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
                           missingDesign={previews[row.id]?.template === null}
                           result={result}
                           reportReady={report?.status === 'ready'}
-                          days={query !== null && 'days' in query && query.days !== undefined ? query.days : 30}
+                          period={{ days: query !== null && 'days' in query && query.days !== undefined ? query.days : 30 }}
                           range={report?.status === 'ready' ? { from: report.data.from, to: report.data.to } : undefined}
                           onDuplicate={() => void act(() => duplicateCampaign(row.id, sprintf(/* translators: %s: a campaign's name. */ __('%s — copy', 'wconvert'), name)), name)}
                           onDecision={(kind, trigger) => { rowFocus.current = trigger; setDecision({ kind, row }); }}

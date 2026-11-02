@@ -115,7 +115,7 @@ function Coupon({ code, percent, until }: { code: string; percent: number | null
     <div className="wconvert-license-coupon">
       <span>{percent !== null ? sprintf(/* translators: %d: a discount percentage, e.g. “20”. A coupon code follows the sentence. */ __('%d%% off your renewal with', 'wconvert-pro'), percent) : __('Your renewal coupon', 'wconvert-pro')}</span>
       <code>{code}</code>
-      <Button variant="outline" size="sm" onClick={copy}>{copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}{copied ? __('Copied', 'wconvert-pro') : __('Copy', 'wconvert-pro')}</Button>
+      <Button variant="outline" onClick={copy}>{copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}{copied ? __('Copied', 'wconvert-pro') : __('Copy', 'wconvert-pro')}</Button>
       {until && <span className="wconvert-license-muted">{sprintf(/* translators: %s: the day the coupon ends, e.g. “Oct 12”. */ __('until %s', 'wconvert-pro'), formatShortDay(until))}</span>}
     </div>
   );
@@ -128,7 +128,7 @@ function Contact({ email }: { email: string }) {
   return (
     <span className="wconvert-license-contact">
       <a href={`mailto:${email}`}>{email}</a>
-      <Button variant="outline" size="sm" onClick={copy}>{copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}{copied ? __('Copied', 'wconvert-pro') : __('Copy', 'wconvert-pro')}</Button>
+      <Button variant="outline" onClick={copy}>{copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}{copied ? __('Copied', 'wconvert-pro') : __('Copy', 'wconvert-pro')}</Button>
     </span>
   );
 }
@@ -175,7 +175,7 @@ function UpdatesLine({ license, stopped, elsewhere }: { license: LicensePayload;
       <span className="wconvert-license-line">
         <Download className="wconvert-license-act" aria-hidden="true" />
         <b>{sprintf(/* translators: %s: the newest WConvert Pro version, e.g. “2.4.0”. */ __('Version %s is available.', 'wconvert-pro'), latest)}</b>
-        <Button asChild size="sm"><a href={updateUrl}>{__('Update now', 'wconvert-pro')}</a></Button>
+        <Button asChild><a href={updateUrl}>{__('Update now', 'wconvert-pro')}</a></Button>
       </span>
     );
   }
@@ -187,7 +187,7 @@ function CheckLine({ license, checking, onCheck }: { license: LicensePayload; ch
   // "detail" — "Oct 12, 2026, 9:14 AM" — reads the same mid-sentence in any language.
   const when = (at: number | null) => (at === null ? null : formatWhen(new Date(at * 1000).toISOString(), 'detail'));
   const button = (
-    <Button variant="link" size="sm" disabled={checking} onClick={() => onCheck()}>
+    <Button variant="link" disabled={checking} onClick={() => onCheck()}>
       {checking ? __('Checking…', 'wconvert-pro') : __('Check now', 'wconvert-pro')}
     </Button>
   );

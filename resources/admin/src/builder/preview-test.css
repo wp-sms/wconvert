@@ -50,7 +50,7 @@
 .wconvert-journey-test__side .wconvert-journey-test__checkpoint dl { gap: 14px; }
 .wconvert-journey-test__side .wconvert-journey-test__checkpoint dl > div { display: grid; gap: 4px; }
 .wconvert-journey-test__side .wconvert-journey-test__checkpoint dd { text-align: start; }
-.wconvert-test-diagnostics label { display: flex; align-items: center; gap: 8px; margin-block: 8px; font-size: var(--text-note); }
+.wconvert-test-diagnostics label { margin-block: 8px; font-size: var(--text-note); }
 .wconvert-test-diagnostics fieldset { min-inline-size: 0; margin: 12px 0 0; padding: 0; border: 0; }
 .wconvert-test-diagnostics legend { padding: 0; font-size: var(--text-note); font-weight: 600; }
 .wconvert-preview-test__footer { grid-column: 1 / -1; }

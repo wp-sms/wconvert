@@ -25,8 +25,8 @@ const optins = vi.hoisted(() => ({
   duplicateCampaign: vi.fn(),
 }));
 
-const stats = vi.hoisted(() => ({ readDashboard: vi.fn() }));
-vi.mock('../../resources/admin/src/stats/api', () => stats);
+const stats = vi.hoisted(() => ({ readDashboard: vi.fn(), readReport: vi.fn() }));
+vi.mock('../../resources/admin/src/stats/api', async (original) => ({ ...await original<object>(), ...stats }));
 
 const goals = vi.hoisted(() => ({ listGoals: vi.fn() }));
 
@@ -843,12 +843,29 @@ it('does not describe a suspended saved version as live in details', async () =>
   expect(within(detail).getByText(/Resolve the issue before it can show again/)).toBeInTheDocument();
 });
 
+it('reads dates the merchant chose, and links the report to those days rather than to a count', async () => {
+  const payload = { days: 30, from: '2026-08-16', to: '2026-09-14', goals: [{ action: 'submit', result_label: 'Submissions', optins: [{ id: OPTIN.id, conversions: 7, impressions: 20, conversion_rate: 0.35 }] }] };
+  stats.readDashboard.mockResolvedValue(payload);
+  stats.readReport.mockResolvedValue({ ...payload, days: 9, from: '2026-08-01', to: '2026-08-09', custom: true });
+  render(<OptinList onEdit={() => undefined} />);
+  const report = await screen.findByRole('link', { name: `View ${OPTIN.name} report` });
+  await userEvent.click(screen.getByRole('button', { name: /^Results period:/ }));
+  await userEvent.click(screen.getByRole('radio', { name: 'Custom dates' }));
+  await userEvent.type(screen.getByLabelText('From'), '2026-08-01');
+  await userEvent.type(screen.getByLabelText('To'), '2026-08-09');
+  await userEvent.click(screen.getByRole('button', { name: 'Apply dates' }));
+  expect(stats.readReport).toHaveBeenLastCalledWith({ from: '2026-08-01', to: '2026-08-09' });
+  await waitFor(() => expect(report).toHaveAttribute('href', expect.stringContaining('from=2026-08-01')));
+  expect(report).not.toHaveAttribute('href', expect.stringContaining('days='));
+});
+
 it('retains accepted results, dates and drill-down links when a new period fails, then retries', async () => {
   const payload = { days: 30, from: '2026-08-16', to: '2026-09-14', goals: [{ action: 'submit', result_label: 'Submissions', optins: [{ id: OPTIN.id, conversions: 7, impressions: 20, conversion_rate: 0.35 }] }] };
   stats.readDashboard.mockResolvedValueOnce(payload).mockRejectedValueOnce(new Error('Offline')).mockResolvedValue({ ...payload, days: 7, from: '2026-09-08' });
   render(<OptinList onEdit={() => undefined} />);
   const report = await screen.findByRole('link', { name: `View ${OPTIN.name} report` });
-  await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Results period' }), '7');
+  await userEvent.click(screen.getByRole('button', { name: /^Results period:/ }));
+  await userEvent.click(screen.getByRole('radio', { name: 'Last 7 days' }));
   expect(await screen.findByText(/previous period and results remain/)).toBeInTheDocument();
   expect(report).toHaveTextContent('7Submissions');
   expect(report).toHaveAttribute('href', expect.stringContaining('days=30'));

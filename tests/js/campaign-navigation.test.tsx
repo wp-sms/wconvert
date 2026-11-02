@@ -5,7 +5,7 @@ import { beforeEach, expect, it, vi } from 'vitest';
 const api = vi.hoisted(() => ({ listOptins: vi.fn(), readCampaignPreviews: vi.fn(), duplicateCampaign: vi.fn(), readProductHealth: vi.fn() }));
 vi.mock('../../resources/admin/src/optins/api', async original => ({ ...await original<typeof import('../../resources/admin/src/optins/api')>(), ...api }));
 vi.mock('../../resources/admin/src/goals/api', () => ({ listGoals: async () => [] }));
-vi.mock('../../resources/admin/src/stats/api', () => ({ readDashboard: async () => ({ days: 30, from: '2026-08-16', to: '2026-09-14', goals: [] }) }));
+vi.mock('../../resources/admin/src/stats/api', async (original) => ({ ...await original<object>(), readDashboard: async () => ({ days: 30, from: '2026-08-16', to: '2026-09-14', goals: [] }) }));
 vi.mock('../../resources/admin/src/builder/lazy', () => ({ GoalScreen: () => <p>New creation flow</p>, OptinBuilder: ({ id }: { id: string }) => <p>Editing {id}</p> }));
 vi.mock('../../resources/admin/src/optins/CampaignDetails', () => ({ default: () => null }));
 const { App } = await import('../../resources/admin/src/App');

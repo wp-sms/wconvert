@@ -64,7 +64,7 @@ export function AddRule({ axis, label, onAdd, autoOpen = false, onClose }: AddRu
 
   return <Popover open={open} onOpenChange={next => { setOpen(next); if (next) setQuery(''); else onClose?.(); }}>
     <PopoverTrigger asChild>
-      <Button type="button" variant="outline" size="sm" className="mt-2" aria-label={label}><Plus aria-hidden="true" />{label}</Button>
+      <Button type="button" variant="outline" className="mt-2" aria-label={label}><Plus aria-hidden="true" />{label}</Button>
     </PopoverTrigger>
     <OptionListContent align="start" aria-label={__('Choose a rule', 'wconvert')}>
       <OptionList search={{ value: query, onChange: setQuery, label: __('Find a rule', 'wconvert'), placeholder: __('Search rules…', 'wconvert') }}

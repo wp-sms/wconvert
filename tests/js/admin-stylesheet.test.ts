@@ -38,6 +38,24 @@ describe('journey choices', () => {
   });
 });
 
+describe('the coarse pointer floor', () => {
+  // Only the selector can be read here: jsdom computes no style (GUIDELINES §21).
+  const floor = /@media \(pointer: coarse\) \{\s*(:is\(#wconvert-admin[^{]*)\{\s*min-block-size: 2\.75rem !important;/.exec(CSS)?.[1] ?? '';
+
+  it('reaches a native input of any text-like type, and a textarea, as §3 says', () => {
+    expect(floor).toMatch(/input:not\(/);
+    expect(floor).toContain('textarea');
+    expect(floor).toContain('[data-slot="input"]');
+    // It is a statement about portals too, or a dialog's fields would miss it.
+    for (const root of ['[data-slot="dialog-content"]', '[data-slot="popover-content"]']) expect(floor).toContain(root);
+  });
+
+  it('leaves a box, a dot and a slider to their own targets', () => {
+    const exempt = /input:not\(([^)]*)\)/.exec(floor)?.[1] ?? '';
+    for (const type of ['checkbox', 'radio', 'range']) expect(exempt).toContain(`[type="${type}"]`);
+  });
+});
+
 describe('a table in a dialog', () => {
   it('reads the page table register, though a dialog portals out of the admin root', () => {
     // A lead's history drew bare, centred, bold column names until it joined.

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ChevronDown, Sparkles } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
+import { OptionItem, OptionMenuContent } from '../components/ui/option-menu';
 import { PinnedDesignNotice, usePinnedDesign } from '../templates/PinnedDesign';
 import { installSetup, refreshCatalog } from '../templates/catalog';
 import { fitsOutcome } from './outcome';
@@ -337,21 +338,18 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
   return <Region className="wconvert-creation wconvert-gallery-scope">
     <div className="wconvert-gallery-head">
       <Step at={2} />
-      <div className="wconvert-gallery-head__title">
+      <div className="wconvert-gallery-head__title wconvert-toolbar">
         <h2>{__('Choose a template', 'wconvert')}</h2>
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" disabled={working}>
+            <Button variant="outline" disabled={working}>
               <span className="wconvert-goal-switch__key">{__('Goal:', 'wconvert')}</span> {goal.label}<ChevronDown aria-hidden="true" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" sideOffset={4}>
-            <DropdownMenuRadioGroup value={goal.id} onValueChange={id => { const next = goalsHere.find(entry => entry.id === id); if (next && next.id !== goal.id) choose(next); }}>
-              {goalsHere.map(entry => <DropdownMenuRadioItem key={entry.id} value={entry.id} className="items-start">
-                <span className="grid gap-0.5"><span className="font-semibold">{entry.label}</span>{entry.description && <span className="text-note text-muted-foreground">{entry.description}</span>}</span>
-              </DropdownMenuRadioItem>)}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
+          <OptionMenuContent align="start" sideOffset={4}>
+            {goalsHere.map(entry => <OptionItem key={entry.id} name={entry.label} hint={entry.description} checked={entry.id === goal.id}
+              onSelect={() => { if (entry.id !== goal.id) choose(entry); }} />)}
+          </OptionMenuContent>
         </DropdownMenu>
       </div>
       {pinned && <div className="wconvert-picker__notice" role="status">

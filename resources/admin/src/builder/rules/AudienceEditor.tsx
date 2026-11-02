@@ -34,7 +34,7 @@ export function AudienceEditor({ value, types, onChange }: { value: Audience; ty
           match={{ ...match, label: sprintf(/* translators: %s: a group's name, e.g. “Group 1”. */ __('%s: match all or any', 'wconvert'), title) }}
           autoOpenAdd={group.id !== undefined && group.id === opening} onAddClosed={() => setOpening(null)}
           onChange={next => onChange({ mode: 'groups', groups: groups.map((old, at) => at === index ? next : old) })}
-          actions={groups.length > 1 && <Button variant="ghost" size="sm" className="wconvert-display-group__remove"
+          actions={groups.length > 1 && <Button variant="ghost" className="wconvert-display-group__remove"
             onClick={() => onChange({ mode: 'groups', groups: groups.filter((_group, at) => at !== index) })}>{__('Remove group', 'wconvert')}</Button>} />
       </div>;
     })}

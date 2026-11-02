@@ -1,8 +1,9 @@
-import { useId, useRef, useState, type KeyboardEvent } from 'react';
+import { useId, useState, type KeyboardEvent } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { Check, ChevronDown } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { Button } from './components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from './components/ui/popover';
+import { OptionEmpty, OptionItem, OptionList, OptionListContent } from './components/ui/option-menu';
+import { Popover, PopoverTrigger } from './components/ui/popover';
 import { cn } from './lib/utils';
 import { InfoTip } from './shell/InfoTip';
 
@@ -31,8 +32,6 @@ export function PhoneCountryPicker({ label, value, countries, onChange, disabled
   const id = useId();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const search = useRef<HTMLInputElement>(null);
-  const results = useRef<HTMLDivElement>(null);
   const chosen = countries.find(country => country.code === value);
   const site = countries.find(country => country.code === siteCountry);
   const siteChoice = site
@@ -46,24 +45,11 @@ export function PhoneCountryPicker({ label, value, countries, onChange, disabled
     setOpen(false);
     if (country !== value) onChange(country);
   };
-  const navigate = (event: KeyboardEvent) => {
-    if (!['ArrowDown', 'ArrowUp', 'Home', 'End', 'Enter'].includes(event.key)) return;
-    if (event.target === search.current && ['Home', 'End'].includes(event.key)) return;
-    const buttons = [...(results.current?.querySelectorAll<HTMLButtonElement>('button') ?? [])];
-    if (buttons.length === 0) return;
-    const at = buttons.indexOf(event.target as HTMLButtonElement);
-    if (event.key === 'Enter') {
-      if (event.target !== search.current) return;
-      event.preventDefault();
-      buttons[0].click();
-      return;
-    }
-    const next = event.key === 'ArrowDown' ? Math.min(at + 1, buttons.length - 1)
-      : event.key === 'ArrowUp' ? at <= 0 ? -1 : at - 1
-        : event.key === 'Home' ? 0 : buttons.length - 1;
+  // Enter in the search takes the first match; the arrows are the list's own.
+  const takeFirst = (event: KeyboardEvent<HTMLElement>) => {
+    if (event.key !== 'Enter' || !(event.target instanceof HTMLInputElement)) return;
     event.preventDefault();
-    if (next < 0) search.current?.focus();
-    else buttons[next]?.focus();
+    event.currentTarget.querySelector<HTMLElement>('.wconvert-option-menu__item[data-option-nav]')?.click();
   };
 
   return <div className={cn('wconvert-phone-country-picker', field && 'gap-1.5')}>
@@ -76,21 +62,13 @@ export function PhoneCountryPicker({ label, value, countries, onChange, disabled
           <span className="truncate">{shown}</span><ChevronDown aria-hidden="true" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="start" aria-label={__('Choose a country', 'wconvert')}
-        className="wconvert-phone-country-picker__popup"
-        onOpenAutoFocus={event => { event.preventDefault(); search.current?.focus(); }} onKeyDown={navigate}>
-        <input ref={search} type="search" value={query} aria-label={__('Search countries', 'wconvert')}
-          placeholder={__('Search countries…', 'wconvert')} onChange={event => setQuery(event.target.value)} />
-        <div ref={results} className="wconvert-phone-country-picker__results">
-          {showSite && <button type="button" onClick={() => choose('site')}>
-            <span>{siteChoice}</span>{value === 'site' && <Check aria-hidden="true" />}
-          </button>}
-          {matches.map(country => <button type="button" key={country.code} onClick={() => choose(country.code)}>
-            <span>{country.name}</span>{country.code === value && <Check aria-hidden="true" />}
-          </button>)}
-          {!showSite && matches.length === 0 && <p role="status">{__('No countries match your search.', 'wconvert')}</p>}
-        </div>
-      </PopoverContent>
+      <OptionListContent align="start" aria-label={__('Choose a country', 'wconvert')} onKeyDown={takeFirst}>
+        <OptionList search={{ value: query, onChange: setQuery, label: __('Search countries', 'wconvert'), placeholder: __('Search countries…', 'wconvert') }}>
+          {showSite && <OptionItem name={siteChoice} checked={value === 'site'} onSelect={() => choose('site')} />}
+          {matches.map(country => <OptionItem key={country.code} name={country.name} checked={country.code === value} onSelect={() => choose(country.code)} />)}
+          {!showSite && matches.length === 0 && <OptionEmpty what={__('countries', 'wconvert')} onClear={() => setQuery('')} />}
+        </OptionList>
+      </OptionListContent>
     </Popover>
   </div>;
 }

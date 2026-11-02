@@ -90,7 +90,7 @@ export function SitesCard({ license, onRemove, busy, result, headingRef, now = D
                 <DataTableCell label={__('Added', 'wconvert-pro')} className="wconvert-license-num">{site.added ? formatShortDay(site.added) : '—'}</DataTableCell>
                 <DataTableCell label={__('Actions', 'wconvert-pro')} className="wconvert-license-act-cell">
                   {!site.here && (
-                    <Button variant="ghost" size="sm" disabled={busy !== null}
+                    <Button variant="ghost" disabled={busy !== null}
                       aria-label={sprintf(/* translators: %s: a site's domain, e.g. “example.com”. */ __('Remove %s', 'wconvert-pro'), site.domain)}
                       onClick={() => onRemove(site)}>
                       {busy === `site:${site.domain}` ? __('Removing…', 'wconvert-pro') : __('Remove', 'wconvert-pro')}
@@ -146,7 +146,7 @@ export function KeyCard({ license, busy, onReplace, replaceError, onRemove }: {
             <b>{__('Remove from this site', 'wconvert-pro')}</b>
             <p className="wconvert-license-hint">{__('Frees a site on your license.', 'wconvert-pro')}</p>
           </div>
-          <Button variant="outline" size="sm" disabled={busy !== null} onClick={() => onRemove()}>
+          <Button variant="outline" disabled={busy !== null} onClick={() => onRemove()}>
             {busy === 'remove' ? __('Removing…', 'wconvert-pro') : __('Remove', 'wconvert-pro')}
           </Button>
         </div>

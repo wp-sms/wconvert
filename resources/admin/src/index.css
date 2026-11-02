@@ -1014,25 +1014,18 @@ body:has(#wconvert-admin) #wpbody-content {
  * same reason: they now have an important declaration to beat.
  *
  * ---------------------------------------------------------------------------
- * **IT OWNS THE HEIGHT AND NOT THE SHAPE, WHICH IS WHY `size` STILL APPEARS.**
+ * **IT OWNS THE HEIGHT, AND A CONTROL TAKES THE DEFAULT SHAPE (GUIDELINES §3).**
  *
- * A `size="sm"` on a `Button` inside one of these strips looks redundant and is
- * not: the vendored variant is `h-8 gap-1.5 px-3` and the default is
- * `h-9 gap-2 px-4`, so deleting the prop leaves the height exactly where this
- * rule puts it and widens the control by 8px. On the Optin list that is three
- * row actions in a column sized `inline-size: 1%` — 24px taken from the data
- * columns to remove a prop that was not lying. `size="icon-sm"` is stronger
- * still: `size-8` is both dimensions, and this rule sets neither inline size.
+ * The vendored `sm` is `h-8 gap-1.5 px-3` and the default is `h-9 gap-2 px-4`,
+ * so a button that drops `size="sm"` for a strip stands where this rule puts it
+ * and is 8px wider. That width used to be the argument for keeping the prop at
+ * the call site, and two heights in one row came back with it, so ESLint now
+ * refuses it (ADR 0182). `size="icon-sm"` stays: `size-8` is both dimensions, an
+ * icon's shape rather than a density, and this rule sets neither inline size.
  *
- * `SelectTrigger` is the one that IS purely redundant — its `size` toggles
- * `h-8` against `h-9` and touches nothing else — which is why the Leads filter
- * passes none and the buttons beside it still do.
- *
- * So: pass no `size` where a strip states the height and the default shape is
- * wanted; pass one where the control's PADDING is the point. What must never
- * appear is a `size` this rule then overrides — see `ReadinessDialog`, which
- * spelled `sm` into `.wconvert-page-actions` and rendered 36px for as long as
- * it existed.
+ * `ReadinessDialog` is why a `size` this rule overrides is worse than none: it
+ * spelled `sm` into `.wconvert-page-actions` and rendered 36px for as long as it
+ * existed.
  * ------------------------------------------------------------------------- */
 @layer utilities {
   /*
@@ -1045,8 +1038,7 @@ body:has(#wconvert-admin) #wpbody-content {
    *
    * **The HEIGHT is not stated for the footer**, only the wrapping — see the
    * override below, and `RegionFooter`'s own docblock. A step's action is the
-   * tall control and a card's repair action is the small one, and that is the
-   * caller's `size` because it is a question about scope.
+   * tall control and a card's repair action is the small one.
    */
   :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
     :is(.wconvert-page-actions, .wconvert-toolbar, .wconvert-table, .wconvert-footer)
@@ -1643,10 +1635,6 @@ body:has(#wconvert-admin) #wpbody-content {
  * `.wconvert-token__exact` at (0,1,0) lost to this at (1,2,0) and stood 32px
  * beside its 24px slider until the exclusion was written.
  *
- * This also lands the media picker's `Button size="sm"` at the height of the
- * input beside it in `.wconvert-slot__media`, which is what a control paired
- * with a field should have been all along.
- *
  * **The `.button` classes are here because `DevExport` uses them.** *Load this
  * design* is a raw wp-admin button under a `<textarea>` inside the library-entry
  * disclosure, so it took the screen's 36px and was the one control in the pane
@@ -1872,20 +1860,6 @@ body:has(#wconvert-admin) #wpbody-content {
 .wconvert-picker__identity h2 { margin: 0; }
 .wconvert-picker__identity [data-slot="dialog-title"]:focus { outline: none; }
 .wconvert-picker__identity { display: flex; align-items: center; flex-wrap: wrap; gap: 0.625rem; }
-:is(.wconvert-picker, .wconvert-creation) select.wconvert-picker__select {
-  min-block-size: var(--control-height-sm);
-  block-size: var(--control-height-sm);
-  margin: 0;
-  padding-block: 0;
-  padding-inline-start: 0.625rem;
-  padding-inline-end: 1.75rem;
-  border: 1px solid var(--input);
-  border-radius: var(--radius-md);
-  background-color: var(--card);
-  color: var(--foreground);
-  font: inherit;
-  font-size: var(--text-note);
-}
 .wconvert-picker__header > [role="group"] { flex: none; }
 .wconvert-picker__header > [data-slot="dialog-description"] { flex-basis: 100%; order: 2; }
 .wconvert-preview-controls__screen { display: inline-flex; align-items: center; gap: .5rem; min-inline-size: 0; }
@@ -1930,7 +1904,6 @@ body:has(#wconvert-admin) #wpbody-content {
 @media (max-width: 640px) {
 .wconvert-creation > .wconvert-creation__steps { padding: 1rem 1rem 0; }
 .wconvert-creation__steps ol { gap: 1rem; }
-.wconvert-creation select.wconvert-picker__select { min-inline-size: 0; max-inline-size: 100%; }
 }
 
 /* Match the layer of the shared components’ important Tailwind utilities. */
@@ -3361,6 +3334,7 @@ body:has(#wconvert-admin) #wpbody-content {
  * refuses to grow clips it.
  */
 .wconvert-theme {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.375rem;
@@ -3384,7 +3358,7 @@ body:has(#wconvert-admin) #wpbody-content {
  * is a different shape and a different colour from the ring on the input beside
  * them, and inside a scroll container can be clipped at its edge.
  */
-.wconvert-theme:focus-visible,
+.wconvert-theme:has(> input:focus-visible),
 .wconvert-swatch:focus-visible {
   border-color: var(--ring);
   box-shadow: 0 0 0 1px var(--ring);
@@ -3393,11 +3367,11 @@ body:has(#wconvert-admin) #wpbody-content {
 }
 
 /*
- * The applied one is stated rather than merely darker: `aria-pressed` is what
- * a screen reader reads, and the ring is the same one every selected thing in
- * this admin wears.
+ * The applied one is stated rather than merely darker: the radio's `checked` is
+ * what a screen reader reads, and the ring is the same one every selected thing
+ * in this admin wears.
  */
-.wconvert-theme[aria-pressed="true"] {
+.wconvert-theme:has(> input:checked) {
   border-color: var(--action);
   box-shadow: 0 0 0 1px var(--action);
 }
@@ -5174,21 +5148,6 @@ body:has(#wconvert-admin) #wpbody-content {
   gap: 0.75rem;
 }
 
-/*
- * What a control has to say for itself beyond its name — the referrer's
- * one-hop caveat, and whose clock a daily window is on (`controls.tsx`).
- *
- * A BLOCK on its own line, and measured: it is a sentence rather than a label,
- * so left inline it would run off the end of a rule row that already carries a
- * name, three checkboxes and a column of inputs.
- */
-.wconvert-param__hint {
-  display: block;
-  max-inline-size: 46ch;
-  margin-block-start: 0.25rem;
-  color: var(--muted-foreground);
-}
-
 .wconvert-export {
   margin-block-start: 1.5rem;
 }
@@ -5745,14 +5704,17 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 }
 
 /* Shared pointer floor: scope controls own density; coarse pointers need room.
- * Keep this in the same important layer as control scope rules so it wins. */
+ * Keep this in the same important layer as control scope rules so it wins.
+ * Native fields are listed by what they are not: a raw `input` of any text-like
+ * type or a `textarea` is a target too (§3), and a box, a dot or a slider's
+ * target is its own. */
 @layer utilities {
   @media (pointer: coarse) {
     :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
       :is(.wconvert-page-actions, .wconvert-toolbar, .wconvert-table, .wconvert-footer)
       :is([data-slot="button"], [data-slot="select-trigger"], [data-slot="input"], select, input[type="search"]),
     :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"], [data-slot="popover-content"], [data-slot="dropdown-menu-content"])
-      :is([data-slot="button"], [data-slot="dropdown-menu-item"], [data-slot="select-trigger"], [data-slot="input"], button, input[type="search"], select, label:has(input:is([type="radio"], [type="checkbox"])), .wconvert-masthead a) {
+      :is([data-slot="button"], [data-slot="dropdown-menu-item"], [data-slot="select-trigger"], [data-slot="input"], button, input:not([type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"], [type="hidden"]), textarea, select, label:has(input:is([type="radio"], [type="checkbox"])), .wconvert-masthead a) {
       min-block-size: 2.75rem !important;
     }
     #wconvert-admin :is(button, .wconvert-campaign-layout label) {
@@ -5826,68 +5788,13 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   min-inline-size: 0;
   text-align: start;
 }
-.wconvert-phone-country-picker__popup {
-  padding: 0.5rem;
-}
-/* Button and Popover supply important width/alignment utilities. */
+/* Button supplies important alignment utilities. */
 @layer utilities {
   #wconvert-admin .wconvert-phone-country-picker__trigger {
     justify-content: space-between !important;
     font-weight: 400 !important;
   }
-  .wconvert-phone-country-picker__popup {
-    inline-size: min(24rem, calc(100vw - 2rem)) !important;
-  }
 }
-.wconvert-phone-country-picker__popup > input {
-  display: block;
-  inline-size: 100%;
-  min-block-size: 2.25rem;
-  margin: 0;
-  padding: 0.4rem 0.65rem;
-  border: 1px solid var(--input);
-  border-radius: var(--radius);
-  background: var(--card);
-  color: var(--foreground);
-  line-height: 1.25;
-}
-.wconvert-phone-country-picker__popup > input:focus-visible {
-  border-color: var(--ring);
-  outline: 2px solid var(--ring);
-  outline-offset: 1px;
-}
-.wconvert-phone-country-picker__results {
-  max-block-size: min(18rem, 45vh);
-  overflow-y: auto;
-  margin-block-start: 0.35rem;
-}
-.wconvert-phone-country-picker__results > button {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  inline-size: 100%;
-  min-block-size: 2rem;
-  margin: 0;
-  padding: 0.35rem 0.6rem;
-  border: 0;
-  border-radius: var(--radius);
-  background: transparent;
-  color: var(--foreground);
-  text-align: start;
-  cursor: pointer;
-}
-.wconvert-phone-country-picker__results > button:hover,
-.wconvert-phone-country-picker__results > button:focus-visible {
-  background: var(--accent);
-  outline: none;
-}
-.wconvert-phone-country-picker__results > p {
-  margin: 0;
-  padding: 0.5rem;
-  color: var(--muted-foreground);
-}
-
 /* Discovery controls qualify the library: use the shared compact toolbar scope. */
 .wconvert-picker__search { min-inline-size: 0; }
 .wconvert-picker__search input { box-sizing: border-box; }
@@ -6396,11 +6303,11 @@ body .wconvert-pro-hint-item .wconvert-option-menu__trail > svg { color: var(--l
 body .wconvert-option-menu__control { display: grid; gap: 8px; padding-block: 8px 10px; padding-inline: 10px; }
 body .wconvert-option-menu__list + .wconvert-option-menu__control { border-block-start: 1px solid var(--border); }
 body .wconvert-option-menu__control .wconvert-param { display: grid; gap: 6px; margin: 0; font-size: var(--text-note); }
-body .wconvert-option-menu__control .wconvert-param > label, body .wconvert-option-menu__control .wconvert-param__name { font-size: var(--text-note); font-weight: 500; }
+body .wconvert-option-menu__control .wconvert-field-heading > :is(label, span:first-child), body .wconvert-option-menu__control .wconvert-param__name { font-size: var(--text-note); font-weight: 500; }
 body .wconvert-option-menu__control :is(input[type='text'], input[type='number'], input[type='time']) { min-block-size: 32px; max-inline-size: 100%; }
 body .wconvert-option-menu__done { justify-self: end; min-block-size: 28px; margin: 0; padding-block: 2px; padding-inline: 12px; border: 1px solid var(--input); border-radius: var(--radius-md); background: var(--card); color: var(--foreground); font-size: var(--text-note); font-weight: 500; cursor: pointer; }
 body .wconvert-option-menu__done:is(:hover, :focus-visible) { background: var(--accent); }
-body .wconvert-rule-row__check { display: flex; align-items: center; gap: 8px; font-size: var(--text-note); }
+body .wconvert-rule-row__check { font-size: var(--text-note); }
 /* Add element's own header: a title and where the element goes. */
 body .wconvert-option-menu__head { display: grid; gap: 6px; flex: none; padding-block: 10px 4px; padding-inline: 10px; }
 body .wconvert-option-menu__head > strong { font-size: var(--text-body); font-weight: 600; }

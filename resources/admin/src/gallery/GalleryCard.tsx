@@ -52,9 +52,9 @@ export function GalleryCard({ card, template, saved, onSave, onInspect, onUse, o
         <DesignStage displayType={card.displayType} size="card" source={source} onNear={near} />
         <button type="button" className="wconvert-template-card__inspect" onClick={onInspect}
           aria-label={sprintf(/* translators: %s: a template's name. */ __('Preview %s', 'wconvert'), card.name)} />
-        {previewFailed && <div className="wconvert-template-card__failed">
+        {previewFailed && <div className="wconvert-template-card__failed wconvert-toolbar">
           <span>{__('Preview could not be loaded.', 'wconvert')}</span>
-          {onRetryPreview && <Button variant="outline" size="sm" onClick={onRetryPreview} aria-describedby={nameId}>{__('Try again', 'wconvert')}</Button>}
+          {onRetryPreview && <Button variant="outline" onClick={onRetryPreview} aria-describedby={nameId}>{__('Try again', 'wconvert')}</Button>}
         </div>}
       </div>
       <div className="wconvert-template-card__body">
@@ -67,8 +67,8 @@ export function GalleryCard({ card, template, saved, onSave, onInspect, onUse, o
         </div>
         <TemplateMarks card={card} conversion={conversion} current={current} />
         {failed !== null && <div className="wconvert-template-error" role="alert"><span>{failed}</span><TryAgain onClick={onUse} /></div>}
-        {!current && failed === null && <div className="wconvert-template-card__action">
-          <TemplateAction card={card} describedBy={nameId} busy={busy} disabled={disabled} conversion={conversion} onUse={onUse} onUpdate={onUpdate} size="sm" />
+        {!current && failed === null && <div className="wconvert-template-card__action wconvert-toolbar">
+          <TemplateAction card={card} describedBy={nameId} busy={busy} disabled={disabled} conversion={conversion} onUse={onUse} onUpdate={onUpdate} quiet />
         </div>}
       </div>
     </li>
@@ -80,7 +80,7 @@ export function GalleryCard({ card, template, saved, onSave, onInspect, onUse, o
  * template (Adding… while it works), See this template ↗ for a locked one, Get
  * the newer version, or the reason this site cannot use it.
  */
-export function TemplateAction({ card, describedBy, busy = false, disabled = false, conversion = null, onUse, onUpdate, size = 'default' }: {
+export function TemplateAction({ card, describedBy, busy = false, disabled = false, conversion = null, onUse, onUpdate, quiet = false }: {
   card: Card;
   describedBy?: string;
   busy?: boolean;
@@ -88,11 +88,12 @@ export function TemplateAction({ card, describedBy, busy = false, disabled = fal
   conversion?: { readonly action: string } | null;
   onUse: () => void;
   onUpdate?: () => void;
-  size?: 'sm' | 'default';
+  /** One of many on a grid, so it does not outweigh the page's own primary. */
+  quiet?: boolean;
 }) {
   if (card.availability === 'locked') {
     return card.previewUrl ? (
-      <Button asChild variant="outline" size={size}>
+      <Button asChild variant="outline">
         <a href={card.previewUrl} target="_blank" rel="noopener noreferrer" aria-describedby={describedBy}>
           {__('See this template', 'wconvert')}<ExternalLink aria-hidden="true" />
         </a>
@@ -108,11 +109,11 @@ export function TemplateAction({ card, describedBy, busy = false, disabled = fal
     );
   }
   if (card.newerRevision && onUpdate) {
-    return <Button variant="outline" size={size} disabled={disabled || busy} aria-describedby={describedBy} onClick={onUpdate}>
+    return <Button variant="outline" disabled={disabled || busy} aria-describedby={describedBy} onClick={onUpdate}>
       {busy ? __('Adding…', 'wconvert') : __('Get the newer version', 'wconvert')}
     </Button>;
   }
-  return <Button variant={size === 'sm' ? 'outline' : 'default'} size={size} disabled={disabled || busy} aria-describedby={describedBy} onClick={onUse}>
+  return <Button variant={quiet ? 'outline' : 'default'} disabled={disabled || busy} aria-describedby={describedBy} onClick={onUse}>
     {busy ? __('Adding…', 'wconvert') : conversion?.action ?? __('Use template', 'wconvert')}
   </Button>;
 }

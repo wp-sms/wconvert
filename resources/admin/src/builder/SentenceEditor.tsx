@@ -63,7 +63,7 @@ export function SentenceEditor({ value, label, bold, italic = false, link, polic
           setEditingLink(false);
         }}><RemoveFormatting aria-hidden="true" /></Button>
       </div>
-      <AutoGrowTextarea id={id} ref={input} value={sentence.text} onKeyDown={event => {
+      <AutoGrowTextarea id={id} ref={input} className="rounded-none border-0 p-2.5 leading-[1.65] shadow-none focus-visible:ring-0" value={sentence.text} onKeyDown={event => {
         if (!(event.metaKey || event.ctrlKey) || event.altKey) return;
         const kind = event.key.toLowerCase() === 'b' && bold ? 'bold' : event.key.toLowerCase() === 'i' && italic ? 'italic' : event.key.toLowerCase() === 'k' && link ? 'link' : null;
         if (kind) { event.preventDefault(); format(kind); }

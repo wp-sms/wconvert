@@ -8,6 +8,7 @@ import { graphRemoval, graphRemovalPlan } from './structure/graphRemoval';
 import { graphChangeImpact } from './structure/graphChangeImpact';
 import { followupGroups } from './structure/followupGroups';
 import { conditionText } from './structure/conditionText';
+import { NativeSelect } from '../components/ui/native-select';
 
 /**
  * A destructive confirm, so it is the body of an `AlertDialog` the host owns
@@ -29,10 +30,10 @@ export function GraphScreenRemove({ tree, screenId, journeys = true, onRemove, o
   const refusal = plan.reason ?? (removal ? null : __('Choose where visitors continue first.', 'wconvert'));
   const choice = <>
     <label htmlFor={`${id}-destination`}>{plan.isEntry ? __('New first screen', 'wconvert') : __('Its incoming lines will go to', 'wconvert')}</label>
-    <select id={`${id}-destination`} value={destination} onChange={event => setDestination(event.target.value)}>
+    <NativeSelect id={`${id}-destination`} value={destination} onChange={event => setDestination(event.target.value)}>
       <option value="" disabled>{__('Choose a screen…', 'wconvert')}</option>
       {plan.targets.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
-    </select>
+    </NativeSelect>
   </>;
   return <>
     <AlertDialogHeader>

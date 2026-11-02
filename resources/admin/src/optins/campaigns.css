@@ -8,13 +8,7 @@
 #wconvert-admin .wconvert-campaign-toolbar { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:4px 24px 16px; border-block-end:1px solid var(--border); }
 #wconvert-admin .wconvert-campaign-toolbar .wconvert-picker__search { flex:1 1 14rem; max-inline-size:20rem; }
 #wconvert-admin .wconvert-campaign-viewtools { display:flex; align-items:center; gap:10px; }
-#wconvert-admin .wconvert-campaign-layout { display:flex; gap:2px; padding-inline-start:8px; border-inline-start:1px solid var(--border); }
-#wconvert-admin .wconvert-campaign-layout label { position:relative; display:grid; place-items:center; min-inline-size:var(--control-height-sm); min-block-size:var(--control-height-sm); margin:0; padding:0; border:0; border-radius:var(--radius); color:var(--muted-foreground); cursor:pointer; }
-#wconvert-admin .wconvert-campaign-layout label:hover { background:var(--accent); }
-#wconvert-admin .wconvert-campaign-layout label:has(input:checked) { color:var(--action); background:var(--secondary); }
-#wconvert-admin .wconvert-campaign-layout label:has(input:focus-visible) { outline:2px solid var(--ring); outline-offset:2px; }
-#wconvert-admin .wconvert-campaign-layout input { position:absolute; inset:0; inline-size:100%; block-size:100%; margin:0; opacity:0; cursor:pointer; }
-#wconvert-admin .wconvert-campaign-layout svg { inline-size:17px; block-size:17px; }
+#wconvert-admin .wconvert-campaign-layout { padding-inline-start:8px; border-inline-start:1px solid var(--border); }
 
 #wconvert-admin .wconvert-campaign-table { inline-size:100%; border-collapse:collapse; margin:0; }
 #wconvert-admin .wconvert-campaign-table tr { display:grid; grid-template-columns:18px minmax(200px,1fr) 140px 110px 200px; align-items:center; gap:16px; padding:20px 24px; border-block-end:1px solid var(--border); }

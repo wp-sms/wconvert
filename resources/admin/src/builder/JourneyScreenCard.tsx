@@ -39,7 +39,7 @@ export function JourneyScreenCard({ template, displayType, index, ordinal, selec
       {onMove && <span ref={grip} className="wconvert-journey-card__grip" aria-hidden="true">{terminal ? __('Last', 'wconvert') : <GripVertical size={16} />}</span>}
     </div>
     <div className="wconvert-journey-card__preview" aria-hidden="true"><DesignStage size="thumb" displayType={displayType} step={index} source={{ live: { template } }} /></div>
-    <button type="button" className="wconvert-journey-card__select" aria-pressed={selected} onClick={onSelect}>
+    <button type="button" className="wconvert-journey-card__select" aria-current={selected || undefined} onClick={onSelect}>
       <strong>{screen.name}</strong><span>{label}</span>
       {condition && <small className="wconvert-journey-card__condition">{condition}</small>}
     </button>

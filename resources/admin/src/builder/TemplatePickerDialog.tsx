@@ -21,6 +21,8 @@ import { GalleryToolbar, NO_CHOICES, type ActiveFilter, type GalleryChoices } fr
 import { InspectDialog } from '../gallery/InspectDialog';
 import { useAskForPage } from '../gallery/useAskForPage';
 import '../gallery/gallery.css';
+import { NativeSelect } from '../components/ui/native-select';
+import { CheckRow } from '../shell/CheckRow';
 
 export interface TemplatePickerDialogProps {
   readonly open: boolean;
@@ -145,10 +147,10 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onLibraryCh
     if (values.length === 0) return null;
     return <label key={facet}>
       <span>{label}</span>
-      <select className="wconvert-picker__select" value={extras[facet]} onChange={event => changeExtras({ [facet]: event.target.value })}>
+      <NativeSelect value={extras[facet]} onChange={event => changeExtras({ [facet]: event.target.value })}>
         <option value="">{__('Any', 'wconvert')}</option>
         {values.map(value => <option key={value} value={value}>{word(value)}</option>)}
-      </select>
+      </NativeSelect>
     </label>;
   };
   const extrasActive: ActiveFilter[] = [
@@ -221,20 +223,17 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onLibraryCh
               showPlan={proHints && cards.some(card => card.availability === 'locked')}
               scope={fit.outcome && <label className="wconvert-gallery-toolbar__field">
                 <span className="sr-only">{__('Show', 'wconvert')}</span>
-                <select className="wconvert-picker__select" value={goalOnly ? 'goal' : 'all'} onChange={event => { setGoalOnly(event.target.value === 'goal'); setPage(0); }}>
+                <NativeSelect className="text-note" value={goalOnly ? 'goal' : 'all'} onChange={event => { setGoalOnly(event.target.value === 'goal'); setPage(0); }}>
                   <option value="goal">{goalLabel ? sprintf(/* translators: %s: campaign goal. */ __('For “%s”', 'wconvert'), goalLabel) : __('For this goal', 'wconvert')}</option>
                   <option value="all">{__('All templates', 'wconvert')}</option>
-                </select>
+                </NativeSelect>
               </label>}
               extras={<>
                 {extraSelect('industry', __('Industry', 'wconvert'), id => tagWord('industry', id))}
                 {extraSelect('occasion', __('Occasion', 'wconvert'), id => tagWord('occasion', id))}
                 {extraSelect('style', __('Style', 'wconvert'), id => tagWord('style', id))}
                 {extraSelect('shape', __('Layout', 'wconvert'), shapeWord)}
-                {(extras.picture || filterCards(cards, { ...filters, hasImage: true }).length > 0) && <label className="flex items-center gap-2">
-                  <input type="checkbox" checked={extras.picture} onChange={event => changeExtras({ picture: event.target.checked })} />
-                  {__('With a picture', 'wconvert')}
-                </label>}
+                {(extras.picture || filterCards(cards, { ...filters, hasImage: true }).length > 0) && <CheckRow checked={extras.picture} onChange={event => changeExtras({ picture: event.target.checked })} label={__('With a picture', 'wconvert')} />}
               </>}
               extrasActive={extrasActive} />
             <GalleryGrid total={cards.length} shown={shown.length} page={shownPage} pages={pages} onPage={setPage} onClear={clear} disabled={busy}

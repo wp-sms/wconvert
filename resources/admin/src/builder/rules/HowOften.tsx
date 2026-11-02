@@ -7,6 +7,7 @@ import { halves } from './picks';
 import { SiteLimitsNote } from './SiteLimitsNote';
 import type { Frequency } from '../api';
 import type { ConvertingAct } from '../structure/catalogue';
+import { CheckRow } from '../../shell/CheckRow';
 
 export interface HowOftenProps {
   readonly frequency: Frequency;
@@ -61,19 +62,12 @@ export function HowOften({ frequency, priority, overlay, custom, reopenEnabled, 
 
     <div className="wconvert-display-settings" role="group" aria-labelledby="wconvert-stop-heading">
       <p className="wconvert-display-settings__title" id="wconvert-stop-heading">{__('Stop showing it…', 'wconvert')}</p>
-      {act !== null && <label className="wconvert-display-setting">
-        <input type="checkbox" checked={frequency.stopAfterConversion !== false} onChange={event => setSwitch('stopAfterConversion', event.target.checked)} />
-        <span>{act === 'click' ? __('after they click the main button', 'wconvert') : __('after they submit the form', 'wconvert')}</span>
-      </label>}
-      <label className="wconvert-display-setting">
-        <input type="checkbox" checked={frequency.stopAfterDismiss !== false} onChange={event => setSwitch('stopAfterDismiss', event.target.checked)} />
-        <span>{__('after they close it', 'wconvert')}</span>
-      </label>
-      <div className="wconvert-display-setting">
-        <input type="checkbox" id="wconvert-frequency-capped" checked={capped}
-          onChange={event => { const next = { ...frequency }; if (event.target.checked) next.maxImpressions = 3; else delete next.maxImpressions; onFrequency(next); }} />
-        <label htmlFor="wconvert-frequency-capped">{before}<TotalField value={frequency.maxImpressions} disabled={!capped} onChange={count => setCount('maxImpressions', count)} />{after}</label>
-      </div>
+      {act !== null && <CheckRow className="wconvert-display-setting" checked={frequency.stopAfterConversion !== false} onChange={event => setSwitch('stopAfterConversion', event.target.checked)}
+        label={act === 'click' ? __('after they click the main button', 'wconvert') : __('after they submit the form', 'wconvert')} />}
+      <CheckRow className="wconvert-display-setting" checked={frequency.stopAfterDismiss !== false} onChange={event => setSwitch('stopAfterDismiss', event.target.checked)} label={__('after they close it', 'wconvert')} />
+      <CheckRow className="wconvert-display-setting" checked={capped}
+        onChange={event => { const next = { ...frequency }; if (event.target.checked) next.maxImpressions = 3; else delete next.maxImpressions; onFrequency(next); }}
+        label={<>{before}<TotalField value={frequency.maxImpressions} disabled={!capped} onChange={count => setCount('maxImpressions', count)} />{after}</>} />
     </div>
     {frequency.maxPerSession !== undefined && frequency.stopAfterDismiss !== false && <p className="wconvert-display-hint">{__('Closing it stops it for good, not just for this visit.', 'wconvert')}</p>}
     {reopenEnabled && <p className="wconvert-display-hint">{__('Your reopen button skips automatic view limits, waiting periods and closing restrictions. Completion stops it; closing the reminder stops this campaign for the visit.', 'wconvert')}</p>}

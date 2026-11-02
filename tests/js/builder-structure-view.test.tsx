@@ -1418,7 +1418,7 @@ describe('undo and redo, where they act on the whole draft', () => {
       only thing about this case that changed: it is still one history entry
       and still undone from the tab it was applied on.
     */
-    await userEvent.click(screen.getByRole('button', { name: /Midnight/ }));
+    await userEvent.click(screen.getByRole('radio', { name: /Midnight/ }));
 
     await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();

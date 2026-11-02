@@ -8,6 +8,7 @@ import { cssOnlyNote, useAdvanced } from './advanced';
 import { StyleValueInput } from './StyleValueInput';
 import { FieldHeading, PanelHint } from './PanelSection';
 import { gradientOf, gradientCss, type Gradient } from './gradient';
+import { NativeSelect } from '../components/ui/native-select';
 
 export const DEFAULT_GRADIENT = 'linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.65) 100%)';
 
@@ -36,10 +37,10 @@ export function GradientField({ label, shown, reset, open, onOpenChange, onChang
             if (value.trim() !== '' && Number.isFinite(Number(value))) write({ ...gradient, angle: Number(value) });
           }} />
         </label> : <label className="wconvert-slot__key">{__('Direction', 'wconvert')}
-          <select value={String(gradient.angle)} onChange={event => write({ ...gradient, angle: Number(event.target.value) })}>
+          <NativeSelect value={String(gradient.angle)} onChange={event => write({ ...gradient, angle: Number(event.target.value) })}>
             {!directions.some(([angle]) => angle === gradient.angle) && <option value={String(gradient.angle)}>{sprintf(/* translators: %s: an angle in degrees, e.g. “45”. */ __('Custom (%s°)', 'wconvert'), String(gradient.angle))}</option>}
             {directions.map(([angle, name]) => <option key={angle} value={String(angle)}>{name}</option>)}
-          </select>
+          </NativeSelect>
         </label>}
         {gradient.stops.map((stop, index) => <div key={index} className="wconvert-gradient-stop">
           <ColorField label={sprintf(/* translators: %d: the color's position in a gradient, e.g. 1. */ __('Color %d', 'wconvert'), index + 1)} fallback={stop.color} value={stop.color}

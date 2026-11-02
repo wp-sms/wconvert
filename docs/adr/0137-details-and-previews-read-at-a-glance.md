@@ -95,7 +95,10 @@ and none could be read at a glance:
    the library switch is the gallery's "Show" select.* *Amended by ADR 0182: a
    draft with no template has no words to keep, so neither radio is drawn and
    the sample content's "Review its offers and links before publishing." stands
-   alone. A control that can never work is hidden, not refused.*
+   alone. A control that can never work is hidden, not refused.* *Amended by ADR
+   0182: the two compact radios are radio cards under "Content to use", and the
+   kept choice reads "Keep my current content", so the transfer dialog and this
+   one draw "whose content" as one shape with one set of words (GUIDELINES §7).*
 
 ## Consequences
 

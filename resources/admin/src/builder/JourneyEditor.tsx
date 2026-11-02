@@ -4,7 +4,8 @@ import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { Disclosure } from '../shell/Disclosure';
 import { OptionStrip } from '../shell/OptionStrip';
 import { DropdownMenu, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
-import { OptionGroup, OptionItem, OptionMenuContent, OptionSeparator, refusal } from '../components/ui/option-menu';
+import { OptionEmpty, OptionGroup, OptionItem, OptionList, OptionListContent, OptionMenuContent, OptionSeparator, refusal } from '../components/ui/option-menu';
+import { Popover, PopoverTrigger } from '../components/ui/popover';
 import { Dialog, DialogTrigger, DialogTitle, DialogDescription, DialogClose } from '../components/ui/dialog';
 import { AdminDialogContent } from '../components/ui/admin-dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
@@ -43,6 +44,7 @@ import type { JourneyRepair } from './structure/journeyReadiness';
 import type { CampaignIssue } from './readiness/campaignIssues';
 import { journeysSupported } from '../settings';
 import { ProHint } from '../shell/ProHint';
+import { NativeSelect } from '../components/ui/native-select';
 
 const EMPTY_TOKENS: Tokens = {};
 const NO_ISSUES: readonly CampaignIssue[] = [];
@@ -130,7 +132,8 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   const testHeading = useRef<HTMLHeadingElement>(null);
   const settingsHeading = useRef<HTMLHeadingElement>(null);
   const inspectorTrigger = useRef<HTMLElement | null>(null);
-  const findInput = useRef<HTMLInputElement>(null);
+  const findTrigger = useRef<HTMLButtonElement>(null);
+  const [finding, setFinding] = useState(false);
   const returnToTestTrigger = useRef(true);
   const [view, setView] = useState<'edit' | 'flow' | 'screens'>(editorCanvas ? 'edit' : 'flow');
   // Flow is always offered, a straight campaign too (ADR 0142).
@@ -479,31 +482,34 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
           <div>{embedded ? <h2 className={editorCanvas ? 'sr-only' : undefined}>{__('Screens', 'wconvert')}</h2> : <DialogTitle>{__('Manage screens', 'wconvert')}</DialogTitle>}
             {embedded ? <p className="wconvert-journey-description sr-only">{__('Select a screen to edit its content and lines.', 'wconvert')}</p>
               : <DialogDescription>{__('Select a screen to edit its content and lines.', 'wconvert')}</DialogDescription>}</div>
-        <div className="wconvert-journey-view">
+        <div className="wconvert-journey-view wconvert-toolbar">
           <OptionStrip label={__('Edit view', 'wconvert')} value={view} options={[
             ...(editorCanvas ? [{ value: 'edit', label: __('Canvas', 'wconvert') }] : []),
             { value: 'flow', label: __('Flow', 'wconvert') },
             ...(!editorCanvas ? [{ value: 'screens', label: __('Screens', 'wconvert') }] : []),
           ]} onChange={value => { setView(value as typeof view); if (value !== 'flow') setInspecting(true); setMobilePane('map'); }} />
           {/* Edit has its own screen list; finding by name is a Flow-view tool. */}
-          {view !== 'edit' && <div className="wconvert-journey-find"><label><Search aria-hidden="true" /><span className="sr-only">{__('Find a screen', 'wconvert')}</span><input ref={findInput} type="search" value={query} placeholder={__('Find a screen…', 'wconvert')} onChange={event => setQuery(event.target.value)} /></label>
-            {query.trim() && <div className="wconvert-journey-find__results" role="group" aria-label={__('Matching screens', 'wconvert')}>
-              {matches.length ? matches.map(({ screen, index }) => <button type="button" key={screen.id} onClick={() => { select(index); setQuery(''); }}><bdi>{screen.name}</bdi></button>)
-                : <p>{__('No matching screens.', 'wconvert')}</p>}
-            </div>}
-          </div>}
+          {view !== 'edit' && <Popover open={finding} onOpenChange={next => { setFinding(next); if (!next) setQuery(''); }}>
+            <PopoverTrigger asChild><Button ref={findTrigger} type="button" variant="outline" className="wconvert-journey-find"><Search aria-hidden="true" />{__('Find a screen', 'wconvert')}</Button></PopoverTrigger>
+            <OptionListContent align="end" aria-label={__('Find a screen', 'wconvert')}>
+              <OptionList search={{ value: query, onChange: setQuery, label: __('Find a screen', 'wconvert'), placeholder: __('Find a screen…', 'wconvert') }}>
+                {matches.map(({ screen, index }) => <OptionItem key={screen.id} name={screen.name} checked={index === step} onSelect={() => { select(index); setFinding(false); setQuery(''); }} />)}
+                {matches.length === 0 && <OptionEmpty what={__('screens', 'wconvert')} onClear={() => setQuery('')} />}
+              </OptionList>
+            </OptionListContent>
+          </Popover>}
         </div>
           {!journeys && usesJourneyElements(tree) && <div className="wconvert-journey-settings__warning" role="status"><p>{__('This design uses elements this site can’t display. This campaign can’t be published, and a live copy is paused; your draft keeps saving. Remove them to publish.', 'wconvert')}</p>
             {/* One undoable edit to everything this site can't show (ADR 0147). */}
             {straight && (isRefusal(straight)
-              ? <><Button type="button" variant="outline" size="sm" aria-disabled="true" aria-describedby={`${id}-straight`}>{__('Make it a straight campaign', 'wconvert')}</Button>
+              ? <><Button type="button" variant="outline" aria-disabled="true" aria-describedby={`${id}-straight`}>{__('Make it a straight campaign', 'wconvert')}</Button>
                 <small id={`${id}-straight`}>{straight.reason}</small></>
-              : <Button type="button" variant="outline" size="sm" onClick={() => setStraightening(true)}>{__('Make it a straight campaign', 'wconvert')}</Button>)}
+              : <Button type="button" variant="outline" onClick={() => setStraightening(true)}>{__('Make it a straight campaign', 'wconvert')}</Button>)}
           </div>}
           <div className="wconvert-journey-dialog__header-actions">
-            {embedded && view !== 'edit' && <Button ref={focusTrigger} type="button" variant="outline" aria-pressed={focused} onClick={() => setFocused(value => !value)}>
+            {embedded && view !== 'edit' && <Button ref={focusTrigger} type="button" variant="outline" className="wconvert-pressable" aria-pressed={focused} onClick={() => setFocused(value => !value)}>
               {focused ? <Minimize2 aria-hidden="true" /> : <Maximize2 aria-hidden="true" />}
-              {focused ? __('Back to campaign', 'wconvert') : __('Focus', 'wconvert')}
+              {__('Focus', 'wconvert')}
             </Button>}
             {focused && focusActions}
             {!editorCanvas && (authoring.headerAdd ? authoring.headerAdd
@@ -541,7 +547,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
           ]} onChange={value => setMobilePane(value as typeof mobilePane)} />}
         <QuestionPanelContext.Provider value={editorCanvas ? questionPanel : null}>
         <div className="wconvert-journey-side" data-mobile-pane={mobilePane} data-panel-open={panelOpen} data-editing={view === 'edit' || undefined} data-wide-panel={widePanel || undefined}>
-          <div className="wconvert-journey-mobile-picker"><label>{__('Screen', 'wconvert')}<select value={step} onChange={event => select(Number(event.target.value))}>{displayOrder.map(index => <option key={tree.steps[index].id} value={index}>{tree.steps[index].name}</option>)}</select></label></div>
+          <div className="wconvert-journey-mobile-picker"><label>{__('Screen', 'wconvert')}<NativeSelect value={step} onChange={event => select(Number(event.target.value))}>{displayOrder.map(index => <option key={tree.steps[index].id} value={index}>{tree.steps[index].name}</option>)}</NativeSelect></label></div>
           {view === 'edit' && <><EditTree tree={tree} step={step} editingScreen={editingScreen && !look?.open} issues={issues} onIssue={openIssue} onSelect={select}
             look={look} formSwitch={formSwitch} elements={elements} extraRows={extraRows} addScreen={addScreenMenu} /><div className="wconvert-campaign-canvas">{editorCanvas}</div></>}
           {view === 'flow' && <FlowMapBoundary><Suspense fallback={<FlowSkeleton />}>
@@ -611,7 +617,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
                     setInspecting(false); setPathFocus(null); setMobilePane('map');
                     requestAnimationFrame(() => {
                       const trigger = inspectorTrigger.current;
-                      (trigger?.isConnected ? trigger : findInput.current)?.focus();
+                      (trigger?.isConnected ? trigger : findTrigger.current)?.focus();
                     });
                   }}><X aria-hidden="true" /></button>}
                 </>} />;
@@ -698,7 +704,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   return <>
     {embedded ? <section ref={workspaceRoot} className="wconvert-journey-workspace" data-focused={focused || undefined} aria-label={__('Screens', 'wconvert')}>{workspace}</section>
       : <Dialog open={open} onOpenChange={value => { setOpen(value); setSaid(''); }}>
-        <DialogTrigger asChild><Button type="button" variant="outline" size="sm"><Workflow aria-hidden="true" />{__('Manage screens', 'wconvert')}</Button></DialogTrigger>
+        <DialogTrigger asChild><Button type="button" variant="outline"><Workflow aria-hidden="true" />{__('Manage screens', 'wconvert')}</Button></DialogTrigger>
         <AdminDialogContent size="lg" className="wconvert-journey-dialog" showCloseButton={false}>{workspace}</AdminDialogContent>
       </Dialog>}
     <AlertDialog open={confirmGraphRemoval} onOpenChange={setConfirmGraphRemoval}>
@@ -716,7 +722,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
       <AdminDialogContent size="lg" className="wconvert-journey-test-dialog" onOpenAutoFocus={event => { event.preventDefault(); testHeading.current?.focus(); }}
         onCloseAutoFocus={event => {
           event.preventDefault();
-          const restore = () => (returnToTestTrigger.current ? externalTestTrigger.current?.isConnected ? externalTestTrigger.current : findInput.current : settingsHeading.current)?.focus();
+          const restore = () => (returnToTestTrigger.current ? externalTestTrigger.current?.isConnected ? externalTestTrigger.current : findTrigger.current : settingsHeading.current)?.focus();
           // The embedded workspace stays mounted. Deferring its restoration can
           // steal focus from a subsequent Escape that leaves Focus journey.
           if (embedded) restore();

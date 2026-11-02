@@ -5,6 +5,7 @@ import { Button } from '../components/ui/button';
 import { AlertDialogCancel, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../components/ui/alert-dialog';
 import { graphCaptureRemovalPlan, removeGraphCapture } from './structure/graphCaptureRemoval';
 import { graphChangeImpact } from './structure/graphChangeImpact';
+import { NativeSelect } from '../components/ui/native-select';
 
 /** A destructive confirm: the body of an `AlertDialog` the host owns (§9). */
 export function GraphCaptureRemove({ tree, submissionId, onRemove, onCancel }: {
@@ -27,10 +28,10 @@ export function GraphCaptureRemove({ tree, submissionId, onRemove, onCancel }: {
         {route.preferred ? <p><strong>{sprintf(/* translators: %s: the name of the screen visitors go to instead, e.g. “Your result”. */ __('After removing: continue to %s.', 'wconvert'), name(route.preferred))}</strong></p> : <label htmlFor={`${id}-${index}`}>{route.from === tree.graph?.entry ? __('New first screen', 'wconvert')
           : sprintf(/* translators: %s: the name of a signup screen being removed, e.g. “Get your results”. */ __('Lines into “%s” go to', 'wconvert'), name(route.from))}</label>}
         {route.incoming.length > 0 && <p>{sprintf(/* translators: %s: a comma-separated list of screen names, e.g. “Welcome, Budget”. */ __('From: %s. Incoming conditions and order stay the same.', 'wconvert'), [...new Set(route.incoming.map(edge => name(edge.from)))].join(', '))}</p>}
-        {!route.preferred && <select id={`${id}-${index}`} value={destinations[route.from] ?? route.preferred} onChange={event => setDestinations({ ...destinations, [route.from]: event.target.value })}>
+        {!route.preferred && <NativeSelect id={`${id}-${index}`} value={destinations[route.from] ?? route.preferred} onChange={event => setDestinations({ ...destinations, [route.from]: event.target.value })}>
           <option value="" disabled>{__('Choose a continuation…', 'wconvert')}</option>
           {route.targets.map(screen => <option key={screen.id} value={screen.id}>{screen.name}</option>)}
-        </select>}
+        </NativeSelect>}
       </div>)}
       {!plan.reason && !plan.routes.length && <p>{__('No lines into it need to change.', 'wconvert')}</p>}
       <strong>{__('Screens to remove', 'wconvert')}</strong><ul>{plan.screens.map(screen => <li key={screen.id}><bdi>{screen.name}</bdi></li>)}</ul>

@@ -283,7 +283,7 @@ export function HelpLinks({ currentPage }: { currentPage?: string } = {}) {
     <div className="wconvert-help-links__foot">
       {currentPage !== HELP_PAGE_ID && (
         <PopoverClose asChild>
-          <Button asChild variant="outline" size="sm"><a className="wconvert-help-links__open" href={`#${HELP_PAGE_ID}`}>{__('Open the Help page', 'wconvert')}</a></Button>
+          <Button asChild variant="outline"><a className="wconvert-help-links__open" href={`#${HELP_PAGE_ID}`}>{__('Open the Help page', 'wconvert')}</a></Button>
         </PopoverClose>
       )}
       <a className="wconvert-help-links__site" href="https://wconvert.io/" target="_blank" rel="noreferrer">

@@ -84,7 +84,7 @@ export function HeadersEditor({ field, value, onChange, stored = [], label, hint
       </div>;
     })}
     {value.length < max && <div>
-      <Button type="button" variant="outline" size="sm" onClick={add}><Plus aria-hidden="true" />{__('Add header', 'wconvert')}</Button>
+      <Button type="button" variant="outline" onClick={add}><Plus aria-hidden="true" />{__('Add header', 'wconvert')}</Button>
     </div>}
   </fieldset>;
 }

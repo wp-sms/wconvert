@@ -218,7 +218,7 @@ draws its own period select or date card.
 
 | Shape | For |
 |---|---|
-| `shell/OptionStrip` chips | page toolbars and dialogs — period, compare, device |
+| `shell/OptionStrip` chips | page toolbars and dialogs — period, compare, device, view; an option may draw an icon in place of its word, which stays its name |
 | `.wconvert-choice-set` | compact inspector settings |
 | `.wconvert-radio-card` | a choice that needs a sentence of its own — retention, transfer, graph insert, capture mode, recommendations |
 

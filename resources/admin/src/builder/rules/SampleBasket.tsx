@@ -7,6 +7,7 @@ import { Skeleton } from '../../components/ui/skeleton';
 import { TryAgain } from '../../shell/Region';
 import type { ProductsNode } from '@renderer/types';
 import type { Rule } from '@loader/types';
+import { NativeSelect } from '../../components/ui/native-select';
 
 export type Basket = { viewed_product_id?: number; items: { id: number; quantity: number }[]; amount: number; total: number; state: 'known' | 'unknown' | 'blocked' };
 export const emptyBasket = (): Basket => ({ items: [], amount: 0, total: 0, state: 'known' });
@@ -53,9 +54,9 @@ export function SampleBasket({ value, onChange, result, error, onRetry, products
   return <section aria-labelledby="wconvert-sample-basket" className="space-y-3">
     <h3 id="wconvert-sample-basket">{__('Sample basket', 'wconvert')}</h3>
     <p className="wconvert-sample-help">{__('These are pretend basket contents and totals. Product categories, relationships and availability come from your store. Nothing is added to a real cart.', 'wconvert')}</p>
-    <label>{__('Basket status', 'wconvert')}<select value={value.state} onChange={event => onChange({ ...value, state: event.target.value as Basket['state'] })}>
+    <label>{__('Basket status', 'wconvert')}<NativeSelect value={value.state} onChange={event => onChange({ ...value, state: event.target.value as Basket['state'] })}>
       <option value="known">{__('Known basket', 'wconvert')}</option><option value="unknown">{__('Basket unavailable', 'wconvert')}</option><option value="blocked">{__('Consent not given', 'wconvert')}</option>
-    </select></label>
+    </NativeSelect></label>
     {products?.context === 'product' && <fieldset className="space-y-3"><legend>{__('Viewed product', 'wconvert')}</legend><CommercePicker recommendations compact max={1} searchLabel={__('Find viewed product', 'wconvert')} value={value.viewed_product_id ? [value.viewed_product_id] : []} onChange={ids => onChange({ ...value, viewed_product_id: ids[0] ?? 0 })}/><p className="wconvert-sample-help">{__('Choose a product page. This does not add it to the sample basket.', 'wconvert')}</p></fieldset>}
     <CommercePicker value={value.items.map(item => item.id)} onChange={ids => onChange({ ...value, items: ids.map(id => value.items.find(item => item.id === id) ?? { id, quantity: 1 }) })}
       itemControls={(id, name) => <label>{__('Quantity', 'wconvert')}<Input className="w-24" type="number" min={1} max={10000} step={1} aria-label={sprintf(/* translators: %s: a product's name in the sample basket, e.g. “Blue T-shirt”. */ __('Quantity for %s', 'wconvert'), name)} value={value.items.find(item => item.id === id)?.quantity ?? 1}

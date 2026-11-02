@@ -17,6 +17,8 @@ import {
   transferStatus, uploadDesign, prepareImport, applyImport, cancelImport, downloadDesign, importImage, withPreviewImages,
   type TransferDesign, type TransferStatus, type TransferPreview, type Config,
 } from '../templates/transfer';
+import { NativeSelect } from '../components/ui/native-select';
+import { CheckRow } from '../shell/CheckRow';
 
 export default function TemplateTransferDialog({ action, design, config, optin, onClose, onApply }: {
   action: 'import' | 'export'; design: TransferDesign; config: Config; optin: string;
@@ -158,7 +160,7 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
             <div className="wconvert-transfer__preview-heading"><span>{__('Template preview', 'wconvert')}</span><Badge variant="outline">{action === 'export' ? __('Current draft', 'wconvert') : __('Before you apply', 'wconvert')}</Badge></div>
             {rendered ? <>
               <PreviewControls mobile={mobile} onMobile={setMobile} template={rendered} step={step} onStep={value => { setStep(value); setResult(0); }} fitHeight={fitHeight} onFitHeight={setFitHeight} disabled={busy} />
-              {results.length > 0 && <label className="wconvert-transfer__result">{__('Result to preview', 'wconvert')}<select className="wconvert-picker__select" value={result} onChange={event => setResult(Number(event.target.value))}>{results.map((item, index) => <option key={item.id} value={index}>{item.heading || sprintf(/* translators: %d: the result's position in the list, starting at 1. */ __('Result %d', 'wconvert'), index + 1)}</option>)}</select></label>}
+              {results.length > 0 && <label className="wconvert-transfer__result">{__('Result to preview', 'wconvert')}<NativeSelect className="text-note" value={result} onChange={event => setResult(Number(event.target.value))}>{results.map((item, index) => <option key={item.id} value={index}>{item.heading || sprintf(/* translators: %d: the result's position in the list, starting at 1. */ __('Result %d', 'wconvert'), index + 1)}</option>)}</NativeSelect></label>}
               <PreviewFrame template={rendered} displayType={action === 'export' ? design.display_type : preview!.patch.display_type} mobile={mobile} step={step} result={results[result]} fitHeight={fitHeight} />
             </> : busy ? <div role="status" className="wconvert-transfer__placeholder"><span className="sr-only">{__('Preparing your preview…', 'wconvert')}</span><Skeleton aria-hidden="true" className="h-full min-h-[20rem] w-full" /></div>
               : <div className="wconvert-transfer__placeholder"><FileArchive aria-hidden="true" /><p>{__('The preview could not be prepared.', 'wconvert')}</p><TryAgain onClick={() => void run(() => prepare(session.current!))} /></div>}
@@ -193,7 +195,7 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
                   <p className="wconvert-transfer__hint">{__('Linked files are not included.', 'wconvert')}</p>
                 </section>}
                 {changingLinks ? <div className="wconvert-transfer__update"><p>{__('Update the preview to review your changed links.', 'wconvert')}</p><Button variant="outline" disabled={busy} onClick={() => { if (session.current) void run(() => prepare(session.current!)); }}>{__('Update preview', 'wconvert')}</Button></div>
-                  : hasReview && <label className="wconvert-transfer__review"><input type="checkbox" checked={reviewed} disabled={busy} onChange={event => setReviewed(event.target.checked)} /><span>{preview.links.length > 0 ? __('Keep these links and apply the reviewed changes', 'wconvert') : __('Apply the reviewed changes', 'wconvert')}</span></label>}
+                  : hasReview && <CheckRow className="wconvert-transfer__review" checked={reviewed} disabled={busy} onChange={event => setReviewed(event.target.checked)} label={preview.links.length > 0 ? __('Keep these links and apply the reviewed changes', 'wconvert') : __('Apply the reviewed changes', 'wconvert')} />}
                 <>{preview.assets.length > 0 && <p className="wconvert-transfer__hint">{__('Included images are added to your Media Library when you apply.', 'wconvert')}</p>}</>
               </>}
             </>}

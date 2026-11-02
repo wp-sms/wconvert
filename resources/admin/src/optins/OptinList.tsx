@@ -32,9 +32,9 @@ import type { Occasion } from '../discovery/api';
 import { readOccasions, type OccasionNotice } from '../occasions/api';
 import { OccasionNoticeView } from '../occasions/Notice';
 import { GettingStarted, useChecklist } from './GettingStarted';
-import { readDashboard, type DashboardPayload } from '../stats/api';
+import { periodOf, readDashboard, readReport, type DashboardPayload, type PeriodQuery } from '../stats/api';
 import { rowResultOf, shownLine } from './rowResult';
-import { formatCount, formatRange, labelOf } from '../lib/format';
+import { formatCount, formatRange, labelOf, siteDay } from '../lib/format';
 import {
   campaignName,
   createVariant,
@@ -67,6 +67,7 @@ import './campaigns.css';
 
 import { productHealthLabel, ProductHealthDetails, useProductHealth } from './ProductHealth';
 import { CampaignThumbnail } from './designChunks';
+import { DateRangePicker, type DateRange } from '../shell/DateRangePicker';
 
 const PAGE_SIZE = 12;
 type Decision = {
@@ -112,7 +113,7 @@ export function OptinList({
   const [report, setReport] = useState<DashboardPayload | null>(null);
   const [reportError, setReportError] = useState<string | null>(null);
   const [reportLoading, setReportLoading] = useState(true);
-  const [days, setDays] = useState(30);
+  const [range, setRange] = useState<DateRange>({ preset: '30' });
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<Set<string>>(new Set());
   const busyRef = useRef(new Set<string>());
@@ -188,7 +189,7 @@ export function OptinList({
     let active = true;
     setReportLoading(true);
     setReportError(null);
-    void readDashboard(days)
+    void (range.preset === 'custom' ? readReport({ from: range.from, to: range.to }) : readDashboard(Number(range.preset)))
       .then((data) => {
         if (active) setReport(data);
       })
@@ -201,7 +202,7 @@ export function OptinList({
     return () => {
       active = false;
     };
-  }, [days, refreshKey]);
+  }, [range, refreshKey]);
 
   const numbers = useMemo(
     () =>
@@ -397,7 +398,10 @@ export function OptinList({
     setSelected(null);
     onEdit(id);
   };
-  const period = report ? { days: report.days } : { days };
+  // The window of the numbers on screen, so a link opens what they count. Before
+  // any have landed, what was asked for.
+  const period: PeriodQuery = report ? periodOf(report)
+    : range.preset === 'custom' ? { from: range.from, to: range.to } : { days: Number(range.preset) };
   const reportReady = report !== null;
   // A key the registry does not name is "Unknown goal", never the stored key.
   const goalOf = (row: OptinSummary): string | null =>
@@ -407,7 +411,7 @@ export function OptinList({
   const occasionOf = (row: OptinSummary): Occasion | undefined => row.occasion === null ? undefined : occasions?.find((item) => item.id === row.occasion);
   const resultsOf = (row: OptinSummary): CampaignResults =>
     report
-      ? { status: 'ready', days: report.days, from: report.from, to: report.to, result: numbers[row.id] }
+      ? { status: 'ready', days: report.days, from: report.from, to: report.to, custom: report.custom, result: numbers[row.id] }
       : reportError
         ? { status: 'failed', onRetry: () => setRefreshKey((n) => n + 1) }
         : { status: 'loading' };
@@ -562,7 +566,7 @@ export function OptinList({
             missingDesign={previews[row.id]?.template === null}
             result={result}
             reportReady={reportReady}
-            days={period.days}
+            period={period}
             range={report ? { from: report.from, to: report.to } : undefined}
             onDetails={(trigger) => openDetails(row, trigger)}
             onDuplicate={() => duplicate(row, parent)}
@@ -660,13 +664,15 @@ export function OptinList({
                       }))
                       .filter((option) => option.value === 'all' || option.value === filter || option.count !== 0)}
                   />
-                  <label className="wconvert-campaign-period">
-                    {__('Results period', 'wconvert')}
-                    <NativeSelect value={days} onChange={(e) => setDays(Number(e.target.value))}>
-                      <option value={30}>{__('Last 30 days', 'wconvert')}</option>
-                      <option value={7}>{__('Last 7 days', 'wconvert')}</option>
-                    </NativeSelect>
-                  </label>
+                  <DateRangePicker
+                    label={__('Results period', 'wconvert')}
+                    value={range}
+                    presets={['30', '7']}
+                    summary={report ? formatRange(report.from, report.to) : null}
+                    today={siteDay()}
+                    maxDays={366}
+                    onChange={setRange}
+                  />
                 </div>
                 <div className="wconvert-toolbar wconvert-campaign-toolbar">
                   <PickerSearch
@@ -708,16 +714,16 @@ export function OptinList({
                       <option value="name">{__('Name A–Z', 'wconvert')}</option>
                       <option value="results">{__('Most results', 'wconvert')}</option>
                     </NativeSelect>
-                    <div className="wconvert-campaign-layout" role="group" aria-label={__('Campaign layout', 'wconvert')}>
-                      <label>
-                        <input type="radio" name="campaign-layout" aria-label={__('List view', 'wconvert')} checked={layout === 'list'} onChange={() => setLayout('list')} />
-                        <List aria-hidden="true" />
-                      </label>
-                      <label>
-                        <input type="radio" name="campaign-layout" aria-label={__('Gallery view', 'wconvert')} checked={layout === 'gallery'} onChange={() => setLayout('gallery')} />
-                        <LayoutGrid aria-hidden="true" />
-                      </label>
-                    </div>
+                    <OptionStrip
+                      className="wconvert-campaign-layout"
+                      label={__('Campaign layout', 'wconvert')}
+                      value={layout}
+                      options={[
+                        { value: 'list', label: __('List view', 'wconvert'), icon: List },
+                        { value: 'gallery', label: __('Gallery view', 'wconvert'), icon: LayoutGrid },
+                      ]}
+                      onChange={(next) => setLayout(next as typeof layout)}
+                    />
                   </div>
                 </div>
               </>

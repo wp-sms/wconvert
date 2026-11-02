@@ -22,6 +22,7 @@ import { graphDisplayOrder } from './structure/graph';
 import { walkNodes } from './structure/journey';
 import { conditionText } from './structure/conditionText';
 import { testCaptureSnapshot, type TestCaptureSnapshot } from './structure/journeyTestState';
+import { CheckRow } from '../shell/CheckRow';
 
 type ProductState = 'selected' | 'empty' | 'error';
 
@@ -304,7 +305,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
       <PreviewDeadlineStatus />
       <div className="wconvert-journey-test__canvas"><div ref={anchor} data-mobile={mobile} className="wconvert-journey-test__stage" /></div>
       {feedback && <p className="wconvert-journey-test__feedback" role="status">{feedback}</p>}
-      <div className="wconvert-preview-test__screen-actions"><Button variant="ghost" size="sm" disabled={visited.length < 2} onClick={() => backAction.current()}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Previous screen', 'wconvert')}</Button><Button variant="ghost" size="sm" onClick={() => onEdit(step)}>{__('Edit this screen', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button></div>
+      <div className="wconvert-preview-test__screen-actions"><Button variant="ghost" disabled={visited.length < 2} onClick={() => backAction.current()}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Previous screen', 'wconvert')}</Button><Button variant="ghost" onClick={() => onEdit(step)}>{__('Edit this screen', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button></div>
     </section>
     {productHost && (shownResult?.product_ids?.length || shownResult?.product_filter) && createPortal(<>{shownResult.product_filter && productState === 'selected' ? <LiveProductMatches filter={shownResult.product_filter} /> : <TestProducts count={shownResult.product_filter ? 3 : shownResult.product_ids?.length ?? 0}
       state={productState} onRetry={() => setProductState('selected')} />}{shownResult.product_action === 'add_to_cart' && productState === 'selected' && <TestCartAction key={shownResult.id} />}</>, productHost)}
@@ -334,7 +335,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
       })}
       {routeSteps.length > 0 && <Disclosure variant="inline" className="wconvert-journey-test__route" title={__('Why these screens?', 'wconvert')}>
         <ol>{routeSteps.map(item => <li key={item.id} data-edge-id={item.id}>{item.label}</li>)}</ol></Disclosure>}
-      {onShowPath && visited.length > 1 && <Button variant="link" size="sm" className="wconvert-journey-test__map self-start px-0" onClick={() => onShowPath(visited, journeyTraceEdges(tree, progress.decisions))}>{__('Show this visit on the map', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button>}
+      {onShowPath && visited.length > 1 && <Button variant="link" className="wconvert-journey-test__map self-start px-0" onClick={() => onShowPath(visited, journeyTraceEdges(tree, progress.decisions))}>{__('Show this visit on the map', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button>}
       {shownSubmissions.length > 0 && <section className="wconvert-journey-test__capture"><h4>{__('Test submissions', 'wconvert')}</h4>
         <ol>{shownSubmissions.map(submission => <li key={submission.id} className="wconvert-journey-test__checkpoint"><div><strong>{tree.steps.find(screen => walkNodes(screen.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit' && 'submission' in node && node.submission === submission.id))?.name ?? __('Signup', 'wconvert')}</strong><span>{accepted.includes(submission.id) ? __('Accepted in test', 'wconvert') : __('Skipped', 'wconvert')}</span></div>
           {accepted.includes(submission.id) && <>
@@ -359,11 +360,11 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
       {(failable || hasProducts) && <Disclosure variant="inline" className="wconvert-test-diagnostics" title={__('Simulate a problem', 'wconvert')}>
         {failable && <>
           <p>{__('Applies to the next submission only. A failed save keeps the visitor here so they can retry.', 'wconvert')}</p>
-          <label><input type="checkbox" checked={failNext} onChange={event => { failNextRef.current = event.target.checked; setFailNext(event.target.checked); }} />{__('Simulate failure on next submission', 'wconvert')}</label>
-          {deliveryMode === 'connected' && <label><input type="checkbox" checked={failDeliveryNext} onChange={event => { failDeliveryNextRef.current = event.target.checked; setFailDeliveryNext(event.target.checked); }} />{__('Simulate delivery failure after next accepted save', 'wconvert')}</label>}
+          <CheckRow checked={failNext} onChange={event => { failNextRef.current = event.target.checked; setFailNext(event.target.checked); }} label={__('Simulate failure on next submission', 'wconvert')} />
+          {deliveryMode === 'connected' && <CheckRow checked={failDeliveryNext} onChange={event => { failDeliveryNextRef.current = event.target.checked; setFailDeliveryNext(event.target.checked); }} label={__('Simulate delivery failure after next accepted save', 'wconvert')} />}
         </>}
         {hasProducts && <fieldset><legend>{__('Products on this result', 'wconvert')}</legend>
-          {(['selected', 'empty', 'error'] as const).map(value => <label key={value}><input type="radio" name="product-state" checked={productState === value} onChange={() => setProductState(value)} />{value === 'selected' ? __('Available', 'wconvert') : value === 'empty' ? __('None available', 'wconvert') : __('Loading error', 'wconvert')}</label>)}
+          {(['selected', 'empty', 'error'] as const).map(value => <CheckRow key={value} type="radio" name="product-state" checked={productState === value} onChange={() => setProductState(value)} label={value === 'selected' ? __('Available', 'wconvert') : value === 'empty' ? __('None available', 'wconvert') : __('Loading error', 'wconvert')} />)}
           <p>{shownResult?.product_filter ? __('Available shows live matches. The other options simulate problems. No activity is counted.', 'wconvert') : __('This test does not fetch your catalog. Retry simulates a successful response; check actual prices and stock on your website.', 'wconvert')}</p>
         </fieldset>}
       </Disclosure>}

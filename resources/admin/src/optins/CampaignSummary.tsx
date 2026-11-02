@@ -14,7 +14,7 @@ import type { OptinStatus } from './api';
 export type CampaignResults =
   | { status: 'loading' }
   | { status: 'failed'; onRetry?: () => void }
-  | { status: 'ready'; days: number; from?: string; to?: string; result?: { count: number; shown: number; rate: number | null; label: string; counted?: boolean } };
+  | { status: 'ready'; days: number; from?: string; to?: string; custom?: boolean; result?: { count: number; shown: number; rate: number | null; label: string; counted?: boolean } };
 
 /**
  * **Campaign details' one body** (ADR 0138), for the list's Details and the
@@ -89,7 +89,8 @@ function Results({ results, status, rateLabel }: { results: CampaignResults; sta
   const title =
     results.status === 'ready' && results.days > 0
       ? results.from && results.to
-        ? sprintf(
+        // Dates someone chose need not end today, so they are not the "last" of anything.
+        ? results.custom ? formatRange(results.from, results.to) : sprintf(
             /* translators: 1: the period, e.g. “Last 30 days”. 2: its dates, e.g. “Sep 10 – Oct 9”. */
             __('%1$s · %2$s', 'wconvert'),
             /* translators: %d: how many days the period covers. */

@@ -232,7 +232,7 @@ export function WebhookConnectionForm({ type, account, title, meta, back, onSave
             <div className="wconvert-webhook-secret__label">{secretField?.label ?? __('Signing secret', 'wconvert-pro')}</div>
             <div className="wconvert-webhook-secret__state">{__('Stored. Shown only when it is made.', 'wconvert-pro')}</div>
           </div>
-          <Button type="button" variant="outline" aria-pressed={confirming} onClick={() => { setError(null); setConfirming(true); }}>
+          <Button type="button" variant="outline" onClick={() => { setError(null); setConfirming(true); }}>
             {__('Regenerate', 'wconvert-pro')}
           </Button>
         </div>}

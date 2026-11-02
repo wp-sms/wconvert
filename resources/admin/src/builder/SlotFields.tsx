@@ -460,7 +460,6 @@ function KeyControl({
     return (
       <AutoGrowTextarea
         id={id}
-        className="widefat"
         value={value}
         onChange={(event) => onChange(event.target.value)}
       />
@@ -576,7 +575,7 @@ export function MediaControl({
     frame.open();
   };
 
-  const chooseButton = media !== null && <Button type="button" variant="outline" size="sm" onClick={choose}>
+  const chooseButton = media !== null && <Button type="button" variant="outline" onClick={choose}>
     <ImagePlus aria-hidden="true" />
     <span aria-hidden="true">{image ? __('Replace image', 'wconvert') : __('Choose image', 'wconvert')}</span>
     <span className="sr-only">
@@ -589,12 +588,12 @@ export function MediaControl({
   </Button>;
 
   return (
-    <span className="wconvert-slot__media">
+    <span className="wconvert-slot__media wconvert-toolbar">
       {image ? <img className="wconvert-media-preview" src={image} alt="" loading="lazy" />
         : <span className="wconvert-media-empty">{chooseButton}</span>}
       <span className="wconvert-media-actions">
         {image && chooseButton}
-        {image && <Button type="button" variant="ghost" size="sm" onClick={() => (onRemove ?? (() => onChange('')))()}>{__('Remove', 'wconvert')}</Button>}
+        {image && <Button type="button" variant="ghost" onClick={() => (onRemove ?? (() => onChange('')))()}>{__('Remove', 'wconvert')}</Button>}
         {extra}
         {!addressShown && <button type="button" className="wconvert-panel-link wconvert-media-actions__end" onClick={() => setTyping(true)}>{__('Use a web address', 'wconvert')}</button>}
       </span>
