@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { useState, type ComponentProps } from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import type { Template } from '../../resources/renderer/src/types';
@@ -39,24 +40,54 @@ describe('which designs the switch makes fit', () => {
   });
 });
 
+/** The review as the picker holds it: what changes opens in its place. */
+function Review(props: ComponentProps<typeof TemplateDesignDetail>) {
+  const [explaining, setExplaining] = useState(false);
+  return <TemplateDesignDetail {...props} explaining={explaining} onExplain={setExplaining} />;
+}
+
 describe('using a design with its form added', () => {
   it('shows and applies the converted design under its own button', async () => {
     vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} });
     const sample = design('offer-receipt');
     const onPrepare = vi.fn().mockResolvedValue(sample);
     const onChoose = vi.fn();
-    render(<TemplateDesignDetail entry={OFFER} template={sample} labels={LABELS} current={false} fit={fitFor('grow_email_list')}
+    render(<Review entry={OFFER} template={sample} labels={LABELS} current={false} fit={fitFor('grow_email_list')}
       busy={false} onChoose={onChoose} onBack={vi.fn()} onPrepare={onPrepare} />);
-    const use = await screen.findByRole('button', { name: 'Use with email form' });
-    await waitFor(() => expect(use).toHaveAttribute('aria-disabled', 'false'));
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Use with email form' })).toHaveAttribute('aria-disabled', 'false'));
     await userEvent.click(screen.getByRole('button', { name: 'What changes' }));
-    const box = within(await screen.findByRole('dialog', { name: 'Add an email form?' }));
-    expect(box.queryByRole('button', { name: 'Add email form' })).toBeNull();
-    await userEvent.click(box.getByRole('button', { name: 'Done' }));
-    await userEvent.click(use);
+    expect(screen.getByRole('heading', { name: 'What changes' })).toHaveFocus();
+    expect(screen.getByText(/^Visitors sign up first/)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Use with email form' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Add email form' })).toBeNull();
+    await userEvent.click(screen.getByRole('button', { name: 'Back' }));
+    expect(screen.getByRole('button', { name: 'What changes' })).toHaveFocus();
+    await userEvent.click(screen.getByRole('button', { name: 'Use with email form' }));
     const [, applied] = onChoose.mock.calls[0] as [string, Template];
     expect(applied.tree.submissions).toHaveLength(1);
     expect(applied.tree.steps.map(step => step.kind)).toEqual(['input', 'acknowledgement']);
+    vi.unstubAllGlobals();
+  });
+});
+
+describe('what changes for a design taken without its form', () => {
+  it('explains the design that applies, with nothing to type that could not reach it', async () => {
+    vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} });
+    vi.stubGlobal('wconvertAdmin', { offerLink: { href: 'https://shop.test/shop/', place: 'shop' } });
+    const entry = { ...OFFER, id: 'centred-card', name: 'Centred card', facets: { ...OFFER.facets, act: 'submit' as const, captures: ['email'] } };
+    const onChoose = vi.fn();
+    const sample = design('centred-card');
+    render(<Review entry={entry} template={sample} labels={LABELS} current={false} fit={fitFor('promote_offer')}
+      busy={false} onChoose={onChoose} onBack={vi.fn()} onPrepare={vi.fn().mockResolvedValue(sample)} />);
+    await userEvent.click(await screen.findByRole('button', { name: 'What changes' }));
+    // The button the applied design gets is said, and is not a choice here.
+    expect(screen.getByText(/“Shop now”/)).toBeInTheDocument();
+    expect(screen.queryByRole('checkbox')).toBeNull();
+    expect(screen.queryByRole('textbox')).toBeNull();
+    await userEvent.click(screen.getByRole('button', { name: 'Back' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Use without form' }));
+    const [, applied] = onChoose.mock.calls[0] as [string, Template];
+    expect(applied.tree.submissions).toHaveLength(0);
     vi.unstubAllGlobals();
   });
 });

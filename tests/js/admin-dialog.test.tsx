@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
@@ -47,6 +49,14 @@ describe('the one modal', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Close' }));
     await userEvent.click(screen.getByRole('button', { name: 'Discard' }));
     expect(screen.getByText('closed')).toBeInTheDocument();
+  });
+});
+
+describe('its three sizes', () => {
+  it('has no way left to set a fourth width on a picker', () => {
+    for (const sheet of ['index.css', 'builder/editor.css', 'gallery/gallery.css']) {
+      expect(readFileSync(resolve(import.meta.dirname, `../../resources/admin/src/${sheet}`), 'utf8'), sheet).not.toContain('--wconvert-picker-width');
+    }
   });
 });
 

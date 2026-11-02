@@ -16,6 +16,11 @@ export { ProviderTiles, channelRefusal, providerRefusal, type ChannelRule } from
 /**
  * Adds one route to this save point: a site route in one click, or a new one
  * through setup. Rows that cannot be added stay listed with the reason.
+ *
+ * Medium, though it is a picker (GUIDELINES §9): a site's few routes and tiles
+ * are a short list to read, not a gallery to browse, and at Large each route's
+ * row would run 80rem with its status a screen away from its name. Its title
+ * stays the action: nothing has been chosen yet to name.
  */
 export function AddDestinationPicker({
   destinations, types, connections, bound, rule, suggested, description, returnFocusTo, onPick, onCreate, onClose,

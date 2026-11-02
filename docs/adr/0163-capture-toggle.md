@@ -19,7 +19,13 @@ the new Goal and a list of changes. The editor's Screens switch, ordinary edits
 (dropping a contact field on a one-screen design, deleting the form screen or its
 only field) and the gallery's "Use with email form" / "Use without form" all call
 it and show the same short "what changes" box. One Undo reverts the design and
-the Goal together.
+the Goal together. *Amended by ADR 0182: the gallery shows that box's body in
+place in its review, with Back, never as a second dialog, and read-only, so its
+Shop now choice (§3) is the switch's alone: the design the gallery applies comes
+from the campaign's Goal and the site's shop link, and a link typed there could
+not reach it. The box's title is its subject, "Email form", "Phone form", "Both
+forms", "Signup copy" or "Offer copy", where the prototype asked "Add an email
+form?"; the button keeps the verb.*
 
 - **Adding a form** turns the offer screen into the form screen. Its headline and
   artwork stay; a field and a submit button take the counted link's place, and

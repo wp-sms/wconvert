@@ -1460,7 +1460,7 @@ body:has(#wconvert-admin) #wpbody-content {
   .wconvert-picker[data-slot="dialog-content"] {
     display: flex !important;
     flex-direction: column !important;
-    inline-size: min(var(--wconvert-picker-width, 80rem), calc(100vw - 2rem)) !important;
+    inline-size: min(80rem, calc(100vw - 2rem)) !important;
     max-inline-size: calc(100vw - 2rem) !important;
   }
 

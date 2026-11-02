@@ -41,6 +41,13 @@ beforeEach(() => {
 
 const page = () => render(<OccasionPage id={BLACK_FRIDAY.id} notice={null} onNotice={vi.fn()} onDismissNotice={vi.fn()} navigate={vi.fn()} onEdit={vi.fn()} />);
 
+it('names the occasion in its edit dialog', async () => {
+  page();
+  await userEvent.click(await screen.findByRole('button', { name: `Actions for ${BLACK_FRIDAY.name}` }));
+  await userEvent.click(screen.getByRole('menuitem', { name: 'Edit occasion' }));
+  expect(await screen.findByRole('dialog', { name: BLACK_FRIDAY.name })).toBeInTheDocument();
+});
+
 it('gives each campaign the list’s row menu, without Details or A/B tests', async () => {
   page();
   await userEvent.click(await screen.findByRole('button', { name: 'More actions for Black Friday bar' }));

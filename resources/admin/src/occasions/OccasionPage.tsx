@@ -406,7 +406,7 @@ function EditOccasion({ occasion, busy, error, returnFocusTo, onClose, onSave }:
     <AdminDialog open onOpenChange={(open) => { if (!open) onClose(); }}>
       <AdminDialogContent size="sm" dirty={dirty} showCloseButton={!busy}
         onCloseAutoFocus={(event) => { event.preventDefault(); returnFocusTo.current?.focus(); }}>
-        <AdminDialogHeader title={__('Edit occasion', 'wconvert')} />
+        <AdminDialogHeader title={<bdi>{occasion.name}</bdi>} />
         <form className="flex min-h-0 flex-1 flex-col" onSubmit={(event) => { event.preventDefault(); onSave({ ...occasion, name: name.trim(), start, end }); }}>
           <AdminDialogBody className="flex flex-col gap-4">
             <Field label={__('Occasion name', 'wconvert')} htmlFor={`${id}-name`}>

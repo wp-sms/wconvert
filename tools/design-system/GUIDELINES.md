@@ -309,17 +309,29 @@ browser, since a class-name test cannot establish the final cascade.
 | Medium | 48rem | details — a lead, a campaign |
 | Large | 80rem | pickers, the journey, preview |
 
-- **Header:** the title is the subject itself (a person, a campaign), an
-  optional status badge, and one muted meta line. Titles truncate before ✕.
+No fourth width. A dialog that changes job changes size with it: importing a
+template is Small until it has a file and Large once it shows the preview, and
+Change goal is Large while it picks and Small once it confirms. One picker is
+deliberately Medium: `builder/AddDestinationPicker`, a short list to read rather
+than a gallery to browse, whose rows would otherwise run 80rem with a route's
+status a screen away from its name (ADR 0182).
+
+- **Header:** the title is the subject itself (a person, a campaign, a form), an
+  optional status badge, and one muted meta line. Titles truncate before ✕. A
+  picker with nothing chosen yet has no subject to name, so its title is the
+  action: Change template, Change goal, Add a destination.
 - **Body:** the only part that scrolls.
 - **Footer:** fixed. Back or Cancel at the start (or a secondary way out such as
   Review & publish's Preview, ADR 0138), an optional short note, the
   primary action at the end, and an error beside the actions. Footer controls
-  take the toolbar scope.
+  take the toolbar scope. A read-only dialog has nothing to cancel: its way out
+  is **Done**, at the start. "Close" is the ✕'s name, so a second button saying
+  it would be two buttons with one word (ADR 0182).
 - **Dirty:** Escape, an outside click or ✕ asks "Discard changes?" only when
   something was typed (`dirty`), and the question is drawn inside the dialog.
 - **Never nested.** A dialog that leads to another view opens it in place with
-  Back. A destructive confirm is an `AlertDialog` that says what survives; red
+  Back: one modal, its body swapped. The caret lands on the new view's name and
+  Back returns it to the control that opened the view. A destructive confirm is an `AlertDialog` that says what survives; red
   is for delete and remove only. A status change asked from a details dialog
   (Publish, Unpublish) confirms in the footer's place — the footer becomes the
   question — rather than in a second dialog (ADR 0137).
@@ -337,8 +349,11 @@ browser, since a class-name test cannot establish the final cascade.
 
 Template discovery dialogs are `PickerDialogContent` — a Large `AdminDialog` —
 with a single scroll body and a separate action footer. Back and Use/Install
-stay reachable in short and phone windows. Pack and collection pagination stays
-outside the scroll body. Use-case choices and screen exploration belong to
+stay reachable in short and phone windows. Change template's review, its What
+changes and its inspection are in-place views over a grid that stays mounted:
+Escape steps back one view, as each view's Back does, and only the grid's Escape
+closes the modal; ✕ and an outside click leave from any view (ADR 0182). Pack
+and collection pagination stays outside the scroll body. Use-case choices and screen exploration belong to
 inspection, never dropdowns on result cards. A single result keeps the ordinary
 card size. Long placement, measurement and journey guidance uses labeled
 progressive disclosure beside the preview. Inspection is for looking: the
@@ -364,9 +379,9 @@ each filter More filters holds — then the grid. A card is the stage, the name
 and ★, one row of chips (format; what it asks for — Email, Phone, Name, or
 Button; Recommended or a grey lock with the plan's name), and one action. No
 sort, no Start here, no comparison. A card's stage opens inspection: Desktop |
-Mobile, Fit | Actual size, its screens, the gist and the same action. Errors and
-recovery actions belong in the active modal, including an uncertain creation
-result. Country choices use names and searchable selection, not code entry.
+Mobile, Fit | Actual size, its screens and the gist, with the same action in the
+footer beside Back to templates. Errors and recovery actions belong in the
+active modal, beside that action, including an uncertain creation result. Country choices use names and searchable selection, not code entry.
 Keep collection introductions concise: one description in the header, stage
 and search controls alongside each other when space allows, and no redundant
 format filter for a single-format collection. Keep the page count visible for

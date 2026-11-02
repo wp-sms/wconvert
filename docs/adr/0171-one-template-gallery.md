@@ -125,6 +125,11 @@ rather than a preference. Picker preferences keep `saved`, `hidden` and
 Inspection is a larger look at one card: Desktop/Mobile, Fit/Actual size, its
 screens, its gist and the same one action. The setup facts list that lived
 there is gone with the prototype; the editor shows what a draft needs.
+*Amended by ADR 0182: the action and its errors leave the side column for a fixed
+footer beside Back to templates (the prototype had no footer), and inspection is
+80rem like every picker, not the prototype's 70rem. In the editor it opens in
+place over the grid rather than as a second dialog, stays open while an online
+card installs, and says a failed install in that footer as well as on the card.*
 
 ## The editor's Change template is the same gallery
 
@@ -158,6 +163,9 @@ gone. Look's **Change template** opens the gallery above, one card per design
    Back returns to the same card and scroll. An online card installs first,
    then opens the same review; Get the newer version does the same with the
    newer revision; a failed install is said on the card with Try again.
+   *Amended by ADR 0182: Escape steps back one view as Back does, from What
+   changes to the review to the grid, and only the grid's Escape closes the
+   dialog. What changes opens in place in the review, read-only.*
 5. **A refusal is said in the review, not on the card.** The cards were
    already preview-first: what this Optin would refuse is read beside the
    button it disables.

@@ -135,7 +135,7 @@ export function LeadHistory({
               onOpen={(lead) => setOpen(lead)} />}
       </AdminDialogBody>
       <AdminDialogFooter
-        back={<Button variant="outline" onClick={onClose}>{__('Close', 'wconvert')}</Button>}
+        back={<Button variant="outline" onClick={onClose}>{__('Done', 'wconvert')}</Button>}
         note={(csv || paged) && <span className="flex flex-wrap items-center gap-3">
           {csv && <ExportMenu filter={filter} answers={answersCsv} />}
           {paged && <span>{sprintf(/* translators: %s: the page number. */ __('Page %s', 'wconvert'), formatCount(shownPage))}</span>}

@@ -41,6 +41,7 @@ export function useJourneyAuthoring(ctx: JourneyEditorContext): JourneyAuthoring
   const [followupAnswer, setFollowupAnswer] = useState<{ question: string; value: string }>();
   const [insertIntent, setInsertIntent] = useState<'branch' | undefined>();
   const [insertLocation, setInsertLocation] = useState<string | undefined>();
+  const [insertDirty, setInsertDirty] = useState(false);
   const [addKind, setAddKind] = useState<GraphScreenKind | null>(null);
   const insertDialog = useRef<HTMLDivElement>(null);
   const insertedScreen = useRef(false);
@@ -255,8 +256,8 @@ export function useJourneyAuthoring(ctx: JourneyEditorContext): JourneyAuthoring
         </AdminDialogContent>
       </Dialog>
       <Dialog open={addKind !== null} onOpenChange={value => { if (!value) setAddKind(null); }}>
-        <AdminDialogContent size="md" ref={insertDialog} onOpenAutoFocus={event => { if (followupAnswer) { event.preventDefault(); insertDialog.current?.querySelector<HTMLInputElement>('input')?.focus(); } }} className="wconvert-graph-insert" onCloseAutoFocus={closeFocus}>
-          {addKind && <GraphScreenInsert tree={insertionTree} source={current.id} kind={addKind} initialLocation={insertLocation} initialIntent={insertIntent} initialAnswer={followupAnswer} onCancel={() => setAddKind(null)}
+        <AdminDialogContent size="md" dirty={insertDirty} ref={insertDialog} onOpenAutoFocus={event => { if (followupAnswer) { event.preventDefault(); insertDialog.current?.querySelector<HTMLInputElement>('input')?.focus(); } }} className="wconvert-graph-insert" onCloseAutoFocus={closeFocus}>
+          {addKind && <GraphScreenInsert tree={insertionTree} source={current.id} kind={addKind} initialLocation={insertLocation} initialIntent={insertIntent} initialAnswer={followupAnswer} onCancel={() => setAddKind(null)} onDirtyChange={setInsertDirty}
             onEditCapture={screenId => { select(tree.steps.findIndex(screen => screen.id === screenId)); setAddKind(null); insertedScreen.current = true; }}
             onCapture={canAddGraphResultSignup || canAddGraphCapture ? () => { setAddKind(null); ctx.addOptional(); } : undefined}
             onExisting={(target, when, edgeId) => {

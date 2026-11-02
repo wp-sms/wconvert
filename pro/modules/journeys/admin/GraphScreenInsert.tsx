@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { CheckRow } from '@/shell/CheckRow';
 import { __, sprintf } from '@wordpress/i18n';
 import type { QuestionCondition, QuestionNode, TemplateTree } from '@renderer/types';
@@ -17,17 +17,22 @@ import { anyOf } from '@/lib/format';
 import { NativeSelect } from '@/components/ui/native-select';
 import { Field } from '@/shell/Field';
 
-export function GraphScreenInsert({ tree, source, kind: initialKind, initialLocation, initialIntent, initialAnswer, onInsert, onExisting, onCapture, onEditCapture, onCancel }: {
+export function GraphScreenInsert({ tree, source, kind: initialKind, initialLocation, initialIntent, initialAnswer, onInsert, onExisting, onCapture, onEditCapture, onCancel, onDirtyChange }: {
   tree: TemplateTree; source: string; kind: GraphScreenKind; initialLocation?: string; initialIntent?: 'branch'; initialAnswer?: { question: string; value: string };
   onInsert(location: string, kind: GraphScreenKind, name: string, when?: QuestionCondition, includeSharedHidden?: boolean, branch?: boolean, answerType?: QuestionNode['answer_type']): void;
   onExisting?(target: string, when?: QuestionCondition, edgeId?: string): void;
   onCapture?(): void; onEditCapture?(screenId: string): void; onCancel(): void;
+  /** A name was typed: the dialog holding this asks before discarding it (§9). */
+  onDirtyChange?(dirty: boolean): void;
 }) {
   const id = useId();
   const [intent, setIntent] = useState<'continue' | 'followup' | 'branch'>(initialIntent ?? (initialKind === 'followup' ? 'followup' : 'continue'));
   const [existing, setExisting] = useState(false);
   const [target, setTarget] = useState('');
   const [name, setName] = useState('');
+  const dirty = name.trim() !== '';
+  useEffect(() => { onDirtyChange?.(dirty); }, [dirty, onDirtyChange]);
+  useEffect(() => () => onDirtyChange?.(false), [onDirtyChange]);
   const [answerType, setAnswerType] = useState<QuestionNode['answer_type']>('single');
   const [changeLocation, setChangeLocation] = useState(initialLocation === 'choose');
   const [advanced, setAdvanced] = useState(false);

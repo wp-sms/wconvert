@@ -1614,8 +1614,7 @@ body .wconvert-add-elements { inline-size: 280px; max-inline-size: calc(100vw - 
 .wconvert-device-controls { display: flex; align-items: center; gap: 4px; }
 
 /* Transfer shares the picker scroll boundary, with a steady preview beside the review. */
-.wconvert-transfer-dialog[data-slot="dialog-content"] { --wconvert-picker-width: 42rem; block-size: auto; max-block-size: calc(100dvh - 2rem); }
-.wconvert-transfer-dialog--workspace[data-slot="dialog-content"] { --wconvert-picker-width: 76rem; }
+.wconvert-transfer-dialog[data-slot="dialog-content"] { block-size: auto; max-block-size: calc(100dvh - 2rem); }
 .wconvert-transfer__file-icon { display: grid; place-items: center; flex: none; background: var(--secondary); color: var(--action); border-radius: var(--radius); inline-size: 2.75rem; block-size: 2.75rem; }
 .wconvert-transfer { display: flex; flex-direction: column; gap: 1.25rem; padding: 1.5rem; background: var(--card); }
 .wconvert-transfer h3, .wconvert-transfer p, .wconvert-transfer ul { margin: 0; }
@@ -2330,6 +2329,12 @@ button.wconvert-flow-pill__label:hover { background: var(--surface); }
 
 /* The box every way into the switch shows. */
 .wconvert-capture-box { display: grid; gap: 14px; }
+/* In place in a Large picker, the box keeps the measure of its Medium dialog. */
+.wconvert-capture-box--in-place { grid-template-columns: minmax(0, 45.5rem); justify-content: center; align-content: start; }
+.wconvert-capture-box__intro { display: grid; gap: 2px; }
+.wconvert-capture-box__intro h3 { margin: 0; font-size: var(--text-heading); font-weight: 600; }
+.wconvert-capture-box__intro h3:focus { outline: none; }
+.wconvert-capture-box__intro p { margin: 0; color: var(--muted-foreground); font-size: var(--text-note); }
 .wconvert-capture-box__tiles { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 14px; border-radius: var(--radius); background: var(--surface); }
 .wconvert-capture-box__tile { display: grid; gap: 6px; inline-size: 104px; margin: 0; text-align: center; }
 .wconvert-capture-box__tile .wconvert-journey-card__preview { block-size: 78px; }

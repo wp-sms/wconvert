@@ -689,7 +689,7 @@ describe('deleting a block', () => {
     const remove = screen.getByRole('menuitem', { name: /Delete/ });
     expect(remove).not.toHaveAttribute('aria-disabled', 'true');
     await userEvent.click(remove);
-    expect(await screen.findByRole('dialog', { name: /^Remove the (email|phone) form\?$/ })).toBeInTheDocument();
+    expect(await screen.findByRole('dialog', { name: /^(Email|Phone) form$/ })).toBeInTheDocument();
   });
 });
 

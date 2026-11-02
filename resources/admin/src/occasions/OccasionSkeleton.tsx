@@ -30,7 +30,7 @@ export function OccasionBack() {
 export function OccasionSkeleton() {
   const control = (className: string) => <Skeleton aria-hidden="true" className={className} style={{ blockSize: 'var(--control-height)' }} />;
   return <Shell section="optins" pageTitle={__('Occasion', 'wconvert')} pageBack={<OccasionBack />}
-    pageDescription={<Skeleton aria-hidden="true" className="inline-block h-[1lh] w-full max-w-56 align-top" />}
+    pageDescription={<Skeleton inline aria-hidden="true" className="inline-block h-[1lh] w-full max-w-56 align-top" />}
     actions={<><Skeleton aria-hidden="true" className="size-12" /><Skeleton aria-hidden="true" className="h-12 w-[266px] min-w-0 shrink" /></>}>
     <div className="flex flex-col gap-5">
       <RegionSkeleton label={__('Results', 'wconvert')} trailing={control('w-44')}>

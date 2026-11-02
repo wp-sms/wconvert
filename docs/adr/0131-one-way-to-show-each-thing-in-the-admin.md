@@ -37,6 +37,8 @@ found the system intact and its application drifted:
    *Amended by [ADR 0138](0138-one-preview-one-review-one-details.md): both Details share one body; the editor's footer is
    View report and Close. Review & publish's footer is Preview beside Publish,
    and Preview is one Large dialog titled with the campaign's name.*
+   *Amended by ADR 0182: a read-only dialog's way out is Done, at the start, so
+   the editor's Details footer is Done, then View report.*
 2. **Dirty dialogs ask once.** `AdminDialogContent dirty` makes Escape, an
    outside click and ✕ ask "Discard changes?" — drawn inside the dialog, over
    its footer — only when something was typed. It replaces the Targets

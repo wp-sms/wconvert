@@ -1103,9 +1103,7 @@ function RecentSendsDialog({ destination, returnFocusTo, onClose }: {
                   </li>
                 ))}</ul>}
         </AdminDialogBody>
-        <AdminDialogFooter>
-          <AdminDialogClose asChild><Button type="button" variant="outline">{__('Done', 'wconvert')}</Button></AdminDialogClose>
-        </AdminDialogFooter>
+        <AdminDialogFooter back={<AdminDialogClose asChild><Button type="button" variant="outline">{__('Done', 'wconvert')}</Button></AdminDialogClose>} />
       </AdminDialogContent>
     </AdminDialog>
   );
@@ -1238,7 +1236,7 @@ function SubmissionDialog({ leadId, onClose, returnFocus }: { leadId: string | n
                 : state.status === 'failed' ? <RegionErrorState message={state.message} onRetry={() => setAttempt((value) => value + 1)} />
                   : <p className="m-0">{__('This submission is no longer kept.', 'wconvert')}</p>}
             </AdminDialogBody>
-            <AdminDialogFooter back={<AdminDialogClose asChild><Button variant="outline">{__('Close', 'wconvert')}</Button></AdminDialogClose>} />
+            <AdminDialogFooter back={<AdminDialogClose asChild><Button variant="outline">{__('Done', 'wconvert')}</Button></AdminDialogClose>} />
           </>}
       </AdminDialogContent>
     </AdminDialog>

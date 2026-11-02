@@ -286,8 +286,8 @@ export function LeadRetention({ onEditingStateChange }: { onEditingStateChange?:
             </AlertDialogDescription>
           </AlertDialogHeader>
           <p className="m-0 text-note text-muted-foreground">{__('Campaign totals in analytics stay. Copies already sent to destinations or exported aren’t affected.', 'wconvert')}</p>
-          {error !== null && <p role="alert" className="m-0 text-note text-destructive">{error}</p>}
           <AlertDialogFooter>
+            {error !== null && <p role="alert" className="m-0 text-note text-destructive sm:flex-1 sm:self-center">{error}</p>}
             <AlertDialogCancel disabled={saving}>{__('Cancel', 'wconvert')}</AlertDialogCancel>
             <AlertDialogAction
               variant="destructive"

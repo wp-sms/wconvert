@@ -1,5 +1,5 @@
 import { contentLockDesignCompatible } from '../inlinePlacement';
-import { useCallback, useEffect, useId, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { ArrowLeft, ClipboardList, MousePointerClick, ShieldCheck } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -14,8 +14,7 @@ import { PreviewControls, usePreviewView } from '../discovery/PreviewControls';
 import { FactList, type Fact } from '../shell/FactList';
 import { PreviewFrame } from '../discovery/PreviewFrame';
 import { actChangeOf, asConverted, conversionOf, conversionWords, convertedDesign, refusalFor, type Fit } from '../gallery/conversion';
-import { CaptureChangeDialog } from './CaptureChangeDialog';
-import { convertCapture, type CaptureTarget } from './structure/captureConversion';
+import { CaptureChangeView } from './CaptureChangeDialog';
 import { whatNeedsOfferAmount } from './structure/problems';
 import { dropsFieldMappings } from './destinations';
 import { actWords } from '../optins/campaignFacts';
@@ -53,6 +52,12 @@ export interface TemplateDesignDetailProps {
   readonly fieldMappings?: unknown;
   /** The draft's design asks quiz questions, which Keep my words cannot carry (ADR 0171, #372). */
   readonly asksQuestions?: boolean;
+  /**
+   * What the form switch changes is showing in this review's place. Held by the
+   * modal, whose Escape steps back one view; this review stays mounted under it.
+   */
+  readonly explaining?: boolean;
+  readonly onExplain?: (explaining: boolean) => void;
 }
 
 /** Whether a design asks quiz questions anywhere. */
@@ -81,10 +86,10 @@ export function designMeta(entry: TemplateIndexEntry, labels: TemplateLabelsWith
  * The dialog's header names the design (ADR 0137), so this draws no title of
  * its own: the preview on the start side with the setup preview's controls,
  * the content choice and the facts beside it, and what applying does as the
- * footer's note.
+ * footer's note. What changes opens in its place, with Back (§9: never nested).
  */
 export function TemplateDesignDetail({
-  entry, template: sample, labels, current, currentDisplayType, fit, goalLabel, busy, onChoose, onPrepare, onBack, backLabel = __('Back to templates', 'wconvert'), loadError = false, onRetry, active = true, hasCurrentDesign = true, contentLock = false, fieldMappings, asksQuestions = false,
+  entry, template: sample, labels, current, currentDisplayType, fit, goalLabel, busy, onChoose, onPrepare, onBack, backLabel = __('Back to templates', 'wconvert'), loadError = false, onRetry, active = true, hasCurrentDesign = true, contentLock = false, fieldMappings, asksQuestions = false, explaining = false, onExplain,
 }: TemplateDesignDetailProps) {
   const { mobile, setMobile, fitHeight, setFitHeight } = usePreviewView();
   const [disableLock, setDisableLock] = useState(false);
@@ -122,10 +127,13 @@ export function TemplateDesignDetail({
   const choice = conversionOf(entry, fit, design);
   const converted = useMemo(() => convertedDesign(entry, fit, design), [entry, fit, design]);
   const template = converted ? converted.config.template as Template : design;
-  const [explaining, setExplaining] = useState(false);
-  const explain = useCallback((next: CaptureTarget) => design && fit.capture
-    ? convertCapture({ config: { ...fit.capture.config, template: design }, goal: fit.capture.goal }, next, { goals: fit.capture.goals })
-    : { reason: '' }, [design, fit.capture]);
+  // Back and Escape both come back through here, and the footer is drawn again by the time this runs.
+  const whatChanges = useRef<HTMLButtonElement>(null);
+  const wasExplaining = useRef(false);
+  useEffect(() => {
+    if (wasExplaining.current && !explaining) whatChanges.current?.focus();
+    wasExplaining.current = explaining;
+  }, [explaining]);
   const preparationError = candidate?.error;
   const retryPreview = preparationError !== undefined ? () => setAttempt((held) => held + 1) : onRetry;
   const [step, setStep] = useState(0);
@@ -187,9 +195,12 @@ export function TemplateDesignDetail({
     unavailable ? `${id}-unavailable` : null,
   ].filter(Boolean).join(' ');
 
+  const inPlace = explaining && design && converted && choice ? { before: design, conversion: converted, capture: choice } : null;
+
   return (
     <section className="wconvert-design-detail" aria-label={entry.name}>
-      <PickerDialogBody className="wconvert-design-detail__document">
+      {inPlace && <CaptureChangeView before={inPlace.before} displayType={entry.display_type} target={{ capture: inPlace.capture }} conversion={inPlace.conversion} onBack={() => onExplain?.(false)} />}
+      <PickerDialogBody className="wconvert-design-detail__document" hidden={inPlace !== null}>
         <div className="wconvert-design-detail__layout">
           <div className="wconvert-design-detail__preview">
             <div className="wconvert-design-detail__controls wconvert-toolbar">
@@ -251,7 +262,7 @@ export function TemplateDesignDetail({
         </div>
       </PickerDialogBody>
       {/* What applying does is the note beside the button that does it. */}
-      <AdminDialogFooter note={<span id={`${id}-replacement`}>
+      {!inPlace && <AdminDialogFooter note={<span id={`${id}-replacement`}>
         {isCurrent ? __('This is the draft’s current template.', 'wconvert') : __('Replaces this draft’s template. You can undo.', 'wconvert')}
         {converted && goalLabel && <> {/* translators: %s: the campaign's goal. */ sprintf(__('The goal stays “%s”.', 'wconvert'), goalLabel)}</>}
         {losesMappings && <> {__('Field mappings for missing fields are removed.', 'wconvert')}</>}
@@ -261,8 +272,7 @@ export function TemplateDesignDetail({
           <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
           {backLabel}
         </Button>}>
-            {converted && design && <Button type="button" variant="outline" disabled={busy} onClick={() => setExplaining(true)}>{__('What changes', 'wconvert')}</Button>}
-            {explaining && design && choice && <CaptureChangeDialog open onOpenChange={setExplaining} before={design} displayType={entry.display_type} target={{ capture: choice }} convert={explain} mode="preview" />}
+            {converted && design && onExplain && <Button ref={whatChanges} type="button" variant="outline" disabled={busy} onClick={() => onExplain(true)}>{__('What changes', 'wconvert')}</Button>}
             <Button disabled={busy} aria-disabled={cannotApply} aria-describedby={describedBy}
               onClick={cannotApply || busy ? undefined : () => prepares ? onChoose(entry.id, { tree: template.tree, tokens: template.tokens }) : onChoose(entry.id)}>
               {busy ? __('Applying template…', 'wconvert')
@@ -271,7 +281,7 @@ export function TemplateDesignDetail({
                   ? sprintf(/* translators: %s: new campaign format. */ __('Switch to %s', 'wconvert'), toFormat)
                   : converted && choice ? conversionWords(choice, fit.outcome).action : __('Use this template', 'wconvert')}
         </Button>
-      </AdminDialogFooter>
+      </AdminDialogFooter>}
     </section>
   );
 }

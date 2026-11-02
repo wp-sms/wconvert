@@ -94,6 +94,16 @@ describe('explicit lead retention', () => {
     expect(screen.getByRole('status')).toHaveTextContent('');
   });
 
+  it('says a refused save beside the actions it is about, and keeps the confirm open', async () => {
+    await open();
+    api.saveRetention.mockRejectedValueOnce(new Error('The site refused the period.'));
+    const dialog = await propose('30');
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Delete after 30 days' }));
+    const alert = await within(dialog).findByRole('alert');
+    expect(alert).toHaveTextContent('The site refused the period.');
+    expect(alert.closest('[data-slot="alert-dialog-footer"]')).not.toBeNull();
+  });
+
   it('keeps a confirmation cancellation editable and restores focus without saving', async () => {
     await open();
     const dialog = await propose('45');

@@ -343,10 +343,30 @@ describe('step 2: one template gallery', () => {
     const dialog = await screen.findByRole('dialog', { name: 'Welcome discount' });
     expect(within(dialog).getByText('A first-order discount is the highest-converting trade there is.')).toBeVisible();
     expect(within(dialog).getByRole('radio', { name: 'Actual size' })).toBeInTheDocument();
-    expect(within(dialog).getByRole('button', { name: 'Use template' })).toBeEnabled();
+    // The way out and the way on stay reachable in any window: neither scrolls.
+    const footer = dialog.querySelector('footer')!;
+    expect(within(footer).getByRole('button', { name: 'Use template' })).toBeEnabled();
+    expect(within(footer).getByRole('button', { name: 'Back to templates' }).closest('.wconvert-dialog__back')).not.toBeNull();
     expect(optins.createOptin).not.toHaveBeenCalled();
     await userEvent.keyboard('{Escape}');
     await waitFor(() => expect(open).toHaveFocus());
+    await userEvent.click(open);
+    await userEvent.click(within(await screen.findByRole('dialog', { name: 'Welcome discount' })).getByRole('button', { name: 'Back to templates' }));
+    await waitFor(() => expect(open).toHaveFocus());
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  it('says a failed start beside the action that retries it, in the footer of the larger look', async () => {
+    optins.createOptin.mockRejectedValue(new Error('The site refused the draft.'));
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    await userEvent.click(within(await cardOf('Welcome discount')).getByRole('button', { name: 'Preview Welcome discount' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Welcome discount' });
+    const footer = dialog.querySelector('footer')!;
+    await userEvent.click(within(footer).getByRole('button', { name: 'Use template' }));
+    expect(await within(footer).findByRole('alert')).toBeInTheDocument();
+    expect(within(footer).getByRole('button', { name: /Use template|Check campaigns/ })).toBeInTheDocument();
+    expect(dialog.querySelector('.wconvert-dialog__body [role="alert"]')).toBeNull();
   });
 
   it('requests only the prepared trees on the first page of 500, 24 per batch', async () => {

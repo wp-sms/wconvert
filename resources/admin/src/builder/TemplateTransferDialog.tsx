@@ -6,8 +6,8 @@ import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 import { Dialog } from '../components/ui/dialog';
-import { AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
-import { PickerDialogContent, PickerDialogBody } from '../discovery/PickerDialog';
+import { AdminDialogContent, AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
+import { PickerDialogBody } from '../discovery/PickerDialog';
 import { TryAgain } from '../shell/Region';
 import { PreviewControls } from '../discovery/PreviewControls';
 import { PreviewFrame } from '../discovery/PreviewFrame';
@@ -34,6 +34,7 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
   const [preview, setPreview] = useState<TransferPreview | null>(null);
   const [mode, setMode] = useState<'file' | 'keep'>('file');
   const [links, setLinks] = useState<Record<string, string>>({});
+  const [linksEdited, setLinksEdited] = useState(false);
   const [reviewed, setReviewed] = useState(false);
   const [images, setImages] = useState<Record<string, string>>({});
   const [step, setStep] = useState(0);
@@ -48,7 +49,8 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
   const committedLinks = useRef<Record<string, string>>({});
   const urls = useRef<Record<string, string>>({});
   const alive = useRef(true);
-  const title = action === 'export' ? __('Export as template', 'wconvert') : __('Import template', 'wconvert');
+  // The design, or the file's once one is chosen. Until then there is no subject, only the action.
+  const title = action === 'export' ? design.name || __('Export as template', 'wconvert') : importName || __('Import template', 'wconvert');
   const readStatus = () => {
     setStatusFailed(false); setError(null);
     transferStatus().then(value => { if (alive.current) setStatus(value); })
@@ -97,6 +99,7 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
     Object.entries(urls.current).forEach(([id, url]) => { if (!(id in loaded)) URL.revokeObjectURL(url); });
     urls.current = loaded; setImages(loaded);
     committedLinks.current = replacements;
+    setLinksEdited(Object.keys(replacements).length > 0);
     setPreview(next); setLinks({}); setStep(0); setResult(0);
   };
   const upload = (file: File | undefined) => {
@@ -124,6 +127,8 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
   const showWorkspace = action === 'export' || !!session.current;
   const busyLabel = action === 'export' ? __('Creating your file…', 'wconvert') : preview ? __('Adding template to draft…', 'wconvert') : __('Preparing your preview…', 'wconvert');
   const reasonId = `${contentId}-reason`;
+  // Typed link edits, whether or not the preview has caught up with them.
+  const dirty = changingLinks || linksEdited;
   // Busy is `disabled`; a refusal is `aria-disabled` with the reason in the footer note (§9).
   const applyRefusal = !preview ? null
     : changingLinks ? __('Update the preview to apply your changed links.', 'wconvert')
@@ -131,9 +136,10 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
     : null;
 
   return <Dialog open onOpenChange={open => { if (!open) close(); }}>
-    <PickerDialogContent className={`wconvert-transfer-dialog ${showWorkspace ? 'wconvert-transfer-dialog--workspace' : ''}`} showCloseButton={!busy}
+    {/* Choosing a file is a short form; once there is one, this is a preview (§9). */}
+    <AdminDialogContent size={showWorkspace ? 'lg' : 'sm'} className="wconvert-transfer-dialog" dirty={dirty && !busy} showCloseButton={!busy}
       onEscapeKeyDown={event => { if (busy) event.preventDefault(); }} onInteractOutside={event => { if (busy) event.preventDefault(); }}>
-      <AdminDialogHeader title={title} meta={action === 'export'
+      <AdminDialogHeader title={<bdi>{title}</bdi>} meta={action === 'export'
         ? __('Take this campaign’s look to another WConvert site as a template.', 'wconvert')
         : __('Bring a template from another WConvert site into this campaign.', 'wconvert')} />
       <PickerDialogBody className="wconvert-transfer" aria-busy={busy}>
@@ -221,6 +227,6 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
             });
           }}>{busy && preview ? __('Applying…', 'wconvert') : __('Apply to draft', 'wconvert')}</Button>}
       </AdminDialogFooter>
-    </PickerDialogContent>
+    </AdminDialogContent>
   </Dialog>;
 }

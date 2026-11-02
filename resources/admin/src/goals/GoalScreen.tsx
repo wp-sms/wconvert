@@ -401,11 +401,10 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
     <InspectDialog card={inspectedCard} template={inspectedCard ? treeOf(inspectedCard) : undefined}
       gist={inspectedCard ? gistOf(entryOf(inspectedCard)?.notes ?? '') : undefined}
       onClose={() => setInspected(null)} returnFocusTo={inspectTrigger}
+      error={inspectedCard && [error && (createUnconfirmed ? unconfirmed : error), installFailed?.key === inspectedCard.key && installFailed.message].filter(Boolean).join(' ')}
       action={inspectedCard && <>
-        {error && (createUnconfirmed ? <><p role="alert" className="m-0 text-note text-destructive">{unconfirmed}</p>{checkCampaigns}</>
-          : <><p role="alert" className="m-0 text-note text-destructive">{error}</p>
-            {staleSetup && <Button variant="outline" disabled={working} onClick={() => { setInspected(null); reload(); }}>{__('Reload templates', 'wconvert')}</Button>}</>)}
-        {installFailed?.key === inspectedCard.key && <p role="alert" className="m-0 text-note text-destructive">{installFailed.message}</p>}
+        {error && (createUnconfirmed ? checkCampaigns
+          : staleSetup && <Button variant="outline" disabled={working} onClick={() => { setInspected(null); reload(); }}>{__('Reload templates', 'wconvert')}</Button>)}
         <TemplateAction card={inspectedCard} busy={starting === inspectedCard.key || adding === inspectedCard.key} disabled={working || createUnconfirmed}
           onUse={() => { void use(inspectedCard); }} onUpdate={inspectedCard.newerRevision ? () => { void update(inspectedCard); } : undefined} />
       </>} />

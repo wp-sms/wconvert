@@ -1064,7 +1064,8 @@ describe('the summary', () => {
     expect([...runs.querySelectorAll('dt')].map((term) => term.textContent)).toEqual(['Who', 'Where', 'Opens', 'How often', 'Runs', 'Leads go to']);
     const footer = dialog.querySelector('footer')!;
     expect(within(footer).getByRole('link', { name: 'View report' })).toHaveAttribute('href', expect.stringContaining('optin='));
-    await userEvent.click(within(footer).getByRole('button', { name: 'Close' }));
+    expect(within(footer).getByRole('button', { name: 'Done' }).closest('.wconvert-dialog__back')).not.toBeNull();
+    await userEvent.click(within(footer).getByRole('button', { name: 'Done' }));
     expect(screen.queryByRole('dialog', { name: 'Welcome discount' })).not.toBeInTheDocument();
   });
 

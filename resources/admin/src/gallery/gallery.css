@@ -117,7 +117,7 @@
 
 /* ---- inspect ---- */
 /* A larger look sizes to what it shows, as the prototype's does, up to the viewport. */
-.wconvert-picker.wconvert-inspect-dialog { block-size: auto; max-block-size: calc(100dvh - 2rem); --wconvert-picker-width: 70rem; }
+.wconvert-picker.wconvert-inspect-dialog { block-size: auto; max-block-size: calc(100dvh - 2rem); }
 .wconvert-inspect { display: grid; grid-template-columns: minmax(0, 1fr) 19rem; min-block-size: 0; }
 .wconvert-inspect__view { display: grid; align-content: start; gap: 12px; padding: 16px 20px 20px; border-inline-end: 1px solid var(--border); background: var(--inspect-surface); }
 .wconvert-inspect__bar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; }

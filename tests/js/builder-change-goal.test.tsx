@@ -592,6 +592,14 @@ describe('confirming the change', () => {
     expect(builder.saveOptin).toHaveBeenCalledTimes(1);
   });
 
+  it('is Large while it picks and Small once it confirms', async () => {
+    open();
+    await changeGoal();
+    expect(screen.getByRole('dialog')).toHaveAttribute('data-size', 'lg');
+    await userEvent.click(within(cardFor('Promote a sale or offer')).getByRole('button', { name: /^Use this goal/ }));
+    expect(screen.getByRole('dialog')).toHaveAttribute('data-size', 'sm');
+  });
+
   it('keeps Undo available after a refused Goal save', async () => {
     builder.saveOptin.mockRejectedValue(new Error('The goal change was refused.'));
     open();

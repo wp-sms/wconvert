@@ -138,6 +138,29 @@ it('lets an ending selection add a question at an explicit location and restores
   await waitFor(() => expect(screen.getByRole('heading', { level: 3, name: draft().steps.at(-1)!.name })).toHaveFocus());
 });
 
+it('asks before losing a typed screen name, and only then', async () => {
+  const user = userEvent.setup();
+  render(<Editor initial={graphFixture as unknown as TemplateTree} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByRole('button', { name: 'Add screen' }));
+  const dialog = await screen.findByRole('dialog', { name: 'Add a screen' });
+  const name = within(dialog).getByRole('textbox', { name: /Question|Screen name/ });
+  await user.type(name, 'Skin type');
+  await user.keyboard('{Escape}');
+  expect(within(dialog).getByRole('group', { name: 'Discard changes?' })).toBeInTheDocument();
+  await user.click(within(dialog).getByRole('button', { name: 'Keep editing' }));
+  expect(name).toHaveValue('Skin type');
+  await user.keyboard('{Escape}');
+  await user.click(within(dialog).getByRole('button', { name: 'Discard' }));
+  await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Add a screen' })).toBeNull());
+
+  // Nothing typed this time, so Escape just closes: the last dialog's answer was not kept.
+  await user.click(screen.getByRole('button', { name: 'Add screen' }));
+  await screen.findByRole('dialog', { name: 'Add a screen' });
+  await user.keyboard('{Escape}');
+  await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Add a screen' })).toBeNull());
+});
+
 it('requires a chosen answer before inserting a relevant follow-up from the toolbar', async () => {
   const user = userEvent.setup();
   render(<Editor initial={graphFixture as unknown as TemplateTree} />);

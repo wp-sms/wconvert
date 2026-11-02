@@ -1552,6 +1552,7 @@ describe('destination recovery entry points', () => {
     expect(dialog.queryByText(/Attempt/)).toBeNull();
     expect(dialog.getByRole('link', { name: 'View submission' })).toHaveAttribute('href', leadsHref({ leadId: '01J0000000BBBBBBBBBBBBBBBB' }));
     expect(screen.queryByText(/01J0000000BBBBBBBBBBBBBBBB/)).toBeNull();
+    expect(dialog.getByRole('button', { name: 'Done' }).closest('.wconvert-dialog__back')).not.toBeNull();
     await userEvent.click(dialog.getByRole('button', { name: 'Done' }));
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
     expect(within(region).getByRole('button', { name: 'Actions for MailPoet subscribers' })).toHaveFocus();

@@ -36,7 +36,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { BackLink, BuilderSkeleton, useEditingFrame } from '../shell/BuilderSkeleton';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
 import { Dialog } from '../components/ui/dialog';
-import { PickerDialogBody, PickerDialogContent } from '../discovery/PickerDialog';
+import { PickerDialogBody } from '../discovery/PickerDialog';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { EmptyState } from '../shell/EmptyState';
 import { PageAction } from '../shell/PageActions';
@@ -1196,9 +1196,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               )}
             </CampaignSummary>
           </AdminDialogBody>
-          <AdminDialogFooter>
+          <AdminDialogFooter back={<Button type="button" variant="outline" onClick={() => setDetails(false)}>{__('Done', 'wconvert')}</Button>}>
             <Button variant="outline" asChild><a href={reportHref({ optinId: id })}>{__('View report', 'wconvert')}</a></Button>
-            <Button type="button" onClick={() => setDetails(false)}>{__('Close', 'wconvert')}</Button>
           </AdminDialogFooter>
         </AdminDialogContent>
       </AdminDialog>
@@ -1217,7 +1216,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
       />
 
       {/* The dialog's own body while its code loads, not a sentence pinned to the page. */}
-      {transfer && <Suspense fallback={<TransferSkeleton action={transfer.action} onClose={() => { setTransfer(null); campaignActions.current?.focus(); }} />}>
+      {transfer && <Suspense fallback={<TransferSkeleton action={transfer.action} name={transfer.name} onClose={() => { setTransfer(null); campaignActions.current?.focus(); }} />}>
         <TemplateTransferDialog action={transfer.action} optin={id} config={transfer.config}
           design={{ ...(transfer.config.template as Template), name: transfer.name, display_type: displayTypeOf(transfer.config, templates) }}
           onClose={() => { setTransfer(null); campaignActions.current?.focus(); }}
@@ -1415,13 +1414,13 @@ function entryFor(
  * titled, with its body as a region skeleton — so the click opens the dialog
  * at once, and Escape still closes it.
  */
-function TransferSkeleton({ action, onClose }: { action: 'import' | 'export'; onClose: () => void }) {
-  const title = action === 'export' ? __('Export as template', 'wconvert') : __('Import template', 'wconvert');
+function TransferSkeleton({ action, name, onClose }: { action: 'import' | 'export'; name: string; onClose: () => void }) {
+  const title = action === 'export' ? name || __('Export as template', 'wconvert') : __('Import template', 'wconvert');
   return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
-    <PickerDialogContent className="wconvert-transfer-dialog">
-      <AdminDialogHeader title={title} />
+    <AdminDialogContent size={action === 'export' ? 'lg' : 'sm'} className="wconvert-transfer-dialog">
+      <AdminDialogHeader title={<bdi>{title}</bdi>} />
       <PickerDialogBody className="wconvert-transfer"><RegionSkeleton label={title} lines={4} /></PickerDialogBody>
-    </PickerDialogContent>
+    </AdminDialogContent>
   </Dialog>;
 }
 

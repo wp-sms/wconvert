@@ -354,8 +354,8 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
         {erasureCsv && <Button variant="outline" className="self-start" onClick={() => {
           if (erasurePreview !== null) exportLeads({ identifier: erasurePreview.identifier, snapshot: erasurePreview.snapshot });
         }}><Download aria-hidden="true" />{__('Export them first', 'wconvert')}</Button>}
-        {erasureError !== null && <p role="alert" className="m-0 text-note text-destructive">{erasureError}</p>}
         <AlertDialogFooter>
+          {erasureError !== null && <p role="alert" className="m-0 text-note text-destructive sm:flex-1 sm:self-center">{erasureError}</p>}
           <AlertDialogCancel disabled={erasing}>{__('Cancel', 'wconvert')}</AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
