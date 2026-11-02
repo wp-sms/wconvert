@@ -1199,6 +1199,11 @@ msgstr "BLACK FRIDAY / LADENSCHLUSS"
 msgid "Closing time"
 msgstr "Ladenschluss"
 
+#. code copied_label
+#: pro/modules/display-types/templates/bf-closing-time.json pro/modules/display-types/templates/bf-final-markdown.json pro/modules/display-types/templates/bf-good-deal-receipt.json
+msgid "Copied"
+msgstr "Kopiert"
+
 #. countdown days_label
 #: pro/modules/display-types/templates/bf-closing-time.json pro/modules/display-types/templates/bf-final-markdown.json pro/modules/display-types/templates/bf-weekend-curtain.json
 msgid "Days"
@@ -1238,6 +1243,11 @@ msgstr "Ein letzter Blick. Ein bisschen weniger."
 #: pro/modules/display-types/templates/bf-closing-time.json pro/modules/display-types/templates/bf-final-markdown.json pro/modules/display-types/templates/bf-weekend-curtain.json
 msgid "Secs"
 msgstr "Sek."
+
+#. code copy_failed_label
+#: pro/modules/display-types/templates/bf-closing-time.json pro/modules/display-types/templates/bf-final-markdown.json pro/modules/display-types/templates/bf-good-deal-receipt.json
+msgid "Select and copy this code"
+msgstr "Markiere und kopiere diesen Code"
 
 #. text text
 #: pro/modules/display-types/templates/bf-closing-time.json pro/modules/display-types/templates/bf-final-markdown.json pro/modules/display-types/templates/bf-little-black-gift.json
@@ -9874,6 +9884,21 @@ msgstr "Ein Willkommen von uns"
 msgid "Apply at checkout. First order only; gift cards excluded."
 msgstr "An der Kasse einlösen. Nur für die erste Bestellung; Geschenkkarten ausgenommen."
 
+#. code copied_label
+#: resources/templates/library/fieldwork.json
+msgid "Copied — ready to use."
+msgstr "Kopiert – bereit zum Einlösen."
+
+#. code copy_label
+#: resources/templates/library/fieldwork.json resources/templates/library/halloween-bats.json resources/templates/library/halloween-engraved.json
+msgid "Copy code"
+msgstr "Code kopieren"
+
+#. code copy_failed_label
+#: resources/templates/library/fieldwork.json
+msgid "Copy unavailable. Select and copy the code above."
+msgstr "Kopieren nicht möglich. Markiere den Code oben und kopiere ihn."
+
 #. consent text
 #: resources/templates/library/fieldwork.json
 msgid "Email me plant notes and offers. %s"
@@ -11873,16 +11898,6 @@ msgstr "Inhalt freigeschaltet."
 #: src/Frontend/PageLabels.php
 msgid "Continue to content"
 msgstr "Weiter zum Inhalt"
-
-#. a word the popup writes itself
-#: src/Frontend/PageLabels.php
-msgid "Copied"
-msgstr "Kopiert"
-
-#. a word the popup writes itself
-#: src/Frontend/PageLabels.php
-msgid "Copy code"
-msgstr "Code kopieren"
 
 #. a word the popup writes itself
 #: src/Frontend/PageLabels.php

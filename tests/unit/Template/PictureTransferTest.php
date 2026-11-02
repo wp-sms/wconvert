@@ -57,6 +57,17 @@ final class PictureTransferTest extends TestCase
         $this->assertSame(0, $result['unplaced']);
     }
 
+    public function testAnAltOnlyEditIsLeftBehindBecauseItCannotBeToldFromATranslation(): void
+    {
+        $old = $this->template([array_replace($this->picture('/sample.jpg'), ['alt' => 'A sunrise'])]);
+        $mine = $this->template([array_replace($this->picture('/sample.jpg'), ['alt' => 'My own words'])]);
+        $next = $this->template([array_replace($this->picture('/sample.jpg'), ['alt' => 'A sunrise'])]);
+
+        $result = PictureTransfer::prepare($mine, $old, $next);
+
+        $this->assertSame('A sunrise', $result['template']['tree']['steps'][0]['content']['children'][0]['alt']);
+    }
+
     public function testTargetSampleMobilePhotoCannotHideACarriedDesktopPhoto(): void
     {
         $old = $this->template([['type' => 'media', 'tokens' => ['bg-image' => 'none'], 'children' => []]]);

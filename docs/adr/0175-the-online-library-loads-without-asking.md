@@ -22,11 +22,6 @@ services".
 
 ## Decision
 
-*Amended by [ADR 0183](0183-design-words-are-one-list-per-language.md): opening a gallery may
-also fetch the word files for the site's language, skipping the twelve-hour wait once if
-that language has none here. It is the same service, on the same request path, and it
-still sends nothing about the site.*
-
 **1. The library is on by default.** The option
 `wconvert_template_library_consent` keeps its `'yes'|'no'` values, and
 `'unanswered'` is gone: anything other than `'no'` reads as `'yes'`. With no
@@ -46,6 +41,9 @@ online resolves to `install` after that same stale refresh.
 - Nothing is fetched on activation, from cron, on the dashboard or on the front
   end — only inside an admin request that opened a gallery or followed a
   `?design=` link, at most every twelve hours.
+  *Amended by [ADR 0183](0183-design-words-are-one-list-per-language.md): that request may also
+  fetch the word files for the site's language, skipping the twelve-hour wait once if that language
+  has none here. It is the same service and path, and it still sends nothing about the site.*
 - `POST /template-catalog/consent`, which the Settings switch uses.
 
 **4. Disclosure moves to Settings and the readme.** What is sent and to whom —

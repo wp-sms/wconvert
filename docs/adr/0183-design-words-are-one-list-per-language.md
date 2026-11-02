@@ -1,6 +1,6 @@
 # 0183: Design words are one list per language
 
-Accepted 2026-11-02. Amends ADRs 0013, 0115, 0156 and 0175, each with an inline note.
+Accepted 2026-11-02. Amends ADRs 0013, 0084, 0115, 0156, 0166 and 0175, each with an inline note.
 
 ## Context
 
@@ -98,4 +98,7 @@ word shared with the admin would drag the admin's language along.
   review. Those are accepted risks of this first version.
 - `de_DE` is informal, as WordPress's own `de_DE` is, and `de_DE_formal` reads it too.
 - `PictureTransfer` no longer treats a different `alt` on an unchanged picture as a
-  merchant's edit, because a language change makes that difference without one.
+  merchant's edit, because a language change makes that difference without one. A merchant's
+  real alt-only edit is left behind when switching design, since the two cannot be told apart.
+- `campaign-friday-pass` sits within bytes of its byte cap in any language, so its words set
+  `Offer` to `Deal` in both, and its decorative barcode's label is short.

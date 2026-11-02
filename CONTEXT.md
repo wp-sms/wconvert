@@ -1274,12 +1274,12 @@ a facet says what a design does, a catalogue word says who it is for.
 
 ### Design words
 
-The per-language list a design's and a setup's starting words are read through:
-"English" to translation, one list per language, generated from a `.po` that never
-ships, in each ZIP for what that ZIP ships and in the online library for what it serves.
-A site's language picks the list, and a campaign that already exists is not touched. Not **Catalogue words**, which describe a design for search, and not a
-language pack, which still wins for any word it translated
-([ADR 0183](docs/adr/0183-design-words-are-one-list-per-language.md)).
+The per-language list a [[Template]]'s and a [[Playbook]]'s starting words are read through:
+"English" to translation, one list per language, generated from a `.po` that never ships, in
+each ZIP for what that ZIP ships and in the online library for what it serves. The site's
+language picks the list, and an [[Optin]] that already exists is not touched. Not **Catalogue
+words**, which describe a design for search, and not a language pack, which still wins for any
+word it translated ([ADR 0183](docs/adr/0183-design-words-are-one-list-per-language.md)).
 
 ### Collection
 

@@ -51,12 +51,13 @@ final class ShippedDesignWordsTest extends TestCase
 
         $this->assertSame(array_keys($english), array_keys($translated->all()));
 
+        $over = [];
         foreach (array_keys($translated->all()) as $id) {
-            $snapshot = $translated->snapshotInto(['template_id' => (string) $id]);
-            $bytes = strlen((string) gzencode((string) json_encode($snapshot['template'] ?? []), 9));
-
-            $this->assertLessThanOrEqual(DesignBudget::PER_DESIGN, $bytes, sprintf('%s in %s is %d B gzipped against a %d B cap', $id, $locale, $bytes, DesignBudget::PER_DESIGN));
+            $bytes = strlen((string) gzencode((string) json_encode($translated->snapshotInto(['template_id' => (string) $id])['template'] ?? []), 9));
+            if ($bytes > DesignBudget::PER_DESIGN) $over[$id] = $bytes;
         }
+
+        $this->assertSame([], $over, 'gzipped bytes against a ' . DesignBudget::PER_DESIGN . ' B cap in ' . $locale);
     }
 
     #[DataProvider('locales')]

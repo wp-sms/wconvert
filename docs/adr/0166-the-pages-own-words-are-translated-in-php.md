@@ -21,6 +21,10 @@ markup does not change. The three per-feature attributes that came before it,
 `data-journey`, `data-reopen` and `data-content-lock`, are folded into it,
 because each carried its own parser in the loader.
 
+*Amended by [ADR 0183](0183-design-words-are-one-list-per-language.md): "untranslated" now means
+neither WordPress nor the small label file for the site's language has the word. A word
+WordPress leaves in English reads through that file, and a site in English reads nothing.*
+
 **2. Read by position, with the English inline.** `pageLabel(0, 'Close')`. The
 English renders wherever nothing is printed: untranslated sites, older cached
 pages, and the design studio, whose rendered identities therefore did not move.

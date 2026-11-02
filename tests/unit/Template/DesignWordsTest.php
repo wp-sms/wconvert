@@ -34,6 +34,7 @@ final class DesignWordsTest extends TestCase
         'Sparkles' => 'Funken',
         'Result' => 'Ergebnis',
         'A note' => 'Ein Hinweis',
+        'Copy it' => 'Kopieren',
     ];
 
     private function words(): DesignWords
@@ -59,7 +60,7 @@ final class DesignWordsTest extends TestCase
                     'children' => [
                         ['type' => 'heading', 'id' => 'n1', 'role' => 'headline', 'text' => 'Headline'],
                         ['type' => 'eyebrow', 'id' => 'n2', 'role' => 'wordmark', 'text' => 'Maison'],
-                        ['type' => 'code', 'id' => 'n3', 'role' => 'code_value', 'text' => 'CODE10'],
+                        ['type' => 'code', 'id' => 'n3', 'role' => 'code_value', 'text' => 'CODE10', 'copy_label' => 'Copy it'],
                         ['type' => 'text', 'id' => 'n4', 'text' => 'Link it. %s', 'link' => ['label' => 'Privacy Policy', 'href' => 'https://example.com/']],
                         ['type' => 'field', 'id' => 'n5', 'name' => 'email', 'label' => 'Details', 'options' => [['value' => 'yes', 'label' => 'A choice']]],
                         ['type' => 'image', 'id' => 'n6', 'src' => 'https://example.com/', 'alt' => 'A picture'],
@@ -88,6 +89,7 @@ final class DesignWordsTest extends TestCase
         $this->assertSame('Angaben', $children[4]['label']);
         $this->assertSame('Eine Wahl', $children[4]['options'][0]['label']);
         $this->assertSame('Ein Bild', $children[5]['alt']);
+        $this->assertSame('Kopieren', $children[2]['copy_label'], 'a coupon stays, and its button speaks the language');
     }
 
     public function testLeavesWhatARuleALeadOrAShopReadsAlone(): void
