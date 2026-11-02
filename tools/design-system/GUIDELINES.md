@@ -170,6 +170,8 @@ stack edge-to-edge tinted panels or repeat the same shared-change warning.
 
 - `RegionHeader` owns symmetric header padding and its optional leading icon.
   Do not target descendant headings with screen-specific padding overrides.
+  The destination card draws its own in the same slot and type roles, because
+  its description carries a link and `RegionHeader`'s is a string (ADR 0182).
 - `DialogContent` and `AlertDialogContent` default to `--card`, including portals
   outside the admin mount. Popovers and menus use the white `--popover` surface.
   Neutral inset notices use solid `--surface`, not translucent `bg-muted/*` fills.
@@ -218,6 +220,9 @@ admin prints on every build. **An `aria-pressed` button group is never one-of-N*
 the window and its dates ("Last 30 days · Sep 9 – Oct 8"), opening presets as
 native radios, Custom dates, and anything that qualifies the window. No screen
 draws its own period select or date card.
+
+**Font rows stay in a popover** (ADRs 0042 and 0054): a font is previewed in its
+own face, which the option menu's rows do not draw (ADR 0182).
 
 **Three one-of-N shapes, and no fourth** (ADR 0131):
 
@@ -606,6 +611,10 @@ screen-reader-only status (§12). Placeholders stay static; a pending read must 
 claim that there are no results. Empty campaigns explain the goal → design →
 publish sequence and offer the first action.
 
+**Refresh is a door only where the data can change without the merchant.**
+Sending issues has one, because a queued send retries in the background; every
+other Destinations action re-reads on its own (ADR 0182).
+
 **A region's error carries no dismiss control.** It clears when the next fetch
 succeeds, so there is no path where a merchant hides a failure and then reads
 the stale data underneath it as current.
@@ -639,7 +648,7 @@ Three places had collapsed them.
 | **Amber** (`warning`) | **The site is holding this back.** | Suspended, *Paused*, *Needs X* |
 | **Grey** (`secondary`) + a lock | It costs money. | every Pro upsell |
 | Muted note, ink link — **no badge, no lock** | Pro has this; this install doesn't. | the Pro hint, free only (ADR 0147) |
-| **Green** (`success`) | It is working. | *Delivering* |
+| **Green** (`success`) | It is working. | *Working* (a destination: the badge answers the merchant's question, the record is the "Last sent" line beside it; ADR 0182) |
 | **Red** (`destructive`) | It is broken. | *Failing* |
 
 Amber previously meant *suspended*, *paused*, *needs a plugin* **and** *buy Pro*
@@ -785,6 +794,11 @@ Not gaps. Each was decided:
 | An ID on a screen | names, or "Deleted campaign"; the developer disclosure, the inline shortcode and the page picker are the exceptions (§8) |
 
 ## 19. Changing the system
+
+- **The rules are guarded** (ADR 0182). ESLint refuses the raw controls and the
+  physical sides; `tests/js/admin-guidelines.test.ts` holds the words, strings,
+  colours and shadows, against an exact allowlist. Adding to that list is a
+  decision, so say why in the same change.
 
 - Components are **vendored from shadcn upstream** and then become WConvert's
   own files. Never copied from WP SMS.
