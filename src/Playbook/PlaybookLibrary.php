@@ -8,6 +8,7 @@ use WConvert\Support\Rejection;
 use WConvert\Support\RejectionReason;
 use WConvert\Support\Ulid;
 use WConvert\Template\SlotRoles;
+use WConvert\Template\DesignWords;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 
@@ -84,6 +85,10 @@ final class PlaybookLibrary
      * bundled entries are PHP rather than the JSON a Template ships as
      * (ADR 0013).
      *
+     * A file's words then pass through {@see DesignWords}, for a language no
+     * WordPress.org pack has translated them into (ADR 0183). `$additional` brings
+     * its own: each source of those entries applied them already.
+     *
      * @param iterable<array<string, mixed>> $additional Validated installed entries.
      */
     public static function fromDirectory(
@@ -91,17 +96,19 @@ final class PlaybookLibrary
         TemplateVocabulary $vocabulary,
         RuleVocabulary $rules,
         string $pluginDir = WCONVERT_DIR,
-        iterable $additional = []
+        iterable $additional = [],
+        ?DesignWords $words = null
     ): self {
         $files = glob(rtrim($pluginDir, '/') . '/' . self::PATH . '/*.php');
         $entries = [];
+        $words ??= DesignWords::bundled($pluginDir);
 
         foreach ($files === false ? [] : $files as $file) {
             $entry = is_readable($file) ? require $file : null;
 
             if (is_array($entry)) {
                 /** @var array<string, mixed> $entry */
-                $entries[] = $entry;
+                $entries[] = $words->playbook($entry);
             }
         }
 

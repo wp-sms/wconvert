@@ -161,6 +161,7 @@ final class ArtifactContractTest extends TestCase
             'resources/rules/manifest.json' => "{\"targeting\":{}}\n",
             'resources/templates/manifest.json' => "{\"slots\":{}}\n",
             'resources/templates/library/centred-card.json' => "{\"tier\":\"free\"}\n",
+            'resources/templates/words/de_DE.json' => "{}\n",
             // The tier file, which is free's and ships in free's ZIP: the admin
             // renders every upsell card's tier name from it (ADR 0056).
             'tiers.json' => self::TIERS_FILE,

@@ -431,6 +431,7 @@ if [ "$tier" = "free" ]; then
     require_file resources/templates/manifest.json "WConvert\\Template\\TemplateManifest::PATH reads it" || true
     require_file resources/phone/countries.json "WConvert\\Optin\\PhoneCountry reads it" || true
     require_populated_dir "$TREE" resources/templates/library '*.json' "WConvert\\Template\\BundledTemplates::PATH reads it" || true
+    require_populated_dir "$TREE" resources/templates/words '*.json' "WConvert\\Template\\DesignWords::PATH reads it" || true
     require_file resources/templates/since.json "WConvert\\Template\\Catalog\\VocabularySince::PATH reads it" || true
     require_file resources/templates/revisions.json "WConvert\\Template\\BundledTemplates::REVISIONS reads it" || true
     # The block's metadata, which is runtime data in the strictest sense:

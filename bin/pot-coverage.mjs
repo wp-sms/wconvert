@@ -95,7 +95,7 @@ function unquote(token) {
 const entryKey = (context, msgid) => `${context ?? ''}\u0004${msgid}`;
 
 /**
- * A POT file as `key → {plural, refs, comments}`, key being context + msgid —
+ * A POT file as `key → {plural, refs, comments, msgstr}`, key being context + msgid —
  * gettext's own identity for an entry.
  *
  * @param text   the POT's contents
@@ -118,7 +118,7 @@ export function parsePot(text, prefix = '') {
         known.refs.push(...refs);
         known.comments.push(...comments);
       } else {
-        entries.set(key, { plural: fields.msgid_plural ?? null, refs, comments });
+        entries.set(key, { plural: fields.msgid_plural ?? null, refs, comments, msgstr: fields.msgstr ?? '' });
       }
     }
     refs = [];

@@ -1,0 +1,4790 @@
+msgid ""
+msgstr ""
+"Language: de_DE\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"X-Generator: bin/template-words.mjs\n"
+
+#. headline
+#: resources/playbooks/agency-project-enquiry.php
+msgid "A better website starts here."
+msgstr "Hier beginnt eine bessere Website."
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/agency-project-enquiry.php
+msgid "A new website"
+msgstr "Eine neue Website"
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/agency-project-enquiry.php
+msgid "A redesign"
+msgstr "Ein Relaunch"
+
+#. consent_text
+#: resources/playbooks/agency-project-enquiry.php
+msgid "Contact me about this website project."
+msgstr "Ich möchte zu diesem Website-Projekt kontaktiert werden."
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/agency-project-enquiry.php
+msgid "Improve an existing site"
+msgstr "Bestehende Website verbessern"
+
+#. cta_label
+#: resources/playbooks/agency-project-enquiry.php
+msgid "Send my project enquiry"
+msgstr "Projektanfrage senden"
+
+#. body
+#: resources/playbooks/agency-project-enquiry.php
+msgid "Share the kind of project you are considering so we can discuss a useful next step."
+msgstr "Erzähl uns, was für ein Projekt du planst, dann besprechen wir einen sinnvollen nächsten Schritt."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/agency-project-enquiry.php
+msgid "Start a website project conversation"
+msgstr "Gespräch über ein Website-Projekt starten"
+
+#. fine_print
+#: resources/playbooks/agency-project-enquiry.php resources/playbooks/fitness-introduction.php
+msgid "We use your details to respond to this request. No appointment is confirmed."
+msgstr "Wir nutzen deine Angaben, um auf diese Anfrage zu antworten. Ein Termin ist damit nicht bestätigt."
+
+#. interest_label
+#: resources/playbooks/agency-project-enquiry.php
+msgid "What are you planning? (optional)"
+msgstr "Was planst du? (optional)"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/announcement-bar.php
+msgid "Announce an offer"
+msgstr "Ein Angebot ankündigen"
+
+#. fine_print
+#: resources/playbooks/announcement-bar.php
+msgid "Ends Sunday at midnight."
+msgstr "Endet Sonntag um Mitternacht."
+
+#. headline
+#: resources/playbooks/announcement-bar.php
+msgid "Free delivery on everything this week"
+msgstr "Diese Woche kostenloser Versand auf alles"
+
+#. body
+#: resources/playbooks/announcement-bar.php
+msgid "No minimum, no code needed."
+msgstr "Ohne Mindestbestellwert, ohne Code."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/appointment-agenda.php
+msgid "Request a room-planning consultation"
+msgstr "Beratung zur Raumplanung anfragen"
+
+#. headline
+#: resources/playbooks/article-end-newsletter.php
+msgid "More like this, every Thursday"
+msgstr "Mehr davon, jeden Donnerstag"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/article-end-newsletter.php
+msgid "Newsletter signup after an article"
+msgstr "Newsletter-Anmeldung nach einem Artikel"
+
+#. body
+#: resources/playbooks/article-end-newsletter.php
+msgid "One email a week with the new posts and nothing else."
+msgstr "Eine E-Mail pro Woche mit den neuen Beiträgen, sonst nichts."
+
+#. cta_label
+#: resources/playbooks/article-end-newsletter.php
+msgid "Send me the weekly round-up"
+msgstr "Schick mir den Wochenüberblick"
+
+#. consent_text
+#: resources/playbooks/article-end-newsletter.php
+msgid "Send me the weekly round-up. %s"
+msgstr "Ich möchte den Wochenüberblick erhalten. %s"
+
+#. success_headline
+#: resources/playbooks/article-end-newsletter.php
+msgid "Thanks for reading"
+msgstr "Danke fürs Lesen"
+
+#. fine_print
+#: resources/playbooks/article-end-newsletter.php resources/playbooks/one-line-invite.php
+msgid "Weekly emails. Unsubscribe anytime. %s"
+msgstr "Wöchentliche E-Mails. Jederzeit abbestellbar. %s"
+
+#. headline
+#: resources/playbooks/basket-product-help.php
+msgid "A question before checkout?"
+msgstr "Eine Frage vor der Kasse?"
+
+#. body
+#: resources/playbooks/basket-product-help.php
+msgid "Choose what your question is about. We will reply by email, so you can tell us which item and what you need."
+msgstr "Wähle, worum es in deiner Frage geht. Wir antworten per E-Mail, dort kannst du uns den Artikel und dein Anliegen nennen."
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/basket-product-help.php
+msgid "Materials or care"
+msgstr "Material oder Pflege"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/basket-product-help.php
+msgid "Offer product help near the basket"
+msgstr "Produkthilfe beim Warenkorb anbieten"
+
+#. success_headline
+#: resources/playbooks/basket-product-help.php
+msgid "Product-help request received"
+msgstr "Anfrage zur Produkthilfe erhalten"
+
+#. cta_label
+#: resources/playbooks/basket-product-help.php
+msgid "Request product help"
+msgstr "Produkthilfe anfordern"
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/basket-product-help.php
+msgid "Size or compatibility"
+msgstr "Größe oder Kompatibilität"
+
+#. success_body
+#: resources/playbooks/basket-product-help.php
+msgid "Thank you. We will use your details to discuss your question. Your basket has not been sent or reserved."
+msgstr "Danke. Wir nutzen deine Angaben, um deine Frage zu besprechen. Dein Warenkorb wurde weder gesendet noch reserviert."
+
+#. consent_text
+#: resources/playbooks/basket-product-help.php resources/playbooks/fit-checklist.php resources/playbooks/personalisation-enquiry.php
+msgid "Use my email to respond to this request."
+msgstr "Meine E-Mail-Adresse darf genutzt werden, um auf diese Anfrage zu antworten."
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/basket-product-help.php
+msgid "What is included"
+msgstr "Was enthalten ist"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/cart-after-a-while.php
+msgid "Cart reminder after a delay"
+msgstr "Warenkorb-Erinnerung nach einer Weile"
+
+#. body
+#: resources/playbooks/cart-after-a-while.php
+msgid "Everything you picked is waiting in your cart."
+msgstr "Alles, was du ausgewählt hast, wartet in deinem Warenkorb."
+
+#. fine_print
+#: resources/playbooks/cart-after-a-while.php
+msgid "Nothing is reserved until you check out."
+msgstr "Reserviert wird erst an der Kasse."
+
+#. headline
+#: resources/playbooks/cart-after-a-while.php
+msgid "Still thinking it over?"
+msgstr "Noch unentschlossen?"
+
+#. cta_label
+#: resources/playbooks/cart-after-a-while.php
+msgid "Take another look"
+msgstr "Wirf noch einen Blick darauf"
+
+#. cta_label
+#: resources/playbooks/cart-on-the-way-out.php
+msgid "Back to my cart"
+msgstr "Zurück zu meinem Warenkorb"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/cart-on-the-way-out.php
+msgid "Cart reminder on exit"
+msgstr "Warenkorb-Erinnerung beim Verlassen"
+
+#. fine_print
+#: resources/playbooks/cart-on-the-way-out.php resources/playbooks/cart-straight-away.php
+msgid "Items are not reserved. Prices and availability can change."
+msgstr "Artikel sind nicht reserviert. Preise und Verfügbarkeit können sich ändern."
+
+#. headline
+#: resources/playbooks/cart-on-the-way-out.php
+msgid "Leaving something behind?"
+msgstr "Etwas vergessen?"
+
+#. body
+#: resources/playbooks/cart-on-the-way-out.php
+msgid "Open your cart when you are ready to take another look."
+msgstr "Öffne deinen Warenkorb, wenn du noch einmal schauen möchtest."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/cart-straight-away.php
+msgid "Inline cart reminder"
+msgstr "Warenkorb-Erinnerung im Text"
+
+#. cta_label
+#: resources/playbooks/cart-straight-away.php
+msgid "Return to my cart"
+msgstr "Zurück zu meinem Warenkorb"
+
+#. body
+#: resources/playbooks/cart-straight-away.php
+msgid "Your cart is still here when you are ready to take another look."
+msgstr "Dein Warenkorb ist noch da, wenn du noch einmal schauen möchtest."
+
+#. body
+#: resources/playbooks/category-promotion.php
+msgid "Explore the newest pieces in the collection and find your favorite."
+msgstr "Entdecke die neuesten Stücke der Kollektion und finde deinen Favoriten."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/category-promotion.php
+msgid "Promote a product category"
+msgstr "Eine Produktkategorie bewerben"
+
+#. name_placeholder
+#: resources/playbooks/checklist-download.php
+msgid "Alex"
+msgstr "Alex"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/checklist-download.php
+msgid "Download with name and email"
+msgstr "Download mit Name und E-Mail"
+
+#. body
+#: resources/playbooks/checklist-download.php
+msgid "Everything we know about getting started, in one PDF."
+msgstr "Alles, was wir über den Einstieg wissen, in einer PDF."
+
+#. fine_print
+#: resources/playbooks/checklist-download.php resources/playbooks/guide-download.php
+msgid "One guide email. No newsletter. %s"
+msgstr "Eine E-Mail mit dem Leitfaden. Kein Newsletter. %s"
+
+#. cta_label
+#: resources/playbooks/checklist-download.php
+msgid "Send me the guide"
+msgstr "Schick mir den Leitfaden"
+
+#. headline
+#: resources/playbooks/checklist-download.php
+msgid "The forty-page guide, free"
+msgstr "Der Leitfaden mit vierzig Seiten, gratis"
+
+#. headline
+#: resources/playbooks/cleaning-quote.php
+msgid "A cleaner home. A clear next step."
+msgstr "Ein saubereres Zuhause. Ein klarer nächster Schritt."
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/cleaning-quote.php
+msgid "A deep clean"
+msgstr "Eine Grundreinigung"
+
+#. fine_print
+#: resources/playbooks/cleaning-quote.php
+msgid "An estimate request. No booking or payment."
+msgstr "Eine Anfrage für einen Kostenvoranschlag. Keine Buchung, keine Zahlung."
+
+#. consent_text
+#: resources/playbooks/cleaning-quote.php
+msgid "Contact me about this cleaning request."
+msgstr "Ich möchte zu dieser Reinigungsanfrage kontaktiert werden."
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/cleaning-quote.php
+msgid "Moving in or out"
+msgstr "Ein- oder Auszug"
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/cleaning-quote.php
+msgid "Regular cleaning"
+msgstr "Regelmäßige Reinigung"
+
+#. cta_label
+#: resources/playbooks/cleaning-quote.php
+msgid "Request a cleaning estimate"
+msgstr "Kostenvoranschlag für Reinigung anfragen"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/cleaning-quote.php
+msgid "Request a home cleaning estimate"
+msgstr "Kostenvoranschlag für Hausreinigung anfragen"
+
+#. body
+#: resources/playbooks/cleaning-quote.php
+msgid "Tell us the kind of clean you need. We will use your email to discuss the scope."
+msgstr "Sag uns, welche Reinigung du brauchst. Den Umfang besprechen wir per E-Mail."
+
+#. interest_label
+#: resources/playbooks/cleaning-quote.php
+msgid "What kind of clean? (optional)"
+msgstr "Welche Art der Reinigung? (optional)"
+
+#. cta_label
+#: resources/playbooks/collection-discovery.php
+msgid "Explore the collection"
+msgstr "Kollektion entdecken"
+
+#. body
+#: resources/playbooks/collection-discovery.php
+msgid "Explore the collection by material, size and use to find a useful starting point."
+msgstr "Entdecke die Kollektion nach Material, Größe und Verwendung und finde einen guten Einstieg."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/collection-discovery.php
+msgid "Help undecided shoppers explore a collection"
+msgstr "Unentschlossenen helfen, eine Kollektion zu entdecken"
+
+#. headline
+#: resources/playbooks/collection-discovery.php
+msgid "Still looking for the right piece?"
+msgstr "Noch auf der Suche nach dem richtigen Stück?"
+
+#. fine_print
+#: resources/playbooks/collection-discovery.php
+msgid "Take another look at your own pace."
+msgstr "Schau dir alles in Ruhe noch einmal an."
+
+#. body
+#: resources/playbooks/consultation-invitation.php
+msgid "A first conversation about what you need, what is possible and whether we can help."
+msgstr "Ein erstes Gespräch darüber, was du brauchst, was möglich ist und ob wir helfen können."
+
+#. success_headline
+#: resources/playbooks/consultation-invitation.php
+msgid "Consultation request received"
+msgstr "Beratungsanfrage erhalten"
+
+#. headline
+#: resources/playbooks/consultation-invitation.php
+msgid "Find the next step for your project"
+msgstr "Finde den nächsten Schritt für dein Projekt"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/consultation-invitation.php
+msgid "Request a consultation"
+msgstr "Beratung anfragen"
+
+#. success_body
+#: resources/playbooks/consultation-invitation.php
+msgid "Thank you for getting in touch. We have received your details and your request for a conversation."
+msgstr "Danke für deine Nachricht. Wir haben deine Angaben und deine Gesprächsanfrage erhalten."
+
+#. fine_print
+#: resources/playbooks/consultation-invitation.php
+msgid "We’ll use your details to reply. No appointment is booked. %s"
+msgstr "Wir nutzen deine Angaben, um zu antworten. Es wird kein Termin gebucht. %s"
+
+#. consent_text
+#: resources/playbooks/consultation-invitation.php
+msgid "You may contact me about my consultation request."
+msgstr "Ich möchte zu meiner Beratungsanfrage kontaktiert werden."
+
+#. cta_label
+#: resources/playbooks/content-upgrade.php
+msgid "Email me the checklist"
+msgstr "Schick mir die Checkliste per E-Mail"
+
+#. body
+#: resources/playbooks/content-upgrade.php
+msgid "Everything on this page as a one-page PDF you can work through."
+msgstr "Alles von dieser Seite als einseitige PDF zum Abhaken."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/content-upgrade.php
+msgid "Offer an article checklist"
+msgstr "Eine Checkliste zum Artikel anbieten"
+
+#. fine_print
+#: resources/playbooks/content-upgrade.php
+msgid "One checklist email. No newsletter. %s"
+msgstr "Eine E-Mail mit der Checkliste. Kein Newsletter. %s"
+
+#. headline
+#: resources/playbooks/content-upgrade.php
+msgid "Take the checklist with you"
+msgstr "Nimm die Checkliste mit"
+
+#. success_body
+#: resources/playbooks/content-upgrade.php
+msgid "Thank you. We have received your request for the checklist."
+msgstr "Danke. Wir haben deine Anfrage für die Checkliste erhalten."
+
+#. cta_label
+#: resources/playbooks/coupon-ticket.php
+msgid "Join and reveal 15% off"
+msgstr "Anmelden und 15 % Rabatt aufdecken"
+
+#. body
+#: resources/playbooks/coupon-ticket.php
+msgid "Join our monthly shop email for new finds, useful things and a first-order code."
+msgstr "Abonniere unsere monatliche Shop-E-Mail mit Neuheiten, Nützlichem und einem Code für die erste Bestellung."
+
+#. fine_print
+#: resources/playbooks/coupon-ticket.php
+msgid "Monthly emails. Unsubscribe anytime. Full-price items only; bundles excluded. %s"
+msgstr "Monatliche E-Mails. Jederzeit abbestellbar. Nur Artikel zum regulären Preis, Bundles ausgenommen. %s"
+
+#. body
+#: resources/playbooks/coupon-ticket.php
+msgid "Off your first order"
+msgstr "auf deine erste Bestellung"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/coupon-ticket.php
+msgid "Reveal a welcome discount"
+msgstr "Einen Willkommensrabatt aufdecken"
+
+#. consent_text
+#: resources/playbooks/coupon-ticket.php
+msgid "Send me the monthly shop email. %s"
+msgstr "Ich möchte die monatliche Shop-E-Mail erhalten. %s"
+
+#. success_body
+#: resources/playbooks/coupon-ticket.php
+msgid "Your request is received. Your first-order code is below."
+msgstr "Deine Anfrage ist eingegangen. Dein Code für die erste Bestellung steht unten."
+
+#. consent_text
+#: resources/playbooks/drop-alerts.php
+msgid "I agree to receive marketing texts about new releases. %s"
+msgstr "Ich möchte Marketing-SMS zu Neuerscheinungen erhalten. %s"
+
+#. fine_print
+#: resources/playbooks/drop-alerts.php
+msgid "Message rates may apply. Opt out at any time. %s"
+msgstr "Es können Gebühren für Nachrichten anfallen. Jederzeit abmeldbar. %s"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/drop-alerts.php
+msgid "New-release SMS alerts"
+msgstr "SMS-Hinweise zu Neuerscheinungen"
+
+#. cta_label
+#: resources/playbooks/drop-alerts.php
+msgid "Request release texts"
+msgstr "SMS zu Neuerscheinungen anfordern"
+
+#. headline
+#: resources/playbooks/drop-alerts.php
+msgid "Text me when it drops"
+msgstr "Schreib mir per SMS, wenn es so weit ist"
+
+#. body
+#: resources/playbooks/drop-alerts.php
+msgid "Text updates when a new collection is released."
+msgstr "SMS-Updates, wenn eine neue Kollektion erscheint."
+
+#. headline
+#: resources/playbooks/earlier-appointment-enquiry.php
+msgid "Could an earlier time work for you?"
+msgstr "Würde dir ein früherer Termin passen?"
+
+#. eyebrow
+#: resources/playbooks/earlier-appointment-enquiry.php
+msgid "Flexible on timing?"
+msgstr "Zeitlich flexibel?"
+
+#. body
+#: resources/playbooks/earlier-appointment-enquiry.php
+msgid "Tell us when you are usually available. We can contact you if a suitable appointment opens up."
+msgstr "Sag uns, wann du meist Zeit hast. Wir melden uns, wenn ein passender Termin frei wird."
+
+#. success_body
+#: resources/playbooks/earlier-appointment-enquiry.php
+msgid "Thank you. We have received your details and any availability preference you selected. Your existing booking has not changed."
+msgstr "Danke. Wir haben deine Angaben und deine gewählte Zeitpräferenz erhalten. Deine bestehende Buchung bleibt unverändert."
+
+#. fine_print
+#: resources/playbooks/earlier-appointment-enquiry.php
+msgid "We use your details to respond. No place is reserved and any existing booking stays the same."
+msgstr "Wir nutzen deine Angaben, um zu antworten. Es wird kein Platz reserviert und eine bestehende Buchung bleibt unverändert."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/edition-early-access.php
+msgid "New collection early access"
+msgstr "Früher Zugang zur neuen Kollektion"
+
+#. eyebrow
+#: resources/playbooks/edition-sample-signup.php
+msgid "A sample from the weekly letter"
+msgstr "Eine Kostprobe aus dem Wochenbrief"
+
+#. headline
+#: resources/playbooks/edition-sample-signup.php
+msgid "A thoughtful note, once a week."
+msgstr "Ein nachdenklicher Gruß, einmal pro Woche."
+
+#. consent_text
+#: resources/playbooks/edition-sample-signup.php
+msgid "Email me the weekly Small Hours letter. I can unsubscribe anytime."
+msgstr "Ich möchte den wöchentlichen Small-Hours-Brief per E-Mail erhalten. Ich kann mich jederzeit abmelden."
+
+#. headline
+#: resources/playbooks/edition-sample-signup.php
+msgid "Leave a little room to notice."
+msgstr "Lass ein wenig Raum zum Bemerken."
+
+#. fine_print
+#: resources/playbooks/edition-sample-signup.php
+msgid "Original sample writing for the Small Hours letter."
+msgstr "Originaltext als Kostprobe für den Small-Hours-Brief."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/edition-sample-signup.php
+msgid "Read a sample of the weekly letter"
+msgstr "Eine Kostprobe des Wochenbriefs lesen"
+
+#. cta_label
+#: resources/playbooks/edition-sample-signup.php
+msgid "Request the weekly letter"
+msgstr "Wochenbrief anfordern"
+
+#. body
+#: resources/playbooks/edition-sample-signup.php
+msgid "Short observations and one small idea to try. Read this sample before deciding whether to request future editions."
+msgstr "Kurze Beobachtungen und eine kleine Idee zum Ausprobieren. Lies diese Kostprobe, bevor du entscheidest, ob du künftige Ausgaben anfordern möchtest."
+
+#. success_body
+#: resources/playbooks/edition-sample-signup.php
+msgid "Thank you. We have received your request for the Small Hours letter."
+msgstr "Danke. Wir haben deine Anfrage für den Small-Hours-Brief erhalten."
+
+#. body
+#: resources/playbooks/edition-sample-signup.php
+msgid "The best part of a familiar walk is often the thing you almost miss: a changed window, a new leaf, a neighbour taking a different route."
+msgstr "Das Schönste an einem vertrauten Spaziergang ist oft das, was man fast übersieht: ein verändertes Fenster, ein neues Blatt, ein Nachbar auf einem anderen Weg."
+
+#. eyebrow
+#: resources/playbooks/edition-sample-signup.php
+msgid "The Small Hours letter"
+msgstr "Der Small-Hours-Brief"
+
+#. body
+#: resources/playbooks/edition-sample-signup.php
+msgid "Try leaving the headphones at home for the first five minutes. Give one ordinary detail your full attention."
+msgstr "Lass die Kopfhörer die ersten fünf Minuten zu Hause. Schenk einem gewöhnlichen Detail deine ganze Aufmerksamkeit."
+
+#. fine_print
+#: resources/playbooks/edition-sample-signup.php
+msgid "You can unsubscribe from future editions at any time."
+msgstr "Du kannst künftige Ausgaben jederzeit abbestellen."
+
+#. body
+#: resources/playbooks/editorial-weekly.php
+msgid "A question to think about."
+msgstr "Eine Frage zum Nachdenken."
+
+#. body
+#: resources/playbooks/editorial-weekly.php
+msgid "A useful link to keep."
+msgstr "Ein nützlicher Link zum Aufbewahren."
+
+#. body
+#: resources/playbooks/editorial-weekly.php
+msgid "An essay worth making time for."
+msgstr "Ein Essay, für den man sich Zeit nimmt."
+
+#. consent_text
+#: resources/playbooks/editorial-weekly.php
+msgid "Email me the Friday letter. I can unsubscribe anytime."
+msgstr "Ich möchte den Freitagsbrief per E-Mail erhalten. Ich kann mich jederzeit abmelden."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/editorial-weekly.php
+msgid "Offer a weekly editorial letter"
+msgstr "Einen wöchentlichen Redaktionsbrief anbieten"
+
+#. headline
+#: resources/playbooks/editorial-weekly.php
+msgid "One good read. Every Friday."
+msgstr "Eine gute Lektüre. Jeden Freitag."
+
+#. cta_label
+#: resources/playbooks/editorial-weekly.php
+msgid "Request the Friday letter"
+msgstr "Freitagsbrief anfordern"
+
+#. fine_print
+#: resources/playbooks/editorial-weekly.php resources/playbooks/maker-notes.php
+msgid "You can unsubscribe at any time."
+msgstr "Du kannst dich jederzeit abmelden."
+
+#. success_headline
+#: resources/playbooks/equipment-return-checklist.php resources/playbooks/fit-checklist.php
+msgid "Checklist request received"
+msgstr "Anfrage für die Checkliste erhalten"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/equipment-return-checklist.php
+msgid "Offer an equipment return checklist"
+msgstr "Eine Checkliste für die Geräterückgabe anbieten"
+
+#. fine_print
+#: resources/playbooks/equipment-return-checklist.php
+msgid "One checklist email. No newsletter signup. Your rental terms still apply."
+msgstr "Eine E-Mail mit der Checkliste. Keine Newsletter-Anmeldung. Deine Mietbedingungen gelten weiterhin."
+
+#. headline
+#: resources/playbooks/equipment-return-checklist.php
+msgid "Ready to return your equipment?"
+msgstr "Bereit, dein Equipment zurückzugeben?"
+
+#. body
+#: resources/playbooks/equipment-return-checklist.php
+msgid "Request a checklist for the accessories, preparation and handover details to check before you return it."
+msgstr "Fordere eine Checkliste mit Zubehör, Vorbereitung und Übergabedetails an, die du vor der Rückgabe prüfen kannst."
+
+#. cta_label
+#: resources/playbooks/equipment-return-checklist.php
+msgid "Request the return checklist"
+msgstr "Checkliste zur Rückgabe anfordern"
+
+#. consent_text
+#: resources/playbooks/equipment-return-checklist.php
+msgid "Send me the equipment return checklist."
+msgstr "Ich möchte die Checkliste für die Geräterückgabe erhalten."
+
+#. success_body
+#: resources/playbooks/equipment-return-checklist.php
+msgid "Thank you. We have received your request. This does not book a collection or confirm that equipment has been returned."
+msgstr "Danke. Wir haben deine Anfrage erhalten. Damit wird keine Abholung gebucht und keine Rückgabe des Equipments bestätigt."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/event-calendar.php
+msgid "Invite visitors to an open workshop"
+msgstr "Besucher zu einem offenen Workshop einladen"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/excerpt-window.php
+msgid "Let readers try a workbook exercise"
+msgstr "Leser eine Übung aus dem Arbeitsbuch ausprobieren lassen"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/first-order-receipt.php
+msgid "Show a first-order offer code"
+msgstr "Einen Code für die erste Bestellung zeigen"
+
+#. body
+#: resources/playbooks/fit-checklist.php
+msgid "Check the space your furniture will use and the route it takes to get there."
+msgstr "Prüfe den Platz für deine Möbel und den Weg, den sie dorthin nehmen."
+
+#. body
+#: resources/playbooks/fit-checklist.php
+msgid "Doorways, stairs\nand placement."
+msgstr "Türen, Treppen\nund Platzierung."
+
+#. headline
+#: resources/playbooks/fit-checklist.php
+msgid "Measure before\nyou choose."
+msgstr "Erst messen,\ndann wählen."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/fit-checklist.php
+msgid "Prepare measurements before buying"
+msgstr "Maße vor dem Kauf vorbereiten"
+
+#. cta_label
+#: resources/playbooks/fit-checklist.php
+msgid "Request the fit checklist"
+msgstr "Passgenauigkeits-Checkliste anfordern"
+
+#. success_body
+#: resources/playbooks/fit-checklist.php
+msgid "Thank you for requesting the furniture-fit checklist."
+msgstr "Danke für deine Anfrage zur Checkliste für passende Möbel."
+
+#. eyebrow
+#: resources/playbooks/fit-checklist.php
+msgid "THE FIT CHECKLIST"
+msgstr "DIE CHECKLISTE FÜR DIE PASSFORM"
+
+#. success_body
+#: resources/playbooks/fit-checklist.php
+msgid "Use the checklist to compare access and placement measurements."
+msgstr "Vergleiche mit der Checkliste die Maße für Zugang und Platzierung."
+
+#. fine_print
+#: resources/playbooks/fit-checklist.php
+msgid "Use the product’s own measurements when checking fit."
+msgstr "Nutze zur Prüfung der Passform die Maße des Produkts."
+
+#. eyebrow
+#: resources/playbooks/fit-checklist.php
+msgid "Your next step"
+msgstr "Dein nächster Schritt"
+
+#. consent_text
+#: resources/playbooks/fitness-introduction.php
+msgid "Call me about visiting the fitness studio."
+msgstr "Ich möchte angerufen werden, um einen Besuch im Fitnessstudio zu besprechen."
+
+#. headline
+#: resources/playbooks/fitness-introduction.php
+msgid "Find a comfortable place to start."
+msgstr "Finde einen angenehmen Einstieg."
+
+#. body
+#: resources/playbooks/fitness-introduction.php
+msgid "Request a call about the studio, class formats and how a first visit works."
+msgstr "Fordere einen Anruf an zu Studio, Kursformaten und dem Ablauf eines ersten Besuchs."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/fitness-introduction.php
+msgid "Request a fitness studio introduction"
+msgstr "Einführung ins Fitnessstudio anfragen"
+
+#. cta_label
+#: resources/playbooks/fitness-introduction.php
+msgid "Request an introductory call"
+msgstr "Einführungsanruf anfragen"
+
+#. body
+#: resources/playbooks/gift-planning-guide.php
+msgid "A guide to choosing by interests, occasion and what someone will actually use. Your name is optional."
+msgstr "Ein Leitfaden zur Auswahl nach Interessen, Anlass und dem, was wirklich genutzt wird. Dein Name ist optional."
+
+#. headline
+#: resources/playbooks/gift-planning-guide.php
+msgid "Find a gift with a little thought."
+msgstr "Finde ein Geschenk mit Bedacht."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/gift-planning-guide.php
+msgid "Offer a thoughtful gift planning guide"
+msgstr "Einen Leitfaden zur Geschenkplanung anbieten"
+
+#. cta_label
+#: resources/playbooks/gift-planning-guide.php
+msgid "Request the gift guide"
+msgstr "Geschenkleitfaden anfordern"
+
+#. consent_text
+#: resources/playbooks/gift-planning-guide.php
+msgid "Send me the gift guide I requested."
+msgstr "Ich möchte den angeforderten Geschenkleitfaden erhalten."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/guide-download.php
+msgid "Email a downloadable guide"
+msgstr "Einen Leitfaden zum Download per E-Mail senden"
+
+#. consent_text
+#: resources/playbooks/guide-download.php
+msgid "Email me the plant-care guide. %s"
+msgstr "Ich möchte den Leitfaden zur Pflanzenpflege per E-Mail erhalten. %s"
+
+#. success_action
+#: resources/playbooks/guide-download.php
+msgid "Open the guide"
+msgstr "Leitfaden öffnen"
+
+#. cta_label
+#: resources/playbooks/guide-download.php
+msgid "Request the plant-care guide"
+msgstr "Pflanzenpflege-Leitfaden anfordern"
+
+#. success_body
+#: resources/playbooks/guide-download.php
+msgid "Seven practical checks for happier plants."
+msgstr "Sieben praktische Checks für glücklichere Pflanzen."
+
+#. eyebrow
+#: resources/playbooks/guide-download.php
+msgid "Start here"
+msgstr "Hier starten"
+
+#. success_body
+#: resources/playbooks/guide-download.php
+msgid "Thank you for requesting the plant-care guide."
+msgstr "Danke für deine Anfrage zum Pflanzenpflege-Leitfaden."
+
+#. eyebrow
+#: resources/playbooks/guide-download.php
+msgid "The plant-care guide"
+msgstr "Der Pflanzenpflege-Leitfaden"
+
+#. fine_print
+#: resources/playbooks/guide-download.php resources/playbooks/launch-checklist.php
+msgid "We’ll use your details for this request. %s"
+msgstr "Wir nutzen deine Angaben für diese Anfrage. %s"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/halloween-after-dark-offer.php
+msgid "Halloween after-dark offer"
+msgstr "Halloween-Angebot nach Einbruch der Dunkelheit"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/halloween-midnight-offer.php
+msgid "Halloween midnight offer"
+msgstr "Halloween-Mitternachtsangebot"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/halloween-treat-signup.php
+msgid "Halloween treat signup"
+msgstr "Halloween-Anmeldung für Leckereien"
+
+#. submission:email
+#: resources/playbooks/headlines-optional-sms.php
+msgid "A weekly briefing on the headlines"
+msgstr "Ein wöchentlicher Überblick über die Schlagzeilen"
+
+#. acknowledgement
+#: resources/playbooks/headlines-optional-sms.php
+msgid "Briefing request received"
+msgstr "Anfrage für den Überblick erhalten"
+
+#. submission:email
+#: resources/playbooks/headlines-optional-sms.php
+msgid "Email me the weekly headline briefing. I can unsubscribe anytime."
+msgstr "Ich möchte den wöchentlichen Schlagzeilen-Überblick per E-Mail erhalten. Ich kann mich jederzeit abmelden."
+
+#. submission:phone
+#: resources/playbooks/headlines-optional-sms.php
+msgid "Finish without texts"
+msgstr "Ohne SMS abschließen"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/headlines-optional-sms.php
+msgid "Offer headlines by email with optional texts"
+msgstr "Schlagzeilen per E-Mail anbieten, optional mit SMS"
+
+#. submission:phone
+#: resources/playbooks/headlines-optional-sms.php
+msgid "Request headline texts"
+msgstr "Schlagzeilen per SMS anfordern"
+
+#. submission:email
+#: resources/playbooks/headlines-optional-sms.php
+msgid "Request the weekly briefing"
+msgstr "Wöchentlichen Überblick anfordern"
+
+#. submission:phone
+#: resources/playbooks/headlines-optional-sms.php
+msgid "Text me occasional editorial headlines. I can opt out."
+msgstr "Ich möchte gelegentlich redaktionelle Schlagzeilen per SMS erhalten. Ich kann mich abmelden."
+
+#. acknowledgement
+#: resources/playbooks/headlines-optional-sms.php
+msgid "Thank you. Your briefing request is received, and your text request too if you added a number."
+msgstr "Danke. Deine Anfrage für den Überblick ist eingegangen, und deine SMS-Anfrage auch, falls du eine Nummer angegeben hast."
+
+#. submission:phone
+#: resources/playbooks/headlines-optional-sms.php
+msgid "Want occasional headline texts too?"
+msgstr "Auch gelegentliche Schlagzeilen per SMS?"
+
+#. submission:phone
+#: resources/playbooks/headlines-optional-sms.php
+msgid "Your email request is received. You can finish now or also request occasional editorial texts."
+msgstr "Deine E-Mail-Anfrage ist eingegangen. Du kannst jetzt abschließen oder zusätzlich gelegentliche redaktionelle SMS anfordern."
+
+#. fine_print
+#: resources/playbooks/home-repair-quote.php
+msgid "A request for a quote. No booking or payment is made here."
+msgstr "Eine Anfrage für ein Angebot. Hier wird nichts gebucht und nichts bezahlt."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/home-repair-quote.php
+msgid "Request a home repair quote"
+msgstr "Angebot für Reparatur im Haus anfragen"
+
+#. body
+#: resources/playbooks/home-repair-quote.php
+msgid "Tell us which part of your home needs attention. We will use your details to discuss the job."
+msgstr "Sag uns, welcher Teil deines Zuhauses Aufmerksamkeit braucht. Wir nutzen deine Angaben, um den Auftrag zu besprechen."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/homeware-care-notes.php
+msgid "Monthly care notes for handmade homeware"
+msgstr "Monatliche Pflegehinweise für handgemachte Wohnaccessoires"
+
+#. success_body
+#: resources/playbooks/homeware-care-notes.php
+msgid "Thank you for requesting monthly homeware care notes."
+msgstr "Danke für deine Anfrage zu den monatlichen Pflegehinweisen für Wohnaccessoires."
+
+#. submission:email
+#: resources/playbooks/journey-email-then-sms.php
+msgid "Email me new-collection announcements."
+msgstr "Ich möchte Ankündigungen neuer Kollektionen per E-Mail erhalten."
+
+#. submission:email
+#: resources/playbooks/journey-email-then-sms.php
+msgid "First to know. Your choice how."
+msgstr "Du erfährst es zuerst. Du entscheidest, wie."
+
+#. acknowledgement
+#: resources/playbooks/journey-email-then-sms.php
+msgid "Launch updates requested"
+msgstr "Updates zum Launch angefordert"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/journey-email-then-sms.php
+msgid "Launch updates with optional SMS"
+msgstr "Launch-Updates, optional per SMS"
+
+#. submission:email
+#: resources/playbooks/journey-email-then-sms.php
+msgid "Request launch emails"
+msgstr "Launch-E-Mails anfordern"
+
+#. submission:phone
+#: resources/playbooks/journey-email-then-sms.php
+msgid "Request launch texts"
+msgstr "Launch-SMS anfordern"
+
+#. submission:phone
+#: resources/playbooks/journey-email-then-sms.php
+msgid "Text me new-collection announcements."
+msgstr "Ich möchte Ankündigungen neuer Kollektionen per SMS erhalten."
+
+#. acknowledgement
+#: resources/playbooks/journey-email-then-sms.php
+msgid "Thank you. Your email signup is received, and your text request too if you added a number."
+msgstr "Danke. Deine E-Mail-Anmeldung ist eingegangen, und deine SMS-Anfrage auch, falls du eine Nummer angegeben hast."
+
+#. submission:phone
+#: resources/playbooks/journey-email-then-sms.php
+msgid "Want a text for the next launch?"
+msgstr "Eine SMS zum nächsten Launch?"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/journey-enquiry.php
+msgid "Enquiry in small steps"
+msgstr "Anfrage in kleinen Schritten"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/journey-offer-first.php
+msgid "Introduce the signup first"
+msgstr "Die Anmeldung zuerst vorstellen"
+
+#. acknowledgement
+#: resources/playbooks/journey-offer-first.php resources/playbooks/maker-session-invitation.php
+msgid "Thank you. We have received your request for maker-session announcements."
+msgstr "Danke. Wir haben deine Anfrage für Ankündigungen zu Maker-Sessions erhalten."
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/landscaping-enquiry.php
+msgid "A new garden layout"
+msgstr "Eine neue Gartengestaltung"
+
+#. acknowledgement
+#: resources/playbooks/landscaping-enquiry.php
+msgid "Garden enquiry received"
+msgstr "Gartenanfrage erhalten"
+
+#. submission:email-interest-name
+#: resources/playbooks/landscaping-enquiry.php
+msgid "Let us discuss your garden"
+msgstr "Lass uns über deinen Garten sprechen"
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/landscaping-enquiry.php
+msgid "Maintenance advice"
+msgstr "Rat zur Pflege"
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/landscaping-enquiry.php
+msgid "Planting and borders"
+msgstr "Bepflanzung und Beete"
+
+#. submission:email-interest-name
+#: resources/playbooks/landscaping-enquiry.php
+msgid "Send my garden enquiry"
+msgstr "Gartenanfrage senden"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/landscaping-enquiry.php
+msgid "Start a garden landscaping enquiry"
+msgstr "Anfrage zur Gartengestaltung starten"
+
+#. acknowledgement
+#: resources/playbooks/landscaping-enquiry.php
+msgid "Thank you. Your project details have been received for review."
+msgstr "Danke. Deine Projektangaben sind zur Prüfung eingegangen."
+
+#. submission:email-interest-name
+#: resources/playbooks/landscaping-enquiry.php
+msgid "We use your details to discuss this enquiry. A site visit is not booked yet."
+msgstr "Wir nutzen deine Angaben, um diese Anfrage zu besprechen. Ein Vor-Ort-Termin ist noch nicht gebucht."
+
+#. screen:request
+#: resources/playbooks/landscaping-enquiry.php
+msgid "What would you like to change?"
+msgstr "Was möchtest du verändern?"
+
+#. screen:request
+#: resources/playbooks/landscaping-enquiry.php
+msgid "Your garden project"
+msgstr "Dein Gartenprojekt"
+
+#. eyebrow
+#: resources/playbooks/launch-checklist.php
+msgid "A practical pre-flight"
+msgstr "Ein praktischer Check vor dem Start"
+
+#. consent_text
+#: resources/playbooks/launch-checklist.php
+msgid "Email me the launch checklist. %s"
+msgstr "Ich möchte die Launch-Checkliste per E-Mail erhalten. %s"
+
+#. success_body
+#: resources/playbooks/launch-checklist.php
+msgid "For your next launch."
+msgstr "Für deinen nächsten Launch."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/launch-checklist.php
+msgid "Offer a website launch checklist"
+msgstr "Eine Checkliste für den Website-Launch anbieten"
+
+#. fine_print
+#: resources/playbooks/launch-checklist.php
+msgid "One checklist email. No marketing. %s"
+msgstr "Eine E-Mail mit der Checkliste. Keine Werbung. %s"
+
+#. success_body
+#: resources/playbooks/launch-checklist.php
+msgid "Start with the forms, your smallest screen and the links that matter."
+msgstr "Beginne mit den Formularen, deinem kleinsten Bildschirm und den wichtigen Links."
+
+#. success_body
+#: resources/playbooks/launch-checklist.php
+msgid "We have received your request for the 12-point checklist."
+msgstr "Wir haben deine Anfrage für die Checkliste mit 12 Punkten erhalten."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/lighting-collection.php
+msgid "Introduce a lighting collection"
+msgstr "Eine Leuchtenkollektion vorstellen"
+
+#. headline
+#: resources/playbooks/maintenance-letter.php
+msgid "A little care.\nEach month."
+msgstr "Ein wenig Pflege.\nJeden Monat."
+
+#. consent_text
+#: resources/playbooks/maintenance-letter.php
+msgid "Email me the monthly home maintenance notes. I can unsubscribe anytime."
+msgstr "Ich möchte die monatlichen Hinweise zur Hauspflege per E-Mail erhalten. Ich kann mich jederzeit abmelden."
+
+#. fine_print
+#: resources/playbooks/maintenance-letter.php
+msgid "Monthly notes. Unsubscribe anytime."
+msgstr "Monatliche Hinweise. Jederzeit abbestellbar."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/maintenance-letter.php
+msgid "Offer monthly home maintenance notes"
+msgstr "Monatliche Hinweise zur Hauspflege anbieten"
+
+#. body
+#: resources/playbooks/maintenance-letter.php
+msgid "One monthly email with practical home maintenance tasks and seasonal checks."
+msgstr "Eine E-Mail pro Monat mit praktischen Aufgaben für Haus und Wohnung und saisonalen Checks."
+
+#. cta_label
+#: resources/playbooks/maintenance-letter.php
+msgid "Request the monthly note"
+msgstr "Monatshinweis anfordern"
+
+#. eyebrow
+#: resources/playbooks/maintenance-letter.php
+msgid "Small jobs, thoughtfully timed"
+msgstr "Kleine Aufgaben, klug getaktet"
+
+#. success_body
+#: resources/playbooks/maintenance-letter.php
+msgid "Thank you for asking for the monthly home maintenance notes."
+msgstr "Danke für deine Anfrage zu den monatlichen Hinweisen zur Hauspflege."
+
+#. eyebrow
+#: resources/playbooks/maintenance-letter.php
+msgid "The monthly home note"
+msgstr "Der monatliche Hausbrief"
+
+#. success_headline
+#: resources/playbooks/maintenance-letter.php
+msgid "Your request is received"
+msgstr "Deine Anfrage ist eingegangen"
+
+#. body
+#: resources/playbooks/maker-notes.php
+msgid "A monthly note about materials, making and the people behind the pieces."
+msgstr "Ein monatlicher Brief über Materialien, Handwerk und die Menschen hinter den Stücken."
+
+#. consent_text
+#: resources/playbooks/maker-notes.php
+msgid "Email me the monthly maker notes."
+msgstr "Ich möchte die monatlichen Maker-Notizen per E-Mail erhalten."
+
+#. headline
+#: resources/playbooks/maker-notes.php
+msgid "From the workshop."
+msgstr "Aus der Werkstatt."
+
+#. cta_label
+#: resources/playbooks/maker-notes.php
+msgid "Request the maker notes"
+msgstr "Maker-Notizen anfordern"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/maker-notes.php
+msgid "Share the stories behind your products"
+msgstr "Die Geschichten hinter deinen Produkten erzählen"
+
+#. eyebrow
+#: resources/playbooks/maker-notes.php
+msgid "The making of things"
+msgstr "Wie Dinge entstehen"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/maker-session-invitation.php
+msgid "Introduce maker-session news before signup"
+msgstr "Maker-Session-News vor der Anmeldung vorstellen"
+
+#. body
+#: resources/playbooks/membership-details.php
+msgid "A way to support independent work"
+msgstr "Eine Möglichkeit, unabhängige Arbeit zu unterstützen"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/membership-details.php
+msgid "Explain a publication’s membership"
+msgstr "Die Mitgliedschaft einer Publikation erklären"
+
+#. cta_label
+#: resources/playbooks/membership-details.php
+msgid "Explore membership"
+msgstr "Mitgliedschaft entdecken"
+
+#. body
+#: resources/playbooks/membership-details.php
+msgid "Member discussion sessions"
+msgstr "Diskussionsrunden für Mitglieder"
+
+#. headline
+#: resources/playbooks/membership-details.php
+msgid "More time with the ideas you value."
+msgstr "Mehr Zeit für die Ideen, die dir wichtig sind."
+
+#. fine_print
+#: resources/playbooks/membership-details.php
+msgid "See current benefits, pricing and terms on the membership page."
+msgstr "Aktuelle Vorteile, Preise und Bedingungen findest du auf der Seite zur Mitgliedschaft."
+
+#. body
+#: resources/playbooks/membership-details.php
+msgid "The full essay archive"
+msgstr "Das komplette Essay-Archiv"
+
+#. fine_print
+#: resources/playbooks/new-arrivals-link.php
+msgid "Browse the collection at your own pace."
+msgstr "Stöbere in Ruhe in der Kollektion."
+
+#. cta_label
+#: resources/playbooks/new-arrivals-link.php
+msgid "Explore new arrivals"
+msgstr "Neuheiten entdecken"
+
+#. body
+#: resources/playbooks/new-arrivals-link.php
+msgid "Explore the latest pieces, with materials, dimensions and care details on each product page."
+msgstr "Entdecke die neuesten Stücke, mit Material, Maßen und Pflegehinweisen auf jeder Produktseite."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/new-arrivals-link.php
+msgid "Introduce new arrivals without a discount"
+msgstr "Neuheiten ohne Rabatt vorstellen"
+
+#. headline
+#: resources/playbooks/new-arrivals-link.php
+msgid "Made for the everyday."
+msgstr "Gemacht für den Alltag."
+
+#. headline
+#: resources/playbooks/one-line-invite.php
+msgid "One useful idea, every week."
+msgstr "Jede Woche eine nützliche Idee."
+
+#. consent_text
+#: resources/playbooks/one-line-invite.php
+msgid "Send me one useful idea every week. %s"
+msgstr "Ich möchte jede Woche eine nützliche Idee erhalten. %s"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/one-line-invite.php
+msgid "Simple newsletter signup"
+msgstr "Einfache Newsletter-Anmeldung"
+
+#. success_body
+#: resources/playbooks/one-line-invite.php
+msgid "Thank you for asking to receive the next issue."
+msgstr "Danke, dass du die nächste Ausgabe erhalten möchtest."
+
+#. eyebrow
+#: resources/playbooks/packaging-details.php
+msgid "Before it reaches you"
+msgstr "Bevor es bei dir ankommt"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/packaging-details.php
+msgid "Explain packaging before checkout"
+msgstr "Die Verpackung vor der Kasse erklären"
+
+#. fine_print
+#: resources/playbooks/packaging-details.php
+msgid "Materials and disposal options vary by product and location."
+msgstr "Materialien und Entsorgungsmöglichkeiten unterscheiden sich je nach Produkt und Ort."
+
+#. cta_label
+#: resources/playbooks/packaging-details.php
+msgid "Read about packaging"
+msgstr "Mehr zur Verpackung lesen"
+
+#. body
+#: resources/playbooks/packaging-details.php
+msgid "See how each item is packed, which materials we use and how to reuse or recycle them."
+msgstr "So wird jeder Artikel verpackt, welche Materialien wir nutzen und wie du sie wiederverwenden oder recyceln kannst."
+
+#. headline
+#: resources/playbooks/packaging-details.php
+msgid "What arrives with your order."
+msgstr "Was mit deiner Bestellung ankommt."
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/personalisation-enquiry.php
+msgid "A bespoke detail"
+msgstr "Ein individuelles Detail"
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/personalisation-enquiry.php
+msgid "A different finish"
+msgstr "Eine andere Oberfläche"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/personalisation-enquiry.php
+msgid "Ask about a custom product"
+msgstr "Nach einem individuellen Produkt fragen"
+
+#. cta_label
+#: resources/playbooks/personalisation-enquiry.php
+msgid "Ask about personalization"
+msgstr "Nach Personalisierung fragen"
+
+#. body
+#: resources/playbooks/personalisation-enquiry.php
+msgid "Choose the kind of personalization you are considering. We will reply about the possibilities."
+msgstr "Wähle, welche Art der Personalisierung du dir vorstellst. Wir antworten dir zu den Möglichkeiten."
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/personalisation-enquiry.php
+msgid "Initials or a short name"
+msgstr "Initialen oder ein kurzer Name"
+
+#. headline
+#: resources/playbooks/personalisation-enquiry.php
+msgid "Make it\na little more personal."
+msgstr "Mach es\nein bisschen persönlicher."
+
+#. success_headline
+#: resources/playbooks/personalisation-enquiry.php
+msgid "Personalization enquiry received"
+msgstr "Anfrage zur Personalisierung erhalten"
+
+#. success_body
+#: resources/playbooks/personalisation-enquiry.php
+msgid "Thank you. We have received your request. Specifications and availability still need to be discussed."
+msgstr "Danke. Wir haben deine Anfrage erhalten. Spezifikationen und Verfügbarkeit müssen noch besprochen werden."
+
+#. interest_label
+#: resources/playbooks/personalisation-enquiry.php
+msgid "What are you considering? (optional)"
+msgstr "Was schwebt dir vor? (optional)"
+
+#. headline
+#: resources/playbooks/product-advice-request.php
+msgid "A little help choosing?"
+msgstr "Etwas Hilfe bei der Wahl?"
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/product-advice-request.php
+msgid "Availability"
+msgstr "Verfügbarkeit"
+
+#. body
+#: resources/playbooks/product-advice-request.php
+msgid "Choose the detail you would like help with. We will reply by email, where you can tell us more."
+msgstr "Wähle, wobei du Hilfe möchtest. Wir antworten per E-Mail, dort kannst du uns mehr erzählen."
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/product-advice-request.php
+msgid "Dimensions and fit"
+msgstr "Maße und Passform"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/product-advice-request.php
+msgid "Let shoppers ask for product advice"
+msgstr "Kunden nach Produktberatung fragen lassen"
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/product-advice-request.php
+msgid "Materials and care"
+msgstr "Material und Pflege"
+
+#. cta_label
+#: resources/playbooks/product-advice-request.php
+msgid "Request product advice"
+msgstr "Produktberatung anfordern"
+
+#. success_body
+#: resources/playbooks/product-advice-request.php
+msgid "Thank you. We will reply by email about the detail you chose."
+msgstr "Danke. Wir antworten dir per E-Mail zu dem gewählten Punkt."
+
+#. consent_text
+#: resources/playbooks/product-advice-request.php
+msgid "Use my details to reply to this product enquiry."
+msgstr "Meine Angaben dürfen genutzt werden, um auf diese Produktanfrage zu antworten."
+
+#. fine_print
+#: resources/playbooks/product-advice-request.php
+msgid "We use your details only to reply. Stock is not reserved."
+msgstr "Wir nutzen deine Angaben nur für die Antwort. Ware wird nicht reserviert."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/product-detail-sheet.php
+msgid "Show a desk lamp in detail"
+msgstr "Eine Schreibtischlampe im Detail zeigen"
+
+#. eyebrow
+#: resources/playbooks/read-to-the-end.php
+msgid "Made for reading"
+msgstr "Gemacht zum Lesen"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/read-to-the-end.php
+msgid "Newsletter signup while reading"
+msgstr "Newsletter-Anmeldung beim Lesen"
+
+#. body
+#: resources/playbooks/read-to-the-end.php
+msgid "One essay on books, places and the things we nearly miss, every Sunday."
+msgstr "Jeden Sonntag ein Essay über Bücher, Orte und das, was wir fast übersehen."
+
+#. fine_print
+#: resources/playbooks/read-to-the-end.php
+msgid "Sunday emails. Unsubscribe anytime. %s"
+msgstr "E-Mails am Sonntag. Jederzeit abbestellbar. %s"
+
+#. success_body
+#: resources/playbooks/read-to-the-end.php
+msgid "Thank you for making a little room for reading."
+msgstr "Danke, dass du dir etwas Raum zum Lesen nimmst."
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/reader-question.php
+msgid "About the publication"
+msgstr "Über die Publikation"
+
+#. interest_label
+#: resources/playbooks/reader-question.php
+msgid "Choose a topic (optional)"
+msgstr "Thema wählen (optional)"
+
+#. body
+#: resources/playbooks/reader-question.php
+msgid "Choose a topic and leave your email. The editorial team can reply to continue the conversation."
+msgstr "Wähle ein Thema und hinterlass deine E-Mail-Adresse. Die Redaktion kann antworten und das Gespräch fortsetzen."
+
+#. success_headline
+#: resources/playbooks/reader-question.php
+msgid "Editorial enquiry received"
+msgstr "Redaktionsanfrage erhalten"
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/reader-question.php
+msgid "Ideas for a future article"
+msgstr "Ideen für einen künftigen Artikel"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/reader-question.php
+msgid "Send an editorial question"
+msgstr "Eine Frage an die Redaktion senden"
+
+#. cta_label
+#: resources/playbooks/reader-question.php
+msgid "Start an editorial conversation"
+msgstr "Gespräch mit der Redaktion starten"
+
+#. success_body
+#: resources/playbooks/reader-question.php
+msgid "Thank you. Your topic and contact details have been received. Nothing has been posted publicly."
+msgstr "Danke. Dein Thema und deine Kontaktdaten sind eingegangen. Es wurde nichts öffentlich veröffentlicht."
+
+#. headline
+#: resources/playbooks/reader-question.php
+msgid "What would you\nlike us to explore?"
+msgstr "Was sollen wir\nfür dich erkunden?"
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/reader-question.php
+msgid "Writing and editing"
+msgstr "Schreiben und Lektorat"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/reading-notes-guide.php
+msgid "Offer a practical reading guide"
+msgstr "Einen praktischen Leseleitfaden anbieten"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/reading-recommendation.php
+msgid "Recommend a related article"
+msgstr "Einen passenden Artikel empfehlen"
+
+#. fine_print
+#: resources/playbooks/related-essay.php
+msgid "Continue when you have a moment."
+msgstr "Lies weiter, wenn du einen Moment Zeit hast."
+
+#. eyebrow
+#: resources/playbooks/related-essay.php
+msgid "Keep reading"
+msgstr "Weiterlesen"
+
+#. headline
+#: resources/playbooks/related-essay.php
+msgid "Next: putting the idea into practice."
+msgstr "Als Nächstes: die Idee in die Praxis umsetzen."
+
+#. cta_label
+#: resources/playbooks/related-essay.php
+msgid "Read the follow-up"
+msgstr "Fortsetzung lesen"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/related-essay.php
+msgid "Suggest a useful next article"
+msgstr "Einen nützlichen nächsten Artikel vorschlagen"
+
+#. body
+#: resources/playbooks/related-essay.php
+msgid "The follow-up turns this article’s idea into practical steps you can try."
+msgstr "Die Fortsetzung macht die Idee dieses Artikels zu praktischen Schritten zum Ausprobieren."
+
+#. eyebrow
+#: resources/playbooks/renovation-callback.php
+msgid "A project starts with a conversation"
+msgstr "Ein Projekt beginnt mit einem Gespräch"
+
+#. consent_text
+#: resources/playbooks/renovation-callback.php
+msgid "Call me about my renovation enquiry."
+msgstr "Ich möchte zu meiner Renovierungsanfrage angerufen werden."
+
+#. body
+#: resources/playbooks/renovation-callback.php
+msgid "Leave your number to discuss the scope and next steps for your project."
+msgstr "Hinterlass deine Nummer, um Umfang und nächste Schritte für dein Projekt zu besprechen."
+
+#. fine_print
+#: resources/playbooks/renovation-callback.php
+msgid "No appointment is booked here."
+msgstr "Hier wird kein Termin gebucht."
+
+#. success_headline
+#: resources/playbooks/renovation-callback.php
+msgid "Planning call requested"
+msgstr "Planungsanruf angefragt"
+
+#. cta_label
+#: resources/playbooks/renovation-callback.php
+msgid "Request a planning call"
+msgstr "Planungsanruf anfragen"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/renovation-callback.php
+msgid "Request a renovation planning call"
+msgstr "Planungsanruf zur Renovierung anfragen"
+
+#. headline
+#: resources/playbooks/renovation-callback.php
+msgid "Talk through your renovation."
+msgstr "Sprich mit uns über deine Renovierung."
+
+#. success_body
+#: resources/playbooks/renovation-callback.php
+msgid "Your request is saved. The team can contact you to agree a time."
+msgstr "Deine Anfrage ist gespeichert. Das Team kann sich bei dir melden, um einen Zeitpunkt zu vereinbaren."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/repair-advice-request.php
+msgid "Start a furniture repair enquiry"
+msgstr "Anfrage zur Möbelreparatur starten"
+
+#. acknowledgement
+#: resources/playbooks/repair-advice-request.php
+msgid "Thank you. We have received your repair enquiry. No repair or appointment has been confirmed."
+msgstr "Danke. Wir haben deine Reparaturanfrage erhalten. Eine Reparatur oder ein Termin ist damit nicht bestätigt."
+
+#. eyebrow
+#: resources/playbooks/repair-assessment.php
+msgid "A practical first step"
+msgstr "Ein praktischer erster Schritt"
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/repair-assessment.php
+msgid "Another non-urgent repair"
+msgstr "Eine andere nicht dringende Reparatur"
+
+#. success_headline
+#: resources/playbooks/repair-assessment.php
+msgid "Assessment request received"
+msgstr "Anfrage zur Begutachtung erhalten"
+
+#. body
+#: resources/playbooks/repair-assessment.php
+msgid "Choose the kind of non-urgent repair you want to discuss. We will use your email to reply."
+msgstr "Wähle, um welche Art nicht dringender Reparatur es geht. Wir antworten dir per E-Mail."
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/repair-assessment.php
+msgid "Fixtures or fittings"
+msgstr "Einbauten oder Armaturen"
+
+#. fine_print
+#: resources/playbooks/repair-assessment.php
+msgid "For non-urgent repairs. No visit is booked here."
+msgstr "Für nicht dringende Reparaturen. Hier wird kein Besuch gebucht."
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/repair-assessment.php
+msgid "Interior surfaces"
+msgstr "Oberflächen im Innenraum"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/repair-assessment.php
+msgid "Request a non-urgent repair assessment"
+msgstr "Begutachtung einer nicht dringenden Reparatur anfragen"
+
+#. cta_label
+#: resources/playbooks/repair-assessment.php
+msgid "Request an assessment"
+msgstr "Begutachtung anfragen"
+
+#. headline
+#: resources/playbooks/repair-assessment.php
+msgid "Tell us about\nyour repair."
+msgstr "Erzähl uns von\ndeiner Reparatur."
+
+#. success_body
+#: resources/playbooks/repair-assessment.php
+msgid "Thank you. Your request has been received. A visit, scope and price still need to be agreed."
+msgstr "Danke. Deine Anfrage ist eingegangen. Besuch, Umfang und Preis müssen noch vereinbart werden."
+
+#. consent_text
+#: resources/playbooks/request-a-callback.php
+msgid "Call me about this request. %s"
+msgstr "Ich möchte zu dieser Anfrage angerufen werden. %s"
+
+#. fine_print
+#: resources/playbooks/request-a-callback.php
+msgid "We’ll use your number to reply. %s"
+msgstr "Wir nutzen deine Nummer, um zu antworten. %s"
+
+#. fine_print
+#: resources/playbooks/request-a-callback.php
+msgid "Your number is only for this reply."
+msgstr "Deine Nummer wird nur für diese Antwort genutzt."
+
+#. consent_text
+#: resources/playbooks/request-a-quote.php
+msgid "Contact me about this request. %s"
+msgstr "Ich möchte zu dieser Anfrage kontaktiert werden. %s"
+
+#. body
+#: resources/playbooks/request-a-quote.php
+msgid "Leave your email so we can discuss what you need and prepare a quote."
+msgstr "Hinterlass deine E-Mail-Adresse, damit wir besprechen können, was du brauchst, und ein Angebot erstellen."
+
+#. headline
+#: resources/playbooks/request-a-quote.php
+msgid "Let us help with your next project"
+msgstr "Wir helfen dir bei deinem nächsten Projekt"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/request-a-quote.php
+msgid "Request a quote"
+msgstr "Angebot anfragen"
+
+#. success_body
+#: resources/playbooks/request-a-quote.php
+msgid "Thank you for getting in touch. We have received your quote request."
+msgstr "Danke für deine Nachricht. Wir haben deine Angebotsanfrage erhalten."
+
+#. fine_print
+#: resources/playbooks/request-a-quote.php
+msgid "We’ll use your details to reply. %s"
+msgstr "Wir nutzen deine Angaben, um zu antworten. %s"
+
+#. interest_label
+#: resources/playbooks/request-a-quote.php
+msgid "Which service do you need? (optional)"
+msgstr "Welche Leistung brauchst du? (optional)"
+
+#. headline
+#: resources/playbooks/restock-announcements.php
+msgid "Another chance. When it returns."
+msgstr "Eine neue Chance. Wenn es zurückkommt."
+
+#. eyebrow
+#: resources/playbooks/restock-announcements.php
+msgid "Back in the making"
+msgstr "Wieder in Arbeit"
+
+#. fine_print
+#: resources/playbooks/restock-announcements.php
+msgid "Collection news only. No product reservation or automatic stock alert."
+msgstr "Nur Neuigkeiten zur Kollektion. Keine Produktreservierung und keine automatische Verfügbarkeitsmeldung."
+
+#. consent_text
+#: resources/playbooks/restock-announcements.php
+msgid "Email me collection restock announcements. I can unsubscribe anytime."
+msgstr "Ich möchte Ankündigungen zum Nachschub der Kollektion per E-Mail erhalten. Ich kann mich jederzeit abmelden."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/restock-announcements.php
+msgid "Invite collection restock announcements"
+msgstr "Zu Nachschub-Meldungen der Kollektion einladen"
+
+#. cta_label
+#: resources/playbooks/restock-announcements.php
+msgid "Request collection news"
+msgstr "Neuigkeiten zur Kollektion anfragen"
+
+#. body
+#: resources/playbooks/restock-announcements.php
+msgid "Request occasional email news when pieces return to this collection."
+msgstr "Frag gelegentliche E-Mail-News an, wenn Stücke in diese Kollektion zurückkehren."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/sale-announcement.php
+msgid "Announce a sale"
+msgstr "Einen Sale ankündigen"
+
+#. body
+#: resources/playbooks/sale-announcement.php
+msgid "Linen shirts. Easy shorts. Selected summer pieces, for less."
+msgstr "Leinenhemden. Leichte Shorts. Ausgewählte Sommerstücke, günstiger."
+
+#. headline
+#: resources/playbooks/sample-request.php
+msgid "A sample before\na decision."
+msgstr "Erst ein Muster,\ndann die Wahl."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/sample-request.php
+msgid "Ask for a material sample"
+msgstr "Ein Materialmuster anfragen"
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/sample-request.php
+msgid "Color sample"
+msgstr "Farbmuster"
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/sample-request.php
+msgid "Fabric"
+msgstr "Stoff"
+
+#. cta_label
+#: resources/playbooks/sample-request.php
+msgid "Request sample details"
+msgstr "Muster-Angaben anfragen"
+
+#. success_headline
+#: resources/playbooks/sample-request.php
+msgid "Sample enquiry received"
+msgstr "Musteranfrage erhalten"
+
+#. body
+#: resources/playbooks/sample-request.php
+msgid "Tell us which material you are considering. We will reply about sample availability."
+msgstr "Sag uns, welches Material dich interessiert. Wir melden uns zur Verfügbarkeit des Musters."
+
+#. success_body
+#: resources/playbooks/sample-request.php
+msgid "Thank you. We have received your sample enquiry. Availability and any delivery details still need to be agreed."
+msgstr "Danke. Wir haben deine Musteranfrage erhalten. Verfügbarkeit und eventuelle Lieferdetails müssen noch abgestimmt werden."
+
+#. interest_label
+#: resources/playbooks/sample-request.php
+msgid "Which material? (optional)"
+msgstr "Welches Material? (optional)"
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/sample-request.php
+msgid "Wood finish"
+msgstr "Holzoberfläche"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/service-fit-brief.php
+msgid "Check whether a website review fits"
+msgstr "Prüfen, ob eine Website-Prüfung passt"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/service-process-strip.php
+msgid "Explain the restoration enquiry process"
+msgstr "Den Ablauf der Restaurierungsanfrage erklären"
+
+#. fine_print
+#: resources/playbooks/service-text-updates.php
+msgid "Occasional marketing texts. Message rates may apply. You can opt out."
+msgstr "Gelegentliche Marketing-SMS. Es können Gebühren für Nachrichten anfallen. Du kannst dich jederzeit abmelden."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/service-text-updates.php
+msgid "Offer occasional service announcements"
+msgstr "Gelegentliche Service-Meldungen anbieten"
+
+#. body
+#: resources/playbooks/service-text-updates.php
+msgid "Request occasional announcements about new services and seasonal availability."
+msgstr "Frag gelegentliche Meldungen zu neuen Leistungen und saisonaler Verfügbarkeit an."
+
+#. cta_label
+#: resources/playbooks/service-text-updates.php
+msgid "Request service texts"
+msgstr "Service-SMS anfragen"
+
+#. headline
+#: resources/playbooks/service-text-updates.php
+msgid "Service news by text."
+msgstr "Service-News per SMS."
+
+#. consent_text
+#: resources/playbooks/service-text-updates.php
+msgid "Text me occasional service announcements. I can opt out."
+msgstr "Ich möchte gelegentlich Service-Meldungen per SMS erhalten. Ich kann mich abmelden."
+
+#. success_body
+#: resources/playbooks/service-text-updates.php
+msgid "Thank you for requesting occasional service texts."
+msgstr "Danke für deine Anfrage nach gelegentlichen Service-SMS."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/show-message-free-shipping.php
+msgid "Announce free shipping"
+msgstr "Kostenlosen Versand ankündigen"
+
+#. fine_print
+#: resources/playbooks/show-message-free-shipping.php
+msgid "Applies to standard delivery."
+msgstr "Gilt für den Standardversand."
+
+#. body
+#: resources/playbooks/show-message-free-shipping.php
+msgid "Ends Sunday at midnight"
+msgstr "Endet Sonntag um Mitternacht"
+
+#. body
+#: resources/playbooks/show-message-free-shipping.php
+msgid "Every order ships free"
+msgstr "Jede Bestellung versandkostenfrei"
+
+#. headline
+#: resources/playbooks/show-message-free-shipping.php
+msgid "Free shipping all weekend"
+msgstr "Kostenloser Versand das ganze Wochenende"
+
+#. body
+#: resources/playbooks/show-message-free-shipping.php
+msgid "No code needed"
+msgstr "Kein Code nötig"
+
+#. fine_print
+#: resources/playbooks/show-message-opening-hours.php
+msgid "Normal hours: Monday to Friday, 9am to 5pm."
+msgstr "Reguläre Zeiten: Montag bis Freitag, 9 bis 17 Uhr."
+
+#. eyebrow
+#: resources/playbooks/show-message-opening-hours.php
+msgid "Opening hours"
+msgstr "Öffnungszeiten"
+
+#. body
+#: resources/playbooks/show-message-opening-hours.php
+msgid "Orders placed over the weekend will ship on Tuesday. Our team replies to messages from Tuesday morning."
+msgstr "Bestellungen vom Wochenende versenden wir am Dienstag. Unser Team beantwortet Nachrichten ab Dienstagmorgen."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/show-message-opening-hours.php
+msgid "Share opening hours"
+msgstr "Öffnungszeiten mitteilen"
+
+#. headline
+#: resources/playbooks/show-message-opening-hours.php
+msgid "We are closed on Monday for the bank holiday."
+msgstr "Am Montag haben wir wegen des Feiertags geschlossen."
+
+#. headline
+#: resources/playbooks/sizing-guide.php
+msgid "Find your fit. Start with a measure."
+msgstr "Finde deine Passform. Fang mit dem Maßnehmen an."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/sizing-guide.php
+msgid "Help shoppers measure before choosing a size"
+msgstr "Kund:innen beim Maßnehmen vor der Größenwahl helfen"
+
+#. body
+#: resources/playbooks/sizing-guide.php
+msgid "Request a measuring guide with the steps and size chart for this collection."
+msgstr "Fordere einen Leitfaden zum Maßnehmen mit den Schritten und der Größentabelle für diese Kollektion an."
+
+#. cta_label
+#: resources/playbooks/sizing-guide.php
+msgid "Request the size guide"
+msgstr "Größenleitfaden anfordern"
+
+#. consent_text
+#: resources/playbooks/sizing-guide.php
+msgid "Send me the size guide I requested."
+msgstr "Ich möchte den angeforderten Größenleitfaden erhalten."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/sms-message-preview.php
+msgid "See a sample before choosing texts"
+msgstr "Ein Beispiel ansehen, bevor man SMS wählt"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/specification-sheet.php
+msgid "Help shoppers compare two sizes"
+msgstr "Kund:innen beim Vergleich zweier Größen helfen"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/sunday-reading.php
+msgid "Article-end Sunday reading list"
+msgstr "Sonntags-Leseliste am Artikelende"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/vip-early-access.php
+msgid "Early-access SMS signup"
+msgstr "SMS-Anmeldung für frühen Zugang"
+
+#. headline
+#: resources/playbooks/vip-early-access.php
+msgid "First pick, before anyone else"
+msgstr "Erste Wahl, vor allen anderen"
+
+#. fine_print
+#: resources/playbooks/vip-early-access.php
+msgid "Monthly texts. Reply STOP to leave. %s"
+msgstr "Monatliche SMS. Antworte STOP zum Abmelden. %s"
+
+#. consent_text
+#: resources/playbooks/vip-early-access.php
+msgid "Text me about new releases. %s"
+msgstr "Ich möchte SMS zu Neuerscheinungen erhalten. %s"
+
+#. cta_label
+#: resources/playbooks/vip-early-access.php
+msgid "Text me first"
+msgstr "Zuerst per SMS informieren"
+
+#. success_body
+#: resources/playbooks/vip-early-access.php
+msgid "Thank you for asking about first access to the next run."
+msgstr "Danke für deine Anfrage zum ersten Zugang zur nächsten Auflage."
+
+#. body
+#: resources/playbooks/vip-early-access.php
+msgid "We text the list the morning a new run goes up, and never at any other time."
+msgstr "Wir schreiben der Liste am Morgen, an dem eine neue Auflage erscheint, und zu keinem anderen Zeitpunkt."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/website-review-enquiry.php
+msgid "Invite a website review enquiry"
+msgstr "Zu einer Anfrage für eine Website-Prüfung einladen"
+
+#. consent_text
+#: resources/playbooks/welcome-discount.php
+msgid "Email me monthly plant and shop news. %s"
+msgstr "Ich möchte monatlich Pflanzen- und Shop-News per E-Mail erhalten. %s"
+
+#. body
+#: resources/playbooks/welcome-discount.php
+msgid "Get 10% off your first order and a monthly note with plant care and shop news."
+msgstr "Hol dir 10 % Rabatt auf deine erste Bestellung und monatlich Tipps zur Pflanzenpflege und Shop-News."
+
+#. cta_label
+#: resources/playbooks/welcome-discount.php
+msgid "Join and reveal my code"
+msgstr "Anmelden und meinen Code zeigen"
+
+#. fine_print
+#: resources/playbooks/welcome-discount.php
+msgid "Monthly emails. Unsubscribe anytime. First order only; gift cards excluded. %s"
+msgstr "Monatliche E-Mails. Jederzeit abbestellbar. Nur für die erste Bestellung; Geschenkkarten ausgenommen. %s"
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/welcome-discount.php
+msgid "Welcome discount"
+msgstr "Willkommensrabatt"
+
+#. success_body
+#: resources/playbooks/welcome-discount.php
+msgid "Your request is received. Use the code below for 10% off your first order."
+msgstr "Deine Anfrage ist erhalten. Nutze den Code unten für 10 % Rabatt auf deine erste Bestellung."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/wholesale-enquiry.php
+msgid "Ask about stocking a collection"
+msgstr "Nach dem Führen einer Kollektion fragen"
+
+#. interest_placeholder
+#: resources/playbooks/wholesale-enquiry.php
+msgid "Choose an enquiry"
+msgstr "Bitte auswählen"
+
+#. consent_text
+#: resources/playbooks/wholesale-enquiry.php
+msgid "Contact me about this wholesale enquiry."
+msgstr "Ich möchte zu dieser Großhandelsanfrage kontaktiert werden."
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/wholesale-enquiry.php
+msgid "First wholesale order"
+msgstr "Erste Großhandelsbestellung"
+
+#. eyebrow
+#: resources/playbooks/wholesale-enquiry.php
+msgid "For independent retailers"
+msgstr "Für unabhängige Händler"
+
+#. headline
+#: resources/playbooks/wholesale-enquiry.php
+msgid "Good things.\nNew shelves."
+msgstr "Gute Dinge.\nNeue Regale."
+
+#. body
+#: resources/playbooks/wholesale-enquiry.php
+msgid "Interested in stocking the collection? Tell us what you need to begin a trade conversation."
+msgstr "Du möchtest die Kollektion führen? Sag uns, was du brauchst, und wir starten das Händlergespräch."
+
+#. cta_label
+#: resources/playbooks/wholesale-enquiry.php
+msgid "Send a trade enquiry"
+msgstr "Händleranfrage senden"
+
+#. success_body
+#: resources/playbooks/wholesale-enquiry.php
+msgid "Thank you. This request does not open or approve a trade account."
+msgstr "Danke. Diese Anfrage eröffnet oder genehmigt kein Händlerkonto."
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/wholesale-enquiry.php
+msgid "Trade catalogue"
+msgstr "Händlerkatalog"
+
+#. answer choice, at most 120 bytes
+#: resources/playbooks/wholesale-enquiry.php
+msgid "Trade eligibility"
+msgstr "Händlerberechtigung"
+
+#. fine_print
+#: resources/playbooks/wholesale-enquiry.php
+msgid "Trade eligibility and pricing are discussed separately."
+msgstr "Händlerberechtigung und Preise besprechen wir separat."
+
+#. success_headline
+#: resources/playbooks/wholesale-enquiry.php
+msgid "Trade enquiry received"
+msgstr "Händleranfrage erhalten"
+
+#. fine_print
+#: resources/playbooks/wholesale-enquiry.php
+msgid "We use your details to respond to this enquiry."
+msgstr "Wir verwenden deine Angaben, um auf diese Anfrage zu antworten."
+
+#. interest_label
+#: resources/playbooks/wholesale-enquiry.php
+msgid "What do you need? (optional)"
+msgstr "Was brauchst du? (optional)"
+
+#. body
+#: resources/playbooks/writing-checklist.php
+msgid "Checks for a\nclearer draft."
+msgstr "Prüfpunkte für einen\nklareren Entwurf."
+
+#. headline
+#: resources/playbooks/writing-checklist.php
+msgid "Give your draft\na second look."
+msgstr "Wirf einen zweiten\nBlick auf deinen Entwurf."
+
+#. setup name, at most 120 bytes
+#: resources/playbooks/writing-checklist.php
+msgid "Offer a seven-point writing checklist"
+msgstr "Eine Schreib-Checkliste mit sieben Punkten anbieten"
+
+#. fine_print
+#: resources/playbooks/writing-checklist.php
+msgid "One checklist email. No newsletter signup."
+msgstr "Eine E-Mail mit der Checkliste. Keine Newsletter-Anmeldung."
+
+#. success_action
+#: resources/playbooks/writing-checklist.php
+msgid "Open the writing checklist"
+msgstr "Schreib-Checkliste öffnen"
+
+#. success_body
+#: resources/playbooks/writing-checklist.php
+msgid "Read your opening aloud. Is the point clear before the detail begins?"
+msgstr "Lies deinen Einstieg laut vor. Ist der Kern klar, bevor die Details beginnen?"
+
+#. cta_label
+#: resources/playbooks/writing-checklist.php
+msgid "Request the writing checklist"
+msgstr "Schreib-Checkliste anfordern"
+
+#. consent_text
+#: resources/playbooks/writing-checklist.php
+msgid "Send me the writing checklist I requested."
+msgstr "Ich möchte die angeforderte Schreib-Checkliste erhalten."
+
+#. body
+#: resources/playbooks/writing-checklist.php
+msgid "Seven checks for structure, evidence and a useful ending."
+msgstr "Sieben Prüfpunkte für Aufbau, Belege und einen nützlichen Schluss."
+
+#. eyebrow
+#: resources/playbooks/writing-checklist.php
+msgid "START WITH ONE PASS"
+msgstr "FANG MIT EINEM DURCHGANG AN"
+
+#. success_body
+#: resources/playbooks/writing-checklist.php
+msgid "Thank you. Your writing checklist request has been received."
+msgstr "Danke. Deine Anfrage nach der Schreib-Checkliste ist erhalten."
+
+#. eyebrow
+#: resources/playbooks/writing-checklist.php
+msgid "THE DRAFT CHECKLIST"
+msgstr "DIE ENTWURFS-CHECKLISTE"
+
+#. fine_print
+#: resources/playbooks/writing-checklist.php
+msgid "Your request is for the writing checklist."
+msgstr "Deine Anfrage gilt der Schreib-Checkliste."
+
+#. eyebrow text
+#: resources/templates/library/appointment-agenda.json resources/playbooks/appointment-agenda.php
+msgid "Agree together"
+msgstr "Gemeinsam abstimmen"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/appointment-agenda.json
+msgid "Appointment agenda"
+msgstr "Terminagenda"
+
+#. button label
+#: resources/templates/library/appointment-agenda.json resources/playbooks/appointment-agenda.php
+msgid "Ask about a consultation"
+msgstr "Beratung anfragen"
+
+#. text text
+#: resources/templates/library/appointment-agenda.json resources/playbooks/appointment-agenda.php
+msgid "Ask about a planning consultation."
+msgstr "Frag eine Planungsberatung an."
+
+#. eyebrow text
+#: resources/templates/library/appointment-agenda.json resources/playbooks/appointment-agenda.php
+msgid "Before we arrange a time"
+msgstr "Bevor wir einen Termin vereinbaren"
+
+#. eyebrow text
+#: resources/templates/library/appointment-agenda.json resources/playbooks/appointment-agenda.php
+msgid "Bring to the conversation"
+msgstr "Für das Gespräch mitbringen"
+
+#. field placeholder
+#: resources/templates/library/appointment-agenda.json resources/templates/library/callback-notes.json resources/playbooks/appointment-agenda.php
+msgid "Choose a topic"
+msgstr "Bitte ein Thema wählen"
+
+#. answer choice, at most 120 bytes
+#: resources/templates/library/appointment-agenda.json resources/playbooks/appointment-agenda.php
+msgid "Choosing colors and materials"
+msgstr "Farben und Materialien auswählen"
+
+#. heading text
+#: resources/templates/library/appointment-agenda.json resources/playbooks/appointment-agenda.php
+msgid "Consultation enquiry received"
+msgstr "Beratungsanfrage erhalten"
+
+#. field label
+#: resources/templates/library/appointment-agenda.json resources/templates/library/availability-desk.json resources/templates/library/bold-ask.json
+msgid "Email address"
+msgstr "E-Mail-Adresse"
+
+#. answer choice, at most 120 bytes
+#: resources/templates/library/appointment-agenda.json resources/playbooks/appointment-agenda.php
+msgid "Help deciding where to start"
+msgstr "Hilfe beim Einstieg"
+
+#. answer choice, at most 120 bytes
+#: resources/templates/library/appointment-agenda.json resources/playbooks/appointment-agenda.php
+msgid "Planning the layout"
+msgstr "Die Raumaufteilung planen"
+
+#. consent text
+#: resources/templates/library/appointment-agenda.json resources/playbooks/appointment-agenda.php
+msgid "Reply to my consultation enquiry."
+msgstr "Antwortet auf meine Beratungsanfrage."
+
+#. screen name, at most 120 bytes
+#: resources/templates/library/appointment-agenda.json resources/templates/library/edition-pass.json resources/templates/library/excerpt-window.json
+msgid "Request received"
+msgstr "Anfrage erhalten"
+
+#. heading text
+#: resources/templates/library/appointment-agenda.json resources/playbooks/appointment-agenda.php
+msgid "Talk through your space."
+msgstr "Sprich über deinen Raum."
+
+#. text text
+#: resources/templates/library/appointment-agenda.json resources/playbooks/appointment-agenda.php
+msgid "Thank you. The format, any fee and a suitable time still need to be agreed."
+msgstr "Danke. Format, eventuelle Kosten und ein passender Termin müssen noch abgestimmt werden."
+
+#. text text
+#: resources/templates/library/appointment-agenda.json resources/playbooks/appointment-agenda.php
+msgid "The format, any fee and a suitable time."
+msgstr "Das Format, eventuelle Kosten und ein passender Termin."
+
+#. field label
+#: resources/templates/library/appointment-agenda.json resources/playbooks/appointment-agenda.php resources/playbooks/basket-product-help.php
+msgid "What would help? (optional)"
+msgstr "Was würde helfen? (optional)"
+
+#. field placeholder
+#: resources/templates/library/appointment-agenda.json resources/templates/library/availability-desk.json resources/templates/library/bold-ask.json
+msgid "you@example.com"
+msgstr "du@example.com"
+
+#. text text
+#: resources/templates/library/appointment-agenda.json resources/playbooks/appointment-agenda.php
+msgid "Your details are for this enquiry. A time is not reserved."
+msgstr "Deine Angaben gelten nur für diese Anfrage. Ein Termin wird nicht reserviert."
+
+#. heading text
+#: resources/templates/library/appointment-agenda.json resources/templates/library/availability-desk.json resources/playbooks/appointment-agenda.php
+msgid "Your enquiry"
+msgstr "Deine Anfrage"
+
+#. screen name, at most 120 bytes
+#: resources/templates/library/appointment-agenda.json resources/templates/library/journey-enquiry.json resources/templates/library/request-folio.json
+msgid "Your request"
+msgstr "Deine Anfrage"
+
+#. text text
+#: resources/templates/library/appointment-agenda.json resources/playbooks/appointment-agenda.php
+msgid "Your room and the changes you have in mind."
+msgstr "Dein Raum und die Veränderungen, die du dir vorstellst."
+
+#. eyebrow text
+#: resources/templates/library/availability-desk.json
+msgid "A little flexibility"
+msgstr "Etwas Flexibilität"
+
+#. heading text, at most 120 bytes
+#: resources/templates/library/availability-desk.json resources/playbooks/earlier-appointment-enquiry.php
+msgid "Ask about an earlier appointment"
+msgstr "Nach einem früheren Termin fragen"
+
+#. button label
+#: resources/templates/library/availability-desk.json resources/playbooks/earlier-appointment-enquiry.php
+msgid "Ask about an earlier time"
+msgstr "Nach früherer Zeit fragen"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/availability-desk.json
+msgid "Availability desk"
+msgstr "Verfügbarkeitsanfrage"
+
+#. field placeholder
+#: resources/templates/library/availability-desk.json resources/playbooks/earlier-appointment-enquiry.php
+msgid "Choose a preference"
+msgstr "Bitte auswählen"
+
+#. button label
+#: resources/templates/library/availability-desk.json resources/playbooks/earlier-appointment-enquiry.php
+msgid "Close"
+msgstr "Schließen"
+
+#. answer choice, at most 120 bytes
+#: resources/templates/library/availability-desk.json resources/playbooks/earlier-appointment-enquiry.php
+msgid "Either works"
+msgstr "Beides passt"
+
+#. screen name, at most 120 bytes
+#: resources/templates/library/availability-desk.json resources/playbooks/earlier-appointment-enquiry.php
+msgid "Enquiry received"
+msgstr "Anfrage erhalten"
+
+#. text text
+#: resources/templates/library/availability-desk.json
+msgid "Leave your preference and a reply address. We can contact you if a suitable opening comes up."
+msgstr "Hinterlasse deine Präferenz und eine Antwortadresse. Wir melden uns, wenn ein passender Termin frei wird."
+
+#. heading text
+#: resources/templates/library/availability-desk.json
+msgid "Preference received"
+msgstr "Präferenz erhalten"
+
+#. text text
+#: resources/templates/library/availability-desk.json
+msgid "Thank you. We have received your details and availability preference. Your appointment has not changed."
+msgstr "Danke. Wir haben deine Angaben und deine Terminpräferenz erhalten. Dein Termin bleibt unverändert."
+
+#. text text
+#: resources/templates/library/availability-desk.json
+msgid "This is an enquiry, not a booking or a guaranteed place."
+msgstr "Das ist eine Anfrage, keine Buchung und kein garantierter Platz."
+
+#. answer choice, at most 120 bytes
+#: resources/templates/library/availability-desk.json resources/playbooks/earlier-appointment-enquiry.php
+msgid "Weekdays"
+msgstr "Wochentage"
+
+#. answer choice, at most 120 bytes
+#: resources/templates/library/availability-desk.json resources/playbooks/earlier-appointment-enquiry.php
+msgid "Weekends"
+msgstr "Wochenenden"
+
+#. field label
+#: resources/templates/library/availability-desk.json resources/playbooks/earlier-appointment-enquiry.php
+msgid "When could you come? (optional)"
+msgstr "Wann könntest du kommen? (optional)"
+
+#. consent text
+#: resources/templates/library/availability-desk.json resources/playbooks/earlier-appointment-enquiry.php
+msgid "You may contact me about a suitable appointment."
+msgstr "Ich möchte wegen eines passenden Termins kontaktiert werden."
+
+#. screen name, at most 120 bytes
+#: resources/templates/library/availability-desk.json
+msgid "Your availability"
+msgstr "Deine Verfügbarkeit"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/bold-ask.json
+msgid "Bold ask"
+msgstr "Mutige Anfrage"
+
+#. screen name, at most 120 bytes
+#: resources/templates/library/bold-ask.json resources/templates/library/callback-notes.json resources/templates/library/centred-card.json
+msgid "Details"
+msgstr "Angaben"
+
+#. consent text
+#: resources/templates/library/bold-ask.json resources/templates/library/code-reveal.json resources/templates/library/cream-coupon.json
+msgid "Email me offers and news. %s"
+msgstr "Ich möchte Angebote und News per E-Mail erhalten. %s"
+
+#. heading text
+#: resources/templates/library/bold-ask.json
+msgid "One good idea. Every week."
+msgstr "Eine gute Idee. Jede Woche."
+
+#. link, at most 200 bytes
+#: resources/templates/library/bold-ask.json resources/templates/library/callback-notes.json resources/templates/library/centred-card.json
+msgid "Privacy Policy"
+msgstr "Datenschutzerklärung"
+
+#. screen name, at most 120 bytes
+#: resources/templates/library/bold-ask.json resources/templates/library/callback-notes.json resources/templates/library/centred-card.json
+msgid "Received"
+msgstr "Erhalten"
+
+#. heading text
+#: resources/templates/library/bold-ask.json
+msgid "Request received."
+msgstr "Anfrage erhalten."
+
+#. button label
+#: resources/templates/library/bold-ask.json resources/playbooks/one-line-invite.php
+msgid "Send me the weekly idea"
+msgstr "Schick mir die Wochenidee"
+
+#. text text
+#: resources/templates/library/bold-ask.json
+msgid "Thank you for asking for the next weekly idea."
+msgstr "Danke, dass du die nächste Wochenidee angefragt hast."
+
+#. text text
+#: resources/templates/library/bold-ask.json
+msgid "Weekly emails. %s"
+msgstr "Wöchentliche E-Mails. %s"
+
+#. eyebrow text
+#: resources/templates/library/callback-notes.json resources/playbooks/request-a-callback.php
+msgid "A conversation, to begin"
+msgstr "Zum Einstieg ein Gespräch"
+
+#. answer choice, at most 120 bytes
+#: resources/templates/library/callback-notes.json resources/playbooks/renovation-callback.php resources/playbooks/request-a-callback.php
+msgid "A new project"
+msgstr "Ein neues Projekt"
+
+#. field placeholder
+#: resources/templates/library/callback-notes.json resources/templates/library/inline-choice.json resources/playbooks/agency-project-enquiry.php
+msgid "Alex Morgan"
+msgstr "Alex Morgan"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/callback-notes.json
+msgid "Callback notes"
+msgstr "Rückruf-Notizen"
+
+#. heading text
+#: resources/templates/library/callback-notes.json resources/templates/library/inline-phone.json resources/playbooks/request-a-callback.php
+msgid "Callback request received"
+msgstr "Rückrufanfrage erhalten"
+
+#. answer choice, at most 120 bytes
+#: resources/templates/library/callback-notes.json resources/playbooks/renovation-callback.php resources/playbooks/request-a-callback.php
+msgid "Help choosing the next step"
+msgstr "Hilfe bei der Wahl des nächsten Schritts"
+
+#. consent text
+#: resources/templates/library/callback-notes.json resources/templates/library/inline-phone.json
+msgid "I agree to a call about my request. %s"
+msgstr "Ich bin mit einem Anruf zu meiner Anfrage einverstanden. %s"
+
+#. answer choice, at most 120 bytes
+#: resources/templates/library/callback-notes.json resources/playbooks/renovation-callback.php resources/playbooks/request-a-callback.php
+msgid "Improving something existing"
+msgstr "Etwas Bestehendes verbessern"
+
+#. text text
+#: resources/templates/library/callback-notes.json resources/playbooks/request-a-callback.php
+msgid "Leave your number to discuss your project and how we can help."
+msgstr "Hinterlasse deine Nummer, um dein Projekt zu besprechen und zu klären, wie wir helfen können."
+
+#. field label
+#: resources/templates/library/callback-notes.json resources/templates/library/journey-email-then-sms.json resources/playbooks/journey-email-then-sms.php
+msgid "Phone number"
+msgstr "Telefonnummer"
+
+#. heading text
+#: resources/templates/library/callback-notes.json resources/playbooks/request-a-callback.php
+msgid "Request a callback\nabout your project."
+msgstr "Fordere einen Rückruf\nzu deinem Projekt an."
+
+#. button label
+#: resources/templates/library/callback-notes.json resources/playbooks/request-a-callback.php
+msgid "Request my callback"
+msgstr "Meinen Rückruf anfordern"
+
+#. text text
+#: resources/templates/library/callback-notes.json resources/playbooks/request-a-callback.php
+msgid "We have received your details and your request for a call. This is not an appointment confirmation."
+msgstr "Wir haben deine Angaben und deine Anfrage nach einem Anruf erhalten. Das ist keine Terminbestätigung."
+
+#. text text
+#: resources/templates/library/callback-notes.json
+msgid "We use your number to respond to this request. %s"
+msgstr "Wir verwenden deine Nummer, um auf diese Anfrage zu antworten. %s"
+
+#. field label
+#: resources/templates/library/callback-notes.json resources/playbooks/renovation-callback.php resources/playbooks/request-a-callback.php
+msgid "What can we help with? (optional)"
+msgstr "Wobei können wir helfen? (optional)"
+
+#. field label
+#: resources/templates/library/callback-notes.json resources/templates/library/inline-choice.json resources/templates/library/service-docket.json
+msgid "Your name (optional)"
+msgstr "Dein Name (optional)"
+
+#. text text
+#: resources/templates/library/callback-notes.json resources/playbooks/renovation-callback.php
+msgid "Your number is for responding to this enquiry."
+msgstr "Deine Nummer dient nur dazu, auf diese Anfrage zu antworten."
+
+#. text text
+#: resources/templates/library/centred-card.json
+msgid "A short selection of stories worth your time. Free, once a week."
+msgstr "Eine kleine Auswahl an Geschichten, die deine Zeit wert sind. Kostenlos, einmal pro Woche."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/centred-card.json
+msgid "Centered card"
+msgstr "Zentrierte Karte"
+
+#. heading text
+#: resources/templates/library/centred-card.json
+msgid "Five good reads. Every Friday."
+msgstr "Fünf gute Lesetipps. Jeden Freitag."
+
+#. text text
+#: resources/templates/library/centred-card.json
+msgid "One email each Friday. Unsubscribe any time."
+msgstr "Jeden Freitag eine E-Mail. Jederzeit abbestellbar."
+
+#. button label
+#: resources/templates/library/centred-card.json
+msgid "Send me the Friday reads"
+msgstr "Schick mir die Freitags-Lesetipps"
+
+#. consent text
+#: resources/templates/library/centred-card.json
+msgid "Send me the Friday reads. %s"
+msgstr "Ich möchte die Freitags-Lesetipps erhalten. %s"
+
+#. heading text
+#: resources/templates/library/centred-card.json resources/templates/library/edition-pass.json resources/templates/library/inline-bar.json
+msgid "Thank you"
+msgstr "Danke"
+
+#. text text
+#: resources/templates/library/centred-card.json
+msgid "We have received your request for the Friday reads."
+msgstr "Wir haben deine Anfrage nach den Freitags-Lesetipps erhalten."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/code-reveal.json
+msgid "Code on success"
+msgstr "Code nach Erfolg"
+
+#. heading text
+#: resources/templates/library/code-reveal.json
+msgid "Here it is"
+msgstr "Hier ist er"
+
+#. text text
+#: resources/templates/library/code-reveal.json
+msgid "Leave your email to reveal your first-order code here."
+msgstr "Gib deine E-Mail-Adresse an, um hier deinen Code für die erste Bestellung zu enthüllen."
+
+#. eyebrow text
+#: resources/templates/library/code-reveal.json
+msgid "New customers"
+msgstr "Neukund:innen"
+
+#. text text
+#: resources/templates/library/code-reveal.json
+msgid "One use per customer. Not with other offers."
+msgstr "Einmal pro Kunde. Nicht mit anderen Angeboten kombinierbar."
+
+#. button label
+#: resources/templates/library/code-reveal.json resources/templates/library/fieldwork.json
+msgid "Reveal my code"
+msgstr "Meinen Code zeigen"
+
+#. text text
+#: resources/templates/library/code-reveal.json
+msgid "We have received your details. Enter this code at checkout."
+msgstr "Wir haben deine Angaben erhalten. Gib diesen Code an der Kasse ein."
+
+#. heading text
+#: resources/templates/library/code-reveal.json
+msgid "Your first order, 10% less."
+msgstr "Deine erste Bestellung, 10 % weniger."
+
+#. heading text
+#: resources/templates/library/collection-poster.json resources/playbooks/lighting-collection.php
+msgid "A softer kind of evening."
+msgstr "Ein sanfterer Abend."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/collection-poster.json
+msgid "Collection poster"
+msgstr "Kollektionsposter"
+
+#. button label
+#: resources/templates/library/collection-poster.json resources/playbooks/lighting-collection.php
+msgid "Explore the lighting edit"
+msgstr "Die Lichtauswahl entdecken"
+
+#. image alt
+#: resources/templates/library/collection-poster.json
+msgid "Illustrated terracotta and cream table lamps beside a green decorative sphere"
+msgstr "Illustrierte Tischlampen in Terrakotta und Creme neben einer grünen Dekokugel"
+
+#. screen name, at most 120 bytes
+#: resources/templates/library/collection-poster.json resources/templates/library/event-calendar.json resources/templates/library/offer-receipt.json
+msgid "Information"
+msgstr "Informationen"
+
+#. text text
+#: resources/templates/library/collection-poster.json resources/playbooks/lighting-collection.php
+msgid "Table lamps for reading corners and quiet rooms."
+msgstr "Tischlampen für Leseecken und ruhige Räume."
+
+#. eyebrow text
+#: resources/templates/library/collection-poster.json resources/playbooks/lighting-collection.php
+msgid "The lighting edit"
+msgstr "Die Lichtauswahl"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/cream-coupon.json
+msgid "Cream coupon"
+msgstr "Cremefarbener Gutschein"
+
+#. eyebrow text
+#: resources/templates/library/cream-coupon.json
+msgid "First order only"
+msgstr "Nur für die erste Bestellung"
+
+#. text text
+#: resources/templates/library/cream-coupon.json
+msgid "First order only. One use per customer. Unsubscribe any time."
+msgstr "Nur für die erste Bestellung. Einmal pro Kunde. Jederzeit abbestellbar."
+
+#. heading text
+#: resources/templates/library/cream-coupon.json
+msgid "Here is your code"
+msgstr "Hier ist dein Code"
+
+#. text text
+#: resources/templates/library/cream-coupon.json
+msgid "off your first order."
+msgstr "auf deine erste Bestellung."
+
+#. button label
+#: resources/templates/library/cream-coupon.json resources/templates/library/punched-ticket.json
+msgid "Reveal my 15% code"
+msgstr "Meinen Code mit 15 % zeigen"
+
+#. text text
+#: resources/templates/library/cream-coupon.json
+msgid "We have received your details. Use this code at checkout."
+msgstr "Wir haben deine Angaben erhalten. Nutze diesen Code an der Kasse."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/deadline-panel.json
+msgid "Deadline panel"
+msgstr "Fristen-Banner"
+
+#. eyebrow text
+#: resources/templates/library/deadline-panel.json
+msgid "Ends soon"
+msgstr "Endet bald"
+
+#. screen name, at most 120 bytes
+#: resources/templates/library/deadline-panel.json resources/templates/library/flash-offer.json resources/templates/library/halloween-bats.json
+msgid "Offer"
+msgstr "Angebot"
+
+#. text text
+#: resources/templates/library/deadline-panel.json resources/templates/library/flash-offer.json resources/templates/library/offer-panel.json
+msgid "Selected items only. Prices as marked."
+msgstr "Nur ausgewählte Artikel. Preise wie ausgezeichnet."
+
+#. text text
+#: resources/templates/library/deadline-panel.json
+msgid "Selected styles, reduced while the sale is open."
+msgstr "Ausgewählte Styles, reduziert, solange der Sale läuft."
+
+#. button label
+#: resources/templates/library/deadline-panel.json resources/templates/library/flash-offer.json resources/templates/library/offer-panel.json
+msgid "Shop the sale"
+msgstr "Zum Sale"
+
+#. heading text
+#: resources/templates/library/deadline-panel.json
+msgid "The final edit"
+msgstr "Die letzte Auswahl"
+
+#. text text
+#: resources/templates/library/edition-pass.json resources/playbooks/edition-early-access.php
+msgid "A short email when a new collection arrives. No daily noise."
+msgstr "Eine kurze E-Mail, wenn eine neue Kollektion erscheint. Kein tägliches Rauschen."
+
+#. text text
+#: resources/templates/library/edition-pass.json resources/playbooks/edition-early-access.php
+msgid "Collection announcements only. Access and availability depend on the release."
+msgstr "Nur Kollektions-Ankündigungen. Zugang und Verfügbarkeit hängen von der Veröffentlichung ab."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/edition-pass.json
+msgid "Edition pass"
+msgstr "Editionspass"
+
+#. consent text
+#: resources/templates/library/edition-pass.json resources/playbooks/edition-early-access.php
+msgid "Email me new-collection announcements. I can unsubscribe anytime."
+msgstr "Ich möchte Ankündigungen neuer Kollektionen per E-Mail erhalten. Ich kann mich jederzeit abmelden."
+
+#. heading text
+#: resources/templates/library/edition-pass.json resources/playbooks/edition-early-access.php
+msgid "First look.\nYour inbox."
+msgstr "Erster Blick.\nDein Posteingang."
+
+#. button label
+#: resources/templates/library/edition-pass.json resources/playbooks/edition-early-access.php
+msgid "Request first access"
+msgstr "Frühen Zugang anfragen"
+
+#. eyebrow text
+#: resources/templates/library/edition-pass.json resources/playbooks/edition-early-access.php
+msgid "The next edition"
+msgstr "Die nächste Edition"
+
+#. text text
+#: resources/templates/library/edition-pass.json resources/playbooks/edition-early-access.php
+msgid "We have received your request for collection announcements."
+msgstr "Wir haben deine Anfrage nach Kollektions-Ankündigungen erhalten."
+
+#. heading text
+#: resources/templates/library/edition-pass.json resources/playbooks/edition-early-access.php
+msgid "You’re on our request list."
+msgstr "Du stehst auf unserer Anfrageliste."
+
+#. screen name, at most 120 bytes
+#: resources/templates/library/edition-pass.json resources/templates/library/message-sample.json resources/templates/library/reading-cover.json
+msgid "Your details"
+msgstr "Deine Angaben"
+
+#. text text
+#: resources/templates/library/event-calendar.json resources/playbooks/event-calendar.php
+msgid "14 November 2026\n14:00–16:00 Europe/London"
+msgstr "14. November 2026\n14:00–16:00 Uhr Europe/London"
+
+#. text text
+#: resources/templates/library/event-calendar.json resources/playbooks/event-calendar.php
+msgid "Check the venue, access and registration terms before planning your visit."
+msgstr "Prüfe Veranstaltungsort, Zugang und Anmeldebedingungen, bevor du deinen Besuch planst."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/event-calendar.json
+msgid "Event calendar"
+msgstr "Veranstaltungskalender"
+
+#. eyebrow text
+#: resources/templates/library/event-calendar.json resources/playbooks/event-calendar.php
+msgid "November 2026"
+msgstr "November 2026"
+
+#. eyebrow text
+#: resources/templates/library/event-calendar.json resources/playbooks/event-calendar.php
+msgid "Open workshop"
+msgstr "Offene Werkstatt"
+
+#. text text
+#: resources/templates/library/event-calendar.json resources/playbooks/event-calendar.php
+msgid "Saturday"
+msgstr "Samstag"
+
+#. heading text
+#: resources/templates/library/event-calendar.json resources/playbooks/event-calendar.php
+msgid "See how a chair is restored."
+msgstr "Sieh, wie ein Stuhl restauriert wird."
+
+#. text text
+#: resources/templates/library/event-calendar.json resources/playbooks/event-calendar.php
+msgid "The restoration workshop\nIn person"
+msgstr "Die Restaurierungswerkstatt\nVor Ort"
+
+#. button label
+#: resources/templates/library/event-calendar.json resources/playbooks/event-calendar.php
+msgid "View event details"
+msgstr "Veranstaltungsdetails ansehen"
+
+#. text text
+#: resources/templates/library/event-calendar.json resources/playbooks/event-calendar.php
+msgid "Watch the tools and techniques, then ask your questions."
+msgstr "Sieh dir Werkzeuge und Techniken an und stell dann deine Fragen."
+
+#. eyebrow text
+#: resources/templates/library/event-calendar.json resources/playbooks/event-calendar.php
+msgid "When"
+msgstr "Wann"
+
+#. eyebrow text
+#: resources/templates/library/event-calendar.json resources/playbooks/event-calendar.php
+msgid "Where"
+msgstr "Wo"
+
+#. text text
+#: resources/templates/library/excerpt-window.json resources/playbooks/excerpt-window.php
+msgid "“Sort the whole room” becomes “clear one shelf”. A small starting point makes the next action easier to see."
+msgstr "Aus „den ganzen Raum sortieren“ wird „ein Regal aufräumen“. Ein kleiner Anfang macht den nächsten Schritt leichter erkennbar."
+
+#. text text
+#: resources/templates/library/excerpt-window.json resources/playbooks/excerpt-window.php
+msgid "An exercise from the Small Starts workbook."
+msgstr "Eine Übung aus dem Arbeitsheft „Small Starts“."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/excerpt-window.json
+msgid "Excerpt window"
+msgstr "Auszug-Fenster"
+
+#. heading text
+#: resources/templates/library/excerpt-window.json resources/playbooks/excerpt-window.php
+msgid "Keep going with the workbook."
+msgstr "Mach mit dem Arbeitsheft weiter."
+
+#. heading text
+#: resources/templates/library/excerpt-window.json resources/playbooks/excerpt-window.php
+msgid "Make the next step smaller."
+msgstr "Mach den nächsten Schritt kleiner."
+
+#. text text
+#: resources/templates/library/excerpt-window.json resources/playbooks/excerpt-window.php resources/playbooks/fit-checklist.php
+msgid "One resource email. No newsletter signup."
+msgstr "Eine E-Mail mit der Ressource. Keine Newsletter-Anmeldung."
+
+#. followup label
+#: resources/templates/library/excerpt-window.json resources/playbooks/excerpt-window.php
+msgid "Open the workbook"
+msgstr "Arbeitsheft öffnen"
+
+#. screen name, at most 120 bytes
+#: resources/templates/library/excerpt-window.json
+msgid "Read a sample"
+msgstr "Leseprobe"
+
+#. button label
+#: resources/templates/library/excerpt-window.json resources/playbooks/excerpt-window.php
+msgid "Request the workbook"
+msgstr "Arbeitsheft anfordern"
+
+#. consent text
+#: resources/templates/library/excerpt-window.json resources/playbooks/excerpt-window.php
+msgid "Send me the requested workbook."
+msgstr "Ich möchte das angeforderte Arbeitsheft erhalten."
+
+#. text text
+#: resources/templates/library/excerpt-window.json resources/playbooks/excerpt-window.php
+msgid "Six short exercises for turning a difficult project into a doable next step."
+msgstr "Sechs kurze Übungen, die ein schwieriges Projekt in einen machbaren nächsten Schritt verwandeln."
+
+#. eyebrow text
+#: resources/templates/library/excerpt-window.json resources/playbooks/excerpt-window.php
+msgid "Small Starts"
+msgstr "Small Starts"
+
+#. text text
+#: resources/templates/library/excerpt-window.json resources/playbooks/excerpt-window.php
+msgid "Thank you for requesting the workbook. Keep your first small step nearby."
+msgstr "Danke für deine Anfrage nach dem Arbeitsheft. Behalte deinen ersten kleinen Schritt im Blick."
+
+#. eyebrow text
+#: resources/templates/library/excerpt-window.json resources/playbooks/excerpt-window.php
+msgid "Try one exercise"
+msgstr "Probier eine Übung aus"
+
+#. text text
+#: resources/templates/library/excerpt-window.json resources/playbooks/excerpt-window.php
+msgid "Write down one task you have been putting off. Now describe its first two minutes."
+msgstr "Schreib eine Aufgabe auf, die du vor dir herschiebst. Beschreibe nun ihre ersten zwei Minuten."
+
+#. heading text
+#: resources/templates/library/excerpt-window.json resources/templates/library/service-docket.json resources/playbooks/edition-sample-signup.php
+msgid "Your request is received."
+msgstr "Deine Anfrage ist erhalten."
+
+#. text emphasis
+#: resources/templates/library/fieldwork.json resources/templates/library/offer-receipt.json resources/playbooks/first-order-receipt.php
+msgid "10% off"
+msgstr "10 % Rabatt"
+
+#. heading text
+#: resources/templates/library/fieldwork.json resources/playbooks/welcome-discount.php
+msgid "10% off.\nRoom to grow."
+msgstr "10 % Rabatt.\nPlatz zum Wachsen."
+
+#. heading text
+#: resources/templates/library/fieldwork.json resources/playbooks/welcome-discount.php
+msgid "A little more\ngreen, for less."
+msgstr "Etwas mehr\nGrün, für weniger."
+
+#. text text
+#: resources/templates/library/fieldwork.json
+msgid "A little welcome for your home. Leave your email to reveal a code for %b your first order."
+msgstr "Ein kleines Willkommen für dein Zuhause. Gib deine E-Mail-Adresse an und enthülle einen Code für %b deine erste Bestellung."
+
+#. eyebrow text
+#: resources/templates/library/fieldwork.json resources/playbooks/welcome-discount.php
+msgid "A welcome from us"
+msgstr "Ein Willkommen von uns"
+
+#. text text
+#: resources/templates/library/fieldwork.json resources/playbooks/welcome-discount.php
+msgid "Apply at checkout. First order only; gift cards excluded."
+msgstr "An der Kasse einlösen. Nur für die erste Bestellung; Geschenkkarten ausgenommen."
+
+#. consent text
+#: resources/templates/library/fieldwork.json
+msgid "Email me plant notes and offers. %s"
+msgstr "Ich möchte Pflanzentipps und Angebote per E-Mail erhalten. %s"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/fieldwork.json
+msgid "Fieldwork"
+msgstr "Fieldwork"
+
+#. text text
+#: resources/templates/library/fieldwork.json
+msgid "Monthly plant notes and offers. Unsubscribe any time. First order only; gift cards excluded. %s"
+msgstr "Monatliche Pflanzentipps und Angebote. Jederzeit abbestellbar. Nur für die erste Bestellung; Geschenkkarten ausgenommen. %s"
+
+#. text text
+#: resources/templates/library/fieldwork.json
+msgid "Thank you for sharing your details. Use the code below for %b your first order."
+msgstr "Danke für deine Angaben. Nutze den Code unten für %b deine erste Bestellung."
+
+#. badge text
+#: resources/templates/library/flash-offer.json
+msgid "50% OFF"
+msgstr "50 % RABATT"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/flash-offer.json
+msgid "Corner flash"
+msgstr "Eck-Flash"
+
+#. heading text
+#: resources/templates/library/flash-offer.json
+msgid "Half price. Fresh possibilities."
+msgstr "Halber Preis. Neue Möglichkeiten."
+
+#. text text
+#: resources/templates/library/flash-offer.json
+msgid "Selected pieces from the archive, ready for a new home."
+msgstr "Ausgewählte Stücke aus dem Archiv, bereit für ein neues Zuhause."
+
+#. eyebrow text
+#: resources/templates/library/flash-offer.json
+msgid "The archive edit"
+msgstr "Die Archivauswahl"
+
+#. heading text
+#: resources/templates/library/halloween-bats.json resources/templates/library/halloween-forest.json resources/playbooks/halloween-after-dark-offer.php
+msgid "30% off"
+msgstr "30 % Rabatt"
+
+#. text text
+#: resources/templates/library/halloween-bats.json resources/playbooks/halloween-midnight-flight-offer.php
+msgid "A fleeting offer for your autumn rituals. Catch it before it disappears."
+msgstr "Ein flüchtiges Angebot für deine Herbstrituale. Schnapp es dir, bevor es verschwindet."
+
+#. description of a decoration, at most 80 bytes
+#: resources/templates/library/halloween-bats.json
+msgid "Flying bats"
+msgstr "Fliegende Fledermäuse"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/halloween-bats.json resources/playbooks/halloween-midnight-flight-offer.php
+msgid "Halloween midnight flight"
+msgstr "Halloween-Mitternachtsflug"
+
+#. eyebrow text
+#: resources/templates/library/halloween-bats.json resources/templates/library/halloween-forest.json resources/playbooks/halloween-after-dark-offer.php
+msgid "HALLOWEEN WEEK"
+msgstr "HALLOWEEN-WOCHE"
+
+#. heading text
+#: resources/templates/library/halloween-bats.json resources/playbooks/halloween-midnight-flight-offer.php
+msgid "Midnight has\nits perks."
+msgstr "Mitternacht hat\nihre Vorzüge."
+
+#. button label
+#: resources/templates/library/halloween-bats.json resources/templates/library/halloween-forest.json resources/playbooks/halloween-after-dark-offer.php
+msgid "Shop after dark"
+msgstr "Shoppen nach Einbruch der Dunkelheit"
+
+#. eyebrow text
+#: resources/templates/library/halloween-bats.json resources/playbooks/halloween-midnight-flight-offer.php
+msgid "SOMETHING GOOD IS IN THE AIR"
+msgstr "ETWAS GUTES LIEGT IN DER LUFT"
+
+#. text text
+#: resources/templates/library/halloween-bats.json resources/templates/library/halloween-forest.json resources/playbooks/halloween-after-dark-offer.php
+msgid "Through October 31.\nSelected pieces only."
+msgstr "Bis 31. Oktober.\nNur ausgewählte Stücke."
+
+#. text text
+#: resources/templates/library/halloween-bats.json resources/templates/library/halloween-forest.json resources/playbooks/halloween-after-dark-offer.php
+msgid "Your invitation to the dark side."
+msgstr "Deine Einladung auf die dunkle Seite."
+
+#. text text
+#: resources/templates/library/halloween-engraved.json resources/playbooks/halloween-midnight-offer.php
+msgid "31% off the wonderfully unusual."
+msgstr "31 % Rabatt auf das wunderbar Ungewöhnliche."
+
+#. heading text
+#: resources/templates/library/halloween-engraved.json resources/playbooks/halloween-midnight-offer.php
+msgid "A little dark.\nA lot to love."
+msgstr "Ein bisschen dunkel.\nViel zum Liebhaben."
+
+#. text text
+#: resources/templates/library/halloween-engraved.json resources/playbooks/halloween-midnight-offer.php
+msgid "Ends October 31. Selected items only."
+msgstr "Endet am 31. Oktober. Nur ausgewählte Artikel."
+
+#. button label
+#: resources/templates/library/halloween-engraved.json resources/playbooks/halloween-midnight-offer.php
+msgid "Explore the Halloween edit"
+msgstr "Die Halloween-Auswahl entdecken"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/halloween-engraved.json
+msgid "Halloween midnight print"
+msgstr "Halloween-Mitternachtsdruck"
+
+#. eyebrow text
+#: resources/templates/library/halloween-engraved.json resources/playbooks/halloween-midnight-offer.php
+msgid "THE OCTOBER EDIT"
+msgstr "DIE OKTOBER-AUSWAHL"
+
+#. text text
+#: resources/templates/library/halloween-forest.json resources/playbooks/halloween-after-dark-offer.php
+msgid "Curious objects, warm layers, and a little midnight magic."
+msgstr "Kuriose Objekte, warme Lagen und ein bisschen Mitternachtszauber."
+
+#. heading text
+#: resources/templates/library/halloween-forest.json resources/playbooks/halloween-after-dark-offer.php
+msgid "Good things\ncome after dark."
+msgstr "Gute Dinge\nkommen nach Einbruch der Dunkelheit."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/halloween-forest.json
+msgid "Halloween after dark"
+msgstr "Halloween nach Einbruch der Dunkelheit"
+
+#. eyebrow text
+#: resources/templates/library/halloween-forest.json resources/playbooks/halloween-after-dark-offer.php
+msgid "WHEN THE EVERYDAY TURNS EXTRAORDINARY"
+msgstr "WENN DER ALLTAG AUSSERGEWÖHNLICH WIRD"
+
+#. eyebrow text
+#: resources/templates/library/halloween-monster.json resources/playbooks/halloween-treat-signup.php
+msgid "A LITTLE SOMETHING FOR YOU"
+msgstr "EIN KLEINES EXTRA FÜR DICH"
+
+#. heading text
+#: resources/templates/library/halloween-monster.json resources/playbooks/halloween-treat-signup.php
+msgid "Bite into\n25% off."
+msgstr "Beiß zu bei\n25 % Rabatt."
+
+#. consent text
+#: resources/templates/library/halloween-monster.json resources/playbooks/halloween-treat-signup.php
+msgid "Email me offers and new arrivals. I can unsubscribe anytime."
+msgstr "Ich möchte Angebote und Neuheiten per E-Mail erhalten. Ich kann mich jederzeit abmelden."
+
+#. text text
+#: resources/templates/library/halloween-monster.json resources/playbooks/halloween-treat-signup.php
+msgid "First order only. Selected items."
+msgstr "Nur für die erste Bestellung. Ausgewählte Artikel."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/halloween-monster.json
+msgid "Halloween treat with teeth"
+msgstr "Halloween-Leckerei mit Biss"
+
+#. text text
+#: resources/templates/library/halloween-monster.json resources/playbooks/halloween-treat-signup.php
+msgid "Join the list. Reveal your first-order code."
+msgstr "Trag dich in die Liste ein. Enthülle deinen Code für die erste Bestellung."
+
+#. eyebrow text
+#: resources/templates/library/halloween-monster.json resources/playbooks/halloween-treat-signup.php
+msgid "NO TRICKS. JUST TREATS."
+msgstr "KEINE TRICKS. NUR LECKEREIEN."
+
+#. text text
+#: resources/templates/library/halloween-monster.json resources/playbooks/halloween-treat-signup.php
+msgid "Offers by email. Unsubscribe anytime. %s"
+msgstr "Angebote per E-Mail. Jederzeit abbestellbar. %s"
+
+#. button label
+#: resources/templates/library/halloween-monster.json resources/playbooks/halloween-treat-signup.php
+msgid "Reveal my treat"
+msgstr "Meine Leckerei zeigen"
+
+#. text text
+#: resources/templates/library/halloween-monster.json resources/playbooks/halloween-treat-signup.php
+msgid "Thanks for sharing your details. Use this code on your first order."
+msgstr "Danke für deine Angaben. Nutze diesen Code bei deiner ersten Bestellung."
+
+#. heading text
+#: resources/templates/library/halloween-monster.json resources/playbooks/halloween-treat-signup.php
+msgid "Your treat\nis here."
+msgstr "Deine Leckerei\nist da."
+
+#. text text
+#: resources/templates/library/inline-bar.json
+msgid "Five links, every Thursday."
+msgstr "Fünf Links, jeden Donnerstag."
+
+#. heading text
+#: resources/templates/library/inline-bar.json
+msgid "Get the weekly round-up"
+msgstr "Hol dir den wöchentlichen Überblick"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/inline-bar.json
+msgid "Inline bar"
+msgstr "Inline-Leiste"
+
+#. button label
+#: resources/templates/library/inline-bar.json resources/templates/library/wide-banner.json
+msgid "Send me the round-up"
+msgstr "Schick mir den Überblick"
+
+#. text text
+#: resources/templates/library/inline-bar.json resources/templates/library/wide-banner.json resources/playbooks/article-end-newsletter.php
+msgid "We have received your request for the weekly round-up."
+msgstr "Wir haben deine Anfrage nach dem wöchentlichen Überblick erhalten."
+
+#. text text
+#: resources/templates/library/inline-benefits.json
+msgid "Dispatch details upfront"
+msgstr "Versanddetails vorab"
+
+#. text text
+#: resources/templates/library/inline-benefits.json
+msgid "Free delivery over £40"
+msgstr "Kostenloser Versand ab £40"
+
+#. text text
+#: resources/templates/library/inline-benefits.json
+msgid "Returns for 30 days"
+msgstr "30 Tage Rückgaberecht"
+
+#. button label
+#: resources/templates/library/inline-benefits.json
+msgid "Start shopping"
+msgstr "Jetzt shoppen"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/inline-benefits.json
+msgid "Three across, in the page"
+msgstr "Drei nebeneinander, in der Seite"
+
+#. text text
+#: resources/templates/library/inline-benefits.json
+msgid "UK mainland orders. See delivery and returns terms."
+msgstr "Bestellungen im britischen Festland. Siehe Liefer- und Rückgabebedingungen."
+
+#. heading text
+#: resources/templates/library/inline-benefits.json
+msgid "Why people order from us"
+msgstr "Warum man bei uns bestellt"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/inline-choice.json
+msgid "Choice card"
+msgstr "Auswahlkarte"
+
+#. field placeholder
+#: resources/templates/library/inline-choice.json resources/playbooks/agency-project-enquiry.php resources/playbooks/basket-product-help.php
+msgid "Choose an option"
+msgstr "Bitte auswählen"
+
+#. consent text
+#: resources/templates/library/inline-choice.json
+msgid "I agree to be contacted about my request. %s"
+msgstr "Ich bin damit einverstanden, wegen meiner Anfrage kontaktiert zu werden. %s"
+
+#. answer choice, at most 120 bytes
+#: resources/templates/library/inline-choice.json resources/playbooks/request-a-quote.php
+msgid "Installation"
+msgstr "Installation"
+
+#. answer choice, at most 120 bytes
+#: resources/templates/library/inline-choice.json resources/playbooks/request-a-quote.php
+msgid "Repair"
+msgstr "Reparatur"
+
+#. button label
+#: resources/templates/library/inline-choice.json
+msgid "Send my request"
+msgstr "Meine Anfrage senden"
+
+#. text text
+#: resources/templates/library/inline-choice.json
+msgid "Share your details so we can respond to your request."
+msgstr "Teile deine Angaben, damit wir auf deine Anfrage antworten können."
+
+#. heading text
+#: resources/templates/library/inline-choice.json
+msgid "Tell us what you have in mind"
+msgstr "Sag uns, was du vorhast"
+
+#. text text
+#: resources/templates/library/inline-choice.json
+msgid "Thank you for sharing your details. We have received your request."
+msgstr "Danke für deine Angaben. Wir haben deine Anfrage erhalten."
+
+#. text text
+#: resources/templates/library/inline-choice.json
+msgid "We use these details to respond to your request. %s"
+msgstr "Wir verwenden diese Angaben, um auf deine Anfrage zu antworten. %s"
+
+#. field label
+#: resources/templates/library/inline-choice.json
+msgid "What are you interested in? (optional)"
+msgstr "Wofür interessierst du dich? (optional)"
+
+#. button label
+#: resources/templates/library/inline-cta.json
+msgid "Continue exploring"
+msgstr "Weiter stöbern"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/inline-cta.json
+msgid "Inline call to action"
+msgstr "Inline-Handlungsaufforderung"
+
+#. heading text
+#: resources/templates/library/inline-cta.json resources/playbooks/cart-straight-away.php
+msgid "Pick up where you left off"
+msgstr "Mach dort weiter, wo du aufgehört hast"
+
+#. text text
+#: resources/templates/library/inline-cta.json
+msgid "Take a closer look before you decide."
+msgstr "Sieh genauer hin, bevor du dich entscheidest."
+
+#. text text
+#: resources/templates/library/inline-cta.json
+msgid "Your next step is here when you are ready."
+msgstr "Dein nächster Schritt wartet hier, wenn du bereit bist."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/inline-phone.json
+msgid "Inline callback"
+msgstr "Inline-Rückruf"
+
+#. text text
+#: resources/templates/library/inline-phone.json
+msgid "Leave your number and a request for a call about your project."
+msgstr "Hinterlasse deine Nummer und die Bitte um einen Anruf zu deinem Projekt."
+
+#. field label
+#: resources/templates/library/inline-phone.json resources/templates/library/message-sample.json resources/templates/library/stacked-signup.json
+msgid "Mobile number"
+msgstr "Handynummer"
+
+#. button label, at most 120 bytes
+#: resources/templates/library/inline-phone.json resources/playbooks/request-a-callback.php
+msgid "Request a callback"
+msgstr "Rückruf anfordern"
+
+#. heading text
+#: resources/templates/library/inline-phone.json
+msgid "Talk it through with us"
+msgstr "Besprich es mit uns"
+
+#. text text
+#: resources/templates/library/inline-phone.json
+msgid "Thank you. We have received your number and your request for a call."
+msgstr "Danke. Wir haben deine Nummer und deine Anfrage nach einem Anruf erhalten."
+
+#. text text
+#: resources/templates/library/inline-phone.json
+msgid "We use your number to respond to this enquiry."
+msgstr "Wir verwenden deine Nummer, um auf diese Anfrage zu antworten."
+
+#. heading text
+#: resources/templates/library/inline-quiet.json
+msgid "A good read, once a week."
+msgstr "Ein guter Lesetipp, einmal pro Woche."
+
+#. text text
+#: resources/templates/library/inline-quiet.json
+msgid "One thoughtful story to carry into the weekend."
+msgstr "Eine nachdenkliche Geschichte fürs Wochenende."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/inline-quiet.json
+msgid "Quiet, in the flow"
+msgstr "Leise, im Lesefluss"
+
+#. button label
+#: resources/templates/library/inline-quiet.json
+msgid "Send me the weekly story"
+msgstr "Schick mir die Wochengeschichte"
+
+#. text text
+#: resources/templates/library/inline-quiet.json
+msgid "We have received your request. Enjoy the rest of your reading."
+msgstr "Wir haben deine Anfrage erhalten. Viel Freude beim Weiterlesen."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/inline-rule.json
+msgid "Inline rule"
+msgstr "Inline-Linie"
+
+#. heading text
+#: resources/templates/library/inline-rule.json
+msgid "Keep reading, on Fridays"
+msgstr "Weiterlesen, freitags"
+
+#. text text
+#: resources/templates/library/inline-rule.json resources/templates/library/ledger-card.json
+msgid "No spam, and you can unsubscribe at any time."
+msgstr "Kein Spam, und du kannst dich jederzeit abmelden."
+
+#. text text
+#: resources/templates/library/inline-rule.json
+msgid "One long piece a week, written for people who finish things."
+msgstr "Ein langer Text pro Woche, geschrieben für Menschen, die Dinge zu Ende lesen."
+
+#. button label
+#: resources/templates/library/inline-rule.json resources/templates/library/ledger-card.json
+msgid "Send me the Friday letter"
+msgstr "Schick mir den Freitagsbrief"
+
+#. text text
+#: resources/templates/library/inline-rule.json
+msgid "Thank you for asking to hear more from us."
+msgstr "Danke, dass du mehr von uns hören möchtest."
+
+#. heading text
+#: resources/templates/library/inline-split.json
+msgid "A clearer start. One useful guide."
+msgstr "Ein klarerer Start. Ein nützlicher Leitfaden."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/inline-split.json
+msgid "Inline split"
+msgstr "Inline-Split"
+
+#. text text
+#: resources/templates/library/inline-split.json
+msgid "One guide request. No newsletter signup. %s"
+msgstr "Eine Leitfaden-Anfrage. Keine Newsletter-Anmeldung. %s"
+
+#. image alt
+#: resources/templates/library/inline-split.json
+msgid "Original illustration of a guide with a short checklist"
+msgstr "Originalillustration eines Leitfadens mit kurzer Checkliste"
+
+#. text text
+#: resources/templates/library/inline-split.json
+msgid "Practical steps and a printable checklist for your next project."
+msgstr "Praktische Schritte und eine druckbare Checkliste für dein nächstes Projekt."
+
+#. button label
+#: resources/templates/library/inline-split.json resources/templates/library/reading-cover.json resources/playbooks/reading-notes-guide.php
+msgid "Request the guide"
+msgstr "Leitfaden anfordern"
+
+#. text text
+#: resources/templates/library/inline-split.json resources/playbooks/checklist-download.php
+msgid "Thank you. We have received your request for the guide."
+msgstr "Danke. Wir haben deine Anfrage nach dem Leitfaden erhalten."
+
+#. consent text
+#: resources/templates/library/inline-split.json
+msgid "Use my email for this guide request. %s"
+msgstr "Verwendet meine E-Mail-Adresse für diese Leitfaden-Anfrage. %s"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/inline-tinted.json
+msgid "Inline tinted"
+msgstr "Inline getönt"
+
+#. badge text
+#: resources/templates/library/inline-tinted.json
+msgid "New"
+msgstr "Neu"
+
+#. text text
+#: resources/templates/library/inline-tinted.json
+msgid "One email a week. Unsubscribe at any time."
+msgstr "Eine E-Mail pro Woche. Jederzeit abbestellbar."
+
+#. button label
+#: resources/templates/library/inline-tinted.json
+msgid "Send me the Sunday note"
+msgstr "Schick mir die Sonntagsnotiz"
+
+#. heading text
+#: resources/templates/library/inline-tinted.json
+msgid "The tide table, every Sunday"
+msgstr "Die Gezeitentabelle, jeden Sonntag"
+
+#. text text
+#: resources/templates/library/inline-tinted.json
+msgid "Times, swell and wind for the week ahead."
+msgstr "Zeiten, Dünung und Wind für die kommende Woche."
+
+#. text text
+#: resources/templates/library/inline-tinted.json
+msgid "We have received your request for the Sunday tide note."
+msgstr "Wir haben deine Anfrage für die Sonntagsnotiz zu den Gezeiten erhalten."
+
+#. screen name, at most 120 bytes
+#: resources/templates/library/journey-email-only.json resources/templates/library/journey-email-then-sms.json resources/templates/library/journey-enquiry.json
+msgid "Acknowledgement"
+msgstr "Bestätigung"
+
+#. heading text
+#: resources/templates/library/journey-email-only.json resources/templates/library/journey-email-then-sms.json resources/templates/library/journey-enquiry.json
+msgid "Details received"
+msgstr "Angaben erhalten"
+
+#. consent text
+#: resources/templates/library/journey-email-only.json resources/templates/library/journey-email-then-sms.json resources/playbooks/journey-email-only.php
+msgid "Email me news and offers."
+msgstr "Ich möchte News und Angebote per E-Mail erhalten."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/journey-email-only.json resources/templates/library/journey-email-then-sms.json resources/templates/library/journey-offer-first.json
+msgid "Email signup"
+msgstr "E-Mail-Anmeldung"
+
+#. heading text
+#: resources/templates/library/journey-email-only.json resources/templates/library/journey-email-then-sms.json resources/playbooks/journey-email-only.php
+msgid "Get our email updates"
+msgstr "Bleib per E-Mail auf dem Laufenden"
+
+#. button label
+#: resources/templates/library/journey-email-only.json resources/templates/library/journey-email-then-sms.json resources/playbooks/journey-email-only.php
+msgid "Sign up for email"
+msgstr "Für E-Mails anmelden"
+
+#. text text
+#: resources/templates/library/journey-email-only.json resources/templates/library/journey-email-then-sms.json resources/templates/library/journey-enquiry.json
+msgid "Thank you. We have received the details you submitted."
+msgstr "Danke. Wir haben deine Angaben erhalten."
+
+#. button label
+#: resources/templates/library/journey-email-then-sms.json resources/playbooks/headlines-optional-sms.php resources/playbooks/journey-email-then-sms.php
+msgid "Change email"
+msgstr "E-Mail ändern"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/journey-email-then-sms.json
+msgid "Email with optional SMS"
+msgstr "E-Mail mit optionaler SMS"
+
+#. button label
+#: resources/templates/library/journey-email-then-sms.json resources/playbooks/journey-email-then-sms.php
+msgid "Finish without SMS"
+msgstr "Ohne SMS abschließen"
+
+#. screen name, at most 120 bytes
+#: resources/templates/library/journey-email-then-sms.json
+msgid "Optional SMS signup"
+msgstr "Optionale SMS-Anmeldung"
+
+#. consent text
+#: resources/templates/library/journey-email-then-sms.json
+msgid "Send me news and offers by text message."
+msgstr "Ich möchte News und Angebote per SMS erhalten."
+
+#. button label
+#: resources/templates/library/journey-email-then-sms.json
+msgid "Sign up for SMS"
+msgstr "Für SMS anmelden"
+
+#. heading text
+#: resources/templates/library/journey-email-then-sms.json
+msgid "Would you also like text updates?"
+msgstr "Möchtest du auch Neuigkeiten per SMS?"
+
+#. text text
+#: resources/templates/library/journey-email-then-sms.json resources/playbooks/journey-email-then-sms.php
+msgid "Your email signup request was received. This next step is optional."
+msgstr "Deine Anmeldung per E-Mail ist eingegangen. Dieser nächste Schritt ist optional."
+
+#. answer choice, at most 120 bytes
+#: resources/templates/library/journey-enquiry.json resources/playbooks/journey-enquiry.php
+msgid "A consultation"
+msgstr "Eine Beratung"
+
+#. answer choice, at most 120 bytes
+#: resources/templates/library/journey-enquiry.json resources/playbooks/journey-enquiry.php
+msgid "A quote"
+msgstr "Ein Angebot"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/journey-enquiry.json
+msgid "A short enquiry"
+msgstr "Eine kurze Anfrage"
+
+#. button label
+#: resources/templates/library/journey-enquiry.json resources/templates/library/request-folio.json resources/playbooks/journey-enquiry.php
+msgid "Back"
+msgstr "Zurück"
+
+#. screen name, at most 120 bytes
+#: resources/templates/library/journey-enquiry.json
+msgid "Contact details"
+msgstr "Kontaktangaben"
+
+#. button label
+#: resources/templates/library/journey-enquiry.json resources/playbooks/journey-enquiry.php resources/playbooks/landscaping-enquiry.php
+msgid "Continue"
+msgstr "Weiter"
+
+#. heading text
+#: resources/templates/library/journey-enquiry.json resources/playbooks/journey-enquiry.php
+msgid "How can we contact you?"
+msgstr "Wie können wir dich erreichen?"
+
+#. button label
+#: resources/templates/library/journey-enquiry.json resources/playbooks/journey-enquiry.php
+msgid "Send my enquiry"
+msgstr "Anfrage senden"
+
+#. heading text
+#: resources/templates/library/journey-enquiry.json resources/playbooks/journey-enquiry.php
+msgid "Tell us what you need"
+msgstr "Sag uns, was du brauchst"
+
+#. text text
+#: resources/templates/library/journey-enquiry.json resources/playbooks/journey-enquiry.php
+msgid "We will use these details to respond to your request."
+msgstr "Wir verwenden diese Angaben, um auf deine Anfrage zu antworten."
+
+#. field label
+#: resources/templates/library/journey-enquiry.json resources/playbooks/journey-enquiry.php
+msgid "What can we help with?"
+msgstr "Wobei können wir helfen?"
+
+#. field label
+#: resources/templates/library/journey-enquiry.json resources/templates/library/name-and-email.json resources/templates/library/service-docket.json
+msgid "Your name"
+msgstr "Dein Name"
+
+#. heading text
+#: resources/templates/library/journey-offer-first.json resources/playbooks/journey-offer-first.php resources/playbooks/maker-session-invitation.php
+msgid "A closer look at how it is made."
+msgstr "Ein genauerer Blick darauf, wie es entsteht."
+
+#. eyebrow text
+#: resources/templates/library/journey-offer-first.json resources/playbooks/journey-offer-first.php resources/playbooks/maker-session-invitation.php
+msgid "A little closer to the craft"
+msgstr "Dem Handwerk ein Stück näher"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/journey-offer-first.json
+msgid "An invitation before signup"
+msgstr "Eine Einladung vor der Anmeldung"
+
+#. eyebrow text
+#: resources/templates/library/journey-offer-first.json resources/playbooks/journey-offer-first.php resources/playbooks/maker-session-invitation.php
+msgid "Behind the making"
+msgstr "Hinter den Kulissen"
+
+#. consent text
+#: resources/templates/library/journey-offer-first.json resources/playbooks/journey-offer-first.php resources/playbooks/maker-session-invitation.php
+msgid "Email me maker-session announcements. I can unsubscribe anytime."
+msgstr "Ich möchte Ankündigungen zu den Werkstatt-Terminen per E-Mail erhalten. Ich kann mich jederzeit abmelden."
+
+#. heading text
+#: resources/templates/library/journey-offer-first.json resources/playbooks/journey-offer-first.php resources/playbooks/maker-session-invitation.php
+msgid "Get maker-session news."
+msgstr "Neuigkeiten zu den Werkstatt-Terminen."
+
+#. screen name, at most 120 bytes
+#: resources/templates/library/journey-offer-first.json
+msgid "Invitation"
+msgstr "Einladung"
+
+#. button label
+#: resources/templates/library/journey-offer-first.json resources/playbooks/journey-offer-first.php resources/playbooks/maker-session-invitation.php
+msgid "Maybe later"
+msgstr "Vielleicht später"
+
+#. text text
+#: resources/templates/library/journey-offer-first.json resources/playbooks/journey-offer-first.php resources/playbooks/maker-session-invitation.php
+msgid "Occasional email invitations to maker demonstrations, with details when announced."
+msgstr "Gelegentlich E-Mail-Einladungen zu Werkstatt-Vorführungen, mit Details zum Termin."
+
+#. button label
+#: resources/templates/library/journey-offer-first.json resources/playbooks/journey-offer-first.php resources/playbooks/maker-session-invitation.php
+msgid "Request session news"
+msgstr "Neuigkeiten anfragen"
+
+#. button label
+#: resources/templates/library/journey-offer-first.json resources/playbooks/journey-offer-first.php resources/playbooks/maker-session-invitation.php
+msgid "Tell me more"
+msgstr "Mehr erfahren"
+
+#. heading text
+#: resources/templates/library/launch-checklist.json resources/playbooks/launch-checklist.php
+msgid "A clearer path\nto launch."
+msgstr "Ein klarerer Weg\nzum Start."
+
+#. eyebrow text
+#: resources/templates/library/launch-checklist.json
+msgid "A PRACTICAL PRE-FLIGHT"
+msgstr "EIN PRAKTISCHER VORAB-CHECK"
+
+#. text text
+#: resources/templates/library/launch-checklist.json resources/playbooks/launch-checklist.php
+msgid "A twelve-point checklist for the details that are easy to miss before launch."
+msgstr "Eine Checkliste mit zwölf Punkten für die Details, die vor dem Start leicht untergehen."
+
+#. text text
+#: resources/templates/library/launch-checklist.json resources/playbooks/launch-checklist.php
+msgid "Checks before\nyou go live."
+msgstr "Prüfen, bevor\ndu live gehst."
+
+#. heading text
+#: resources/templates/library/launch-checklist.json resources/playbooks/launch-checklist.php
+msgid "Launch your site.\nKeep your nerve."
+msgstr "Starte deine Website.\nBleib gelassen."
+
+#. text text
+#: resources/templates/library/launch-checklist.json
+msgid "One useful checklist. Free to request. %s"
+msgstr "Eine nützliche Checkliste. Kostenlos anfragen. %s"
+
+#. followup label
+#: resources/templates/library/launch-checklist.json resources/templates/library/useful-guide.json resources/playbooks/fit-checklist.php
+msgid "Open the checklist"
+msgstr "Checkliste öffnen"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/launch-checklist.json
+msgid "Ready for launch"
+msgstr "Bereit für den Start"
+
+#. heading text
+#: resources/templates/library/launch-checklist.json resources/playbooks/launch-checklist.php
+msgid "Ready."
+msgstr "Bereit."
+
+#. button label
+#: resources/templates/library/launch-checklist.json resources/playbooks/launch-checklist.php
+msgid "Request the launch checklist"
+msgstr "Start-Checkliste anfragen"
+
+#. text text
+#: resources/templates/library/launch-checklist.json
+msgid "Small steps.\nA steadier launch."
+msgstr "Kleine Schritte.\nEin sicherer Start."
+
+#. text text
+#: resources/templates/library/launch-checklist.json
+msgid "Start with the essentials: clear copy, working links and a form you have tested."
+msgstr "Fang mit dem Wesentlichen an: klare Texte, funktionierende Links und ein getestetes Formular."
+
+#. text text
+#: resources/templates/library/launch-checklist.json
+msgid "Thank you for requesting the launch checklist. We have received your details."
+msgstr "Danke für deine Anfrage zur Start-Checkliste. Wir haben deine Angaben erhalten."
+
+#. consent text
+#: resources/templates/library/launch-checklist.json resources/templates/library/useful-guide.json
+msgid "Use my email to respond to this request. %s"
+msgstr "Verwende meine E-Mail-Adresse, um auf diese Anfrage zu antworten. %s"
+
+#. text text
+#: resources/templates/library/launch-checklist.json
+msgid "Your request is for the launch checklist."
+msgstr "Deine Anfrage gilt der Start-Checkliste."
+
+#. text text
+#: resources/templates/library/ledger-card.json
+msgid "Eight minutes, no more."
+msgstr "Acht Minuten, nicht mehr."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/ledger-card.json
+msgid "Ledger card"
+msgstr "Hauptbuch-Karte"
+
+#. text text
+#: resources/templates/library/ledger-card.json
+msgid "One click to leave."
+msgstr "Ein Klick zum Abmelden."
+
+#. text text
+#: resources/templates/library/ledger-card.json
+msgid "One idea to try."
+msgstr "Eine Idee zum Ausprobieren."
+
+#. heading text
+#: resources/templates/library/ledger-card.json
+msgid "One long read, every Friday"
+msgstr "Ein langer Lesetipp, jeden Freitag"
+
+#. text text
+#: resources/templates/library/ledger-card.json
+msgid "Thank you for asking to receive the letter."
+msgstr "Danke, dass du den Brief erhalten möchtest."
+
+#. heading text
+#: resources/templates/library/message-sample.json resources/playbooks/sms-message-preview.php
+msgid "A little news.\nBy text."
+msgstr "Ein paar Neuigkeiten.\nPer SMS."
+
+#. eyebrow text
+#: resources/templates/library/message-sample.json resources/playbooks/sms-message-preview.php
+msgid "A preview, before you decide"
+msgstr "Eine Vorschau, bevor du dich entscheidest"
+
+#. text text
+#: resources/templates/library/message-sample.json resources/playbooks/sms-message-preview.php
+msgid "An illustrative message, not a text we have sent."
+msgstr "Eine Beispielnachricht, keine von uns versendete SMS."
+
+#. heading text
+#: resources/templates/library/message-sample.json resources/playbooks/sms-message-preview.php
+msgid "Choose your updates."
+msgstr "Wähle deine Neuigkeiten."
+
+#. text text
+#: resources/templates/library/message-sample.json resources/playbooks/sms-message-preview.php
+msgid "Collection news, up to twice a month."
+msgstr "Neuigkeiten zur Kollektion, bis zu zweimal im Monat."
+
+#. eyebrow text
+#: resources/templates/library/message-sample.json resources/playbooks/sms-message-preview.php
+msgid "Example message"
+msgstr "Beispielnachricht"
+
+#. text text
+#: resources/templates/library/message-sample.json resources/playbooks/sms-message-preview.php
+msgid "Message rates may apply. You can opt out of future texts."
+msgstr "Es können Gebühren für Nachrichten anfallen. Du kannst künftige SMS jederzeit abbestellen."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/message-sample.json
+msgid "Message sample"
+msgstr "Nachrichtenbeispiel"
+
+#. button label
+#: resources/templates/library/message-sample.json resources/playbooks/sms-message-preview.php
+msgid "Request collection texts"
+msgstr "SMS zur Kollektion anfragen"
+
+#. consent text
+#: resources/templates/library/message-sample.json resources/playbooks/sms-message-preview.php
+msgid "Send me collection news by text, up to twice a month. I can opt out."
+msgstr "Ich möchte Neuigkeiten zur Kollektion per SMS erhalten, bis zu zweimal im Monat. Ich kann mich abmelden."
+
+#. text text
+#: resources/templates/library/message-sample.json resources/playbooks/sms-message-preview.php
+msgid "Thank you. We have received your request for collection texts."
+msgstr "Danke. Wir haben deine Anfrage für SMS zur Kollektion erhalten."
+
+#. text text
+#: resources/templates/library/message-sample.json resources/playbooks/sms-message-preview.php
+msgid "The new ceramic collection is here. Take a look when you have a moment."
+msgstr "Die neue Keramikkollektion ist da. Schau gern vorbei, wenn du einen Moment Zeit hast."
+
+#. heading text
+#: resources/templates/library/message-sample.json resources/playbooks/sms-message-preview.php
+msgid "Your text request is received."
+msgstr "Deine SMS-Anfrage ist eingegangen."
+
+#. text text
+#: resources/templates/library/name-and-email.json
+msgid "A clear set of steps for your next project. Request a copy by email."
+msgstr "Klare Schritte für dein nächstes Projekt. Fordere eine Kopie per E-Mail an."
+
+#. heading text
+#: resources/templates/library/name-and-email.json
+msgid "A practical guide to getting started"
+msgstr "Ein praktischer Leitfaden für den Einstieg"
+
+#. field label
+#: resources/templates/library/name-and-email.json resources/playbooks/checklist-download.php resources/playbooks/equipment-return-checklist.php
+msgid "First name (optional)"
+msgstr "Vorname (optional)"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/name-and-email.json
+msgid "Name and email"
+msgstr "Name und E-Mail"
+
+#. button label
+#: resources/templates/library/name-and-email.json
+msgid "Request my guide"
+msgstr "Leitfaden anfordern"
+
+#. text text
+#: resources/templates/library/name-and-email.json
+msgid "Thank you for requesting the guide. We have received your details."
+msgstr "Danke für deine Anfrage zum Leitfaden. Wir haben deine Angaben erhalten."
+
+#. consent text
+#: resources/templates/library/name-and-email.json
+msgid "We use your details for this guide request. %s"
+msgstr "Wir verwenden deine Angaben für diese Anfrage zum Leitfaden. %s"
+
+#. text text
+#: resources/templates/library/name-and-email.json
+msgid "Your details are used for this guide request."
+msgstr "Deine Angaben werden für diese Anfrage zum Leitfaden verwendet."
+
+#. heading text
+#: resources/templates/library/offer-panel.json
+msgid "Midseason sale"
+msgstr "Zwischensaison-Sale"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/offer-panel.json
+msgid "Offer panel"
+msgstr "Angebotstafel"
+
+#. text text
+#: resources/templates/library/offer-panel.json
+msgid "Selected favourites from the collection, for less."
+msgstr "Ausgewählte Lieblingsstücke aus der Kollektion, günstiger."
+
+#. text text
+#: resources/templates/library/offer-receipt.json resources/playbooks/first-order-receipt.php
+msgid "A little towards something you will keep."
+msgstr "Ein kleiner Beitrag zu etwas, das du behalten wirst."
+
+#. button label
+#: resources/templates/library/offer-receipt.json resources/playbooks/first-order-receipt.php
+msgid "Find your first piece"
+msgstr "Finde dein erstes Stück"
+
+#. text text
+#: resources/templates/library/offer-receipt.json resources/playbooks/first-order-receipt.php
+msgid "First order only. One use per customer. Cannot be combined with other offers."
+msgstr "Nur für die erste Bestellung. Einmal pro Kundin oder Kunde. Nicht mit anderen Angeboten kombinierbar."
+
+#. eyebrow text
+#: resources/templates/library/offer-receipt.json resources/playbooks/first-order-receipt.php
+msgid "For your first order"
+msgstr "Für deine erste Bestellung"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/offer-receipt.json
+msgid "Offer receipt"
+msgstr "Angebotsbeleg"
+
+#. text text
+#: resources/templates/library/offer-receipt.json resources/playbooks/first-order-receipt.php
+msgid "Your checkout code"
+msgstr "Dein Code für die Kasse"
+
+#. text text
+#: resources/templates/library/photo-offer.json
+msgid "Explore the newest pieces in the collection and find your favourite."
+msgstr "Entdecke die neuesten Stücke der Kollektion und finde deinen Favoriten."
+
+#. image alt
+#: resources/templates/library/photo-offer.json
+msgid "Original illustration of a basket, ceramic vase and small cup"
+msgstr "Originalillustration eines Korbs, einer Keramikvase und einer kleinen Tasse"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/photo-offer.json
+msgid "Photo offer"
+msgstr "Foto-Angebot"
+
+#. text text
+#: resources/templates/library/photo-offer.json resources/playbooks/category-promotion.php
+msgid "See product details, delivery and returns in the shop."
+msgstr "Produktdetails, Lieferung und Rückgabe findest du im Shop."
+
+#. button label
+#: resources/templates/library/photo-offer.json resources/playbooks/category-promotion.php
+msgid "See what is new"
+msgstr "Neuheiten ansehen"
+
+#. heading text
+#: resources/templates/library/photo-offer.json resources/templates/library/photo-wash.json resources/playbooks/category-promotion.php
+msgid "The new season has landed"
+msgstr "Die neue Saison ist da"
+
+#. text text
+#: resources/templates/library/photo-wash.json
+msgid "Join the list and see it before it goes anywhere else."
+msgstr "Trag dich in die Liste ein und sieh es, bevor es irgendwo sonst auftaucht."
+
+#. text text
+#: resources/templates/library/photo-wash.json
+msgid "Occasional collection notes. Unsubscribe any time."
+msgstr "Gelegentliche Neuigkeiten zur Kollektion. Jederzeit abbestellbar."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/photo-wash.json
+msgid "Over a picture"
+msgstr "Über einem Bild"
+
+#. button label
+#: resources/templates/library/photo-wash.json
+msgid "Show me first"
+msgstr "Zuerst zeigen"
+
+#. heading text
+#: resources/templates/library/photo-wash.json
+msgid "Thanks for the interest"
+msgstr "Danke für dein Interesse"
+
+#. text text
+#: resources/templates/library/photo-wash.json
+msgid "We have received your request for first access."
+msgstr "Wir haben deine Anfrage für frühen Zugang erhalten."
+
+#. text text
+#: resources/templates/library/product-detail-sheet.json resources/playbooks/product-detail-sheet.php
+msgid "18 × 18 cm base"
+msgstr "Sockel 18 × 18 cm"
+
+#. eyebrow text
+#: resources/templates/library/product-detail-sheet.json resources/playbooks/product-detail-sheet.php
+msgid "A closer look"
+msgstr "Ein genauerer Blick"
+
+#. heading text
+#: resources/templates/library/product-detail-sheet.json resources/playbooks/product-detail-sheet.php
+msgid "A little light for your desk."
+msgstr "Ein kleines Licht für deinen Schreibtisch."
+
+#. eyebrow text
+#: resources/templates/library/product-detail-sheet.json resources/templates/library/specification-sheet.json resources/playbooks/product-detail-sheet.php
+msgid "Footprint"
+msgstr "Standfläche"
+
+#. eyebrow text
+#: resources/templates/library/product-detail-sheet.json resources/playbooks/product-detail-sheet.php
+msgid "Made for"
+msgstr "Gemacht für"
+
+#. eyebrow text
+#: resources/templates/library/product-detail-sheet.json resources/playbooks/product-detail-sheet.php
+msgid "Materials"
+msgstr "Materialien"
+
+#. image alt
+#: resources/templates/library/product-detail-sheet.json
+msgid "Original illustration of a terracotta-coloured adjustable desk lamp"
+msgstr "Originalillustration einer verstellbaren Schreibtischlampe in Terrakotta"
+
+#. text text
+#: resources/templates/library/product-detail-sheet.json resources/playbooks/product-detail-sheet.php
+msgid "Powder-coated steel"
+msgstr "Pulverbeschichteter Stahl"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/product-detail-sheet.json
+msgid "Product detail sheet"
+msgstr "Produktdatenblatt"
+
+#. text text
+#: resources/templates/library/product-detail-sheet.json resources/playbooks/product-detail-sheet.php
+msgid "Reading corners and small desks"
+msgstr "Leseecken und kleine Schreibtische"
+
+#. text text
+#: resources/templates/library/product-detail-sheet.json resources/playbooks/product-detail-sheet.php
+msgid "The Task lamp, for everyday reading."
+msgstr "Die Task-Lampe, fürs tägliche Lesen."
+
+#. button label
+#: resources/templates/library/product-detail-sheet.json resources/playbooks/product-detail-sheet.php
+msgid "View lamp details"
+msgstr "Lampendetails ansehen"
+
+#. text text
+#: resources/templates/library/product-shelf.json resources/playbooks/homeware-care-notes.php
+msgid "A monthly note on looking after handmade homeware, from cleaning to careful storage."
+msgstr "Eine monatliche Notiz zur Pflege handgefertigter Wohnaccessoires, von der Reinigung bis zur sorgsamen Aufbewahrung."
+
+#. heading text
+#: resources/templates/library/product-shelf.json resources/playbooks/homeware-care-notes.php
+msgid "Care for the pieces you love."
+msgstr "Pflege, was du liebst."
+
+#. consent text
+#: resources/templates/library/product-shelf.json resources/playbooks/homeware-care-notes.php
+msgid "Email me monthly care notes. I can unsubscribe anytime."
+msgstr "Ich möchte monatliche Pflegetipps per E-Mail erhalten. Ich kann mich jederzeit abmelden."
+
+#. screen name, at most 120 bytes
+#: resources/templates/library/product-shelf.json
+msgid "Email request"
+msgstr "E-Mail-Anfrage"
+
+#. image alt
+#: resources/templates/library/product-shelf.json
+msgid "Illustrated terracotta pot, cream vase and green cup on a shelf"
+msgstr "Terrakottatopf, helle Vase und grüne Tasse im Regal"
+
+#. eyebrow text
+#: resources/templates/library/product-shelf.json resources/playbooks/homeware-care-notes.php
+msgid "Made for everyday"
+msgstr "Gemacht für jeden Tag"
+
+#. button label
+#: resources/templates/library/product-shelf.json resources/playbooks/homeware-care-notes.php
+msgid "Request care notes"
+msgstr "Pflegetipps anfragen"
+
+#. text text
+#: resources/templates/library/product-shelf.json resources/templates/library/request-folio.json resources/playbooks/agency-project-enquiry.php
+msgid "Thank you. We have received your request."
+msgstr "Danke. Wir haben deine Anfrage erhalten."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/product-shelf.json
+msgid "The product shelf"
+msgstr "Das Produktregal"
+
+#. text text
+#: resources/templates/library/punched-ticket.json
+msgid "First order only. Full-price items; excludes bundles."
+msgstr "Nur für die erste Bestellung. Artikel zum vollen Preis, ohne Sets."
+
+#. text text
+#: resources/templates/library/punched-ticket.json
+msgid "For the things you will use every day.\nA small hello from Good Thing."
+msgstr "Für die Dinge, die du jeden Tag nutzt.\nEin kleines Hallo von Good Thing."
+
+#. heading text
+#: resources/templates/library/punched-ticket.json resources/playbooks/coupon-ticket.php
+msgid "Good things\nstart here."
+msgstr "Gute Dinge\nbeginnen hier."
+
+#. text text
+#: resources/templates/library/punched-ticket.json
+msgid "off your\nfirst order"
+msgstr "Rabatt auf deine\nerste Bestellung"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/punched-ticket.json
+msgid "Punched ticket"
+msgstr "Gelochtes Ticket"
+
+#. consent text
+#: resources/templates/library/punched-ticket.json
+msgid "Send me offers and news. %s"
+msgstr "Ich möchte Angebote und News erhalten. %s"
+
+#. text text
+#: resources/templates/library/punched-ticket.json resources/playbooks/coupon-ticket.php
+msgid "Use at checkout on full-price items. Excludes bundles."
+msgstr "Einlösbar an der Kasse für Artikel zum vollen Preis. Ohne Sets."
+
+#. text text
+#: resources/templates/library/punched-ticket.json
+msgid "We have received your details.\nYour first-order code is below."
+msgstr "Wir haben deine Angaben erhalten.\nDein Code für die erste Bestellung steht unten."
+
+#. eyebrow text
+#: resources/templates/library/punched-ticket.json resources/playbooks/coupon-ticket.php
+msgid "Your ticket to 15% off"
+msgstr "Dein Ticket für 15 % Rabatt"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/quieter-frequency.json
+msgid "A quieter frequency"
+msgstr "Eine leisere Frequenz"
+
+#. text text
+#: resources/templates/library/quieter-frequency.json
+msgid "Five good finds on music, design and slower living.\nA short letter for the end of your Sunday."
+msgstr "Fünf gute Fundstücke zu Musik, Design und entschleunigtem Leben.\nEin kurzer Brief zum Ausklang deines Sonntags."
+
+#. eyebrow text
+#: resources/templates/library/quieter-frequency.json
+msgid "Good finds, off the clock"
+msgstr "Gute Fundstücke, nach Feierabend"
+
+#. button label
+#: resources/templates/library/quieter-frequency.json
+msgid "Join the Sunday letter"
+msgstr "Zum Sonntagsbrief anmelden"
+
+#. eyebrow text
+#: resources/templates/library/quieter-frequency.json
+msgid "Next on the dial"
+msgstr "Als Nächstes im Radio"
+
+#. text text
+#: resources/templates/library/quieter-frequency.json
+msgid "One email a week from after hours.\nUnsubscribe whenever you like."
+msgstr "Eine E-Mail pro Woche, nach Feierabend.\nJederzeit abbestellbar."
+
+#. text text
+#: resources/templates/library/quieter-frequency.json
+msgid "One email each Sunday. Unsubscribe at any time."
+msgstr "Eine E-Mail jeden Sonntag. Jederzeit abbestellbar."
+
+#. consent text
+#: resources/templates/library/quieter-frequency.json resources/templates/library/sunday-marginalia.json resources/playbooks/read-to-the-end.php
+msgid "Send me the Sunday letter. %s"
+msgstr "Ich möchte den Sonntagsbrief erhalten. %s"
+
+#. text text
+#: resources/templates/library/quieter-frequency.json
+msgid "Thank you for requesting the Sunday letter. We have received your details."
+msgstr "Danke für deine Anfrage zum Sonntagsbrief. Wir haben deine Angaben erhalten."
+
+#. heading text
+#: resources/templates/library/quieter-frequency.json
+msgid "The internet\ncan wait."
+msgstr "Das Internet\nkann warten."
+
+#. eyebrow text
+#: resources/templates/library/reading-cover.json resources/playbooks/reading-notes-guide.php
+msgid "A practical guide"
+msgstr "Ein praktischer Leitfaden"
+
+#. text text
+#: resources/templates/library/reading-cover.json resources/playbooks/reading-notes-guide.php
+msgid "A short guide to choosing a question, taking notes and returning to useful ideas."
+msgstr "Ein kurzer Leitfaden, um eine Frage zu wählen, Notizen zu machen und zu nützlichen Ideen zurückzukehren."
+
+#. text text
+#: resources/templates/library/reading-cover.json resources/playbooks/reading-notes-guide.php
+msgid "Five ways to get more from a book."
+msgstr "Fünf Wege, mehr aus einem Buch mitzunehmen."
+
+#. heading text
+#: resources/templates/library/reading-cover.json resources/playbooks/reading-notes-guide.php
+msgid "Keep more of what you read."
+msgstr "Behalte mehr von dem, was du liest."
+
+#. text text
+#: resources/templates/library/reading-cover.json resources/playbooks/reading-notes-guide.php
+msgid "One guide email. No newsletter signup."
+msgstr "Eine E-Mail mit dem Leitfaden. Keine Newsletter-Anmeldung."
+
+#. followup label
+#: resources/templates/library/reading-cover.json resources/playbooks/reading-notes-guide.php
+msgid "Open the reading guide"
+msgstr "Lese-Leitfaden öffnen"
+
+#. heading text
+#: resources/templates/library/reading-cover.json resources/playbooks/reading-notes-guide.php
+msgid "Read.\nNotice.\nRemember."
+msgstr "Lesen.\nBemerken.\nMerken."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/reading-cover.json
+msgid "Reading cover"
+msgstr "Lese-Cover"
+
+#. text text
+#: resources/templates/library/reading-cover.json resources/playbooks/reading-notes-guide.php
+msgid "Thank you. Your request for the reading guide is received."
+msgstr "Danke. Deine Anfrage zum Lese-Leitfaden ist eingegangen."
+
+#. eyebrow text
+#: resources/templates/library/reading-desk.json resources/playbooks/sunday-reading.php
+msgid "A letter worth making time for"
+msgstr "Ein Brief, für den man sich Zeit nimmt"
+
+#. heading text
+#: resources/templates/library/reading-desk.json resources/playbooks/sunday-reading.php
+msgid "A slower Sunday starts here."
+msgstr "Hier beginnt ein ruhigerer Sonntag."
+
+#. consent text
+#: resources/templates/library/reading-desk.json resources/playbooks/sunday-reading.php
+msgid "Email me the Sunday reading list. I can unsubscribe anytime."
+msgstr "Ich möchte die Sonntags-Leseliste per E-Mail erhalten. Ich kann mich jederzeit abmelden."
+
+#. heading text
+#: resources/templates/library/reading-desk.json resources/playbooks/sunday-reading.php
+msgid "Less scrolling.\nMore reading."
+msgstr "Weniger scrollen.\nMehr lesen."
+
+#. text text
+#: resources/templates/library/reading-desk.json resources/playbooks/sunday-reading.php
+msgid "One thoughtful essay every Sunday. Books, places and ideas that stay with you."
+msgstr "Jeden Sonntag ein durchdachter Essay. Bücher, Orte und Ideen, die dich begleiten."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/reading-desk.json
+msgid "Reading desk"
+msgstr "Lesepult"
+
+#. button label
+#: resources/templates/library/reading-desk.json resources/playbooks/sunday-reading.php
+msgid "Request the Sunday letter"
+msgstr "Sonntagsbrief anfragen"
+
+#. eyebrow text
+#: resources/templates/library/reading-desk.json resources/playbooks/sunday-reading.php
+msgid "The Sunday reading list"
+msgstr "Die Sonntags-Leseliste"
+
+#. text text
+#: resources/templates/library/reading-desk.json resources/playbooks/read-to-the-end.php resources/playbooks/sunday-reading.php
+msgid "We have received your request for the Sunday letter."
+msgstr "Wir haben deine Anfrage für den Sonntagsbrief erhalten."
+
+#. text text
+#: resources/templates/library/reading-desk.json resources/playbooks/sunday-reading.php
+msgid "Weekly. Free to read. Unsubscribe anytime."
+msgstr "Wöchentlich. Kostenlos zu lesen. Jederzeit abbestellbar."
+
+#. text text
+#: resources/templates/library/reading-slip.json resources/playbooks/reading-recommendation.php
+msgid "A practical essay on finding a little quiet before the day begins."
+msgstr "Ein praktischer Essay darüber, wie du vor dem Tag etwas Ruhe findest."
+
+#. text text
+#: resources/templates/library/reading-slip.json resources/playbooks/reading-recommendation.php
+msgid "An essay to read at your own pace."
+msgstr "Ein Essay, den du in deinem Tempo liest."
+
+#. heading text
+#: resources/templates/library/reading-slip.json resources/playbooks/reading-recommendation.php
+msgid "Make room for a slower morning"
+msgstr "Schaff Platz für einen ruhigeren Morgen"
+
+#. button label
+#: resources/templates/library/reading-slip.json resources/playbooks/reading-recommendation.php
+msgid "Read the essay"
+msgstr "Essay lesen"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/reading-slip.json
+msgid "Reading slip"
+msgstr "Lesezettel"
+
+#. eyebrow text
+#: resources/templates/library/reading-slip.json resources/playbooks/reading-recommendation.php
+msgid "Your next read"
+msgstr "Dein nächstes Lesestück"
+
+#. eyebrow text
+#: resources/templates/library/request-folio.json resources/playbooks/repair-advice-request.php
+msgid "1 / Your request"
+msgstr "1 / Deine Anfrage"
+
+#. eyebrow text
+#: resources/templates/library/request-folio.json resources/playbooks/repair-advice-request.php
+msgid "2 / Reply address"
+msgstr "2 / Antwortadresse"
+
+#. answer choice, at most 120 bytes
+#: resources/templates/library/request-folio.json resources/playbooks/repair-advice-request.php
+msgid "A chair"
+msgstr "Ein Stuhl"
+
+#. answer choice, at most 120 bytes
+#: resources/templates/library/request-folio.json resources/playbooks/repair-advice-request.php
+msgid "A table"
+msgstr "Ein Tisch"
+
+#. answer choice, at most 120 bytes
+#: resources/templates/library/request-folio.json resources/playbooks/repair-advice-request.php
+msgid "Another piece"
+msgstr "Ein anderes Stück"
+
+#. field placeholder
+#: resources/templates/library/request-folio.json resources/playbooks/repair-advice-request.php
+msgid "Choose an item"
+msgstr "Bitte auswählen"
+
+#. button label
+#: resources/templates/library/request-folio.json resources/playbooks/repair-advice-request.php
+msgid "Continue to email"
+msgstr "Weiter zur E-Mail"
+
+#. heading text
+#: resources/templates/library/request-folio.json resources/playbooks/repair-advice-request.php
+msgid "Could it be repaired?"
+msgstr "Lässt es sich reparieren?"
+
+#. text text
+#: resources/templates/library/request-folio.json resources/playbooks/repair-advice-request.php
+msgid "No photos or measurements needed to start."
+msgstr "Zum Start brauchst du keine Fotos oder Maße."
+
+#. screen name, at most 120 bytes
+#: resources/templates/library/request-folio.json
+msgid "Reply address"
+msgstr "Antwortadresse"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/request-folio.json
+msgid "Request folio"
+msgstr "Anfragemappe"
+
+#. button label
+#: resources/templates/library/request-folio.json resources/playbooks/repair-advice-request.php
+msgid "Send request"
+msgstr "Anfrage senden"
+
+#. text text
+#: resources/templates/library/request-folio.json resources/playbooks/repair-advice-request.php
+msgid "Two short steps"
+msgstr "Zwei kurze Schritte"
+
+#. text text
+#: resources/templates/library/request-folio.json resources/playbooks/repair-advice-request.php
+msgid "We use your email to discuss this request. This is not a booking."
+msgstr "Wir verwenden deine E-Mail-Adresse, um diese Anfrage zu besprechen. Dies ist keine Buchung."
+
+#. field label
+#: resources/templates/library/request-folio.json resources/templates/library/service-docket.json resources/playbooks/home-repair-quote.php
+msgid "What needs attention? (optional)"
+msgstr "Was braucht Aufmerksamkeit? (optional)"
+
+#. heading text
+#: resources/templates/library/request-folio.json resources/playbooks/repair-advice-request.php
+msgid "Where can we reply?"
+msgstr "Wohin können wir antworten?"
+
+#. text text
+#: resources/templates/library/scope-sheet.json resources/playbooks/service-fit-brief.php
+msgid "A focused look at the pages your customers use, with a written list of observations."
+msgstr "Ein gezielter Blick auf die Seiten, die deine Kundschaft nutzt, mit einer schriftlichen Liste der Beobachtungen."
+
+#. eyebrow text
+#: resources/templates/library/scope-sheet.json resources/playbooks/service-fit-brief.php
+msgid "A website review"
+msgstr "Eine Website-Prüfung"
+
+#. eyebrow text
+#: resources/templates/library/scope-sheet.json resources/playbooks/service-fit-brief.php
+msgid "Agreed separately"
+msgstr "Separat vereinbart"
+
+#. button label
+#: resources/templates/library/scope-sheet.json resources/playbooks/service-fit-brief.php
+msgid "Ask about the review"
+msgstr "Zur Prüfung anfragen"
+
+#. heading text
+#: resources/templates/library/scope-sheet.json resources/playbooks/service-fit-brief.php
+msgid "Changes to the website."
+msgstr "Änderungen an der Website."
+
+#. heading text
+#: resources/templates/library/scope-sheet.json resources/playbooks/service-fit-brief.php
+msgid "Clarity. Navigation. Next steps."
+msgstr "Klarheit. Navigation. Nächste Schritte."
+
+#. text text
+#: resources/templates/library/scope-sheet.json resources/playbooks/service-fit-brief.php
+msgid "Design, development and ongoing support are separate work, with their own scope and price."
+msgstr "Design, Entwicklung und laufende Betreuung sind eigene Leistungen, mit eigenem Umfang und Preis."
+
+#. heading text
+#: resources/templates/library/scope-sheet.json resources/playbooks/service-fit-brief.php
+msgid "Know what you are asking for."
+msgstr "Wisse, wonach du fragst."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/scope-sheet.json
+msgid "Scope sheet"
+msgstr "Leistungsblatt"
+
+#. heading text
+#: resources/templates/library/scope-sheet.json resources/playbooks/service-fit-brief.php
+msgid "Start with a conversation."
+msgstr "Beginne mit einem Gespräch."
+
+#. text text
+#: resources/templates/library/scope-sheet.json resources/playbooks/service-fit-brief.php
+msgid "Thank you. The next conversation can confirm which pages to review, the price and timing. No work is booked."
+msgstr "Danke. Im nächsten Gespräch können wir klären, welche Seiten geprüft werden, den Preis und den Zeitplan. Es wird keine Arbeit gebucht."
+
+#. consent text
+#: resources/templates/library/scope-sheet.json resources/playbooks/service-fit-brief.php
+msgid "Use my email to discuss this website review."
+msgstr "Verwende meine E-Mail-Adresse, um diese Website-Prüfung zu besprechen."
+
+#. text text
+#: resources/templates/library/scope-sheet.json resources/playbooks/service-fit-brief.php
+msgid "We use your email to reply. Scope, price and timing are agreed before any work."
+msgstr "Wir verwenden deine E-Mail-Adresse, um zu antworten. Umfang, Preis und Zeitplan werden vor jeder Arbeit vereinbart."
+
+#. eyebrow text
+#: resources/templates/library/scope-sheet.json resources/playbooks/service-fit-brief.php
+msgid "What we review"
+msgstr "Was wir prüfen"
+
+#. heading text
+#: resources/templates/library/scope-sheet.json resources/playbooks/service-fit-brief.php
+msgid "Your enquiry is received."
+msgstr "Deine Anfrage ist eingegangen."
+
+#. eyebrow text
+#: resources/templates/library/service-docket.json resources/playbooks/cleaning-quote.php resources/playbooks/home-repair-quote.php
+msgid "A practical next step"
+msgstr "Ein praktischer nächster Schritt"
+
+#. text text
+#: resources/templates/library/service-docket.json
+msgid "A quote request, with no booking or payment."
+msgstr "Eine Angebotsanfrage, ohne Buchung oder Zahlung."
+
+#. answer choice, at most 120 bytes
+#: resources/templates/library/service-docket.json resources/playbooks/home-repair-quote.php
+msgid "A repair"
+msgstr "Eine Reparatur"
+
+#. answer choice, at most 120 bytes
+#: resources/templates/library/service-docket.json resources/playbooks/home-repair-quote.php
+msgid "An installation"
+msgstr "Eine Installation"
+
+#. field placeholder
+#: resources/templates/library/service-docket.json resources/playbooks/cleaning-quote.php resources/playbooks/home-repair-quote.php
+msgid "Choose a service"
+msgstr "Bitte auswählen"
+
+#. consent text
+#: resources/templates/library/service-docket.json resources/playbooks/home-repair-quote.php
+msgid "Contact me about this home repair request."
+msgstr "Kontaktiere mich zu dieser Anfrage für eine Reparatur im Haushalt."
+
+#. answer choice, at most 120 bytes
+#: resources/templates/library/service-docket.json resources/playbooks/home-repair-quote.php
+msgid "Help deciding"
+msgstr "Hilfe bei der Entscheidung"
+
+#. button label
+#: resources/templates/library/service-docket.json resources/playbooks/home-repair-quote.php
+msgid "Request a repair quote"
+msgstr "Reparaturangebot anfragen"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/service-docket.json
+msgid "Service docket"
+msgstr "Serviceauftrag"
+
+#. heading text
+#: resources/templates/library/service-docket.json resources/playbooks/home-repair-quote.php
+msgid "Small repair.\nFresh start."
+msgstr "Kleine Reparatur.\nFrischer Start."
+
+#. text text
+#: resources/templates/library/service-docket.json
+msgid "Tell us what needs attention. Leave your email so we can discuss the job."
+msgstr "Sag uns, was zu tun ist. Hinterlass deine E-Mail-Adresse, damit wir den Auftrag besprechen können."
+
+#. text text
+#: resources/templates/library/service-docket.json resources/playbooks/home-repair-quote.php
+msgid "Thank you for describing what you need. This is a quote request, not a confirmed booking."
+msgstr "Danke für die Beschreibung deines Anliegens. Dies ist eine Angebotsanfrage, keine bestätigte Buchung."
+
+#. text text
+#: resources/templates/library/service-docket.json resources/playbooks/basket-product-help.php resources/playbooks/cleaning-quote.php
+msgid "We use your details to respond to this request."
+msgstr "Wir verwenden deine Angaben, um auf diese Anfrage zu antworten."
+
+#. text text
+#: resources/templates/library/service-process-strip.json resources/playbooks/service-process-strip.php
+msgid "An enquiry is the first step towards a restoration plan."
+msgstr "Eine Anfrage ist der erste Schritt zu einem Restaurierungsplan."
+
+#. button label
+#: resources/templates/library/service-process-strip.json resources/playbooks/service-process-strip.php
+msgid "Ask about restoration"
+msgstr "Zur Restaurierung anfragen"
+
+#. heading text
+#: resources/templates/library/service-process-strip.json resources/playbooks/service-process-strip.php
+msgid "Assess together"
+msgstr "Gemeinsam einschätzen"
+
+#. heading text
+#: resources/templates/library/service-process-strip.json resources/playbooks/service-process-strip.php
+msgid "Decide on the work"
+msgstr "Über die Arbeit entscheiden"
+
+#. text text
+#: resources/templates/library/service-process-strip.json resources/playbooks/service-process-strip.php
+msgid "Leave your email so we can discuss the piece."
+msgstr "Hinterlass deine E-Mail-Adresse, damit wir das Stück besprechen können."
+
+#. heading text
+#: resources/templates/library/service-process-strip.json resources/playbooks/service-process-strip.php
+msgid "Restoration enquiry received"
+msgstr "Restaurierungsanfrage erhalten"
+
+#. text text
+#: resources/templates/library/service-process-strip.json resources/playbooks/service-process-strip.php
+msgid "Review the scope and price before committing."
+msgstr "Prüfe Umfang und Preis, bevor du zusagst."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/service-process-strip.json
+msgid "Service process strip"
+msgstr "Ablaufleiste des Services"
+
+#. text text
+#: resources/templates/library/service-process-strip.json resources/playbooks/service-process-strip.php
+msgid "Share photos and agree what needs attention."
+msgstr "Teile Fotos und vereinbare, was gemacht werden muss."
+
+#. heading text
+#: resources/templates/library/service-process-strip.json resources/playbooks/service-process-strip.php
+msgid "Start with the piece you want to keep."
+msgstr "Beginne mit dem Stück, das du behalten möchtest."
+
+#. heading text
+#: resources/templates/library/service-process-strip.json resources/playbooks/service-process-strip.php
+msgid "Tell us"
+msgstr "Erzähl uns"
+
+#. text text
+#: resources/templates/library/service-process-strip.json resources/playbooks/service-process-strip.php
+msgid "Thank you. The next conversation can cover the piece, photographs and a possible assessment. No work is booked."
+msgstr "Danke. Im nächsten Gespräch können wir über das Stück, Fotos und eine mögliche Einschätzung sprechen. Es wird keine Arbeit gebucht."
+
+#. consent text
+#: resources/templates/library/service-process-strip.json resources/playbooks/service-process-strip.php
+msgid "Use my email to discuss this restoration request."
+msgstr "Verwende meine E-Mail-Adresse, um diese Restaurierungsanfrage zu besprechen."
+
+#. text text
+#: resources/templates/library/service-process-strip.json resources/playbooks/service-process-strip.php
+msgid "We use your email to reply. No work is booked by this form."
+msgstr "Wir verwenden deine E-Mail-Adresse, um zu antworten. Mit diesem Formular wird keine Arbeit gebucht."
+
+#. eyebrow text
+#: resources/templates/library/service-summary.json resources/playbooks/website-review-enquiry.php
+msgid "01 / Clarity"
+msgstr "01 / Klarheit"
+
+#. eyebrow text
+#: resources/templates/library/service-summary.json resources/playbooks/website-review-enquiry.php
+msgid "02 / Usability"
+msgstr "02 / Bedienbarkeit"
+
+#. text text
+#: resources/templates/library/service-summary.json resources/playbooks/website-review-enquiry.php
+msgid "A focused review of the pages your customers use most."
+msgstr "Eine gezielte Prüfung der Seiten, die deine Kundschaft am häufigsten nutzt."
+
+#. button label
+#: resources/templates/library/service-summary.json resources/playbooks/website-review-enquiry.php
+msgid "Ask about a review"
+msgstr "Zu einer Prüfung anfragen"
+
+#. text text
+#: resources/templates/library/service-summary.json resources/playbooks/website-review-enquiry.php
+msgid "Can they take the next step?"
+msgstr "Können sie den nächsten Schritt gehen?"
+
+#. text text
+#: resources/templates/library/service-summary.json resources/playbooks/website-review-enquiry.php
+msgid "Can visitors find the answer?"
+msgstr "Finden Besucher die Antwort?"
+
+#. heading text
+#: resources/templates/library/service-summary.json resources/playbooks/website-review-enquiry.php
+msgid "Find the friction in your website."
+msgstr "Finde die Reibungspunkte deiner Website."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/service-summary.json
+msgid "Service summary"
+msgstr "Service-Überblick"
+
+#. text text
+#: resources/templates/library/service-summary.json resources/playbooks/website-review-enquiry.php
+msgid "We use your email to discuss scope and pricing. This does not book a review."
+msgstr "Wir verwenden deine E-Mail-Adresse, um Umfang und Preis zu besprechen. Damit wird keine Prüfung gebucht."
+
+#. eyebrow text
+#: resources/templates/library/service-summary.json resources/playbooks/website-review-enquiry.php
+msgid "Website review"
+msgstr "Website-Prüfung"
+
+#. text text
+#: resources/templates/library/service-summary.json resources/playbooks/website-review-enquiry.php
+msgid "Your website review enquiry is received. Scope, pricing and timing are agreed separately."
+msgstr "Deine Anfrage zur Website-Prüfung ist eingegangen. Umfang, Preis und Zeitplan werden separat vereinbart."
+
+#. eyebrow text
+#: resources/templates/library/specification-sheet.json resources/playbooks/specification-sheet.php
+msgid "Best beside"
+msgstr "Passt am besten neben"
+
+#. eyebrow text
+#: resources/templates/library/specification-sheet.json resources/playbooks/specification-sheet.php
+msgid "Care"
+msgstr "Pflege"
+
+#. text text
+#: resources/templates/library/specification-sheet.json resources/playbooks/specification-sheet.php
+msgid "Check the product pages for materials, price and availability."
+msgstr "Material, Preis und Verfügbarkeit findest du auf den Produktseiten."
+
+#. screen name, at most 120 bytes
+#: resources/templates/library/specification-sheet.json
+msgid "Compare"
+msgstr "Vergleichen"
+
+#. button label
+#: resources/templates/library/specification-sheet.json resources/playbooks/specification-sheet.php
+msgid "Explore the tables"
+msgstr "Tische entdecken"
+
+#. text text
+#: resources/templates/library/specification-sheet.json resources/playbooks/specification-sheet.php
+msgid "Small · 35 × 35 cm"
+msgstr "Klein · 35 × 35 cm"
+
+#. text text
+#: resources/templates/library/specification-sheet.json resources/playbooks/specification-sheet.php
+msgid "Small · an armchair"
+msgstr "Klein · ein Sessel"
+
+#. text text
+#: resources/templates/library/specification-sheet.json resources/playbooks/specification-sheet.php
+msgid "Small · wipe clean"
+msgstr "Klein · abwischbar"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/specification-sheet.json
+msgid "Specification sheet"
+msgstr "Datenblatt"
+
+#. text text
+#: resources/templates/library/specification-sheet.json resources/playbooks/specification-sheet.php
+msgid "Two everyday options. Start with the space beside your seat."
+msgstr "Zwei Alltagsvarianten. Fang mit dem Platz neben deinem Sitz an."
+
+#. heading text
+#: resources/templates/library/specification-sheet.json resources/playbooks/specification-sheet.php
+msgid "Which table fits your space?"
+msgstr "Welcher Tisch passt zu deinem Platz?"
+
+#. text text
+#: resources/templates/library/specification-sheet.json resources/playbooks/specification-sheet.php
+msgid "Wide · 50 × 40 cm"
+msgstr "Breit · 50 × 40 cm"
+
+#. text text
+#: resources/templates/library/specification-sheet.json resources/playbooks/specification-sheet.php
+msgid "Wide · a two-seat sofa"
+msgstr "Breit · ein Zweisitzer-Sofa"
+
+#. text text
+#: resources/templates/library/specification-sheet.json resources/playbooks/specification-sheet.php
+msgid "Wide · wipe clean"
+msgstr "Breit · abwischbar"
+
+#. text text
+#: resources/templates/library/stacked-signup.json
+msgid "Occasional text updates. Message rates may apply. You can opt out."
+msgstr "Gelegentliche Neuigkeiten per SMS. Es können Gebühren für Nachrichten anfallen. Du kannst dich abmelden."
+
+#. text text
+#: resources/templates/library/stacked-signup.json
+msgid "One message when something new lands. Nothing else."
+msgstr "Eine Nachricht, wenn etwas Neues da ist. Sonst nichts."
+
+#. button label
+#: resources/templates/library/stacked-signup.json
+msgid "Request text updates"
+msgstr "SMS-Updates anfragen"
+
+#. consent text
+#: resources/templates/library/stacked-signup.json
+msgid "Send me text updates about new releases. %s"
+msgstr "Ich möchte SMS-Updates zu Neuerscheinungen erhalten. %s"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/stacked-signup.json
+msgid "Stacked signup"
+msgstr "Gestapelte Anmeldung"
+
+#. heading text
+#: resources/templates/library/stacked-signup.json
+msgid "Text me the drops"
+msgstr "Schick mir die Drops per SMS"
+
+#. text text
+#: resources/templates/library/stacked-signup.json resources/playbooks/drop-alerts.php
+msgid "Thank you for asking to hear about the next drop."
+msgstr "Danke, dass du vom nächsten Drop erfahren möchtest."
+
+#. heading text
+#: resources/templates/library/summer-archive.json resources/playbooks/sale-announcement.php
+msgid "Good days.\n30% off."
+msgstr "Gute Tage.\n30 % Rabatt."
+
+#. text text
+#: resources/templates/library/summer-archive.json
+msgid "Linen shirts. Easy shorts.\nLast season, still a good idea."
+msgstr "Leinenhemden. Lässige Shorts.\nLetzte Saison, trotzdem eine gute Idee."
+
+#. text text
+#: resources/templates/library/summer-archive.json resources/playbooks/sale-announcement.php
+msgid "Selected summer styles only. Prices as marked. No code needed."
+msgstr "Nur ausgewählte Sommerstyles. Preise wie ausgezeichnet. Kein Code nötig."
+
+#. button label
+#: resources/templates/library/summer-archive.json resources/playbooks/sale-announcement.php
+msgid "Shop the summer sale"
+msgstr "Zum Sommer-Sale"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/summer-archive.json
+msgid "The summer archive"
+msgstr "Das Sommerarchiv"
+
+#. eyebrow text
+#: resources/templates/library/summer-archive.json resources/playbooks/sale-announcement.php
+msgid "The summer edit"
+msgstr "Die Sommerauswahl"
+
+#. text text
+#: resources/templates/library/sunday-marginalia.json
+msgid "A good read. A cup of something. A little room to think."
+msgstr "Ein guter Text. Eine Tasse von irgendwas. Etwas Raum zum Nachdenken."
+
+#. eyebrow text
+#: resources/templates/library/sunday-marginalia.json resources/playbooks/read-to-the-end.php
+msgid "A taste of the letter"
+msgstr "Ein Vorgeschmack auf den Brief"
+
+#. text text
+#: resources/templates/library/sunday-marginalia.json resources/playbooks/read-to-the-end.php
+msgid "An essay to keep"
+msgstr "Ein Essay zum Aufheben"
+
+#. text text
+#: resources/templates/library/sunday-marginalia.json
+msgid "Books, places and the things we nearly miss. One thoughtful read in your inbox every Sunday."
+msgstr "Bücher, Orte und die Dinge, die wir fast übersehen. Jeden Sonntag ein durchdachter Lesetipp in deinem Postfach."
+
+#. text text
+#: resources/templates/library/sunday-marginalia.json resources/playbooks/read-to-the-end.php
+msgid "Every Sunday"
+msgstr "Jeden Sonntag"
+
+#. text text
+#: resources/templates/library/sunday-marginalia.json
+msgid "Every Sunday. Always time to unsubscribe."
+msgstr "Jeden Sonntag. Abbestellen ist jederzeit möglich."
+
+#. text text
+#: resources/templates/library/sunday-marginalia.json
+msgid "Free to read. A letter every Sunday. Unsubscribe any time. %s"
+msgstr "Kostenlos zu lesen. Jeden Sonntag ein Brief. Jederzeit abbestellbar. %s"
+
+#. eyebrow text
+#: resources/templates/library/sunday-marginalia.json
+msgid "Made for a quieter moment"
+msgstr "Gemacht für einen ruhigeren Moment"
+
+#. heading text
+#: resources/templates/library/sunday-marginalia.json resources/playbooks/read-to-the-end.php
+msgid "One good essay.\nA slower Sunday."
+msgstr "Ein guter Essay.\nEin ruhigerer Sonntag."
+
+#. button label
+#: resources/templates/library/sunday-marginalia.json resources/playbooks/read-to-the-end.php
+msgid "Send me the Sunday letter"
+msgstr "Schick mir den Sonntagsbrief"
+
+#. design name, at most 120 bytes
+#: resources/templates/library/sunday-marginalia.json
+msgid "Sunday marginalia"
+msgstr "Sonntags-Randnotizen"
+
+#. text text
+#: resources/templates/library/sunday-marginalia.json
+msgid "Thank you for asking for %b. We have received your details."
+msgstr "Danke für deine Anfrage zu %b. Wir haben deine Angaben erhalten."
+
+#. text italic
+#: resources/templates/library/sunday-marginalia.json resources/playbooks/read-to-the-end.php
+msgid "The best bookshops leave a little room for getting lost."
+msgstr "Die besten Buchhandlungen lassen ein wenig Raum, sich zu verlieren."
+
+#. text emphasis
+#: resources/templates/library/sunday-marginalia.json
+msgid "the Sunday letter"
+msgstr "den Sonntagsbrief"
+
+#. heading text
+#: resources/templates/library/sunday-marginalia.json resources/playbooks/read-to-the-end.php
+msgid "Your request\nis in."
+msgstr "Deine Anfrage\nist da."
+
+#. text text
+#: resources/templates/library/useful-guide.json
+msgid "A printable guide to keep nearby. Free to request. %s"
+msgstr "Ein druckbarer Leitfaden für griffbereit. Kostenlos anfragen. %s"
+
+#. heading text
+#: resources/templates/library/useful-guide.json resources/playbooks/guide-download.php
+msgid "A useful first step."
+msgstr "Ein nützlicher erster Schritt."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/useful-guide.json
+msgid "A useful little guide"
+msgstr "Ein nützlicher kleiner Leitfaden"
+
+#. text text
+#: resources/templates/library/useful-guide.json
+msgid "Check the soil before you water. Give it a moment, then decide."
+msgstr "Prüfe die Erde, bevor du gießt. Gib ihr einen Moment, dann entscheide."
+
+#. heading text
+#: resources/templates/library/useful-guide.json resources/playbooks/guide-download.php
+msgid "Less guesswork.\nHappier plants."
+msgstr "Weniger Raten.\nGlücklichere Pflanzen."
+
+#. button label
+#: resources/templates/library/useful-guide.json
+msgid "Request the plant checklist"
+msgstr "Pflanzen-Checkliste anfragen"
+
+#. text text
+#: resources/templates/library/useful-guide.json resources/playbooks/guide-download.php
+msgid "Seven checks for light, water and the little things your plants need."
+msgstr "Sieben Checks für Licht, Wasser und die kleinen Dinge, die deine Pflanzen brauchen."
+
+#. text text
+#: resources/templates/library/useful-guide.json resources/playbooks/guide-download.php
+msgid "Simple checks.\nHappier plants."
+msgstr "Einfache Checks.\nGlücklichere Pflanzen."
+
+#. eyebrow text
+#: resources/templates/library/useful-guide.json
+msgid "START HERE"
+msgstr "HIER STARTEN"
+
+#. text text
+#: resources/templates/library/useful-guide.json
+msgid "Thank you for requesting the plant checklist. We have received your details."
+msgstr "Danke für deine Anfrage zur Pflanzen-Checkliste. Wir haben deine Angaben erhalten."
+
+#. eyebrow text
+#: resources/templates/library/useful-guide.json
+msgid "THE PLANT CHECKLIST"
+msgstr "DIE PFLANZEN-CHECKLISTE"
+
+#. text text
+#: resources/templates/library/useful-guide.json
+msgid "Your request is for the plant checklist."
+msgstr "Deine Anfrage gilt der Pflanzen-Checkliste."
+
+#. text text
+#: resources/templates/library/wide-banner.json
+msgid "Five worthwhile links, every Thursday."
+msgstr "Fünf lohnende Links, jeden Donnerstag."
+
+#. heading text
+#: resources/templates/library/wide-banner.json
+msgid "The weekly round-up"
+msgstr "Der Wochenüberblick"
+
+#. text text
+#: resources/templates/library/wide-banner.json
+msgid "Unsubscribe in one click, any time."
+msgstr "Jederzeit mit einem Klick abbestellbar."
+
+#. design name, at most 120 bytes
+#: resources/templates/library/wide-banner.json
+msgid "Wide banner"
+msgstr "Breites Banner"

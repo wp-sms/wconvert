@@ -121,6 +121,9 @@ the same move ADR 0010 made on templates, applied one layer up.
   so a JSON bundled registry ships an English-only library. Remote entries stay
   JSON and untranslated because remote PHP is Guideline 8 remote code execution
   with no argument available. Both normalise to one in-memory shape.
+  *Amended by [ADR 0183](0183-design-words-are-one-list-per-language.md): a bundled
+  entry's words also pass through a per-language list after `__()`, for the
+  languages no WordPress.org pack covers.*
   *Built by [#27](https://github.com/navidkashani/wconvert/issues/27):
   [`resources/playbooks/*.php`](../../resources/playbooks/), normalised by
   [`PlaybookLibrary::fromEntries()`](../../src/Playbook/PlaybookLibrary.php) —

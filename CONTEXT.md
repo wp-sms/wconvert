@@ -1272,6 +1272,15 @@ design, written in the publishing layer and searched in the picker. Distinct
 from facets, which are derived from the tree ([ADR 0043](docs/adr/0043-the-library-is-indexed-and-its-facets-are-derived.md)) —
 a facet says what a design does, a catalogue word says who it is for.
 
+### Design words
+
+The per-language list a design's and a setup's starting words are read through:
+"English" to translation, one list per language, generated from a `.po` that never
+ships. A site's language picks the list, and a campaign that already exists is not
+touched. Not **Catalogue words**, which describe a design for search, and not a
+language pack, which still wins for any word it translated
+([ADR 0183](docs/adr/0183-design-words-are-one-list-per-language.md)).
+
 ### Collection
 
 A reviewed discovery list of [[Playbook]]s and designs, shown as campaign setups.

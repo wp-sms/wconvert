@@ -19,8 +19,8 @@ defined('ABSPATH') || exit;
  * Entries are JSON rather than PHP arrays, which is the opposite of ADR 0013's
  * choice for [[Playbook]]s and for the reason that decision gives: a Playbook
  * is nothing but words, so `wp i18n make-pot` not seeing a JSON string ships
- * an English-only library. A Template is structure, and its only words are
- * placeholders no visitor ever reads.
+ * an English-only library. A Template is structure, and the words it starts with
+ * reach a site's language through {@see DesignWords} instead (ADR 0183).
  *
  * @since 0.1.0
  */
@@ -33,6 +33,7 @@ final class BundledTemplates implements TemplateSource
 
     public function __construct(
         private readonly string $pluginDir = WCONVERT_DIR,
+        private readonly ?DesignWords $words = null,
     ) {
     }
 
@@ -57,6 +58,8 @@ final class BundledTemplates implements TemplateSource
         }
 
         $entries = TemplateNames::apply($entries, rtrim($this->pluginDir, '/') . '/' . self::LABELS);
+        // After the names, so a word a language pack already translated stays as the pack has it (ADR 0183).
+        $entries = array_map(($this->words ?? DesignWords::bundled($this->pluginDir))->template(...), $entries);
 
         return BundledRevisions::stamp($entries, BundledRevisions::read(rtrim($this->pluginDir, '/') . '/' . self::REVISIONS));
     }
