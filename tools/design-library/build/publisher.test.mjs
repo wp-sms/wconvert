@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, readFileSync, rmSync, statSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { buildRelease, buildPointer, publishRelease, guardDrops, sha256, LIMITS } from './publisher.mjs';
+import { buildRelease, buildPointer, publishRelease, guardDrops, sha256, wordFiles, LIMITS } from './publisher.mjs';
 
 const image = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jA1sAAAAASUVORK5CYII=', 'base64');
 const rights = { redistribution: true, kind: 'original', source: 'Original test pixel', reviewedBy: 'test' };
@@ -94,4 +94,25 @@ test('local publication reuses immutable objects, guards drops, and swaps only t
   publishRelease(directory, withdrawn, first.id);
   assert.equal(JSON.parse(readFileSync(join(directory, 'public/v3/manifest.json'))).release, withdrawn.id);
   assert.ok(existsSync(join(directory, 'public/v3/releases', first.id + '.json')), 'The previous release stays for rollback');
+});
+
+test('a language\'s words are public files under the object budget, listed under a key a frozen reader ignores', () => {
+  const list = Object.fromEntries(Array.from({ length: 2000 }, (_, i) => [`English word number ${i} ${'x'.repeat(100)}`, `Wort Nummer ${i} ${'ü'.repeat(100)}`]));
+  const release = buildRelease({ designs: [design('a', { access: 'free' })], words: { de_DE: list, fr_FR: {} } });
+  const parsed = JSON.parse(release.objects.find(object => object.key === `v3/releases/${release.id}.json`).bytes);
+  assert.equal(parsed.i18n, undefined);
+  assert.deepEqual(Object.keys(parsed.words), ['de_DE'], 'a language with no words is not listed');
+  assert.ok(parsed.words.de_DE.length >= 2, 'more than one object\'s worth');
+  const read = {};
+  for (const sha of parsed.words.de_DE) {
+    const object = release.objects.find(item => item.key === `v3/index/${sha}.json`);
+    assert.equal(object.scope, 'public');
+    assert.ok(object.bytes.length <= LIMITS.object);
+    Object.assign(read, JSON.parse(object.bytes).words);
+  }
+  assert.deepEqual(read, list);
+});
+
+test('the same words are the same files, in any order', () => {
+  assert.deepEqual(wordFiles({ b: '2', a: '1' }), wordFiles({ a: '1', b: '2' }));
 });

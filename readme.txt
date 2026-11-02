@@ -266,7 +266,8 @@ which nothing is fetched. Nothing is fetched on activation, from cron, on the
 dashboard or on your site's pages. While the picker is open, WConvert checks
 for new designs at most twice a day.
 
-What is fetched: JSON design and setup data and PNG, JPEG or WebP images. Every
+What is fetched: JSON design and setup data, the words for your site's language
+where the library has them, and PNG, JPEG or WebP images. Every
 file is checked against a SHA-256 checksum, and nothing executable or any font
 is downloaded. A design you add is stored under `wp-content/uploads/` and keeps
 working offline. Your browser loads design thumbnails from the same address with

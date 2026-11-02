@@ -22,6 +22,11 @@ services".
 
 ## Decision
 
+*Amended by [ADR 0183](0183-design-words-are-one-list-per-language.md): opening a gallery may
+also fetch the word files for the site's language, skipping the twelve-hour wait once if
+that language has none here. It is the same service, on the same request path, and it
+still sends nothing about the site.*
+
 **1. The library is on by default.** The option
 `wconvert_template_library_consent` keeps its `'yes'|'no'` values, and
 `'unanswered'` is gone: anything other than `'no'` reads as `'yes'`. With no

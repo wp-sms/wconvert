@@ -35,7 +35,7 @@ path contains the SHA-256 of its exact bytes, served `immutable` for a year.
 | --- | --- | --- |
 | `manifest.json` | public | The pointer. The only mutable object. `no-cache`, with an ETag. |
 | `releases/<sha>.json` | public | A release: page list, taxonomy, collections, sidecars. |
-| `index/<sha>.json` | public | A page of entries, a detail page, an i18n sidecar or the popularity sidecar. |
+| `index/<sha>.json` | public | A page of entries, a detail page, a file of a language's word list or the popularity sidecar. |
 | `designs/<sha>.json` | public | A Free design object. |
 | `setups/<sha>.json` | public | A Free setup object. |
 | `assets/<sha>.<png\|jpg\|webp>` | public | A Free image. |
@@ -84,7 +84,7 @@ Nothing is ever deleted from a site remotely.
   "schema": 3, "minor": 0,
   "pages": ["<sha>", "..."],
   "details": ["<sha>", "..."],
-  "i18n": {"de_DE": "<sha>"},
+  "words": {"de_DE": ["<sha>", "<sha>"]},
   "taxonomy": {
     "industry": [{"id": "food", "label": "Food & drink"}],
     "occasion": [{"id": "christmas", "label": "Christmas"}],
@@ -179,7 +179,13 @@ A detail page (website only) is `{"schema": 3, "details": [{"id", "slug",
 "preview": "<sha>", "og": "<sha>", "thumb": {"sha", "width", "height", "alt"}}]}`.
 
 The popularity sidecar is `{"schema": 3, "generated": "2026-10-20", "downloads": {"<design id>": 120}}`.
-An i18n sidecar is `{"schema": 3, "designs": {"<id>": {"name", "description"}}}`.
+A word list file is `{"schema": 3, "words": {"English": "Translation"}}`
+([ADR 0183](adr/0183-design-words-are-one-list-per-language.md)). A language's files
+together are its list; each entry's name and every word of a public object is in it,
+and a paid setup's words never are. A plugin fetches only its site's language, keeps
+every object in English, and reads the words over it, so a missing or bad word leaves
+that object English. A reader that does not know the key ignores it. The digests in
+`words` are part of the release, so a word changes only with a release.
 
 ### Design object — `v3/designs/<sha>.json`
 

@@ -63,10 +63,200 @@ final class TemplateCatalogTest extends TestCase
      * @param array<string, bool> $plugins
      * @param array<string, int> $local
      */
-    private function catalog(Tier $tier = Tier::Free, ?FakeCatalogTransport $http = null, ?DesignArchive $archive = null, array $plugins = [], array $local = []): TemplateCatalog
+    private function catalog(Tier $tier = Tier::Free, ?FakeCatalogTransport $http = null, ?DesignArchive $archive = null, array $plugins = [], array $local = [], string $locale = 'en_US'): TemplateCatalog
     {
         return new TemplateCatalog($this->options, $http ?? $this->http, $this->validator($tier), $archive ?? $this->archive($tier, $tier->value), $tier,
-            static fn (): array => $local, static fn (): array => $plugins, fn (): int => $this->now, TemplateVocabulary::fromManifest()->facets());
+            static fn (): array => $local, static fn (): array => $plugins, fn (): int => $this->now, TemplateVocabulary::fromManifest()->facets(), $locale);
+    }
+
+    /**
+     * A catalogue with one design, one setup and a list covering all of both, and a
+     * site in `$locale`: the archive reads through the catalogue, as the container wires it.
+     * Languages no ZIP carries, so these read the catalogue's list alone.
+     *
+     * @return array{TemplateCatalog, DesignArchive}
+     */
+    private function translatedSite(string $locale = 'nl_NL'): array
+    {
+        $site = new \stdClass();
+        $archive = new DesignArchive($this->directory, $this->validator(), 'site-secret', null, 'free', [], fn (): array => $this->referenced, static fn (): \WConvert\Template\DesignWords => $site->catalog->words());
+        $site->catalog = $this->catalog(archive: $archive, locale: $locale);
+        return [$site->catalog, $archive];
+    }
+
+    /**
+     * @param array<string, mixed> $design
+     * @param array<string, mixed> $copy
+     * @return array<string, string>
+     */
+    private function wholeList(array $design, string $setupName = 'A setup', array $copy = []): array
+    {
+        $words = [];
+        foreach (\WConvert\Template\DesignWords::wordsOfTemplate($design['object'], TemplateManifest::load()) as $english => $word) $words[$english] = 'DE ' . $english;
+        foreach (\WConvert\Template\DesignWords::wordsOfPlaybook(['name' => $setupName, 'copy' => $copy]) as $english => $word) $words[$english] = 'DE ' . $english;
+        return $words;
+    }
+
+    /**
+     * @param array<string, mixed> $design
+     * @return array<string, mixed> the setup's words
+     */
+    private function setupFor(array $design, string $headline = 'A setup headline'): array
+    {
+        $playbook = require WCONVERT_DIR . 'resources/playbooks/reading-recommendation.php';
+        $playbook['name'] = 'A setup';
+        $playbook['copy']['headline'] = $headline;
+        $this->service->setups = [];
+        $this->service->setup('a-setup', $design, $playbook);
+        return $playbook['copy'];
+    }
+
+    public function testASiteInALanguageFetchesItsListAndReadsCardsAndInstalledDesignsThroughIt(): void
+    {
+        $design = $this->service->design(self::FREE_DESIGN, 'reading');
+        $copy = $this->setupFor($design);
+        $this->service->words = ['nl_NL' => array_map(null, array_chunk($this->wholeList($design, 'A setup', $copy), 40, true)), 'es_ES' => [['Nope' => 'Non']]];
+        $this->service->publish();
+        [$catalog, $archive] = $this->translatedSite();
+
+        $status = $catalog->refresh();
+        self::assertSame('DE ' . $design['object']['name'], $this->cards($catalog)['reading']['name']);
+        self::assertSame('DE A setup', $status['setups'][0]['name']);
+
+        $sha = $status['setups'][0]['sha256'];
+        $catalog->installSetup('a-setup', $sha);
+        $entry = $archive->entries()[0];
+        self::assertSame('DE ' . $design['object']['name'], $entry['name']);
+        self::assertSame('DE A setup', $archive->playbooks()[0]['name']);
+        self::assertSame('DE A setup headline', $archive->playbooks()[0]['copy']['headline']);
+        self::assertSame($design['object']['name'], $archive->designs()[0]['template']['name'], 'the snapshot and the files stay English');
+        self::assertSame(1, count($archive->revisions()));
+    }
+
+    public function testASiteInEnglishFetchesNoList(): void
+    {
+        $design = $this->service->design(self::FREE_DESIGN, 'reading');
+        $this->service->words = ['nl_NL' => [$this->wholeList($design)]];
+        $sha = hash('sha256', (string) json_encode(['schema' => 3, 'words' => $this->service->words['nl_NL'][0]], JSON_THROW_ON_ERROR));
+        $this->service->publish();
+        $catalog = $this->catalog();
+        $catalog->refresh();
+
+        self::assertNotContains(CatalogFixture::BASE . 'index/' . $sha . '.json', $this->http->requests);
+        self::assertSame($design['object']['name'], $this->cards($catalog)['reading']['name']);
+    }
+
+    public function testAMissingFileMeansEnglishAndBlocksNothing(): void
+    {
+        $design = $this->service->design(self::FREE_DESIGN, 'reading');
+        $this->setupFor($design);
+        $this->service->words = ['nl_NL' => [$this->wholeList($design)]];
+        $this->service->publish();
+        $sha = hash('sha256', (string) json_encode(['schema' => 3, 'words' => $this->service->words['nl_NL'][0]], JSON_THROW_ON_ERROR));
+        unset($this->http->responses[CatalogFixture::BASE . 'index/' . $sha . '.json']);
+        [$catalog, $archive] = $this->translatedSite();
+
+        $status = $catalog->refresh();
+        self::assertSame($design['object']['name'], $this->cards($catalog)['reading']['name']);
+        self::assertFalse((bool) get_transient(TemplateCatalog::BACKOFF_TRANSIENT), 'no backoff: the library itself answered');
+
+        $catalog->installSetup('a-setup', $status['setups'][0]['sha256']);
+        self::assertSame($design['object']['name'], $archive->entries()[0]['name'], 'installs in English');
+    }
+
+    public function testAMissingWordKeepsThatObjectWhollyEnglishAndNoOther(): void
+    {
+        $design = $this->service->design(self::FREE_DESIGN, 'reading');
+        $copy = $this->setupFor($design);
+        $list = $this->wholeList($design, 'A setup', $copy);
+        unset($list['A setup headline']);
+        $this->service->words = ['nl_NL' => [$list]];
+        $this->service->publish();
+        [$catalog, $archive] = $this->translatedSite();
+
+        $status = $catalog->refresh();
+        $catalog->installSetup('a-setup', $status['setups'][0]['sha256']);
+
+        self::assertSame('DE ' . $design['object']['name'], $archive->entries()[0]['name'], 'the design is whole');
+        self::assertSame('A setup', $archive->playbooks()[0]['name'], 'the setup lacks a word, so even its name stays English');
+        self::assertSame('A setup headline', $archive->playbooks()[0]['copy']['headline']);
+    }
+
+    public function testABadTranslationCostsItsObjectsGermanAndNeverTheObject(): void
+    {
+        $design = $this->service->design(self::FREE_DESIGN, 'reading');
+        $copy = $this->setupFor($design, 'Read our %s');
+        $list = $this->wholeList($design, 'A setup', $copy);
+        $list['Read our %s'] = 'Lies das, ohne Link';
+        $this->service->words = ['nl_NL' => [$list]];
+        $this->service->publish();
+        [$catalog, $archive] = $this->translatedSite();
+
+        $status = $catalog->refresh();
+        $catalog->installSetup('a-setup', $status['setups'][0]['sha256']);
+
+        self::assertCount(1, $archive->playbooks(), 'it survives, and pins its design');
+        self::assertSame('Read our %s', $archive->playbooks()[0]['copy']['headline']);
+        self::assertSame(0, $archive->prune());
+        self::assertCount(1, $archive->designs());
+    }
+
+    public function testAChangedLanguageFetchesItsListInsideTheWaitOnceAndAStaleWindowIsOtherwiseQuiet(): void
+    {
+        $design = $this->service->design(self::FREE_DESIGN, 'reading');
+        $this->service->words = ['nl_NL' => [$this->wholeList($design)], 'es_ES' => [array_map(static fn (string $word): string => 'ES ' . substr($word, 3), $this->wholeList($design))]];
+        $this->service->publish();
+        $this->catalog()->refresh();
+        self::assertSame($design['object']['name'], $this->cards($this->catalog())['reading']['name']);
+
+        $this->http->requests = [];
+        self::assertNotEmpty($this->catalog()->refresh(true)['designs']);
+        self::assertSame([], $this->http->requests, 'an English site inside the window asks nothing');
+
+        $dutch = $this->catalog(locale: 'nl_NL');
+        $dutch->refresh(true);
+        self::assertSame('DE ' . $design['object']['name'], $this->cards($dutch)['reading']['name'], 'the language changed, so the wait is skipped');
+        self::assertCount(2, $this->http->requests, 'the pointer and the one file');
+
+        $this->http->requests = [];
+        $this->catalog(locale: 'nl_NL')->refresh(true);
+        self::assertSame([], $this->http->requests, 'once it has them');
+
+        $spanish = $this->catalog(locale: 'es_MX');
+        $spanish->refresh(true);
+        self::assertSame('ES ' . $design['object']['name'], $this->cards($spanish)['reading']['name'], 'a variant reads its language');
+        $this->http->requests = [];
+        self::assertSame('DE ' . $design['object']['name'], $this->cards($this->catalog(locale: 'nl_NL'))['reading']['name'], 'changing back needs no fetch');
+        self::assertSame([], $this->http->requests);
+    }
+
+    public function testAFailedFetchInsideTheWaitIsNotAnErrorAndIsNotRetriedUntilTheNextRefresh(): void
+    {
+        $design = $this->service->design(self::FREE_DESIGN, 'reading');
+        $this->service->words = ['nl_NL' => [$this->wholeList($design)]];
+        $this->service->publish();
+        $this->catalog()->refresh();
+        $source = $this->http->responses[CatalogFixture::SOURCE];
+        unset($this->http->responses[CatalogFixture::SOURCE]);
+
+        $dutch = $this->catalog(locale: 'nl_NL');
+        self::assertNotEmpty($dutch->refresh(true)['designs'], 'offline, the library still shows, in English');
+        self::assertFalse((bool) get_transient(TemplateCatalog::BACKOFF_TRANSIENT));
+
+        $this->http->requests = [];
+        $this->http->responses[CatalogFixture::SOURCE] = $source;
+        $this->catalog(locale: 'nl_NL')->refresh(true);
+        self::assertSame([], $this->http->requests, 'one try per language per ordinary refresh');
+    }
+
+    public function testAReleaseWithAnOldI18nSlotIsReadAsNoList(): void
+    {
+        $this->service->design(self::FREE_DESIGN, 'reading');
+        $this->service->publish();
+        $release = \WConvert\Template\Catalog\CatalogIndex::release((string) json_encode(['schema' => 3, 'pages' => [str_repeat('a', 64)], 'i18n' => ['nl_NL' => str_repeat('b', 64)], 'words' => ['nl_NL' => 'not a list', 'es_ES' => ['nope'], 'BAD' => [str_repeat('c', 64)], 'pl_PL' => [str_repeat('d', 64)]]]));
+
+        self::assertSame(['pl_PL' => [str_repeat('d', 64)]], $release['words']);
+        self::assertArrayNotHasKey('i18n', $release);
     }
 
     /** @return array<string, array<string, mixed>> */

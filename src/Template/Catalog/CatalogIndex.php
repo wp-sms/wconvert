@@ -2,6 +2,7 @@
 
 namespace WConvert\Template\Catalog;
 
+use WConvert\Template\DesignWords;
 use WConvert\Template\TemplateFacets;
 
 defined('ABSPATH') || exit;
@@ -65,7 +66,7 @@ final class CatalogIndex
     }
 
     /**
-     * @return array{pages: list<string>, i18n: array<string, string>, taxonomy: array<string, list<array{id: string, label: string}>>, collections: list<array<string, mixed>>}
+     * @return array{pages: list<string>, words: array<string, list<string>>, taxonomy: array<string, list<array{id: string, label: string}>>, collections: list<array<string, mixed>>}
      */
     public static function release(string $json): array
     {
@@ -75,9 +76,11 @@ final class CatalogIndex
         $pages = $release['pages'] ?? null;
         PackValidator::check(is_array($pages) && array_is_list($pages) && count($pages) >= 1 && count($pages) <= self::MAX_PAGES
             && count(array_filter($pages, [self::class, 'digest'])) === count($pages) && count(array_unique($pages)) === count($pages), __('The catalog release lists invalid pages.', 'wconvert'));
-        $i18n = [];
-        foreach (is_array($release['i18n'] ?? null) ? $release['i18n'] : [] as $locale => $sha) {
-            if (is_string($locale) && preg_match('/^[a-z]{2,3}(?:_[A-Z]{2})?$/D', $locale) === 1 && self::digest($sha)) $i18n[$locale] = $sha;
+        // A language whose list is damaged is simply not offered; English stays in the objects.
+        $words = [];
+        foreach (is_array($release['words'] ?? null) ? $release['words'] : [] as $locale => $files) {
+            if (is_string($locale) && preg_match('/^[a-z]{2,3}(?:_[A-Z]{2})?$/D', $locale) === 1 && is_array($files) && array_is_list($files) && count($files) >= 1
+                && count($files) <= self::MAX_PAGES && count(array_filter($files, [self::class, 'digest'])) === count($files)) $words[$locale] = $files;
         }
         $taxonomy = [];
         foreach (is_array($release['taxonomy'] ?? null) ? $release['taxonomy'] : [] as $group => $terms) {
@@ -91,7 +94,7 @@ final class CatalogIndex
             $read = self::collection($collection);
             if ($read !== null) $collections[$read['id']] ??= $read;
         }
-        return ['pages' => $pages, 'i18n' => $i18n, 'taxonomy' => $taxonomy, 'collections' => array_values($collections)];
+        return ['pages' => $pages, 'words' => $words, 'taxonomy' => $taxonomy, 'collections' => array_values($collections)];
     }
 
     /**
@@ -128,23 +131,16 @@ final class CatalogIndex
     }
 
     /**
-     * A translated sidecar maps ids to display words. Anything unexpected is
-     * simply untranslated; English stays in the entries themselves.
+     * One file of a language's list, English to translation, every pair already
+     * one that may stand in ({@see DesignWords::readList()}).
      *
-     * @return array<string, array{name?: string, description?: string}>
+     * @return array<string, string>
      */
-    public static function translations(string $json): array
+    public static function words(string $json): array
     {
-        $data = strlen($json) <= PackValidator::MAX_BYTES ? json_decode($json, true, 6) : null;
-        if (!is_array($data) || ($data['schema'] ?? null) !== self::MAJOR || !is_array($data['designs'] ?? null)) return [];
-        $words = [];
-        foreach ($data['designs'] as $id => $row) {
-            if (!is_string($id) || !PackValidator::identifier($id) || !is_array($row)) continue;
-            foreach (['name' => 120, 'description' => 1000] as $key => $limit) {
-                if (self::text($row[$key] ?? null, $limit)) $words[$id][$key] = $row[$key];
-            }
-        }
-        return $words;
+        $data = strlen($json) <= PackValidator::MAX_BYTES ? json_decode($json, true, 4) : null;
+
+        return is_array($data) && ($data['schema'] ?? null) === self::MAJOR ? DesignWords::readList($data['words'] ?? null) : [];
     }
 
     /**

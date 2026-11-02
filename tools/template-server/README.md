@@ -25,8 +25,8 @@ leading slash.
 | Key | Bucket | What |
 | --- | --- | --- |
 | `v3/manifest.json` | public | The pointer: `{schema: 3, minor, release, withdrawn, popularity?, latest_major?}`. The only mutable object. |
-| `v3/releases/<sha>.json` | public | A release: `pages`, `details`, `i18n`, `taxonomy`, `collections`. |
-| `v3/index/<sha>.json` | public | An index page, detail page, i18n sidecar or popularity sidecar. |
+| `v3/releases/<sha>.json` | public | A release: `pages`, `details`, `words`, `taxonomy`, `collections`. |
+| `v3/index/<sha>.json` | public | An index page, detail page, word list file or popularity sidecar. |
 | `v3/designs/<sha>.json`, `v3/setups/<sha>.json` | public | Free design and setup objects. |
 | `v3/assets/<sha>.<png\|jpg\|webp>` | public | Free images. |
 | `v3/thumbs/<sha>.webp`, `v3/thumbs/<sha>@2x.webp` | public | Card thumbnails. `@2x` is named after the 1× digest. |
@@ -45,7 +45,7 @@ walks the same dependency closure (`releaseClosure` in `scripts/storage.mjs`)
 and refuses the whole release on the first gap:
 
 - the pointer's `release`, and its `popularity` sidecar if named;
-- every `pages`, `details` and `i18n` digest as `v3/index/<sha>.json`, with at
+- every `pages`, `details` and `words` digest as `v3/index/<sha>.json`, with at
   most 16 pages and 1 MiB of pages in total;
 - every design entry's object, at `bytes` and `sha256`: public when `tier` is
   `free`, private otherwise, and never both. The object's `id`, `revision` and

@@ -2,6 +2,7 @@
 
 namespace WConvert\Template\Catalog;
 
+use WConvert\Template\DesignWords;
 use WConvert\Template\TemplateSource;
 
 defined('ABSPATH') || exit;
@@ -47,10 +48,13 @@ final class DesignArchive implements TemplateSource
     /** @var array{designs: list<array<string, mixed>>, setups: list<array<string, mixed>>}|null */
     private ?array $snapshot = null;
 
+    private ?DesignWords $designWords = null;
+
     /**
      * @param string|\Closure(): string $fingerprint the configuration validation depends on; a closure so building this reads nothing
      * @param array<string, int> $bundledRevisions revision of each design this ZIP ships, by id
      * @param \Closure(): list<string>|null $referenced template and playbook ids any Optin row still names
+     * @param \Closure(): DesignWords|null $words what a design or setup reads through as the library is read
      */
     public function __construct(
         private readonly string $directory,
@@ -60,6 +64,7 @@ final class DesignArchive implements TemplateSource
         private readonly string|\Closure $fingerprint = '',
         private readonly array $bundledRevisions = [],
         private readonly ?\Closure $referenced = null,
+        private readonly ?\Closure $words = null,
     ) {
     }
 
@@ -74,10 +79,24 @@ final class DesignArchive implements TemplateSource
         return 'setup-' . $revision . '-' . $id;
     }
 
-    /** @return list<array<string, mixed>> */
+    /**
+     * In the site's language, read after validation and over the snapshot rather
+     * than into it: the files, the cache, its key and {@see self::prune()} stay
+     * English and locale-free, so a bad translation costs its design's German and
+     * can never cost the design (ADR 0183).
+     *
+     * @return list<array<string, mixed>>
+     */
     public function entries(): array
     {
-        return array_map(static fn (array $design): array => $design['template'], $this->snapshot()['designs']);
+        $words = $this->words();
+
+        return array_map(static fn (array $design): array => $words->templateOrEnglish($design['template']), $this->snapshot()['designs']);
+    }
+
+    private function words(): DesignWords
+    {
+        return $this->designWords ??= $this->words !== null ? ($this->words)() : new DesignWords();
     }
 
     /**
@@ -101,10 +120,11 @@ final class DesignArchive implements TemplateSource
     public function playbooks(): array
     {
         $seen = []; $entries = [];
+        $words = $this->words();
         foreach ($this->snapshot()['setups'] as $setup) {
             if (isset($seen[$setup['id']])) continue;
             $seen[$setup['id']] = true;
-            $entries[] = $setup['playbook'];
+            $entries[] = $words->playbookOrEnglish($setup['playbook']);
         }
         return $entries;
     }

@@ -5,6 +5,7 @@ namespace WConvert\Template\Catalog;
 use WConvert\Goal\Goal;
 use WConvert\Storage\OptionStore;
 use WConvert\Support\Tier;
+use WConvert\Template\DesignWords;
 
 defined('ABSPATH') || exit;
 
@@ -48,6 +49,8 @@ final class TemplateCatalog
 
     /** @var array{designs: list<array<string, mixed>>, revisions: list<array<string, mixed>>, setups: list<array<string, mixed>>, collections: list<array<string, mixed>>, taxonomy: array<string, mixed>, popularity: array<string, int>, skipped: int}|null */
     private ?array $index = null;
+
+    private ?DesignWords $words = null;
 
     /**
      * @param \Closure(): array<string, int> $localRevisions highest revision this site already holds, by design id (bundled or installed)
@@ -160,8 +163,13 @@ final class TemplateCatalog
     public function refresh(bool $ifStale = false): array
     {
         $cache = $this->cache();
-        if ($ifStale && ($this->consent() !== 'yes' || !self::enabled($this->options)
-            || ($this->now() - strtotime((string) ($cache['checked_at'] ?? '@0'))) < self::REFRESH_INTERVAL)) return $this->status();
+        if ($ifStale) {
+            if ($this->consent() !== 'yes' || !self::enabled($this->options)) return $this->status();
+            if (($this->now() - strtotime((string) ($cache['checked_at'] ?? '@0'))) < self::REFRESH_INTERVAL) {
+                if ($this->wordsDue($cache)) $this->fetchWordsNow($cache);
+                return $this->status();
+            }
+        }
         PackValidator::check(self::enabled($this->options), __('The online template library is switched off on this site.', 'wconvert'));
         PackValidator::check($this->consent() === 'yes', __('The online template library is turned off in Settings. Your local library has not changed.', 'wconvert'));
         $retry = (int) get_transient(self::BACKOFF_TRANSIENT);
@@ -178,6 +186,27 @@ final class TemplateCatalog
         }
         $this->index = null;
         return $this->status();
+    }
+
+    /**
+     * Every word this site has for what the catalogue serves: the release's list
+     * for its language, and what its ZIPs carry, which is where a paid setup's
+     * words are. A list with a file missing counts as no list.
+     *
+     * Local files only. Never touches the network.
+     */
+    public function words(): DesignWords
+    {
+        if ($this->words !== null) return $this->words;
+        $words = [];
+        $cache = $this->cache();
+        $files = ($cache['source'] ?? '') === $this->source() ? $this->indexFiles($cache) : null;
+        foreach ($files === null ? [] : $this->wordsFilesFor($this->wordsListed($files['release'])) as $sha) {
+            $json = $this->archive->object('index', $sha);
+            if ($json === null) { $words = []; break; }
+            $words += CatalogIndex::words($json);
+        }
+        return $this->words = DesignWords::everyBundled($this->locale())->with($words);
     }
 
     /**
@@ -465,14 +494,15 @@ final class TemplateCatalog
         if ($answer === null) {
             // 304: nothing moved. Confirm the files are still here, then stop.
             if ($sameSource && $this->indexFiles($cache) !== null) {
-                $this->options->set(self::CACHE_OPTION, ['checked_at' => $checked] + $cache);
+                $this->fetchWords($this->wordsListed($cache['files']['release']), $started);
+                $this->options->set(self::CACHE_OPTION, ['checked_at' => $checked, 'words_tried' => $this->locale()] + $cache);
                 return;
             }
             $answer = $this->transport->revalidate($source, null);
             PackValidator::check($answer !== null, __('The catalog could not be reached. Installed designs are still available. Retry when the connection returns.', 'wconvert'));
         }
         $pointer = CatalogIndex::pointer($answer['body']);
-        $files = ['release' => $pointer['release'], 'pages' => [], 'popularity' => null, 'i18n' => null, 'truncated' => false];
+        $files = ['release' => $pointer['release'], 'pages' => [], 'popularity' => null, 'truncated' => false];
         $known = $sameSource && ($cache['release'] ?? null) === $pointer['release'] ? $this->indexFiles($cache) : null;
         if ($known !== null) {
             $files = $known;
@@ -488,11 +518,9 @@ final class TemplateCatalog
                 CatalogIndex::page($page, $this->facets());
                 $files['pages'][] = $sha;
             }
-            if (isset($release['i18n'][$this->locale()])) {
-                try { $this->indexObject('index/', $release['i18n'][$this->locale()], $started); $files['i18n'] = $release['i18n'][$this->locale()]; }
-                catch (\RuntimeException $error) { /* English stays in the entries. */ }
-            }
         }
+        $words = $this->wordsListed($files['release']);
+        $this->fetchWords($words, $started);
         // Popularity is a nicety: it may change without a release and it may fail.
         $files['popularity'] = null;
         if ($pointer['popularity'] !== null) {
@@ -501,9 +529,86 @@ final class TemplateCatalog
         }
         $this->options->set(self::CACHE_OPTION, [
             'source' => $source, 'checked_at' => $checked, 'etag' => $answer['etag'], 'release' => $pointer['release'],
-            'withdrawn' => $pointer['withdrawn'], 'latest_major' => $pointer['latest_major'], 'files' => $files,
+            'withdrawn' => $pointer['withdrawn'], 'latest_major' => $pointer['latest_major'], 'files' => $files, 'words_tried' => $this->locale(),
         ]);
-        $this->archive->prune(array_values(array_filter(array_merge([$files['release'], $files['popularity'], $files['i18n']], $files['pages']))));
+        // Every language's, so a site that changes language back does not fetch it twice.
+        $this->archive->prune(array_values(array_filter(array_merge([$files['release'], $files['popularity']], $files['pages'], ...array_values($words)))));
+    }
+
+    /**
+     * Whether the site's language has a list this site never tried to fetch. It is
+     * what lets a changed language skip the twelve-hour wait, once: a failed fetch
+     * waits for the next ordinary refresh, so a broken file costs one request.
+     *
+     * @param array<string, mixed> $cache
+     */
+    private function wordsDue(array $cache): bool
+    {
+        if (($cache['words_tried'] ?? null) === $this->locale() || (int) get_transient(self::BACKOFF_TRANSIENT) > $this->now()) return false;
+        $files = ($cache['source'] ?? '') === $this->source() ? $this->indexFiles($cache) : null;
+        if ($files === null) return false;
+        foreach ($this->wordsFilesFor($this->wordsListed($files['release'])) as $sha) {
+            if ($this->archive->object('index', $sha) === null) return true;
+        }
+        return false;
+    }
+
+    /**
+     * A refresh for the words' sake alone, so failing it is not an error anyone
+     * sees: the library is already on screen, and the words are only ever English.
+     *
+     * @param array<string, mixed> $cache
+     */
+    private function fetchWordsNow(array $cache): void
+    {
+        try {
+            $this->read($cache, $this->now());
+        } catch (\RuntimeException $error) {
+            $this->options->set(self::CACHE_OPTION, ['words_tried' => $this->locale()] + $cache);
+        }
+        $this->index = null;
+        $this->words = null;
+    }
+
+    /**
+     * Fetch the site's language's list. A failure means English, and never blocks
+     * a refresh or an install.
+     *
+     * @param array<string, list<string>> $listed
+     */
+    private function fetchWords(array $listed, int $started): void
+    {
+        try {
+            foreach ($this->wordsFilesFor($listed) as $sha) $this->indexObject('index/', $sha, $started);
+        } catch (\RuntimeException $error) {
+            return;
+        }
+        $this->words = null;
+    }
+
+    /**
+     * What a verified local release lists, by language.
+     *
+     * @return array<string, list<string>>
+     */
+    private function wordsListed(string $release): array
+    {
+        try {
+            return CatalogIndex::release((string) $this->archive->object('index', $release))['words'];
+        } catch (\RuntimeException $error) {
+            return [];
+        }
+    }
+
+    /**
+     * The files of the list that serves this site's language.
+     *
+     * @param array<string, list<string>> $listed
+     * @return list<string>
+     */
+    private function wordsFilesFor(array $listed): array
+    {
+        return $listed[DesignWords::pick($this->locale(), array_keys($listed)) ?? ''] ?? [];
     }
 
     /**
@@ -553,7 +658,7 @@ final class TemplateCatalog
             $index = $empty;
             $index['collections'] = $release['collections'];
             $index['taxonomy'] = $release['taxonomy'];
-            $words = is_string($files['i18n'] ?? null) ? CatalogIndex::translations((string) $this->archive->object('index', $files['i18n'])) : [];
+            $words = $this->words();
             $seen = [];
             foreach ($files['pages'] as $sha) {
                 $page = CatalogIndex::page((string) $this->archive->object('index', $sha), $this->facets());
@@ -563,10 +668,10 @@ final class TemplateCatalog
                     // Older revisions stay addressable for the setups that pin them.
                     if (isset($seen[$entry['id']]) && $seen[$entry['id']]['revision'] >= $entry['revision']) { $index['revisions'][] = $entry; continue; }
                     if (isset($seen[$entry['id']])) $index['revisions'][] = $seen[$entry['id']];
-                    if (isset($words[$entry['id']]['name'])) $entry['name'] = $words[$entry['id']]['name'];
+                    $entry['name'] = $words->name($entry['name']);
                     $seen[$entry['id']] = $entry;
                 }
-                foreach ($page['setups'] as $entry) $index['setups'][] = $entry;
+                foreach ($page['setups'] as $entry) $index['setups'][] = ['name' => $words->name($entry['name'])] + $entry;
             }
             $index['designs'] = array_values($seen);
             if (is_string($files['popularity'] ?? null)) $index['popularity'] = CatalogIndex::popularity((string) $this->archive->object('index', $files['popularity']));

@@ -1,6 +1,6 @@
 # 0183: Design words are one list per language
 
-Accepted 2026-11-02. Amends ADR 0013 and ADR 0115, each with an inline note.
+Accepted 2026-11-02. Amends ADRs 0013, 0115, 0156 and 0175, each with an inline note.
 
 ## Context
 
@@ -51,6 +51,33 @@ word shared with the admin would drag the admin's language along.
 
 7. **Existing campaigns never change.** Words are read into a design when the library
    is read. A campaign already holds its own copy.
+
+8. **The online library publishes a list per language too.** The release lists it under
+   a new key, `words`, as content-addressed `v3/index/<sha>.json` files within the
+   per-object budget: every word of a public object and every entry's name. A paid
+   setup's words never go there. `free-v1.0.0` ignores the key, and the old `i18n` slot
+   is removed rather than used, because that reader would apply it and show German names
+   on English templates.
+
+9. **A site fetches only its language's files**, on any refresh, on a 304 and on a known
+   release. A language with no files fetched skips the twelve-hour wait once, so a site
+   that changes language need not wait; a failed fetch is not retried until the next
+   ordinary refresh, and it is never an error, because the library is already on screen.
+
+10. **Online objects are all or nothing, and read after validation.** One word missing or
+    refused leaves that object English, and an install is never blocked. Words apply in
+    `DesignArchive::entries()` and `playbooks()` over the snapshot, so the files, the
+    cache and its key, `prune` and every digest stay English and locale-free. A bad
+    translation can never drop an installed design or the revision a setup pins.
+
+11. **Publishing runs the full validator over each object in each language**, and
+    `HostedDesignWordsTest` holds the same on every pull request, so a word that cannot
+    stand in is found long before a site reads it. A word missing from a list is reported
+    rather than refused, because it costs only its object's German.
+
+12. **What stays English:** gallery pictures, Collections, category labels and wconvert.io.
+    A card's name is translated and search reads it, so searching a translated online
+    design's English name does not match.
 
 ## Consequences
 

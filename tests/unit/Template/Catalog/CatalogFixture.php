@@ -27,6 +27,8 @@ final class CatalogFixture
     public ?array $popularity = null;
     /** @var positive-int */
     public int $designsPerPage = 1000;
+    /** @var array<string, list<array<string, string>>> each language's list, by file */
+    public array $words = [];
 
     public function __construct(public readonly FakeCatalogTransport $http)
     {
@@ -104,8 +106,12 @@ final class CatalogFixture
             $page = json_encode(['schema' => 3, 'designs' => $chunk, 'setups' => $i === 0 ? $setups : []], JSON_THROW_ON_ERROR);
             $pages[] = $this->serveIndex($page);
         }
+        $lists = [];
+        foreach ($this->words as $locale => $files) {
+            foreach ($files as $file) $lists[$locale][] = $this->serveIndex(json_encode(['schema' => 3, 'words' => $file], JSON_THROW_ON_ERROR));
+        }
         $release = json_encode(['schema' => 3, 'minor' => 0, 'pages' => $pages, 'collections' => $this->collections,
-            'taxonomy' => ['industry' => [['id' => 'food', 'label' => 'Food & drink']]]], JSON_THROW_ON_ERROR);
+            'taxonomy' => ['industry' => [['id' => 'food', 'label' => 'Food & drink']]]] + ($lists === [] ? [] : ['words' => $lists]), JSON_THROW_ON_ERROR);
         $releaseSha = hash('sha256', $release);
         $this->http->responses[self::BASE . 'releases/' . $releaseSha . '.json'] = $release;
         $pointer = array_replace(['schema' => 3, 'minor' => 0, 'release' => $releaseSha, 'withdrawn' => $this->withdrawn], $this->extraPointer);

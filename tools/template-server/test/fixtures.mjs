@@ -11,7 +11,7 @@ export const sha = hash;
  * setups:  [{ id, design, revision = 1, tier = design's tier }]
  * Identical designs produce identical objects, so two catalogues share them.
  */
-export function catalogue({ designs = [{ id: 'reading-slip' }], setups = [], withdrawn = [], label = 'base', popularity } = {}) {
+export function catalogue({ designs = [{ id: 'reading-slip' }], setups = [], withdrawn = [], label = 'base', popularity, words = {} } = {}) {
   const pub = new Map(), priv = new Map();
   const put = (scope, key, bytes) => { (scope === 'public' ? pub : priv).set(key, bytes); return hash(bytes); };
   const entries = [], setupEntries = [], details = [], objects = {};
@@ -47,7 +47,8 @@ export function catalogue({ designs = [{ id: 'reading-slip' }], setups = [], wit
   }
   const page = put('public', `v3/index/${hash(json({ schema: 3, designs: entries, setups: setupEntries }))}.json`, json({ schema: 3, designs: entries, setups: setupEntries }));
   const detail = put('public', `v3/index/${hash(json({ schema: 3, details }))}.json`, json({ schema: 3, details }));
-  const release = json({ schema: 3, minor: 0, pages: [page], details: [detail], i18n: {},
+  const listed = Object.fromEntries(Object.entries(words).map(([locale, files]) => [locale, files.map(file => put('public', `v3/index/${hash(json(file))}.json`, json(file)))]));
+  const release = json({ schema: 3, minor: 0, pages: [page], details: [detail], words: listed,
     taxonomy: { style: [{ id: label, label }] }, collections: [] });
   const id = put('public', `v3/releases/${hash(release)}.json`, release);
   let sidecar;

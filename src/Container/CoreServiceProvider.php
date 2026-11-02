@@ -271,6 +271,7 @@ final class CoreServiceProvider implements ServiceProvider
                 $fingerprint,
                 [],
                 static fn (): array => $c->resolve(OptinRepository::class)->designReferences(),
+                static fn (): \WConvert\Template\DesignWords => $c->resolve(TemplateCatalog::class)->words(),
             );
         });
         $container->register(\WConvert\Template\Catalog\CatalogTransport::class, static fn () => new WpCatalogTransport());
@@ -288,7 +289,8 @@ final class CoreServiceProvider implements ServiceProvider
             static fn (): array => ['woocommerce' => class_exists('WooCommerce')],
             null,
             static fn (): array => $c->resolve(TemplateVocabulary::class)->facets(),
-            static fn (): string => determine_locale(),
+            // The site's language, not the administrator's: these words reach its visitors (ADR 0183).
+            static fn (): string => \WConvert\Template\DesignWords::siteLocale(),
         ));
         $container->register(TemplateTransferController::class, static fn (ServiceContainer $c): TemplateTransferController => new TemplateTransferController(
             $c->resolve(PackValidator::class), $c->resolve(TemplateVocabulary::class), $c->resolve(TemplateLibrary::class),
