@@ -199,6 +199,7 @@ final class ArtifactContractTest extends TestCase
             'public/admin/chunk-def67890.js' => "console.log('pro builder');\n",
             // Pro's catalogue template, made from THESE bundles: it names the
             // two files above and nothing else.
+            'resources/templates/words/de_DE.json' => "{}\n",
             'resources/languages/wconvert-pro.pot' => "#: public/admin/main-abc12345.js:1\nmsgid \"Exit intent\"\nmsgstr \"\"\n\n#: public/admin/chunk-def67890.js:3\n#: src/Bootstrap.php:4\nmsgid \"Licence\"\nmsgstr \"\"\n",
             'resources/loader/src/main.ts' => "export const boot = () => {};\n",
             // Every module `tiers.json` names, which check (f) asserts.

@@ -12,6 +12,7 @@
 //
 //   tools/design-library/translations/<locale>.po   the source, which never ships
 //   resources/templates/words/<locale>.json         Free's designs and setups
+//   pro/resources/templates/words/<locale>.json     Pro's, and the paid online setups
 //
 // To add a language: create an empty <locale>.po, run this, translate what it
 // wrote. No code changes. Generated lists are never edited by hand.
@@ -29,6 +30,7 @@ const SOURCE = 'tools/design-library/translations';
 // list is applied a word at a time, and a gap is an English word in a German popup.
 const SETS = [
   { name: 'free', out: 'resources/templates/words' },
+  { name: 'pro', out: 'pro/resources/templates/words' },
 ];
 
 const quote = text => JSON.stringify(text);
