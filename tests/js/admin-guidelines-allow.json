@@ -68,12 +68,7 @@
     "resources/admin/src/shell/ProHint.tsx": 1,
     "resources/admin/src/stats/MonthlyTargets.tsx": 1
   },
-  "errors": {
-    "pro/resources/admin/src/license/api.ts": 1,
-    "resources/admin/src/builder/CaptureChangeDialog.tsx": 1,
-    "resources/admin/src/builder/ScopeStyle.tsx": 1,
-    "resources/admin/src/builder/TemplateDesignDetail.tsx": 1
-  },
+  "errors": {},
   "digits": {
     "pro/modules/content-lock/block/Divider.tsx": 2,
     "pro/modules/journeys/admin/GraphRouteSettings.tsx": 2,
@@ -150,11 +145,7 @@
     "resources/admin/src/builder/InterestOptions.tsx": 1
   },
   "retry": {
-    "pro/modules/journeys/admin/ResultProductPicker.tsx": 1,
-    "resources/admin/src/builder/JourneyTest.tsx": 6,
-    "resources/admin/src/builder/LinkField.tsx": 2,
-    "resources/admin/src/builder/rules/ObjectPicker.tsx": 3,
-    "resources/admin/src/destinations/Destinations.tsx": 1
+    "resources/admin/src/builder/JourneyTest.tsx": 6
   },
   "tiers": {
     "pro/modules/analytics/admin/Settings.tsx": 1,

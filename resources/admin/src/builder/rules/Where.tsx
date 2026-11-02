@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
+import { TryAgain } from '../../shell/Region';
 import { Description } from '../../shell/Description';
 import { ParamControl, ParamField } from '../controls';
 import { resolveObjects, type ObjectKind } from './objects';
@@ -200,7 +201,8 @@ function TargetRow({ id, type, value, onChange }: { id: string; type: RuleType; 
   const Icon = ruleIcon(type.type);
   const kind: ObjectKind | null = param.control === 'post_id' ? 'post' : param.control === 'term_id' ? 'term' : null;
   const stored = typeof value === 'string' ? value : '';
-  const title = useObjectTitle(kind, stored);
+  const { title, loading, failed, retry } = useObjectTitle(kind, stored);
+  // The page picker's ID: the rule still uses it when no name can be read.
   const text = stored === '' ? null : kind === null ? stored : title ?? `#${stored}`;
 
   return <div className="wconvert-rule-row">
@@ -208,23 +210,30 @@ function TargetRow({ id, type, value, onChange }: { id: string; type: RuleType; 
       <span className="wconvert-rule-row__name"><Icon aria-hidden="true" />{type.label}</span>
       {param.control === 'post_type'
         ? <ParamControl id={id} param={param} value={value} variant="pill" label={param.label} onChange={onChange} />
-        : <ValuePill label={param.label} text={text}><ParamField id={id} param={param} value={value} onChange={onChange} /></ValuePill>}
+        : <ValuePill label={param.label} text={text} pending={loading ? __('Loading the saved selection’s name…', 'wconvert') : undefined}><ParamField id={id} param={param} value={value} onChange={onChange} /></ValuePill>}
     </div>
+    {failed && <div role="alert" className="flex flex-wrap items-center gap-3 text-note text-destructive">
+      <span>{sprintf(/* translators: %s: the saved page, post, category or tag's ID number. */ __('Couldn’t load the saved selection’s name. This rule still uses #%s.', 'wconvert'), stored)}</span>
+      <TryAgain onClick={retry} />
+    </div>}
   </div>;
 }
 
-/** A stored post or term id as its title, for the pill; null until it is known. */
-function useObjectTitle(kind: ObjectKind | null, id: string): string | null {
-  const [found, setFound] = useState<{ id: string; title: string } | null>(null);
+/** A stored post or term id as its title, for the pill; `title` is null until it is known, and for an id with none. */
+function useObjectTitle(kind: ObjectKind | null, id: string) {
+  const [read, setRead] = useState<{ id: string; attempt: number; title: string | null; failed: boolean } | null>(null);
+  const [attempt, setAttempt] = useState(0);
+  const asked = kind !== null && id !== '';
 
   useEffect(() => {
-    if (kind === null || id === '') return;
+    if (!asked) return;
     const controller = new AbortController();
     resolveObjects(kind, [id], controller.signal)
-      .then((hits) => { if (!controller.signal.aborted && hits[0]) setFound({ id, title: hits[0].title }); })
-      .catch(() => {});
+      .then((hits) => { if (!controller.signal.aborted) setRead({ id, attempt, title: hits[0]?.title ?? null, failed: false }); })
+      .catch(() => { if (!controller.signal.aborted) setRead({ id, attempt, title: null, failed: true }); });
     return () => controller.abort();
-  }, [kind, id]);
+  }, [asked, kind, id, attempt]);
 
-  return found?.id === id ? found.title : null;
+  const answer = read?.id === id && read.attempt === attempt ? read : null;
+  return { title: answer?.title ?? null, loading: asked && answer === null, failed: answer?.failed === true, retry: () => setAttempt((current) => current + 1) };
 }

@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
+import { LineSkeleton } from '../shell/LineSkeleton';
+import { TryAgain } from '../shell/Region';
 
 // Gallery previews have no campaign. Keep their sample stable across renders.
 const SAMPLE = Date.now() + (2 * 24 + 14) * 60 * 60 * 1000;
@@ -38,9 +40,9 @@ export function usePreviewDeadline(): Deadline { return useContext(PreviewDeadli
 
 export function PreviewDeadlineNote() {
   const { mode } = usePreviewDeadline();
+  if (mode === 'loading') return <div className="wconvert-panel-hint"><LineSkeleton status={__('Updating countdown…', 'wconvert')} /></div>;
   return <p className="wconvert-panel-hint">{mode === 'sample'
     ? __('Sample countdown. Set an end date to preview the actual time remaining.', 'wconvert')
-    : mode === 'loading' ? __('Updating countdown…', 'wconvert')
       : mode === 'error' ? __('Countdown unavailable until the deadline can be loaded.', 'wconvert')
         : __('The preview counts down to this campaign’s end date.', 'wconvert')}</p>;
 }
@@ -49,10 +51,11 @@ export function PreviewDeadlineNote() {
 /** Also rendered inside Preview & test, where the parent page is inert. */
 export function PreviewDeadlineStatus() {
   const { mode, retry } = usePreviewDeadline();
-  if (mode === 'loading') return <p role="status">{__('Loading countdown deadline…', 'wconvert')}</p>;
+  // Words only: nothing stands here once the deadline lands, so a bar would be a row that vanishes.
+  if (mode === 'loading') return <p role="status" className="sr-only">{__('Loading countdown deadline…', 'wconvert')}</p>;
   if (mode !== 'error') return null;
   return <div role="alert" className="wconvert-panel-warn">
-    {__('Could not load the countdown deadline. Check the date and your connection.', 'wconvert')}{' '}
-    <button type="button" onClick={retry}>{__('Try again', 'wconvert')}</button>
+    <span>{__('Could not load the countdown deadline. Check the date and your connection.', 'wconvert')}</span>
+    {retry && <TryAgain onClick={retry} />}
   </div>;
 }

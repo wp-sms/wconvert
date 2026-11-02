@@ -11,6 +11,7 @@ import { DesignStage } from '../stage/DesignStage';
 import { captureState, type CaptureTarget, type Change, type ChangeItem, type Conversion, type NotConverted } from './structure/captureConversion';
 import type { ContactChannel } from './structure/captureWording';
 import { walkNodes } from './structure/journey';
+import { messageOf } from '../shell/loadable';
 
 /**
  * ============================================================================
@@ -174,7 +175,7 @@ export function CaptureChangeDialog({ open, onOpenChange, before, displayType, t
     setSaving(true); setError(null);
     Promise.resolve(onConfirm(result))
       .then(() => { setSaving(false); onOpenChange(false); })
-      .catch((cause: unknown) => { setSaving(false); setError(cause instanceof Error ? cause.message : String(cause)); });
+      .catch((cause: unknown) => { setSaving(false); setError(messageOf(cause)); });
   };
 
   const after = 'reason' in result ? null : (result.config.template as Template);

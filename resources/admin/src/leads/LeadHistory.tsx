@@ -5,7 +5,7 @@ import { AdminDialogBody, AdminDialogFooter, AdminDialogHeader } from '../compon
 import { Button } from '../components/ui/button';
 import { DataTable } from '../shell/DataTable';
 import { EmptyState } from '../shell/EmptyState';
-import { PageError } from '../shell/Region';
+import { PageError, RegionErrorState } from '../shell/Region';
 import { TableSkeleton } from '../shell/TableSkeleton';
 import { messageOf } from '../shell/loadable';
 import { formatCount } from '../lib/format';
@@ -124,9 +124,9 @@ export function LeadHistory({
           : submissionCount(total)}
       />
       <AdminDialogBody ref={rows} className="flex flex-col gap-4">
-        {error !== null && <PageError message={error} onRetry={() => setRetry((value) => value + 1)} />}
+        {error !== null && data !== null && <PageError message={error} onRetry={() => setRetry((value) => value + 1)} />}
         {data === null
-          ? error === null && <DataTable><TableSkeleton columns={4} /></DataTable>
+          ? error !== null ? <RegionErrorState message={error} onRetry={() => setRetry((value) => value + 1)} /> : <DataTable><TableSkeleton columns={4} status={__('Loading submissions…', 'wconvert')} /></DataTable>
           : data.leads.length === 0
             ? <EmptyState icon={Inbox} title={__('No matching submissions', 'wconvert')}>
               {__('They may have been deleted since the list loaded.', 'wconvert')}

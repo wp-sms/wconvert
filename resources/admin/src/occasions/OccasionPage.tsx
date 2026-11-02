@@ -23,7 +23,7 @@ import { DateRangePicker, type DateRange } from '../shell/DateRangePicker';
 import { EmptyState } from '../shell/EmptyState';
 import { Field } from '../shell/Field';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
-import { Region, RegionBody, RegionError, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
+import { PageError, Region, RegionBody, RegionError, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
 import { Shell } from '../shell/Shell';
 import { Stat, StatRow, StatRowSkeleton } from '../shell/Stat';
 import { readReport, type DashboardPayload, type PeriodQuery } from '../stats/api';
@@ -34,6 +34,8 @@ import { OccasionBack, OccasionSkeleton } from './OccasionSkeleton';
 import { CampaignThumbnail } from '../optins/designChunks';
 import '../optins/campaigns.css';
 
+/** A re-read over what is on screen keeps it; only what has nothing to show goes back to loading (§13). */
+const rereading = <T,>(current: Loadable<T>): Loadable<T> => (current.status === 'ready' ? current : LOADING);
 
 /**
  * One occasion's own screen, at `#occasions/<id>` (#277, layout B of the
@@ -58,7 +60,12 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
   const [attempt, setAttempt] = useState(0);
   const [range, setRange] = useState<DateRange>({ preset: 'occasion' });
   const [report, setReport] = useState<Loadable<DashboardPayload> | null>(null);
+  const [reportStale, setReportStale] = useState(false);
+  const [reportUpdating, setReportUpdating] = useState(false);
   const [previews, setPreviews] = useState<Record<string, CampaignPreview>>({});
+  const [previewFailed, setPreviewFailed] = useState(false);
+  const [previewAttempt, setPreviewAttempt] = useState(0);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
   const [asking, setAsking] = useState<'copy' | 'delete' | 'edit' | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -69,9 +76,14 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
 
   useEffect(() => {
     let active = true;
-    setOccasions(LOADING); setList(LOADING);
-    readOccasions().then((data) => { if (active) setOccasions(ready(data)); }, (cause) => { if (active) setOccasions(failed(cause)); });
-    listOptins().then((data) => { if (active) setList(ready(data)); }, (cause) => { if (active) setList(failed(cause)); });
+    // `OccasionSection` keys this page by occasion, so a re-read here is always this occasion's.
+    setOccasions(rereading); setList(rereading); setRefreshError(null);
+    readOccasions().then((data) => { if (active) setOccasions(ready(data)); }, (cause) => {
+      if (active) { setRefreshError(messageOf(cause)); setOccasions((current) => (current.status === 'ready' ? current : failed(cause))); }
+    });
+    listOptins().then((data) => { if (active) setList(ready(data)); }, (cause) => {
+      if (active) { setRefreshError(messageOf(cause)); setList((current) => (current.status === 'ready' ? current : failed(cause))); }
+    });
     return () => { active = false; };
   }, [id, attempt]);
 
@@ -91,22 +103,27 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
   useEffect(() => {
     if (queryKey === '' || ids === '') { setReport(null); return; }
     let active = true;
-    setReport(LOADING);
-    readReport(JSON.parse(queryKey) as PeriodQuery).then((data) => { if (active) setReport(ready(data)); }, (cause) => { if (active) setReport(failed(cause)); });
+    setReport((current) => (current === null ? LOADING : rereading(current)));
+    setReportStale(false); setReportUpdating(true);
+    readReport(JSON.parse(queryKey) as PeriodQuery)
+      .then((data) => { if (active) setReport(ready(data)); }, (cause) => {
+        if (active) { setReportStale(true); setReport((current) => (current?.status === 'ready' ? current : failed(cause))); }
+      })
+      .finally(() => { if (active) setReportUpdating(false); });
     return () => { active = false; };
   }, [queryKey, ids, attempt]);
 
   useEffect(() => {
-    setPreviews({});
     if (ids === '') return;
     let active = true;
+    setPreviewFailed(false);
     const values = ids.split(','), batches: string[][] = [];
     for (let i = 0; i < values.length; i += 12) batches.push(values.slice(i, i + 12));
     void Promise.all(batches.map(readCampaignPreviews))
       .then((responses) => { if (active) setPreviews(Object.fromEntries(responses.flat().map((p) => [p.id, p]))); })
-      .catch(() => undefined);
+      .catch(() => { if (active) setPreviewFailed(true); });
     return () => { active = false; };
-  }, [ids]);
+  }, [ids, previewAttempt]);
 
   const back = <OccasionBack />;
   const newCampaign = (
@@ -181,9 +198,9 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
   const numbers = report?.status === 'ready'
     ? Object.fromEntries(report.data.goals.flatMap((goal) => goal.optins.map((row) => [row.id, rowResultOf(goal, row)])))
     : {};
-  const summary = query === null ? null
-    : 'from' in query && query.from !== undefined && query.to !== undefined ? formatRange(query.from, query.to)
-      : report?.status === 'ready' ? formatRange(report.data.from, report.data.to) : null;
+  // The dates of the numbers on screen, which until a new read lands are the old ones.
+  const summary = report?.status === 'ready' ? formatRange(report.data.from, report.data.to)
+    : query !== null && 'from' in query && query.from !== undefined && query.to !== undefined ? formatRange(query.from, query.to) : null;
 
   return (
     <Shell section="optins" pageTitle={occasion.name} pageBack={back}
@@ -209,7 +226,8 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
       </>}>
       <div className="flex flex-col gap-5">
         {notice && <OccasionNoticeView notice={notice} onDismiss={onDismissNotice} />}
-        {error && <Region><RegionError message={error} /></Region>}
+        {error && <PageError message={error} />}
+        {refreshError && <PageError message={sprintf(/* translators: %s: the reason reading the occasion again failed, as the server gave it. */ __('This page couldn’t refresh, so it still shows what was read before. %s', 'wconvert'), refreshError)} onRetry={() => setAttempt((n) => n + 1)} />}
         {campaigns.length === 0 ? (
           <Region>
             <EmptyState icon={Megaphone} title={sprintf(/* translators: %s: an occasion's name. */ __('No campaigns in %s yet', 'wconvert'), occasion.name)} action={newCampaign}>
@@ -221,9 +239,11 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
             <RegionHeader title={__('Results', 'wconvert')} trailing={
               <DateRangePicker label={__('Results period', 'wconvert')} value={range} presets={['occasion', '7', '30']} summary={summary} today={today} maxDays={366} onChange={setRange} />
             } />
-            <RegionBody>
-              {report?.status === 'failed' ? <RegionError message={report.message} onRetry={() => setAttempt((n) => n + 1)} />
-                : (report?.status === 'loading' || (report === null && queryKey !== '')) ? <StatRowSkeleton stats={3} status={__('Loading results…', 'wconvert')} />
+            {reportStale && report?.status === 'ready' && <RegionError message={__('Results couldn’t refresh. The previous period and results remain below.', 'wconvert')} onRetry={() => setAttempt((n) => n + 1)} />}
+            {report?.status === 'failed' ? <RegionErrorState message={report.message} onRetry={() => setAttempt((n) => n + 1)} /> : <RegionBody>
+              {reportUpdating && report?.status === 'ready' && <p role="status" className="sr-only">{__('Updating results…', 'wconvert')}</p>}
+              <div aria-busy={reportUpdating || undefined} className={reportUpdating && report?.status === 'ready' ? 'opacity-60' : undefined}>
+              {(report?.status === 'loading' || (report === null && queryKey !== '')) ? <StatRowSkeleton stats={3} status={__('Loading results…', 'wconvert')} />
                 : totals === null || totals.shown === 0
                   ? <p className="m-0 text-note text-muted-foreground">{__('Totals appear once a campaign here is published and shown.', 'wconvert')}</p>
                   : <StatRow>
@@ -233,7 +253,8 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
                       hint={!totals.counted || totals.clickRate === null ? undefined : sprintf(/* translators: %s: a rate such as "7.4%". */ __('%s of shown', 'wconvert'), formatRate(totals.clickRate))} />
                     <Stat label={__('Dismissed', 'wconvert')} value={formatCount(totals.dismissed)} />
                   </StatRow>}
-            </RegionBody>
+              </div>
+            </RegionBody>}
           </Region>
           <Region label={__('Dates', 'wconvert')}>
             <RegionHeader title={__('Dates', 'wconvert')} />
@@ -241,6 +262,7 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
           </Region>
           <Region label={__('Campaigns', 'wconvert')}>
             <RegionHeader title={__('Campaigns', 'wconvert')} />
+            {previewFailed && <RegionError message={__('Design previews couldn’t load.', 'wconvert')} onRetry={() => setPreviewAttempt((n) => n + 1)} />}
             <DataTable label={sprintf(/* translators: %s: an occasion's name. */ __('Campaigns in %s', 'wconvert'), occasion.name)} className="wconvert-campaign-table is-occasion">
               <DataTableHead>
                 <DataTableColumn>{__('Campaign', 'wconvert')}</DataTableColumn>
@@ -259,7 +281,8 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
                         <div className="wconvert-campaign-thumbnail" aria-hidden="true">
                           {previews[row.id]?.template
                             ? <CampaignThumbnail template={previews[row.id].template!} displayType={previews[row.id].display_type} />
-                            : <div className="wconvert-preview-placeholder"><Megaphone aria-hidden="true" /></div>}
+                            // A plain box while it is read; the icon is for a campaign that will not have a picture.
+                            : <div className="wconvert-preview-placeholder">{(previewFailed || previews[row.id]) && <Megaphone aria-hidden="true" />}</div>}
                         </div>
                         <div className="min-w-0">
                           <p className="m-0 wconvert-campaign-name"><bdi>{name}</bdi></p>

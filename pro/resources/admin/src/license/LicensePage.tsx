@@ -2,9 +2,9 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { __, sprintf } from '@wordpress/i18n';
 import { Info } from 'lucide-react';
 import { ConfirmDialog } from '@/shell/ConfirmDialog';
-import { Region, RegionBody, RegionError } from '@/shell/Region';
+import { PageError, Region, RegionErrorState } from '@/shell/Region';
 import { LicenseSkeleton } from './LicenseSkeleton';
-import { LOADING, messageOf, ready, type Loadable } from '@/shell/loadable';
+import { LOADING, failed, messageOf, ready, type Loadable } from '@/shell/loadable';
 import { setPlanBadge } from '@/shell/planBadge';
 import { markSubmenuCurrent } from '@/shell/menuHighlight';
 import {
@@ -36,13 +36,15 @@ interface Confirmation { title: string; description: ReactNode; confirm: string;
  * badge redraw from that one answer. Results are inline, focused on arrival
  * and announced, never toasts. Coming back to the tab asks the store again,
  * at most once a minute, so a renewal made in another tab shows here at once
- * — and a check that fails keeps what the page already shows.
+ * — and a check that fails keeps what the page already shows, under an error
+ * that never takes focus, since nobody asked for that check on the tab's return.
  */
 export function LicensePage() {
   const [license, setLicense] = useState<Loadable<LicensePayload>>(LOADING);
   const [busy, setBusy] = useState<string | null>(null);
   const [checking, setChecking] = useState(false);
   const [updatesFailed, setUpdatesFailed] = useState(false);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
   const [result, setResult] = useState<Result | null>(null);
   const [errors, setErrors] = useState<Partial<Record<KeyField, LicenseError>>>({});
   const [confirm, setConfirm] = useState<Confirmation | null>(null);
@@ -59,17 +61,18 @@ export function LicensePage() {
   const settle = useCallback((next: LicensePayload) => {
     setLicense(ready(next));
     setPlanBadge(next.badge);
+    setRefreshError(null);
   }, []);
 
   const load = useCallback((check = false) => {
-    if (check) lastCheck.current = Date.now();
+    if (check) { lastCheck.current = Date.now(); setRefreshError(null); }
     return readLicense(check).then(settle, (cause) => {
       // A page already showing the licence keeps showing it — with the key
       // somebody was halfway through typing — and says the check failed.
-      setLicense((current) => (current.status === 'ready' ? current : { status: 'failed', message: messageOf(cause) }));
-      if (check) say('warning', __('Couldn’t check the license just now.', 'wconvert-pro'), messageOf(cause));
+      setLicense((current) => (current.status === 'ready' ? current : failed(cause)));
+      if (check) setRefreshError(messageOf(cause));
     });
-  }, [settle, say]);
+  }, [settle]);
 
   useEffect(() => { void load(); }, [load]);
 
@@ -92,6 +95,15 @@ export function LicensePage() {
     return () => window.clearTimeout(timer);
   }, [activateError]);
 
+  // What failed comes with its way forward, and Try again repeats that action (§13).
+  const refuse = (error: LicenseError, retry: () => void) => {
+    const copy = errorCopy(error);
+    const ways = license.status === 'ready' && copy.ways.length > 0
+      ? <Ways ways={copy.ways} license={license.data} retry={retry} signIn={startSignIn} />
+      : undefined;
+    say('danger', copy.text, ways);
+  };
+
   const run = async (name: string, action: () => Promise<Changed>, done?: (answer: Changed) => void, field?: KeyField) => {
     setBusy(name);
     setResult(null);
@@ -103,7 +115,7 @@ export function LicensePage() {
     } catch (cause) {
       const error = asLicenseError(cause);
       if (field) setErrors((current) => ({ ...current, [field]: error }));
-      else say('danger', errorCopy(error).text);
+      else refuse(error, () => void run(name, action, done, field));
     } finally {
       setBusy(null);
     }
@@ -123,16 +135,18 @@ export function LicensePage() {
     }
   };
 
-  const startSignIn = () => goSignIn((error) => say('danger', errorCopy(error).text));
+  function startSignIn() { goSignIn((error) => refuse(error, startSignIn)); }
 
   if (license.status === 'loading') return <LicenseSkeleton />;
 
   if (license.status === 'failed') {
-    return <Region><RegionBody><RegionError message={license.message} onRetry={() => { setLicense(LOADING); void load(); }} /></RegionBody></Region>;
+    return <Region label={__('License', 'wconvert-pro')}><RegionErrorState message={license.message} onRetry={() => { setLicense(LOADING); void load(); }} /></Region>;
   }
 
   const data = license.data;
   const notice = result && <Notice key={result.id} tone={result.tone} title={result.title} focus>{result.body}</Notice>;
+  const refreshFailure = refreshError !== null && <PageError onRetry={() => void load(true)}
+    message={sprintf(/* translators: %s: the reason the check failed, as the server gave it. */ __('Couldn’t check the license just now. %s', 'wconvert-pro'), refreshError)} />;
 
   const activate = (key: string) => {
     lastKey.current.activate = key;
@@ -165,6 +179,7 @@ export function LicensePage() {
   if (data.state === 'none') {
     return (
       <div className="wconvert-license wconvert-license--narrow">
+        {refreshFailure}
         {notice}
         <ActivateCard license={data} busy={busy} keyError={errors.activate ?? null}
           onActivateKey={activate}
@@ -225,6 +240,7 @@ export function LicensePage() {
 
   return (
     <div className="wconvert-license">
+      {refreshFailure}
       {notice}
       <StatusCard license={data} actions={{
         busy, checking, updatesFailed, onCheck: () => void checkNow(), onMove: move,

@@ -629,7 +629,7 @@ const BUSY_SAID: Partial<Record<Busy, () => string>> = {
 
 const OUTCOMES: Record<RecentAttempt['outcome'], () => string> = {
   accepted: () => __('Accepted', 'wconvert'),
-  retry_scheduled: () => __('Will retry', 'wconvert'),
+  retry_scheduled: () => __('Will try again', 'wconvert'),
   needs_attention: () => __('Needs attention', 'wconvert'),
   skipped: () => __('Skipped', 'wconvert'),
   queued: () => __('Queued', 'wconvert'),
@@ -1098,7 +1098,7 @@ function RecentSendsDialog({ destination, returnFocusTo, onClose }: {
           {recent.status === 'loading'
             ? <RowsSkeleton rows={3} status={__('Loading recent sends…', 'wconvert')} />
             : recent.status === 'failed'
-              ? <PageError message={recent.message} onRetry={() => { setRecent(LOADING); setAttempt((current) => current + 1); }} />
+              ? <RegionErrorState message={recent.message} onRetry={() => { setRecent(LOADING); setAttempt((current) => current + 1); }} />
               : recent.data.length === 0
                 ? <p className="m-0 text-note text-muted-foreground">{__('No recent sends on record.', 'wconvert')}</p>
                 : <ul className="m-0 list-none divide-y divide-border p-0">{recent.data.map((each) => (
@@ -1268,7 +1268,7 @@ function SubmissionDialog({ leadId, onClose, returnFocus }: { leadId: string | n
           : <>
             <AdminDialogHeader title={__('Submission', 'wconvert')} />
             <AdminDialogBody>
-              {state.status === 'loading' ? <RowsSkeleton rows={4} />
+              {state.status === 'loading' ? <RowsSkeleton rows={4} status={__('Loading the submission…', 'wconvert')} />
                 : state.status === 'failed' ? <RegionErrorState message={state.message} onRetry={() => setAttempt((value) => value + 1)} />
                   : <p className="m-0">{__('This submission is no longer kept.', 'wconvert')}</p>}
             </AdminDialogBody>

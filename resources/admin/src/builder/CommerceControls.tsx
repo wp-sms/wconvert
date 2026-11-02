@@ -5,13 +5,21 @@ import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { ArrowUp, ArrowDown, X } from 'lucide-react';
 import apiFetch from '@wordpress/api-fetch';
 import { __, sprintf } from '@wordpress/i18n';
+import { Skeleton } from '../components/ui/skeleton';
 import { LineSkeleton } from '../shell/LineSkeleton';
+import { TryAgain } from '../shell/Region';
 
 type Hit = { id: number; name: string };
 type Results = { items: Hit[]; currency: string; decimals: number };
+function ReadFailure({ message, onRetry }: { message: string; onRetry(): void }) {
+  return <div role="alert" className="flex flex-wrap items-center gap-3 text-note text-destructive"><span>{message}</span><TryAgain onClick={onRetry} /></div>;
+}
 export function CommercePicker({ value, onChange, categories = false, max = 20, recommendations = false, compact = false, searchLabel, excludeIds = [], itemControls }: { value: unknown; onChange(value: number[]): void; categories?: boolean; max?: number; recommendations?: boolean; compact?: boolean; searchLabel?: string; excludeIds?: readonly number[]; itemControls?: (id: number, name: string) => ReactNode }) {
   const ids = Array.isArray(value) ? value.filter((id): id is number => typeof id === 'number') : [];
   const [query, setQuery] = useState(''); const [hits, setHits] = useState<Hit[]>([]); const [names, setNames] = useState<Hit[]>([]); const [error, setError] = useState('');
+  const [namesFailed, setNamesFailed] = useState(false);
+  const [namesAttempt, setNamesAttempt] = useState(0);
+  const [searchAttempt, setSearchAttempt] = useState(0);
   const [changing, setChanging] = useState(false);
   const [searched, setSearched] = useState('');
   const inputId = useId();
@@ -19,22 +27,26 @@ export function CommercePicker({ value, onChange, categories = false, max = 20, 
   useEffect(() => { if (changing) searchInput.current?.focus(); }, [changing]);
   const key = ids.join(',');
   useEffect(() => {
+    setNamesFailed(false);
     if (!key) return;
     const controller = new AbortController();
     void apiFetch<Results>({ path: `/wconvert/v1/commerce/objects?kind=${categories ? 'category' : recommendations ? 'recommendation' : 'product'}&ids=${key}`, signal: controller.signal })
-      .then(result => { if (!controller.signal.aborted) setNames(result.items); }).catch(() => {});
+      .then(result => { if (!controller.signal.aborted) setNames(result.items); }).catch(() => { if (!controller.signal.aborted) setNamesFailed(true); });
     return () => controller.abort();
-  }, [key, categories, recommendations]);
+  }, [key, categories, recommendations, namesAttempt]);
   useEffect(() => {
     const controller = new AbortController();
     const timer = setTimeout(() => {
       if (!query.trim()) { setHits([]); return; }
       void apiFetch<Results>({ path: `/wconvert/v1/commerce/objects?kind=${categories ? 'category' : recommendations ? 'recommendation' : 'product'}&search=${encodeURIComponent(query)}`, signal: controller.signal })
         .then(result => { if (!controller.signal.aborted) { setHits(result.items); setSearched(query); setError(''); } })
-        .catch(() => { if (!controller.signal.aborted) setError(__('Could not search the store. Try again.', 'wconvert')); });
+        .catch(() => { if (!controller.signal.aborted) setError(__('Could not search the store.', 'wconvert')); });
     }, 250);
     return () => { clearTimeout(timer); controller.abort(); };
-  }, [query, categories, recommendations]);
+  }, [query, categories, recommendations, searchAttempt]);
+  const searchFailure = error && <ReadFailure message={error} onRetry={() => { setError(''); setSearchAttempt(current => current + 1); }} />;
+  const namesFailure = namesFailed && <ReadFailure onRetry={() => setNamesAttempt(current => current + 1)}
+    message={categories ? __('Category names could not load. Your selection is kept.', 'wconvert') : __('Product names could not load. Your selection is kept.', 'wconvert')} />;
   if (compact) {
     const single = max === 1;
     const showSearch = !single || ids.length === 0 || changing;
@@ -46,6 +58,7 @@ export function CommercePicker({ value, onChange, categories = false, max = 20, 
       onChange(next);
     };
     return <div className="wconvert-product-picker">
+      {namesFailure}
       {ids.length > 0 && <ol className="wconvert-product-picker__selected" aria-label={single ? __('Selected product', 'wconvert') : __('Selected extras, in display order', 'wconvert')}>
         {ids.map((id, i) => <li key={id}>
           {!single && <span className="wconvert-product-picker__number" aria-hidden="true">{i + 1}</span>}
@@ -62,7 +75,7 @@ export function CommercePicker({ value, onChange, categories = false, max = 20, 
       {showSearch && <div className="wconvert-product-picker__search">
         <label className="sr-only" htmlFor={inputId}>{searchLabel ?? __('Find products', 'wconvert')}</label>
         <Input ref={searchInput} id={inputId} type="search" autoComplete="off" placeholder={searchLabel ?? __('Find products', 'wconvert')} value={query} onChange={event => { setQuery(event.target.value); setError(''); }}/>
-        {error ? <p role="alert">{error}</p> : query.trim() && <div role="status" className="wconvert-panel-hint">{searched !== query ? __('Searching…', 'wconvert') : matches.length === 0 ? __('No matching products.', 'wconvert') : null}</div>}
+        {searchFailure || query.trim() && <div role="status" className="wconvert-panel-hint">{searched !== query ? <><span className="sr-only">{__('Searching…', 'wconvert')}</span><Skeleton aria-hidden="true" className="h-[1lh] w-40 max-w-full" /></> : matches.length === 0 ? __('No matching products.', 'wconvert') : null}</div>}
         {matches.length > 0 && <ul className="wconvert-product-picker__results" aria-label={__('Matching products', 'wconvert')}>{matches.map(hit => <li key={hit.id}>
           <span className="wconvert-product-picker__name">{hit.name}</span>
           <Button type="button" variant="outline" size="sm" aria-label={sprintf(single ? /* translators: %s: a product's name. */ __('Use %s', 'wconvert') : /* translators: %s: a product's name. */ __('Add %s', 'wconvert'), hit.name)} disabled={!single && ids.length >= max} onClick={() => { setNames(current => [...current.filter(item => item.id !== hit.id), hit]); onChange(single ? [hit.id] : [...ids, hit.id]); setQuery(''); setChanging(false); }}>{single ? __('Use', 'wconvert') : __('Add', 'wconvert')}</Button>
@@ -73,7 +86,8 @@ export function CommercePicker({ value, onChange, categories = false, max = 20, 
   }
   return <div className="space-y-3">
     <label>{categories ? __('Find categories', 'wconvert') : recommendations ? __('Find products', 'wconvert') : __('Find products or variations', 'wconvert')}<Input value={query} onChange={event => setQuery(event.target.value)} /></label>
-    {error && <p role="alert">{error}</p>}
+    {searchFailure}
+    {namesFailure}
     <ol className="space-y-2">{ids.map((id, i) => <li className="flex flex-wrap items-center gap-2" key={id}>{[...names, ...hits].find(hit => hit.id === id)?.name ?? `#${id}`}
       {itemControls?.(id, [...names, ...hits].find(hit => hit.id === id)?.name ?? `#${id}`)}
       {recommendations && <Button variant="outline" size="sm" type="button" disabled={i === 0} onClick={() => { const next = [...ids]; [next[i - 1], next[i]] = [next[i], next[i - 1]]; onChange(next); }}>{__('Move earlier', 'wconvert')}</Button>}
@@ -86,10 +100,14 @@ type Range = { operator?: string; min?: number; max?: number; currency?: string;
 export function CommerceRange({ value, onChange, money }: { value: unknown; onChange(value: Range): void; money: boolean }) {
   const range: Range = value && typeof value === 'object' ? value : {};
   const [currency, setCurrency] = useState<{ currency: string; decimals: number }>();
+  const [currencyFailed, setCurrencyFailed] = useState(false);
+  const [currencyAttempt, setCurrencyAttempt] = useState(0);
   useEffect(() => { if (!money) return; let active = true;
-    void apiFetch<Results>({ path: '/wconvert/v1/commerce/objects?kind=currency' }).then(result => { if (active) setCurrency(result); }).catch(() => {});
+    setCurrencyFailed(false);
+    void apiFetch<Results>({ path: '/wconvert/v1/commerce/objects?kind=currency' }).then(result => { if (active) setCurrency(result); }).catch(() => { if (active) setCurrencyFailed(true); });
     return () => { active = false; };
-  }, [money]);
+  }, [money, currencyAttempt]);
+  const currencyCode = range.currency ?? currency?.currency;
   const update = (next: Range) => onChange({ ...range, operator: range.operator ?? 'min', ...(money && currency ? { currency: currency.currency, decimals: currency.decimals } : {}), ...next });
   return <div className="space-y-3">
     <NativeSelect className="w-full" aria-label={__('Comparison', 'wconvert')} value={range.operator ?? 'min'} onChange={event => update({ operator: event.target.value })}>
@@ -97,6 +115,7 @@ export function CommerceRange({ value, onChange, money }: { value: unknown; onCh
     </NativeSelect>
     <Input aria-label={__('Amount or quantity', 'wconvert')} type="number" min="0" step={money ? 10 ** -(currency?.decimals ?? 2) : 1} value={range.min ?? ''} onChange={event => update({ min: event.target.value === '' ? undefined : Number(event.target.value) })} />
     {range.operator === 'between' && <Input aria-label={__('Upper limit', 'wconvert')} type="number" min="0" step={money ? 'any' : 1} value={range.max ?? ''} onChange={event => update({ max: event.target.value === '' ? undefined : Number(event.target.value) })} />}
-    {money && <p>{range.currency ?? currency?.currency ?? <LineSkeleton inline status={__('Loading store currency…', 'wconvert')} className="w-8" />} · {__('Products after discounts, excluding tax and shipping.', 'wconvert')}</p>}
+    {money && currencyFailed && <ReadFailure message={__('Could not load the store currency.', 'wconvert')} onRetry={() => setCurrencyAttempt(current => current + 1)} />}
+    {money && <p>{currencyCode ?? (!currencyFailed && <LineSkeleton inline status={__('Loading store currency…', 'wconvert')} className="w-8" />)}{(currencyCode || !currencyFailed) && ' · '}{__('Products after discounts, excluding tax and shipping.', 'wconvert')}</p>}
   </div>;
 }

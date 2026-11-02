@@ -3,6 +3,7 @@ import apiFetch from '@wordpress/api-fetch';
 import { __, sprintf } from '@wordpress/i18n';
 import { TryAgain } from '@/shell/Region';
 import { Disclosure } from '@/shell/Disclosure';
+import { LineSkeleton } from '@/shell/LineSkeleton';
 import type { ResultProductFilter as Filter } from '@renderer/types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -25,12 +26,15 @@ function CatalogChoice({ label, taxonomy, value, onChange }: { label: string; ta
     }, search ? 250 : 0);
     return () => { clearTimeout(timer); controller.abort(); };
   }, [taxonomy, search, value, retry]);
+  const held = state.items.some(item => item.id === value);
+  // A bar in the control's place until the list can name what is chosen: an option cannot hold one.
+  const waiting = state.busy && (!state.items.length || (!!value && !held));
   return <div className="wconvert-catalog-choice">
-    <label>{label}<select value={value} onChange={event => onChange(event.target.value)} disabled={state.error || state.busy && !state.items.length}>
-      <option value="">{state.busy ? __('Loading…', 'wconvert-pro') : __('Choose…', 'wconvert-pro')}</option>
-      {value && !state.items.some(item => item.id === value) && <option value={value}>{state.busy ? __('Loading selection…', 'wconvert-pro') : __('Unavailable — choose again', 'wconvert-pro')}</option>}
+    <label>{label}{waiting ? <LineSkeleton inline status={__('Loading choices…', 'wconvert-pro')} className="block h-9 w-full" /> : <select value={value} onChange={event => onChange(event.target.value)} disabled={state.error}>
+      <option value="">{__('Choose…', 'wconvert-pro')}</option>
+      {value && !held && <option value={value}>{__('Unavailable — choose again', 'wconvert-pro')}</option>}
       {state.items.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
-    </select></label>
+    </select>}</label>
     {(state.more || state.items.length > 8 || !!search) && <Input type="search" aria-label={sprintf(/* translators: %s: what is being searched, in lowercase: “category”, “attribute” or “value”. */ __('Search %s', 'wconvert-pro'), label.toLowerCase())} placeholder={__('Search…', 'wconvert-pro')} value={search} maxLength={100} onChange={event => setSearch(event.target.value)} />}
     {state.more && <small>{__('Search to narrow the list.', 'wconvert-pro')}</small>}
     {!state.busy && !state.error && !state.items.length && <small>{__('No choices found. Try another search or add them in WooCommerce.', 'wconvert-pro')}</small>}

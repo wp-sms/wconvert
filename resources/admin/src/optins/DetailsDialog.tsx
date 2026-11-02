@@ -160,7 +160,7 @@ export function CampaignDetailsDialog({
               goalId={goalId}
               results={results}
               status={status}
-              howItRuns={<ChunkBoundary><Suspense fallback={<RowsSkeleton rows={4} />}><Facts key={row.id} id={row.id} /></Suspense></ChunkBoundary>}
+              howItRuns={<ChunkBoundary><Suspense fallback={<RowsSkeleton rows={4} status={__('Loading how it runs…', 'wconvert')} />}><Facts key={row.id} id={row.id} /></Suspense></ChunkBoundary>}
               productCheck={productCheck}
               developers={<ForDevelopers key={row.id} value={row.id} variant={row.parent_id !== null} />}
             />

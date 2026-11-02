@@ -81,6 +81,10 @@ now drawn by the caller. Every skeleton paints at once by default, and a re-read
 passes `wait` (or sits in a `Reread` boundary). `TableSkeleton`,
 `ChoiceSkeleton` and `GallerySkeleton` no longer wait on their own.*
 
+*Amended by [GUIDELINES §12](../../tools/design-system/GUIDELINES.md#12-loading):
+a first fill that usually lands as nothing, Analytics' sending check, sits in a
+`Reread` boundary as well, so a quick all-clear never flashes a card.*
+
 **The announcement belongs to the skeleton and never to the call site.** One
 `role="status"` reading *Loading…* per region, with every bar `aria-hidden` — a
 screen reader has nothing to gain from twenty-eight empty cells. Leaving it to

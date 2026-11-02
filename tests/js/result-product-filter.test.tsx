@@ -114,7 +114,7 @@ it('drops old search results when the query changes and offers a working retry',
   await userEvent.keyboard('{Enter}');
   expect(await screen.findByRole('alert')).toHaveTextContent('Products could not load');
   vi.mocked(apiFetch).mockResolvedValueOnce([{ id: 2, name: 'New product' }]);
-  await userEvent.click(screen.getByRole('button', { name: 'Retry search' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
   expect(await screen.findByRole('button', { name: 'Pin: New product' })).toBeEnabled();
 });
 

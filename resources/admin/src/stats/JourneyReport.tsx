@@ -44,7 +44,7 @@ export function JourneyReport({ id, period }: { id: string; period?: ReportPerio
   }
   return <ReportTarget name="activity" label={__('Screen activity', 'wconvert')}><Region className="wa-report">
     <RegionHeader title={__('Signup and screen activity', 'wconvert')} level={3} icon={<Route />} description={__('See which screens were shown and which actions followed.', 'wconvert')} />
-    {failed && <Failure message={__('Could not load matching screen totals. Activity below still uses its displayed dates.', 'wconvert')} onRetry={() => setRetry(n => n + 1)} />}
+    {failed && <Failure message={report ? __('Could not load matching screen totals. Activity below still uses its displayed dates.', 'wconvert') : __('Could not load screen activity.', 'wconvert')} onRetry={() => setRetry(n => n + 1)} />}
     {report && <>
       <RegionBody>
         <div className="wa-report-meta"><span>{rangeLabel(report.from, report.to)}</span>{!period && <span>{__('Includes today', 'wconvert')}</span>}{updating && <span role="status">{__('Updating… Previous dates shown.', 'wconvert')}</span>}</div>

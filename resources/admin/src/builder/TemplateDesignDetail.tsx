@@ -8,6 +8,7 @@ import { displayTypeLabel } from '../displayTypes';
 import { PickerDialogBody } from '../discovery/PickerDialog';
 import { AdminDialogFooter } from '../components/ui/admin-dialog';
 import { CheckRow } from '../shell/CheckRow';
+import { messageOf } from '../shell/loadable';
 import { TryAgain } from '../shell/Region';
 import { PreviewControls, usePreviewView } from '../discovery/PreviewControls';
 import { FactList, type Fact } from '../shell/FactList';
@@ -106,7 +107,7 @@ export function TemplateDesignDetail({
       })
       .catch((cause: unknown) => {
         if (alive) setPrepared({ sample, mode, prepare: onPrepare,
-          error: cause instanceof Error ? cause.message : __('This content preview could not be prepared.', 'wconvert') });
+          error: messageOf(cause) });
       });
     return () => { alive = false; };
   }, [entry.id, sample, mode, onPrepare, prepares, attempt, active]);
@@ -203,7 +204,7 @@ export function TemplateDesignDetail({
                 </div>
               ) : (
                 <div className="wconvert-design-detail__loading">
-                  <p id={`${id}-load`} role="status">{__('Loading template preview…', 'wconvert')}</p>
+                  <p id={`${id}-load`} role="status" className="sr-only">{__('Loading template preview…', 'wconvert')}</p>
                   <Skeleton aria-hidden="true" className="h-64 w-full" />
                 </div>
               )}

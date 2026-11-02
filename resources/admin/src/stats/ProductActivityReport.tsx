@@ -2,7 +2,7 @@ import apiFetch from '@wordpress/api-fetch';
 import { useEffect, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { Package } from 'lucide-react';
-import { Region, RegionBody, RegionHeader, RegionErrorState } from '../shell/Region';
+import { Region, RegionBody, RegionError, RegionErrorState, RegionHeader } from '../shell/Region';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
 import { EmptyState } from '../shell/EmptyState';
 import { DataTable, DataTableHead, DataTableBody, DataTableRow, DataTableColumn, DataTableCell } from '../shell/DataTable';
@@ -24,34 +24,40 @@ export function ProductActivityReport({ id, period }: { id: string; period?: Rep
   const from = period?.from, to = period?.to;
   // The builder passes no period and reads the server's default, today included.
   const windowQuery = period ? periodParams(periodOf(period)).toString() : '';
-  const key = `${id}:${windowQuery}:${from}:${to}`;
-  const [stored, setStored] = useState<{ key: string; value: ProductReport } | null>(null);
-  const [failure, setFailure] = useState<string | null>(null);
+  const [stored, setStored] = useState<(ProductReport & { campaign: string }) | null>(null);
+  const [failed, setFailed] = useState(false);
+  const [updating, setUpdating] = useState(false);
   const [retry, setRetry] = useState(0);
-  const report = stored?.key === key ? stored.value : null;
+  // Another campaign is another report, but another period over this one keeps
+  // the rows and their dates until an answer replaces them (§13).
+  const held = stored?.campaign === id ? stored : null;
   useEffect(() => {
     const controller = new AbortController();
-    setFailure(null);
+    setUpdating(true); setFailed(false);
     void apiFetch<ProductReport>({ path: `/wconvert/v1/optins/${id}/product-stats${windowQuery ? `?${windowQuery}` : ''}`, signal: controller.signal })
       .then(value => {
         if (controller.signal.aborted) return;
-        if (from && (value.from !== from || value.to !== to)) { setFailure(key); return; }
-        setStored({ key, value });
-      }).catch(() => { if (!controller.signal.aborted) setFailure(key); });
+        if (from && (value.from !== from || value.to !== to)) { setFailed(true); return; }
+        setStored({ ...value, campaign: id });
+      }).catch(() => { if (!controller.signal.aborted) setFailed(true); })
+      .finally(() => { if (!controller.signal.aborted) setUpdating(false); });
     return () => controller.abort();
-  }, [id, key, windowQuery, from, to, retry]);
+  }, [id, windowQuery, from, to, retry]);
   // A site with neither product module rarely has activity — only what a
   // removed Pro left behind — so it waits quietly instead of flashing a
   // placeholder for a report that almost always stays away.
   const quiet = !productModuleActive();
-  if (!report && failure !== key) return quiet ? null : <RegionSkeleton label={__('Product activity', 'wconvert')} className="wa-report" icon={<Package />} description lines={3} />;
-  if (quiet && failure === key) return null;
-  if (report && !report.available && failure !== key) return null;
+  const report = held?.available ? held : null;
+  if (!held && !failed) return quiet ? null : <RegionSkeleton label={__('Product activity', 'wconvert')} className="wa-report" icon={<Package />} description lines={3} />;
+  if (quiet && failed && !report) return null;
+  if (held && !held.available && !failed) return null;
+  const Failure = report ? RegionError : RegionErrorState;
   return <ReportTarget name="products" label={__('Product activity', 'wconvert')}><Region className="wa-report">
     <RegionHeader title={__('Product activity', 'wconvert')} level={3} icon={<Package />} description={__('See which products shoppers notice and add.', 'wconvert')} />
-    {failure === key ? <RegionErrorState message={__('Could not load product activity.', 'wconvert')} onRetry={() => setRetry(n => n + 1)} /> : report && <>
+    {failed && <Failure message={report ? __('Could not refresh product activity. The activity below keeps its dates.', 'wconvert') : __('Could not load product activity.', 'wconvert')} onRetry={() => setRetry(n => n + 1)} />}
+    {report && <>
       <RegionBody>
-        <div className="wa-report-meta"><span>{formatRange(report.from, report.to)}</span>{!period && <span>{__('Includes today', 'wconvert')}</span>}</div>
+        <div className="wa-report-meta"><span>{formatRange(report.from, report.to)}</span>{!period && <span>{__('Includes today', 'wconvert')}</span>}{updating && <span role="status">{__('Updating… Previous dates shown.', 'wconvert')}</span>}</div>
         {report.since && <p className="wa-muted">{sprintf(/* translators: %s: a date, e.g. “Nov 27, 2026”. */ __('Tracking started %s. Earlier product activity is unavailable.', 'wconvert'), formatDay(report.since))}</p>}
         {!report.collecting && <p className="wa-report-notice">{__('Tracking is unavailable. Saved activity is still shown.', 'wconvert')}</p>}
         {report.recorded_from && report.recorded_from !== report.from && report.recorded_from !== report.since && <p className="wa-report-notice">{sprintf(/* translators: %s: a date range, e.g. “Sep 9 – Oct 8, 2026”. */ __('Available activity: %s. The rest of this period is not recorded or has expired.', 'wconvert'), formatRange(report.recorded_from, report.to))}</p>}

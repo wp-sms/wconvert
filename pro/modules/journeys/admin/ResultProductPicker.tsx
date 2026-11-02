@@ -44,14 +44,14 @@ export function ProductPicker({ ids, onChange, max = 6, ordered = true, allowUna
     try {
       const products = await apiFetch<Product[]>({ path: `/wc/store/v1/products?search=${encodeURIComponent(query.trim())}&per_page=12&catalog_visibility=visible`, signal: controller.signal });
       if (!controller.signal.aborted) { setFound(products); setSearched(true); }
-    } catch { if (!controller.signal.aborted) setError(__('Products could not load. Try again.', 'wconvert-pro')); }
+    } catch { if (!controller.signal.aborted) setError(__('Products could not load.', 'wconvert-pro')); }
     finally { if (!controller.signal.aborted) setBusy(false); }
   };
   return <div className="wconvert-journey-settings__products">
     <p id={helpId}>{help ?? __('Up to 6. The first 3 available appear.', 'wconvert-pro')}</p>
     <label>{label ?? __('Find products', 'wconvert-pro')}<Input type="search" autoComplete="off" aria-describedby={helpId} value={query} onChange={event => { searchRequest.current?.abort(); setQuery(event.target.value); setFound([]); setError(''); setBusy(false); setSearched(false); }} onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); void search(); } }} /></label>
-    <Button variant="outline" type="button" onClick={() => void search()} disabled={busy || !query.trim()}>{busy ? __('Searching…', 'wconvert-pro') : error ? __('Retry search', 'wconvert-pro') : __('Search catalog', 'wconvert-pro')}</Button>
-    {error && <p role="alert">{error}</p>}
+    <Button variant="outline" type="button" onClick={() => void search()} disabled={busy || !query.trim()}>{busy ? __('Searching…', 'wconvert-pro') : __('Search catalog', 'wconvert-pro')}</Button>
+    {error && <div className="wconvert-result-filter__body"><p role="alert">{error}</p><TryAgain onClick={() => void search()} busy={busy} /></div>}
     {searched && !found.length && <p role="status">{__('No products found. Try another name.', 'wconvert-pro')}</p>}
     {ids.length >= max && <p>{__('Selection full. Remove a product to choose another.', 'wconvert-pro')}</p>}
     {namesFailed && <div className="wconvert-result-filter__body"><p role="alert">{__('Product names could not load. Your selection is kept.', 'wconvert-pro')}</p><TryAgain onClick={() => setNamesRetry(n => n + 1)} /></div>}

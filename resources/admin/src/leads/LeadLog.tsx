@@ -15,6 +15,7 @@ import { Field } from '../shell/Field';
 import { OptionStrip } from '../shell/OptionStrip';
 import { Region, RegionBody, RegionError, RegionErrorState, RegionFooter } from '../shell/Region';
 import { Toolbar, ToolbarCount } from '../shell/Toolbar';
+import { LineSkeleton } from '../shell/LineSkeleton';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { formatCount, formatDay, formatRange, formatWhen } from '../lib/format';
 import { canExport, eraseIdentifier, exportLeads, readLog, type Lead, type LeadGroup, type LeadLog as LeadLogPayload, type LeadPage, type LeadQuery } from './api';
@@ -337,7 +338,7 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
         <AlertDialogHeader>
           <AlertDialogTitle>{framed(/* translators: %s: an email address or phone number. */ __('Delete every submission from %s?', 'wconvert'), erasureTarget ?? '')}</AlertDialogTitle>
           <AlertDialogDescription>
-            {erasurePreview === null ? __('Counting their submissions…', 'wconvert') : sprintf(
+            {erasurePreview === null ? <LineSkeleton inline status={__('Counting their submissions…', 'wconvert')} className="w-64 max-w-full" /> : sprintf(
               /* translators: %s: how many submissions will be deleted. */
               _n(
                 'This permanently deletes %s submission, from every campaign.',

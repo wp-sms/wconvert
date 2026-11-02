@@ -458,7 +458,8 @@ had them: a bare table that grew filters above it, a full-width card that became
 a rail and a column. So the skeleton lives in an **eager** file outside the
 chunk (`stats/AnalyticsSkeleton`, `leads/LeadLogSkeleton`,
 `settings-page/SettingsSkeleton`, `goals/GoalStepSkeleton`,
-`occasions/OccasionSkeleton`, `shell/BuilderSkeleton`), the section draws it as
+`occasions/OccasionSkeleton`, `shell/BuilderSkeleton`,
+`license/LicenseSkeleton` in Pro), the section draws it as
 its fallback, and the screen imports it back for its first read. A test asserts
 the two are the same component. **Any CSS the skeleton needs is eager CSS too**
 — a skeleton styled by the stylesheet of the chunk it stands in for is
@@ -482,6 +483,9 @@ the placeholder replaces, and the caller is the one who knows, so it is a flag:
   (`RegionSkeleton` and the four above) waits. A re-read that keeps its rows
   on screen, as Leads' filters do, dims them under *Updating…* and draws no
   skeleton at all.
+- **A region that usually lands as nothing waits too.** Analytics' *Sending needs
+  attention* is absent on a healthy site, so it wraps its first read in `Reread`:
+  drawn at once, its shape would flash and drop the numbers back on every visit.
 
 `shell/skeletonDelay.ts` is where that line lives, so a new skeleton chooses
 rather than copies.
@@ -766,7 +770,7 @@ Not gaps. Each was decided:
   confirmation uses the primary action; deletion and replacement use destructive
   actions. A known missing design explains why publication is disabled.
 - Campaigns, results, previews and vocabulary can fail independently. Draw the
-  failed concern with a shared error and Retry. Keep accepted results, dates and
+  failed concern with a shared error and Try again. Keep accepted results, dates and
   links together during loading or failure. Skeletons reserve the upcoming
   thumbnail and field layout in either view.
 - Busy state belongs to the affected campaign family. Navigation waits for

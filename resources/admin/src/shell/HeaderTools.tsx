@@ -197,7 +197,7 @@ export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
               <TryAgain onClick={() => void load()} busy={loading} />
             </div>
           )}
-          {loading && !notices && !error ? <RowsSkeleton rows={2} /> : (
+          {loading && !notices && !error ? <RowsSkeleton rows={2} status={__('Loading notifications…', 'wconvert')} /> : (
             notices && (
               <>
                 {count === 0 && (

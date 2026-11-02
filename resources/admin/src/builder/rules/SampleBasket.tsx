@@ -3,6 +3,8 @@ import apiFetch from '@wordpress/api-fetch';
 import { __, sprintf } from '@wordpress/i18n';
 import { CommercePicker } from '../CommerceControls';
 import { Input } from '../../components/ui/input';
+import { Skeleton } from '../../components/ui/skeleton';
+import { TryAgain } from '../../shell/Region';
 import type { ProductsNode } from '@renderer/types';
 import type { Rule } from '@loader/types';
 
@@ -16,6 +18,7 @@ export function useBasketPreview(enabled: boolean, basket: Basket, rules: readon
   const key = JSON.stringify({ ...basket, rules, products: products ? { action: products.action ?? 'link', source: products.source ?? 'selected', product_ids: products.product_ids ?? [], exclude_cart: products.exclude_cart !== false, context: products.context ?? 'cart', ...(products.main_product_id !== undefined ? { main_product_id: products.main_product_id } : {}) } : null });
   const request = useMemo(() => ({ key }), [key]);
   const [reply, setReply] = useState<{ request: typeof request; result?: BasketResult; error?: boolean }>();
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     if (!enabled) return;
     let current = true;
@@ -27,11 +30,15 @@ export function useBasketPreview(enabled: boolean, basket: Basket, rules: readon
         .catch(() => { if (current) setReply({ request, error: true }); }).finally(() => clearTimeout(timeout));
     }, 250);
     return () => { current = false; clearTimeout(timer); controller.abort(); };
-  }, [enabled, key, request]);
-  return { result: enabled && reply?.request === request ? reply.result : undefined, error: enabled && reply?.request === request && reply.error === true };
+  }, [enabled, key, request, attempt]);
+  return {
+    result: enabled && reply?.request === request ? reply.result : undefined,
+    error: enabled && reply?.request === request && reply.error === true,
+    retry: () => { setReply(undefined); setAttempt(current => current + 1); },
+  };
 }
 
-export function SampleBasket({ value, onChange, result, error, products, legacyTotal }: { value: Basket; onChange(value: Basket): void; result?: BasketResult; error: boolean; products?: ProductsNode; legacyTotal: boolean }) {
+export function SampleBasket({ value, onChange, result, error, onRetry, products, legacyTotal }: { value: Basket; onChange(value: Basket): void; result?: BasketResult; error: boolean; onRetry(): void; products?: ProductsNode; legacyTotal: boolean }) {
   const reason: Record<string, string> = {
     unknown: __('The sample basket is unavailable or consent is not given.', 'wconvert'),
     main_required: __('Choose an available main product in the recommendation settings.', 'wconvert'),
@@ -56,9 +63,11 @@ export function SampleBasket({ value, onChange, result, error, products, legacyT
     <label>{__('Merchandise amount after discounts', 'wconvert')}<Input type="number" min={0} max={1000000000} step="any" value={value.amount} onChange={event => onChange({ ...value, amount: Number(event.target.value) })} /></label>
     <p className="wconvert-sample-help">{result?.currency ?? ''} · {__('Enter a pretend amount, excluding shipping and tax. It is not calculated from product prices.', 'wconvert')}</p>
     {legacyTotal && <label>{__('Cart total including shipping and tax', 'wconvert')}<Input type="number" min={0} max={1000000000} step="any" value={value.total} onChange={event => onChange({ ...value, total: Number(event.target.value) })} /></label>}
-    {error ? <p role="alert">{__('Could not test this basket. Review the values or reopen the sample visit to try again.', 'wconvert')}</p> : !result ? <p>{__('Checking the sample basket…', 'wconvert')}</p> : null}
+    {/* The verdict beside this says "Checking…", so the wait has no second voice here. */}
+    {error && <div role="alert" className="flex flex-wrap items-center gap-3"><span>{__('Could not test this basket. Review the values, then try again.', 'wconvert')}</span><TryAgain onClick={onRetry} /></div>}
     {products && <div className="space-y-3"><h4>{__('Recommendations for this sample visit', 'wconvert')}</h4>
       <p className="wconvert-sample-help">{__('Product availability preview only. The campaign also needs to pass the display rules above. No clicks or sales are recorded.', 'wconvert')}</p>
+      {!result && !error && <Skeleton aria-hidden="true" className="h-[1lh] w-64 max-w-full" />}
       {result && !result.cards.length && <p>{reason[result.reason] ?? __('No eligible suggestions.', 'wconvert')}</p>}
       {!!result?.cards.length && <ul className="grid gap-3 sm:grid-cols-3">{result.cards.map(card => <li className="min-w-0 rounded-md border p-3 space-y-2" key={card.id}>
         {card.image && <img className="w-full aspect-square object-cover" src={card.image} alt="" />}

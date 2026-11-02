@@ -6,9 +6,9 @@
  * `resources/admin/src` for the classes it emits, and a class used only under
  * `pro/` would be a class nothing emits. Everything here is scoped under
  * `#wconvert-admin .wconvert-license`, so it reaches nothing else.
+ *
+ * The page's frame is in license-frame.css, eager, for {@see LicenseSkeleton}.
  */
-#wconvert-admin .wconvert-license { display:grid; gap:20px; max-inline-size:72rem; }
-#wconvert-admin .wconvert-license--narrow { max-inline-size:44rem; }
 #wconvert-admin .wconvert-license :is(h2,p) { margin:0; }
 
 /* The status card and the activate card. */
@@ -87,7 +87,6 @@
 #wconvert-admin .wconvert-license-notice__body { display:grid; gap:4px; }
 
 /* Sites and License key. */
-#wconvert-admin .wconvert-license-grid { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(0,1fr); gap:20px; align-items:start; }
 #wconvert-admin .wconvert-license-card { min-inline-size:0; border:1px solid var(--border); border-radius:var(--radius); background:var(--card); overflow:hidden; }
 #wconvert-admin .wconvert-license-card__head { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:4px 16px; padding:10px 16px; border-block-end:1px solid var(--border); font-size:var(--text-note); }
 #wconvert-admin .wconvert-license-card__head h2 { font-size:var(--text-heading); font-weight:600; line-height:1.25; letter-spacing:-.01em; }
@@ -121,9 +120,6 @@
 #wconvert-admin .wconvert-license-choices .wconvert-radio-card > span > span { font-size:var(--text-note); color:var(--muted-foreground); overflow-wrap:anywhere; }
 #wconvert-admin .wconvert-license-why { color:var(--warning) !important; font-weight:500; }
 
-@media (max-width:900px) {
-  #wconvert-admin .wconvert-license-grid { grid-template-columns:minmax(0,1fr); }
-}
 @media (max-width:600px) {
   #wconvert-admin :is(.wconvert-license-hero__top,.wconvert-license-act-card__main) { grid-template-columns:minmax(0,1fr); padding:18px; gap:12px; }
   #wconvert-admin .wconvert-license-strip { grid-auto-flow:row; }

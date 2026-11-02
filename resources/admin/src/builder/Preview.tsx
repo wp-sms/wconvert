@@ -11,6 +11,7 @@ import { SLOT_SELECTOR, keyOfElement, type SlotKey } from './slots';
 import { policyUrl, withPolicyLink } from './policy';
 import type { ResultVariant, Template } from '@renderer/types';
 import { previewSurfaces } from '../previewSurfaces';
+import { TryAgain } from '../shell/Region';
 
 /**
  * A design, drawn by **the renderer the loader imports** — and, in the
@@ -181,15 +182,18 @@ export function Preview({ template, displayType = 'inline', step = 0, selected =
   // A copy or color edit should not repeat the site-font lookup.
   const fontRequest = JSON.stringify(usedGoogleFonts(template));
   const fontPreview = onSelect !== undefined;
+  const [fontsFailed, setFontsFailed] = useState(false);
+  const [fontsAttempt, setFontsAttempt] = useState(0);
   // Only the active editor preview requests faces; gallery cards remain request-free.
   useEffect(() => {
     if (!fontPreview || fontRequest === '[]') return;
     let active = true;
+    setFontsFailed(false);
     getThemeTokens().then(site => {
       if (active) loadFontFaces(JSON.parse(fontRequest) as import('@renderer/types').GoogleFont[], site.google_fonts_enabled === true, [...(site.fonts ?? []).map(font => firstFamily(font.stack)), ...(site.bundled_fonts ?? []).map(font => font.toLowerCase())]);
-    }).catch(() => {});
+    }).catch(() => { if (active) setFontsFailed(true); });
     return () => { active = false; };
-  }, [fontRequest, fontPreview]);
+  }, [fontRequest, fontPreview, fontsAttempt]);
   const anchor = useRef<HTMLDivElement>(null);
   /*
    * State rather than a ref, because the two effects below have to run again
@@ -518,6 +522,10 @@ export function Preview({ template, displayType = 'inline', step = 0, selected =
   // the size-contained .wc-root and collapses gallery/creation previews.
   return (
     <div>
+      {fontsFailed && <div role="alert" className="wconvert-panel-warn">
+        <span>{__('This design’s fonts couldn’t load, so the preview may show others.', 'wconvert')}</span>
+        <TryAgain onClick={() => setFontsAttempt(current => current + 1)} />
+      </div>}
       <div
         ref={anchor}
         style={{ inlineSize: width ?? (previewSurfaces[displayType] ? '100%' : template.tokens.width ?? A_DESIGNS_OWN_WIDTH), maxInlineSize: '100%' }}

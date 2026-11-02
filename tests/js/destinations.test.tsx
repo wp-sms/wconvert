@@ -1547,7 +1547,7 @@ describe('destination recovery entry points', () => {
     const dialog = within(await screen.findByRole('dialog', { name: 'MailPoet subscribers' }));
     expect(await dialog.findByText('Recent sends could not be read.')).toBeVisible();
     await userEvent.click(dialog.getByRole('button', { name: 'Try again' }));
-    expect(await dialog.findByText('Will retry')).toBeVisible();
+    expect(await dialog.findByText('Will try again')).toBeVisible();
     expect(dialog.getByText(/Aug 25/)).toBeVisible();
     expect(dialog.queryByText(/Attempt/)).toBeNull();
     expect(dialog.getByRole('link', { name: 'View submission' })).toHaveAttribute('href', leadsHref({ leadId: '01J0000000BBBBBBBBBBBBBBBB' }));

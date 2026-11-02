@@ -33,7 +33,8 @@ function TestProducts({ count, state, onRetry }: { count: number; state: Product
       : state === 'empty' ? __('These products are unavailable right now. Please use the link below.', 'wconvert')
         : __('Products could not load. You can still use the link below.', 'wconvert')}</p>
     {state === 'error' && <button type="button" className="wc-button" onClick={() => {
-      // This same status stays mounted when Retry disappears.
+      // This same status stays mounted when Retry disappears. The words are the
+      // visitor's (journeys/loader/products.ts), so §13's one retry word does not apply.
       status.current?.focus(); onRetry();
     }}>{__('Retry products', 'wconvert')}</button>}
   </>;

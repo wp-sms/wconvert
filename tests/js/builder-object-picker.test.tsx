@@ -146,7 +146,7 @@ describe('finding a page', () => {
     const changed = picker('42');
     await waitFor(() => expect(box()).toHaveValue('Pricing (#42)'));
     await type('new page');
-    const retry = await screen.findByRole('button', { name: 'Retry search' });
+    const retry = await screen.findByRole('button', { name: 'Try again' });
     expect(screen.getByRole('status')).toHaveTextContent('Search couldn’t be completed');
     expect(retry).toHaveAccessibleDescription(/press Enter/);
     expect(within(screen.getByRole('listbox')).queryByRole('button')).toBeNull();
@@ -166,7 +166,7 @@ describe('finding a page', () => {
     objects.searchObjects.mockRejectedValueOnce(new Error('offline'));
     picker();
     await type('pri');
-    await userEvent.click(await screen.findByRole('button', { name: 'Retry search' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Try again' }));
     expect(box()).toHaveFocus();
     expect(box()).toHaveValue('pri');
     await act250();
@@ -209,7 +209,7 @@ describe('finding a page', () => {
     expect((objects.searchObjects.mock.calls[0][2] as AbortSignal).aborted).toBe(true);
     await act(async () => { old.reject(new Error('aborted')); });
     expect(screen.getByRole('status')).toHaveTextContent('Searching…');
-    expect(screen.queryByRole('button', { name: 'Retry search' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
     await act(async () => { current.resolve([{ id: '80', title: 'Contact' }]); });
     expect(screen.getByRole('option')).toHaveTextContent('Contact #80');
   });
@@ -358,17 +358,17 @@ describe('a value already stored', () => {
     picker('42');
 
     await waitFor(() => expect(box()).toHaveValue('#42'));
-    expect(await screen.findByRole('button', { name: 'Retry name lookup' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'Try again' })).toBeInTheDocument();
     expect(box()).toHaveAccessibleDescription(/Couldn’t load.*still uses #42/);
   });
 
   it('retries a saved name lookup by keyboard, retaining its id and restoring input focus', async () => {
     objects.resolveObjects.mockRejectedValueOnce(new Error('offline')).mockResolvedValueOnce([PRICING]);
     const changed = picker('42');
-    await screen.findByRole('button', { name: 'Retry name lookup' });
+    await screen.findByRole('button', { name: 'Try again' });
     await userEvent.tab();
     await userEvent.tab();
-    expect(screen.getByRole('button', { name: 'Retry name lookup' })).toHaveFocus();
+    expect(screen.getByRole('button', { name: 'Try again' })).toHaveFocus();
     await userEvent.keyboard('{Enter}');
     await waitFor(() => expect(box()).toHaveValue('Pricing (#42)'));
     expect(box()).toHaveFocus();
@@ -387,7 +387,7 @@ describe('a value already stored', () => {
     expect((objects.resolveObjects.mock.calls[0][2] as AbortSignal).aborted).toBe(true);
     await act(async () => { if (outcome === 'success') old.resolve([PRICING]); else old.reject(new Error('aborted')); });
     expect(box()).toHaveValue('Prices (#77)');
-    expect(screen.queryByRole('button', { name: 'Retry name lookup' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
     expect(changed).not.toHaveBeenCalled();
   });
 
@@ -395,7 +395,7 @@ describe('a value already stored', () => {
     const changed = picker('42');
     await waitFor(() => expect(box()).toHaveAccessibleDescription(/may be unpublished, deleted.*still uses it/));
     expect(box()).toHaveValue('#42');
-    expect(screen.queryByRole('button', { name: 'Retry name lookup' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
     expect(changed).not.toHaveBeenCalled();
   });
 

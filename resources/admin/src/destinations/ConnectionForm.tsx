@@ -4,6 +4,7 @@ import { Button } from '../components/ui/button';
 import { AdminDialogBody, AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
 import { Input } from '../components/ui/input';
 import { Field } from '../shell/Field';
+import { LineSkeleton } from '../shell/LineSkeleton';
 import { messageOf } from '../shell/loadable';
 import { saveConnection, type HeaderPair } from './api';
 import { connectionSetup, type ConnectionFormProps } from './connectionSetup';
@@ -30,7 +31,7 @@ export function ConnectionForm(props: ConnectionFormProps) {
   // A registered form may be lazy: the header stays while its code loads.
   return <Suspense fallback={<>
     {props.title !== undefined && <AdminDialogHeader title={props.title} meta={props.meta} />}
-    <AdminDialogBody><p role="status" className="m-0 text-note text-muted-foreground">{__('Loading…', 'wconvert')}</p></AdminDialogBody>
+    <AdminDialogBody><LineSkeleton lines={3} status={__('Loading the connection form…', 'wconvert')} /></AdminDialogBody>
   </>}><Own {...props} /></Suspense>;
 }
 

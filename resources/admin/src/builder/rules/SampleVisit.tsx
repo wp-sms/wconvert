@@ -164,7 +164,7 @@ export default function SampleVisit({ value, vocabulary, onClose, onOpenSection,
         <Group title={__('Where', 'wconvert')}>{where}</Group>
         <Group title={__('Who', 'wconvert')}>{who}</Group>
         <Group title={__('When', 'wconvert')}>{when}</Group>
-        {basketEnabled && <Group title={__('Basket', 'wconvert')}><SampleBasket value={basket} onChange={setBasket} result={preview.result} error={preview.error} products={products}
+        {basketEnabled && <Group title={__('Basket', 'wconvert')}><SampleBasket value={basket} onChange={setBasket} result={preview.result} error={preview.error} onRetry={preview.retry} products={products}
           legacyTotal={cartRules.some(rule => rule.type === 'cart_value_min')} /></Group>}
       </section>
       <aside className="wconvert-sample-verdict" aria-label={__('Result', 'wconvert')}>

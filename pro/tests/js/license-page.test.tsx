@@ -1,8 +1,9 @@
 import { beforeEach, expect, it, vi } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import apiFetch from '@wordpress/api-fetch';
 import { LicensePage } from '../../resources/admin/src/license/LicensePage';
+import { LicenseSkeleton } from '../../resources/admin/src/license/LicenseSkeleton';
 import type { LicensePayload } from '../../resources/admin/src/license/describeLicense';
 
 vi.mock('@wordpress/api-fetch', () => ({ default: vi.fn() }));
@@ -106,9 +107,71 @@ it('a check that fails keeps the page and says so', async () => {
   render(<LicensePage />);
   await userEvent.click(await screen.findByRole('button', { name: 'Check now' }));
 
-  expect(await screen.findByText('Couldn’t check the license just now.')).toBeInTheDocument();
+  expect(await screen.findByText('Couldn’t check the license just now. No route')).toBeInTheDocument();
   expect(checks).toBe(1);
   expect(screen.getByRole('heading', { name: 'Your license expired' })).toBeInTheDocument();
+});
+
+it('a check that fails on coming back to the tab says so without moving focus, and offers Try again', async () => {
+  let checks = 0;
+  vi.mocked(apiFetch).mockImplementation(((options?: { path: string; method?: string }) => {
+    if (options?.path === '/wconvert/v1/license?check=1') { checks += 1; return checks === 1 ? Promise.reject({ code: 'network_error', message: 'No route' }) : Promise.resolve(expired); }
+    if (options?.path === '/wconvert/v1/license') return Promise.resolve(expired);
+    return Promise.resolve({ updates: expired.updates });
+  }) as never);
+  render(<LicensePage />);
+  const check = await screen.findByRole('button', { name: 'Check now' });
+  check.focus();
+  await act(async () => { window.dispatchEvent(new Event('focus')); });
+
+  const alert = await screen.findByRole('alert');
+  expect(alert).toHaveTextContent('Couldn’t check the license just now.');
+  expect(check).toHaveFocus();
+  await userEvent.click(within(alert).getByRole('button', { name: 'Try again' }));
+  await waitFor(() => expect(screen.queryByRole('alert')).toBeNull());
+  expect(checks).toBe(2);
+});
+
+it('a first read that fails is the page’s whole content, and Try again reads it again', async () => {
+  vi.mocked(apiFetch).mockRejectedValueOnce({ code: 'x', message: 'The server is away.' }).mockResolvedValue(expired);
+  render(<LicensePage />);
+  expect(await screen.findByText('The server is away.')).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
+  expect(await screen.findByRole('heading', { name: 'Your license expired' })).toBeInTheDocument();
+});
+
+it('an action that fails keeps its door, and Try again repeats that action', async () => {
+  let removals = 0;
+  vi.mocked(apiFetch).mockImplementation(((options?: { path: string; method?: string }) => {
+    if (options?.method === 'DELETE') { removals += 1; return removals === 1 ? Promise.reject({ code: 'network_error' }) : Promise.resolve({ ...expired, sites: expired.sites.slice(0, 1) }); }
+    return Promise.resolve(options?.path === '/wconvert/v1/license' ? expired : { signed_in: false, licenses: [] });
+  }) as never);
+  render(<LicensePage />);
+  await userEvent.click(await screen.findByRole('button', { name: 'Remove shop.example.com' }));
+  await userEvent.click(within(await screen.findByRole('alertdialog')).getByRole('button', { name: 'Remove' }));
+
+  const alert = await screen.findByRole('alert');
+  expect(alert).toHaveTextContent('Couldn’t reach the license server.');
+  expect(within(alert).getByRole('link', { name: /Troubleshooting guide/ })).toBeInTheDocument();
+  await userEvent.click(within(alert).getByRole('button', { name: 'Try again' }));
+  await waitFor(() => expect(screen.getByText('shop.example.com was removed. One more site is free.')).toBeInTheDocument());
+  expect(removals).toBe(2);
+});
+
+it('the placeholder is the shape that lands: one card to activate, otherwise status over two columns', () => {
+  window.wconvertAdmin = { exportUrl: '', planBadge: { ...none.badge, prompt: true } } as never;
+  const narrow = render(<LicenseSkeleton />);
+  expect(narrow.container.querySelector('.wconvert-license--narrow')).not.toBeNull();
+  expect(narrow.container.querySelector('.wconvert-license-grid')).toBeNull();
+  narrow.unmount();
+
+  window.wconvertAdmin = { exportUrl: '', planBadge: expired.badge } as never;
+  const full = render(<LicenseSkeleton />);
+  expect(full.container.querySelector('.wconvert-license--narrow')).toBeNull();
+  expect(full.container.querySelector('.wconvert-license-grid')?.children).toHaveLength(2);
+  expect(screen.getAllByRole('status')).toHaveLength(1);
+  full.unmount();
+  delete window.wconvertAdmin;
 });
 
 it('S10: a rate-limited key field opens again when the key is edited', async () => {

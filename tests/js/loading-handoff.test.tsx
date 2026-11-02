@@ -135,10 +135,10 @@ describe('the skeleton delay', () => {
     try {
       const { TableSkeleton } = await import('../../resources/admin/src/shell/TableSkeleton');
       const table = (Component: ComponentType) => render(<table><Component /></table>);
-      const first = table(() => <TableSkeleton columns={3} />);
+      const first = table(() => <TableSkeleton columns={3} status="Loading rows…" />);
       expect(first.container.querySelector('[data-slot="skeleton"]')).not.toBeNull();
       cleanup();
-      const reread = table(() => <TableSkeleton columns={3} wait />);
+      const reread = table(() => <TableSkeleton columns={3} wait status="Loading rows…" />);
       expect(reread.container.querySelector('[data-slot="skeleton"]')).toBeNull();
     } finally {
       vi.useRealTimers();

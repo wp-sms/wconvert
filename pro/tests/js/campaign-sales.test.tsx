@@ -34,6 +34,22 @@ it('keeps a confirmed tracking setting when the following report refresh fails',
   expect(screen.getByText('Linked paid orders')).toBeInTheDocument();
 });
 
+it('a failed tracking save offers Try again, and that saves again rather than re-reading', async () => {
+  vi.mocked(apiFetch).mockResolvedValueOnce(report).mockRejectedValueOnce({ message: 'Nope' }).mockResolvedValueOnce({ settings: { ...report.settings, enabled: false } }).mockResolvedValue(report);
+  render(<Revenue period={period} />);
+  await userEvent.click(await screen.findByText('Tracking & setup'));
+  await userEvent.click(screen.getByRole('button', { name: 'Turn off tracking' }));
+  await userEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Turn off tracking' }));
+  const alert = await screen.findByRole('alert');
+  expect(alert).toHaveTextContent('Could not save the tracking setting. Nope');
+  const saves = () => vi.mocked(apiFetch).mock.calls.filter(([options]) => options?.method === 'POST');
+  expect(saves()).toHaveLength(1);
+  await userEvent.click(within(alert).getByRole('button', { name: 'Try again' }));
+  expect(saves()).toHaveLength(2);
+  expect(saves()[1][0]).toMatchObject({ data: { enabled: false } });
+  expect(screen.queryByRole('alert')).toBeNull();
+});
+
 it('keeps currencies separate and explains an unavailable refund amount', async () => {
   vi.mocked(apiFetch).mockResolvedValueOnce({ ...report, currencies: [...report.currencies, { currency: 'EUR', orders: 2, amount: null, unallocated_refunds: 1 }] });
   render(<Revenue period={period} />);

@@ -111,7 +111,7 @@ export default function CampaignDetails({ id }: { id: string }) {
     };
   }, [id, attempt]);
   if (error) return <RegionError message={error} onRetry={() => setAttempt((n) => n + 1)} />;
-  if (!context) return <RowsSkeleton rows={4} />;
+  if (!context) return <RowsSkeleton rows={4} status={__('Loading how it runs…', 'wconvert')} />;
   return <HowItRuns facts={campaignFacts({
     ...context,
     where: context.inline ? { text: __('Where you place its block or shortcode', 'wconvert') } : context.where,

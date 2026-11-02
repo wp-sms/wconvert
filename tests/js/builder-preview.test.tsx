@@ -612,3 +612,15 @@ it('shows a clearly marked admin code placeholder without writing it into the ca
   expect(drawn().querySelector('.wc-code')).toHaveAttribute('title', 'Add your store’s coupon code in the editor.');
   expect(JSON.stringify(template)).toBe(before);
 });
+
+describe('the design’s fonts in the editor preview', () => {
+  it('says so when the site’s font list cannot be read, and reads it again on Try again', async () => {
+    const withFont = { ...ENTRY, tokens: { ...ENTRY.tokens, font: 'Lora' }, tree: { ...ENTRY.tree, fonts: [{ family: 'Lora', faces: [{ weight: 400 }] }] } } as TemplateEntry;
+    deadlineRequest.mockRejectedValueOnce(new Error('offline')).mockResolvedValue({ fonts: [], bundled_fonts: [], google_fonts_enabled: false });
+    render(<Preview template={withFont} onSelect={() => undefined} />);
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('This design’s fonts couldn’t load');
+    fireEvent.click(within(alert).getByRole('button', { name: 'Try again' }));
+    await waitFor(() => expect(screen.queryByRole('alert')).toBeNull());
+  });
+});

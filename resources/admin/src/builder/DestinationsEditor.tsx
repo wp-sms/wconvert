@@ -170,7 +170,7 @@ export function DestinationsEditor({
           </div>}
 
           {/* Kept local, the services stay one choice away: choosing one connects (ADR 0133). */}
-          {available.status === 'loading' ? <RowsSkeleton />
+          {available.status === 'loading' ? <RowsSkeleton status={__('Loading services…', 'wconvert')} />
             : available.status === 'failed' ? <RegionErrorState message={available.message} hint={__('Your draft is unchanged.', 'wconvert')} onRetry={onRefresh} />
             : site.length === 0 ? (
               <div className="flex flex-col gap-2">

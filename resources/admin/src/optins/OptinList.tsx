@@ -409,7 +409,7 @@ export function OptinList({
     report
       ? { status: 'ready', days: report.days, from: report.from, to: report.to, result: numbers[row.id] }
       : reportError
-        ? { status: 'failed' }
+        ? { status: 'failed', onRetry: () => setRefreshKey((n) => n + 1) }
         : { status: 'loading' };
   const filters = [
     ['all', __('All', 'wconvert')],

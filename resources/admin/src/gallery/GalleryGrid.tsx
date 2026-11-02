@@ -62,7 +62,7 @@ export function GallerySkeleton({ cards = 6, wait = false }: { cards?: number; w
 
   return (
     <>
-      <span role="status" className="sr-only">{__('Loading…', 'wconvert')}</span>
+      <span role="status" className="sr-only">{__('Loading templates…', 'wconvert')}</span>
       <ul className="wconvert-template-grid" aria-hidden="true">
         {Array.from({ length: cards }, (_each, index) => (
           <li key={index} className="wconvert-template-card">

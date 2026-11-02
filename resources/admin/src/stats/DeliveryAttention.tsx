@@ -7,6 +7,8 @@ import { destinationsAfter, type DestinationsPayload } from '../destinations/api
 import { issueCount } from '../destinations/issueCount';
 import { sendingIssuesHref } from '../nav';
 import { Region, RegionHeader, RegionBody, RegionErrorState } from '../shell/Region';
+import { RegionSkeleton } from '../shell/RegionSkeleton';
+import { Reread } from '../shell/skeletonDelay';
 import { Button } from '../components/ui/button';
 import { formatWhen } from '../lib/format';
 import { wallKey } from '../lib/wallTime';
@@ -22,7 +24,10 @@ export function DeliveryAttention() {
     return () => { active = false; };
   }, [retry]);
   if (failed && !data) return <Region><RegionHeader title={__('Sending needs attention', 'wconvert')} icon={<Send />} /><RegionErrorState message={__('Could not check how sending is going.', 'wconvert')} onRetry={() => setRetry(n => n + 1)} /></Region>;
-  if (!data || issueCount(data) === 0) return null;
+  // Most reads land as nothing at all, so this waits as a re-read does: a quick
+  // all-clear never flashes a card above the numbers and drops them back.
+  if (!data) return <Reread.Provider value><RegionSkeleton label={__('Sending status', 'wconvert')} className="wa-report" icon={<Send />} lines={2} /></Reread.Provider>;
+  if (issueCount(data) === 0) return null;
   // Stored times are site wall times; the newest across the three sources wins.
   const lastIssue = (id: string) => {
     const destination = data.destinations.find(d => d.id === id)!;

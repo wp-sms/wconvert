@@ -14,6 +14,7 @@ import { statusOf, type OptinState } from '../optins/api';
 import { FactList } from '../shell/FactList';
 import { GuideLink, SuspensionGuideLink } from '../shell/GuideLink';
 import { GUIDES, docsUrl } from '../shell/docs';
+import { LineSkeleton } from '../shell/LineSkeleton';
 import { campaignFacts, defaultRows, factAct, linksIn } from '../optins/campaignFacts';
 import { isFreeInstall } from '../goals/availability';
 import { formatCount, humanize, labelOf } from '../lib/format';
@@ -373,6 +374,7 @@ export function ReadinessDialog({
                     ? <div className="wconvert-campaign-thumbnail"><CampaignThumbnail template={template} displayType={displayType} /></div>
                     : <p>{__('No template chosen yet.', 'wconvert')} <Button type="button" variant="link" onClick={() => jump(onGoToDesign)}>{__('Browse templates', 'wconvert')}</Button></p>}
                   {/* What counts as success, said where publishing is decided, never folded away. */}
+                  {goal.status === 'loading' && <div className="wconvert-launch-review__success-measure"><LineSkeleton lines={3} status={__('Loading what counts as success…', 'wconvert')} /></div>}
                   {outcome && goal.status === 'ready' && goal.data && (
                     <div className="wconvert-launch-review__success-measure">
                       <Target aria-hidden="true" size={18} />

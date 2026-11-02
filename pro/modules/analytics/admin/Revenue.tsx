@@ -56,6 +56,8 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
   const report = stored?.scope === optinId ? stored : null;
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState('');
+  // Apart from `error`, because its door saves again where that one reads again.
+  const [saveFailure, setSaveFailure] = useState<{ message: string; enabled: boolean } | null>(null);
   const [busy, setBusy] = useState(false);
   const [confirmOff, setConfirmOff] = useState(false);
   const [retry, setRetry] = useState(0);
@@ -89,9 +91,9 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
   }, [onSummary, summaryOrders, summaryAmount, summaryCurrency]);
   useEffect(() => () => onSummary?.(null), [onSummary]);
   async function change(enabled: boolean) {
-    setBusy(true); setError('');
+    setBusy(true); setSaveFailure(null);
     try { const saved = await apiFetch<{ settings: Report['settings'] }>({ path: '/wconvert/v1/revenue', method: 'POST', data: { enabled } }); setReport(previous => previous ? { ...previous, settings: saved.settings, site_matches: true } : previous); setRetry(n => n + 1); }
-    catch (cause) { setError(sprintf(/* translators: %s: the reason the request failed, as the server gave it. */ __('Could not save the tracking setting. %s', 'wconvert-pro'), messageOf(cause))); }
+    catch (cause) { setSaveFailure({ enabled, message: sprintf(/* translators: %s: the reason the request failed, as the server gave it. */ __('Could not save the tracking setting. %s', 'wconvert-pro'), messageOf(cause)) }); }
     finally { setBusy(false); }
   }
   if (!report && !error) return <RegionSkeleton label={__('Campaign sales', 'wconvert-pro')} className="wa-report" icon={<ShoppingBag />} description lines={3} />;
@@ -104,6 +106,7 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
   const trackingControl = report && !optinId ? <Button ref={toggle} variant={firstSetup ? 'default' : 'outline'} disabled={busy} onClick={() => enabled ? setConfirmOff(true) : void change(true)}>{busy ? __('Saving…', 'wconvert-pro') : enabled ? __('Turn off tracking', 'wconvert-pro') : __('Turn on tracking', 'wconvert-pro')}</Button> : null;
   return <ReportTarget name="sales" label={__('Sales', 'wconvert-pro')}><Region className="wa-report">
     <RegionHeader title={__('Campaign sales', 'wconvert-pro')} icon={<ShoppingBag />} description={__('Paid orders linked to your campaigns.', 'wconvert-pro')} trailing={report && <Badge variant={enabled && !report.consent_ready ? 'warning' : 'outline'}>{status}</Badge>} />
+    {saveFailure && <RegionError message={saveFailure.message} onRetry={() => void change(saveFailure.enabled)} />}
     {error && <Failure message={error} onRetry={() => setRetry(n => n + 1)} />}
     {report && <>
       {firstSetup ? <><RegionBody className="wa-sales-setup">

@@ -25,6 +25,7 @@ import { isColor } from './themes';
 import { Description } from '../shell/Description';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Template, Tokens } from '@renderer/types';
+import { messageOf } from '../shell/loadable';
 
 export function ScopeStyle({
   template,
@@ -80,7 +81,7 @@ export function ScopeStyle({
       const next = withGoogleFont({ ...template, tree: withScopeToken(template.tree, here.path, name, value, width) }, font);
       setFontError('');
       onChange(next, coalesce);
-    } catch (cause) { setFontError(cause instanceof Error ? cause.message : String(cause)); }
+    } catch (cause) { setFontError(messageOf(cause)); }
   };
 
   const mobileOverrides = Object.keys(here.narrow);

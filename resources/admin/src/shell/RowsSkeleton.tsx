@@ -1,4 +1,3 @@
-import { __ } from '@wordpress/i18n';
 import { Skeleton } from '../components/ui/skeleton';
 import { RegionBody } from './Region';
 
@@ -13,20 +12,20 @@ import { RegionBody } from './Region';
  *
  * `aria-hidden` on the bars and one `role="status"` beside them, for
  * `TableSkeleton`'s reason: a screen reader has nothing to gain from four empty
- * rows and everything to gain from the word "Loading".
+ * rows and everything to gain from one sentence naming what is on its way.
  *
  * No anti-flash delay: this fills a region for the first time and there is
  * nothing to flicker against — {@see useShownAfterDelay} draws that line.
  */
 export function RowsSkeleton({ rows = 3, status }: {
   rows?: number;
-  /** What is loading, said once: "Loading recent sends…". Plain "Loading…" otherwise. */
-  status?: string;
+  /** What is loading, said once: "Loading recent sends…". */
+  status: string;
 }) {
   return (
     <RegionBody className="flex flex-col gap-3">
       <span role="status" className="flex items-center gap-2">
-        <span className="sr-only">{status ?? __('Loading…', 'wconvert')}</span>
+        <span className="sr-only">{status}</span>
         <Skeleton aria-hidden="true" className="size-4 shrink-0" />
         <Skeleton aria-hidden="true" className="h-4 w-48 max-w-full" />
       </span>

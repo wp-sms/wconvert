@@ -4,6 +4,7 @@ import { AlertTriangle, CalendarClock, CircleAlert, CircleCheck, Clock, Copy, Ch
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Disclosure } from '@/shell/Disclosure';
+import { TryAgain } from '@/shell/Region';
 import { formatShortDay, formatWhen } from '@/lib/format';
 import { describeLicense, type Door, type Icon, type LicensePayload } from './describeLicense';
 import { Ext, KeyField } from './parts';
@@ -72,7 +73,7 @@ export function StatusCard({ license, actions }: { license: LicensePayload; acti
       {/* Announced, so Check now's answer is heard as well as seen. */}
       <div className="wconvert-license-hero__foot" aria-live="polite">
         <div className="wconvert-license-hero__updates">{actions.updatesFailed
-          ? <span className="wconvert-license-line"><CircleAlert className="wconvert-license-bad" aria-hidden="true" />{__('Couldn’t check for updates.', 'wconvert-pro')}<Button variant="link" size="sm" onClick={actions.onCheck}>{__('Try again', 'wconvert-pro')}</Button></span>
+          ? <span className="wconvert-license-line"><CircleAlert className="wconvert-license-bad" aria-hidden="true" />{__('Couldn’t check for updates.', 'wconvert-pro')}<TryAgain onClick={actions.onCheck} busy={actions.checking} /></span>
           : <UpdatesLine license={license} stopped={d.stopped} elsewhere={d.elsewhere} />}</div>
         <div><CheckLine license={license} checking={actions.checking} onCheck={actions.onCheck} /></div>
       </div>
@@ -187,12 +188,12 @@ function CheckLine({ license, checking, onCheck }: { license: LicensePayload; ch
   const when = (at: number | null) => (at === null ? null : formatWhen(new Date(at * 1000).toISOString(), 'detail'));
   const button = (
     <Button variant="link" size="sm" aria-disabled={checking || undefined} onClick={() => !checking && onCheck()}>
-      {checking ? __('Checking…', 'wconvert-pro') : license.reach === 'unreachable' ? __('Try again', 'wconvert-pro') : __('Check now', 'wconvert-pro')}
+      {checking ? __('Checking…', 'wconvert-pro') : __('Check now', 'wconvert-pro')}
     </Button>
   );
 
   if (license.reach === 'unreachable') {
-    return <span className="wconvert-license-line"><Info className="wconvert-license-act" aria-hidden="true" />{sprintf(/* translators: %s: when the license was last checked successfully, e.g. “Oct 12, 2026, 9:14 AM”, or “—” if never. */ __('Couldn’t reach the license server. Showing details from %s.', 'wconvert-pro'), when(license.last_success_at) ?? '—')}{button}</span>;
+    return <span className="wconvert-license-line"><Info className="wconvert-license-act" aria-hidden="true" />{sprintf(/* translators: %s: when the license was last checked successfully, e.g. “Oct 12, 2026, 9:14 AM”, or “—” if never. */ __('Couldn’t reach the license server. Showing details from %s.', 'wconvert-pro'), when(license.last_success_at) ?? '—')}<TryAgain onClick={onCheck} busy={checking} /></span>;
   }
 
   const checked = when(license.last_checked_at);
