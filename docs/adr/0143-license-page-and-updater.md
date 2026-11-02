@@ -85,7 +85,11 @@ nothing, and asserts no file on the front-end read path touches it.
    with no licence. The bell is untouched: it belongs to notifications.
 8. **The page.** One status card — headline, one action, then Updates · Support
    · Renewal, with updates and *Check now* in its foot — then a Sites card and a
-   License key card. The page's words are `describeLicense()` in TypeScript;
+   License key card. *Amended by ADR 0182: all of them are the shared `Region`,
+   `RegionHeader`, `RegionBody` and `RegionFooter`, like Settings, so the
+   headline is the region's 16px heading with the state's icon beside it, and
+   the page has no card drawing of its own. The structure and the words here
+   stand.* The page's words are `describeLicense()` in TypeScript;
    what the licence says outside the page — the badge's dot and reason, and the
    Plugins row — is `LicenseNotice` in PHP, sent with the payload, so the badge
    and the row cannot disagree and free never computes it. Over the limit is

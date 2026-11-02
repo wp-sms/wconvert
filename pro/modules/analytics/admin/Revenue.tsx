@@ -4,6 +4,7 @@ import { ShoppingBag, SlidersHorizontal } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { RegionSkeleton } from '@/shell/RegionSkeleton';
 import { EmptyState } from '@/shell/EmptyState';
+import { GuideLink } from '@/shell/GuideLink';
 import { InfoTip } from '@/shell/InfoTip';
 import { ReportDisclosure } from '@/stats/ReportDisclosure';
 import { reportHref } from '@/nav';
@@ -116,11 +117,11 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
             <li><strong>{__('Turn on tracking', 'wconvert-pro')}</strong><span>{__('A signup or eligible click can link one checkout within 30 minutes.', 'wconvert-pro')}</span></li>
           </ol>
         </div>
-        </RegionBody><RegionFooter><div className="wa-report-actions">{trackingControl}{optinId && <Button asChild variant="outline"><a href={reportHref()}>{__('Open sales setup', 'wconvert-pro')}</a></Button>}<a href={docsUrl(GUIDES.campaignSales)} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert-pro')}</a></div>
+        </RegionBody><RegionFooter><div className="wa-report-actions">{trackingControl}{optinId && <Button asChild variant="outline"><a href={reportHref()}>{__('Open sales setup', 'wconvert-pro')}</a></Button>}<GuideLink href={docsUrl(GUIDES.campaignSales)}>{__('Setup guide', 'wconvert-pro')}</GuideLink></div>
       </RegionFooter></> : <>
         <RegionBody>
           <div className="wa-report-meta"><span>{report.from && report.to ? formatRange(report.from, report.to) : __('Report not loaded', 'wconvert-pro')}</span><span>{__('By order paid date', 'wconvert-pro')}</span>{updating && <span role="status">{__('Updating… Previous dates shown.', 'wconvert-pro')}</span>}</div>
-          {enabled && !report.consent_ready && <div className="wa-report-notice"><strong>{__('Finish consent setup to link new orders.', 'wconvert-pro')}</strong><a href={docsUrl(GUIDES.campaignSales, 'turn-on-tracking')} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert-pro')}</a></div>}
+          {enabled && !report.consent_ready && <div className="wa-report-notice"><strong>{__('Finish consent setup to link new orders.', 'wconvert-pro')}</strong><GuideLink href={docsUrl(GUIDES.campaignSales, 'turn-on-tracking')}>{__('Setup guide', 'wconvert-pro')}</GuideLink></div>}
           {!report.site_matches && <p className="wa-report-notice">{__('The site address changed. Turn on tracking again in Tracking & setup below.', 'wconvert-pro')}</p>}
           {report.complete === undefined ? <p className="wa-muted">{__('Sales totals have not loaded yet.', 'wconvert-pro')}</p>
             : report.complete === false ? <EmptyState icon={ShoppingBag} title={__('Choose a shorter period', 'wconvert-pro')}>{__('This report is too large to total safely. No partial totals are shown.', 'wconvert-pro')}</EmptyState>
@@ -145,7 +146,7 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
         <ReportDisclosure title={__('Tracking & setup', 'wconvert-pro')}>
           <div className="wa-report-setting"><SlidersHorizontal aria-hidden="true" className="size-5" /><div><strong>{status}</strong><p className="wa-muted">{__('Turning tracking off keeps existing order links.', 'wconvert-pro')}</p></div><div className="wconvert-toolbar">{trackingControl}{optinId && <a href={reportHref()}>{__('Manage tracking', 'wconvert-pro')}</a>}</div></div>
           <p className="wa-muted">{sprintf(/* translators: %s: the date and time tracking was first turned on, e.g. “Oct 9, 2026, 2:22 PM”. */ __('First turned on %s', 'wconvert-pro'), formatWhen(report.settings.since, 'detail'))}</p>
-          <a href={docsUrl(GUIDES.campaignSales)} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert-pro')}</a>
+          <GuideLink href={docsUrl(GUIDES.campaignSales)}>{__('Setup guide', 'wconvert-pro')}</GuideLink>
         </ReportDisclosure>
       </>}
       <ReportDisclosure title={__('How sales are linked', 'wconvert-pro')}>

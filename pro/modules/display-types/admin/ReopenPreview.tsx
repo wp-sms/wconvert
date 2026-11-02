@@ -24,7 +24,7 @@ export default function ReopenPreview({ value, template, mobile, onReopen }: Reo
     if (visible) parent.appendChild(view.host);
     return () => view.host.remove();
   }, [config, template, mobile, direction, dismissed, onReopen]);
-  return <div ref={container} className="absolute inset-0 grid place-items-center">
+  return <div ref={container} className="absolute inset-0 flex items-center justify-center">
     {hidden ? <p className="rounded bg-card p-4">{__('Hidden on mobile', 'wconvert-pro')}</p> : dismissed ? <div className="rounded bg-card p-4 text-center">
       <p>{__('Reminder dismissed for this preview.', 'wconvert-pro')}</p>
       <Button variant="outline" onClick={() => setDismissed(false)}>{__('Show again', 'wconvert-pro')}</Button>

@@ -2,6 +2,7 @@ import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'rea
 import { __, sprintf } from '@wordpress/i18n';
 import { ArrowLeft, Code, TriangleAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Alert, AlertTitle } from '@/components/ui/alert';
 import { AdminDialogBody, AdminDialogFooter, AdminDialogHeader } from '@/components/ui/admin-dialog';
 import { Input } from '@/components/ui/input';
 import { Field } from '@/shell/Field';
@@ -196,10 +197,10 @@ export function WebhookConnectionForm({ type, account, title, meta, back, onSave
             aria-describedby={[field('url-hint'), warnPlain ? field('url-warn') : ''].filter(Boolean).join(' ')}
             onChange={(event) => setUrl(event.target.value)} />
         </Field>
-        {warnPlain && <p id={field('url-warn')} className="wconvert-webhook-warning">
+        {warnPlain && <Alert id={field('url-warn')} role="status" className="border-warning/30 bg-warning-surface text-warning">
           <TriangleAlert aria-hidden="true" />
-          <span>{__('http:// isn’t encrypted, so your header and every lead travel readable. Use https://.', 'wconvert-pro')}</span>
-        </p>}
+          <AlertTitle className="line-clamp-none">{__('http:// isn’t encrypted, so your header and every lead travel readable. Use https://.', 'wconvert-pro')}</AlertTitle>
+        </Alert>}
 
         {!editing && receiver === 'make' && <Field label={<>{__('API key', 'wconvert-pro')} <span className="wconvert-webhook-optional">{__('· optional', 'wconvert-pro')}</span></>}
           htmlFor={field('make-key')} hintId={field('make-key-hint')}

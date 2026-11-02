@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { TryAgain } from '@/shell/Region';
+import { Region, RegionBody, RegionFooter, RegionHeader, TryAgain } from '@/shell/Region';
+import { GuideLink } from '@/shell/GuideLink';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { KeyRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,7 +11,7 @@ import { asLicenseError, chooseLicense, goSignIn, readAccount, signOut, type Acc
 import { type LicensePayload } from './describeLicense';
 import { formatShortDay } from '@/lib/format';
 import { errorCopy, type Way } from './errorCopy';
-import { Ext, KeyField, Notice } from './parts';
+import { Ext, KeyField, KeyHint, ResultAlert } from './parts';
 import { GUIDES, docsUrl } from '@/shell/docs';
 
 /**
@@ -92,21 +93,17 @@ export function ActivateCard({ license, onActivateKey, onKeyEdit, onChanged, bus
     const error = license.error_code ? { code: license.error_code } : null;
     const copy = error ? errorCopy(error, { fromConfig: true }) : null;
     return (
-      <section className="wconvert-license-act-card" aria-labelledby="wconvert-license-activate">
-        <div className="wconvert-license-act-card__main">
-          <span className="wconvert-license-well" data-tone="info"><KeyRound size={22} aria-hidden="true" /></span>
-          <div>
-            <h2 id="wconvert-license-activate">{__('Activate WConvert Pro', 'wconvert-pro')}</h2>
-            <p className="wconvert-license-hero__body">{__('Your license key is set in wp-config.php.', 'wconvert-pro')}</p>
-            {error && copy && (
-              <Notice tone="danger" title={__('It didn’t activate', 'wconvert-pro')}>
-                <p>{copy.text} <span className="wconvert-license-muted">({error.code})</span></p>
-                {license.retry_at && <p>{sprintf(/* translators: %s: when it tries next, e.g. “Today, 4:05 PM” or “Oct 3”. */ __('WordPress tries again %s.', 'wconvert-pro'), formatWhen(new Date(license.retry_at * 1000).toISOString()))}</p>}
-              </Notice>
-            )}
-          </div>
-        </div>
-      </section>
+      <Region>
+        <RegionHeader title={__('Activate WConvert Pro', 'wconvert-pro')} description={__('Your license key is set in wp-config.php.', 'wconvert-pro')} icon={<KeyRound />} />
+        {error && copy && (
+          <RegionBody>
+            <ResultAlert tone="danger" title={__('It didn’t activate', 'wconvert-pro')}>
+              <p>{copy.text} <span className="wconvert-license-muted">({error.code})</span></p>
+              {license.retry_at && <p>{sprintf(/* translators: %s: when it tries next, e.g. “Today, 4:05 PM” or “Oct 3”. */ __('WordPress tries again %s.', 'wconvert-pro'), formatWhen(new Date(license.retry_at * 1000).toISOString()))}</p>}
+            </ResultAlert>
+          </RegionBody>
+        )}
+      </Region>
     );
   }
 
@@ -114,17 +111,18 @@ export function ActivateCard({ license, onActivateKey, onKeyEdit, onChanged, bus
 
   if (account?.signed_in && choices.length === 0) {
     return (
-      <section className="wconvert-license-card" aria-labelledby="wconvert-license-activate">
-        <div className="wconvert-license-card__head"><h2 id="wconvert-license-activate">{__('Activate WConvert Pro', 'wconvert-pro')}</h2></div>
-        <div className="wconvert-license-card__body">
-          <Notice tone="warning" title={sprintf(/* translators: %s: the account's email address, partly hidden, e.g. “n***@example.com”. */ __('This account (%s) has no WConvert Pro license', 'wconvert-pro'), account.email_masked ?? '')}
-            actions={<>
+      <Region>
+        <RegionHeader title={__('Activate WConvert Pro', 'wconvert-pro')} />
+        <RegionBody>
+          <ResultAlert tone="warning" title={sprintf(/* translators: %s: the account's email address, partly hidden, e.g. “n***@example.com”. */ __('This account (%s) has no WConvert Pro license', 'wconvert-pro'), account.email_masked ?? '')}>
+            <div className="wconvert-license-actions">
               <Button variant="outline" onClick={leave}>{__('Sign out and use another account', 'wconvert-pro')}</Button>
-              <Ext href={license.urls.checkout ?? '#'}>{__('See plans', 'wconvert-pro')}</Ext>
+              <Ext href={license.urls.checkout}>{__('See plans', 'wconvert-pro')}</Ext>
               <Button variant="link" onClick={useKey}>{__('Use a key instead', 'wconvert-pro')}</Button>
-            </>} />
-        </div>
-      </section>
+            </div>
+          </ResultAlert>
+        </RegionBody>
+      </Region>
     );
   }
 
@@ -133,11 +131,11 @@ export function ActivateCard({ license, onActivateKey, onKeyEdit, onChanged, bus
     const picked = choices.find((choice) => choice.id === selected);
 
     return (
-      <section className="wconvert-license-card" aria-labelledby="wconvert-license-choose">
-        <div className="wconvert-license-card__head"><h2 id="wconvert-license-choose">{__('Choose a license for this site', 'wconvert-pro')}</h2></div>
-        <div className="wconvert-license-card__body">
-          {accountError && <Notice key={accountError.id} tone="danger" focus>{errorCopy(accountError.error).text}{ways(accountError.error, () => selected !== null && choose(selected))}</Notice>}
-          {account.message && <Notice tone="warning">{account.message}</Notice>}
+      <Region>
+        <RegionHeader title={__('Choose a license for this site', 'wconvert-pro')} />
+        <RegionBody className="wconvert-license-card__body">
+          {accountError && <ResultAlert key={accountError.id} tone="danger" title={errorCopy(accountError.error).text} focus>{ways(accountError.error, () => selected !== null && choose(selected))}</ResultAlert>}
+          {account.message && <ResultAlert tone="warning" title={account.message} />}
           <fieldset className="wconvert-license-choices">
             <legend className="sr-only">{__('Your licenses', 'wconvert-pro')}</legend>
             {choices.map((choice) => (
@@ -158,18 +156,18 @@ export function ActivateCard({ license, onActivateKey, onKeyEdit, onChanged, bus
             ))}
           </fieldset>
           {picked === undefined && <p id="wconvert-license-none-free" className="wconvert-license-hint">
-            {__('Every license on this account is in use. Free a site in your account, then come back.', 'wconvert-pro')} <Ext href={license.urls.sites ?? '#'}>{__('Manage sites', 'wconvert-pro')}</Ext>
+            {__('Every license on this account is in use. Free a site in your account, then come back.', 'wconvert-pro')} <Ext href={license.urls.sites}>{__('Manage sites', 'wconvert-pro')}</Ext>
           </p>}
           <div className="wconvert-license-actions">
             <Button disabled={choosing !== null} {...refusable(picked === undefined ? 'wconvert-license-none-free' : null, () => picked && choose(picked.id))}>
               {choosing !== null ? __('Activating…', 'wconvert-pro') : __('Activate on this site', 'wconvert-pro')}
             </Button>
           </div>
-        </div>
-        <div className="wconvert-license-card__foot">
+        </RegionBody>
+        <RegionFooter className="flex flex-wrap items-center gap-2 text-note">
           {sprintf(/* translators: %s: the account's email address, partly hidden, e.g. “n***@example.com”. */ __('Signed in as %s', 'wconvert-pro'), account.email_masked ?? '')} · <Button variant="link" onClick={leave}>{__('Sign out', 'wconvert-pro')}</Button>
-        </div>
-      </section>
+        </RegionFooter>
+      </Region>
     );
   }
 
@@ -177,29 +175,28 @@ export function ActivateCard({ license, onActivateKey, onKeyEdit, onChanged, bus
   const keyCopy = keyError ? errorCopy(keyError) : null;
 
   return (
-    <section className="wconvert-license-act-card" aria-labelledby="wconvert-license-activate">
-      <div className="wconvert-license-act-card__main">
-        <span className="wconvert-license-well" data-tone="info"><KeyRound size={22} aria-hidden="true" /></span>
-        <div>
-          <h2 id="wconvert-license-activate">{__('Activate WConvert Pro', 'wconvert-pro')}</h2>
-          <p className="wconvert-license-hero__body">{__('Activate to get updates and support. Pro features already work.', 'wconvert-pro')}</p>
-          <div className="wconvert-license-actions">
-            <Button variant="brand" disabled={opening} aria-describedby={signError ? 'wconvert-license-sign-error' : 'wconvert-license-sign-hint'} onClick={() => startSignIn()}>
-              {opening ? __('Opening your account…', 'wconvert-pro') : signError?.code === 'account_expired' ? __('Sign in again', 'wconvert-pro') : __('Sign in to your account', 'wconvert-pro')}
-            </Button>
-          </div>
-          {signError
-            ? <div className="wconvert-license-error" id="wconvert-license-sign-error" role="alert"><span>{errorCopy(signError).text}</span>{ways(signError, startSignIn)}</div>
-            : <p className="wconvert-license-hint" id="wconvert-license-sign-hint">{account?.message ?? __('Opens your account, then brings you back here.', 'wconvert-pro')}</p>}
+    <Region>
+      <RegionHeader title={__('Activate WConvert Pro', 'wconvert-pro')} description={__('Activate to get updates and support. Pro features already work.', 'wconvert-pro')} icon={<KeyRound />} />
+      <RegionBody className="wconvert-license-card__body">
+        <div className="wconvert-license-actions">
+          <Button variant="brand" disabled={opening} aria-describedby={signError ? 'wconvert-license-sign-error' : 'wconvert-license-sign-hint'} onClick={() => startSignIn()}>
+            {opening ? __('Opening your account…', 'wconvert-pro') : signError?.code === 'account_expired' ? __('Sign in again', 'wconvert-pro') : __('Sign in to your account', 'wconvert-pro')}
+          </Button>
         </div>
-      </div>
-      <Disclosure className="wconvert-license-act-card__key" variant="inline" title={__('Enter a license key instead', 'wconvert-pro')} open={keyOpen} onToggle={setKeyOpen}>
-        <KeyField id="wconvert-license-key-input" label={__('License key', 'wconvert-pro')} value={key} inputRef={keyRef} onChange={(value) => { setKey(value); onKeyEdit(); }}
-          onSubmit={() => onActivateKey(key)} busy={busy === 'activate'} refused={keyError?.code === 'rate_limited'}
-          error={keyCopy && <><span role="alert">{keyCopy.text}</span>{ways(keyError!, () => onActivateKey(key))}</>}
-          hint={<>{__('It’s in your purchase email', 'wconvert-pro')} · <Ext href={license.urls.account ?? '#'}>{__('Find my key', 'wconvert-pro')}</Ext></>} />
-      </Disclosure>
-    </section>
+        {signError
+          ? <div className="wconvert-license-error" id="wconvert-license-sign-error" role="alert"><span>{errorCopy(signError).text}</span>{ways(signError, startSignIn)}</div>
+          : <p className="wconvert-license-hint" id="wconvert-license-sign-hint">{account?.message ?? __('Opens your account, then brings you back here.', 'wconvert-pro')}</p>}
+        {/* The second door, under a rule. Its field stays on the card's surface (§6). */}
+        <div className="border-t border-border pt-2">
+          <Disclosure variant="inline" title={__('Enter a license key instead', 'wconvert-pro')} open={keyOpen} onToggle={setKeyOpen}>
+            <KeyField id="wconvert-license-key-input" label={__('License key', 'wconvert-pro')} value={key} inputRef={keyRef} onChange={(value) => { setKey(value); onKeyEdit(); }}
+              onSubmit={() => onActivateKey(key)} busy={busy === 'activate'} refused={keyError?.code === 'rate_limited'}
+              error={keyCopy && <><span role="alert">{keyCopy.text}</span>{ways(keyError!, () => onActivateKey(key))}</>}
+              hint={<KeyHint account={license.urls.account} />} />
+          </Disclosure>
+        </div>
+      </RegionBody>
+    </Region>
   );
 }
 
@@ -214,13 +211,13 @@ export function Ways({ ways, license, retry, signIn: startSignIn }: { ways: Way[
 
   const door: Record<Way, ReactNode> = {
     sign_in: <Button key="sign_in" variant="link" onClick={startSignIn}>{__('Sign in instead', 'wconvert-pro')}</Button>,
-    find_key: <Ext key="find_key" href={license.urls.account ?? '#'}>{__('Find my WConvert key', 'wconvert-pro')}</Ext>,
-    renew: <Ext key="renew" href={license.urls.renew ?? license.urls.account ?? '#'} variant="outline">{__('Renew', 'wconvert-pro')}</Ext>,
-    sites: <Ext key="sites" href={license.urls.sites ?? '#'}>{__('Manage sites', 'wconvert-pro')}</Ext>,
-    upgrade: <Ext key="upgrade" href={license.urls.upgrade ?? '#'}>{__('Upgrade', 'wconvert-pro')}</Ext>,
+    find_key: <Ext key="find_key" href={license.urls.account}>{__('Find my WConvert key', 'wconvert-pro')}</Ext>,
+    renew: <Ext key="renew" href={license.urls.renew ?? license.urls.account} variant="outline">{__('Renew', 'wconvert-pro')}</Ext>,
+    sites: <Ext key="sites" href={license.urls.sites}>{__('Manage sites', 'wconvert-pro')}</Ext>,
+    upgrade: <Ext key="upgrade" href={license.urls.upgrade}>{__('Upgrade', 'wconvert-pro')}</Ext>,
     retry: <TryAgain key="retry" onClick={retry} />,
-    support: <Ext key="support" href={license.urls.support ?? '#'}>{__('Contact support', 'wconvert-pro')}</Ext>,
-    guide: <Ext key="guide" href={docsUrl(GUIDES.proUnavailable, 'check-license')}>{__('Troubleshooting guide', 'wconvert-pro')}</Ext>,
+    support: <Ext key="support" href={license.urls.support}>{__('Contact support', 'wconvert-pro')}</Ext>,
+    guide: <GuideLink key="guide" href={docsUrl(GUIDES.proUnavailable, 'check-license')}>{__('Troubleshooting guide', 'wconvert-pro')}</GuideLink>,
   };
 
   return <div className="wconvert-license-actions">{ways.map((way) => door[way])}</div>;

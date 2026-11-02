@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import { KeyRound } from 'lucide-react';
 import { RegionSkeleton } from '@/shell/RegionSkeleton';
 import { adminSettings } from '@/settings';
 import './license-frame.css';
@@ -17,14 +18,15 @@ export function LicenseSkeleton() {
   if (adminSettings()?.planBadge?.prompt === true) {
     return (
       <div className="wconvert-license wconvert-license--narrow">
-        <RegionSkeleton label={__('License', 'wconvert-pro')} description lines={3} footer />
+        <RegionSkeleton label={__('License', 'wconvert-pro')} icon={<KeyRound />} description lines={3} />
       </div>
     );
   }
 
   return (
     <div className="wconvert-license">
-      <RegionSkeleton label={__('License', 'wconvert-pro')} description lines={3} footer />
+      {/* The icon is the state's and arrives with it, so an empty one holds its place. */}
+      <RegionSkeleton label={__('License', 'wconvert-pro')} icon={<></>} description trailing lines={3} footer />
       <div className="wconvert-license-grid">
         <RegionSkeleton label={__('Sites', 'wconvert-pro')} announce={false} trailing lines={4} />
         <RegionSkeleton label={__('License key', 'wconvert-pro')} announce={false} lines={3} />

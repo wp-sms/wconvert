@@ -1,6 +1,7 @@
 import { useEffect, useRef, type ReactNode, type RefObject } from 'react';
 import { __ } from '@wordpress/i18n';
-import { CircleAlert, CircleCheck, Info, TriangleAlert } from 'lucide-react';
+import { CircleAlert, CircleCheck, TriangleAlert } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { refusable } from '@/lib/refusable';
 import { Input } from '@/components/ui/input';
@@ -17,8 +18,13 @@ export function cleanKey(raw: string, full = true): string {
   return full ? key.replace(/-{2,}/g, '-').replace(/^-+|-+$/g, '') : key;
 }
 
-/** A link to the store, which opens beside WordPress and says so. */
-export function Ext({ href, children, variant }: { href: string; children: ReactNode; variant?: 'brand' | 'outline' | 'link' }) {
+/**
+ * A link to the store, which opens beside WordPress and says so. With no
+ * address there is no door: `href="#"` opened a dead tab (§20).
+ */
+export function Ext({ href, children, variant }: { href: string | undefined; children: ReactNode; variant?: 'brand' | 'outline' | 'link' }) {
+  if (!href) return null;
+
   const label = <>{children} <span aria-hidden="true">↗</span><span className="sr-only"> {__('(opens in a new tab)', 'wconvert-pro')}</span></>;
 
   if (variant === undefined || variant === 'link') {
@@ -28,19 +34,32 @@ export function Ext({ href, children, variant }: { href: string; children: React
   return <Button asChild variant={variant}><a href={href} target="_blank" rel="noreferrer">{label}</a></Button>;
 }
 
-export type NoticeTone = 'success' | 'info' | 'warning' | 'danger';
+/** Where to find a key, and the account's door to it where there is one. */
+export function KeyHint({ account }: { account: string | undefined }) {
+  return <>{__('It’s in your purchase email', 'wconvert-pro')}{account && <> · <Ext href={account}>{__('Find my key', 'wconvert-pro')}</Ext></>}</>;
+}
 
-const NOTICE_ICON = { success: CircleCheck, info: Info, warning: TriangleAlert, danger: CircleAlert } as const;
+export type ResultTone = 'success' | 'warning' | 'danger';
+
+const RESULT = {
+  success: { icon: CircleCheck, surface: 'border-success/30 bg-success-surface text-success' },
+  warning: { icon: TriangleAlert, surface: 'border-warning/30 bg-warning-surface text-warning' },
+  danger: { icon: CircleAlert, surface: 'border-destructive/30 bg-destructive-surface' },
+} as const;
 
 /**
- * A result, inline where it happened — never a toast (ADR 0143): it is read,
- * focused and announced, and it stays until the next action replaces it.
- * Focus moves to it when it ARRIVES, once; a new result is a new notice (give
- * it a new `key`), so re-rendering the same one never pulls focus back.
+ * A result, inline where it happened, in the shared `Alert` and never a toast
+ * (ADR 0143): it is read and announced, and it stays until the next action
+ * replaces it.
+ *
+ * `focus` is for an answer the merchant just asked for, and moves focus to it
+ * when it ARRIVES, once; a new result is a new alert (give it a new `key`), so
+ * re-rendering the same one never pulls focus back. A background refresh never
+ * passes it: nobody asked for that check, and focus is where they left it.
  */
-export function Notice({ tone, title, children, actions, focus = false }: { tone: NoticeTone; title?: string; children?: ReactNode; actions?: ReactNode; focus?: boolean }) {
+export function ResultAlert({ tone, title, children, focus = false }: { tone: ResultTone; title: string; children?: ReactNode; focus?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
-  const Icon = NOTICE_ICON[tone];
+  const { icon: Icon, surface } = RESULT[tone];
 
   useEffect(() => {
     if (focus) ref.current?.focus();
@@ -49,14 +68,12 @@ export function Notice({ tone, title, children, actions, focus = false }: { tone
   }, []);
 
   return (
-    <div ref={ref} className="wconvert-license-notice" data-tone={tone} role={tone === 'danger' ? 'alert' : 'status'} tabIndex={-1}>
+    <Alert ref={ref} variant={tone === 'danger' ? 'destructive' : 'default'} role={tone === 'danger' ? 'alert' : 'status'} tabIndex={focus ? -1 : undefined}
+      className={`wconvert-license-result ${surface}`}>
       <Icon aria-hidden="true" />
-      <div>
-        {title && <p className="wconvert-license-notice__title">{title}</p>}
-        {children && <div className="wconvert-license-notice__body">{children}</div>}
-        {actions && <div className="wconvert-license-actions">{actions}</div>}
-      </div>
-    </div>
+      <AlertTitle className="line-clamp-none">{title}</AlertTitle>
+      {children && <AlertDescription>{children}</AlertDescription>}
+    </Alert>
   );
 }
 

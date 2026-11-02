@@ -63,7 +63,7 @@ it('S6 and P6: a refused key says why under the field, and an unknown code is sh
   expect(screen.getByRole('link', { name: /Contact support/ })).toBeInTheDocument();
 });
 
-it('M3: expired — red card, renew with the coupon, sites and the key below', async () => {
+it('M3: expired — renew with the coupon, sites and the key below', async () => {
   answer({ 'GET /wconvert/v1/license': expired });
   render(<LicensePage />);
 
@@ -71,7 +71,8 @@ it('M3: expired — red card, renew with the coupon, sites and the key below', a
   expect(screen.getByText(/Pro features keep working\./)).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Renew/ })).toHaveAttribute('href', 'https://my.wconvert.io/renew');
   expect(screen.getByText('RENEW20')).toBeInTheDocument();
-  const sites = screen.getByRole('region', { name: 'Sites' });
+  // A region's heading is its name (`Region.tsx`), so it is found by that.
+  const sites = screen.getByRole('heading', { name: 'Sites' }).closest('section')!;
   expect(within(sites).getByText('This site')).toBeInTheDocument();
   expect(within(sites).queryByRole('button', { name: 'Remove example.com' })).toBeNull();
   expect(within(sites).getByRole('button', { name: 'Remove shop.example.com' })).toBeInTheDocument();
@@ -85,6 +86,40 @@ it('L3: removing a site asks first, then says it is done', async () => {
   await userEvent.click(within(await screen.findByRole('alertdialog')).getByRole('button', { name: 'Remove' }));
 
   await waitFor(() => expect(screen.getByText('shop.example.com was removed. One more site is free.')).toBeInTheDocument());
+  // The merchant asked for this answer, so it is where focus lands.
+  expect(screen.getByRole('status')).toHaveFocus();
+});
+
+it('a site is a row of the shared table: its domain names the row, and Remove is the actions cell', async () => {
+  answer({ 'GET /wconvert/v1/license': expired });
+  render(<LicensePage />);
+  const remove = await screen.findByRole('button', { name: 'Remove shop.example.com' });
+  const row = remove.closest('tr')!;
+
+  expect(remove.closest('td')).toHaveClass('wconvert-table__actions');
+  expect(row.querySelector('td[data-card="heading"]')).toHaveTextContent('shop.example.com');
+});
+
+it('a door with no address is not drawn, rather than opening a dead tab', async () => {
+  answer({ 'GET /wconvert/v1/license': { ...expired, urls: {} } });
+  render(<LicensePage />);
+
+  expect(await screen.findByRole('heading', { name: 'Your license expired' })).toBeInTheDocument();
+  expect(document.querySelector('a[href="#"]')).toBeNull();
+  expect(screen.queryByRole('link', { name: /Renew/ })).toBeNull();
+  expect(screen.queryByRole('link', { name: /Upgrade/ })).toBeNull();
+});
+
+it('the search box is the shared one, whose text clears its icon on a long list', async () => {
+  const sites = Array.from({ length: 11 }, (_, index) => ({ domain: `site${index}.example.com`, here: false, dev: false, added: null, last_seen: null }));
+  answer({ 'GET /wconvert/v1/license': { ...expired, sites } });
+  render(<LicensePage />);
+  const search = await screen.findByLabelText('Search sites');
+
+  expect(search).toHaveClass('ps-9');
+  await userEvent.type(search, 'site7');
+  expect(screen.getByRole('button', { name: 'Remove site7.example.com' })).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Remove site1.example.com' })).toBeNull();
 });
 
 it('P1: a managed licence shows whether updates work and who to call — no sites, no key card', async () => {
@@ -93,7 +128,7 @@ it('P1: a managed licence shows whether updates work and who to call — no site
 
   expect(await screen.findByRole('heading', { name: 'Updates stopped' })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'help@acme.studio' })).toHaveAttribute('href', 'mailto:help@acme.studio');
-  expect(screen.queryByRole('region', { name: 'Sites' })).toBeNull();
+  expect(screen.queryByRole('heading', { name: 'Sites' })).toBeNull();
   expect(screen.getByText(/WCONVERT_LICENSE_KEY/)).toBeInTheDocument();
 });
 

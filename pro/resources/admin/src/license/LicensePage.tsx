@@ -13,7 +13,7 @@ import {
 } from './api';
 import { type LicensePayload, type LicenseSite } from './describeLicense';
 import { errorCopy } from './errorCopy';
-import { Notice, type NoticeTone } from './parts';
+import { ResultAlert, type ResultTone } from './parts';
 import { ActivateCard, Ways } from './ActivateCard';
 import { StatusCard } from './StatusCard';
 import { KeyCard, SitesCard } from './SitesCard';
@@ -24,7 +24,7 @@ const FOCUS_CHECK_MS = 60_000;
 
 type KeyField = 'activate' | 'replace' | 'rekey';
 
-interface Result { tone: NoticeTone; title: string; body?: ReactNode; id: number }
+interface Result { tone: ResultTone; title: string; body?: ReactNode; id: number }
 
 interface Confirmation { title: string; description: ReactNode; confirm: string; destructive?: boolean; run: () => void }
 
@@ -56,7 +56,7 @@ export function LicensePage() {
 
   useEffect(() => markSubmenuCurrent('license'), []);
 
-  const say = useCallback((tone: NoticeTone, title: string, body?: ReactNode) => setResult({ tone, title, body, id: ++results.current }), []);
+  const say = useCallback((tone: ResultTone, title: string, body?: ReactNode) => setResult({ tone, title, body, id: ++results.current }), []);
 
   const settle = useCallback((next: LicensePayload) => {
     setLicense(ready(next));
@@ -144,7 +144,7 @@ export function LicensePage() {
   }
 
   const data = license.data;
-  const notice = result && <Notice key={result.id} tone={result.tone} title={result.title} focus>{result.body}</Notice>;
+  const notice = result && <ResultAlert key={result.id} tone={result.tone} title={result.title} focus>{result.body}</ResultAlert>;
   const refreshFailure = refreshError !== null && <PageError onRetry={() => void load(true)}
     message={sprintf(/* translators: %s: the reason the check failed, as the server gave it. */ __('Couldn’t check the license just now. %s', 'wconvert-pro'), refreshError)} />;
 
@@ -223,7 +223,7 @@ export function LicensePage() {
     run: () => {
       setSitesResult(null);
       void run(`site:${site.domain}`, () => removeSite(site.domain), () => setSitesResult(
-        <Notice key={site.domain} tone="success" focus>{sprintf(/* translators: %s: a site's domain on the license, e.g. “example.com”. */ __('%s was removed. One more site is free.', 'wconvert-pro'), site.domain)}</Notice>,
+        <ResultAlert key={site.domain} tone="success" title={sprintf(/* translators: %s: a site's domain on the license, e.g. “example.com”. */ __('%s was removed. One more site is free.', 'wconvert-pro'), site.domain)} focus />,
       ));
     },
   });
