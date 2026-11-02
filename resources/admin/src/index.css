@@ -433,6 +433,12 @@
   --link: var(--action);
   /* Citron, for the one brand action per screen. Always on an espresso edge. */
   --brand: #e2f475;
+  /*
+   * The getting-started checklist's current step: citron as a surface and an
+   * edge, in the solid colours the approved wash came to (§5).
+   */
+  --brand-surface: #f9fde1;
+  --brand-edge: #d1dd7e;
   /* The site's ice blue: its Pro card, and here the paid plan and info. */
   --ice: #e0eff3;
   /* Dims the page under a dialog without turning it grey. */
@@ -455,7 +461,7 @@
   --recommended-foreground: #485000;
   /* A saved template's star (ADR 0171): gold, not the warning amber. */
   --saved: #b7791f;
-  /* The open collection and its tile: the action colour, barely there. */
+  /* The action colour, barely there: the open collection and its tile, a draft's date bar, a group of follow-up screens. */
   --action-surface: #f5fafb;
   --action-border: #c6dfe6;
   /* An ice chip's edge and hover, a step deeper than --ice. */
@@ -1335,40 +1341,6 @@ body:has(#wconvert-admin) #wpbody-content {
   accent-color: var(--action);
 }
 
-/*
- * ---------------------------------------------------------------------------
- * THE VENDORED CHECKBOX IS 16px DRAWN AND 24px TO A POINTER.
- *
- * WCAG 2.2 SC 2.5.8 asks for 24 × 24 CSS px, and `size-4` is 16. The Leads
- * toolbar's *"Group submissions that share an email or phone"* is the one in
- * this admin, and none of the exceptions rescues it: there is no equivalent
- * control on the screen doing the same job, and the Spacing exception is about
- * an undersized target with 24px of clearance rather than about a small one on
- * its own.
- *
- * **A pseudo-element rather than a bigger box**, so what is drawn is unchanged:
- * a 24px checkbox beside a 20px `Select` in the same toolbar would be the
- * heaviest thing on a row of filters.
- *
- * **And not by wrapping the pair in one `<label>`**, which is the obvious fix
- * and is wrong here: Radix draws the checkbox as `<button role="checkbox">`,
- * and a `<label>` around a labelable element forwards its click to it — so a
- * press on the box itself is a press the label also forwards, and the merchant
- * toggles twice. `htmlFor` keeps the text clickable without that; this grows
- * the box's own target; and the run is given a 24px line below so the LABEL
- * clears the same bar.
- * ------------------------------------------------------------------------- */
-#wconvert-admin [data-slot="checkbox"] {
-  position: relative;
-}
-
-#wconvert-admin [data-slot="checkbox"]::after {
-  content: "";
-  position: absolute;
-  /* 16px drawn + 4px each side = 24px of target. */
-  inset: -0.25rem;
-}
-
 #wconvert-admin .wconvert-check {
   display: flex;
   align-items: center;
@@ -1897,7 +1869,6 @@ body:has(#wconvert-admin) #wpbody-content {
 .wconvert-goal-card p { margin: 0; }
 .wconvert-goal-card .wconvert-goal-card__action { position: static; inline-size: 100%; }
 .wconvert-goal-card__action:not([aria-disabled='true'])::after { content: ''; position: absolute; inset: 0; border-radius: var(--radius-md); }
-.wconvert-goal-card:has(.wconvert-goal-card__action:not([aria-disabled='true'])):hover { box-shadow: 0 3px 12px color-mix(in srgb, var(--action) 8%, transparent); }
 .wconvert-goal-card:has(.wconvert-goal-card__action:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
 .wconvert-goal-card--locked .wconvert-goal-card__icon { color: var(--muted-foreground); }
 .wconvert-creation .wconvert-picker__search { min-inline-size: 0; }
@@ -2767,7 +2738,7 @@ body:has(#wconvert-admin) #wpbody-content {
  * the other.
  */
 .wconvert-block[data-selected='true'] {
-  background: color-mix(in srgb, var(--ring) 12%, transparent);
+  background: var(--secondary);
   box-shadow: inset 2px 0 0 0 var(--ring);
 }
 
@@ -5266,31 +5237,9 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
  * ------------------------------------------------------------------------- */
 
 /*
- * The tree's keyboard contract, said once, under the toolbar and over all three
- * panes — because it is about none of them and true of the tab.
- *
- * **It carries the id**, or `#wconvert-admin :is(p, li, td, th, …)` at (1,1,0)
- * forces `font-size: inherit` over a bare class and this renders at body size.
- * That trap is documented five times in this file and has been walked into
- * every one of them.
- */
-#wconvert-admin .wconvert-hint {
-  margin: 0;
-  padding-block: 0.25rem;
-  padding-inline: var(--wconvert-gutter);
-  border-block-end: 1px solid var(--border);
-  color: var(--muted-foreground);
-  font-size: var(--text-meta);
-  line-height: var(--text-meta--line-height);
-  letter-spacing: 0.02em;
-  text-wrap: pretty;
-}
-
-/*
  * The one sentence this tab prints that a merchant did NOT ask for — *Headline,
  * moved down, 3 of 6* — drawn only while there is one. It is the visible half
- * of the live region, so it takes the size of something read rather than the
- * hint's, and it sits in the same band.
+ * of the live region, so it takes the size of something read.
  */
 #wconvert-admin .wconvert-said {
   margin: 0;
@@ -5318,114 +5267,6 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   padding-block: 0.25rem;
   padding-inline: var(--wconvert-gutter);
   border-block-start: 1px solid var(--border);
-}
-
-/* ---------------------------------------------------------------------------
- * WHAT WAS LOOKED AT — SIX CHIPS, DRAWN WHETHER THEY PASSED OR NOT.
- *
- * A list, because it is a set of countable statements and a screen reader
- * should say how many; a list with no markers, because a bullet in a toolbar
- * row is a bullet in a toolbar row. `#wconvert-admin :not(.wconvert-editor) >
- * ul > li` at (1,1,2) is what a bare class here would lose to, which is the
- * trap `.wconvert-readiness__list` already documents four screens up.
- * ------------------------------------------------------------------------- */
-#wconvert-admin .wconvert-checks {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.25rem;
-  margin: 0;
-  /*
-   * **A band at the foot of the card rather than a row at the top of it**
-   * (ADR 0066). The padding and the rule above it are what make it one: it is a
-   * sibling of `.wconvert-panes` inside the same `Region`, so it spans all
-   * three columns and divides from them the way the toolbar divides from above.
-   */
-  min-block-size: var(--control-height-sm);
-  padding-block: 0.25rem;
-  padding-inline: var(--wconvert-gutter);
-  border-block-start: 1px solid var(--border);
-  background: var(--surface);
-  list-style: none;
-}
-
-#wconvert-admin .wconvert-checks > li {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-/*
- * **Passing is quiet and failing is not, and the difference is not colour
- * alone.** The icon changes with the state — a tick for a pass, a triangle for
- * a fail — so the strip is readable in greyscale and to anyone who cannot tell
- * the two grounds apart (ADR 0038).
- */
-.wconvert-checks__chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  /*
-   * **A failing chip is a button, and it had no floor at all.** Six chips of
-   * 9px and 11px text came to about 20px tall, which is under SC 2.5.8's 24 —
-   * and the failing ones are the pressable ones, so the smallest target on the
-   * strip was the only one anybody needs to hit. The passing chips take it too:
-   * a strip whose height changes with its state is a strip that moves the card
-   * under it every time a check flips.
-   */
-  min-block-size: var(--control-height-xs);
-  padding-block: 0.125rem;
-  padding-inline: 0.375rem;
-  border: 0;
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--muted-foreground);
-  /*
-   * **The WORD is `label` and the source under it is `meta`**, which is the
-   * whole shape of a chip here: *Readable* is what the check is called and
-   * `contrast.ts` is what enforces it, and one is read while the other is
-   * glanced at. They were both `micro`, so the source competed with the name it
-   * qualifies on a strip of six.
-   */
-  font-size: var(--text-label);
-  line-height: var(--text-label--line-height);
-  letter-spacing: var(--text-label--letter-spacing);
-  font-weight: var(--text-label--font-weight);
-  white-space: nowrap;
-}
-
-.wconvert-checks__chip > svg {
-  flex: none;
-  inline-size: 0.75rem;
-  block-size: 0.75rem;
-}
-
-.wconvert-checks__chip[data-state='pass'] > svg {
-  color: var(--success);
-}
-
-/*
- * Amber is the reserved meaning it carries everywhere else in this admin: not
- * an error, something the merchant should look at. A failing check is exactly
- * that — the design still renders, publishes and runs.
- */
-.wconvert-checks__chip[data-state='fail'] {
-  background: var(--warning-surface);
-  color: var(--warning);
-}
-
-/*
- * The button variant is a chip that goes somewhere, and it says so under the
- * pointer. The blanket `cursor: pointer` for `button` already covers the hand;
- * this is the ring, which is the same treatment every other control here has.
- */
-.wconvert-checks__chip:is(button):hover {
-  background: color-mix(in srgb, var(--warning) 14%, var(--warning-surface));
-}
-
-.wconvert-checks__chip:is(button):focus-visible {
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
 }
 
 /* ---------------------------------------------------------------------------
@@ -5597,73 +5438,9 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
  * "this is the thing" colour, which the selected-block rail already uses.
  */
 .wconvert-block__chip--sets {
-  background: color-mix(in srgb, var(--ring) 12%, transparent);
+  background: var(--secondary);
   color: var(--ring);
   font-variant-numeric: tabular-nums;
-}
-
-/*
- * The class or ADR that enforces a check, beside the words for it.
- *
- * **Quieter than the check's own name, and the claim that it could not be
- * quieter was invented.**
- *
- * *This read: "it takes the muted colour and keeps the size — a `--text-micro`
- * that is already this admin's floor (ADR 0038, and the 9px in the reference
- * tool fails the bar)."* **ADR 0038 states no minimum font size.** Its floors
- * are contrast ratios, a blocking `jsx-a11y` lint, 24 × 24 pointer targets and
- * the reading/editor viewports — and none of them is about type. The citation was
- * wrong, and it is the reason the whole strip stayed a wall of monospace across
- * the top of the tab for one release longer than it had to.
- *
- * It is `--text-meta` — the reference editor's own 9px — and the two things
- * that make that legible are stated rather than assumed: it carries the muted
- * colour at full opacity against `--surface`, and every source is repeated in
- * the chip's `title` in full. Nothing here is the only copy of anything.
- *
- * **And the container query that hid half the strip is gone with it.** At 9px
- * six sources fit on one line at every width the tab has, so there is nothing
- * left to hide — which is the better answer to "it wraps onto three lines" than
- * removing the information was.
- */
-.wconvert-checks__source {
-  color: var(--muted-foreground);
-  font-family: var(--font-mono);
-  font-size: var(--text-meta);
-  line-height: var(--text-meta--line-height);
-  letter-spacing: 0.02em;
-}
-
-/*
- * What is stored for this box, as data.
- *
- * `<details>` closed, so it costs one line until it is asked for — the panel
- * above it is what a merchant reads and this is what an author checks.
- */
-.wconvert-scope__json > summary {
-  color: var(--muted-foreground);
-  font-size: var(--text-meta);
-  line-height: var(--text-meta--line-height);
-  letter-spacing: var(--text-meta--letter-spacing);
-  font-weight: var(--text-meta--font-weight);
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-#wconvert-admin .wconvert-scope__json > pre {
-  margin: 0.375rem 0 0;
-  padding-block: 0.5rem;
-  padding-inline: var(--wconvert-gutter);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--foreground);
-  font-family: var(--font-mono);
-  font-size: var(--text-label);
-  line-height: var(--text-label--line-height);
-  /* A bag of 24 tokens is taller than the pane; the scroll is the readout's. */
-  max-block-size: 14rem;
-  overflow: auto;
-  white-space: pre;
 }
 
 .wconvert-report-attention { padding: 1rem; border-radius: 0.375rem; background: var(--warning-surface); color: var(--foreground); border-inline-start: 3px solid var(--warning); }
@@ -5856,7 +5633,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 }
 @media (pointer: coarse) { .wconvert-option-strip > label { min-block-size: 2.75rem; } }
 
-.wconvert-comparison-tray { position: sticky; inset-block-end: 0; z-index: 1; display: flex; flex: none; flex-wrap: wrap; align-items: center; gap: .75rem; padding: .75rem 1rem; border-block-start: 1px solid var(--border); background: var(--card); box-shadow: 0 -2px 8px oklch(0 0 0 / .04); }
+.wconvert-comparison-tray { position: sticky; inset-block-end: 0; z-index: 1; display: flex; flex: none; flex-wrap: wrap; align-items: center; gap: .75rem; padding: .75rem 1rem; border-block-start: 1px solid var(--border); background: var(--card); }
 .wconvert-comparison-tray__selection { flex: 1 1 14rem; min-inline-size: 0; display: grid; gap: .25rem; font-size: var(--text-note); }
 .wconvert-comparison-tray__selection > span { color: var(--muted-foreground); overflow-wrap: anywhere; }
 
@@ -5890,9 +5667,6 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-facts__links { display: grid; gap: .25rem; margin: .25rem 0 0; padding: 0; list-style: none; color: var(--muted-foreground); font-size: var(--text-note); overflow-wrap: anywhere; text-align: start; }
 @media (max-width: 479px) { .wconvert-facts > div { grid-template-columns: minmax(0, 1fr); gap: .125rem; } }
 .wconvert-setup-glance h3 { margin: 0 0 .5rem; font-size: var(--text-heading); font-weight: 600; }
-.wconvert-setup-todo { display: grid; gap: .375rem; margin: 0 !important; padding-inline-start: 1.25rem; list-style: disc; }
-.wconvert-setup-todo li { margin: 0 !important; font-size: var(--text-body); }
-.wconvert-setup-todo li::marker { color: var(--muted-foreground); }
 .wconvert-setup-optional { margin: 0; color: var(--muted-foreground); font-size: var(--text-note); }
 .wconvert-setup-optional > strong { font-weight: 500; color: var(--foreground); }
 
@@ -6116,7 +5890,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   min-block-size: 560px;
   gap: 0;
   overflow: hidden;
-  background: #fff;
+  background: var(--card);
   font-size: var(--text-note);
 }
 body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {

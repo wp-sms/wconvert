@@ -358,6 +358,12 @@ describe('the rules panel against the editor’s blanket rules', () => {
  * made total without forking every vendored component, so it is guarded at the
  * one boundary where it IS total: the CSS this project writes by hand.
  */
+/*
+ * The block sheets load in the block editor, where the admin's tokens and type
+ * roles do not exist, so they answer to direction and nothing else here.
+ */
+const BLOCK_CSS = ['resources/blocks/inline-optin/src/editor.css', 'pro/modules/content-lock/block/editor.css'].map(file => readFileSync(resolve(import.meta.dirname, '../..', file), 'utf8')).join('\n');
+
 /**
  * ============================================================================
  * 4,470 LINES AND NOT ONE PHYSICAL DIRECTION PROPERTY. IT STAYS THAT WAY.
@@ -372,12 +378,6 @@ describe('the rules panel against the editor’s blanket rules', () => {
  * were: that layer is where every RTL bug in this admin has been found, and
  * ADR 0036 holds those files are WConvert's from the moment they land.
  */
-/*
- * The block sheets load in the block editor, where the admin's tokens and type
- * roles do not exist, so they answer to direction and nothing else here.
- */
-const BLOCK_CSS = ['resources/blocks/inline-optin/src/editor.css', 'pro/modules/content-lock/block/editor.css'].map(file => readFileSync(resolve(import.meta.dirname, '../..', file), 'utf8')).join('\n');
-
 describe('the direction convention', () => {
   /** Declarations only — a comment naming `left` is prose about one. */
   const DECLARATIONS = `${CSS}\n${BLOCK_CSS}`.replace(/\/\*[\s\S]*?\*\//g, '');
@@ -588,9 +588,8 @@ describe('the builder card’s one inset', () => {
    * **Derived from the selector rather than from a list**, because a list is
    * the thing that rots: a band added next year is caught without anybody
    * remembering to add it here. `\b` is what keeps the family names out —
-   * `_` is a word character, so `.wconvert-checks__chip` and
-   * `.wconvert-block__label` do not match while `.wconvert-checks` and
-   * `.wconvert-block[data-hidden]` do.
+   * `_` is a word character, so `.wconvert-block__label` does not match while
+   * `.wconvert-block[data-hidden]` does.
    *
    * `padding-block` is deliberately not checked. The gutter is an INSET; how
    * much air a band has above and below it is a question about that band.
@@ -602,7 +601,7 @@ describe('the builder card’s one inset', () => {
    * no business claiming it.
    */
   const BAND =
-    String.raw`\.wconvert-(?:hint|said|stored|checks|pane__head|inspector__head|inspector__body|block)\b`;
+    String.raw`\.wconvert-(?:said|stored|pane__head|inspector__head|inspector__body|block)\b`;
   const SUBJECT = new RegExp(String.raw`${BAND}[^\s>+~]*$`);
 
   const RULES = [

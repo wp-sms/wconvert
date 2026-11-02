@@ -89,7 +89,7 @@
 #wconvert-admin .wconvert-license-choices .wconvert-radio-card[data-refused] { opacity:.65; cursor:not-allowed; }
 #wconvert-admin .wconvert-license-choices .wconvert-radio-card > span { display:grid; gap:2px; min-inline-size:0; }
 #wconvert-admin .wconvert-license-choices .wconvert-radio-card > span > span { font-size:var(--text-note); color:var(--muted-foreground); overflow-wrap:anywhere; }
-#wconvert-admin .wconvert-license-why { color:var(--warning) !important; font-weight:500; }
+#wconvert-admin .wconvert-license-choices .wconvert-radio-card .wconvert-license-why { color:var(--warning); font-weight:500; }
 
 @media (max-width:600px) {
   #wconvert-admin .wconvert-license-strip { grid-auto-flow:row; }

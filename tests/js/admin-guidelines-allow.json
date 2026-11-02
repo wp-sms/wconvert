@@ -20,18 +20,9 @@
   },
   "colours": {
     "pro/modules/content-lock/block/editor.css": 9,
-    "resources/admin/src/builder/editor.css": 12,
-    "resources/admin/src/index.css": 1,
-    "resources/admin/src/optins/campaigns.css": 1,
-    "resources/admin/src/stage/stage.css": 1,
     "resources/blocks/inline-optin/src/editor.css": 3
   },
   "shadows": {
-    "resources/admin/src/builder/editor.css": 15,
-    "resources/admin/src/gallery/gallery.css": 2,
-    "resources/admin/src/index.css": 9,
-    "resources/admin/src/optins/campaigns.css": 3,
-    "resources/admin/src/shell/header.css": 2,
     "resources/admin/src/stage/stage.css": 1
   }
 }

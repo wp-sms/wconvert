@@ -6,6 +6,10 @@
  *
  * WordPress's own placeholder lays its children out in a wrapping row, so the
  * block's content is one full-width column inside it.
+ *
+ * The block editor does not load the admin's tokens, so these are their values
+ * by hand, and both block sheets use the same set: edge #dedad1, strong edge
+ * #c9bfb1, inset #f6f5f1, text #302720, muted #6b6056.
  */
 .wconvert-inline-block { inline-size: 100%; }
 .wconvert-inline-block code { overflow-wrap: anywhere; }
@@ -14,15 +18,15 @@
 
 .wconvert-lock-picker .components-base-control { margin-block-end: 12px; }
 .wconvert-lock-picker__selected {
-  border: 1px solid #dcdcde;
+  border: 1px solid #dedad1;
   border-radius: 4px;
   padding: 12px;
-  background: #f6f7f7;
+  background: #f6f5f1;
 }
 .wconvert-lock-picker__label {
   display: block;
   margin-block-end: 8px;
-  color: #50575e;
+  color: #6b6056;
   font-size: 11px;
   font-weight: 500;
   text-transform: uppercase;

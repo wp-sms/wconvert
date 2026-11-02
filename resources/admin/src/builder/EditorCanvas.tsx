@@ -133,5 +133,5 @@ export function EditorCanvas({
 function closeLook(tokens: Template['tokens']) {
   const look = (part: string) => resolvedToken(tokens, `close-${part}`);
 
-  return { color: look('fg'), background: look('bg'), border: `1px solid ${look('border')}`, borderRadius: look('radius'), boxShadow: 'none' };
+  return { color: look('fg'), background: look('bg'), border: `1px solid ${look('border')}`, borderRadius: look('radius') };
 }

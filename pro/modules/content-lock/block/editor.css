@@ -1,4 +1,9 @@
-/* Editor chrome stays compact even when the theme uses large article type. */
+/*
+ * Editor chrome stays compact even when the theme uses large article type.
+ *
+ * Its colours are the set `resources/blocks/inline-optin/src/editor.css` names,
+ * because the block editor does not load the admin's tokens.
+ */
 .wp-block-wconvert-content-lock.wconvert-lock-editor {
   border-inline-start: 2px solid #c9bfb1;
   padding: 0 12px;
@@ -9,13 +14,13 @@
   gap: 4px 12px;
   align-items: baseline;
   padding: 8px 0;
-  border-block-end: 1px solid #dcdcde;
-  color: #4a3f36;
+  border-block-end: 1px solid #dedad1;
+  color: #302720;
   font: 13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   overflow-wrap: anywhere;
 }
 .wconvert-lock-editor .wconvert-lock-editor__end {
-  border-block-start: 1px solid #dcdcde;
+  border-block-start: 1px solid #dedad1;
   border-block-end: 0;
 }
 :is(.wconvert-lock-editor, .wconvert-lock-divider) .wconvert-lock-editor__setup {
@@ -31,8 +36,8 @@
 .wp-block-wconvert-content-lock-divider.wconvert-lock-divider {
   border-block: 1px solid #c9bfb1;
   padding: 10px 14px;
-  background: #faf6ed;
-  color: #4a3f36;
+  background: #f6f5f1;
+  color: #302720;
   font: 13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 .wconvert-lock-divider .wconvert-lock-editor__boundary { border: 0; padding: 0; }
@@ -40,6 +45,6 @@
 .wconvert-lock-divider__count { font: inherit; color: #6b6056; }
 
 /* The picker itself is styled by the free block's stylesheet (resources/blocks/inline-optin/src/editor.css). */
-.wconvert-lock-settings__hint { color: #50575e; margin-block: 16px 8px; }
+.wconvert-lock-settings__hint { color: #6b6056; margin-block: 16px 8px; }
 .wconvert-lock-divider__count { display: block; margin-block-start: 4px; }
 .wconvert-lock-divider > .components-button { margin-block: 6px; }

@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
@@ -103,7 +103,12 @@ const ESLINT_SHAPES = /<(?:select|textarea|details)\b|type="checkbox"|<Button\b[
 
 /**
  * The CSS half: a literal colour outside a token's definition (§5), and a shadow
- * that is not a focus ring (§6). Every sheet this project wrote is read.
+ * that casts anything (§6). Every sheet this project wrote is read.
+ *
+ * What the allowlist keeps of these is meant to stay. The two block sheets hold
+ * `colours` because the block editor does not load the admin's tokens, so they
+ * write one set by value. `stage.css` holds `shadows` for the phone standing on
+ * the ghost page (ADR 0170), the one object in the admin that casts one.
  */
 const sheets = adminRoots().flatMap((root) => walk(resolve(REPO, root), /\.css$/));
 function cssFound(test: (selector: string, declaration: string) => boolean): Record<string, number> {
@@ -120,35 +125,35 @@ function cssFound(test: (selector: string, declaration: string) => boolean): Rec
   return Object.fromEntries(result.sort(([a], [b]) => a.localeCompare(b)));
 }
 const LITERAL_COLOUR = /#[0-9a-f]{3,8}\b|\brgba?\(|\bhsla?\(|:\s*(?:white|black)\b/i;
+/**
+ * A ring or a rail: no blur, and nothing cast past the box. A ring is a selected
+ * state or a hairline a clip would cut from a border; a rail is §15's, or a drop
+ * edge. Either is a line drawn without moving layout, which is not a shadow.
+ */
+const LINE = /^(?:inset\s+)?0\s+0\s+0\s+[\d.]+px\b|^inset\s+-?[\d.]+(?:px)?\s+-?[\d.]+(?:px)?\s+0(?:px)?(?:\s+0(?:px)?)?\s+[^\d\s-]/;
+function castsShadow(declaration: string): boolean {
+  // Out from the innermost, because a colour's own commas are not layers.
+  let layers = declaration.replace(/^box-shadow\s*:\s*/, '');
+  while (layers.includes('(')) layers = layers.replace(/\([^()]*\)/g, '');
+  return layers.split(',').some((layer) => !LINE.test(layer.trim()));
+}
 const CSS_RULES: Record<string, { why: string; test: (selector: string, declaration: string) => boolean }> = {
   colours: {
     why: '§5: colours are tokens',
     test: (_selector, declaration) => !declaration.startsWith('--') && LITERAL_COLOUR.test(declaration),
   },
   shadows: {
-    why: '§6: shadow tokens are none; a shadow here is a focus ring or the §15 selected rail',
-    test: (selector, declaration) => /^box-shadow\s*:/.test(declaration) && !/:\s*(?:none|inherit)\b/.test(declaration) && !/focus|:dir\(/.test(selector),
+    why: '§6: shadow tokens are none; a ring or a rail is a line, and casts nothing',
+    test: (selector, declaration) => /^box-shadow\s*:/.test(declaration) && !/:\s*(?:none|inherit)\b/.test(declaration) && !/focus|:dir\(/.test(selector) && castsShadow(declaration),
   },
 };
-
-/*
- * Run with WCONVERT_GUIDELINES_SHRINK=1 after a fix to drop what it fixed. It
- * only ever shrinks: a count above what is allowed still fails.
- */
-const SHRINK = process.env.WCONVERT_GUIDELINES_SHRINK === '1';
-const next = JSON.parse(JSON.stringify(allowFile)) as typeof allowFile;
 
 function holdsTo(name: string, actual: Record<string, number>) {
   const allowed = allowFile[name] ?? {};
   const over = Object.entries(actual).filter(([path, count]) => count > (allowed[path] ?? 0));
   expect(over.map(([path, count]) => `${path}: ${count}, allowed ${allowed[path] ?? 0}`)).toEqual([]);
-  if (SHRINK) {
-    next[name] = Object.fromEntries(Object.keys(allowed).filter((path) => actual[path]).map((path) => [path, actual[path]]));
-    writeFileSync(ALLOW_PATH, `${JSON.stringify(next, null, 2)}\n`);
-  } else {
-    // A fixed file leaves the list, so the list never allows what has been fixed.
-    expect(actual).toEqual(Object.fromEntries(Object.entries(allowed).sort(([a], [b]) => a.localeCompare(b))));
-  }
+  // A fixed file leaves the list, so the list never allows what has been fixed.
+  expect(actual).toEqual(Object.fromEntries(Object.entries(allowed).sort(([a], [b]) => a.localeCompare(b))));
 }
 
 describe('the admin guidelines', () => {
@@ -169,12 +174,7 @@ describe('the admin guidelines', () => {
 
   it('lists no file in the ESLint ignore that no longer breaks a rule', () => {
     const stale = allowFile.eslint.filter((path) => !ESLINT_SHAPES.test(readFileSync(resolve(REPO, path), 'utf8')));
-    if (SHRINK) {
-      next.eslint = allowFile.eslint.filter((path) => !stale.includes(path));
-      writeFileSync(ALLOW_PATH, `${JSON.stringify(next, null, 2)}\n`);
-    } else {
-      expect(stale).toEqual([]);
-    }
+    expect(stale).toEqual([]);
   });
 });
 

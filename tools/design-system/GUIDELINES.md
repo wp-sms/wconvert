@@ -119,7 +119,8 @@ colour.
   - **Citron `#E2F475`** is the brand. It fills the `brand` button, on an
     espresso edge, once per screen, and it is the signal on the espresso
     frame: the active tab, the unread dot and focus. It is never text on a
-    light surface.
+    light surface. `--brand-surface` and `--brand-edge` are its solid colours
+    for the getting-started checklist's current step (ADR 0176).
   - **Ice blue `#E0EFF3`** is selection, info and the paid plan.
 
   The canvas is a near-neutral warm white, **`#F6F5F1`**, and work surfaces
@@ -155,7 +156,11 @@ colour.
 Shared shadow tokens are `none`. Use surface contrast and fine borders for depth,
 with 6px control corners and 8px work surfaces. No gradients or decorative motion,
 and that includes a loading placeholder: skeletons are static, never pulsing (§12).
-This supersedes the earlier hard-offset shadow direction (ADR 0097).
+This supersedes the earlier hard-offset shadow direction (ADR 0097). A ring or
+rail drawn with `box-shadow` has no blur and casts nothing, so it is a line and
+not a shadow: a selected state, a hairline around something clipped, the §15
+rail. The one cast shadow is the phone on the stage's ghost page (ADR 0170).
+`tests/js/admin-guidelines.test.ts` tells the two apart by shape.
 
 Expanded destination settings remain white. Place usage notices inside the form's
 padding, on a solid `--surface` inset, and keep fields on the card surface. Do not
