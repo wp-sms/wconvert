@@ -445,7 +445,7 @@ msgid "Email me sale news and offers. %s"
 msgstr "Ich möchte Sale-News und Angebote per E-Mail erhalten. %s"
 
 #. countdown_units
-#: pro/modules/display-types/playbooks/final-hours-sale.php
+#: pro/modules/display-types/playbooks/final-hours-sale.php src/Frontend/PageLabels.php
 msgid "Hours"
 msgstr "Std."
 
@@ -1199,6 +1199,11 @@ msgstr "BLACK FRIDAY / LADENSCHLUSS"
 msgid "Closing time"
 msgstr "Ladenschluss"
 
+#. code copied_label
+#: pro/modules/display-types/templates/bf-closing-time.json pro/modules/display-types/templates/bf-final-markdown.json pro/modules/display-types/templates/bf-good-deal-receipt.json
+msgid "Copied"
+msgstr "Kopiert"
+
 #. countdown days_label
 #: pro/modules/display-types/templates/bf-closing-time.json pro/modules/display-types/templates/bf-final-markdown.json pro/modules/display-types/templates/bf-weekend-curtain.json
 msgid "Days"
@@ -1238,6 +1243,11 @@ msgstr "Ein letzter Blick. Ein bisschen weniger."
 #: pro/modules/display-types/templates/bf-closing-time.json pro/modules/display-types/templates/bf-final-markdown.json pro/modules/display-types/templates/bf-weekend-curtain.json
 msgid "Secs"
 msgstr "Sek."
+
+#. code copy_failed_label
+#: pro/modules/display-types/templates/bf-closing-time.json pro/modules/display-types/templates/bf-final-markdown.json pro/modules/display-types/templates/bf-good-deal-receipt.json
+msgid "Select and copy this code"
+msgstr "Markiere und kopiere diesen Code"
 
 #. text text
 #: pro/modules/display-types/templates/bf-closing-time.json pro/modules/display-types/templates/bf-final-markdown.json pro/modules/display-types/templates/bf-little-black-gift.json
@@ -7029,6 +7039,36 @@ msgstr "Starte mit einem Pflanztopf von höchstens 20 cm Breite. Lass der Pflanz
 msgid "What would you like to do?"
 msgstr "Was möchtest du tun?"
 
+#. a word the popup writes itself
+#: pro/src/Frontend/ProPageLabels.php
+msgid "Loading current products…"
+msgstr "Aktuelle Produkte werden geladen…"
+
+#. a word the popup writes itself
+#: pro/src/Frontend/ProPageLabels.php
+msgid "Please answer this question."
+msgstr "Bitte beantworte diese Frage."
+
+#. a word the popup writes itself
+#: pro/src/Frontend/ProPageLabels.php
+msgid "Products could not load. You can still use the link below."
+msgstr "Die Produkte konnten nicht geladen werden. Du kannst weiterhin den Link unten nutzen."
+
+#. a word the popup writes itself
+#: pro/src/Frontend/ProPageLabels.php
+msgid "Retry products"
+msgstr "Produkte neu laden"
+
+#. a word the popup writes itself
+#: pro/src/Frontend/ProPageLabels.php
+msgid "These products are unavailable right now. Please use the link below."
+msgstr "Diese Produkte sind gerade nicht verfügbar. Bitte nutze den Link unten."
+
+#. a word the popup writes itself
+#: pro/src/Frontend/ProPageLabels.php
+msgid "View %s"
+msgstr "%s ansehen"
+
 #. headline
 #: resources/playbooks/agency-project-enquiry.php
 msgid "A better website starts here."
@@ -9844,6 +9884,21 @@ msgstr "Ein Willkommen von uns"
 msgid "Apply at checkout. First order only; gift cards excluded."
 msgstr "An der Kasse einlösen. Nur für die erste Bestellung; Geschenkkarten ausgenommen."
 
+#. code copied_label
+#: resources/templates/library/fieldwork.json
+msgid "Copied — ready to use."
+msgstr "Kopiert – bereit zum Einlösen."
+
+#. code copy_label
+#: resources/templates/library/fieldwork.json resources/templates/library/halloween-bats.json resources/templates/library/halloween-engraved.json
+msgid "Copy code"
+msgstr "Code kopieren"
+
+#. code copy_failed_label
+#: resources/templates/library/fieldwork.json
+msgid "Copy unavailable. Select and copy the code above."
+msgstr "Kopieren nicht möglich. Markiere den Code oben und kopiere ihn."
+
 #. consent text
 #: resources/templates/library/fieldwork.json
 msgid "Email me plant notes and offers. %s"
@@ -11813,6 +11868,81 @@ msgstr "Jederzeit mit einem Klick abbestellbar."
 #: resources/templates/library/wide-banner.json
 msgid "Wide banner"
 msgstr "Breites Banner"
+
+#. a word the popup writes itself
+#: src/Frontend/PageLabels.php
+msgid "Already saved. You can review these details, but cannot change them."
+msgstr "Bereits gespeichert. Du kannst diese Angaben ansehen, aber nicht ändern."
+
+#. a word the popup writes itself
+#: src/Frontend/PageLabels.php
+msgid "Apply code"
+msgstr "Code einlösen"
+
+#. a word the popup writes itself
+#: src/Frontend/PageLabels.php
+msgid "Campaign"
+msgstr "Kampagne"
+
+#. a word the popup writes itself
+#: src/Frontend/PageLabels.php
+msgid "Contact details are required before you see your result."
+msgstr "Bevor du dein Ergebnis siehst, brauchen wir deine Kontaktdaten."
+
+#. a word the popup writes itself
+#: src/Frontend/PageLabels.php
+msgid "Content unlocked."
+msgstr "Inhalt freigeschaltet."
+
+#. a word the popup writes itself
+#: src/Frontend/PageLabels.php
+msgid "Continue to content"
+msgstr "Weiter zum Inhalt"
+
+#. a word the popup writes itself
+#: src/Frontend/PageLabels.php
+msgid "Copy failed. Select the code."
+msgstr "Kopieren fehlgeschlagen. Markiere den Code."
+
+#. a word the popup writes itself
+#: src/Frontend/PageLabels.php
+msgid "Dismiss reminder"
+msgstr "Erinnerung schließen"
+
+#. a word the popup writes itself
+#: src/Frontend/PageLabels.php
+msgid "Interested in"
+msgstr "Interesse an"
+
+#. a word the popup writes itself
+#: src/Frontend/PageLabels.php
+msgid "Name"
+msgstr "Name"
+
+#. a word the popup writes itself
+#: src/Frontend/PageLabels.php
+msgid "Review your answers"
+msgstr "Prüfe deine Antworten"
+
+#. a word the popup writes itself
+#: src/Frontend/PageLabels.php
+msgid "Submission not confirmed. Please try again."
+msgstr "Absenden nicht bestätigt. Bitte versuch es noch einmal."
+
+#. a word the popup writes itself
+#: src/Frontend/PageLabels.php
+msgid "Submission received — View details"
+msgstr "Eingang bestätigt – Details ansehen"
+
+#. a word the popup writes itself
+#: src/Frontend/PageLabels.php
+msgid "Time remaining"
+msgstr "Verbleibende Zeit"
+
+#. a word the popup writes itself
+#: src/Frontend/PageLabels.php
+msgid "Your submission could not be confirmed. The content is available below."
+msgstr "Dein Absenden konnte nicht bestätigt werden. Der Inhalt steht unten bereit."
 
 #. setup name, at most 120 bytes
 #: tools/design-library/hosted/playbooks/accounting-consultation.php

@@ -13,6 +13,7 @@
 //   tools/design-library/translations/<locale>.po   the source, which never ships
 //   resources/templates/words/<locale>.json         Free's designs and setups
 //   pro/resources/templates/words/<locale>.json     Pro's, and the paid online setups
+//   */resources/templates/words/labels/<locale>.json  the words the popup writes itself
 //
 // The online library's public list is built from the same .po when a release is
 // published (`publish-local.mjs`, `publicWords` below). A word missing from it costs
@@ -36,6 +37,9 @@ const SOURCE = 'tools/design-library/translations';
 const SETS = [
   { name: 'free', out: 'resources/templates/words' },
   { name: 'pro', out: 'pro/resources/templates/words' },
+  // Small on purpose: these are read on visitor pages, the lists above never are.
+  { name: 'labels', out: 'resources/templates/words/labels' },
+  { name: 'pro-labels', out: 'pro/resources/templates/words/labels' },
 ];
 
 const quote = text => JSON.stringify(text);

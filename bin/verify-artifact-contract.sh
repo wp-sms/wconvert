@@ -238,6 +238,8 @@ else
     require_file public/blocks/content-lock.css "content-lock editor styles must load in the WordPress iframe" || true
     require_file modules/content-lock/static-blocks.json "the divider renderer reads the supported static block schema" || true
 
+    require_populated_dir "$TREE" resources/templates/words '*.json' "WConvert\\Template\\DesignWords reads Pro's list from it" || true
+
     # PRO'S CATALOGUE TEMPLATE. Pro is not on wp.org, so no language pack will
     # ever be built for it: the `.pot` a translator starts from ships in the
     # ZIP or nowhere. bin/build.sh generates it from the built bundles before
@@ -249,8 +251,6 @@ else
     # build names files this ZIP does not have, and every `.json` made from it
     # is one WordPress never asks for. Every `#:` reference into public/ has to
     # be a file that is here.
-    require_populated_dir "$TREE" resources/templates/words '*.json' "WConvert\\Template\\DesignWords reads Pro's list from it" || true
-
     if require_file resources/languages/wconvert-pro.pot "Pro ships its own catalogue template — run npm run build:pot:pro" ; then
         pot_js_refs="$(grep -oE '^#: .*' "$TREE/resources/languages/wconvert-pro.pot" | tr ' ' '\n' | grep -E '^public/.+\.js' | sed 's/:[0-9]*$//' | sort -u)" || true
 

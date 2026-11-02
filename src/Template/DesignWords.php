@@ -47,10 +47,12 @@ final class DesignWords
     /** Content keys that are addresses or data, whatever their type. */
     public const NOT_WORDS = ['src', 'href', 'apply_href'];
 
+    private const MARKS = ['%s', '%b', '%i'];
+
     /** A wrong variant reads as the wrong language: Simplified for Traditional, Latin for Cyrillic. */
     private const NO_SAME_LANGUAGE = ['zh', 'pt', 'sr'];
 
-    /** The sites' own words, and a shop's coupon code, which a translation would break. */
+    /** A brand and a coupon: the role is on the node, and only its `text` is the merchant's. */
     private const AUTHORED_ROLES = ['code_value', 'wordmark'];
 
     /** The strictest limit either reader holds each to ({@see \WConvert\Template\Catalog\PackValidator}, {@see ChoiceOptions}), in bytes. */
@@ -115,6 +117,19 @@ final class DesignWords
         return self::fileFor(rtrim($pluginDir, '/') . '/' . self::PATH, $locale);
     }
 
+    /**
+     * The few words the popup writes itself, for visitor pages: a small file beside
+     * the list, never the list. A site in English touches nothing at all.
+     *
+     * @return array<string, string>
+     */
+    public static function labelsFor(string $pluginDir, ?string $locale = null): array
+    {
+        $locale ??= self::siteLocale();
+
+        return explode('_', $locale)[0] === 'en' ? [] : self::fileFor(rtrim($pluginDir, '/') . '/' . self::PATH . '/labels', $locale);
+    }
+
     public static function siteLocale(): string
     {
         return function_exists('get_locale') ? get_locale() : 'en_US';
@@ -166,7 +181,7 @@ final class DesignWords
             return false;
         }
 
-        foreach (['%s', '%b', '%i'] as $mark) {
+        foreach (self::MARKS as $mark) {
             if (substr_count($english, $mark) !== substr_count($translated, $mark)) {
                 return false;
             }
@@ -178,7 +193,7 @@ final class DesignWords
     /** Whether a string has words in it at all: `%b` and `20%` read the same in every language. */
     public static function isWord(string $text): bool
     {
-        return preg_match('/\p{L}/u', str_replace(['%s', '%b', '%i'], '', $text)) === 1;
+        return preg_match('/\p{L}/u', str_replace(self::MARKS, '', $text)) === 1;
     }
 
     /**
@@ -254,7 +269,7 @@ final class DesignWords
         }
 
         $complete = true;
-        $translated = self::walkTemplate($entry, $this->keys(), $this->replaceAll($complete));
+        $translated = self::walkTemplate($entry, $this->keys(), $this->replaceNotingGaps($complete));
 
         return $complete ? $translated : $entry;
     }
@@ -272,7 +287,7 @@ final class DesignWords
         }
 
         $complete = true;
-        $translated = self::walkPlaybook($entry, $this->replaceAll($complete));
+        $translated = self::walkPlaybook($entry, $this->replaceNotingGaps($complete));
 
         return $complete ? $translated : $entry;
     }
@@ -293,7 +308,7 @@ final class DesignWords
         return new self($words + $this->words, $this->manifest);
     }
 
-    private function replaceAll(bool &$complete): \Closure
+    private function replaceNotingGaps(bool &$complete): \Closure
     {
         return function (string $english, int $limit) use (&$complete): string {
             $translated = $this->replaceEach($english, $limit);
@@ -320,10 +335,7 @@ final class DesignWords
     public static function wordsOfTemplate(array $entry, array $manifest): array
     {
         $found = [];
-        self::walkTemplate($entry, self::wordKeys($manifest), static function (string $english, int $limit, string $kind) use (&$found): string {
-            $found[$english] = ['limit' => min($limit, $found[$english]['limit'] ?? PHP_INT_MAX), 'kind' => $found[$english]['kind'] ?? $kind];
-            return $english;
-        });
+        self::walkTemplate($entry, self::wordKeys($manifest), self::collecting($found));
 
         return $found;
     }
@@ -335,12 +347,19 @@ final class DesignWords
     public static function wordsOfPlaybook(array $entry): array
     {
         $found = [];
-        self::walkPlaybook($entry, static function (string $english, int $limit, string $kind) use (&$found): string {
-            $found[$english] = ['limit' => min($limit, $found[$english]['limit'] ?? PHP_INT_MAX), 'kind' => $found[$english]['kind'] ?? $kind];
-            return $english;
-        });
+        self::walkPlaybook($entry, self::collecting($found));
 
         return $found;
+    }
+
+    /** @param array<string, array{limit: int, kind: string}> $found */
+    private static function collecting(array &$found): \Closure
+    {
+        return static function (string $english, int $limit, string $kind) use (&$found): string {
+            $found[$english] = ['limit' => min($limit, $found[$english]['limit'] ?? PHP_INT_MAX), 'kind' => $found[$english]['kind'] ?? $kind];
+
+            return $english;
+        };
     }
 
     /**
@@ -436,7 +455,7 @@ final class DesignWords
                 if (is_array($node['link'] ?? null)) {
                     self::word($node['link'], 'label', self::LIMIT_LINK, 'link', $visit);
                 }
-            } elseif (!in_array($node['role'] ?? null, self::AUTHORED_ROLES, true)) {
+            } elseif ($key !== 'text' || !in_array($node['role'] ?? null, self::AUTHORED_ROLES, true)) {
                 self::word($node, $key, self::LIMIT_WORDS, $type . ' ' . $key, $visit);
             }
         }

@@ -1031,9 +1031,10 @@ CI does the same. The build installs it in the stage like free's, strips
 artifact contract's check (g) refuses a Pro ZIP without the scoped copy — and a
 free ZIP with any copy.
 
-**Translations are wp.org language packs.** There is no `Domain Path` and no
+**Gettext translations are wp.org language packs.** There is no `Domain Path` and no
 `load_plugin_textdomain()` — WordPress loads the `wconvert` domain from
-`wp-content/languages/plugins/` just in time.
+`wp-content/languages/plugins/` just in time. The ZIP also carries the design-word lists
+of ADR 0183, read by `DesignWords` rather than the text domain.
 
 ### Pro is one ZIP, posted once per plan
 

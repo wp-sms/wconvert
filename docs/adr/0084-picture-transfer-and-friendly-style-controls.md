@@ -24,6 +24,11 @@ photos retain their own background slot; cross-kind transfer does not guess
 mobile geometry. New design palettes, overlays and layout dimensions remain
 the new design's. A sample narrow photo cannot cover a carried desktop photo.
 
+*Amended by [ADR 0183](0183-design-words-are-one-list-per-language.md): a different `alt` on a
+picture whose address is unchanged no longer counts as the merchant's edit, because a change of
+site language makes that same difference. An alt-only edit stays with the old design: it cannot
+be told from a translation, and it describes a picture the target may not have.*
+
 The snapshot response includes transient counts for pictures with no clear
 destination and pictures whose original baseline is unavailable. Keep my content
 shows these before Apply. Sample mode omits these notices. Apply strips the

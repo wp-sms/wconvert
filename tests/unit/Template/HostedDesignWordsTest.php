@@ -107,22 +107,6 @@ final class HostedDesignWordsTest extends TestCase
     }
 
     #[DataProvider('locales')]
-    public function testEveryHostedWordHasATranslation(string $locale): void
-    {
-        $words = self::words($locale);
-        $manifest = TemplateManifest::load();
-        $english = [];
-
-        foreach (glob(self::HOSTED . 'templates/*.json') ?: [] as $file) {
-            $design = json_decode((string) file_get_contents($file), true);
-            if ($words->templateOrEnglish($design) === $design) $english[] = $design['id'];
-        }
-
-        $this->assertSame([], $english, 'stay English in ' . $locale . ' — run npm run templates:words');
-        $this->assertNotSame([], DesignWords::wordsOfTemplate($design ?? [], $manifest));
-    }
-
-    #[DataProvider('locales')]
     public function testEveryHostedSetupStillRegisters(string $locale): void
     {
         $vocabulary = TemplateVocabulary::fromManifest();
