@@ -11,6 +11,7 @@ name: CI
 # Filters live at job level so a skipped job still reports; no push trigger;
 # no ZIP; a draft skips the visual suites. Why: ADR 0029, "The pull-request
 # workflow". Run `npm run preflight` before pushing.
+# Throwaway line: this file hits every filter, so this PR runs every suite on main.
 
 on:
   pull_request:
