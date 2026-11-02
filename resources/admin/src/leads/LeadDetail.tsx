@@ -124,7 +124,7 @@ function Group({ title, tip, children }: { title: string; tip?: ReactNode; child
 }
 
 /** A value's own direction and line breaks, inside the shared icon list. */
-const said = (value: ReactNode): ReactNode => <bdi dir="auto" className="break-words whitespace-pre-wrap">{value}</bdi>;
+const asWritten = (value: ReactNode): ReactNode => <bdi dir="auto" className="break-words whitespace-pre-wrap">{value}</bdi>;
 
 /** How many retained submissions share this email or phone. The meta line simply goes without it on failure. */
 function useSubmissionsFrom(contact: string | null): number | null {
@@ -215,8 +215,8 @@ export function LeadDetail({
 
   const submitted = formatWhen(lead.created_at, 'detail');
   const cameFrom: IconFact[] = [
-    { icon: Megaphone, label: __('Campaign', 'wconvert'), text: said(<CampaignLink id={lead.optin_id} name={campaign} returnTo={returnTo} />) },
-    ...(goal ? [{ icon: Target, label: __('Goal', 'wconvert'), text: said(goal) }] : []),
+    { icon: Megaphone, label: __('Campaign', 'wconvert'), text: asWritten(<CampaignLink id={lead.optin_id} name={campaign} returnTo={returnTo} />) },
+    ...(goal ? [{ icon: Target, label: __('Goal', 'wconvert'), text: asWritten(goal) }] : []),
     ...(fields.page_url ? [{ icon: Globe, label: __('Page', 'wconvert'), text: <bdi dir="ltr" className="break-all">{fields.page_url}</bdi> }] : []),
     { icon: CalendarDays, label: __('When', 'wconvert'), text: <time dateTime={lead.created_at.replace(' ', 'T')}>{submitted}</time> },
   ];
@@ -236,14 +236,14 @@ export function LeadDetail({
         icon: ShieldCheck,
         label: channel === 'email' ? __('Email signup', 'wconvert') : __('SMS signup', 'wconvert'),
         text: <>
-          <span className="block">{said(fields[`${channel}_consent_text`] || __('No wording was recorded.', 'wconvert'))}</span>
+          <span className="block">{asWritten(fields[`${channel}_consent_text`] || __('No wording was recorded.', 'wconvert'))}</span>
           {agreed && <span className="mt-1 block text-note text-muted-foreground">
             {sprintf(/* translators: %s: the date and time they agreed, e.g. “Oct 9, 2026, 2:22 PM”. */ __('Agreed %s', 'wconvert'), agreed)}
           </span>}
         </>,
       };
     })
-    : fields.consent_text ? [{ icon: ShieldCheck, label: __('Agreed to', 'wconvert'), text: said(fields.consent_text) }] : [];
+    : fields.consent_text ? [{ icon: ShieldCheck, label: __('Agreed to', 'wconvert'), text: asWritten(fields.consent_text) }] : [];
 
   return (
     <>

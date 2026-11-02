@@ -452,7 +452,7 @@ it('says what a quiz counts and how it runs, in the list’s words', async () =>
   await open({ template, goal: ready(goal), goalId: goal.id });
   expect(screen.getByText('Counts as success')).toBeVisible();
   expect(screen.getByRole('button', { name: 'How Quiz completions are counted' })).toBeVisible();
-  expect(fact('Visitor action')).toHaveTextContent('Shows a matching resultCounts Quiz completions');
+  expect(fact('Visitor action')).toHaveTextContent(/^Shows a matching result$/);
   expect(fact('Visitor action').parentElement).not.toHaveAttribute('data-tone');
   expect(screen.getByRole('button', { name: 'Preview' })).toBeInTheDocument();
 });

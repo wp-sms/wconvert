@@ -34,11 +34,10 @@ import type { Path } from './panel';
 import type { RuleVocabulary } from './api';
 import type { DisplayRulesValue } from './rules/summaries';
 import type { Destination } from '../destinations/api';
-import { goalSaid } from '../goals/said';
 import type { GoalEntry } from '../goals/api';
 import type { Template } from '@renderer/types';
 import { CampaignThumbnail } from '../optins/designChunks';
-import { CampaignOverview, GoalMeasure } from '../optins/CampaignSummary';
+import { CampaignOverview, GoalLine, GoalMeasure } from '../optins/CampaignSummary';
 
 const handoffIssueOf = (issues: readonly CampaignIssue[]) => issues.some(issue => issue.key === ISSUE.handoff);
 
@@ -190,7 +189,6 @@ export function ReadinessDialog({
     act: factAct(template, outcome),
     forwarding,
     links: linksIn(template),
-    counts: goal.status === 'ready' ? goal.data?.headline_label ?? null : null,
     placement: placementSaid,
     collects: captures.length > 0 ? captures.map((field) => labelOf(field, fieldLabels, humanize(field))).join(', ') : undefined,
     consent: reviewsPrivacy
@@ -307,16 +305,7 @@ export function ReadinessDialog({
           <AdminDialogHeader
             title={name || __('Untitled campaign', 'wconvert')}
             badge={<StatusBadge status={statusOf(optin)} />}
-            // Its line is held while the registry answers, so the body does not move (ADR 0039).
-            meta={<span className="inline-block min-h-[1lh]">
-              {!published && (dirty || optin.has_unpublished_changes)
-                ? sprintf(
-                    /* translators: %s: the campaign's goal, e.g. "Grow my email list". */
-                    __('%s · Unpublished changes', 'wconvert'),
-                    goalSaid(goal, goalId),
-                  )
-                : goalSaid(goal, goalId)}
-            </span>}
+            meta={<GoalLine goal={goal} goalId={goalId} also={!published && (dirty || optin.has_unpublished_changes) ? __('Unpublished changes', 'wconvert') : null} />}
           />
           <AdminDialogBody inert={publishing}>
             {optin.suspended !== null && (

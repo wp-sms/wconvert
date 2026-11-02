@@ -38,10 +38,12 @@ long. A review of them on a real campaign found the same two faults:
 4. **In Details, the first number is the Goal.** It carries the target mark and
    ⓘ, because a separate goal line would have repeated "Email submissions"
    directly above it. A draft, a quiet period, a failed read or a message has no
-   such number, so there it says **Counts as success** as Review does. *This
-   departs from the sketch the merchant chose; the prototype flagged it and they
-   approved.*
-5. **Review & publish loses what changes nothing:** the Template line (the
+   such number, so there it says **Counts as success** as Review does. A draft
+   with no numbers names no period either. *This departs from the sketch the
+   merchant chose; the prototype flagged it and they approved.*
+5. **The number's name is said once.** "Counts Quiz completions" under Visitor
+   action goes, in every dialog that reads How it runs: the row above says it.
+   **Review & publish also loses what changes nothing:** the Template line (the
    preview shows the design), How it runs' Display rules link (each row goes to
    its own setting), "Visitors see it wherever its display rules allow." and
    "Rows marked Default use WConvert's starting settings." (the tag explains
@@ -75,7 +77,12 @@ long. A review of them on a real campaign found the same two faults:
 ## Consequences
 
 - `ReadinessDialog` loses `playbook` and `playbookId`; `CampaignSummary` and
-  `CampaignDetailsDialog` lose `goalId`.
+  `CampaignDetailsDialog` lose `goalId`; `campaignFacts` loses `counts`.
+- `.wconvert-facts dt` aligns on its text's baseline, not its centre, so every
+  fact list's label now shares a line with its answer. Before, labels sat a few
+  pixels above their values.
+- A Goal that could not be read leaves the space beside the preview empty: the
+  header says "Goal unavailable", and there is nothing true to put there.
 - `.wconvert-campaign-detail-stats` wraps rather than dividing the width by
   three, so the Goal's number keeps its label on one line beside a preview.
 - No storage, route or schema change. Consent records keep every date they had:

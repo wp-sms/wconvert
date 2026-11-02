@@ -6,6 +6,7 @@ import { TryAgain } from '../shell/Region';
 import { formatCount, formatRange, formatRate } from '../lib/format';
 import type { GoalEntry } from '../goals/api';
 import type { Loadable } from '../shell/loadable';
+import { goalSaid } from '../goals/said';
 import { FactList, type Fact } from '../shell/FactList';
 import { InfoTip } from '../shell/InfoTip';
 import { LineSkeleton } from '../shell/LineSkeleton';
@@ -30,6 +31,15 @@ export function CampaignOverview({ thumbnail, children }: { readonly thumbnail?:
       <div className="wconvert-campaign-overview__side">{children}</div>
     </div>
   );
+}
+
+/**
+ * A campaign dialog's meta line: the Goal, then anything that dialog must add.
+ * Its height is held while the registry answers, so the body does not move
+ * (ADR 0039), and an unread Goal leaves no dangling separator.
+ */
+export function GoalLine({ goal, goalId, also }: { readonly goal: Loadable<GoalEntry | null>; readonly goalId: string; readonly also?: string | null }) {
+  return <span className="inline-block min-h-[1lh]">{[goalSaid(goal, goalId), also].filter(Boolean).join(' · ')}</span>;
 }
 
 /** The sentence saying how a Goal's number is counted, folded into ⓘ (ADR 0183). */
@@ -120,24 +130,24 @@ export function CampaignSummary({ notes = [], thumbnail, goal, goalAction, resul
 /** The host's numbers for this campaign, never a second read. */
 function Results({ results, status, entry }: { results: CampaignResults; status: OptinStatus; entry: GoalEntry | null }) {
   const heading = useId();
-  // A draft, or a read that recorded nothing, has no period to name.
-  const hasPeriod = results.status === 'ready' && results.days > 0;
-  const title = results.status === 'ready' && results.days > 0
-    ? results.from && results.to
+  const result = results.status === 'ready' ? results.result : undefined;
+  // A draft with nothing to show, or a read that recorded nothing, has no period to name.
+  const period = results.status === 'ready' && results.days > 0 && (result !== undefined || status !== 'draft') ? results : null;
+  const title = period
+    ? period.from && period.to
       // Dates someone chose need not end today, so they are not the "last" of anything.
-      ? results.custom ? formatRange(results.from, results.to) : sprintf(
+      ? period.custom ? formatRange(period.from, period.to) : sprintf(
           /* translators: 1: the period, e.g. “Last 30 days”. 2: its dates, e.g. “Sep 10 – Oct 9”. */
           __('%1$s · %2$s', 'wconvert'),
           /* translators: %s: how many days the period covers. */
-          sprintf(_n('Last %s day', 'Last %s days', results.days, 'wconvert'), formatCount(results.days)),
-          formatRange(results.from, results.to),
+          sprintf(_n('Last %s day', 'Last %s days', period.days, 'wconvert'), formatCount(period.days)),
+          formatRange(period.from, period.to),
         )
-      : sprintf(/* translators: %s: how many days the period covers. */ _n('Last %s day', 'Last %s days', results.days, 'wconvert'), formatCount(results.days))
-    : __('Results', 'wconvert');
-  const result = results.status === 'ready' ? results.result : undefined;
+      : sprintf(/* translators: %s: how many days the period covers. */ _n('Last %s day', 'Last %s days', period.days, 'wconvert'), formatCount(period.days))
+    : results.status === 'loading' ? __('Results', 'wconvert') : null;
   return (
-    <section className="wconvert-campaign-overview__results" aria-labelledby={hasPeriod || results.status === 'loading' ? heading : undefined}>
-      {(hasPeriod || results.status === 'loading') && <h3 id={heading}>{title}</h3>}
+    <section className="wconvert-campaign-overview__results" aria-labelledby={title ? heading : undefined}>
+      {title && <h3 id={heading}>{title}</h3>}
       {results.status === 'loading' ? (
         <div className="wconvert-campaign-detail-stats" aria-hidden="true">
           {[0, 1, 2].map((key) => (

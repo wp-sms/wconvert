@@ -78,6 +78,8 @@ After 0137 the editor was still hard to read in four places:
    answers were links; "Leads go to" now links to Destinations too, and Review
    tags each value still on WConvert's starting setting "Default", because
    first users published without ever opening Display rules or Destinations.*
+   *Amended by [ADR 0183](0183-a-campaign-dialog-opens-on-its-preview-and-its-answer.md): Visitor action no longer adds "Counts
+   {headline_label}"; the row beside the preview says it.*
 5. **Details is one body** — `optins/CampaignSummary.tsx`: the notice, the
    thumbnail (the list's), the **Goal** (its label, "Counts as success:
    {headline_label}", the measurement, and Change goal in the editor), the

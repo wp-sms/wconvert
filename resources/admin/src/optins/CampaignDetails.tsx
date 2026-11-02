@@ -78,7 +78,6 @@ async function readContext(id: string) {
     where,
     forwarding,
     act,
-    counts: goals.find((goal) => goal.id === draft.goal)?.headline_label ?? null,
     inline,
     links: linksIn(template),
   };

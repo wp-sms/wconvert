@@ -66,17 +66,15 @@
 /* Publish and Unpublish ask here, in the footer's place — never in a second dialog. */
 .wconvert-campaign-detail__confirm > p { flex:1 1 16rem; min-inline-size:0; margin:0; font-size:var(--text-note); color:var(--muted-foreground); }
 .wconvert-campaign-detail__confirm > p > strong { color:var(--foreground); font-weight:500; }
-/* A lead's icon rows and its plain Answers share one value column (ADR 0183). */
-.wconvert-facts.wconvert-lead-facts { gap:.75rem; }
-.wconvert-facts.wconvert-lead-facts > div { grid-template-columns:10rem minmax(0,1fr); gap:1rem; }
-@media (max-width:639px) { .wconvert-facts.wconvert-lead-facts > div { grid-template-columns:minmax(0,1fr); gap:.125rem; } }
 /* The top of a campaign's dialog: the preview, and its answer beside it (ADR 0183). */
 .wconvert-campaign-overview { display:grid; grid-template-columns:200px minmax(0,1fr); gap:20px; align-items:center; min-inline-size:0; }
 .wconvert-campaign-overview[data-preview=none] { grid-template-columns:minmax(0,1fr); }
+@media (max-width:639px) { .wconvert-campaign-overview { grid-template-columns:minmax(0,1fr); align-items:start; } }
 .wconvert-campaign-overview .wconvert-campaign-thumbnail { inline-size:200px; block-size:150px; }
 .wconvert-campaign-overview__side { display:grid; gap:12px; justify-items:start; min-inline-size:0; }
 .wconvert-campaign-overview__side > * { max-inline-size:100%; }
-.wconvert-campaign-overview__side p { margin:0; }
+/* Beats the review section's own paragraph margin: the side's gap owns this rhythm (ADR 0042). */
+.wconvert-campaign-overview .wconvert-campaign-overview__side p { margin:0; }
 .wconvert-campaign-overview__results { display:grid; gap:8px; min-inline-size:0; }
 .wconvert-campaign-overview__results h3 { margin:0; font-size:var(--text-note); font-weight:400; line-height:1.4; color:var(--muted-foreground); }
 .wconvert-goal-measure { display:grid; grid-template-columns:18px minmax(0,1fr); gap:10px; align-items:start; }
@@ -86,7 +84,7 @@
 .wconvert-goal-measure__name strong { font-size:var(--text-heading); font-weight:600; line-height:1.4; overflow-wrap:anywhere; }
 .wconvert-goal-measure__loading { inline-size:min(100%,14rem); }
 /* ⓘ beside a line of text keeps its 32px target without making that line taller. */
-:is(.wconvert-campaign-detail-stats__goal, .wconvert-goal-measure__name, .wconvert-lead-group__head) .wconvert-info-trigger { margin-block:-.375rem; }
+:is(.wconvert-campaign-detail-stats__goal, .wconvert-goal-measure__name) .wconvert-info-trigger { margin-block:-.375rem; }
 .wconvert-campaign-detail-stats { display:flex; flex-wrap:wrap; gap:12px 28px; margin:0; }
 .wconvert-campaign-detail-stats > * { min-inline-size:0; margin:0; }
 .wconvert-campaign-detail-stats strong { display:block; font-size:var(--text-result); font-weight:500; letter-spacing:-.03em; line-height:1.3; font-variant-numeric:tabular-nums; }
@@ -147,7 +145,6 @@
   #wconvert-admin .wconvert-campaign-viewtools { inline-size:100%; flex-wrap:wrap; justify-content:space-between; }
   #wconvert-admin .wconvert-campaign-toolbar .wconvert-picker__search { max-inline-size:none; }
   #wconvert-admin .wconvert-campaign-workspace[data-layout=gallery] tbody { grid-template-columns:1fr; }
-  .wconvert-campaign-overview { grid-template-columns:minmax(0,1fr); align-items:start; }
 }
 @media(max-width:600px) {
   #wconvert-admin :is(.wconvert-campaign-filterbar,.wconvert-campaign-toolbar,.wconvert-campaign-footer,.wconvert-campaign-table tr,.wconvert-campaign-tray,.wconvert-campaign-group-result:not(:empty)) { padding-inline:18px; }

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import { CalendarDays, Clock, ExternalLink, Inbox, LayoutTemplate, TextCursorInput, ListChecks, MapPin, Megaphone, MousePointerClick, Repeat, ShieldCheck, ShoppingBasket, Users } from 'lucide-react';
 import type { Template } from '@renderer/types';
 import { summaryOf, type AxisSummaries } from '../builder/rules/summaries';
@@ -28,8 +28,6 @@ export interface CampaignFactsInput {
   readonly forwarding: { readonly said: ReactNode; readonly problems: readonly string[] };
   /** The design's link targets, for one that counts a click. */
   readonly links: readonly string[];
-  /** What the Goal calls its number, e.g. “Quiz completions”, or null while unread. */
-  readonly counts: string | null;
   /** How the campaign sits on the page, where that is more than its rules say. */
   readonly placement?: Said;
   /** The consent the form shows, where it captures and privacy is reviewed. */
@@ -83,7 +81,7 @@ function DefaultTag() {
  * act a quiz or basket design counts. Only a design with no converting act at
  * all reads as unfinished.
  */
-export function campaignFacts({ rules, where, act, forwarding, links, counts, placement, consent, collects, onRule, onDestinations, defaults }: CampaignFactsInput): Fact[] {
+export function campaignFacts({ rules, where, act, forwarding, links, placement, consent, collects, onRule, onDestinations, defaults }: CampaignFactsInput): Fact[] {
   const tagged = (text: ReactNode, isDefault: boolean): ReactNode => isDefault ? <>{text} <DefaultTag /></> : text;
   const rule = (key: 'who' | 'where' | 'when' | 'how-often' | 'dates'): Said => {
     const said = summaryOf(rules, key);
@@ -97,9 +95,6 @@ export function campaignFacts({ rules, where, act, forwarding, links, counts, pl
   const leadsSaid = onDestinations
     ? <button type="button" className="wconvert-readiness__go" onClick={onDestinations}>{forwarding.said}</button>
     : forwarding.said;
-  const counted = counts && <span className="block text-note text-muted-foreground">
-    {/* translators: %s: what the Goal's number is called, e.g. “Quiz completions”. */ sprintf(__('Counts %s', 'wconvert'), counts)}
-  </span>;
   const facts: Fact[] = [
     fact(Users, __('Who', 'wconvert'), rule('who')),
     fact(MapPin, __('Where', 'wconvert'), where ?? rule('where')),
@@ -134,10 +129,10 @@ export function campaignFacts({ rules, where, act, forwarding, links, counts, pl
     facts.push({
       icon: act === 'match' ? ListChecks : ShoppingBasket,
       label: __('Visitor action', 'wconvert'),
-      text: <>{actWords(act)}{counted}</>,
+      text: actWords(act),
     });
   } else if (act === 'none') {
-    facts.push({ icon: Megaphone, label: __('Visitor action', 'wconvert'), text: <>{__('Reads the message', 'wconvert')}{counted}</> });
+    facts.push({ icon: Megaphone, label: __('Visitor action', 'wconvert'), text: __('Reads the message', 'wconvert') });
   } else {
     facts.push({ icon: MousePointerClick, label: __('Visitor action', 'wconvert'), tone: 'warning', text: __('Choose what a visitor does in the editor.', 'wconvert') });
   }

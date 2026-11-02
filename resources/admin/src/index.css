@@ -5666,6 +5666,12 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-facts__warning { display: block; margin-block-start: .25rem; color: var(--warning); font-size: var(--text-note); }
 .wconvert-facts__links { display: grid; gap: .25rem; margin: .25rem 0 0; padding: 0; list-style: none; color: var(--muted-foreground); font-size: var(--text-note); overflow-wrap: anywhere; text-align: start; }
 @media (max-width: 479px) { .wconvert-facts > div { grid-template-columns: minmax(0, 1fr); gap: .125rem; } }
+/* A lead's icon rows and its plain Answers share one value column (ADR 0183). */
+.wconvert-facts.wconvert-lead-facts { gap: .75rem; }
+.wconvert-facts.wconvert-lead-facts > div { grid-template-columns: 10rem minmax(0, 1fr); gap: 1rem; }
+@media (max-width: 639px) { .wconvert-facts.wconvert-lead-facts > div { grid-template-columns: minmax(0, 1fr); gap: .125rem; } }
+/* ⓘ beside a heading keeps its 32px target without making that line taller. */
+.wconvert-lead-group__head .wconvert-info-trigger { margin-block: -.375rem; }
 .wconvert-setup-glance h3 { margin: 0 0 .5rem; font-size: var(--text-heading); font-weight: 600; }
 .wconvert-setup-optional { margin: 0; color: var(--muted-foreground); font-size: var(--text-note); }
 .wconvert-setup-optional > strong { font-weight: 500; color: var(--foreground); }

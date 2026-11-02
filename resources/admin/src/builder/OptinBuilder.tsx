@@ -52,7 +52,7 @@ import { notePublished, sitePublishedBefore } from './firstPublish';
 import { captureModeOf, routedMode } from './captureMode';
 import { campaignIssues, followIssue, type IssueRoutes } from './readiness/campaignIssues';
 import { ForDevelopers } from '../optins/DetailsDialog';
-import { CampaignSummary, HowItRuns, type CampaignResults } from '../optins/CampaignSummary';
+import { CampaignSummary, HowItRuns, type CampaignResults, GoalLine } from '../optins/CampaignSummary';
 import { campaignFacts, factAct, linksIn } from '../optins/campaignFacts';
 import { CountsNothing } from './countsNothing';
 import { CaptureRequest, CaptureSwitch, type CaptureChoice } from './CaptureSwitch';
@@ -85,7 +85,6 @@ import { convertingActOf } from './structure/guards';
 import type { ConvertingAct } from './structure/catalogue';
 import { listGoals, type GoalEntry } from '../goals/api';
 import { CampaignThumbnail } from '../optins/designChunks';
-import { goalSaid } from '../goals/said';
 import { offerableGoals } from '../goals/GoalCard';
 import { countsNothing } from '../goals/countsNothing';
 import { ChangeGoalDialog } from './ChangeGoalDialog';
@@ -1141,10 +1140,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           <AdminDialogHeader
             title={name || __('Untitled campaign', 'wconvert')}
             badge={<StatusBadge status={campaignStatus} />}
-            // Its line is held while the registry answers, so the body does not move (ADR 0039).
-            meta={<span className="inline-block min-h-[1lh]">
-              {[goalSaid(goalEntry, goal ?? ''), dirty ? __('Unsaved changes', 'wconvert') : unpublishedChanges ? __('Unpublished changes', 'wconvert') : ''].filter(Boolean).join(' · ')}
-            </span>}
+            meta={<GoalLine goal={goalEntry} goalId={goal ?? ''} also={dirty ? __('Unsaved changes', 'wconvert') : unpublishedChanges ? __('Unpublished changes', 'wconvert') : null} />}
           />
           <AdminDialogBody className="wconvert-campaign-detail__body">
             {/* The list's Details body, read live from this draft (ADR 0138); the editor's own sections follow it. */}
@@ -1168,7 +1164,6 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
                 act: factAct(template, entryOfGoal?.outcome),
                 forwarding: destinationsSaid(bound, read(destinations)?.destinations ?? null, capturedFields(template), primaryMappings(config.integration_mappings, template)),
                 links: linksIn(template),
-                counts: entryOfGoal?.headline_label ?? null,
               })} />}
               developers={<ForDevelopers value={id} variant={analyticsParent !== null} />}
             >

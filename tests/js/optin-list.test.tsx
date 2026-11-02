@@ -1113,3 +1113,19 @@ describe('group actions on ticked campaigns', () => {
     expect(screen.getByRole('checkbox', { name: 'Select Campaign 1' })).not.toBeChecked();
   });
 });
+
+/**
+ * **A draft with nothing to show reads like Review & publish** (ADR 0183): what
+ * counts as success beside the preview, with no period to be empty over.
+ */
+it('names no period over a draft with no results, and says what counts instead', async () => {
+  stats.readDashboard.mockResolvedValue({ days: 30, from: '2026-08-16', to: '2026-09-14', goals: [] });
+  render(<OptinList onEdit={vi.fn()} />);
+  await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
+  await userEvent.click(await screen.findByRole('menuitem', { name: 'Details' }));
+  const dialog = within(await screen.findByRole('dialog', { name: OPTIN.name }));
+  expect(await dialog.findByText('No results yet.')).toBeVisible();
+  expect(dialog.getByText('Counts as success')).toBeVisible();
+  expect(dialog.getByRole('button', { name: 'How Email submissions are counted' })).toBeVisible();
+  expect(dialog.queryByRole('heading', { name: /^Last 30 days/ })).toBeNull();
+});
