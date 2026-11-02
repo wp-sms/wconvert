@@ -1,4 +1,4 @@
-import { useId, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { ChevronDown, CircleCheck, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -15,9 +15,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu';
+import { OptionItem, OptionMenuContent, OptionSeparator, refusal } from '../components/ui/option-menu';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { Region, RegionBody, RegionHeader } from '../shell/Region';
 import { messageOf } from '../shell/loadable';
@@ -58,7 +58,6 @@ export function AccountEditor({ types, connections, usage, onChange, onAddDestin
    */
   onAddDestination?: (type: DestinationType, account: Connection, trigger: HTMLElement | null) => void;
 }) {
-  const id = useId();
   const [editing, setEditing] = useState<{ type: DestinationType; account?: Connection } | null>(null);
   /**
    * The account a CONNECT just saved, which turns the dialog into its result:
@@ -122,7 +121,6 @@ export function AccountEditor({ types, connections, usage, onChange, onAddDestin
         const usedBy = usage[account.id] ?? [];
         const said = metaOf(type, account);
         const state = busy[account.id];
-        const blocked = `${id}-${account.id}-blocked`;
         return <li key={account.id} className="flex flex-wrap items-start justify-between gap-3 py-4">
           <div className="flex min-w-0 flex-1 items-start gap-2 [overflow-wrap:anywhere]">
             <ProviderMark type={type} connection={account} className="mt-0.5 size-5 shrink-0" />
@@ -130,7 +128,7 @@ export function AccountEditor({ types, connections, usage, onChange, onAddDestin
               <strong><bdi>{account.label}</bdi></strong>
               {said !== '' && <span className="text-note text-muted-foreground">{said}</span>}
               {(account.checked_at || account.site_changed) && <p className="m-0 flex flex-wrap items-center gap-2 text-note text-muted-foreground">
-                {account.checked_at && <Badge variant={account.check_outcome === 'success' ? 'success' : 'warning'}>{account.check_outcome === 'success' ? __('Check passed', 'wconvert') : __('Check failed', 'wconvert')}</Badge>}
+                {account.checked_at && <Badge variant={account.check_outcome === 'success' ? 'success' : 'destructive'}>{account.check_outcome === 'success' ? __('Check passed', 'wconvert') : __('Check failed', 'wconvert')}</Badge>}
                 {account.site_changed && <Badge variant="warning">{__('On a copy of the site', 'wconvert')}</Badge>}
                 {account.checked_at && formatWhen(account.checked_at, 'list')}
               </p>}
@@ -166,40 +164,19 @@ export function AccountEditor({ types, connections, usage, onChange, onAddDestin
                   <MoreHorizontal aria-hidden="true" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" sideOffset={5}>
+              <OptionMenuContent align="end" sideOffset={5}>
                 {type && <>
-                  <DropdownMenuItem onSelect={() => { trigger.current = menus.current.get(account.id) ?? null; open(type, account); }}>
-                    <Pencil aria-hidden="true" />{__('Edit', 'wconvert')}
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
+                  <OptionItem icon={Pencil} name={__('Edit', 'wconvert')} onSelect={() => { trigger.current = menus.current.get(account.id) ?? null; open(type, account); }} />
+                  <OptionSeparator />
                 </>}
-                {/*
-                  Refused, not disabled, while a destination still runs over
-                  it: Radix skips a disabled item, which hides the reason with
-                  the action (§14).
-                */}
-                <DropdownMenuItem variant={usedBy.length > 0 ? 'default' : 'destructive'}
-                  aria-disabled={usedBy.length > 0 ? true : undefined}
-                  aria-describedby={usedBy.length > 0 ? blocked : undefined}
-                  className={usedBy.length > 0 ? 'text-muted-foreground' : undefined}
-                  onSelect={(event) => {
-                    if (usedBy.length > 0) { event.preventDefault(); return; }
-                    trigger.current = menus.current.get(account.id) ?? null;
-                    setRemoving(account);
-                  }}>
-                  <Trash2 aria-hidden="true" />
-                  <span className="flex flex-col">
-                    {__('Remove', 'wconvert')}
-                    {usedBy.length > 0 && <span id={blocked} className="text-note">
-                      {sprintf(
-                        /* translators: %s: how many destinations use this account. */
-                        _n('Used by %s destination. Remove it or move it to another account first.', 'Used by %s destinations. Remove them or move them to another account first.', usedBy.length, 'wconvert'),
-                        formatCount(usedBy.length),
-                      )}
-                    </span>}
-                  </span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
+                <OptionItem icon={Trash2} destructive name={__('Remove', 'wconvert')}
+                  refused={usedBy.length > 0 ? refusal(__('In use', 'wconvert'), sprintf(
+                    /* translators: %s: how many destinations use this account. */
+                    _n('Used by %s destination. Remove it or move it to another account first.', 'Used by %s destinations. Remove them or move them to another account first.', usedBy.length, 'wconvert'),
+                    formatCount(usedBy.length),
+                  )) : null}
+                  onSelect={() => { trigger.current = menus.current.get(account.id) ?? null; setRemoving(account); }} />
+              </OptionMenuContent>
             </DropdownMenu>
           </div>
           {state === 'removing' && <p role="status" className="m-0 basis-full text-note text-muted-foreground">{__('Removing…', 'wconvert')}</p>}

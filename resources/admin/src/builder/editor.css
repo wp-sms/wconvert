@@ -881,7 +881,7 @@ body .wconvert-add-elements { inline-size: 280px; max-inline-size: calc(100vw - 
 .wconvert-journey-settings :is(input,select,textarea) { inline-size: 100%; min-inline-size: 0; margin: 0; border: 1px solid var(--input); border-radius: var(--radius); padding: 7px 10px; color: var(--foreground); background: var(--card); font: inherit; }
 /* Text actions are a low-specificity default; component cards own their geometry. */
 .wconvert-journey-settings :where(button:not([data-slot])) { justify-self: start; border: 0; background: none; color: var(--action); cursor: pointer; padding: 4px 0; font: inherit; text-align: start; }
-.wconvert-journey-settings button:disabled { opacity: .45; cursor: not-allowed; }
+.wconvert-journey-settings button:is(:disabled, :not([data-slot])[aria-disabled='true']) { opacity: .45; cursor: not-allowed; }
 .wconvert-journey-settings :is(input,select,textarea,button):focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 .wconvert-journey-settings__clause { display: grid; grid-template-columns: auto minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr) auto; align-items: center; gap: 7px; }
 .wconvert-journey-settings__clause>span { color: var(--foreground); font-size: var(--text-note); font-weight: 600; }
@@ -1094,7 +1094,7 @@ body .wconvert-add-elements { inline-size: 280px; max-inline-size: calc(100vw - 
 .wconvert-journey-answer-repair button { border: 0; background: none; color: var(--action); text-align: start; cursor: pointer; }
 .wconvert-journey-answer-repair__actions { display: flex; gap: 12px; }
 .wconvert-journey-answer-repair__actions button:first-child { padding: 7px 10px; border-radius: var(--radius); background: var(--primary); color: var(--primary-foreground); }
-.wconvert-journey-answer-repair__actions button:disabled { opacity: .5; cursor: not-allowed; }
+.wconvert-journey-answer-repair__actions button:is(:disabled, [aria-disabled='true']) { opacity: .5; cursor: not-allowed; }
 .wconvert-journey-answer-repair small { color: var(--muted-foreground); }
 #wconvert-admin .wconvert-workspace__journey { flex: 1; min-inline-size: 0; min-block-size: 0; margin: 0; }
 #wconvert-admin .wconvert-journey-workspace { display: flex; flex-direction: column; block-size: 100%; min-block-size: 0; background: var(--card); }
@@ -1890,7 +1890,7 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
   cursor: pointer;
 }
 :is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-link { justify-self: start; }
-:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-link:disabled { color: var(--muted-foreground); text-decoration: none; cursor: not-allowed; }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-link:is(:disabled, [aria-disabled='true']) { color: var(--muted-foreground); text-decoration: none; cursor: not-allowed; }
 
 .wconvert-facts { display: grid; min-inline-size: 0; }
 .wconvert-fact {
@@ -2269,8 +2269,7 @@ button.wconvert-flow-card__foot:hover { color: var(--action); text-decoration: u
 .wconvert-flow-pill { position: absolute; display: flex; align-items: center; justify-content: center; gap: 4px; }
 .wconvert-flow-pill__label { display: inline-flex; align-items: center; gap: 5px; min-inline-size: 0; max-inline-size: 220px; padding-block: 1px; padding-inline: 7px 9px; border: 1.5px solid var(--flow-answer, var(--input)); border-radius: 13px; background: var(--card); color: var(--flow-answer, var(--foreground)); font-size: var(--text-micro); line-height: 16px; overflow-wrap: anywhere; text-align: center; cursor: pointer; }
 .wconvert-flow-pill:is([data-style='around'], [data-style='skipped']) .wconvert-flow-pill__label { border-style: dashed; }
-.wconvert-flow-pill__label:hover { background: var(--surface); }
-.wconvert-flow-pill__label:disabled { cursor: default; }
+button.wconvert-flow-pill__label:hover { background: var(--surface); }
 .wconvert-flow-pill[data-selected] .wconvert-flow-pill__label, .wconvert-flow-pill[data-state='on'] .wconvert-flow-pill__label { font-weight: 600; }
 .wconvert-flow[data-trace] .wconvert-flow-pill[data-state='off'] .wconvert-flow-pill__label { border-color: var(--border); }
 .wconvert-flow-pill[data-problem] .wconvert-flow-pill__label { border-color: var(--destructive); background: var(--destructive-surface); color: var(--destructive); }

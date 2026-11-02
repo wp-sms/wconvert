@@ -45,9 +45,27 @@ it('keeps what was typed when saving fails, and says why', async () => {
   expect(onCreated).not.toHaveBeenCalled();
 });
 
+it('asks for a name before the button will press, rather than saying nothing', async () => {
+  render(<NewOccasionDialog returnFocusTo={createRef()} onClose={vi.fn()} onCreated={vi.fn()} />);
+  expect(await screen.findByText(/never schedules a campaign/)).toBeVisible();
+  const add = screen.getByRole('button', { name: 'Add occasion' });
+  await waitFor(() => expect(add).toBeEnabled());
+  expect(add).toHaveAttribute('aria-disabled', 'true');
+  expect(add).toHaveAccessibleDescription('Name this occasion first.');
+  await userEvent.click(add);
+  expect(api.saveOccasions).not.toHaveBeenCalled();
+  await fill();
+  expect(add).not.toHaveAttribute('aria-disabled');
+});
+
 it('says the limit instead of offering a fifty-first occasion', async () => {
   api.pickerData.mockResolvedValue(data(Array.from({ length: 50 }, (_, at) => ({ id: `o${at}`, name: `Occasion ${at}`, start: '2026-10-01', end: '2026-10-02' }))));
   render(<NewOccasionDialog returnFocusTo={createRef()} onClose={vi.fn()} onCreated={vi.fn()} />);
   expect(await screen.findByText('You can keep up to 50 occasions. Delete one to add another.')).toBeVisible();
-  expect(screen.getByRole('button', { name: 'Add occasion' })).toBeDisabled();
+  const add = screen.getByRole('button', { name: 'Add occasion' });
+  expect(add).toHaveAttribute('aria-disabled', 'true');
+  expect(add).toHaveAccessibleDescription('You can keep up to 50 occasions. Delete one to add another.');
+  await userEvent.click(add);
+  expect(add).toHaveFocus();
+  expect(api.saveOccasions).not.toHaveBeenCalled();
 });

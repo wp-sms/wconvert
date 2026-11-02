@@ -934,6 +934,23 @@ it('explains why a known design-less campaign cannot be published', async () => 
   expect(screen.getByText('Choose a template in the editor before publishing.')).toBeInTheDocument();
 });
 
+it('refuses publishing from Details the way the row does: a few words, the sentence as its description', async () => {
+  vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
+  onTestFinished(() => { vi.unstubAllGlobals(); });
+  optins.readCampaignPreviews.mockResolvedValue([{ id: OPTIN.id, template: null, display_type: 'popup' }]);
+  render(<OptinList onEdit={() => undefined} />);
+  await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
+  await userEvent.click(await screen.findByRole('menuitem', { name: 'Details' }));
+  const dialog = await screen.findByRole('dialog');
+  await userEvent.click(within(dialog).getByRole('button', { name: /More actions/ }));
+  const publish = await screen.findByRole('menuitem', { name: 'Publish saved draft' });
+  expect(publish).toHaveAttribute('aria-disabled', 'true');
+  expect(publish).toHaveTextContent('Choose a template first');
+  expect(publish).toHaveAccessibleDescription('Choose a template in the editor before publishing.');
+  await userEvent.click(publish);
+  expect(optins.publishOptin).not.toHaveBeenCalled();
+});
+
 it('keeps a family failure visible when another write succeeds and suppresses automatic editor handoff', async () => {
   optins.listOptins.mockResolvedValue([OPTIN, { ...OPTIN, id: 'other', name: 'Other campaign' }]);
   let finish!: (value: { id: string }) => void;

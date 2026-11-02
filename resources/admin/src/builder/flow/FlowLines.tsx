@@ -48,12 +48,14 @@ export function LinePill({ line, rtl, rect, fromName, toName, state, selected, t
   const where = line.label
     ? sprintf(/* translators: 1: a line's answer. 2, 3: screen names. */ __('%1$s: %2$s to %3$s', 'wconvert'), line.label, fromName, toName)
     : sprintf(/* translators: 1, 2: screen names. */ __('%1$s to %2$s', 'wconvert'), fromName, toName);
+  const words = <>{line.color && <span className="wconvert-flow-dot" data-color={line.color} aria-hidden="true" />}<bdi>{line.label}</bdi></>;
   return <span className="wconvert-flow-pill" data-style={line.style} data-color={line.color} data-state={state} data-selected={selected || undefined} data-problem={line.problem || undefined}
     dir={rtl ? 'rtl' : 'ltr'} style={{ left: rect.x, top: rect.y, width: rect.width, height: rect.height }}>
-    {line.label && <button type="button" className="wconvert-flow-pill__label" tabIndex={tabbable ? 0 : -1} onClick={onLabel} disabled={!onLabel}
+    {/* A line with no settings to open is only words, never a button that cannot be pressed. */}
+    {line.label && (onLabel ? <button type="button" className="wconvert-flow-pill__label" tabIndex={tabbable ? 0 : -1} onClick={onLabel}
       aria-label={sprintf(/* translators: %s: a line, e.g. “Growing: Interests to Your guide”. */ __('%s. Edit', 'wconvert'), where)}>
-      {line.color && <span className="wconvert-flow-dot" data-color={line.color} aria-hidden="true" />}<bdi>{line.label}</bdi>
-    </button>}
+      {words}
+    </button> : <span className="wconvert-flow-pill__label">{words}</span>)}
     {onAdd && <button type="button" className="wconvert-flow-pill__add" tabIndex={tabbable ? 0 : -1} onClick={onAdd} title={__('Add a screen here', 'wconvert')}
       aria-label={sprintf(/* translators: %s: a line, e.g. “Interests to Your guide”. */ __('Add a screen on the line %s', 'wconvert'), where)}>
       <Plus aria-hidden="true" />

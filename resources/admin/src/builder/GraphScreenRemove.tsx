@@ -40,7 +40,7 @@ export function GraphScreenRemove({ tree, screenId, journeys = true, onRemove, o
       <AlertDialogDescription>{sprintf(/* translators: %s: the name of the screen being deleted, e.g. “Your result”. */ __('“%s” and its answers are removed from the draft. Other screens and saved leads stay. Undo restores the screen and all its lines.', 'wconvert'), name(screenId))}</AlertDialogDescription>
     </AlertDialogHeader>
     <div className="wconvert-graph-insert__body wconvert-graph-remove__body">
-      {plan.reason ? <p role="status">{plan.reason}</p> : <>
+      {plan.reason ? <p id={`${id}-refusal`} role="status">{plan.reason}</p> : <>
         {plan.needsDestination ? <>
           {destination && <div className="wconvert-graph-insert__outcome" aria-label={__('After removing', 'wconvert')}><strong>{__('After removing', 'wconvert')}</strong><p>{group && destination === plan.preferred ? sprintf(/* translators: %s: the name of the screen after the follow-ups, e.g. “Your result”. */ __('Check the remaining matching follow-ups, then continue to %s.', 'wconvert'), name(group.next)) : sprintf(/* translators: %s: the name of the screen visitors go to instead, e.g. “Your result”. */ __('Then → %s.', 'wconvert'), name(destination))}</p></div>}
           {plan.preferred ? <Disclosure variant="inline" title={__('Change where they go', 'wconvert')} open={custom} onToggle={setCustom}>{custom && choice}</Disclosure> : choice}
@@ -59,7 +59,7 @@ export function GraphScreenRemove({ tree, screenId, journeys = true, onRemove, o
     {refusal && !plan.reason && <p id={`${id}-refusal`} className="m-0 text-note text-muted-foreground">{refusal}</p>}
     <AlertDialogFooter>
       <AlertDialogCancel onClick={onCancel}>{__('Cancel', 'wconvert')}</AlertDialogCancel>
-      <Button type="button" variant="destructive" aria-disabled={refusal !== null || undefined} aria-describedby={refusal && !plan.reason ? `${id}-refusal` : undefined}
+      <Button type="button" variant="destructive" aria-disabled={refusal !== null || undefined} aria-describedby={refusal ? `${id}-refusal` : undefined}
         onClick={() => { if (removal && refusal === null) onRemove(removal.next, removal.destination); }}>{__('Delete screen', 'wconvert')}</Button>
     </AlertDialogFooter>
   </>;

@@ -31,11 +31,9 @@ import {
 import { Button } from '../components/ui/button';
 import {
   DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu';
+import { OptionItem, OptionMenuContent, OptionSeparator, refusal } from '../components/ui/option-menu';
 import { AddDestinationDialog } from './AddDestinationDialog';
 import { AccountEditor } from './AccountEditor';
 import { DestinationSettingsForm } from './DestinationSettingsForm';
@@ -868,7 +866,7 @@ function Configured({
                 <MoreHorizontal aria-hidden="true" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" sideOffset={5}>
+            <OptionMenuContent align="end" sideOffset={5}>
               {/*
                 **Two verbs, in the order a merchant needs them.** *Test
                 connection* answers whether the credentials are good; *Send a
@@ -877,28 +875,21 @@ function Configured({
                 0031). A type with no credentials has nothing to connect to,
                 so there is no item rather than one whose only answer is
                 "nothing to check".
-
-                **`aria-disabled`, not `disabled`**: Radix skips a disabled
-                item in keyboard navigation, which hides the reason with it.
               */}
               {type?.needs_connection === true && (
-                <RefusableItem icon={<Plug aria-hidden="true" />} label={__('Test connection', 'wconvert')}
-                  refusal={connectionRefusal} reasonId={`${id}-connection`} onSelect={onTestConnection} />
+                <OptionItem icon={Plug} name={__('Test connection', 'wconvert')} onSelect={onTestConnection}
+                  refused={connectionRefusal === null ? null : refusal(connectionRefusal)} />
               )}
-              <RefusableItem icon={<Send aria-hidden="true" />} label={__('Send a test', 'wconvert')}
-                refusal={testRefusal} reasonId={`${id}-test`} onSelect={() => onTestSend(menu.current)} />
-              <RefusableItem icon={<RotateCcw aria-hidden="true" />} label={__('Send stored submissions again', 'wconvert')}
-                refusal={replayRefusal} reasonId={`${id}-replay`} onSelect={() => onRePush(menu.current)} />
-              <DropdownMenuItem onSelect={() => { dialogTrigger.current = menu.current; setRecentOpen(true); }}>
-                <History aria-hidden="true" />{__('Recent sends', 'wconvert')}
-              </DropdownMenuItem>
+              <OptionItem icon={Send} name={__('Send a test', 'wconvert')} onSelect={() => onTestSend(menu.current)}
+                refused={testRefusal === null ? null : refusal(testRefusal)} />
+              <OptionItem icon={RotateCcw} name={__('Send stored submissions again', 'wconvert')} onSelect={() => onRePush(menu.current)}
+                refused={replayRefusal === null ? null : refusal(replayRefusal)} />
+              <OptionItem icon={History} name={__('Recent sends', 'wconvert')} onSelect={() => { dialogTrigger.current = menu.current; setRecentOpen(true); }} />
               {mode === 'settings' && <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem variant="destructive" onSelect={() => onRemove(menu.current)}>
-                  <Trash2 aria-hidden="true" />{__('Remove', 'wconvert')}
-                </DropdownMenuItem>
+                <OptionSeparator />
+                <OptionItem icon={Trash2} destructive name={__('Remove', 'wconvert')} onSelect={() => onRemove(menu.current)} />
               </>}
-            </DropdownMenuContent>
+            </OptionMenuContent>
           </DropdownMenu>
         </div>
       </div>
@@ -1120,31 +1111,6 @@ function RecentSendsDialog({ destination, returnFocusTo, onClose }: {
   );
 }
 
-
-/**
- * A ⋯ item that may be refused. Refused, it stays reachable and says why
- * under its label (`aria-disabled` + `aria-describedby`), because a disabled
- * Radix item is skipped by the keyboard and takes its reason with it (§14).
- */
-function RefusableItem({ icon, label, refusal, reasonId, onSelect }: {
-  icon: ReactNode;
-  label: string;
-  refusal: string | null;
-  reasonId: string;
-  onSelect: () => void;
-}) {
-  return (
-    <DropdownMenuItem aria-disabled={refusal === null ? undefined : true} aria-describedby={refusal === null ? undefined : reasonId}
-      className={refusal === null ? undefined : 'text-muted-foreground'}
-      onSelect={(event) => { if (refusal !== null) { event.preventDefault(); return; } onSelect(); }}>
-      {icon}
-      <span className="flex flex-col">
-        {label}
-        {refusal !== null && <span id={reasonId} className="text-note">{refusal}</span>}
-      </span>
-    </DropdownMenuItem>
-  );
-}
 
 const FAILURES_PER_PAGE = 25;
 

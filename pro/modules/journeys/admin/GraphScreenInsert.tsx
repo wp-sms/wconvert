@@ -94,7 +94,7 @@ export function GraphScreenInsert({ tree, source, kind: initialKind, initialLoca
         ] as const).map(([value, label, detail]) => {
           const off = value === 'followup' && existing || value === 'branch' && (!fallback || !graphChoiceSources(tree, source).length);
           return <label key={value} className="wconvert-radio-card" htmlFor={`${id}-intent-${value}`}><input id={`${id}-intent-${value}`} aria-labelledby={`${id}-intent-${value}-name`} aria-describedby={`${id}-intent-${value}-hint`} type="radio" name={`${id}-intent`} checked={intent === value}
-            disabled={off} onChange={() => { setIntent(value); setCapture(false); if (value === 'followup' && kind === 'ending') setKind('input'); setQuestionId(''); setAnswers([]); setTarget(''); setIncludeHidden(value === 'followup'); }} /><span><strong id={`${id}-intent-${value}-name`}>{label}</strong><small id={`${id}-intent-${value}-hint`}>{value === 'branch' && off ? __('Needs a choice question before this screen.', 'wconvert-pro') : value === 'followup' && off ? __('For an existing screen, set “Only if…” in its panel.', 'wconvert-pro') : detail}</small></span></label>;
+            aria-disabled={off || undefined} onChange={() => { if (off) return; setIntent(value); setCapture(false); if (value === 'followup' && kind === 'ending') setKind('input'); setQuestionId(''); setAnswers([]); setTarget(''); setIncludeHidden(value === 'followup'); }} /><span><strong id={`${id}-intent-${value}-name`}>{label}</strong><small id={`${id}-intent-${value}-hint`}>{value === 'branch' && off ? __('Needs a choice question before this screen.', 'wconvert-pro') : value === 'followup' && off ? __('For an existing screen, set “Only if…” in its panel.', 'wconvert-pro') : detail}</small></span></label>;
         })}
       </fieldset>}
       {intent !== 'branch' && (changeLocation || !location) ? <><label htmlFor={`${id}-location`}>{existing ? __('Line to change', 'wconvert-pro') : __('Where', 'wconvert-pro')}</label>
@@ -127,9 +127,9 @@ export function GraphScreenInsert({ tree, source, kind: initialKind, initialLoca
           ] as const).map(([value, Icon, title, description]) => {
             const refused = intent === 'followup' && (value === 'capture' || value === 'ending');
             return <label key={value} className="wconvert-radio-card">
-              <input type="radio" name={`${id}-type`} value={value} disabled={refused} aria-labelledby={`${id}-type-${value}`} aria-describedby={`${id}-type-${value}-hint`}
+              <input type="radio" name={`${id}-type`} value={value} aria-disabled={refused || undefined} aria-labelledby={`${id}-type-${value}`} aria-describedby={`${id}-type-${value}-hint`}
                 checked={value === 'capture' ? capture : !capture && kind === value}
-                onChange={() => { setCapture(value === 'capture'); if (value !== 'capture') setKind(value); }} />
+                onChange={() => { if (refused) return; setCapture(value === 'capture'); if (value !== 'capture') setKind(value); }} />
               <span><span id={`${id}-type-${value}`} className="flex items-center gap-2"><Icon aria-hidden="true" size={16}/>{title}</span>
                 <span id={`${id}-type-${value}-hint`}>{refused ? __('Not available for a follow-up.', 'wconvert-pro') : description}</span></span>
             </label>;

@@ -3,6 +3,7 @@ import { TryAgain } from '@/shell/Region';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { KeyRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { refusable } from '@/lib/refusable';
 import { Disclosure } from '@/shell/Disclosure';
 import { formatWhen } from '@/lib/format';
 import { asLicenseError, chooseLicense, goSignIn, readAccount, signOut, type Account, type Changed, type LicenseError } from './api';
@@ -156,11 +157,11 @@ export function ActivateCard({ license, onActivateKey, onKeyEdit, onChanged, bus
               </label>
             ))}
           </fieldset>
-          {picked === undefined && <p className="wconvert-license-hint">
+          {picked === undefined && <p id="wconvert-license-none-free" className="wconvert-license-hint">
             {__('Every license on this account is in use. Free a site in your account, then come back.', 'wconvert-pro')} <Ext href={license.urls.sites ?? '#'}>{__('Manage sites', 'wconvert-pro')}</Ext>
           </p>}
           <div className="wconvert-license-actions">
-            <Button aria-disabled={picked === undefined || choosing !== null || undefined} onClick={() => picked && choosing === null && choose(picked.id)}>
+            <Button disabled={choosing !== null} {...refusable(picked === undefined ? 'wconvert-license-none-free' : null, () => picked && choose(picked.id))}>
               {choosing !== null ? __('Activating…', 'wconvert-pro') : __('Activate on this site', 'wconvert-pro')}
             </Button>
           </div>
@@ -183,7 +184,7 @@ export function ActivateCard({ license, onActivateKey, onKeyEdit, onChanged, bus
           <h2 id="wconvert-license-activate">{__('Activate WConvert Pro', 'wconvert-pro')}</h2>
           <p className="wconvert-license-hero__body">{__('Activate to get updates and support. Pro features already work.', 'wconvert-pro')}</p>
           <div className="wconvert-license-actions">
-            <Button variant="brand" aria-disabled={opening || undefined} aria-describedby={signError ? 'wconvert-license-sign-error' : 'wconvert-license-sign-hint'} onClick={() => !opening && startSignIn()}>
+            <Button variant="brand" disabled={opening} aria-describedby={signError ? 'wconvert-license-sign-error' : 'wconvert-license-sign-hint'} onClick={() => startSignIn()}>
               {opening ? __('Opening your account…', 'wconvert-pro') : signError?.code === 'account_expired' ? __('Sign in again', 'wconvert-pro') : __('Sign in to your account', 'wconvert-pro')}
             </Button>
           </div>
@@ -214,7 +215,7 @@ export function Ways({ ways, license, retry, signIn: startSignIn }: { ways: Way[
   const door: Record<Way, ReactNode> = {
     sign_in: <Button key="sign_in" variant="link" size="sm" onClick={startSignIn}>{__('Sign in instead', 'wconvert-pro')}</Button>,
     find_key: <Ext key="find_key" href={license.urls.account ?? '#'}>{__('Find my WConvert key', 'wconvert-pro')}</Ext>,
-    renew: <Ext key="renew" href={license.urls.renew ?? license.urls.account ?? '#'} variant="brand" size="sm">{__('Renew', 'wconvert-pro')}</Ext>,
+    renew: <Ext key="renew" href={license.urls.renew ?? license.urls.account ?? '#'} variant="outline" size="sm">{__('Renew', 'wconvert-pro')}</Ext>,
     sites: <Ext key="sites" href={license.urls.sites ?? '#'}>{__('Manage sites', 'wconvert-pro')}</Ext>,
     upgrade: <Ext key="upgrade" href={license.urls.upgrade ?? '#'}>{__('Upgrade', 'wconvert-pro')}</Ext>,
     retry: <TryAgain key="retry" onClick={retry} />,

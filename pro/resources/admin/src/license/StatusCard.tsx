@@ -94,12 +94,12 @@ function Doors({ door, license, actions }: { door: Door | null; license: License
     case 'payment': doors = <Ext href={urls.payment ?? '#'} variant="brand">{__('Update payment', 'wconvert-pro')}</Ext>; break;
     case 'support': doors = <Ext href={urls.support ?? '#'} variant="outline">{__('Contact support', 'wconvert-pro')}</Ext>; break;
     case 'sites': doors = <><Button variant="outline" onClick={actions.onSites}>{__('Manage sites', 'wconvert-pro')}</Button><Ext href={urls.upgrade ?? '#'}>{__('Upgrade', 'wconvert-pro')}</Ext></>; break;
-    case 'activate_copy': doors = <Button aria-disabled={actions.busy !== null || undefined} onClick={() => actions.busy === null && actions.onMove()}>{actions.busy === 'move' ? __('Activating…', 'wconvert-pro') : __('Activate on this copy', 'wconvert-pro')}</Button>; break;
+    case 'activate_copy': doors = <Button disabled={actions.busy !== null} onClick={() => actions.onMove()}>{actions.busy === 'move' ? __('Activating…', 'wconvert-pro') : __('Activate on this copy', 'wconvert-pro')}</Button>; break;
     case 'move': doors = <>
-      <Button aria-disabled={actions.busy !== null || undefined} onClick={() => actions.busy === null && actions.onMove(false)}>{__('Move license here', 'wconvert-pro')}</Button>
-      {!license.domain_change?.was_dev && <Button variant="outline" aria-disabled={actions.busy !== null || undefined} onClick={() => actions.busy === null && actions.onMove(true)}>{__('Keep it on both', 'wconvert-pro')}</Button>}
+      <Button disabled={actions.busy !== null} onClick={() => actions.onMove(false)}>{__('Move license here', 'wconvert-pro')}</Button>
+      {!license.domain_change?.was_dev && <Button variant="outline" disabled={actions.busy !== null} onClick={() => actions.onMove(true)}>{__('Keep it on both', 'wconvert-pro')}</Button>}
     </>; break;
-    case 'activate_here': doors = <Button aria-disabled={actions.busy !== null || undefined} onClick={() => actions.busy === null && actions.onReactivate()}>{actions.busy === 'reactivate' ? __('Activating…', 'wconvert-pro') : __('Activate on this site', 'wconvert-pro')}</Button>; break;
+    case 'activate_here': doors = <Button disabled={actions.busy !== null} onClick={() => actions.onReactivate()}>{actions.busy === 'reactivate' ? __('Activating…', 'wconvert-pro') : __('Activate on this site', 'wconvert-pro')}</Button>; break;
     case 'contact': doors = license.managed?.email ? <Contact email={license.managed.email} /> : null; break;
     default: doors = null;
   }
@@ -187,7 +187,7 @@ function CheckLine({ license, checking, onCheck }: { license: LicensePayload; ch
   // "detail" — "Oct 12, 2026, 9:14 AM" — reads the same mid-sentence in any language.
   const when = (at: number | null) => (at === null ? null : formatWhen(new Date(at * 1000).toISOString(), 'detail'));
   const button = (
-    <Button variant="link" size="sm" aria-disabled={checking || undefined} onClick={() => !checking && onCheck()}>
+    <Button variant="link" size="sm" disabled={checking} onClick={() => onCheck()}>
       {checking ? __('Checking…', 'wconvert-pro') : __('Check now', 'wconvert-pro')}
     </Button>
   );

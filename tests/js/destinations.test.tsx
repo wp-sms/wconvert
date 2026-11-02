@@ -1598,13 +1598,23 @@ describe('connected accounts', () => {
   });
 
   it('refuses to remove an account a destination still uses, and says why', async () => {
+    vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
+    onTestFinished(() => { vi.unstubAllGlobals(); });
     render(<Destinations />);
     await userEvent.click(await screen.findByRole('button', { name: 'Actions for Main account' }));
-    const remove = screen.getByRole('menuitem', { name: /Remove/ });
+    const remove = screen.getByRole('menuitem', { name: 'Remove' });
     expect(remove).toHaveAttribute('aria-disabled', 'true');
+    // A few words on the row, the sentence as its description (ADR 0139).
+    expect(remove).toHaveTextContent('In use');
     expect(remove).toHaveAccessibleDescription(/Used by 1 destination/);
     await userEvent.click(remove);
     expect(screen.queryByRole('alertdialog')).toBeNull();
+  });
+
+  it('draws a failed check red, because red means broken (§14)', async () => {
+    api.readDestinations.mockResolvedValue({ types: [REMOTE], destinations: [], connections: [{ ...MAIN, check_outcome: 'failed' }], failures: [] });
+    render(<Destinations />);
+    expect(await screen.findByText('Check failed')).toHaveAttribute('data-variant', 'destructive');
   });
 
   it('removes an unused account behind a confirm that says what survives', async () => {

@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
+import { refusable } from '@/lib/refusable';
 import apiFetch from '@wordpress/api-fetch';
 import { __, sprintf } from '@wordpress/i18n';
 import { TryAgain } from '@/shell/Region';
@@ -53,7 +54,7 @@ export function ProductPicker({ ids, onChange, max = 6, ordered = true, allowUna
     <Button variant="outline" type="button" onClick={() => void search()} disabled={busy || !query.trim()}>{busy ? __('Searching…', 'wconvert-pro') : __('Search catalog', 'wconvert-pro')}</Button>
     {error && <div className="wconvert-result-filter__body"><p role="alert">{error}</p><TryAgain onClick={() => void search()} busy={busy} /></div>}
     {searched && !found.length && <p role="status">{__('No products found. Try another name.', 'wconvert-pro')}</p>}
-    {ids.length >= max && <p>{__('Selection full. Remove a product to choose another.', 'wconvert-pro')}</p>}
+    {ids.length >= max && <p id={`${helpId}-full`}>{__('Selection full. Remove a product to choose another.', 'wconvert-pro')}</p>}
     {namesFailed && <div className="wconvert-result-filter__body"><p role="alert">{__('Product names could not load. Your selection is kept.', 'wconvert-pro')}</p><TryAgain onClick={() => setNamesRetry(n => n + 1)} /></div>}
     {!!ids.length && <ol aria-label={ordered ? __('Selected products, in display order', 'wconvert-pro') : __('Selected products', 'wconvert-pro')}>{ids.map((id, index) => <li key={id} className="wconvert-result-picker__selection"><span>{productName(id)}</span><div className="wconvert-result-picker__actions">
       {ordered && ids.length > 1 && <Button variant="outline" type="button" disabled={index === 0} onClick={() => move(index, -1)} aria-label={`${__('Move earlier', 'wconvert-pro')}: ${productName(id)}`}>{__('Earlier', 'wconvert-pro')}</Button>}
@@ -61,8 +62,9 @@ export function ProductPicker({ ids, onChange, max = 6, ordered = true, allowUna
       <Button variant="outline" type="button" data-destructive="true" aria-label={`${__('Remove', 'wconvert-pro')}: ${productName(id)}`} onClick={() => onChange(ids.filter(item => item !== id))}>{__('Remove', 'wconvert-pro')}</Button></div></li>)}</ol>}
     {!!found.length && <ul aria-label={__('Search results', 'wconvert-pro')}>{found.map(product => <li key={product.id}>
       {product.images?.[0]?.thumbnail && <img alt="" src={product.images[0].thumbnail} width="36" height="36" />}
-      <span>{product.name} {product.is_in_stock === false ? __('Out of stock', 'wconvert-pro') : ''} {productPrice(product)}</span>
-      <Button variant="outline" type="button" aria-label={sprintf(/* translators: 1: the button's action, e.g. “Add”, “Pin” or “Exclude”. 2: a product's name. */ __('%1$s: %2$s', 'wconvert-pro'), actionLabel, product.name)} disabled={ids.includes(product.id) || ids.length >= max || (!allowUnavailable && product.is_in_stock === false)} onClick={() => onChange([...ids, product.id])}>{ids.includes(product.id) ? __('Selected', 'wconvert-pro') : actionLabel}</Button>
+      <span>{product.name} {product.is_in_stock === false && <span id={`${helpId}-stock-${product.id}`}>{__('Out of stock', 'wconvert-pro')}</span>} {productPrice(product)}</span>
+      {ids.includes(product.id) && <span id={`${helpId}-chosen-${product.id}`} className="sr-only">{__('Already selected.', 'wconvert-pro')}</span>}
+      <Button variant="outline" type="button" aria-label={sprintf(/* translators: 1: the button's action, e.g. “Add”, “Pin” or “Exclude”. 2: a product's name. */ __('%1$s: %2$s', 'wconvert-pro'), actionLabel, product.name)} {...refusable(ids.includes(product.id) ? `${helpId}-chosen-${product.id}` : !allowUnavailable && product.is_in_stock === false ? `${helpId}-stock-${product.id}` : ids.length >= max ? `${helpId}-full` : null, () => onChange([...ids, product.id]))}>{ids.includes(product.id) ? __('Selected', 'wconvert-pro') : actionLabel}</Button>
     </li>)}</ul>}
   </div>;
 }

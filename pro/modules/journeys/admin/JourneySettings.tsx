@@ -1,4 +1,5 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
+import { refusable } from '@/lib/refusable';
 import { ArrowDown, ArrowRight, ArrowUp, ChevronDown, FilePlus2, GitBranch, ListPlus, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import type { QuestionClause, QuestionCondition, QuestionNode, ResultVariant, TemplateNode, TemplateTree } from '@renderer/types';
@@ -52,6 +53,7 @@ export function ConditionSettings({ value, sources, onChange, required = false, 
   value?: QuestionCondition; sources: ChoiceQuestion[]; onChange(value?: QuestionCondition): void; required?: boolean;
   purpose?: 'screen' | 'route' | 'result'; deliberate?: boolean;
 }) {
+  const noSourcesId = useId();
   const initial = (q: ChoiceQuestion): QuestionClause => ({ question: q.id, operator: q.answer_type === 'multi' ? 'includes_any' : 'is', values: deliberate ? [] : [q.options?.[0]?.value ?? ''] });
   const patch = (index: number, clause: QuestionCondition['clauses'][number]) => onChange({ match: value?.match ?? 'all', clauses: (value?.clauses ?? []).map((old, at) => at === index ? clause : old) });
   return <div className="wconvert-journey-settings wconvert-condition-settings">
@@ -61,10 +63,8 @@ export function ConditionSettings({ value, sources, onChange, required = false, 
         <option value="match" disabled={!sources.length}>{__('Only if an answer matches', 'wconvert-pro')}</option>
       </select>
     </label>}
-    {!sources.length && <p>{__('Add a choice question on an earlier screen to use conditions.', 'wconvert-pro')}</p>}
-    {required && !value && <button type="button" disabled={!sources.length} onClick={() => {
-      if (sources[0]) onChange({ match: 'all', clauses: [initial(sources[0])] });
-    }}>{__('Add condition', 'wconvert-pro')}</button>}
+    {!sources.length && <p id={noSourcesId}>{__('Add a choice question on an earlier screen to use conditions.', 'wconvert-pro')}</p>}
+    {required && !value && <button type="button" {...refusable(sources.length ? null : noSourcesId, () => onChange({ match: 'all', clauses: [initial(sources[0])] }))}>{__('Add condition', 'wconvert-pro')}</button>}
     {value && <>
       {value.clauses.length > 1 && <label>{__('Match', 'wconvert-pro')}<select value={value.match} onChange={event => onChange({ ...value, match: event.target.value as 'all' | 'any' })}>
         <option value="all">{__('All conditions', 'wconvert-pro')}</option><option value="any">{__('Any condition', 'wconvert-pro')}</option>
@@ -99,7 +99,7 @@ export function ConditionSettings({ value, sources, onChange, required = false, 
           <button type="button" data-destructive="true" onClick={() => { const clauses = value.clauses.filter((_, at) => at !== index); onChange(clauses.length || required ? { ...value, clauses } : undefined); }}>{__('Remove', 'wconvert-pro')}</button>
         </div>;
       })}
-      {value.clauses.length < 5 && <button type="button" disabled={!sources.length} onClick={() => { if (sources[0]) onChange({ ...value, clauses: [...value.clauses, initial(sources[0])] }); }}>{value.clauses.length ? __('Add another condition', 'wconvert-pro') : __('Add condition', 'wconvert-pro')}</button>}
+      {value.clauses.length < 5 && <button type="button" {...refusable(sources.length ? null : noSourcesId, () => onChange({ ...value, clauses: [...value.clauses, initial(sources[0])] }))}>{value.clauses.length ? __('Add another condition', 'wconvert-pro') : __('Add condition', 'wconvert-pro')}</button>}
       <div className="wconvert-editor-help"><p>{purpose === 'route'
         ? __('Otherwise, the next line is checked.', 'wconvert-pro')
         : required
@@ -271,11 +271,11 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
         </select></PanelField>
         {typeReview?.question === question.id && <section tabIndex={-1} className="wconvert-journey-answer-repair" aria-label={__('Review answer type change', 'wconvert-pro')}>
           <strong>{__('Review the affected conditions', 'wconvert-pro')}</strong>
-          <p>{typeReview.type === 'text' ? __('Short answers cannot keep rules based on selected choices. Edit the rules below first, then change the answer type.', 'wconvert-pro')
+          <p id={`${question.id}-type-review`}>{typeReview.type === 'text' ? __('Short answers cannot keep rules based on selected choices. Edit the rules below first, then change the answer type.', 'wconvert-pro')
             : questionTypeChange(tree, question.id, typeReview.type) ? __('Choice labels and lines will stay. Condition operators will be updated. Choosing several answers can match several rules; the top-to-bottom order still applies to answer lines and results. Try the form after this change.', 'wconvert-pro')
             : __('Some conditions compare several choices at once. Edit those conditions to use one choice each before switching to Choose one.', 'wconvert-pro')}</p>
           {refs.map(reference => <button type="button" key={reference.key} onClick={() => openReference(reference)}>{reference.label} · {reference.detail} <ArrowRight aria-hidden="true" className="inline size-3 rtl:-scale-x-100" /></button>)}
-          <div className="wconvert-journey-answer-repair__actions"><button type="button" disabled={!questionTypeChange(tree, question.id, typeReview.type)} onClick={() => { const next = questionTypeChange(tree, question.id, typeReview.type); if (next) onChange(next); setTypeReview(null); }}>{__('Apply answer type change', 'wconvert-pro')}</button><button type="button" onClick={() => setTypeReview(null)}>{__('Cancel', 'wconvert-pro')}</button></div>
+          <div className="wconvert-journey-answer-repair__actions"><button type="button" {...refusable(questionTypeChange(tree, question.id, typeReview.type) ? null : `${question.id}-type-review`, () => { const next = questionTypeChange(tree, question.id, typeReview.type); if (next) onChange(next); setTypeReview(null); })}>{__('Apply answer type change', 'wconvert-pro')}</button><button type="button" onClick={() => setTypeReview(null)}>{__('Cancel', 'wconvert-pro')}</button></div>
         </section>}
         {question.answer_type !== 'text' && <div className="wconvert-panel-field" role="group" aria-labelledby={`${question.id}-choices`}><FieldHeading as="span" label={__('Choices', 'wconvert-pro')} labelId={`${question.id}-choices`} />
           {/*
@@ -316,9 +316,11 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
               <option value="">{__('Choose an existing answer…', 'wconvert-pro')}</option>
               {question.options?.filter(option => option.value !== repair.value).map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
             </select></label>}
-            <div className="wconvert-journey-answer-repair__actions">{reviewRefs.length > 0 && <button type="button" disabled={!question.options?.some(option => option.value === replacement && option.value !== repair.value) || (question.options?.length ?? 0) <= 2} onClick={() => { onChange(replaceAnswer(tree, question.id, repair.value, replacement)); setRepair(null); }}>
+            <div className="wconvert-journey-answer-repair__actions">{reviewRefs.length > 0 && <button type="button" {...refusable((question.options?.length ?? 0) <= 2 ? `${question.id}-keep-two` : question.options?.some(option => option.value === replacement && option.value !== repair.value) ? null : `${question.id}-choose-replacement`, () => { onChange(replaceAnswer(tree, question.id, repair.value, replacement)); setRepair(null); })}>
               {__('Replace uses & remove', 'wconvert-pro')}</button>}<button type="button" onClick={() => setRepair(null)}>{__('Cancel', 'wconvert-pro')}</button></div>
-            {(question.options?.length ?? 0) <= 2 && <p>{__('Keep at least two choices. Add another choice before removing this one.', 'wconvert-pro')}</p>}
+            {(question.options?.length ?? 0) <= 2 && <p id={`${question.id}-keep-two`}>{__('Keep at least two choices. Add another choice before removing this one.', 'wconvert-pro')}</p>}
+            {reviewRefs.length > 0 && (question.options?.length ?? 0) > 2 && !question.options?.some(option => option.value === replacement && option.value !== repair.value)
+              && <p id={`${question.id}-choose-replacement`}>{__('Choose an answer to replace it with first.', 'wconvert-pro')}</p>}
             <small>{__('One draft change. Undo restores the answer and its references.', 'wconvert-pro')}</small>
           </div>}
           {(question.options?.length ?? 0) < 12 && <button type="button" className="wconvert-panel-link" onClick={() => change(question.id, node => {

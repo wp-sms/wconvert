@@ -887,8 +887,11 @@ it('explains a branched result timing restriction and opens the named paths for 
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(screen.getByRole('radio', { name: 'Screens' }));
   await user.click(screen.getByRole('button', { name: /Your result Shows a selected result/ }));
-  expect(screen.getByRole('radio', { name: 'After required contact details' })).toBeDisabled();
-  expect(screen.getByText(/Move any answer lines after both screens first/)).toBeInTheDocument();
+  const required = screen.getByRole('radio', { name: 'After required contact details' });
+  expect(required).toHaveAttribute('aria-disabled', 'true');
+  expect(required).toHaveAccessibleDescription(/Move any answer lines after both screens first/);
+  await user.click(required);
+  expect(draft()).toEqual(initial);
   await user.click(screen.getByRole('button', { name: 'Review Your result' }));
   expect(screen.getByRole('radio', { name: 'Lines' })).toBeChecked();
   await waitFor(() => expect(screen.getByRole('heading', { name: 'Your result' })).toHaveFocus());
@@ -1004,7 +1007,9 @@ it('lets a two-choice question review references while keeping the two-choice mi
   expect(within(review).getByRole('button', { name: /Sunny garden picks/ })).toBeEnabled();
   expect(within(review).queryByRole('button', { name: /Balcony picks/ })).not.toBeInTheDocument();
   await user.selectOptions(within(review).getByRole('combobox', { name: 'Replace its uses with' }), 'balcony');
-  expect(within(review).getByRole('button', { name: 'Replace uses & remove' })).toBeDisabled();
+  const replace = within(review).getByRole('button', { name: 'Replace uses & remove' });
+  expect(replace).toHaveAttribute('aria-disabled', 'true');
+  expect(replace).toHaveAccessibleDescription(/Keep at least two choices/);
 });
 
 

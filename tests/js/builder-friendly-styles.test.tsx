@@ -158,6 +158,26 @@ describe('padding and gradients preserve authored values until an explicit edit'
     expect(changed).toHaveBeenLastCalledWith('linear-gradient(180deg, #000 0%, #000 50%, #fff 100%)');
   });
 
+  it('refuses to go below two colors or above six, with the reason on the control', async () => {
+    const changed = vi.fn();
+    const { unmount } = render(<Control initial="linear-gradient(to right, #000, #fff)" token="overlay" changed={changed} />);
+    await userEvent.click(screen.getByRole('button', { name: 'Edit gradient' }));
+    const remove = screen.getByRole('button', { name: 'Remove color 1' });
+    expect(remove).toHaveAttribute('aria-disabled', 'true');
+    expect(remove).toHaveAccessibleDescription('A gradient keeps at least two colors.');
+    await userEvent.click(remove);
+    expect(remove).toHaveFocus();
+    expect(changed).not.toHaveBeenCalled();
+    unmount();
+
+    render(<Control initial="linear-gradient(to right, #000, #111, #222, #333, #444, #fff)" token="overlay" changed={changed} />);
+    await userEvent.click(screen.getByRole('button', { name: 'Edit gradient' }));
+    const add = screen.getByRole('button', { name: 'Add color' });
+    expect(add).toHaveAccessibleDescription('Up to 6 colors. Remove one to add another.');
+    await userEvent.click(add);
+    expect(changed).not.toHaveBeenCalled();
+  });
+
   it('keeps unsupported gradients in the custom editor', async () => {
     const changed = vi.fn();
     render(<Control initial="radial-gradient(circle, red, blue)" token="overlay" changed={changed} />);

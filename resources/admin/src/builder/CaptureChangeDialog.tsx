@@ -1,4 +1,5 @@
 import { useId, useMemo, useState, type ReactNode, type RefObject } from 'react';
+import { refusable } from '../lib/refusable';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { ArrowRight } from 'lucide-react';
 import type { Template } from '@renderer/types';
@@ -135,6 +136,7 @@ export function CaptureChangeDialog({ open, onOpenChange, before, displayType, t
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const hrefId = useId();
+  const reasonId = useId();
   const radioName = useId();
 
   // The box offers a "Shop now" button only where no link comes back on its own.
@@ -197,7 +199,7 @@ export function CaptureChangeDialog({ open, onOpenChange, before, displayType, t
             <input type="radio" name={radioName} checked={channel === value} onChange={() => setChannel(value)} />
             {value === 'email' ? __('Ask for email', 'wconvert') : __('Ask for phone', 'wconvert')}</label>)}
         </div>}
-        {'reason' in result ? <p role="alert">{result.reason}</p> : <>
+        {'reason' in result ? <p id={reasonId} role="alert">{result.reason}</p> : <>
           {/* Before and after, drawn small, for every change the box describes, copies included. */}
           {after && <div className="wconvert-capture-box__tiles" aria-hidden="true">
             {before.tree.steps.map((screen, index) => <ScreenTile key={screen.id} template={before} displayType={displayType} step={index}
@@ -225,7 +227,7 @@ export function CaptureChangeDialog({ open, onOpenChange, before, displayType, t
               <Input id={hrefId} type="url" dir="ltr" value={href} onChange={event => setHref(event.target.value)} />
               <small>{offer?.place === 'home' ? __('Your home page. Change it if the offer lives somewhere else.', 'wconvert')
                 : __('Your shop page. Change it if the offer lives somewhere else.', 'wconvert')}</small>
-              {missingLink && <small role="alert">{__('Add a link, or untick the button.', 'wconvert')}</small>}</div>}
+              {missingLink && <small id={reasonId} role="alert">{__('Add a link, or untick the button.', 'wconvert')}</small>}</div>}
           </div>}
           {needsLink && <dl className="wconvert-capture-box__rows">{changeRows(goalRow, copy)}</dl>}
           {hadForm && adding && !copy && <p className="wconvert-capture-box__note">{__('This campaign had a form before. A new one is built, so earlier changes to its wording come back only with Undo.', 'wconvert')}</p>}
@@ -233,7 +235,7 @@ export function CaptureChangeDialog({ open, onOpenChange, before, displayType, t
       </AdminDialogBody>
       <AdminDialogFooter note={mode === 'preview' ? undefined : copy ? __('Nothing is published automatically.', 'wconvert') : __('Undo reverts all of this.', 'wconvert')} error={error}>
         <Button type="button" variant="outline" disabled={saving} onClick={() => close(false)}>{mode === 'preview' ? __('Done', 'wconvert') : __('Cancel', 'wconvert')}</Button>
-        {mode !== 'preview' && <Button type="button" disabled={saving || 'reason' in result || missingLink} onClick={confirm}>{confirmLabel}</Button>}
+        {mode !== 'preview' && <Button type="button" disabled={saving} {...refusable('reason' in result || missingLink ? reasonId : null, confirm)}>{confirmLabel}</Button>}
       </AdminDialogFooter>
     </AdminDialogContent>
   </AdminDialog>;

@@ -66,10 +66,15 @@ it('reorders pins, removes a pin and enforces the pin limit', async () => {
   expect(screen.getByRole('status')).toHaveTextContent('2,1,3');
   await userEvent.type(screen.getByLabelText('Find products'), 'Four');
   await userEvent.click(screen.getByRole('button', { name: 'Search catalog' }));
-  expect((await screen.findAllByRole('button', { name: /^Add:/ })).every(button => button.hasAttribute('disabled'))).toBe(true);
+  const adds = await screen.findAllByRole('button', { name: /^Add:/ });
+  expect(adds.every(button => button.getAttribute('aria-disabled') === 'true')).toBe(true);
+  expect(adds[0]).toHaveAccessibleDescription('Already selected.');
+  expect(adds[3]).toHaveAccessibleDescription('Selection full. Remove a product to choose another.');
+  await userEvent.click(adds[3]);
+  expect(screen.getByRole('status')).toHaveTextContent('2,1,3');
   await userEvent.click(screen.getByRole('button', { name: 'Remove: One' }));
   expect(screen.getByRole('status')).toHaveTextContent('2,3');
-  expect(screen.getAllByRole('button', { name: /^Add:/ })[3]).toBeEnabled();
+  expect(screen.getAllByRole('button', { name: /^Add:/ })[3]).not.toHaveAttribute('aria-disabled');
 });
 
 it('allows excluding out-of-stock products without ordering controls', async () => {

@@ -92,7 +92,10 @@ and none could be read at a glance:
    the Apply button is still described by it. *Amended by [ADR 0171](0171-one-template-gallery.md): the words are
    "template" now — "Current template", "Use the template's sample content",
    "Replaces this draft's template. You can undo.", "Use this template" — and
-   the library switch is the gallery's "Show" select.*
+   the library switch is the gallery's "Show" select.* *Amended by ADR 0182: a
+   draft with no template has no words to keep, so neither radio is drawn and
+   the sample content's "Review its offers and links before publishing." stands
+   alone. A control that can never work is hidden, not refused.*
 
 ## Consequences
 

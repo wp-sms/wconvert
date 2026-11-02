@@ -90,9 +90,9 @@ export function SitesCard({ license, onRemove, busy, result, headingRef, now = D
                 <DataTableCell label={__('Added', 'wconvert-pro')} className="wconvert-license-num">{site.added ? formatShortDay(site.added) : '—'}</DataTableCell>
                 <DataTableCell label={__('Actions', 'wconvert-pro')} className="wconvert-license-act-cell">
                   {!site.here && (
-                    <Button variant="ghost" size="sm" aria-disabled={busy !== null || undefined}
+                    <Button variant="ghost" size="sm" disabled={busy !== null}
                       aria-label={sprintf(/* translators: %s: a site's domain, e.g. “example.com”. */ __('Remove %s', 'wconvert-pro'), site.domain)}
-                      onClick={() => busy === null && onRemove(site)}>
+                      onClick={() => onRemove(site)}>
                       {busy === `site:${site.domain}` ? __('Removing…', 'wconvert-pro') : __('Remove', 'wconvert-pro')}
                     </Button>
                   )}
@@ -146,7 +146,7 @@ export function KeyCard({ license, busy, onReplace, replaceError, onRemove }: {
             <b>{__('Remove from this site', 'wconvert-pro')}</b>
             <p className="wconvert-license-hint">{__('Frees a site on your license.', 'wconvert-pro')}</p>
           </div>
-          <Button variant="outline" size="sm" aria-disabled={busy !== null || undefined} onClick={() => busy === null && onRemove()}>
+          <Button variant="outline" size="sm" disabled={busy !== null} onClick={() => onRemove()}>
             {busy === 'remove' ? __('Removing…', 'wconvert-pro') : __('Remove', 'wconvert-pro')}
           </Button>
         </div>

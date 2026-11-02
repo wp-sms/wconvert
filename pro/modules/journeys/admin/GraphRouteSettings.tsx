@@ -123,7 +123,8 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
       </div>}
       {tree.steps.find(item => item.id === edge.to)?.when && <p className="wconvert-journey-route-check">{sprintf(/* translators: %s: the screen's rule, e.g. “Interests includes Growing”. */ __('Only if %s', 'wconvert-pro'), conditionText(tree, tree.steps.find(item => item.id === edge.to)!.when!))}</p>}
       {onOpenInsert ? <button type="button" className="wconvert-journey-routes__insert" onClick={() => onOpenInsert(edge.id)}>{__('Add a screen on this line', 'wconvert-pro')}</button> : <>
-      <button type="button" className="wconvert-journey-routes__insert" disabled={!canAsk(edge.id)} onClick={() => onInsert(edge.id, 'input')}>{__('Ask a question on this line', 'wconvert-pro')}</button>
+      {/* After the save its answer could never be kept, so the line does not offer it; the note below the routes says where to ask. */}
+      {canAsk(edge.id) && <button type="button" className="wconvert-journey-routes__insert" onClick={() => onInsert(edge.id, 'input')}>{__('Ask a question on this line', 'wconvert-pro')}</button>}
       <button type="button" className="wconvert-journey-routes__insert" onClick={() => onInsert(edge.id, 'content')}>{__('Show a message on this line', 'wconvert-pro')}</button>
       </>}
       {edge.kind === 'answer' && <div className="wconvert-journey-routes__actions">

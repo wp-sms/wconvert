@@ -2,6 +2,7 @@ import { useEffect, useRef, type ReactNode, type RefObject } from 'react';
 import { __ } from '@wordpress/i18n';
 import { CircleAlert, CircleCheck, Info, TriangleAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { refusable } from '@/lib/refusable';
 import { Input } from '@/components/ui/input';
 import { Field } from '@/shell/Field';
 
@@ -91,7 +92,7 @@ export function KeyField({
             onChange={(event) => onChange(cleanKey(event.target.value, false))}
             placeholder="WCV-XXXX-XXXX-XXXX"
           />
-          <Button type="submit" aria-disabled={busy || refused ? true : undefined}>
+          <Button type="submit" disabled={busy} {...refusable(refused ? `${id}-error` : null)}>
             {busy ? __('Activating…', 'wconvert-pro') : submitLabel ?? __('Activate', 'wconvert-pro')}
           </Button>
         </div>

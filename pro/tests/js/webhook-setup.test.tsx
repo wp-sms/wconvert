@@ -91,7 +91,11 @@ describe('each tool stores the same webhook', () => {
     await pick('n8n');
     await userEvent.type(screen.getByLabelText('Webhook URL'), 'https://flows.example/webhook/abc');
     await userEvent.type(screen.getByLabelText(/Header Auth name/), 'X-N8N-Auth');
-    expect(screen.getByRole('button', { name: 'Check and save account' })).toBeDisabled();
+    const save = screen.getByRole('button', { name: 'Check and save account' });
+    expect(save).toHaveAttribute('aria-disabled', 'true');
+    expect(save).toHaveAccessibleDescription('Enter the value n8n expects.');
+    await userEvent.click(save);
+    expect(api.saveConnection).not.toHaveBeenCalled();
     await userEvent.type(screen.getByLabelText('Header Auth value'), 'v-1');
     await userEvent.click(screen.getByRole('button', { name: 'Check and save account' }));
     expect(api.saveConnection).toHaveBeenCalledWith(expect.objectContaining({

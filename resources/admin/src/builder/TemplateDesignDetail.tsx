@@ -213,12 +213,14 @@ export function TemplateDesignDetail({
           </div>
 
           <div className="wconvert-design-detail__facts">
-            {prepares && (
+            {/* A draft with no template has no words to keep, so there is nothing to choose. */}
+            {prepares && !hasCurrentDesign && <p className="m-0 text-note text-muted-foreground">{__('Review its offers and links before publishing.', 'wconvert')}</p>}
+            {prepares && hasCurrentDesign && (
               <fieldset className="wconvert-design-detail__content-choice" disabled={busy}>
                 <legend>{__('Content', 'wconvert')}</legend>
-                <CheckRow type="radio" name={`${id}-content`} value="keep" checked={mode === 'keep'} disabled={!hasCurrentDesign}
+                <CheckRow type="radio" name={`${id}-content`} value="keep" checked={mode === 'keep'}
                   onChange={() => setMode('keep')} label={__('Keep my words and images', 'wconvert')}
-                  hint={hasCurrentDesign ? __('Fitted into this layout; check each screen.', 'wconvert') : __('This draft has no content yet.', 'wconvert')} />
+                  hint={__('Fitted into this layout; check each screen.', 'wconvert')} />
                 <CheckRow type="radio" name={`${id}-content`} value="sample" checked={mode === 'sample'}
                   onChange={() => setMode('sample')} label={__('Use the template’s sample content', 'wconvert')}
                   hint={__('Review its offers and links before publishing.', 'wconvert')} />

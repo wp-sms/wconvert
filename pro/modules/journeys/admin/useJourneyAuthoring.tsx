@@ -53,6 +53,14 @@ export function useJourneyAuthoring(ctx: JourneyEditorContext): JourneyAuthoring
   const canAddGraphResultSignup = !!graphResultSignupTarget(tree);
   const canAddGraphCapture = !!tree.graph && tree.submissions.length === 1 && ['email', 'phone', 'sms'].includes(primaryChannel ?? '');
   const resultAccessIssue = tree.graph && tree.submissions.length === 1 ? graphResultAccessIssue(tree, !tree.submissions[0].required) : null;
+  // Each refused answer points at the sentence already drawn under the radios (GUIDELINES §14).
+  const accessRefusal = (required: boolean): string | null => {
+    if (required && tree.submissions.length === 0) return `${id}-access-signup`;
+    if (tree.submissions.length > 1 && (required || tree.graph)) return `${id}-access-one`;
+    if (!tree.graph) return tree.steps.some(screen => screen.paths?.length) ? `${id}-access-lines` : null;
+    return tree.submissions.length === 1 && graphResultAccessIssue(tree, required) ? `${id}-access-issue` : null;
+  };
+  const accessReason = { immediately: accessRefusal(false), required: accessRefusal(true) };
   const canCondition = !!current && tree.steps.some((screen, index) => (tree.graph
     ? screen.id === current.id || graphReaches(tree.graph, screen.id, current.id)
     : index <= step) && walkNodes(screen.content).some(node => node.type === 'question' && 'answer_type' in node && node.answer_type !== 'text'));
@@ -190,18 +198,19 @@ export function useJourneyAuthoring(ctx: JourneyEditorContext): JourneyAuthoring
       {current.kind === 'result' && <PanelSection title={__('When visitors see their result', 'wconvert-pro')}
         tipLabel={__('About result access', 'wconvert-pro')} tip={tree.submissions.length > 0 ? __('Changing this moves signup before or after the result, and you can undo the whole change. Mention required contact details on the first screen.', 'wconvert-pro') : undefined}>
         <div role="radiogroup" aria-label={__('When visitors see their result', 'wconvert-pro')} className="wconvert-panel-radios">
-          <CheckRow type="radio" className="wconvert-check" name={`${id}-result-access`} label={__('Immediately after the questions', 'wconvert-pro')} disabled={tree.graph ? tree.submissions.length > 0 && !!graphResultAccessIssue(tree, false) : tree.steps.some(screen => screen.paths?.length)} checked={tree.submissions.length === 0 || (tree.graph
+          <CheckRow type="radio" className="wconvert-check" name={`${id}-result-access`} label={__('Immediately after the questions', 'wconvert-pro')} aria-disabled={accessReason.immediately !== null || undefined} aria-describedby={accessReason.immediately ?? undefined} checked={tree.submissions.length === 0 || (tree.graph
             ? !tree.submissions[0].required : step < submissionScreen(tree, tree.submissions[0]?.id))}
-            onChange={() => { if (tree.submissions.length) { const next = resultAccess(tree, false); write(next, next.steps.findIndex(s => s.id === current.id));
+            onChange={() => { if (accessReason.immediately === null && tree.submissions.length) { const next = resultAccess(tree, false); write(next, next.steps.findIndex(s => s.id === current.id));
               if (next !== tree) say(__('Result moved before contact details. Signup is optional and visitors may finish without submitting.', 'wconvert-pro')); } }} />
-          <CheckRow type="radio" className="wconvert-check" name={`${id}-result-access`} label={__('After required contact details', 'wconvert-pro')} disabled={tree.submissions.length !== 1 || (tree.graph ? !!graphResultAccessIssue(tree, true) : tree.steps.some(screen => screen.paths?.length))}
+          <CheckRow type="radio" className="wconvert-check" name={`${id}-result-access`} label={__('After required contact details', 'wconvert-pro')} aria-disabled={accessReason.required !== null || undefined} aria-describedby={accessReason.required ?? undefined}
             checked={tree.submissions.length === 1 && (tree.graph ? tree.submissions[0].required : step > submissionScreen(tree, tree.submissions[0].id))}
-            onChange={() => { const next = resultAccess(tree, true); write(next, next.steps.findIndex(s => s.id === current.id));
+            onChange={() => { if (accessReason.required !== null) return; const next = resultAccess(tree, true); write(next, next.steps.findIndex(s => s.id === current.id));
               if (next !== tree) say(__('Contact details are now required before the result. Tell visitors on the first screen.', 'wconvert-pro')); }} />
         </div>
-        {!tree.graph && tree.steps.some(screen => screen.paths?.length) && <PanelHint>{__('Remove answer lines before changing when results appear.', 'wconvert-pro')}</PanelHint>}
-        {tree.submissions.length === 0 && <PanelHint>{__('Add a signup screen first to make contact details required.', 'wconvert-pro')} {(!tree.graph || canAddGraphResultSignup) && <button type="button" className="wconvert-panel-link" onClick={ctx.addOptional}>{__('Add optional signup', 'wconvert-pro')}</button>}</PanelHint>}
-        {resultAccessIssue && <div className="wconvert-panel-warn"><span>{resultAccessIssue.message}</span>{resultAccessIssue.screenId && <button type="button" className="wconvert-panel-link" onClick={() => {
+        {!tree.graph && tree.steps.some(screen => screen.paths?.length) && <PanelHint id={`${id}-access-lines`}>{__('Remove answer lines before changing when results appear.', 'wconvert-pro')}</PanelHint>}
+        {tree.submissions.length > 1 && <PanelHint id={`${id}-access-one`}>{__('Keep one signup to choose when contact details are requested.', 'wconvert-pro')}</PanelHint>}
+        {tree.submissions.length === 0 && <PanelHint id={`${id}-access-signup`}>{__('Add a signup screen first to make contact details required.', 'wconvert-pro')} {(!tree.graph || canAddGraphResultSignup) && <button type="button" className="wconvert-panel-link" onClick={ctx.addOptional}>{__('Add optional signup', 'wconvert-pro')}</button>}</PanelHint>}
+        {resultAccessIssue && <div className="wconvert-panel-warn"><span id={`${id}-access-issue`}>{resultAccessIssue.message}</span>{resultAccessIssue.screenId && <button type="button" className="wconvert-panel-link" onClick={() => {
           const index = tree.steps.findIndex(screen => screen.id === resultAccessIssue.screenId);
           if (index >= 0) { select(index); ctx.showSection(resultAccessIssue.section); requestAnimationFrame(() => settingsHeading.current?.focus()); }
         }}>{sprintf(/* translators: %s: a screen's name, e.g. “Skin type”. */ __('Review %s', 'wconvert-pro'), tree.steps.find(screen => screen.id === resultAccessIssue.screenId)?.name ?? '')}</button>}</div>}

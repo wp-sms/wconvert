@@ -65,10 +65,16 @@ export default function SampleVisit({ value, vocabulary, onClose, onOpenSection,
   const usesBasket = cartRules.length > 0 || !!products;
   const basketEnabled = usesBasket && commerceSupported();
   const preview = useBasketPreview(basketEnabled, basket, cartRules, products);
+  // Not bought and missing a plugin are opposites, so the vocabulary says which this is (GUIDELINES §14).
+  const cartType = everyType(vocabulary).find(type => type.type.startsWith('cart_'));
   const basketCheck: BasketCheck = !usesBasket ? { status: 'unused' }
-    : !basketEnabled ? { status: 'fail', reason: unlessFree(sprintf(
-      /* translators: %s: the product that includes cart testing, e.g. “WConvert Pro”. */
-      __('Cart testing is included with %s and needs WooCommerce on this site.', 'wconvert'), tierProductName('pro'))) }
+    : !basketEnabled ? { status: 'fail', reason: cartType?.availability === 'unavailable'
+      ? sprintf(
+        /* translators: %s: a plugin's name, e.g. “WooCommerce”. */
+        __('Cart testing needs %s on this site.', 'wconvert'), cartType.requires_label ?? __('another plugin', 'wconvert'))
+      : unlessFree(sprintf(
+        /* translators: %s: the product that includes cart testing, e.g. “WConvert Pro”. */
+        __('Cart testing is included with %s.', 'wconvert'), tierProductName(cartType?.tier ?? 'pro'))) }
       : preview.error ? { status: 'fail', reason: __('The sample basket could not be checked.', 'wconvert') }
         : !preview.result ? { status: 'checking' }
           : !preview.result.eligible || (cartRequired && preview.result.rules[requiredCartId] !== true)

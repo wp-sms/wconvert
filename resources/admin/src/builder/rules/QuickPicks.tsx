@@ -3,7 +3,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { Lock } from 'lucide-react';
 import { Badge } from '../../components/ui/badge';
 import { EXPLORE_PRO_URL } from '../../shell/HeaderTools';
-import { renderingFor, tierName, tierProductName, unlessFree } from '../../goals/availability';
+import { renderingFor, tierName, tierProductName, unlessFree, type Rendering } from '../../goals/availability';
 import { availabilityOf, halves, picksIn, type Pick, type PickParam, type SectionId } from './picks';
 import { portableSelector } from './validation';
 import type { DisplayRulesValue } from './summaries';
@@ -59,7 +59,7 @@ export function QuickPicks({ section, question, value, vocabulary, shown, onChoo
         const offered = rendering === 'offer' && !ruledOut;
         return <label key={pick.id} className="wconvert-quick-pick" data-custom={pick.id === 'custom' || undefined} data-refused={offered ? undefined : true}>
           <input type="radio" className="sr-only" name={name} value={pick.id} checked={chosen} aria-disabled={offered ? undefined : true}
-            aria-describedby={ruledOut ? held?.id : offered ? undefined : reasonId}
+            aria-describedby={ruledOut ? held?.id : offered ? undefined : `${reasonId}-${pick.id}`}
             onChange={() => { if (offered) { setRefused(null); onChoose(pick); } else if (!ruledOut) setRefused(pick.id); }} />
           {chosen && pick.param ? <Inline template={pick.template(Number(pick.param.read(value) ?? pick.param.default))} param={pick.param} value={value} onChange={onParam} onError={setError} errorId={errorId} />
             : <span>{wordsOf(pick, shown, value)}</span>}
@@ -75,16 +75,22 @@ export function QuickPicks({ section, question, value, vocabulary, shown, onChoo
     {shown.param?.kind === 'selector' && !shown.param.read(value) && <p className="wconvert-quick-picks__hint" data-attention="true">{__('Choose the button or link they click, such as #signup or .offer-button.', 'wconvert')}</p>}
     {note && <p className="wconvert-quick-picks__hint">{note}</p>}
     {held && <p id={held.id} className="wconvert-quick-picks__hint">{held.reason}</p>}
-    <p id={reasonId} className="wconvert-quick-picks__reason" role="status">{refusal === undefined ? null
-      : refusal.rendering === 'upsell'
-        ? <>{unlessFree(sprintf(
-          /* translators: 1: a choice, e.g. “When they try to leave”. 2: a product name, e.g. “WConvert Pro”. */
-          __('“%1$s” is part of %2$s.', 'wconvert'), refusal.pick.label(value), tierProductName(refusal.availability.tier)))}{' '}
-          <a href={EXPLORE_PRO_URL} target="_blank" rel="noreferrer">{__('Compare plans', 'wconvert')}</a></>
-        : sprintf(
-          /* translators: 1: a choice, e.g. “Shoppers with items in their cart”. 2: a plugin's name, e.g. “WooCommerce”. */
-          __('“%1$s” needs the %2$s plugin on this site.', 'wconvert'), refusal.pick.label(value), refusal.availability.requires_label ?? __('another', 'wconvert'))}</p>
+    {/* Each refused chip's own sentence, heard before it is pressed; its badge is the short form on screen. */}
+    {picks.filter(each => each.rendering !== 'offer').map(each => <span key={each.pick.id} id={`${reasonId}-${each.pick.id}`} className="sr-only">{sentenceFor(each, value)}</span>)}
+    <p className="wconvert-quick-picks__reason" role="status">{refusal !== undefined && <>{sentenceFor(refusal, value)}
+      {refusal.rendering === 'upsell' && <>{' '}<a href={EXPLORE_PRO_URL} target="_blank" rel="noreferrer">{__('Compare plans', 'wconvert')}</a></>}</>}</p>
   </div>;
+}
+
+/** Why a chip is refused: bought or missing, which are never one sentence (GUIDELINES §14). */
+function sentenceFor({ pick, availability, rendering }: { pick: Pick; availability: ReturnType<typeof availabilityOf>; rendering: Rendering }, value: DisplayRulesValue): string {
+  return rendering === 'upsell'
+    ? unlessFree(sprintf(
+      /* translators: 1: a choice, e.g. “When they try to leave”. 2: a product name, e.g. “WConvert Pro”. */
+      __('“%1$s” is part of %2$s.', 'wconvert'), pick.label(value), tierProductName(availability.tier)))
+    : sprintf(
+      /* translators: 1: a choice, e.g. “Shoppers with items in their cart”. 2: a plugin's name, e.g. “WooCommerce”. */
+      __('“%1$s” needs the %2$s plugin on this site.', 'wconvert'), pick.label(value), availability.requires_label ?? __('another', 'wconvert'));
 }
 
 /** An unchosen chip reads the number choosing it would write. */

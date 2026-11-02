@@ -1,6 +1,8 @@
 import { useId, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
+import { formatCount } from '../lib/format';
+import { refusable } from '../lib/refusable';
 import { ColorField } from './ColorField';
 import { cssOnlyNote, useAdvanced } from './advanced';
 import { StyleValueInput } from './StyleValueInput';
@@ -52,21 +54,24 @@ export function GradientField({ label, shown, reset, open, onOpenChange, onChang
                   write({ ...gradient, stops: gradient.stops.map((held, i) => i === index ? { ...held, at } : held) });
                 }} />
             </label> : <span className="flex-1" />}
-            <Button type="button" variant="ghost" size="xs" disabled={gradient.stops.length <= 2} aria-label={sprintf(/* translators: %d: the color's position in a gradient, e.g. 1. */ __('Remove color %d', 'wconvert'), index + 1)} onClick={() => {
+            <Button type="button" variant="ghost" size="xs" aria-label={sprintf(/* translators: %d: the color's position in a gradient, e.g. 1. */ __('Remove color %d', 'wconvert'), index + 1)} {...refusable(gradient.stops.length <= 2 ? `${id}-fewest` : null, () => {
               setColor(null); write({ ...gradient, stops: gradient.stops.filter((_, i) => i !== index) });
-            }}>{__('Remove', 'wconvert')}</Button>
+            })}>{__('Remove', 'wconvert')}</Button>
           </div>
         </div>)}
-        <button type="button" className="wconvert-panel-link" disabled={gradient.stops.length >= 6} onClick={() => {
+        {gradient.stops.length <= 2 && <PanelHint id={`${id}-fewest`}>{__('A gradient keeps at least two colors.', 'wconvert')}</PanelHint>}
+        <button type="button" className="wconvert-panel-link" {...refusable(gradient.stops.length >= 6 ? `${id}-most` : null, () => {
           const stops = [...gradient.stops];
           let gap = 0;
           for (let i = 1; i < stops.length - 1; i++) if (stops[i + 1].at - stops[i].at > stops[gap + 1].at - stops[gap].at) gap = i;
           stops.splice(gap + 1, 0, { color: stops[gap].color, at: (stops[gap].at + stops[gap + 1].at) / 2 });
           write({ ...gradient, stops });
-        }}>{__('Add color', 'wconvert')}</button>
+        })}>{__('Add color', 'wconvert')}</button>
+        {gradient.stops.length >= 6 && <PanelHint id={`${id}-most`}>{sprintf(/* translators: %s: the most colors a gradient may have. */ __('Up to %s colors. Remove one to add another.', 'wconvert'), formatCount(6))}</PanelHint>}
       </> : advanced ? <StyleValueInput aria-label={sprintf(/* translators: %s: a design setting's label, e.g. “Background”. */ __('%s CSS', 'wconvert'), label)} value={shown} onCommit={onChange} />
         : <PanelHint>{cssOnlyNote()}</PanelHint>}
-      {advanced && <button type="button" className="wconvert-panel-link" disabled={gradient === null} onClick={() => { setColor(null); setCustom(!custom); }}>{custom ? __('Use visual controls', 'wconvert') : __('Custom CSS', 'wconvert')}</button>}
+      {/* CSS the visual controls cannot read has nothing to switch to. */}
+      {advanced && gradient !== null && <button type="button" className="wconvert-panel-link" onClick={() => { setColor(null); setCustom(!custom); }}>{custom ? __('Use visual controls', 'wconvert') : __('Custom CSS', 'wconvert')}</button>}
     </div>}
   </div>;
 }

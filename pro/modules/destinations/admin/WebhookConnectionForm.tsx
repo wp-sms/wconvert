@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Field } from '@/shell/Field';
 import { GuideLink } from '@/shell/GuideLink';
 import { messageOf } from '@/shell/loadable';
+import { refusable } from '@/lib/refusable';
 import { regenerateConnection, saveConnection, type HeaderPair } from '@/destinations/api';
 import type { ConnectionFormProps } from '@/destinations/connectionSetup';
 import { HeadersEditor, headerProblem, headersToSend, storedHeaders } from '@/destinations/HeadersEditor';
@@ -115,6 +116,12 @@ export function WebhookConnectionForm({ type, account, title, meta, back, onSave
   const listed = [...own, ...extra];
   const headerRefused = listed.some((pair) => headerProblem(pair, listed, headersField, editing ? stored.map((known) => known.name) : []) !== null);
   const urlMissing = !editing && url.trim() === '';
+  const authMissing = receiver === 'n8n' && !editing && authName.trim() !== '' && authValue.trim() === '';
+  const refusal = label.trim() === '' ? __('Name this account first.', 'wconvert-pro')
+    : urlMissing ? __('Add the webhook URL first.', 'wconvert-pro')
+      // Before the headers: an n8n name with no value is also a header with no value.
+      : authMissing ? __('Enter the value n8n expects.', 'wconvert-pro')
+        : headerRefused ? __('Fix the headers above first.', 'wconvert-pro') : null;
   const warnPlain = insecure(url) && (headers.length > 0 || (editing && stored.length > 0));
 
   const save = () => {
@@ -165,7 +172,7 @@ export function WebhookConnectionForm({ type, account, title, meta, back, onSave
   }
 
   const field = (key: string) => `${id}-${key}`;
-  return <form className="flex min-h-0 flex-1 flex-col" onSubmit={(event) => { event.preventDefault(); if (!confirming) save(); }}>
+  return <form className="flex min-h-0 flex-1 flex-col" onSubmit={(event) => { event.preventDefault(); if (!confirming && refusal === null) save(); }}>
     {editing ? header(title, meta) : header(
       <span className="wconvert-webhook-heading"><ReceiverMark receiver={receiver} /><span>{receiver === 'code'
         ? sprintf(/* translators: %s: a service, e.g. “Webhook”. */ __('Connect %s', 'wconvert-pro'), type.label)
@@ -211,7 +218,7 @@ export function WebhookConnectionForm({ type, account, title, meta, back, onSave
             <Input id={field('auth-value')} type="password" dir="ltr" autoComplete="off" value={authValue} disabled={authName.trim() === ''}
               onChange={(event) => setAuthValue(event.target.value)} />
           </Field>
-          {authName.trim() !== '' && authValue.trim() === '' && <p className="wconvert-webhook-problem">{__('Enter the value n8n expects.', 'wconvert-pro')}</p>}
+          {authMissing && <p className="wconvert-webhook-problem">{__('Enter the value n8n expects.', 'wconvert-pro')}</p>}
         </div>}
 
         {(editing || receiver === 'code' || otherHeaders)
@@ -240,12 +247,11 @@ export function WebhookConnectionForm({ type, account, title, meta, back, onSave
           {busy ? __('Regenerating…', 'wconvert-pro') : __('Regenerate secret', 'wconvert-pro')}
         </Button>
       </AdminDialogFooter>
-      : <AdminDialogFooter error={error} note={editing ? undefined : __('Creates a signing secret', 'wconvert-pro')}
+      : <AdminDialogFooter error={error} note={refusal ? <span id={field('refused')}>{refusal}</span> : editing ? undefined : __('Creates a signing secret', 'wconvert-pro')}
         back={editing ? cancel : <Button type="button" variant="outline" disabled={busy} onClick={() => { setError(null); setStep('choose'); }}>
           <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back', 'wconvert-pro')}
         </Button>}>
-        <Button type="submit" disabled={busy || label.trim() === '' || urlMissing || headerRefused
-          || (receiver === 'n8n' && !editing && authName.trim() !== '' && authValue.trim() === '')}>
+        <Button type="submit" disabled={busy} {...refusable(refusal ? field('refused') : null)}>
           {busy ? __('Checking…', 'wconvert-pro') : __('Check and save account', 'wconvert-pro')}
         </Button>
       </AdminDialogFooter>}

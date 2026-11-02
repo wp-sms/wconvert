@@ -182,9 +182,54 @@ it('S10: a rate-limited key field opens again when the key is edited', async () 
   await userEvent.click(screen.getByRole('button', { name: 'Activate' }));
 
   expect(await screen.findByText('Too many tries. Try again in 12 minutes.')).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Activate' })).toHaveAttribute('aria-disabled', 'true');
+  const refused = screen.getByRole('button', { name: 'Activate' });
+  expect(refused).toHaveAttribute('aria-disabled', 'true');
+  expect(refused).toBeEnabled();
+  expect(refused).toHaveAccessibleDescription(/Too many tries/);
   await userEvent.type(screen.getByLabelText('License key'), '1');
   expect(screen.getByRole('button', { name: 'Activate' })).not.toHaveAttribute('aria-disabled');
+});
+
+it('busy is the real attribute: an activation in flight gets out of the way, it is not a refusal', async () => {
+  let finish: (value: unknown) => void = () => {};
+  vi.mocked(apiFetch).mockImplementation(((options?: { path: string; method?: string }) => {
+    if (!options) return Promise.resolve(undefined);
+    if (options.method === 'POST') return new Promise((resolve) => { finish = resolve; });
+    return options.path.endsWith('/account') ? Promise.resolve({ signed_in: false, email_masked: null, licenses: [], error_code: null, message: null }) : Promise.resolve(none);
+  }) as never);
+  render(<LicensePage />);
+  await userEvent.click(await screen.findByText('Enter a license key instead'));
+  await userEvent.type(screen.getByLabelText('License key'), 'WCV-BUSY');
+  await userEvent.click(screen.getByRole('button', { name: 'Activate' }));
+  const busy = await screen.findByRole('button', { name: 'Activating…' });
+  expect(busy).toBeDisabled();
+  expect(busy).not.toHaveAttribute('aria-disabled');
+  finish(none);
+});
+
+it('every license full: Activate stays reachable, says why, and declines', async () => {
+  answer({ 'GET /wconvert/v1/license': none, 'GET /wconvert/v1/license/account': {
+    signed_in: true, email_masked: 's***@example.com', error_code: null, message: null,
+    licenses: [{ id: 'one', key_masked: '••••AB12', max: 1, used: 1, full: true, ends_at: null }],
+  } });
+  render(<LicensePage />);
+  const activate = await screen.findByRole('button', { name: 'Activate on this site' });
+  expect(activate).toHaveAttribute('aria-disabled', 'true');
+  expect(activate).toHaveAccessibleDescription(/Every license on this account is in use/);
+  await userEvent.click(activate);
+  expect(activate).toHaveFocus();
+  expect(vi.mocked(apiFetch).mock.calls.some(([options]) => (options as { method?: string } | undefined)?.method === 'POST')).toBe(false);
+});
+
+it('an expired key offers Renew beside sign-in without a second brand button', async () => {
+  answer({ 'GET /wconvert/v1/license': none, 'POST /wconvert/v1/license/activate': { code: 'license_expired' } });
+  render(<LicensePage />);
+  await userEvent.click(await screen.findByText('Enter a license key instead'));
+  await userEvent.type(screen.getByLabelText('License key'), 'WCV-OLD');
+  await userEvent.click(screen.getByRole('button', { name: 'Activate' }));
+  const renew = await screen.findByRole('link', { name: /Renew/ });
+  expect(renew).toHaveAttribute('data-variant', 'outline');
+  expect(document.querySelectorAll('[data-variant="brand"]')).toHaveLength(1);
 });
 
 it('L5: a swapped key leaves the swap box empty and closed, not offering the new key for itself', async () => {

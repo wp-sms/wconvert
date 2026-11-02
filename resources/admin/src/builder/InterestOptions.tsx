@@ -1,4 +1,6 @@
-import { useLayoutEffect, useRef } from 'react';
+import { useId, useLayoutEffect, useRef } from 'react';
+import { formatCount } from '../lib/format';
+import { refusable } from '../lib/refusable';
 import { __, sprintf } from '@wordpress/i18n';
 import { FieldHeading, PanelHint } from './PanelSection';
 import { Disclosure } from '../shell/Disclosure';
@@ -36,6 +38,8 @@ export function InterestOptions({ value, onEdit, onChange }: {
   const options = interestOptions(value);
   const labels = useRef<(HTMLInputElement | null)[]>([]);
   const addButton = useRef<HTMLButtonElement>(null);
+  const fullId = useId();
+  const full = options.length >= optionLimits.max_items;
   const focusAfterChange = useRef<number | null>(null);
   useLayoutEffect(() => {
     const at = focusAfterChange.current;
@@ -80,6 +84,7 @@ export function InterestOptions({ value, onEdit, onChange }: {
       </div>
     </div>)}
     {!validInterestOptions(value) && <p role="status" className="text-sm text-destructive">{__('Add at least one choice. Each choice needs a label and a unique valid sent value.', 'wconvert')}</p>}
-    <button ref={addButton} type="button" className="wconvert-panel-link" onClick={add} disabled={options.length >= optionLimits.max_items}>{__('Add choice', 'wconvert')}</button>
+    <button ref={addButton} type="button" className="wconvert-panel-link" {...refusable(full ? fullId : null, add)}>{__('Add choice', 'wconvert')}</button>
+    {full && <PanelHint id={fullId}>{sprintf(/* translators: %s: the most choices a field may offer. */ __('Up to %s choices. Remove one to add another.', 'wconvert'), formatCount(optionLimits.max_items))}</PanelHint>}
   </fieldset>;
 }

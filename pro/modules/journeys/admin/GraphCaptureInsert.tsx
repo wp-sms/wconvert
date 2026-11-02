@@ -19,7 +19,7 @@ export function GraphCaptureInsert({ tree, primaryChannel, source, onInsert, onC
     <AdminDialogHeader title={plan.channel === 'email' ? __('Add optional email signup', 'wconvert-pro') : __('Add optional SMS signup', 'wconvert-pro')}
       meta={__('The main signup is saved first. This optional one adds contact details and consent to the same lead only when the visitor submits it.', 'wconvert-pro')} />
     <AdminDialogBody className="wconvert-graph-insert__body">
-      {plan.reason ? <p role="status">{plan.reason}</p> : <>
+      {plan.reason ? <p id={`${id}-refusal`} role="status">{plan.reason}</p> : <>
         {/* The visitor's outcome first, then the control that changes it (§22). */}
         {selected && <div className="wconvert-graph-insert__summary"><strong>{selected.label}</strong><p>{selected.detail}</p></div>}
         <label htmlFor={`${id}-location`}>{__('Insert after the main signup', 'wconvert-pro')}</label>
@@ -32,7 +32,7 @@ export function GraphCaptureInsert({ tree, primaryChannel, source, onInsert, onC
     </AdminDialogBody>
     <AdminDialogFooter back={<Button type="button" variant="outline" onClick={onCancel}>{__('Cancel', 'wconvert-pro')}</Button>}
       note={refusal && !plan.reason && <span id={`${id}-refusal`}>{refusal}</span>}>
-      <Button type="button" aria-disabled={refusal !== null || undefined} aria-describedby={refusal && !plan.reason ? `${id}-refusal` : undefined}
+      <Button type="button" aria-disabled={refusal !== null || undefined} aria-describedby={refusal ? `${id}-refusal` : undefined}
         onClick={() => { if (refusal === null) onInsert(locationId); }}>{__('Add signup', 'wconvert-pro')}</Button>
     </AdminDialogFooter>
   </>;

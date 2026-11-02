@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, onTestFinished, vi } from 'vitest';
 import SampleVisit from '../../resources/admin/src/builder/rules/SampleVisit';
 import type { DisplayRulesValue } from '../../resources/admin/src/builder/rules/summaries';
 import { ruleTypes } from './support/rule-types';
@@ -19,6 +19,20 @@ const result = () => screen.getByRole('status');
 const choose = (name: string, value: string) => fireEvent.change(screen.getByRole('combobox', { name }), { target: { value } });
 
 describe('Test a visit', () => {
+  // Not bought and missing a plugin mean opposite things and never share a sentence (§14).
+  it.each([
+    ['locked', /included with/, /WooCommerce/],
+    ['unavailable', /needs WooCommerce/, /included with/],
+  ] as const)('says only why a basket cannot be tried when cart rules are %s', (availability, says, never) => {
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' } as never;
+    onTestFinished(() => { delete window.wconvertAdmin; });
+    render(<SampleVisit cartRequired vocabulary={ruleTypes({ pro: availability })} onClose={vi.fn()} value={{
+      display_rules: { audience: { mode: 'everyone' }, opening: after15 }, targeting: {}, frequency: { maxPerSession: 1 }, schedule: {}, priority: 0,
+    }} />);
+    expect(screen.getByText(/Cart testing/)).toHaveTextContent(says);
+    expect(screen.getByText(/Cart testing/)).not.toHaveTextContent(never);
+  });
+
   it('asks only what this campaign’s rules use', () => {
     sample();
     // A Preview tab now, grouped Where / When; a group the rules never ask about is not drawn.

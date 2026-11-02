@@ -44,6 +44,21 @@ it('edits all capture conveniences in the inspector without changing routes or a
   expect(next.submissions).toHaveLength(1);
 });
 
+it('refuses Ask for their name while the name field has its own settings, and says where to change it', async () => {
+  const user = userEvent.setup();
+  const customized = structuredClone(setCaptureName(tree, tree.steps[0].id, true));
+  const named = walkNodes(customized.steps[0].content).find(node => node.type === 'field' && 'name' in node && node.name === 'name')!;
+  Object.assign(named, { required: true });
+  const update = vi.fn();
+  render(<JourneyCaptureSettings tree={customized} step={0} onChange={update} />);
+  const ask = screen.getByLabelText(/Ask for their name/);
+  expect(ask).toHaveAttribute('aria-disabled', 'true');
+  expect(ask).toHaveAccessibleDescription('The name field has its own settings. Change it on its own panel.');
+  await user.click(ask);
+  expect(ask).toHaveFocus();
+  expect(update).not.toHaveBeenCalled();
+});
+
 /** The Form section sets Required and opens each field's own panel; a field's words are edited there, once (ADR 0134). */
 it('switches Required and opens a field’s own panel, preserving save ownership and layout', async () => {
   const user = userEvent.setup();

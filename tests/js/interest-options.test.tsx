@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
-import { InterestOptions, validDraftInterestOptions, validInterestOptions, type InterestOption } from '../../resources/admin/src/builder/InterestOptions';
+import { InterestOptions, optionLimits, validDraftInterestOptions, validInterestOptions, type InterestOption } from '../../resources/admin/src/builder/InterestOptions';
 
 const OPTIONS: InterestOption[] = [
   { value: 'repair', label: 'Repair' },
@@ -25,6 +25,17 @@ describe('editing qualification choices', () => {
     await user.keyboard('{Enter}');
     expect(screen.getByRole('textbox', { name: 'Choice 1' })).toHaveValue('Installation');
     expect(screen.getByText('Saved as: installation')).toBeInTheDocument();
+  });
+
+  it('refuses another choice at the limit, keeps focus and says why', async () => {
+    const full = Array.from({ length: optionLimits.max_items }, (_, at) => ({ value: `o-${at}`, label: `Option ${at}` }));
+    render(<Editor initial={full} />);
+    const add = screen.getByRole('button', { name: 'Add choice' });
+    expect(add).toHaveAttribute('aria-disabled', 'true');
+    expect(add).toHaveAccessibleDescription(new RegExp(`Up to ${optionLimits.max_items} choices`));
+    await userEvent.click(add);
+    expect(add).toHaveFocus();
+    expect(screen.getAllByRole('textbox', { name: /^Choice / })).toHaveLength(optionLimits.max_items);
   });
 
   it('focuses the nearest surviving answer after removal and Add choice after removing the last', async () => {
