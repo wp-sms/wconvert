@@ -1,8 +1,9 @@
-import { afterEach, expect, it, vi } from 'vitest';
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import apiFetch from '@wordpress/api-fetch';
 import Revenue from '../../modules/analytics/admin/Revenue';
+import { ReportNavigationProvider, useReportJump } from '@/stats/ReportNavigation';
 vi.mock('@wordpress/api-fetch', () => ({ default: vi.fn() }));
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 const period = { days: 7, from: '2026-09-24', to: '2026-09-30' };
@@ -97,4 +98,138 @@ it('reads Today live, which the order report would otherwise read as complete da
   await screen.findByText('No linked orders in this period');
   expect(vi.mocked(apiFetch).mock.calls[0][0].path).toBe('/wconvert/v1/revenue?days=1&complete=0');
   expect(screen.queryByText(/appears tomorrow/)).toBeNull();
+});
+
+describe('a switched-off Campaign sales section (ADR 0185)', () => {
+  const off = { ...report, settings: { ...report.settings, enabled: false }, linked_orders: 0, currencies: [], orders: [] };
+  const neverSetUp = { available: true, consent_ready: true, site_matches: false, settings: { enabled: false, since: null, home: '' } };
+  const fold = () => screen.getByText('Campaign sales').closest('details');
+
+  it('starts collapsed when tracking is off and the period has no linked orders, saying what it is', async () => {
+    vi.mocked(apiFetch).mockResolvedValueOnce(off);
+    render(<Revenue period={period} />);
+    await screen.findByText('Campaign sales');
+    expect(fold()).not.toHaveAttribute('open');
+    const row = fold()!.querySelector('summary')!;
+    expect(row).toHaveTextContent('Campaign sales');
+    expect(row).toHaveTextContent('Tracking is off');
+    expect(row).toHaveTextContent('Paid orders linked to your campaigns.');
+    expect(row.querySelector('svg.lucide-shopping-bag')).not.toBeNull();
+    expect(screen.getByText('No linked orders in this period')).not.toBeVisible();
+  });
+
+  it('starts collapsed for a store that never turned it on, whose saved address is empty', async () => {
+    vi.mocked(apiFetch).mockResolvedValueOnce(neverSetUp);
+    render(<Revenue period={period} />);
+    await screen.findByText('Campaign sales');
+    expect(fold()).not.toHaveAttribute('open');
+    expect(screen.queryByRole('heading', { name: 'Campaign sales' })).toBeNull();
+    await userEvent.click(screen.getByText('Campaign sales'));
+    expect(fold()).toHaveAttribute('open');
+    expect(screen.getByRole('button', { name: 'Turn on tracking' })).toBeVisible();
+  });
+
+  it('stays open while tracking is on, even with nothing linked', async () => {
+    vi.mocked(apiFetch).mockResolvedValueOnce({ ...report, linked_orders: 0, currencies: [], orders: [] });
+    render(<Revenue period={period} />);
+    expect(await screen.findByRole('heading', { name: 'Campaign sales' })).toBeVisible();
+    expect(fold()).toBeNull();
+  });
+
+  it('stays open when the period has linked orders, even with tracking off', async () => {
+    vi.mocked(apiFetch).mockResolvedValueOnce({ ...report, settings: off.settings });
+    render(<Revenue period={period} />);
+    expect(await screen.findByRole('heading', { name: 'Campaign sales' })).toBeVisible();
+    expect(screen.getByText('Linked paid orders')).toBeVisible();
+  });
+
+  it('stays open when the site address changed, because that needs fixing', async () => {
+    vi.mocked(apiFetch).mockResolvedValueOnce({ ...off, site_matches: false });
+    render(<Revenue period={period} />);
+    expect(await screen.findByRole('heading', { name: 'Campaign sales' })).toBeVisible();
+    expect(screen.getByText(/The site address changed/)).toBeVisible();
+  });
+
+  it('stays open when a report too large to total cannot say nothing was linked', async () => {
+    vi.mocked(apiFetch).mockResolvedValueOnce({ ...off, complete: false });
+    render(<Revenue period={period} />);
+    expect(await screen.findByRole('heading', { name: 'Campaign sales' })).toBeVisible();
+    expect(screen.getByText('Choose a shorter period')).toBeVisible();
+  });
+
+  it('stays open when the first read failed', async () => {
+    vi.mocked(apiFetch).mockRejectedValueOnce(new Error('offline'));
+    render(<Revenue period={period} />);
+    expect(await screen.findByRole('alert')).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Campaign sales' })).toBeVisible();
+  });
+
+  it('opens to show a read that failed after a collapsed one', async () => {
+    vi.mocked(apiFetch).mockResolvedValueOnce(off);
+    const view = render(<Revenue period={period} />);
+    await screen.findByText('Campaign sales');
+    vi.mocked(apiFetch).mockRejectedValueOnce(new Error('offline'));
+    view.rerender(<Revenue period={{ ...period, days: 30, from: '2026-09-01' }} />);
+    const alert = await screen.findByRole('alert');
+    expect(alert).toBeVisible();
+    expect(fold()).toHaveAttribute('open');
+  });
+
+  it('opens to show a failed save, and keeps the shape it was in', async () => {
+    vi.mocked(apiFetch).mockResolvedValueOnce(off).mockRejectedValueOnce({ message: 'Nope' });
+    render(<Revenue period={period} />);
+    await userEvent.click(await screen.findByText('Campaign sales'));
+    await userEvent.click(screen.getByText('Tracking & setup'));
+    await userEvent.click(screen.getByRole('button', { name: 'Turn on tracking' }));
+    expect(await screen.findByRole('alert')).toBeVisible();
+    expect(fold()).toHaveAttribute('open');
+  });
+
+  it('keeps the section open after tracking is turned off here, with its confirmation and focus', async () => {
+    vi.mocked(apiFetch).mockResolvedValueOnce({ ...report, linked_orders: 0, currencies: [], orders: [] })
+      .mockResolvedValueOnce({ settings: off.settings }).mockResolvedValueOnce(off);
+    render(<Revenue period={period} />);
+    await userEvent.click(await screen.findByText('Tracking & setup'));
+    await userEvent.click(screen.getByRole('button', { name: 'Turn off tracking' }));
+    await userEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Turn off tracking' }));
+    const again = await screen.findByRole('button', { name: 'Turn on tracking' });
+    await waitFor(() => expect(vi.mocked(apiFetch)).toHaveBeenCalledTimes(3));
+    expect(screen.getByRole('heading', { name: 'Campaign sales' })).toBeVisible();
+    expect(fold()).toBeNull();
+    expect(again).toBeVisible();
+  });
+
+  it('does not rebuild the section under the merchant when they turn tracking on from it', async () => {
+    vi.mocked(apiFetch).mockResolvedValueOnce(off)
+      .mockResolvedValueOnce({ settings: report.settings }).mockResolvedValueOnce({ ...off, settings: report.settings });
+    render(<Revenue period={period} />);
+    await userEvent.click(await screen.findByText('Campaign sales'));
+    await userEvent.click(screen.getByText('Tracking & setup'));
+    const toggle = screen.getByRole('button', { name: 'Turn on tracking' });
+    await userEvent.click(toggle);
+    await waitFor(() => expect(toggle).toHaveTextContent('Turn off tracking'));
+    expect(toggle).toBeInTheDocument();
+    expect(toggle).toBeVisible();
+  });
+
+  it('opens when something jumps to it', async () => {
+    vi.mocked(apiFetch).mockResolvedValueOnce(off);
+    function JumpToSales() {
+      const target = useReportJump('sales');
+      return <button type="button" onClick={() => { const element = document.getElementById(target!.controls)!; element.scrollIntoView = vi.fn(); target!.jump(); }}>Go</button>;
+    }
+    render(<ReportNavigationProvider><JumpToSales /><Revenue period={period} /></ReportNavigationProvider>);
+    await screen.findByText('Campaign sales');
+    expect(fold()).not.toHaveAttribute('open');
+    await userEvent.click(screen.getByRole('button', { name: 'Go' }));
+    expect(fold()).toHaveAttribute('open');
+    expect(screen.getByRole('group', { name: 'Sales' })).toHaveFocus();
+  });
+
+  it('behaves the same on one campaign', async () => {
+    vi.mocked(apiFetch).mockResolvedValueOnce(off);
+    render(<Revenue period={period} optinId="offer" />);
+    await screen.findByText('Campaign sales');
+    expect(fold()).not.toHaveAttribute('open');
+  });
 });

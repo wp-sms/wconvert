@@ -1,10 +1,11 @@
 import { createContext, useCallback, useContext, useId, useState, type ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
+import { flushSync } from 'react-dom';
 import { Button } from '../components/ui/button';
 import './report.css';
 
 type ReportName = 'attention' | 'sales' | 'products' | 'activity' | 'answers';
-type Target = { label: string; element: HTMLDivElement };
+type Target = { label: string; element: HTMLDivElement; onJump?: () => void };
 const ORDER: ReportName[] = ['attention', 'products', 'sales', 'activity', 'answers'];
 const Navigation = createContext<{
   targets: Partial<Record<ReportName, Target>>;
@@ -24,17 +25,24 @@ export function ReportNavigationProvider({ children }: { children: ReactNode }) 
   return <Navigation.Provider value={{ targets, register }}>{children}</Navigation.Provider>;
 }
 
-/** Only mounted reports register a shortcut: no dead links for unavailable sales or empty answers. */
-export function ReportTarget({ name, label, children }: { name: ReportName; label: string; children: ReactNode }) {
+/**
+ * Only mounted reports register a shortcut: no dead links for unavailable sales or empty answers.
+ *
+ * `onJump` runs just before a jump lands, for a report that has to open first
+ * (ADR 0185). Keep it stable: a new function registers the target again.
+ */
+export function ReportTarget({ name, label, onJump, children }: { name: ReportName; label: string; onJump?: () => void; children: ReactNode }) {
   const register = useContext(Navigation)?.register;
   const id = useId();
   const ref = useCallback((element: HTMLDivElement | null) => {
-    register?.(name, element ? { label, element } : null);
-  }, [register, name, label]);
+    register?.(name, element ? { label, element, onJump } : null);
+  }, [register, name, label, onJump]);
   return register ? <div id={id} ref={ref} tabIndex={-1} role="group" aria-label={label} className="wa-report-target">{children}</div> : children;
 }
 
 function jumpTo(target: Target) {
+  // Laid out before the scroll: a report near the foot may only reach the top once it is open.
+  if (target.onJump) flushSync(target.onJump);
   target.element.focus({ preventScroll: true });
   target.element.scrollIntoView({ block: 'start' });
 }
