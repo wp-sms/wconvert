@@ -56,7 +56,7 @@ final class Insights
                     'name' => $row['name'], 'result_label' => $goal['result_label'], 'rate_label' => $goal['rate_label'], 'title' => $title, 'note' => $note,
                     'evidence_type' => 'observed', 'facts' => $facts, 'periods' => $periods,
                     'fingerprint' => hash('sha256', (string) wp_json_encode([$rule, $row['id'], $facts, $periods])),
-                    'limitation' => __('The cause is unknown. Current settings do not prove what happened during this period. Counts are activity, not unique people.', 'wconvert'),
+                    'limitation' => __('Cause unknown; current settings don’t prove it. Counts are activity, not unique people.', 'wconvert'),
                     'action' => $rule === 'lower_rate' ? 'edit' : 'display',
                     'priority' => $rule === 'no_appearances' ? 0 : 1,
                     'difference' => ($before['results'] ?? 0) - $current['results']];

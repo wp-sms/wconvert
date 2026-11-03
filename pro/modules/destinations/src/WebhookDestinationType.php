@@ -160,8 +160,8 @@ final class WebhookDestinationType implements DestinationType, DeclaresRetrySche
         if ($status >= 200 && $status < 300) return PushResult::success();
         if ($status >= 300 && $status < 400) return PushResult::attention(__('The webhook URL redirects. Paste the address it redirects to.', 'wconvert-pro'));
         if ($status === 401) return PushResult::attention(__('The receiver refused the request. Check the webhook’s key or headers.', 'wconvert-pro'));
-        if ($status === 403) return PushResult::attention(__('The receiver or its firewall blocked the request. Check its key, headers or bot protection.', 'wconvert-pro'));
-        if ($status === 404 || $status === 410) return PushResult::attention(__('The receiver no longer accepts this URL. The Zap or scenario may be off or deleted.', 'wconvert-pro'));
+        if ($status === 403) return PushResult::attention(__('Blocked by the receiver or firewall. Check key, headers or bot protection.', 'wconvert-pro'));
+        if ($status === 404 || $status === 410) return PushResult::attention(__('URL not found: its Zap or scenario may be off or deleted.', 'wconvert-pro'));
         if ($status === 408 || $status === 429 || $status >= 500) return PushResult::retryable(__('The receiver is temporarily unavailable.', 'wconvert-pro'));
         return PushResult::terminal(__('The receiver rejected this submission.', 'wconvert-pro'));
     }
@@ -170,7 +170,7 @@ final class WebhookDestinationType implements DestinationType, DeclaresRetrySche
     private static function transportFailure(string $error): PushResult
     {
         if (preg_match('/certificate|cURL error (51|58|60|77)\b/i', $error) === 1) {
-            return PushResult::attention(__('The receiver’s security certificate is invalid. Fix it on the receiver; WConvert only sends over a valid one.', 'wconvert-pro'));
+            return PushResult::attention(__('The receiver’s security certificate is invalid. Fix it on the receiver.', 'wconvert-pro'));
         }
         return PushResult::retryable(__('The receiver could not be reached. The result may be uncertain.', 'wconvert-pro'));
     }
@@ -180,7 +180,7 @@ final class WebhookDestinationType implements DestinationType, DeclaresRetrySche
     {
         return match ($refusal) {
             WebhookUrlGuard::INVALID => __('Enter a full webhook URL starting with https:// or http://.', 'wconvert-pro'),
-            WebhookUrlGuard::PRIVATE => __('This URL points at a private or local network address, which WConvert does not send to.', 'wconvert-pro'),
+            WebhookUrlGuard::PRIVATE => __('WConvert does not send to private or local network addresses like this.', 'wconvert-pro'),
             WebhookUrlGuard::UNRESOLVED => __('This URL’s host could not be found. Check the address.', 'wconvert-pro'),
             default => null,
         };

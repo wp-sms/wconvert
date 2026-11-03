@@ -483,7 +483,7 @@ final class OptinController implements RestController
 
         if ($stored !== null && $checked !== null && $checked->value !== $stored->goal && !$stored->canChangeGoal()) {
             return new WP_Error('wconvert_optin_goal_locked',
-                __('This goal is fixed after first publish or while part of an A/B test. Duplicate this campaign for a different Goal to keep its history unchanged.', 'wconvert'),
+                __('This goal is fixed after first publish or in an A/B test. Duplicate for another goal.', 'wconvert'),
                 ['status' => 409]);
         }
 
@@ -776,7 +776,7 @@ final class OptinController implements RestController
             }
             if (is_array($step) && $invalid($step)) {
                 return new WP_Error('wconvert_optin_choices_invalid',
-                    __('Fix the interest choices before saving: each entered choice needs a label and a unique valid sent value. Your changes are still here.', 'wconvert'),
+                    __('Can’t save: interest choices need a label and unique valid sent value.', 'wconvert'),
                     ['status' => 400]);
             }
         }
@@ -1028,7 +1028,7 @@ final class OptinController implements RestController
         return new WP_Error(
             'wconvert_optin_invalid_schedule',
             $refused->reason === InvalidSchedule::UNREADABLE
-                ? __('A campaign’s start and end have to be a date and a time.', 'wconvert')
+                ? __('A campaign’s start and end need a date and a time.', 'wconvert')
                 : __('A campaign’s schedule has to end after it starts.', 'wconvert'),
             ['status' => 400]
         );
@@ -1080,7 +1080,7 @@ final class OptinController implements RestController
             return new WP_Error(
                 'wconvert_optin_captures_nothing',
                 __(
-                    'This design captures nothing, so it has no leads to send anywhere. Remove its destinations first.',
+                    'This design collects nothing to send. Remove its destinations first.',
                     'wconvert'
                 ),
                 ['status' => 400]
@@ -1144,7 +1144,7 @@ final class OptinController implements RestController
         // arm counting nothing beside one counting clicks compares nothing.
         if ($offered === [] && $siblings !== null) {
             return new WP_Error('wconvert_optin_arms_are_not_comparable',
-                __('This design counts nothing and the other arm of this test counts a conversion, so the two rates would not be comparable.', 'wconvert'),
+                __('Rates not comparable: this design counts nothing, the other variant counts conversions.', 'wconvert'),
                 ['status' => 400]);
         }
 
@@ -1156,11 +1156,11 @@ final class OptinController implements RestController
             'wconvert_optin_arms_are_not_comparable',
             $offered[0] === ConvertingAct::Click
                 ? __(
-                    'This design converts on a click and the other arm of this test converts on a form submission, so the two rates would not be comparable.',
+                    'Rates not comparable: this design counts clicks, the other variant form submissions.',
                     'wconvert'
                 )
                 : __(
-                    'This design converts on a form submission and the other arm of this test converts on a click, so the two rates would not be comparable.',
+                    'Rates not comparable: this design counts form submissions, the other variant clicks.',
                     'wconvert'
                 ),
             ['status' => 400]
@@ -1225,7 +1225,7 @@ final class OptinController implements RestController
         return new WP_Error(
             'wconvert_optin_cannot_convert',
             __(
-                'This design has nothing on it that counts as a conversion, so the Campaign would report zero however many people saw it. Add the button back, or pick a design that has one.',
+                'Nothing here counts as a conversion. Add the button back, or pick a design with one.',
                 'wconvert'
             ),
             ['status' => 400]

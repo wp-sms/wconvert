@@ -191,7 +191,7 @@ final class LeadController implements RestController
         if ($canonical === null || $confirmation === null || $canonical !== $confirmation) {
             return new WP_Error(
                 'wconvert_invalid_erasure_identifier',
-                __('Enter and confirm one complete email address or phone number with its country code.', 'wconvert'),
+                __('Enter and confirm one complete email or phone number with country code.', 'wconvert'),
                 ['status' => 400]
             );
         }

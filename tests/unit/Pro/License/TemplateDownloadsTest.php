@@ -138,7 +138,7 @@ final class TemplateDownloadsTest extends TestCase
             };
             try { $this->pack($this->transport()); self::fail('Accepted refused managed key'); }
             catch (\RuntimeException $e) {
-                self::assertSame('Premium template access is unavailable. Contact the person managing your licence. Installed designs still work.', $e->getMessage());
+                self::assertSame('Premium templates unavailable. Ask whoever manages your license. Installed designs still work.', $e->getMessage());
             }
         }
     }

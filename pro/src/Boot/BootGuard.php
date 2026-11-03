@@ -89,7 +89,7 @@ final class BootGuard
     {
         return match ($verdict) {
             MinCoreVerdict::CoreAbsent => __(
-                'WConvert Pro did not start: it supplies features to the WConvert plugin, and WConvert is not active. Activate WConvert.',
+                'WConvert Pro did not start: WConvert is not active. Activate WConvert.',
                 'wconvert-pro'
             ),
             MinCoreVerdict::CoreTooOld => sprintf(
@@ -104,7 +104,7 @@ final class BootGuard
             MinCoreVerdict::VersionUnreadable => sprintf(
                 /* translators: 1: installed WConvert version string, 2: version WConvert Pro requires. */
                 __(
-                    'WConvert Pro did not start: it could not read the versions it compares. WConvert reports "%1$s" and WConvert Pro requires "%2$s". Reinstall both plugins.',
+                    'WConvert Pro did not start: it could not read WConvert "%1$s" or its required "%2$s". Reinstall both plugins.',
                     'wconvert-pro'
                 ),
                 self::installedCore() ?? '',

@@ -73,7 +73,7 @@ final class Bootstrap
     {
         if ($networkWide && is_multisite()) {
             wp_die(
-                esc_html__('WConvert Pro cannot be activated for the whole network. Activate it on each site instead, from that site\'s Plugins screen.', 'wconvert-pro'),
+                esc_html__('WConvert Pro cannot be network-activated. Activate it from each site’s Plugins screen.', 'wconvert-pro'),
                 esc_html__('Plugin not activated', 'wconvert-pro'),
                 ['back_link' => true]
             );

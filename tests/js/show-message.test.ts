@@ -13,7 +13,7 @@ import type { GoalReport, OptinReport } from '../../resources/admin/src/stats/ap
 
 /** Show a message: one content screen offering no act, reporting appearances only (ADR 0163). */
 const MESSAGE: OutcomeContract = {
-  action: 'none', capture_any_of: [], requirement: 'Shows a message. Remove the form and any counted button, or choose Promote an offer.',
+  action: 'none', capture_any_of: [], requirement: 'Remove the form and any counted button, or choose Promote an offer.',
   measurement: 'Counts appearances only.', proof_level: 'shown', destination_type: null, link_required: false, audience_channel: null,
 };
 

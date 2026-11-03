@@ -165,7 +165,7 @@ final class MailPoetDestinationType implements DestinationType
             'type' => 'ids',
             'label' => __('Lists to add to', 'wconvert'),
             'description' => __(
-                'Adds subscribers to these lists without removing other memberships. MailPoet controls signup confirmation.',
+                'Other list memberships stay. MailPoet controls signup confirmation.',
                 'wconvert'
             ),
         ];
@@ -220,7 +220,7 @@ final class MailPoetDestinationType implements DestinationType
         $email = $subject->values[CanonicalFields::EMAIL] ?? '';
 
         if (!$this->requirements()->acceptsCapture($subject->values)) {
-            return PushResult::skipped(__('MailPoet keys a subscriber on their email address, and this Lead carries none.', 'wconvert'));
+            return PushResult::skipped(__('MailPoet needs an email address, and this lead has none.', 'wconvert'));
         }
 
         $lists = $this->configuredLists($context);
@@ -294,7 +294,7 @@ final class MailPoetDestinationType implements DestinationType
             $subscriber = $this->newSubscriber($values);
             $valid = array_column($this->subscribers->textFields(), 'id');
             foreach ($mapped as $mapping => $value) {
-                if (!is_string($value) || !in_array($mapping, $valid, true)) throw new \RuntimeException(__('A configured MailPoet text field is unavailable or incompatible. Review this campaign’s mapping.', 'wconvert')); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- operator text: caught upstream and returned or stored as plain text, never printed as HTML.
+                if (!is_string($value) || !in_array($mapping, $valid, true)) throw new \RuntimeException(__('A MailPoet text field is unavailable or incompatible. Review this campaign’s mapping.', 'wconvert')); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- operator text: caught upstream and returned or stored as plain text, never printed as HTML.
                 $subscriber[$mapping] = $value;
             }
             return $this->subscribers->add($subscriber, $lists);

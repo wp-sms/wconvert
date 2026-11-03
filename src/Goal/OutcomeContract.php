@@ -140,10 +140,10 @@ final class OutcomeContract
         // (ADR 0133). A lead magnet gets a non-blocking warning in the review.
         if ($captureMode === 'local') return null;
         if ($this->audienceChannel !== null && !in_array($this->audienceChannel, $readyChannels, true)) {
-            return __('Choose and set up a service for this channel, or choose “Keep in WConvert only” before publishing.', 'wconvert');
+            return __('Set up a service for this channel, or choose “Keep in WConvert only”.', 'wconvert');
         }
         return $this->destinationType !== null && !in_array($this->destinationType, $readyTypes, true)
-            ? __('Connect a lead magnet email destination and complete its file link, or choose “Keep in WConvert only”, before publishing.', 'wconvert')
+            ? __('Connect a lead magnet email destination with its file link, or choose “Keep in WConvert only”.', 'wconvert')
             : null;
     }
 

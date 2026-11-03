@@ -91,7 +91,7 @@ final class ReportController implements RestController
         if (!$this->job->sendTest($parsed)) {
             return new WP_Error(
                 'wconvert_summary_not_sent',
-                __('WordPress could not send the email. Check your site’s email setup, then try again.', 'wconvert'),
+                __('WordPress could not send the email. Check your site’s email setup.', 'wconvert'),
                 ['status' => 502]
             );
         }

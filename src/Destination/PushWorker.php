@@ -162,7 +162,7 @@ final class PushWorker
             return PushResult::retryable(__('The destination fields could not be checked. Sending will retry.', 'wconvert'));
         }
         foreach ($subject->mapped as $target => $value) {
-            if (!isset($available[$target]) || !MappingFields::accepts($available[$target], $value)) return PushResult::attention(__('A mapped destination field is unavailable or has an incompatible type. Review this campaign’s mapping.', 'wconvert'));
+            if (!isset($available[$target]) || !MappingFields::accepts($available[$target], $value)) return PushResult::attention(__('A mapped destination field is unavailable or incompatible. Review this campaign’s mapping.', 'wconvert'));
         }
         return null;
     }

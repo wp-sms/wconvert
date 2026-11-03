@@ -126,7 +126,7 @@ final class TestReport
     public static function nothingToConnectTo(): self
     {
         return new self(PushOutcome::Skipped, __(
-            'This destination has no credentials to check — it runs on this site. Use “Send a test” to prove it works.',
+            'Runs on this site, so nothing to check. Use “Send a test”.',
             'wconvert'
         ));
     }

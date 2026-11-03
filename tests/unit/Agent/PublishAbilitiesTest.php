@@ -99,7 +99,7 @@ final class PublishAbilitiesTest extends TestCase
         $reply = $this->ask('wconvert/publish', ['occasion_id' => 'black-friday-2026']);
 
         self::assertSame([$ready], array_column($reply['published'], 'campaign_id'));
-        self::assertSame([['campaign_id' => $empty, 'name' => 'Teaser', 'reason' => 'Choose a template before publishing. You can keep saving this campaign as a draft.']], $reply['failed']);
+        self::assertSame([['campaign_id' => $empty, 'name' => 'Teaser', 'reason' => 'Choose a template before publishing.']], $reply['failed']);
         self::assertSame([['campaign_id' => $live, 'name' => 'Already live', 'reason' => 'Already published, with no unpublished changes.']], $reply['skipped']);
         self::assertNull($this->site->optins->find($empty)?->publishedAt);
     }

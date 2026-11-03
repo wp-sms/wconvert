@@ -70,6 +70,6 @@ final class SpamFilters
 
     private static function invalid(): WP_Error
     {
-        return new WP_Error('wconvert_filter_settings', __('Enter up to 100 valid addresses or exact domains per list, one per line. Wildcards are not supported.', 'wconvert-pro'), ['status' => 422]);
+        return new WP_Error('wconvert_filter_settings', __('Enter up to 100 valid addresses or exact domains per list, one per line. No wildcards.', 'wconvert-pro'), ['status' => 422]);
     }
 }

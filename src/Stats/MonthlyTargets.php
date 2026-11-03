@@ -43,7 +43,7 @@ final class MonthlyTargets
                 'available' => $id === 'leads' || $impact['goals'] !== [] || isset($saved[$id]) || isset($prior[$id]),
                 'unit' => $id === 'leads' ? __('submissions', 'wconvert') : __('clicks', 'wconvert'),
                 'note' => $id === 'leads'
-                    ? __('Form submissions across all capture campaigns, including repeats. Not unique people or confirmed subscribers.', 'wconvert')
+                    ? __('Form submissions across campaigns, including repeats. Not unique people or confirmed subscribers.', 'wconvert')
                     : ($id === 'offers'
                         ? __('Clicks to offers or content. Not purchases or revenue.', 'wconvert')
                         : __('Clicks back to a shopping basket. Not completed orders or recovered revenue.', 'wconvert')),

@@ -165,7 +165,7 @@ final class Suspension
         if ($this->dependency !== null) {
             return sprintf(
                 /* translators: 1: the display name of the rule the Optin cannot run without. 2: the plugin the site needs, e.g. WooCommerce. */
-                __('Suspended — the “%1$s” rule needs %2$s, which is not active on this site', 'wconvert'),
+                __('Suspended: the “%1$s” rule needs %2$s, which isn’t active here.', 'wconvert'),
                 RuleLabels::type($this->rule),
                 $this->dependency->label()
             );
