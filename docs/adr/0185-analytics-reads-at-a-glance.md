@@ -49,3 +49,17 @@ made a merchant hunt for them. A problem looked like every other card.
    any of them. The fact moves to a "Today" entry in "How these numbers work";
    the chart's dashed last segment stays, and its hover and table still say
    "Today so far".
+
+5. **The chart draws in real pixels and reads one day at a time.** It was a fixed
+   960-wide drawing scaled to a 190px-tall box, so a wider panel left empty space
+   on both sides and a phone shrank its text. A `ResizeObserver` now measures the
+   plot, the line and gridlines reach both of its edges, and the text keeps its
+   size. A pointer snaps to the nearest day (`nearestDay`) and shows a hairline, a
+   dot on each line and a tooltip with the date and value, the previous date and
+   value when comparing, and "Today so far" on the running day. A tap does the
+   same and `touch-action: pan-y` leaves scrolling to the browser. About five dates
+   run under a wide plot and three under a narrow one, each at its day's pixel.
+   The chart block is `dir="ltr"`, because its date row flipped in right-to-left
+   while the line did not, which put the dates on the wrong ends (§15). The drawing
+   and tooltip stay hidden from assistive technology: the exact-numbers table is
+   that route.

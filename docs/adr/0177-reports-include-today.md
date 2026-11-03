@@ -37,7 +37,8 @@ did not.
    a change.
 4. **The chart marks the running day.** Its last segment is dashed and its last
    point hollow, so a partial day does not read as a drop; the point and the
-   daily table say "Today so far".
+   daily table say "Today so far". *(Amended by
+   [0185](0185-analytics-reads-at-a-glance.md): so does the chart's hover.)*
 5. **"Today's activity appears tomorrow. Choose Today to see it so far." is
    retired**, with "No complete days yet" and "No complete days yet this
    month". An empty window says "Nothing was shown in this period."

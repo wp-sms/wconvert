@@ -723,7 +723,8 @@ The exceptions, and they are the only ones:
   mirror them a second time. The words on each card still take the page's
   direction. The design stage is the same case (ADR 0170): `place()` mirrors a
   slide-in's corner, the stage is the `ltr` scroll box, and its page takes the
-  admin's direction back.
+  admin's direction back. So is the Analytics chart (ADR 0185): time runs left to
+  right, its block is `ltr`, and its tooltip's words take the direction back.
 
 **A directional glyph is mirrored.** A Back arrow, a submenu chevron, a
 disclosure twist, the corner arrow marking an A/B arm — `rtl:-scale-x-100` in a
