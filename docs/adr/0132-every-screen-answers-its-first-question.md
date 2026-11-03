@@ -127,7 +127,9 @@ collections shelf above the grid.*
     measure's amount and unit are one joined control under its slider; the
     editor's preloader is the editor's own frame; Data & privacy's data map is
     closed by default; the Needs attention card leads with what is wrong and
-    puts the fix and its evidence on one row.
+    puts the fix and its evidence on one row. *(Amended by
+    [0185](0185-analytics-reads-at-a-glance.md): its header is amber, and so is
+    Sending needs attention's, so a problem stands out among white cards.)*
 26. Help holds help (Getting started, Guides, Contact support, What's new;
     *amended by [ADR 0144](0144-help-is-a-page.md): and a WConvert → Help page
     the popover opens, from the same `HELP_URLS`*);

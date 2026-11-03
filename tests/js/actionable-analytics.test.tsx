@@ -24,6 +24,27 @@ it('shows at most three observations with inspectable denominators and a scoped 
   expect(screen.getByText('1 more campaign needs attention. Open a goal to see it.')).toBeInTheDocument();
   expect(screen.queryByText(/apply automatically/i)).not.toBeInTheDocument();
 });
+it('marks both problem cards with an amber header and leaves their rows white (ADR 0185)', async () => {
+  const item: Insight = { rule_id: 'no_appearances', fingerprint: 'none', optin_id: 'campaign', goal: 'grow_email_list', name: 'Newsletter', title: 'Not shown in this period', note: 'Review display rules.', result_label: 'Email submissions', rate_label: 'Email submission rate', limitation: 'Cause unknown.', action: 'display', facts: { current: { appearances: 0, results: 0, rate: null }, previous: null }, periods: { from: '2026-09-01', to: '2026-09-30', previous_from: null, previous_to: null } };
+  vi.mocked(readDestinations).mockResolvedValue({ destinations: [{ id: 'mail', label: 'Newsletter', availability: 'ready', health: { consecutive_failures: 2, skipped_captures: 0, last_error_at: null, last_skipped_at: null } }], failures: [] } as unknown as DestinationsPayload);
+  render(<><Insights items={[item]} query={{ days: 30 }} /><DeliveryAttention /></>);
+  for (const name of ['Needs attention', 'Sending needs attention']) {
+    const heading = await screen.findByRole('heading', { name });
+    const header = heading.closest('[data-slot="region-header"]')!;
+    expect(header).toHaveClass('bg-warning-surface');
+    expect(header.querySelector('.wconvert-region-icon')).toHaveClass('bg-warning');
+    expect(header.closest('section')).toHaveClass('border-warning');
+    expect(header.closest('section')).not.toHaveClass('bg-warning-surface');
+  }
+});
+
+it('keeps the amber header when sending could not be checked', async () => {
+  vi.mocked(readDestinations).mockRejectedValue(new Error('offline'));
+  render(<DeliveryAttention />);
+  const heading = await screen.findByRole('heading', { name: 'Sending needs attention' });
+  expect(heading.closest('[data-slot="region-header"]')).toHaveClass('bg-warning-surface');
+});
+
 it('refuses journey numbers from a different reporting period', async () => {
   vi.mocked(apiFetch).mockResolvedValue({ from: '2026-09-01', to: '2026-09-07', rows: [], definitions: {}, days: 7 });
   render(<JourneyReport id="campaign" period={{ from: '2026-09-24', to: '2026-09-30', days: 7 }} />);

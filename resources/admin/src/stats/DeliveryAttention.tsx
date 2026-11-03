@@ -23,7 +23,7 @@ export function DeliveryAttention() {
     void destinationsAfter(retry).then(value => { if (active) setData(value); }).catch(() => { if (active) setFailed(true); });
     return () => { active = false; };
   }, [retry]);
-  if (failed && !data) return <Region><RegionHeader title={__('Sending needs attention', 'wconvert')} icon={<Send />} /><RegionErrorState message={__('Could not check how sending is going.', 'wconvert')} onRetry={() => setRetry(n => n + 1)} /></Region>;
+  if (failed && !data) return <Region tone="attention" className="wa-report"><RegionHeader tone="attention" title={__('Sending needs attention', 'wconvert')} icon={<Send />} /><RegionErrorState message={__('Could not check how sending is going.', 'wconvert')} onRetry={() => setRetry(n => n + 1)} /></Region>;
   // Most reads land as nothing at all, so this waits as a re-read does: a quick
   // all-clear never flashes a card above the numbers and drops them back.
   if (!data) return <Reread.Provider value><RegionSkeleton label={__('Sending status', 'wconvert')} className="wa-report" icon={<Send />} lines={2} /></Reread.Provider>;
@@ -36,7 +36,7 @@ export function DeliveryAttention() {
     return newest === undefined ? null : formatWhen(newest, 'detail');
   };
   const affected = data.destinations.filter(d => d.health.consecutive_failures > 0 || d.health.skipped_captures > 0 || d.availability !== 'ready' || data.failures.some(f => f.destination === d.id));
-  return <Region className="wa-report"><RegionHeader title={__('Sending needs attention', 'wconvert')} icon={<Send />} />
+  return <Region tone="attention" className="wa-report"><RegionHeader tone="attention" title={__('Sending needs attention', 'wconvert')} icon={<Send />} />
     <RegionBody className="wa-report-setting"><div><strong>{sprintf(/* translators: %s: how many destinations need review. */ _n('%s destination needs review', '%s destinations need review', issueCount(data), 'wconvert'), formatCount(issueCount(data)))}</strong><p className="wa-muted">{__('Current status, not limited to the report dates.', 'wconvert')}</p></div>
       <div className="wconvert-toolbar"><Button variant="outline" asChild><a href={sendingIssuesHref()}>{__('Review sending issues', 'wconvert')}</a></Button></div>
     </RegionBody>
