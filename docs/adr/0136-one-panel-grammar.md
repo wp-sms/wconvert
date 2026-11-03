@@ -45,7 +45,7 @@ with one change: field hints one step smaller.
      12/400 muted. A `CheckRow`'s hint in a panel is the same 12px.
 2. **Help has a ladder.** Delete a sentence the label already says.
    Otherwise keep one line of at most twelve words only if it changes what the
-   merchant does next. Otherwise it is an InfoTip beside the label or section
+   merchant does next. (Amended by [ADR 0188](0188-the-admin-says-it-in-twelve-words.md): the whole admin is held to this, and twelve is a target with named exceptions.) Otherwise it is an InfoTip beside the label or section
    title. The InfoTip of 0131 now serves the builder as well as Analytics and
    Leads. Amended by [ADR 0187](0187-the-way-back-and-a-section-title-read-with-their-page.md): outside the builder's panels, the rung beside a section title is `RegionHeader`'s `tip` or an Analytics report's `.wa-section-title`.
 3. **Checkboxes are `CheckRow` with `.wconvert-check`**: 0131 §7's row. The

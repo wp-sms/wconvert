@@ -184,7 +184,7 @@ stack edge-to-edge tinted panels or repeat the same shared-change warning.
   Neutral inset notices use solid `--surface`, not translucent `bg-muted/*` fills.
 - Native single-select fields share an explicit chevron, logical end padding and
   RTL placement. Multi-select/listbox controls keep their own affordance.
-- `InfoTip` owns contextual help in Analytics, Leads, the builder's panels and campaign dialogs (ADR 0136, ADR 0183): a 16px Info glyph in a
+- `InfoTip` owns contextual help in Analytics, Leads, Settings, Destinations, the builder's panels and campaign dialogs (ADR 0136, ADR 0183, ADR 0188): a 16px Info glyph in a
   32px control, expanded for coarse pointers by the shared control rules. Its
   popover handles viewport edges, Escape dismissal and returning keyboard focus.
   Beside a reading page's title it takes -6px of block margin, so its 32px

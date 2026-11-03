@@ -203,6 +203,12 @@ describe('provider-declared destination requirements', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Send test' }));
     await waitFor(() => expect(testSend).toHaveBeenCalledExactlyOnceWith('route', 'owner@example.test', 'installation'));
   });
+  it('says a type that forwards the submission sends placeholder name and phone, opened from Settings', () => {
+    render(<SendTestDialog destination={route} type={{ ...type, forwards_submission: true }} initialEmail="owner@example.test" settingsDirty={false}
+      returnFocusTo={{ current: null }} onClose={vi.fn()} onSent={vi.fn()} />);
+    expect(screen.getByText('Sends this address and placeholder details, including name and phone.')).toBeInTheDocument();
+    expect(screen.queryByText(/no name or phone/)).not.toBeInTheDocument();
+  });
   it('offers no interest sample when the route has no mapping', async () => {
     render(<SendTestDialog destination={route} type={type} initialEmail="owner@example.test" settingsDirty={false}
       returnFocusTo={{ current: null }} onClose={vi.fn()} onSent={vi.fn()} />);

@@ -1524,6 +1524,11 @@ describe('destination recovery entry points', () => {
     })) });
     render(<Destinations mode="issues" />);
     expect(await screen.findByText('Rejected 0.')).toBeVisible();
+    // What the list is goes in a tip, so the rows are what reads at rest.
+    expect(screen.queryByText(/Only the latest 200 are kept/)).toBeNull();
+    await userEvent.click(screen.getByRole('button', { name: 'About Submissions that weren’t sent' }));
+    expect(await screen.findByText(/Only the latest 200 are kept/)).toBeVisible();
+    await userEvent.keyboard('{Escape}');
     expect(screen.queryByText('Rejected 25.')).toBeNull();
     expect(screen.getByText('Page 1 of 2')).toBeVisible();
     // One line: how many, across which days, and the pages (§20).

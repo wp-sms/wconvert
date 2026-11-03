@@ -748,6 +748,7 @@ describe('a report’s section title (ADR 0187)', () => {
     const tip = within(title.parentElement!).getByRole('button', { name: 'About Variant A' });
     await userEvent.click(tip);
     expect(await screen.findByText(/They do not prove a winner/)).toBeVisible();
+    expect(screen.getByText('Each variant counts once in goal totals. Visitors are assigned per browser, not per person.')).toBeVisible();
   });
 });
 

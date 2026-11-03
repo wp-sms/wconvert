@@ -15,7 +15,7 @@ import { InfoTip } from './InfoTip';
  * does not clone its child.
  *
  * `tip` stands beside the label, outside it, because a button inside a label is
- * a button that also focuses the control (ADR 0187).
+ * a button that also focuses the control (ADR 0188).
  */
 export function Field({
   label,

@@ -152,7 +152,7 @@ const REFUSALS = {
   questionBoundary: () => ({ short: __('Only before the result or signup', 'wconvert'), reason: __('Add questions on a screen before the result or contact submission.', 'wconvert') }),
   tenOnPath: () => ({ short: __('Line already has ten questions', 'wconvert'), reason: __('A line holds ten questions. Use another line, or remove a question.', 'wconvert') }),
   tenInJourney: () => ({ short: __('Already has ten questions', 'wconvert'), reason: __('This campaign already has ten questions on one line.', 'wconvert') }),
-  // The short line says it all, so no ⓘ: OptionItem draws one only for a longer reason.
+  // A reason equal to the short line draws no ⓘ. This module stays free of the menu's runtime.
   everyField: () => { const short = __('Every field is already here', 'wconvert'); return { short, reason: short }; },
   column: () => ({ short: __('Screens are already columns', 'wconvert'), reason: __('Add a column inside a Row, to group blocks into one item.', 'wconvert') }),
 } as const;
