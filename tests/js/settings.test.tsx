@@ -259,7 +259,7 @@ it('keeps agents to drafts until “Let AI agents publish” is switched on and 
 
   const publish = await screen.findByLabelText(/Let AI agents publish/);
   expect(publish).not.toBeChecked();
-  expect(publish).toHaveAccessibleDescription('Agents can always read and make drafts. Give your agent its own WordPress user so you can see and revoke what it does.');
+  expect(publish).toHaveAccessibleDescription('Agents can always read and draft. Give each its own WordPress user.');
 
   await userEvent.click(publish);
   expect(agents.saveAgentPublishing).not.toHaveBeenCalled();

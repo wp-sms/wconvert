@@ -122,7 +122,7 @@ export function PinnedDesignNotice({ pinned, onReload, onInstalled, onClear }: {
     <strong>{sprintf(/* translators: %s: a design name. */ __('Starting from “%s”', 'wconvert'), entry.name)}</strong>
     {pinned.state === 'ready' && <Description>{__('Choose a goal this template can serve. Your campaign starts with it.', 'wconvert')}</Description>}
     {pinned.state === 'install' && <>
-      <Description>{__('This template is in the online library. Add it to your templates to start a campaign with it.', 'wconvert')}</Description>
+      <Description>{__('Add this template from the online library to start a campaign.', 'wconvert')}</Description>
       <div><Button disabled={busy} onClick={() => { void install(); }}>{busy ? __('Adding…', 'wconvert') : __('Add to my templates', 'wconvert')}</Button></div>
     </>}
     {pinned.state === 'update_plugin' && <Description>{__('This template needs a newer version of WConvert.', 'wconvert')}</Description>}

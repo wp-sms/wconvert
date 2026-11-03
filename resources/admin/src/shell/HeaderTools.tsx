@@ -210,7 +210,7 @@ export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
                 {notices.formsPaused && (
                   <div className="wconvert-notification">
                     <strong>{__('Forms are paused', 'wconvert')}</strong>
-                    <p>{__('Saved email filters aren’t available on this site, so no form accepts submissions.', 'wconvert')}</p>
+                    <p>{__('Saved email filters aren’t available here, so no form accepts submissions.', 'wconvert')}</p>
                     <a href={settingsHref('protection')}>{__('Review spam protection', 'wconvert')}</a>
                   </div>
                 )}

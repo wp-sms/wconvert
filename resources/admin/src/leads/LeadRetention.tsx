@@ -171,7 +171,7 @@ export function LeadRetention({ onEditingStateChange }: { onEditingStateChange?:
         />
         <RegionBody className="flex flex-col gap-3">
           <p className="m-0 text-note text-muted-foreground" id={`${id}-scope`}>
-            {__('Applies to submissions from every campaign. Copies already sent to destinations or exported aren’t affected.', 'wconvert')}{' '}
+            {__('Applies to every campaign. Copies sent to destinations or exported aren’t affected.', 'wconvert')}{' '}
             <GuideLink href={docsUrl(GUIDES.retention, 'choose-policy')}>{__('Choosing a policy', 'wconvert')}</GuideLink>
           </p>
           <fieldset className="wconvert-radio-cards" disabled={saving} aria-describedby={`${id}-scope`}>
@@ -285,7 +285,7 @@ export function LeadRetention({ onEditingStateChange }: { onEditingStateChange?:
               {__('Existing and future submissions from every campaign are permanently deleted once they are older than this. Export a CSV first if you need them.', 'wconvert')}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <p className="m-0 text-note text-muted-foreground">{__('Campaign totals in analytics stay. Copies already sent to destinations or exported aren’t affected.', 'wconvert')}</p>
+          <p className="m-0 text-note text-muted-foreground">{__('Campaign totals stay. Copies sent to destinations or exported aren’t affected.', 'wconvert')}</p>
           <AlertDialogFooter>
             {error !== null && <p role="alert" className="m-0 text-note text-destructive sm:flex-1 sm:self-center">{error}</p>}
             <AlertDialogCancel disabled={saving}>{__('Cancel', 'wconvert')}</AlertDialogCancel>

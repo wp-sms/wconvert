@@ -357,7 +357,7 @@ describe('fitting the preview without changing its layout width', () => {
     act(() => resized());
     expect(design(container)).toHaveStyle({ transform: 'scale(1)' });
     expect(screen.getByRole('region', { name: 'Scrollable design preview' })).toBe(container.querySelector('.wconvert-stage'));
-    expect(screen.getByText('Scroll inside the preview to see the rest, or choose Fit whole design.')).toBeVisible();
+    expect(screen.getByText('Scroll the preview for the rest, or choose Fit whole design.')).toBeVisible();
   });
 
   it('gives a full-width design a stated desktop reference width without changing its tokens', async () => {

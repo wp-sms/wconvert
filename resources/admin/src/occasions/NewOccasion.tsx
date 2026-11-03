@@ -38,7 +38,7 @@ export function NewOccasionDialog({ returnFocusTo, onClose, onCreated }: {
       <AdminDialogContent size="sm" dirty={name !== '' || start !== '' || end !== ''} showCloseButton={!picker.saving}
         onCloseAutoFocus={(event) => { if (!returnFocusTo.current?.isConnected) return; event.preventDefault(); returnFocusTo.current.focus(); }}>
         <AdminDialogHeader title={__('New occasion', 'wconvert')} meta={zone
-          ? sprintf(/* translators: %s: the site's time zone, e.g. “Central European Time”. */ __('Days follow this site’s time zone, %s. Saving one never schedules a campaign.', 'wconvert'), zone)
+          ? sprintf(/* translators: %s: the site's time zone, e.g. “Central European Time”. */ __('Days use this site’s time zone, %s. Saving never schedules a campaign.', 'wconvert'), zone)
           : __('Saving one never schedules a campaign.', 'wconvert')} />
         <form className="flex min-h-0 flex-1 flex-col" onSubmit={(event) => {
           event.preventDefault();

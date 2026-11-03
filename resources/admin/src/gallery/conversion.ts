@@ -110,7 +110,7 @@ export function refusalFor(entry: TemplateIndexEntry, fit: Fit): string | null {
   if (entry.facets.captures.length === 0) {
     if (fit.bound) {
       return __(
-        'This template collects nothing, so there would be no submissions to send to this campaign’s destinations.',
+        'This template collects nothing, so this campaign’s destinations would get no submissions.',
         'wconvert',
       );
     }
@@ -119,11 +119,11 @@ export function refusalFor(entry: TemplateIndexEntry, fit: Fit): string | null {
   if (fit.sibling !== null && offered !== fit.sibling) {
     return fit.sibling === 'submit'
       ? __(
-          'Converts on a click, and the other arm of this test converts on a form submission.',
+          'Converts on a click; this test’s variants convert on a form submission.',
           'wconvert',
         )
       : __(
-          'Converts on a form submission, and the other arm of this test converts on a click.',
+          'Converts on a form submission; this test’s variants convert on a click.',
           'wconvert',
         );
   }
@@ -169,11 +169,11 @@ export function actChangeOf(entry: TemplateIndexEntry, fit: Fit, tree?: Template
 
   return entry.facets.act === 'click'
     ? __(
-        'Counts click-throughs instead of submissions — including everything this campaign has already counted.',
+        'Counts click-throughs instead of submissions, including everything this campaign already counted.',
         'wconvert',
       )
     : __(
-        'Counts submissions instead of click-throughs — including everything this campaign has already counted.',
+        'Counts submissions instead of click-throughs, including everything this campaign already counted.',
         'wconvert',
       );
 }

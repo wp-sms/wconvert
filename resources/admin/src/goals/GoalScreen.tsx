@@ -329,7 +329,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
   const entryOf = (card: Card) => setups.find(entry => entry.id === card.key);
   // The prepared tree once it arrives, or one the index already carried.
   const treeOf = (card: Card) => trees.get(card.key);
-  const unconfirmed = __('Draft creation could not be confirmed. Check your campaigns before trying again, so you don’t create a second draft.', 'wconvert');
+  const unconfirmed = __('Draft creation could not be confirmed. Check your campaigns before trying again.', 'wconvert');
   const checkCampaigns = onCheckOptins
     ? <Button variant="outline" onClick={onCheckOptins}>{__('Check campaigns', 'wconvert')}</Button>
     : <Button variant="outline" asChild><a href="#optins">{__('Check campaigns', 'wconvert')}</a></Button>;
@@ -354,7 +354,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
       </div>
       {pinned && <div className="wconvert-picker__notice" role="status">
         <strong>{sprintf(/* translators: %s: a design name. */ __('Starting from “%s”', 'wconvert'), pinned.name)}</strong>
-        <p>{__('Use this template with your own words, or pick a version below with words written for your goal.', 'wconvert')}</p>
+        <p>{__('Use your words, or pick a version below worded for your goal.', 'wconvert')}</p>
         <div className="flex flex-wrap gap-2">
           <Button disabled={working} onClick={() => { void start(); }}>{starting === 'scratch' ? __('Starting…', 'wconvert') : __('Use this template', 'wconvert')}</Button>
           <Button variant="outline" disabled={working} onClick={() => setUnpinned(true)}>{__('Show every template', 'wconvert')}</Button>

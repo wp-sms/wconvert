@@ -17,7 +17,7 @@ export function AgentSettings({
     <SwitchSetting
       title={__('AI agents', 'wconvert')}
       label={__('Let AI agents publish', 'wconvert')}
-      hint={__('Agents can always read and make drafts. Give your agent its own WordPress user so you can see and revoke what it does.', 'wconvert')}
+      hint={__('Agents can always read and draft. Give each its own WordPress user.', 'wconvert')}
       setting="agents-publish"
       saveLabel={__('Save AI agent setting', 'wconvert')}
       read={readAgentPublishing}

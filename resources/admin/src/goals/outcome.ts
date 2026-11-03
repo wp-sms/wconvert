@@ -82,7 +82,7 @@ export function outcomeHandoffIssue(outcome: OutcomeContract, bound: readonly st
       && destination.availability === 'ready'
       && destination.requirements?.audience_channels?.includes(outcome.audience_channel as string)
       && settingsProblems(destination.requirements, destination.settings).length === 0);
-    return ready ? null : __('Before you can publish, connect a service or choose “Keep in WConvert only”.', 'wconvert');
+    return ready ? null : __('To publish, connect a service or choose “Keep in WConvert only”.', 'wconvert');
   }
   if (outcome.destination_type === null) return null;
   if (destinations === null) return __('Open Destinations to check the required delivery setup before publishing.', 'wconvert');

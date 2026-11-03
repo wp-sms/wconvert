@@ -138,7 +138,7 @@ export function HelpPage() {
         <span className="wconvert-help-agents__icon" aria-hidden="true"><Bot /></span>
         <div className="wconvert-help-agents__copy">
           <h2 id="wconvert-help-agents">{__('Connect an AI agent', 'wconvert')}</h2>
-          <p>{__('Let Claude, ChatGPT or Cursor read your campaigns, report how they are doing and make drafts for you to check.', 'wconvert')}</p>
+          <p>{__('Claude, ChatGPT or Cursor can read campaigns, report results and make drafts.', 'wconvert')}</p>
         </div>
         <div className="wconvert-help-agents__links">
           <a href={docsUrl(GUIDES.aiAgents)} target="_blank" rel="noreferrer">{__('How to connect one', 'wconvert')}<ArrowUpRight aria-hidden="true" className="rtl:-scale-x-100" /><NewTab /></a>
@@ -150,7 +150,7 @@ export function HelpPage() {
         <span className="wconvert-help-support__icon" aria-hidden="true"><LifeBuoy /></span>
         <div>
           <h2 id="wconvert-help-stuck">{__('Still stuck?', 'wconvert')}</h2>
-          <p>{__('Tell us what you expected and what happened instead. We’ll help you find the next step.', 'wconvert')}</p>
+          <p>{__('Tell us what you expected and what happened instead.', 'wconvert')}</p>
           <p className="wconvert-help-support__tip">
             <Info aria-hidden="true" />
             <span>
