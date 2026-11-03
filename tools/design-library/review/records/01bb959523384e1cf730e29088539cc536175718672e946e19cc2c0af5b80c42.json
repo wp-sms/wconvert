@@ -1,0 +1,55 @@
+{
+  "id": "campaign-sneaker-edit",
+  "revision": "9ca7384d4b8121b4aba013c01d92f73f98f101eecc1771a05d7ebfceb29b237c",
+  "base_id": "fead21976b12295809626a7cf9e02151ec9ddfb7cd17e46ce2bbbefc15bd7c6f",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer origin/main and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-11-03T05:07:02Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/11-1440-wordpress.png",
+          "sha256": "011b24741db942da91190d806424b4a1e750303a5304d6a4714c89597af42aa7"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/11-390-wordpress.png",
+          "sha256": "63b0f60ffb69ce6d70228119ed6c4240508333ebc1ed663225c89a3de6f55384"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "9e3ee8a59134d7cdda74319ad40454f9634ceb6e09ef0f70d3630a78f66de3b0"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/review.md",
+          "sha256": "64658b330127835eb1a32c711c654a42558785445782307da4ec83bf04975457"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "612280bf7c05641759430a7fdea0aea3853f9dd4b8fd033dc1bac8c372cc6d39"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/black-friday-wordpress/results.json",
+          "sha256": "612280bf7c05641759430a7fdea0aea3853f9dd4b8fd033dc1bac8c372cc6d39"
+        },
+        {
+          "path": "docs/reviews/black-friday-wordpress/visual.json",
+          "sha256": "9e3ee8a59134d7cdda74319ad40454f9634ceb6e09ef0f70d3630a78f66de3b0"
+        }
+      ]
+    }
+  },
+  "record_id": "01bb959523384e1cf730e29088539cc536175718672e946e19cc2c0af5b80c42"
+}

@@ -1,0 +1,75 @@
+{
+  "id": "collection-halloween-2026",
+  "revision": "056941fb4d5a65270be8136dea0d57c6504fe4a7ed990dcccccadc8ea45dd5ad",
+  "base_id": "525f6225c899daf1a70f69a3b42840a4b540a97de2051ca3d293d8a30f5c4639",
+  "decision": "approved",
+  "reviewer": "Renderer carry (ADR 0156)",
+  "note": "Every setup in it pixel-identical under the new renderer and carried by templates:visual-diff; items, order and words unchanged; only setup revisions moved. Not a new review.",
+  "at": "2026-11-03T05:07:02Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/README.md",
+          "sha256": "8fc43e91e2224ce3ed9c2b9381d11d50ca0095daeb5371659c32011943e76a72"
+        },
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/manifest.json",
+          "sha256": "4c4aeb18167dd8ea7eb63da3f396094cb154ecc802af79e7a907109d2d3cbbfd"
+        },
+        {
+          "path": "docs/reviews/visual-diff-2026-10-24/collections-carry-031e66237b8265ce7bc935d28e5eb45786fc894c.md",
+          "sha256": "e241e1ab27138e90b7291748e2fa876e7c1e4fb8776493a24bc60dac59951e19"
+        },
+        {
+          "path": "docs/reviews/visual-diff-2026-10-24/collections-carry-d7688edf.md",
+          "sha256": "38ade91c10201b60b4309c8376b30c292ac272397f33071d839ee9ac86cc681d"
+        },
+        {
+          "path": "docs/reviews/visual-diff-2026-10-24/collections-carry-dc915bdc.md",
+          "sha256": "8a39fd64cf89b9af6826a794b4a4b162218fa9717eb334158c22e15411775608"
+        },
+        {
+          "path": "docs/reviews/artwork-files-2026-10-25/review.md",
+          "sha256": "0e54364a8329f533e5cd2b242eaaea66efa597708b966208ca8fbbf4c0e84fd8"
+        },
+        {
+          "path": "docs/reviews/artwork-files-2026-10-25/metrics.json",
+          "sha256": "e904c4ea78c22461814a39d6aed271846adca8012074b2587b150456078c3809"
+        },
+        {
+          "path": "docs/reviews/visual-diff-2026-11-03/collections-carry-origin-main.md",
+          "sha256": "fd4edc92463995412f4afd2eb24efb648b1b7893a0f410bd5129d692068d1d47"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/README.md",
+          "sha256": "8fc43e91e2224ce3ed9c2b9381d11d50ca0095daeb5371659c32011943e76a72"
+        },
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/manifest.json",
+          "sha256": "4c4aeb18167dd8ea7eb63da3f396094cb154ecc802af79e7a907109d2d3cbbfd"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/README.md",
+          "sha256": "8fc43e91e2224ce3ed9c2b9381d11d50ca0095daeb5371659c32011943e76a72"
+        },
+        {
+          "path": "docs/reviews/i18n-domain-2026-10-23/manifest.json",
+          "sha256": "4c4aeb18167dd8ea7eb63da3f396094cb154ecc802af79e7a907109d2d3cbbfd"
+        }
+      ]
+    }
+  },
+  "record_id": "59d15d14ee0a3d6c3e4f672175efa30d5687cc55268a46fc6a4c556c7a1ed1ab"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "everyday-the-useful-checklist",
+  "revision": "a94c2f8299e89c383b9e0597b80cec5b46c2225a7cb1ef9b0ca432ac42b387e5",
+  "base_id": "1c118693bbe6cfc5884a9997c7dba2a91a87eb108144ed103185127d67c421a3",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer origin/main and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-11-03T05:07:02Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/review.md",
+          "sha256": "2140efcabc4dee5cc2d05ce1fb7f20b46657d2e4ae6100cf69c6be21ef3e5563"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-the-useful-checklist-320.png",
+          "sha256": "1be745e986384c88006cdd799657b3150132dc5edccb5f82f57f99f92eda6e25"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/everyday-the-useful-checklist-1440.png",
+          "sha256": "5799cd5d39bb9e43196b245fcc197471fcfc35586e50b70dc65abb32c910f52f"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "cc7ccb4050bfcf7985d270710cfedd362fc187b7213597526d8fb39c3791ce98"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "cc7ccb4050bfcf7985d270710cfedd362fc187b7213597526d8fb39c3791ce98"
+        }
+      ]
+    }
+  },
+  "record_id": "3fa9587eb23f268da70953a50094196548574e1cd49d94928fe4b9e2a100d930"
+}

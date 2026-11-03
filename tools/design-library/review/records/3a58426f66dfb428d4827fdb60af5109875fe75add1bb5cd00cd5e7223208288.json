@@ -1,0 +1,47 @@
+{
+  "id": "landscaping-enquiry",
+  "revision": "2d43d0c0cc6c595b76c24be9915e96cd174285bf456fc5330474647c990afa51",
+  "base_id": "dc8777a57bf094be0bec7300a840835afcf4e436446b1cc675c265862d21282c",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer origin/main and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-11-03T05:07:02Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/landscaping-enquiry-320.png",
+          "sha256": "b916a53a67d5d392caae59f7d78330a598c552a54ea5653fb353e22512259157"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/landscaping-enquiry-1440.png",
+          "sha256": "7a4a274dfc63ec8a8fb26b23f43acbbfda7e4e6ac4835ae8cf9969b0f0963d2c"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/review.md",
+          "sha256": "438777d237ee10d12f22d764d859c4d671cd876f0b72e0bcaf0afc84d211265e"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "30c7764d8e1a150bdc7441c3911f7e8da31476cf95a1c628e9b2f5185d21b79a"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "30c7764d8e1a150bdc7441c3911f7e8da31476cf95a1c628e9b2f5185d21b79a"
+        }
+      ]
+    }
+  },
+  "record_id": "3a58426f66dfb428d4827fdb60af5109875fe75add1bb5cd00cd5e7223208288"
+}

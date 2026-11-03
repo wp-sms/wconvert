@@ -1,0 +1,47 @@
+{
+  "id": "winter-last-sleigh",
+  "revision": "ccb11f9f6c2f743a03cc3dca9106b9a0b1ac0d2b2b28b6609abcfb2e6065ea97",
+  "base_id": "200185106c6caf9fc22bd54fdd151217dff959d61b836186753a16a3049aafdf",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer origin/main and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-11-03T05:07:02Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-5.jpg",
+          "sha256": "3621ff35397561d97168cea076c1239921258e29aa473e01c5dfd1ae83603ae4"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-5.jpg",
+          "sha256": "28e6c8ee0da96b5b0cdaf6d2cceb4ca87ca6babb20c82108a4648648f06fcc1d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "688a0f3364f204556372f065c39e97c085e9597475854487b602ee2284c730d0"
+}

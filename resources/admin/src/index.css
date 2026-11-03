@@ -551,6 +551,35 @@
     "Liberation Mono", monospace;
 }
 
+/*
+ * Right-to-left, against the type scale's letter-spacing. Arabic script is joined
+ * handwriting: letter-spacing pulls its letters apart, and a slant is a machine's
+ * guess, because the fonts have no italic. So both stop here rather than in every
+ * role that sets them. Two halves, because Tailwind's important utilities sit in a
+ * layer and a layered `!important` beats any unlayered rule: their variables go to
+ * `normal`, and the rule covers everything that sets a value itself. Dialogs and
+ * menus portal to `<body>`.
+ */
+:is(#wconvert-admin, [data-slot$='-content']):dir(rtl) {
+  --tracking-tight: normal;
+  --tracking-wide: normal;
+  --tracking-widest: normal;
+  --text-meta--letter-spacing: normal;
+  --text-label--letter-spacing: normal;
+  --text-micro--letter-spacing: normal;
+}
+
+:is(#wconvert-admin, [data-slot$='-content']):dir(rtl),
+:is(#wconvert-admin, [data-slot$='-content']) :dir(rtl) {
+  letter-spacing: normal !important;
+  font-style: normal !important;
+}
+
+/* An address reads left to right in any language: `@` and dots otherwise jump as it is typed. */
+:is(#wconvert-admin, [data-slot$='-content']) input:is([type='email'], [type='url']) {
+  direction: ltr;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -2303,6 +2332,9 @@ body:has(#wconvert-admin) #wpbody-content {
     padding-inline: 0.375rem !important;
     font-size: var(--text-micro) !important;
     line-height: var(--text-micro--line-height) !important;
+  }
+
+  #wconvert-admin .wconvert-inspector__head [data-slot="tabs-trigger"]:dir(ltr) {
     letter-spacing: 0.02em !important;
   }
 }

@@ -1,0 +1,47 @@
+{
+  "id": "launch-interest",
+  "revision": "756918c2c285932816a483a1fa6750a672c8fb507901d6faeabcbd09fc9cc722",
+  "base_id": "14e065cc831e3cfb371d268c1e20b0191765f1ae8b4878b7bca7a07b2844647c",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer origin/main and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-11-03T05:07:02Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/launch-interest-320.png",
+          "sha256": "6884aa3d31abacbe829f7797565cdf3e44a9c4ecdaf1fd3cc1e66d9ccd5ff56e"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/launch-interest-1440.png",
+          "sha256": "b09e20ff2ebf5c7df9d1e00d7ed476caee7890b75ecc2591c64dabbc98d29c20"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/review.md",
+          "sha256": "438777d237ee10d12f22d764d859c4d671cd876f0b72e0bcaf0afc84d211265e"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "30c7764d8e1a150bdc7441c3911f7e8da31476cf95a1c628e9b2f5185d21b79a"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "30c7764d8e1a150bdc7441c3911f7e8da31476cf95a1c628e9b2f5185d21b79a"
+        }
+      ]
+    }
+  },
+  "record_id": "0af7ff323f2824c98f83001a55a76207f98b43d14aee62f56090ff6ce3c29221"
+}

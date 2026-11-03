@@ -1,0 +1,47 @@
+{
+  "id": "studio-welcome",
+  "revision": "5c35f0dea01f0798f590cdd74ddb5980ab76fa6a144bf77019646428432780ac",
+  "base_id": "443348926a598e55f658f956f76115e86875d7a1d9f5c8f94b431dfc86e060c5",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer origin/main and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-11-03T05:07:02Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/studio-welcome-320.png",
+          "sha256": "d20ea6079964ddcf152841b4442b0f5662e91bd3877b2851054949f162dbad3c"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/studio-welcome-1440.png",
+          "sha256": "b8332dcab13f59d6193ed4560525191fa845443d8473b4df6f1bfb28455c4925"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/review.md",
+          "sha256": "86c12cbcf32d7846bf93b750fcc96388d149f746b88b74b9b9dcf1aa6e3f455d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "0b0014399f011a8d79af5f170b3c43a5196e847688610c324fd08ee4aca75c79"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "0b0014399f011a8d79af5f170b3c43a5196e847688610c324fd08ee4aca75c79"
+        }
+      ]
+    }
+  },
+  "record_id": "3ac1276b7c1f4107603f83da92c96f4c032f0e3168cf15f5dd0d7f05c095448e"
+}

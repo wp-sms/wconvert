@@ -970,11 +970,20 @@ has a route of its own (ADR 0166):
 - **Pro's inspector explanations** read their words from
   `ProInspectorLabels`, by group and key.
 
-To see a locale for real, turn both POTs into pseudo-translated `.po` files,
-compile them with `wp i18n make-json` and `make-php`, mount them as
-`wp-content/languages` (Pro's into `pro/resources/languages`), and force the
-locale with a one-line mu-plugin: `add_filter('locale', fn () => 'de_DE')`. The design
-words need nothing but that mu-plugin. `WPLANG` is refused for a locale whose core pack is not installed.
+A full admin translation of Free keeps its source in `tools/admin-translations/<domain>-<locale>.po`,
+which never ships: wp.org's language pack is what reaches sites. It cannot sit in
+`tools/design-library/translations/`, where every `.po` is read as a design-word language.
+Pro's stays in `pro/resources/languages/`. A setup's own word that the design-word list already
+holds stays blank in both: gettext then returns the English, and the list translates it (ADR 0183).
+So each has one translation.
+
+To see a locale for real, run `tools/admin-translations/compile.sh [output-dir]` after
+`npm run build`, mount `<output-dir>/languages` as `wp-content/languages` and `<output-dir>/pro`
+over `pro/resources/languages`, and force the locale with a one-line mu-plugin:
+`add_filter('locale', fn () => 'fa_IR')`. Run it again after every build, because each JS
+catalogue is named after a content-hashed bundle. For a language with no `.po`, turn both POTs
+into pseudo-translated files and compile those the same way. The design words need nothing but
+that mu-plugin. `WPLANG` is refused for a locale whose core pack is not installed.
 
 ## Releasing
 

@@ -1,0 +1,47 @@
+{
+  "id": "winter-still-time",
+  "revision": "8cc39b12244439ad4e3d1de19e31c3ddfb008666436bd2cc9156722e7860d063",
+  "base_id": "0838a8aa9e2d8c6de8bba495bd5eb546ff2e96bcf09f5f30622832e50b0c9767",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer origin/main and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-11-03T05:07:02Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-6.jpg",
+          "sha256": "fb4e2a22d042a10b7b0e78f34234df8ab0fe011d4c37628b69d624d8657173bd"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-6.jpg",
+          "sha256": "e2d62cc963c0936df1151861c6375611960cc7548cd0ef97f7a04055b87542d2"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "ff2f151b99c7e45e21df6d23462ba4b026e20ec2fd33daa3a57c1f578f8b2d19"
+}

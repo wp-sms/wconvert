@@ -197,7 +197,10 @@ function scope(element: HTMLElement, tokens: Tokens | undefined, prefix = TOKEN_
       value !== name && REFERABLE.includes(value)
         // Secondary actions can follow foreground even in an unstyled template.
         // Match the root's CSS fallback when that optional token is absent.
-        ? `var(${TOKEN_PREFIX}${value}${value === 'fg' ? ',#111827' : ''})` : value,
+        ? `var(${TOKEN_PREFIX}${value}${value === 'fg' ? ',#111827' : ''})`
+        // A four-sided `pad` names physical sides, and usually clears the close
+        // control at the end of the line. So it mirrors, as the control does.
+        : name === 'pad' && document.dir === 'rtl' && !value.includes('(') ? value.replace(/^(\S+) (\S+) (\S+) (\S+)$/, '$1 $4 $3 $2') : value,
     );
   }
 }

@@ -33,6 +33,14 @@ test.beforeAll(async ({ browser, request }) => {
 async function commonChecks(page, direction) {
   await expect(page.locator('html')).toHaveCSS('direction', direction);
   await expect(page.locator('#wpfooter')).toBeHidden();
+  if (direction === 'rtl') {
+    // ADR 0184: letter-spacing pulls Arabic script's joined letters apart.
+    const spaced = await page.evaluate(() => [...document.querySelectorAll('#wconvert-admin *')]
+      .filter((node) => [...node.childNodes].some((child) => child.nodeType === 3 && child.nodeValue.trim()))
+      .filter((node) => getComputedStyle(node).direction === 'rtl' && getComputedStyle(node).letterSpacing !== 'normal')
+      .map((node) => node.className));
+    expect(spaced).toEqual([]);
+  }
   await expect(page.getByRole('img', { name: 'VeronaLabs', exact: true })).toBeVisible();
   const layout = await page.evaluate(() => {
     const style = (selector, pseudo) => getComputedStyle(document.querySelector(selector), pseudo);
