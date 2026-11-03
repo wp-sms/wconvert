@@ -724,6 +724,7 @@ describe('Jump to on each report (ADR 0185)', () => {
     render(<Dashboard />);
     const trigger = await screen.findByRole('button', { name: 'Jump to' });
     expect(trigger.closest('.wa-header-actions')).not.toBeNull();
+    expect(trigger.parentElement!.firstElementChild).toBe(trigger);
   });
 });
 

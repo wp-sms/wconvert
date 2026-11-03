@@ -81,8 +81,8 @@ made a merchant hunt for them. A problem looked like every other card.
    that route.
 
 6. **Jump to is one menu in the page header.** A row of its own took height on
-   every report and wrapped on a phone. It is now a quiet "Jump to" button beside
-   Export CSV, on the existing dropdown menu, and choosing a section moves focus
+   every report and wrapped on a phone. It is now a quiet "Jump to" button, the first
+   item in the page's toolbar, on the existing dropdown menu, and choosing a section moves focus
    to that section. The menu earns its place with sections the row lacked: Results
    by goal and Monthly targets on the overview, Performance and Campaigns on a
    report. It lists what is mounted, in the order it stands on the page, and is

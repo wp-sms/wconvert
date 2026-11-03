@@ -253,6 +253,7 @@ function DashboardContent({
     <div className="wconvert-analytics">
       <PageAction>
         <div className="wa-header-actions">
+          {payload && <ReportShortcuts />}
           <DateRangePicker
             key={pickerValue.preset === 'custom' ? `${pickerValue.from}:${pickerValue.to}` : 'preset'}
             label={__('Report period', 'wconvert')}
@@ -285,10 +286,10 @@ function DashboardContent({
               )
             }
           />
-          {payload && <ReportShortcuts />}
           {hasGoals && (
             <Button
               variant="outline"
+              className="wa-export"
               disabled={!payload || updating}
               onClick={exportReport}
             >

@@ -279,6 +279,7 @@ test('analytics: Jump to sits in the header and focuses the section it names', a
     const trigger = page.getByRole('button', { name: 'Jump to' });
     const exportButton = page.getByRole('button', { name: 'Export CSV' });
     expect((await trigger.boundingBox()).y).toBe((await exportButton.boundingBox()).y);
+    expect((await trigger.boundingBox()).x).toBeLessThan((await page.locator('.wconvert-date-picker__trigger').boundingBox()).x);
     await trigger.click();
     await page.getByRole('menuitem', { name: 'Results by goal' }).click();
     await expect(page.getByRole('group', { name: 'Results by goal' })).toBeFocused();

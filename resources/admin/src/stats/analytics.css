@@ -366,8 +366,9 @@
 @media(max-width:600px) {
   .wa-header-actions { inline-size:100%; gap:10px; }
   .wa-header-actions > button { flex:1 1 100%; inline-size:100%; }
-  /* Jump to and Export share a row, so a phone's header is not three rows tall. */
-  .wa-header-actions > .wa-jump-to, .wa-header-actions > .wa-jump-to + button { flex:1 1 0; inline-size:auto; }
+  /* The period takes its own row and Jump to and Export share the next, so a phone's header is not three rows tall. */
+  .wa-header-actions > .wconvert-date-picker__trigger { order:-1; }
+  .wa-header-actions > :is(.wa-jump-to, .wa-export) { flex:1 1 0; inline-size:auto; }
 }
 
 /* The comparison inside the picker's footer is the canonical check row
