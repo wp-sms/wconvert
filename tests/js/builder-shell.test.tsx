@@ -1378,7 +1378,7 @@ describe('saving qualification choices without losing unfinished work', () => {
     await userEvent.clear(value);
     await userEvent.type(value, 'repair');
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
-    expect(await screen.findByText(/Fix the interest choices before saving/)).toBeVisible();
+    expect(await screen.findByText(/Can’t save: interest choices need a label and unique valid sent value/)).toBeVisible();
     expect(screen.getByRole('textbox', { name: 'Choice 2' })).toHaveValue('Installation');
     expect(value).toHaveValue('repair');
     expect(builder.saveOptin).not.toHaveBeenCalled();
@@ -1403,7 +1403,7 @@ describe('saving qualification choices without losing unfinished work', () => {
     expect(builder.saveOptin).toHaveBeenCalledTimes(1);
     await userEvent.click(screen.getByRole('button', { name: 'Review & publish' }));
     const dialog = within(await screen.findByRole('dialog'));
-    expect(dialog.getByText(/Set up the interest choices/)).toBeVisible();
+    expect(dialog.getByText(/Every interest choice needs a label/)).toBeVisible();
     expect(dialog.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
   });
 });
@@ -1456,7 +1456,7 @@ describe('whole-draft Undo and Redo', () => {
     await userEvent.click(await screen.findByRole('tab', { name: 'Destinations' }));
     expect(screen.getByRole('radio', { name: /Send to a service/ })).toBeChecked();
     await userEvent.click(screen.getByRole('radio', { name: /Keep in WConvert only/ }));
-    expect(screen.getByText(/Automatic emails and texts need a separate sending setup/)).toBeVisible();
+    expect(screen.getByText(/Don’t promise automatic emails or texts/)).toBeVisible();
     await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     expect(screen.getByRole('radio', { name: /Send to a service/ })).toBeChecked();
     await userEvent.click(screen.getByRole('button', { name: /^Redo/ }));

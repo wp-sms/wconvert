@@ -73,7 +73,7 @@ describe('provider-declared destination requirements', () => {
     await userEvent.type(screen.getByLabelText('API key'), 'second-key');
     await userEvent.click(screen.getByRole('button', { name: 'Check and save account' }));
     expect(await screen.findByRole('textbox', { name: 'Name' })).toHaveValue('Spring leads');
-    expect(screen.getByText(/No Audience choices were found/)).toBeVisible();
+    expect(screen.getByText(/No Audience in this account\. Create one in/)).toBeVisible();
     expect(screen.getByRole('button', { name: 'Add destination' })).toHaveAttribute('aria-disabled', 'true');
   });
 
@@ -102,15 +102,15 @@ describe('provider-declared destination requirements', () => {
     } });
     render(<DestinationSettingsForm type={remoteType} connections={[account]} busy={false} error={null}
       onCancel={vi.fn()} onConfirm={vi.fn()} />);
-    expect(await screen.findByText(/Could not load choices from this account/)).toBeVisible();
+    expect(await screen.findByText(/Could not load this account’s choices/)).toBeVisible();
     expect(screen.getByRole('button', { name: 'Add destination' })).toBeDisabled();
     await userEvent.click(screen.getByRole('button', { name: 'Refresh choices' }));
     expect(await screen.findByRole('checkbox', { name: 'Newsletter' })).toBeVisible();
-    expect(screen.queryByText(/Could not load choices/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Could not load this account’s choices/)).not.toBeInTheDocument();
   });
   it('distinguishes missing email, optional email and satisfied capture requirements', () => {
     expect(compatibilityProblems(route, [{ name: 'phone', required: true }]).join(' ')).toContain('needs email address. Add it');
-    expect(compatibilityProblems(route, [{ name: 'email', required: false }, { name: 'phone', required: false }]).join(' ')).toContain('field is optional');
+    expect(compatibilityProblems(route, [{ name: 'email', required: false }, { name: 'phone', required: false }]).join(' ')).toContain('Optional email address: submissions without it are kept');
     expect(compatibilityProblems(route, [{ name: 'email', required: false }])).toEqual([]);
     expect(compatibilityProblems(route, [{ name: 'email', required: true }])).toEqual([]);
   });
@@ -142,7 +142,7 @@ describe('provider-declared destination requirements', () => {
 
   it('does not claim an interest answer is sent until mapped, and states the new-subscriber limit', () => {
     const captures = [{ name: 'email', required: true }, { name: 'interest', required: false }];
-    expect(compatibilityProblems(route, captures).join(' ')).toContain('saved in WConvert but is not sent');
+    expect(compatibilityProblems(route, captures).join(' ')).toContain('saved in WConvert but not sent');
     expect(compatibilityProblems({ ...route, settings: { ...route.settings, interest_field: 'cf_7' } }, captures).join(' ')).toContain('New subscribers only');
   });
   /** #365: the campaign's own mapping sends the answer, so it is never "not sent". */
@@ -152,9 +152,9 @@ describe('provider-declared destination requirements', () => {
     const mapped = { [mailpoet.id]: { 'field:interest': 'cf_1' } };
     const said = compatibilityProblems(mailpoet, captures, mapped).join(' ');
     expect(said).not.toContain('not sent');
-    expect(said).toContain('The interest answer is sent for new contacts only. Existing contacts keep their current details.');
+    expect(said).toContain('The interest answer is sent for new contacts only.');
     expect(compatibilityProblems({ ...mailpoet, settings: { ...mailpoet.settings, existing_contact: 'update' } }, captures, mapped).join(' ')).not.toContain('interest');
-    expect(compatibilityProblems(mailpoet, captures, { other: { 'field:interest': 'cf_1' } }).join(' ')).toContain('saved in WConvert but is not sent');
+    expect(compatibilityProblems(mailpoet, captures, { other: { 'field:interest': 'cf_1' } }).join(' ')).toContain('saved in WConvert but not sent');
   });
   it('reads actual fields and requiredness across nested layout branches', () => {
     const template: Template = { tokens: {}, tree: treeFixture({ steps: [{ type: 'split', start: [
@@ -189,15 +189,15 @@ describe('provider-declared destination requirements', () => {
     render(<DestinationSettingsForm type={type} destination={{ ...route, settings: { lists: ['3'], interest_field: 'cf_99' } }}
       connections={[]} busy={false} error={null} onCancel={vi.fn()} onConfirm={vi.fn()} />);
     expect(screen.getByRole('combobox', { name: 'Interest field' })).toHaveValue('cf_99');
-    expect(screen.getByText(/The selected field for Interest is unavailable/)).toBeInTheDocument();
-    expect(screen.getByText(/Could not read which campaigns use it/)).toBeInTheDocument();
+    expect(screen.getByText(/Field for Interest unavailable/)).toBeInTheDocument();
+    expect(screen.getByText(/Could not read them\. Try again before changing shared settings/)).toBeInTheDocument();
   });
   it('requires an explicitly entered interest sample and describes the new-subscriber effect before sending', async () => {
     render(<SendTestDialog destination={{ ...route, settings: { lists: ['3'], interest_field: 'cf_7' } }} type={type}
       initialEmail="owner@example.test" settingsDirty={false} returnFocusTo={{ current: null }} onClose={vi.fn()} onSent={vi.fn()} />);
     const answer = screen.getByRole('textbox', { name: 'Test interest value (optional)' });
     expect(answer).toHaveValue('');
-    expect(screen.getByText(/It is written to the mapped field for new subscribers only/)).toBeInTheDocument();
+    expect(screen.getByText(/written for new subscribers only/)).toBeInTheDocument();
     expect(testSend).not.toHaveBeenCalled();
     await userEvent.type(answer, 'installation');
     await userEvent.click(screen.getByRole('button', { name: 'Send test' }));

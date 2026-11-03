@@ -101,7 +101,7 @@ describe('inspecting a design before replacing the draft', () => {
       currentDisplayType: 'popup',
       goalLabel: 'Grow my email list',
     });
-    const warning = screen.getByText('Changes this campaign from Popup to Inline form. Its goal stays “Grow my email list”. Place its block or shortcode before publishing.');
+    const warning = screen.getByText('Popup becomes Inline form. Goal stays “Grow my email list”. It needs a block or shortcode.');
     expect(warning).toBeVisible();
     expect(screen.getByRole('button', { name: 'Switch to Inline form' }))
       .toHaveAttribute('aria-describedby', expect.stringContaining(warning.id));
@@ -110,13 +110,13 @@ describe('inspecting a design before replacing the draft', () => {
 
   it('does not repeat a format warning when the format stays the same', () => {
     detail({ currentDisplayType: 'popup' });
-    expect(screen.queryByText(/Changes this campaign/)).toBeNull();
+    expect(screen.queryByText(/ becomes /)).toBeNull();
   });
 
   it('explains unmatched pictures before applying and never stores the transfer report', async () => {
     const onPrepare = vi.fn().mockResolvedValue({ ...TEMPLATE, transfer: { unplaced: 2, unverified: 0 } });
     const { onChoose } = detail({ onPrepare });
-    expect(await screen.findByText(/2 pictures have no clear matching place/)).toBeVisible();
+    expect(await screen.findByText(/2 pictures have no clear place here/)).toBeVisible();
     expect(onChoose).not.toHaveBeenCalled();
     await userEvent.click(screen.getByRole('button', { name: 'Use this template' }));
     expect(onChoose).toHaveBeenCalledExactlyOnceWith(ENTRY.id, { tree: TEMPLATE.tree, tokens: TEMPLATE.tokens });
@@ -236,7 +236,7 @@ describe('inspecting a design before replacing the draft', () => {
     const apply = screen.getByRole('button', { name: 'Use this template' });
     expect(apply).toHaveAttribute('aria-disabled', 'true');
     expect(apply).not.toBeDisabled();
-    expect(apply).toHaveAccessibleDescription(/other arm of this test converts on a click/);
+    expect(apply).toHaveAccessibleDescription(/this test’s variants convert on a click/);
     await userEvent.click(apply);
     expect(onChoose).not.toHaveBeenCalled();
     await userEvent.click(screen.getByRole('radio', { name: 'Received' }));

@@ -220,9 +220,9 @@ describe('health, on the card that has it', () => {
       ['a', 'b'],
       [type({ id: 'paid', label: 'Paid', tier: 'pro' }), type({ id: 'mailpoet', label: 'MailPoet', requires: 'mailpoet', requires_label: 'MailPoet' })],
     );
-    expect(within(card('Paid route')).getByText(/Needs WConvert Pro,/)).toBeVisible();
+    expect(within(card('Paid route')).getByText(/Needs WConvert Pro\./)).toBeVisible();
     expect(within(card('Plugin route')).getByText('Paused')).toBeVisible();
-    expect(within(card('Plugin route')).getByText(/Needs MailPoet on this site/)).toBeVisible();
+    expect(within(card('Plugin route')).getByText(/Needs MailPoet here\./)).toBeVisible();
     expect(within(card('Plugin route')).getByText('Newsletter')).toBeVisible();
   });
 
@@ -478,7 +478,7 @@ describe('what this save point needs before publishing', () => {
   it('keeps the requirement while the only bound route cannot run', () => {
     editor(ready([destination({ id: 'a', label: 'Newsletter', availability: 'unavailable' })]), ['a'], [], { outcome: CAPTURE_OUTCOME });
     expect(card('Newsletter')).toBeInTheDocument();
-    expect(screen.getByText(/Before you can publish, connect a service/)).toBeVisible();
+    expect(screen.getByText(/To publish, connect a service/)).toBeVisible();
   });
 
   it('keeps forwarding optional for an enquiry with no handoff requirement', () => {

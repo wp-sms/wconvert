@@ -227,7 +227,7 @@ it('copies current edits to another Goal while leaving a published original unto
   await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
   await userEvent.click(screen.getByRole('button', { name: 'Duplicate for another goal' }));
   await userEvent.click(within(cardFor('Promote a sale or offer')).getByRole('button', { name: /^Use this goal/ }));
-  expect(screen.getByText(/results start at zero/)).toBeInTheDocument();
+  expect(screen.getByText(/Results start at zero/)).toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Create copied draft' }));
   await waitFor(() => expect(onCreated).toHaveBeenCalledWith('COPIED'));
   expect(copies.createOptin).toHaveBeenCalledWith('Welcome discount revised — copy', 'promote_offer', expect.objectContaining({ template_id: 'centred-card' }));
@@ -537,12 +537,12 @@ describe('confirming the change', () => {
    * — it is a column. That is the exception the structure editor's amendment to
    * ADR 0039 buys for a design switch and cannot buy here.
    */
-  it('explains that Goal changes end at first publish and history stays stable', async () => {
+  it('explains that Goal changes end at first publish, with a duplicate as the way to another goal', async () => {
     open();
     await pick('Promote a sale or offer');
 
-    expect(await screen.findByText(/keep reporting history stable/)).toBeInTheDocument();
-    expect(screen.getByText(/Undo cannot reverse this/)).toBeInTheDocument();
+    expect(await screen.findByText(/After first publish, the goal is fixed; duplicate for another goal/)).toBeInTheDocument();
+    expect(screen.getByText(/Undo can’t reverse this/)).toBeInTheDocument();
   });
 
   /**
@@ -561,12 +561,12 @@ describe('confirming the change', () => {
     expect(builder.saveOptin.mock.calls[0][2]).toMatchObject({ template_id: 'centred-card' });
   });
 
-  it('discloses that confirmation also saves the current name and draft, then sends that unsaved name', async () => {
+  it('says confirmation does not publish and cannot be undone, then sends the unsaved name', async () => {
     open();
     await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), ' updated');
     await pick('Promote a sale or offer');
     const confirm = screen.getByRole('button', { name: 'Save draft and change goal' });
-    expect(confirm).toHaveAccessibleDescription(/current name and all draft edits, including design, display rules and destinations.*does not publish/);
+    expect(confirm).toHaveAccessibleDescription(/^Doesn’t publish\. Undo can’t reverse this\./);
     expect(builder.saveOptin).not.toHaveBeenCalled();
     await userEvent.click(confirm);
     expect(builder.saveOptin).toHaveBeenCalledTimes(1);
@@ -581,7 +581,7 @@ describe('confirming the change', () => {
     expect(screen.getByRole('button', { name: /^Undo/ })).toBeEnabled();
     await pick('Promote a sale or offer');
     const confirm = screen.getByRole('button', { name: 'Save draft and change goal' });
-    expect(confirm).toHaveAccessibleDescription(/clears the current Undo and Redo history/);
+    expect(confirm).toHaveAccessibleDescription(/clears Undo and Redo history/);
     await userEvent.click(confirm);
     await waitFor(() => expect(screen.getByRole('button', { name: /^Undo/ })).toBeDisabled());
     expect(screen.getByRole('button', { name: /^Redo/ })).toBeDisabled();

@@ -51,7 +51,7 @@ it('authors optional settings with on-demand help and without visitor storage or
 
 it('Free explains retained settings and offers no premium authoring controls', () => {
   render(<EditionSettings value={{ label: 'Saved offer' }} template={template} onChange={vi.fn()} />);
-  expect(screen.getByText('This campaign has a reopen button saved. It isn’t shown on this site.')).toBeInTheDocument();
+  expect(screen.getByText('A reopen button is saved, but isn’t shown on this site.')).toBeInTheDocument();
   expect(screen.queryByText(/Pro/)).toBeNull();
   expect(screen.queryByRole('checkbox')).toBeNull();
 });

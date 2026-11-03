@@ -130,7 +130,7 @@ it('Free explains manual placement without carrying the premium controls', () =>
 it('Free explains retained automatic placement and content lock without selling either', () => {
   render(<InlinePlacementSettings optinId="example" published config={{ inline_placement: { position: 'after_content' }, content_lock: { mode: 'hide' } }} vocabulary={vocabulary} onChange={() => undefined} />);
   expect(screen.getByText('Content lock isn’t available on this site. The selected section stays readable.')).toBeInTheDocument();
-  expect(screen.getByText('Automatic placement isn’t available on this site. You can still place this campaign manually with its block or shortcode.')).toBeInTheDocument();
+  expect(screen.getByText('Automatic placement isn’t available on this site. Use the block or shortcode.')).toBeInTheDocument();
   expect(screen.queryByText(/Pro/)).toBeNull();
 });
 
@@ -149,7 +149,7 @@ it('automatic publish guidance does not tell merchants to insert a shortcode', (
   render(<PlacementGuidance optinId="example" displayType="inline" inlinePlacement={{ position: 'after_paragraph', paragraph: 3 }} published />);
   expect(screen.getByText('Automatically after paragraph 3')).toBeInTheDocument();
   expect(screen.queryByRole('textbox')).toBeNull();
-  expect(screen.getByText(/No block or shortcode is needed/)).toBeInTheDocument();
+  expect(screen.getByText(/Follows its display rules, no block needed\./)).toBeInTheDocument();
 });
 
 it('hands a published content lock off to its region block and enclosing shortcode', () => {

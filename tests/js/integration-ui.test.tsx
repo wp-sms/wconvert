@@ -140,7 +140,7 @@ describe('integration setup controls', () => {
     await user.click(screen.getByText('Field mapping'));
     await screen.findByText('Test mapping');
     await user.click(screen.getByRole('button', { name: 'Refresh fields' }));
-    await screen.findByText(/Could not refresh fields/);
+    await screen.findByText(/Could not refresh\. These are the last loaded fields/);
     expect(screen.getByRole('combobox', { name: 'Service needed' })).toHaveValue('SERVICE');
     expect(screen.getByRole('combobox', { name: 'Service needed' })).toBeDisabled();
     expect(screen.queryByText('Test mapping')).not.toBeInTheDocument();
@@ -229,7 +229,7 @@ describe('integration setup controls', () => {
     await user.click(screen.getByRole('button', { name: 'Actions for Newsletter key' }));
     await user.click(screen.getByRole('menuitem', { name: 'Remove' }));
     const dialog = within(screen.getByRole('alertdialog'));
-    expect(dialog.getByText(/The saved credentials for “Newsletter key” are deleted from this site/)).toBeVisible();
+    expect(dialog.getByText(/Deletes credentials for “Newsletter key” from this site/)).toBeVisible();
     expect(api.deleteConnection).not.toHaveBeenCalled();
     await user.click(dialog.getByRole('button', { name: 'Cancel' }));
     expect(api.deleteConnection).not.toHaveBeenCalled();

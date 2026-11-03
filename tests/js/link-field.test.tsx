@@ -99,7 +99,7 @@ describe('LinkField', () => {
     await userEvent.type(box(), 'pric');
     await act250();
 
-    expect(screen.getByText(/Search could not be completed/)).toBeVisible();
+    expect(screen.getByText(/Search failed/)).toBeVisible();
     expect(screen.queryByRole('option')).toBeNull();
 
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));

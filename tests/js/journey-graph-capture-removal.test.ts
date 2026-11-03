@@ -59,11 +59,11 @@ it('requires a named exit when the removed signup has several continuations', ()
 
 it('protects shared ownership and questions used by surviving rules', () => {
   const shared = { ...tree, submissions: tree.submissions.map(sub => sub.required ? { ...sub, fields: [...sub.fields, ...optional.fields] } : sub) };
-  expect(graphCaptureRemovalPlan(shared, optional.id).reason).toMatch(/another signup/);
+  expect(graphCaptureRemovalPlan(shared, optional.id).reason).toMatch(/the other signup/);
   const dependent: TemplateTree = { ...tree, steps: tree.steps.map(screen => screen.id === save.id
     ? { ...screen, content: { type: 'stack', children: [screen.content, { id: 'answer', type: 'question', label: 'Choose', answer_type: 'single', options: [{ value: 'yes', label: 'Yes' }], required: false }] } }
     : screen.kind === 'acknowledgement' ? { ...screen, when: { match: 'all', clauses: [{ question: 'answer', operator: 'is', values: ['yes'] }] } } : screen) };
-  expect(graphCaptureRemovalPlan(dependent, optional.id).reason).toMatch(/used by rules/);
+  expect(graphCaptureRemovalPlan(dependent, optional.id).reason).toMatch(/Rules on Acknowledgement use these answers/);
   expect(removeGraphCapture(dependent, optional.id)).toBeNull();
 });
 

@@ -205,9 +205,9 @@ it('clears stale branch instructions when Undo restores the prior draft', async 
   render(<HistoryEditor />);
   await user.click(await screen.findByRole('button', { name: 'Insert test screen' }));
   await user.click(screen.getByRole('button', { name: 'Add screen here' }));
-  expect(screen.getByText(/Screen added at the chosen location/)).toBeInTheDocument();
+  expect(screen.getByText(/Screen added\. Review its content/)).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'Undo fixture edit' }));
-  expect(screen.queryByText(/Screen added at the chosen location/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/Screen added\. Review its content/)).not.toBeInTheDocument();
 });
 
 it.each(['followup', 'branch'] as const)('starts a %s from Paths without confusing skip and branch semantics', async intent => {
@@ -250,7 +250,7 @@ it('reviews newly unreachable screens before applying a changed line', async () 
   await user.click(screen.getByText('Answer lines'));
   await user.selectOptions(screen.getByRole('combobox', { name: 'Then' }), 'contact');
   expect(screen.getByRole('heading', { name: 'Check this change' })).toBeInTheDocument();
-  const explanation = screen.getByText(/These screens would become unreachable:/);
+  const explanation = screen.getByText(/Visitors could no longer reach:/);
   for (const name of ['Garden details', 'Indoor details', 'Balcony details']) expect(explanation).toHaveTextContent(name);
   expect(draft().graph!.edges.find(edge => edge.id === 'start')?.to).toBe('garden');
   await user.click(screen.getByRole('button', { name: 'Change anyway' }));
@@ -406,7 +406,7 @@ it('lets a merchant add optional capture to a graph quiz and move it before the 
   expect(draft().submissions[0].required).toBe(true);
   expect(draft().graph?.edges.find(edge => edge.to === 'match')?.from).toBe(draft().steps.find(item => item.name === 'Contact details')?.id);
   expect(screen.getByRole('radio', { name: 'After required contact details' })).toBeChecked();
-  expect(screen.getByText(/Contact details are now required before the result/)).toBeInTheDocument();
+  expect(screen.getByText(/The result now needs contact details/)).toBeInTheDocument();
 });
 it('preserves screen identity when reordering and gives a duplicate its own identity', async () => {
   const user = userEvent.setup();
@@ -835,7 +835,7 @@ it('reviews a branch deletion, keeps Cancel unchanged, and restores the entire e
   dialog = screen.getByRole('alertdialog', { name: 'Delete this screen?' });
   expect(within(dialog).getByRole('combobox')).toHaveValue('');
   await user.selectOptions(within(dialog).getByRole('combobox'), 'contact');
-  expect(within(dialog).getByText(/would become unreachable: Indoor details, Balcony details/)).toBeInTheDocument();
+  expect(within(dialog).getByText(/could no longer reach: Indoor details, Balcony details/)).toBeInTheDocument();
   await user.click(within(dialog).getByRole('button', { name: 'Delete screen' }));
   await waitFor(() => expect(screen.getByRole('heading', { level: 3, name: 'One enquiry' })).toHaveFocus());
   const removed = draft();
@@ -855,7 +855,7 @@ it('refuses a protected Delete in the screen menu and says why beside it', async
   await user.click(screenMenu());
   const item = screen.getByRole('menuitem', { name: 'Delete screen' });
   expect(item).toHaveAttribute('aria-disabled', 'true');
-  expect(item).toHaveAccessibleDescription(/collects or saves contact details/);
+  expect(item).toHaveAccessibleDescription(/Fields, consent and save settings stay together/);
   await user.click(item);
   expect(screen.queryByRole('alertdialog', { name: 'Delete this screen?' })).not.toBeInTheDocument();
 });
@@ -930,7 +930,7 @@ it('explains a branched result timing restriction and opens the named paths for 
   await user.click(screen.getByRole('button', { name: /Your result Shows a selected result/ }));
   const required = screen.getByRole('radio', { name: 'After required contact details' });
   expect(required).toHaveAttribute('aria-disabled', 'true');
-  expect(required).toHaveAccessibleDescription(/Move any answer lines after both screens first/);
+  expect(required).toHaveAccessibleDescription(/Move answer lines after both/);
   await user.click(required);
   expect(draft()).toEqual(initial);
   await user.click(screen.getByRole('button', { name: 'Review Your result' }));

@@ -17,7 +17,7 @@ it('warns when the coupon outlives the campaign, and says nothing otherwise', ()
   expect(expiryWarning('BF30', { verdict: 'outlives', expires: 'December 31, 2026', ends: 'December 2, 2026 00:00' }))
     .toBe('BF30 stays valid until December 31, 2026, after this campaign ends on December 2, 2026 00:00.');
   expect(expiryWarning('BF30', { verdict: 'no_expiry', expires: null, ends: 'December 2, 2026 00:00' }))
-    .toBe('BF30 never expires, so it keeps working after this campaign ends on December 2, 2026 00:00.');
+    .toBe('BF30 never expires, so it works after this campaign ends on December 2, 2026 00:00.');
   expect(expiryWarning('BF30', { verdict: 'ok', expires: 'December 1, 2026', ends: 'December 2, 2026 00:00' })).toBeNull();
   expect(expiryWarning('BF30', { verdict: 'unknown', expires: null, ends: 'December 2, 2026 00:00' })).toBeNull();
   expect(expiryWarning('BF30', null)).toBeNull();

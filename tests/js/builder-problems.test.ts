@@ -63,7 +63,7 @@ describe('the converting act', () => {
   it('says when nothing on the design counts', () => {
     const template = { tree: withRemoved(ENTRY.tree, BUTTON), tokens: ENTRY.tokens };
 
-    expect(said(template)[0]).toMatch(/report zero forever/);
+    expect(said(template)[0]).toMatch(/Nothing on this design counts as a conversion\. Add a button/);
   });
 
   /**
@@ -104,7 +104,7 @@ describe('a form that captures nothing anybody reads', () => {
   it('says so when the button that submits has been deleted', () => {
     const template = { tree: withRemoved(ENTRY.tree, BUTTON), tokens: ENTRY.tokens };
 
-    expect(said(template)).toContainEqual(expect.stringMatching(/goes nowhere/));
+    expect(said(template)).toContainEqual(expect.stringMatching(/has a field but no submit button/));
   });
 
   it('says so for a field stranded on a step that is not the form', () => {
@@ -145,7 +145,7 @@ describe('words a design switch would throw away', () => {
     });
 
     expect(said({ tree: extra, tokens: ENTRY.tokens })).toContainEqual(
-      expect.stringMatching(/1 block has no name of its own/),
+      expect.stringMatching(/Switching design loses your words in 1 block/),
     );
   });
 });
@@ -216,7 +216,7 @@ describe('a countdown with no end date', () => {
     const problems = problemsIn(withClock, undefined);
 
     expect(problems).toHaveLength(1);
-    expect(problems[0].said).toMatch(/Set an end date/);
+    expect(problems[0].said).toMatch(/needs an end date/);
     expect(problems[0].go).toBe('schedule');
     // No block path: following this must not select the countdown.
     expect(problems[0].path).toBeNull();
@@ -244,7 +244,7 @@ describe('the order they are reported in', () => {
     };
     const problems = said(broken);
 
-    expect(problems[0]).toMatch(/report zero forever/);
+    expect(problems[0]).toMatch(/Nothing on this design counts as a conversion\. Add a button/);
     expect(problems.at(-1)).toMatch(/lighter text/i);
   });
 });
@@ -300,7 +300,7 @@ describe('graph capture readiness follows connections instead of storage order',
       { id: 'start', name: 'Start', kind: 'content', content: { type: 'button', action: 'next', label: 'Continue' } }],
       graph: { entry: 'start', edges: [...template.tree.graph!.edges,
         { id: 'direct', from: 'start', to: 'save', kind: 'default' }, { id: 'via-details', from: 'start', to: 'details', kind: 'answer' }] } } };
-    expect(blocking(branched)).toContainEqual(expect.objectContaining({ path: [2, 'children', 0], said: expect.stringContaining('Every line to this field’s form') }));
+    expect(blocking(branched)).toContainEqual(expect.objectContaining({ path: [2, 'children', 0], said: expect.stringContaining('Move this field onto its form’s screen') }));
   });
   it('rejects conditional owned fields and a resource reachable without saving', () => {
     const conditional: Template = { ...template, tree: { ...template.tree, steps: template.tree.steps.map(step => step.id === 'details'

@@ -127,7 +127,7 @@ describe('a connected webhook account', () => {
     expect(secret).toHaveValue(SECRET);
     expect(secret).toHaveAttribute('readonly');
     expect(dialog).toHaveTextContent('Connected. Add a destination, turn it on in a campaign, then test.');
-    expect(dialog).toHaveTextContent('This is the only time it is shown.');
+    expect(dialog).toHaveTextContent('Shown only once.');
     expect(dialog).toHaveTextContent('Receivers that ignore it are fine.');
     expect(within(dialog).getByRole('link', { name: /How to verify/ })).toHaveAttribute('href', WEBHOOK.connection_schema.signing_secret.guide);
     await userEvent.click(within(dialog).getByRole('button', { name: 'Copy' }));
@@ -225,7 +225,7 @@ describe('sending stored submissions to a receiver again', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Actions for Leads hook' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Send stored submissions again' }));
     const confirm = await screen.findByRole('alertdialog', { name: 'Send stored submissions again?' });
-    expect(confirm).toHaveTextContent('Each one is posted to the receiver again, which may run your automation and use its tasks.');
-    expect(confirm).toHaveTextContent('Those that already arrived keep their id, so a receiver that checks it can skip them.');
+    expect(confirm).toHaveTextContent('Each is posted again, so your automation may run and use tasks.');
+    expect(confirm).toHaveTextContent('A receiver that checks the id can skip repeats.');
   });
 });

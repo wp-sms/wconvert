@@ -71,7 +71,7 @@ try {
 
   await client.get('/?wconvert_quiz_fixture=1&stock=in');
   await client.get('/?wconvert_recommendations_fixture=1&options_required=1');
-  assert.match((await health([rec.campaigns.add]))[0].checks[0].message, /None of these products supports Add to cart/);
+  assert.match((await health([rec.campaigns.add]))[0].checks[0].message, /None support Add to cart/);
   await client.get('/?wconvert_recommendations_fixture=1&options_required=0');
   const cross = (await saved(rec.campaigns.page_cross)).config;
   const crossNode = cross.template.tree.steps[0].content.children.find(node => node.type === 'products');

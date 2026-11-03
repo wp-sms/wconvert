@@ -280,7 +280,11 @@ it('saves campaign privacy guidance without disabling core privacy tools', async
 
   const guidance = await screen.findByLabelText(/Show privacy guidance in the campaign editor/);
   expect(guidance).toBeChecked();
-  expect(guidance).toHaveAccessibleDescription(/Export, erasure and retention work either way/);
+  expect(guidance).toHaveAccessibleDescription(/Adds a privacy notice to new campaigns and checks it before publishing/);
+  expect(screen.queryByText(/Export, erasure and retention work either way/)).not.toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'About Privacy guidance' }));
+  expect(screen.getByText(/Export, erasure and retention work either way/)).toBeInTheDocument();
+  await userEvent.keyboard('{Escape}');
 
   await userEvent.click(guidance);
   expect(privacy.savePrivacyGuidance).not.toHaveBeenCalled();

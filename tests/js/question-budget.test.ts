@@ -24,11 +24,11 @@ it('allows ten per route and refuses additions only where they can exceed that b
   const ten = extra(4);
   expect(questionPath(ten)?.count).toBe(10);
   expect(journeyReadinessIssues(ten)).toEqual([]);
-  expect(canAdd(ten, 'home_garden')).toContain('more than ten questions');
-  expect(canAdd(ten, 'scope')).toContain('more than ten questions');
+  expect(canAdd(ten, 'home_garden')).toContain('A line holds ten questions');
+  expect(canAdd(ten, 'scope')).toContain('A line holds ten questions');
   expect(canAdd(ten, 'business_office')).toBeNull();
   const issue = journeyReadinessIssues(extra(5)).find(item => item.key === 'question-path-limit');
-  expect(issue?.said).toContain('11 questions; the limit is ten');
+  expect(issue?.said).toContain('11 questions, limit ten');
   expect(issue?.said).toContain('Garden landscaping details');
   expect(issue?.repair).toEqual({ screenId: 'home_irrigation', section: 'content', focus: 'questions' });
 });

@@ -721,7 +721,7 @@ describe('the destinations screen', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Send again' }));
 
     await waitFor(() => {
-      expect(screen.getByText(/limit for one run/)).toBeInTheDocument();
+      expect(screen.getByText(/one run’s limit/)).toBeInTheDocument();
     });
     expect(screen.getByText(/10,000 submissions queued/)).toBeInTheDocument();
 
@@ -1356,7 +1356,7 @@ describe('testing a destination', () => {
     expect(screen.getByRole('dialog')).toHaveAccessibleDescription('MailPoet subscribers · 7');
     expect(dialog.getByRole('textbox', { name: 'Test email address' })).toHaveValue('merchant@example.com');
     // One sentence of effect; what a success does not prove is the result's to say.
-    expect(dialog.getByRole('button', { name: 'Send test' })).toHaveAccessibleDescription(/^Only this email address.*Use an address you own\. The test really sends — it may add a contact or send an email — but creates no lead\.$/);
+    expect(dialog.getByRole('button', { name: 'Send test' })).toHaveAccessibleDescription(/^Only this email address.*Use your own address\. It may add a contact or send email, but creates no lead\.$/);
     expect(screen.queryByText(/inbox delivery/)).toBeNull();
     expect(api.testSend).not.toHaveBeenCalled();
     expect(api.testConnection).not.toHaveBeenCalled();
@@ -1466,7 +1466,7 @@ describe('destination recovery entry points', () => {
     const region = regionFor(await screen.findByRole('heading', { name: 'MailPoet subscribers' }));
     expect(screen.queryByRole('dialog')).toBeNull();
     const replay = within(region).getByRole('button', { name: 'Send again' });
-    expect(replay).toHaveAccessibleDescription(/since its last success/);
+    expect(replay).toHaveAccessibleDescription(/^Once this destination can send, send them again\.$/);
     expect(api.rePush).not.toHaveBeenCalled();
     await userEvent.click(replay);
     expect(api.rePush).not.toHaveBeenCalled();

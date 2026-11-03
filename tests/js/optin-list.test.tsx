@@ -141,7 +141,7 @@ it('asks to delete the A/B test, naming how many variants go with it', async () 
   await userEvent.click(await screen.findByRole('button', { name: `More actions for ${OPTIN.name}` }));
   await userEvent.click(await screen.findByRole('menuitem', { name: 'Delete campaign' }));
   const confirm = await screen.findByRole('alertdialog', { name: 'Delete this A/B test?' });
-  expect(confirm).toHaveTextContent(`“${OPTIN.name}” and its 1 variant stop showing and leave this list. Their leads and results are kept.`);
+  expect(confirm).toHaveTextContent(`“${OPTIN.name}” and its 1 variant stop showing. Leads and results are kept.`);
   await userEvent.click(within(confirm).getByRole('button', { name: 'Delete test' }));
   expect(optins.deleteOptin).toHaveBeenCalledWith(OPTIN.id);
 });
@@ -484,7 +484,7 @@ describe('an A/B test on the list', () => {
     expect(write).toHaveBeenCalledWith(ARM_B.id);
     expect(screen.getByRole('textbox', { name: 'Variant ID' })).toHaveValue(ARM_B.id);
     expect(screen.queryByRole('textbox', { name: 'Campaign ID' })).not.toBeInTheDocument();
-    expect(screen.getByText(/their campaignId is the campaign this variant belongs to/)).toBeInTheDocument();
+    expect(screen.getByText(/campaignId is this variant’s campaign/)).toBeInTheDocument();
     write.mockRestore();
   });
 
@@ -755,7 +755,7 @@ it('unpublishes from Details by asking in its footer, never in a second dialog',
   await userEvent.click(screen.getByRole('menuitem', { name: 'Unpublish campaign' }));
 
   const question = within(dialog).getByRole('group', { name: /Unpublish this campaign\?/ });
-  expect(question).toHaveTextContent('stops showing and returns to Draft');
+  expect(question).toHaveTextContent('returns to Draft');
   expect(screen.getAllByRole('dialog')).toHaveLength(1);
   expect(screen.queryByRole('alertdialog')).toBeNull();
   expect(within(question).getByRole('button', { name: 'Cancel' })).toHaveFocus();

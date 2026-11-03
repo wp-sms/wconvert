@@ -101,7 +101,7 @@ test('admin saves settings through real REST and diagnostics stay local until an
   await expect(page.getByRole('button', { name: 'Save analytics integration', exact: true })).toBeDisabled();
   await expect(page.getByText('Save changes before testing.')).toHaveCount(0);
   await page.getByRole('button', { name: 'About the Measurement ID' }).click();
-  await expect(page.getByText(/Use the G- ID/)).toBeVisible();
+  await expect(page.getByText(/Use your installed web stream’s G- ID/)).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(page.getByRole('button', { name: 'About the Measurement ID' })).toBeFocused();
   await page.getByRole('radio', { name: 'Google tag', exact: true }).focus();

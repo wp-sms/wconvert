@@ -61,7 +61,7 @@ it('waits for the basket check, then takes its answer, and checks again after a 
   await waitFor(() => expect(resolvers).toHaveLength(1));
   await act(async () => resolvers[0]({ ...response(true), rules: { 'sample-required-cart': false } }));
   expect(status).toHaveTextContent('Doesn’t open');
-  expect(status).toHaveTextContent('This basket does not meet the campaign’s basket requirements');
+  expect(status).toHaveTextContent('This basket fails the campaign’s requirements');
   fireEvent.change(screen.getByRole('spinbutton', { name: 'Merchandise amount after discounts' }), { target: { value: '100' } });
   expect(status).toHaveTextContent('Checking…');
   await waitFor(() => expect(resolvers).toHaveLength(2));

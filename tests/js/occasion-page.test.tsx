@@ -89,10 +89,10 @@ it('keeps its rows while a row action reads the list again, and says so when tha
   expect(screen.getByRole('table', { name: /Campaigns in/ })).toBeInTheDocument();
   await act(async () => refuse({ code: 'x', message: 'The server is away.' }));
 
-  expect(await screen.findByRole('alert')).toHaveTextContent('still shows what was read before. The server is away.');
+  expect(await screen.findByRole('alert')).toHaveTextContent('Showing what was read before. The server is away.');
   expect(screen.getByRole('table', { name: /Campaigns in/ })).toBeInTheDocument();
   await userEvent.click(within(screen.getByRole('alert')).getByRole('button', { name: 'Try again' }));
-  await vi.waitFor(() => expect(screen.queryByText(/still shows what was read before/)).toBeNull());
+  await vi.waitFor(() => expect(screen.queryByText(/Showing what was read before/)).toBeNull());
 });
 
 it('a first read that fails has nothing to keep, and offers Try again', async () => {

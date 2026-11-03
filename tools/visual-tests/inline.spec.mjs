@@ -435,7 +435,7 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await expect(canvas.getByText('No submission recorded.', { exact: true })).toBeVisible();
   await preview.selectOption('locked');
   await page.getByRole('button', { name: 'Review & publish', exact: true }).click();
-  await expect(review).toContainText('Locks the selected region');
+  await expect(review).toContainText('Unlocks last 30 days per browser');
   await expect(publish).toBeEnabled();
   const published = page.waitForResponse(response => response.url().includes('/publish') && response.request().method() === 'POST');
   await publish.click(); expect((await published).ok()).toBe(true);

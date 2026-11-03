@@ -113,8 +113,8 @@ describe('what a block may become', () => {
  * param edit.
  */
 describe('what a button may do', () => {
-  it('refuses the flip in both directions, and says the step count is why', () => {
-    expect(offered(ENTRY.tree, BUTTON, 'submit').link).toMatch(/second step/);
+  it('refuses the flip in both directions, and says which template to pick instead', () => {
+    expect(offered(ENTRY.tree, BUTTON, 'submit').link).toMatch(/Change template to pick one that links away/);
     expect(offered(ENTRY.tree, BUTTON, 'submit').link).not.toMatch(/goal/i);
     expect(offered(ENTRY.tree, BUTTON, 'submit').submit).toBeNull();
 
@@ -131,7 +131,7 @@ describe('what a button may do', () => {
       ],
     });
 
-    expect(offered(clicky, [0, 'children', 0], 'click').submit).toMatch(/second step/);
+    expect(offered(clicky, [0, 'children', 0], 'click').submit).toMatch(/Change template to pick one that submits/);
     expect(offered(clicky, [0, 'children', 0], 'click').link).toBeNull();
   });
 
@@ -141,7 +141,7 @@ describe('what a button may do', () => {
    * field on it draws, takes typing, and is read by nothing.
    */
   it('refuses a link while the form still captures, even where the Goal allows it', () => {
-    expect(offered(ENTRY.tree, BUTTON, 'click').link).toMatch(/read by nothing/);
+    expect(offered(ENTRY.tree, BUTTON, 'click').link).toMatch(/A link button can’t send these fields/);
   });
 
   it('allows a link once nothing is being captured', () => {

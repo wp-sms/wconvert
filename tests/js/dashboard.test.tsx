@@ -451,6 +451,8 @@ describe('Goal and campaign reports', () => {
     expect(
       screen.getByText('10', { selector: '.wa-handoff strong' }),
     ).toBeInTheDocument();
+    expect(screen.queryByText(/a difference is not a queue or failure count/)).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'About Email handoffs' }));
     expect(
       screen.getByText(/a difference is not a queue or failure count/),
     ).toBeInTheDocument();
@@ -886,7 +888,7 @@ describe('what the overview says', () => {
     render(<Dashboard />);
     await userEvent.click(await screen.findByText('How these numbers work'));
     expect(screen.queryByText('Includes today so far')).not.toBeInTheDocument();
-    expect(screen.getByText('Today', { selector: 'dt' }).nextElementSibling).toHaveTextContent('still running');
+    expect(screen.getByText('Today', { selector: 'dt' }).nextElementSibling).toHaveTextContent('Still running');
     expect(document.querySelectorAll('.wa-impact .wa-change').length).toBeGreaterThan(0);
   });
 
