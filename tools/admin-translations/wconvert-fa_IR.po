@@ -22570,10 +22570,6 @@ msgid "Picture unavailable offline"
 msgstr "تصویر در حالت آفلاین در دسترس نیست"
 
 #: public/admin/chunk-DdOzknjs.js:1
-msgid "Report sections"
-msgstr "بخش‌های گزارش"
-
-#: public/admin/chunk-DdOzknjs.js:1
 msgid "Jump to"
 msgstr "رفتن به"
 
@@ -24975,7 +24971,7 @@ msgid "Down"
 msgstr "کاهش"
 
 #: resources/admin/src/stats/ReportDetails.tsx
-#, php-format
+#, js-format
 msgid "%s pts"
 msgstr "%s واحد درصد"
 

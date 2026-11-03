@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
+import { act, cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import apiFetch from '@wordpress/api-fetch';
 import Revenue from '../../modules/analytics/admin/Revenue';
@@ -164,7 +164,7 @@ describe('a switched-off Campaign sales section (ADR 0185)', () => {
     expect(screen.getByRole('heading', { name: 'Campaign sales' })).toBeVisible();
   });
 
-  it('opens to show a read that failed after a collapsed one', async () => {
+  it('cannot be folded over a read that failed after a collapsed one', async () => {
     vi.mocked(apiFetch).mockResolvedValueOnce(off);
     const view = render(<Revenue period={period} />);
     await screen.findByText('Campaign sales');
@@ -172,17 +172,17 @@ describe('a switched-off Campaign sales section (ADR 0185)', () => {
     view.rerender(<Revenue period={{ ...period, days: 30, from: '2026-09-01' }} />);
     const alert = await screen.findByRole('alert');
     expect(alert).toBeVisible();
-    expect(fold()).toHaveAttribute('open');
+    expect(fold()).toBeNull();
   });
 
-  it('opens to show a failed save, and keeps the shape it was in', async () => {
+  it('cannot be folded over a failed save', async () => {
     vi.mocked(apiFetch).mockResolvedValueOnce(off).mockRejectedValueOnce({ message: 'Nope' });
     render(<Revenue period={period} />);
     await userEvent.click(await screen.findByText('Campaign sales'));
     await userEvent.click(screen.getByText('Tracking & setup'));
     await userEvent.click(screen.getByRole('button', { name: 'Turn on tracking' }));
     expect(await screen.findByRole('alert')).toBeVisible();
-    expect(fold()).toHaveAttribute('open');
+    expect(fold()).toBeNull();
   });
 
   it('keeps the section open after tracking is turned off here, with its confirmation and focus', async () => {
@@ -197,6 +197,24 @@ describe('a switched-off Campaign sales section (ADR 0185)', () => {
     expect(screen.getByRole('heading', { name: 'Campaign sales' })).toBeVisible();
     expect(fold()).toBeNull();
     expect(again).toBeVisible();
+    await waitFor(() => expect(again).toHaveFocus());
+  });
+
+  it('puts focus back on the button when a slow save ends, because a busy button cannot hold it', async () => {
+    let finish!: (value: unknown) => void;
+    vi.mocked(apiFetch).mockResolvedValueOnce({ ...report, linked_orders: 0, currencies: [], orders: [] })
+      .mockImplementationOnce(() => new Promise((resolve) => { finish = resolve; })).mockResolvedValueOnce(off);
+    render(<Revenue period={period} />);
+    await userEvent.click(await screen.findByText('Tracking & setup'));
+    await userEvent.click(screen.getByRole('button', { name: 'Turn off tracking' }));
+    await userEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Turn off tracking' }));
+    await waitFor(() => expect(screen.queryByRole('alertdialog')).toBeNull());
+    const toggle = screen.getByRole('button', { name: 'Saving…' });
+    expect(toggle).toBeDisabled();
+    await act(async () => { await new Promise((resolve) => setTimeout(resolve, 20)); });
+    expect(toggle).not.toHaveFocus();
+    finish({ settings: off.settings });
+    await waitFor(() => expect(toggle).toHaveFocus());
   });
 
   it('does not rebuild the section under the merchant when they turn tracking on from it', async () => {
@@ -210,6 +228,33 @@ describe('a switched-off Campaign sales section (ADR 0185)', () => {
     await waitFor(() => expect(toggle).toHaveTextContent('Turn off tracking'));
     expect(toggle).toBeInTheDocument();
     expect(toggle).toBeVisible();
+    await waitFor(() => expect(toggle).toHaveFocus());
+  });
+
+  it('decides again for a new period, rather than holding what a save found', async () => {
+    vi.mocked(apiFetch).mockResolvedValueOnce(off)
+      .mockResolvedValueOnce({ settings: report.settings }).mockResolvedValueOnce({ ...off, settings: report.settings });
+    const view = render(<Revenue period={period} />);
+    await userEvent.click(await screen.findByText('Campaign sales'));
+    await userEvent.click(screen.getByText('Tracking & setup'));
+    const toggle = screen.getByRole('button', { name: 'Turn on tracking' });
+    await userEvent.click(toggle);
+    await waitFor(() => expect(toggle).toHaveTextContent('Turn off tracking'));
+    vi.mocked(apiFetch).mockResolvedValueOnce({ ...report, from: '2026-09-01', days: 30 });
+    view.rerender(<Revenue period={{ ...period, days: 30, from: '2026-09-01' }} />);
+    expect(await screen.findByRole('heading', { name: 'Campaign sales' })).toBeVisible();
+    expect(fold()).toBeNull();
+  });
+
+  it('starts one campaign collapsed even after the overview was opened, because it is a new report', async () => {
+    vi.mocked(apiFetch).mockResolvedValueOnce(off).mockResolvedValueOnce(off);
+    const view = render(<Revenue period={period} />);
+    await userEvent.click(await screen.findByText('Campaign sales'));
+    expect(fold()).toHaveAttribute('open');
+    view.rerender(<Revenue period={period} optinId="offer" />);
+    await screen.findByText('Campaign sales');
+    await waitFor(() => expect(vi.mocked(apiFetch)).toHaveBeenCalledTimes(2));
+    expect(fold()).not.toHaveAttribute('open');
   });
 
   it('opens when something jumps to it', async () => {

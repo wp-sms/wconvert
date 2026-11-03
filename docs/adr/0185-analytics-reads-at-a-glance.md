@@ -1,7 +1,8 @@
 # 0185: Analytics reads at a glance
 
 Accepted 2026-11-03. Amends [0132](0132-every-screen-answers-its-first-question.md)
-decision 25 and [0177](0177-reports-include-today.md) decisions 3 and 4.
+decision 25, [0177](0177-reports-include-today.md) decisions 3 and 4, and
+[0131](0131-one-way-to-show-each-thing-in-the-admin.md) decision 10.
 
 ## Context
 
@@ -15,20 +16,29 @@ made a merchant hunt for them. A problem looked like every other card.
    header strip is `--warning-surface`, the card edge and icon well are
    `--warning`, and the rows stay white. The whole card is not tinted, because
    tinting a card that holds several tables and buttons says nothing more than
-   the header does and costs the reading of everything in it.
+   the header does and costs the reading of everything in it. This widens amber
+   past "the site is holding this back" (§5, §14) to "look here" on these two
+   Analytics cards, and their icon well departs from `--secondary` with it.
 
 2. **A switched-off Campaign sales is one closed row.** It starts collapsed when
    tracking is off, including a store that never turned it on, and the period
    has no linked orders. It is the shared `Disclosure`
    ([0131](0131-one-way-to-show-each-thing-in-the-admin.md)) and shows the icon, the
    title, the "Tracking is off" badge and the description. It stays open when
-   the period has linked orders, when the site address changed, and when a read
-   or save failed; a report too large to total stays open too, because it has
-   not said that nothing was linked. A save never swaps the section's shape:
-   turning tracking off keeps it open with its confirmation, and turning it on
-   from the closed row keeps the row, with focus on the button. A jump opens it
-   first (`ReportTarget`'s `onJump`). This holds on the overview and on one
-   campaign's report.
+   the period has linked orders and when the site address changed. A read or save
+   that failed draws the open region, with no way to fold it over the failure. A
+   report too large to total stays open too, because it has not said that nothing
+   was linked. A save does not swap the section's shape: turning tracking off keeps
+   it open with its confirmation, and turning it on from the closed row keeps the
+   row. Focus returns to the button when the save ends, because a busy button is
+   `disabled` and cannot hold it; a store's first setup swaps its steps for the
+   report, so that button is gone. Each new period or campaign decides afresh. A
+   jump opens it first (`ReportTarget`'s `onJump`). This holds on the overview and
+   on one campaign's report.
+
+   The closed row draws the region header's icon, type and padding itself, because
+   a `Disclosure`'s `summary` line cannot hold an icon and a badge beside two lines
+   of text, and its body has no padding, because the region's body brings its own.
 
    `site_matches` alone cannot mean "the address changed": a store that never
    set up tracking saved no address, so it reads false there as well. Only a
@@ -40,7 +50,9 @@ made a merchant hunt for them. A problem looked like every other card.
    and "vs previous period" still muted. No change and "New this period" have no
    direction, so they stay neutral with no arrow, and so does a change that
    rounds to 0%. A fall does not mean anything is broken, which is why it stays
-   on the figure and does not spread to the card, and it is never amber (§14).
+   on the figure and does not spread to the card, and the figure is never amber
+   (§14). A Needs attention row about a falling rate sits under an amber header
+   because the header says "look here", not because the number is held back.
    The Rate tile gains its own change in percentage points, and shows nothing
    when either rate is missing.
 

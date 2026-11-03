@@ -46,6 +46,8 @@ const STATUS: Record<OptinReport['status'], OptinStatus> = {
 /** A figure's move against the previous period, and the words to write it in. */
 export type PeriodChange = { text: string; direction: 'up' | 'down' | 'flat' | 'new' };
 
+const directionOf = (move: number): PeriodChange['direction'] => (move === 0 ? 'flat' : move > 0 ? 'up' : 'down');
+
 /**
  * A change against the previous period, as a percentage and a direction — or
  * "New this period" from nothing, and nothing at all for nothing → nothing,
@@ -57,8 +59,7 @@ export function changeOf(current: number, previous: number): PeriodChange | null
   if (previous === 0)
     return current === 0 ? null : { text: __('New this period', 'wconvert'), direction: 'new' };
   const delta = (current - previous) / previous;
-  const text = formatRate(Math.abs(delta));
-  return { text, direction: Math.round(delta * 1000) === 0 ? 'flat' : delta > 0 ? 'up' : 'down' };
+  return { text: formatRate(Math.abs(delta)), direction: directionOf(Math.round(delta * 1000)) };
 }
 
 /**
@@ -75,7 +76,7 @@ export function rateChange(current: number | null, previous: number | null): Per
       __('%s pts', 'wconvert'),
       formatDecimal(Math.abs(points)),
     ),
-    direction: points === 0 ? 'flat' : points > 0 ? 'up' : 'down',
+    direction: directionOf(points),
   };
 }
 

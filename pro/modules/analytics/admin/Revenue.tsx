@@ -64,11 +64,20 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
   const [confirmOff, setConfirmOff] = useState(false);
   const [retry, setRetry] = useState(0);
   const toggle = useRef<HTMLButtonElement>(null);
+  const windowQuery = periodParams(periodOf(period)).toString();
   // Whether the collapsed section is open, and what a save found it as (ADR 0185).
   const [expanded, setExpanded] = useState(false);
   const [foldedAtSave, setFoldedAtSave] = useState<boolean | null>(null);
   const expand = useCallback(() => setExpanded(true), []);
-  const windowQuery = periodParams(periodOf(period)).toString();
+  const refocusToggle = useRef(false);
+  // A new report decides for itself: what a save or a click found holds for this one only.
+  useEffect(() => { setFoldedAtSave(null); setExpanded(false); }, [windowQuery, optinId]);
+  // A busy button is `disabled` (§14), which drops the focus it held, so it comes back when the save ends.
+  useEffect(() => {
+    if (busy || !refocusToggle.current) return;
+    refocusToggle.current = false;
+    if (document.activeElement === document.body) toggle.current?.focus();
+  }, [busy]);
   useEffect(() => {
     const controller = new AbortController();
     setUpdating(true); setError('');
@@ -102,11 +111,13 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
   // is false there too: only a store with a `since` can have had its address
   // change. A report too large to total has not said that nothing was linked.
   const nothingToRead = !!report && !report.settings.enabled && (report.settings.since === null || (report.site_matches && report.complete === true && (report.linked_orders ?? 0) === 0));
-  // A save never rebuilds the section under the merchant: turning tracking off
+  // A failure is never folded away, because nothing here hides one (see RegionError).
+  // A save does not rebuild the section under the merchant: turning tracking off
   // keeps it open with its confirmation, and turning it on from the closed row
-  // keeps the row, with focus still on the button.
-  const folded = foldedAtSave ?? nothingToRead;
+  // keeps the row. A store's first setup still swaps its steps for the report.
+  const folded = !error && !saveFailure && (foldedAtSave ?? nothingToRead);
   async function change(enabled: boolean) {
+    refocusToggle.current = true;
     setBusy(true); setSaveFailure(null); setFoldedAtSave(folded);
     try { const saved = await apiFetch<{ settings: Report['settings'] }>({ path: '/wconvert/v1/revenue', method: 'POST', data: { enabled } }); setReport(previous => previous ? { ...previous, settings: saved.settings, site_matches: true } : previous); setRetry(n => n + 1); }
     catch (cause) { setExpanded(true); setSaveFailure({ enabled, message: sprintf(/* translators: %s: the reason the request failed, as the server gave it. */ __('Could not save the tracking setting. %s', 'wconvert-pro'), messageOf(cause)) }); }

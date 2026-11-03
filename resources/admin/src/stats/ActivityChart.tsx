@@ -83,14 +83,14 @@ export function ActivityChart({
 }) {
   const [metric, setMetric] = useState<Metric>('results');
   const [plot, width] = usePlotWidth();
-  const [hovered, setHovered] = useState<number | null>(null);
+  const [pickedDay, setPickedDay] = useState<number | null>(null);
   const direction = useDirection();
   // A tap has no leave to end it, so a tap elsewhere does.
-  const showing = hovered !== null;
+  const showing = pickedDay !== null;
   useEffect(() => {
     if (!showing) return;
     const dismiss = (event: globalThis.PointerEvent) => {
-      if (!plot.current?.contains(event.target as Node)) setHovered(null);
+      if (!plot.current?.contains(event.target as Node)) setPickedDay(null);
     };
     document.addEventListener('pointerdown', dismiss);
     return () => document.removeEventListener('pointerdown', dismiss);
@@ -158,11 +158,11 @@ export function ActivityChart({
         />
       ) : null,
     );
-  const point = hovered === null ? undefined : current[hovered];
-  const priorPoint = hovered === null ? undefined : prior[hovered];
-  const pointX = hovered === null ? 0 : x(hovered, current.length);
-  const readDay = (event: PointerEvent<HTMLDivElement>) => {
-    setHovered(nearestDay(event.clientX - event.currentTarget.getBoundingClientRect().left, width, current.length));
+  const point = pickedDay === null ? undefined : current[pickedDay];
+  const priorPoint = pickedDay === null ? undefined : prior[pickedDay];
+  const pointX = pickedDay === null ? 0 : x(pickedDay, current.length);
+  const pickDay = (event: PointerEvent<HTMLDivElement>) => {
+    setPickedDay(nearestDay(event.clientX - event.currentTarget.getBoundingClientRect().left, width, current.length));
   };
   // Beside the hairline on the roomier side, and never past the plot's edges: a
   // percentage in `translate` is the tooltip's own width, so nothing measures it.
@@ -193,12 +193,12 @@ export function ActivityChart({
         <div
           ref={plot}
           className="wa-chart-plot"
-          onPointerMove={readDay}
-          onPointerDown={readDay}
+          onPointerMove={pickDay}
+          onPointerDown={pickDay}
           onPointerLeave={(event) => {
-            if (event.pointerType !== 'touch') setHovered(null);
+            if (event.pointerType !== 'touch') setPickedDay(null);
           }}
-          onPointerCancel={() => setHovered(null)}
+          onPointerCancel={() => setPickedDay(null)}
         >
           <svg
             className="wa-chart"
@@ -229,11 +229,11 @@ export function ActivityChart({
                 <title>{todaySoFar}</title>
               </circle>
             )}
-            {point && hovered !== null && (
+            {point && pickedDay !== null && (
               <>
                 <line className="wa-chart-cursor" x1={pointX} x2={pointX} y1="20" y2="160" />
                 {priorPoint && priorPoint.value !== null && (
-                  <circle className="wa-chart-dot wa-chart-dot-prior" cx={x(hovered, prior.length)} cy={y(priorPoint.value)} r="4" />
+                  <circle className="wa-chart-dot wa-chart-dot-prior" cx={x(pickedDay, prior.length)} cy={y(priorPoint.value)} r="4" />
                 )}
                 {point.value !== null && <circle className="wa-chart-dot" cx={pointX} cy={y(point.value)} r="4" />}
               </>
