@@ -11369,10 +11369,6 @@ msgstr "بارگذاری این دوره ممکن نشد. آخرین گزارش 
 msgid "Overall impact"
 msgstr "تأثیر کلی"
 
-#: public/admin/chunk-2dRxxHZc.js:71
-msgid "Includes today so far"
-msgstr "شامل امروز تا این لحظه"
-
 #. translators: %s: the earlier date range being compared against, e.g. “Sep 1 – 30, 2026”.
 #: public/admin/chunk-2dRxxHZc.js:73
 #, js-format
@@ -24969,3 +24965,24 @@ msgstr "سایدبار"
 msgctxt "block keyword"
 msgid "footer"
 msgstr "فوتر"
+
+#: resources/admin/src/stats/ReportDetails.tsx
+msgid "Up"
+msgstr "افزایش"
+
+#: resources/admin/src/stats/ReportDetails.tsx
+msgid "Down"
+msgstr "کاهش"
+
+#: resources/admin/src/stats/ReportDetails.tsx
+#, php-format
+msgid "%s pts"
+msgstr "%s واحد درصد"
+
+#: resources/admin/src/stats/ReportDetails.tsx
+msgid "Performance"
+msgstr "عملکرد"
+
+#: resources/admin/src/stats/Dashboard.tsx
+msgid "Today is still running, so a period ending today can read a little low against the one before."
+msgstr "امروز هنوز تمام نشده است، پس بازه‌ای که به امروز می‌رسد ممکن است کمی پایین‌تر از بازه قبلی دیده شود."
