@@ -14,7 +14,8 @@
 # Run it again after every `npm run build`. Each JS catalogue is named after the md5
 # of the bundle it belongs to, and bundle names carry a content hash, so a catalogue
 # from an earlier build is never asked for. Each .po is therefore brought up to a
-# freshly made POT first, and only the copy in <output-dir> is changed.
+# freshly made POT first, and only the copy in <output-dir> is changed. The POTs are
+# rebuilt where `npm run build:pot*` writes them, which git ignores.
 
 set -euo pipefail
 

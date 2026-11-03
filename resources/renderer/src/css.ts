@@ -19,6 +19,9 @@ import { DECORATION_CSS } from './decorations';
  * is entirely a matter of never naming a physical side here. That was verified
  * at 44 of 44 under a real `fa_IR` locale; do not re-litigate it with
  * `margin-left`.
+ * That covers sides only. Letter-spacing, a slant and an email input needed
+ * their own rules under real Persian, and a four-sided `pad` mirrors in the token
+ * writer (ADR 0184).
  */
 
 /**
@@ -509,6 +512,12 @@ export const SHADOW_CSS = [
    */
   `.wc-strong{font-weight:max(700,var(--wc-text-weight,700))}`,
   `.wc-italic{font-style:italic}`,
+  /*
+   * Arabic script is joined handwriting. Letter-spacing pulls its letters apart,
+   * and a slant is a machine's guess, because the fonts have no italic. After
+   * every rule that sets either, so no `!important` is paid for.
+   */
+  `:dir(rtl){letter-spacing:normal;font-style:normal}`,
   `.wc-image{display:block;inline-size:100%;block-size:var(--wc-image-height,auto);object-fit:cover;object-position:var(--wc-image-position,center);border-radius:var(--wc-radius,.5rem)}`,
   /*
    * A picture that IS one side of a split fills that side.
@@ -689,6 +698,12 @@ export const SHADOW_CSS = [
   // design's error colour, so a dark card does not get a red ring it cannot
   // show; a design that sets none keeps the red it always had.
   `.wc-input::placeholder{color:var(--wc-placeholder,revert);opacity:1}`,
+  /*
+   * An address reads left to right in any language: right-to-left, its `@` and
+   * dots jump to the wrong side as it is typed. A browser's own sheet does this
+   * for `tel` and leaves `email` out.
+   */
+  `.wc-input[type=email]{direction:ltr}`,
   `.wc-input[aria-invalid]{box-shadow:inset 0 0 0 2px var(--wc-error-fg,#b91c1c)}`,
 
   // Container chrome, not vocabulary: a template cannot omit the way out. It

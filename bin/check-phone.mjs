@@ -12,9 +12,10 @@ console.log(`  ✓ phone feature: ${phone} B gzipped (budget ${cap} B)`);
 for (const [label, path, base] of [
   // ADR 0167: +1024 B for bounded artwork; both bases follow their loader budget's +2560 B.
   // ADR 0168: the approved styling and form alignment changes add 192 B to both bases.
-  ['free', 'public/loader/loader.js', 18112],
+  // ADR 0184: both bases follow their loader budget, +80 B free and +32 B Pro.
+  ['free', 'public/loader/loader.js', 18192],
   // ADR 0158: the Pro base follows the Pro loader budget's +288 B.
-  ['pro', 'pro/public/loader/loader.js', 30688],
+  ['pro', 'pro/public/loader/loader.js', 30720],
 ]) {
   const total = size(path) + phone;
   console.log(`  ✓ ${label} phone page: ${total} B gzipped (combined ceiling ${base + cap} B)`);

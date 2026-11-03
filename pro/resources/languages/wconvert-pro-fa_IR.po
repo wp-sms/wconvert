@@ -6101,22 +6101,22 @@ msgstr "میز کار لوازم جانبی"
 #: resources/templates/labels.php:5
 msgctxt "a screen of a campaign design"
 msgid "Useful accessories"
-msgstr "لوازم جانبی مفید"
+msgstr "لوازم جانبی کاربردی"
 
 #: resources/templates/labels.php:6
 msgctxt "a campaign design's name"
 msgid "After hours"
-msgstr "پس از ساعت کاری"
+msgstr "بعد از ساعت کاری"
 
 #: resources/templates/labels.php:6
 msgctxt "a screen of a campaign design"
 msgid "Listening night"
-msgstr "شب شنیدن موسیقی"
+msgstr "شب موسیقی"
 
 #: resources/templates/labels.php:7
 msgctxt "a campaign design's name"
 msgid "Availability note"
-msgstr "یادداشت زمان‌های آزاد"
+msgstr "یادداشت زمان‌های بازدید"
 
 #: resources/templates/labels.php:7
 #: resources/templates/labels.php:95
@@ -6130,7 +6130,7 @@ msgstr "اطلاعات"
 #: resources/templates/labels.php:8
 msgctxt "a campaign design's name"
 msgid "Announcement bar"
-msgstr "نوار اعلان"
+msgstr "نوار اطلاعیه"
 
 #: resources/templates/labels.php:8
 #: resources/templates/labels.php:10
@@ -6290,7 +6290,7 @@ msgstr "همراه سبد خرید"
 #: resources/templates/labels.php:12
 msgctxt "a screen of a campaign design"
 msgid "Basket extras"
-msgstr "افزودنی‌های سبد خرید"
+msgstr "مکمل‌های سبد خرید"
 
 #: resources/templates/labels.php:13
 msgctxt "a campaign design's name"
@@ -6300,7 +6300,7 @@ msgstr "نوار خاموشی"
 #: resources/templates/labels.php:14
 msgctxt "a campaign design's name"
 msgid "Closing time"
-msgstr "زمان بسته شدن"
+msgstr "وقت تعطیلی"
 
 #: resources/templates/labels.php:15
 msgctxt "a campaign design's name"
@@ -6315,12 +6315,12 @@ msgstr "رسید خرید خوب شما"
 #: resources/templates/labels.php:17
 msgctxt "a campaign design's name"
 msgid "A little black gift"
-msgstr "یک هدیه کوچک سیاه"
+msgstr "هدیه کوچک سیاه"
 
 #: resources/templates/labels.php:18
 msgctxt "a campaign design's name"
 msgid "Midnight atelier"
-msgstr "کارگاه نیمه‌شب"
+msgstr "آتلیه نیمه‌شب"
 
 #: resources/templates/labels.php:19
 msgctxt "a campaign design's name"
@@ -6363,7 +6363,7 @@ msgstr "ثبت‌نام"
 #: resources/templates/labels.php:151
 msgctxt "a screen of a campaign design"
 msgid "Request received"
-msgstr "درخواست دریافت شد"
+msgstr "ثبت شد"
 
 #: resources/templates/labels.php:20
 msgctxt "a campaign design's name"
@@ -6383,7 +6383,7 @@ msgstr "چیزی زیبا بسازید"
 #: resources/templates/labels.php:22
 msgctxt "a campaign design's name"
 msgid "Callback slip"
-msgstr "برگه درخواست تماس"
+msgstr "برگه تماس"
 
 #: resources/templates/labels.php:22
 msgctxt "a screen of a campaign design"
@@ -6423,17 +6423,17 @@ msgstr "تابلوی مهلت"
 #: resources/templates/labels.php:29
 msgctxt "a campaign design's name"
 msgid "Drop Alert"
-msgstr "هشدار عرضه جدید"
+msgstr "هشدار عرضه"
 
 #: resources/templates/labels.php:30
 msgctxt "a campaign design's name"
 msgid "Extra-Ten Coupon"
-msgstr "کد تخفیف ۱۰ اضافه"
+msgstr "کد تخفیف ده درصدی اضافه"
 
 #: resources/templates/labels.php:31
 msgctxt "a campaign design's name"
 msgid "First-Dibs Signup"
-msgstr "ثبت‌نام برای اولویت خرید"
+msgstr "ثبت‌نام اولین انتخاب"
 
 #: resources/templates/labels.php:32
 msgctxt "a campaign design's name"
@@ -6448,12 +6448,12 @@ msgstr "هشدار ایمیلی جمعه"
 #: resources/templates/labels.php:34
 msgctxt "a campaign design's name"
 msgid "Layer Edit"
-msgstr "منتخب لباس‌های لایه‌ای"
+msgstr "منتخب لایه‌ها"
 
 #: resources/templates/labels.php:35
 msgctxt "a campaign design's name"
 msgid "Packing Perk"
-msgstr "مزیت بسته‌بندی"
+msgstr "امتیاز بسته‌بندی"
 
 #: resources/templates/labels.php:36
 msgctxt "a campaign design's name"
@@ -6468,7 +6468,7 @@ msgstr "منتخب شیرین"
 #: resources/templates/labels.php:38
 msgctxt "a campaign design's name"
 msgid "Your Welcome Pal"
-msgstr "رفیق خوش‌آمدگویی شما"
+msgstr "رفیق خوشامدگوی شما"
 
 #: resources/templates/labels.php:39
 msgctxt "a campaign design's name"
@@ -6485,7 +6485,7 @@ msgstr "پیشنهادها"
 #: resources/templates/labels.php:40
 msgctxt "a campaign design's name"
 msgid "Add useful extras"
-msgstr "موارد مفید را اضافه کنید"
+msgstr "افزودن محصولات جانبی کاربردی"
 
 #: resources/templates/labels.php:41
 msgctxt "a campaign design's name"
@@ -6495,7 +6495,7 @@ msgstr "ساعت کروم"
 #: resources/templates/labels.php:42
 msgctxt "a campaign design's name"
 msgid "Command + save"
-msgstr "Command + ذخیره"
+msgstr "فرمان + ذخیره"
 
 #: resources/templates/labels.php:43
 msgctxt "a campaign design's name"
@@ -6505,7 +6505,7 @@ msgstr "راهروی برقی"
 #: resources/templates/labels.php:44
 msgctxt "a campaign design's name"
 msgid "Midnight transmission"
-msgstr "مخابره نیمه‌شب"
+msgstr "پخش نیمه‌شب"
 
 #: resources/templates/labels.php:45
 msgctxt "a campaign design's name"
@@ -6530,7 +6530,7 @@ msgstr "تابلوی قهوه‌یاب"
 #: resources/templates/labels.php:48
 msgctxt "a screen of a campaign design"
 msgid "Choose your taste"
-msgstr "طعم خود را انتخاب کنید"
+msgstr "انتخاب طعم"
 
 #: resources/templates/labels.php:48
 msgctxt "a screen of a campaign design"
@@ -6540,7 +6540,7 @@ msgstr "نقطه شروع قهوه شما"
 #: resources/templates/labels.php:49
 msgctxt "a campaign design's name"
 msgid "Conversation note"
-msgstr "یادداشت گفت‌وگو"
+msgstr "یادداشت گفتگو"
 
 #: resources/templates/labels.php:49
 msgctxt "a screen of a campaign design"
@@ -6605,12 +6605,12 @@ msgstr "یادداشتی از سازنده"
 #: resources/templates/labels.php:54
 msgctxt "a campaign design's name"
 msgid "Almost somewhere"
-msgstr "تقریباً یک جایی"
+msgstr "تقریباً جایی دیگر"
 
 #: resources/templates/labels.php:55
 msgctxt "a campaign design's name"
 msgid "An evening worth making"
-msgstr "عصری که ارزش ساختن دارد"
+msgstr "عصری که ارزشش را دارد"
 
 #: resources/templates/labels.php:56
 msgctxt "a campaign design's name"
@@ -6630,17 +6630,17 @@ msgstr "با هم بهتر"
 #: resources/templates/labels.php:59
 msgctxt "a campaign design's name"
 msgid "Build something good"
-msgstr "چیزی خوب بسازید"
+msgstr "چیز خوبی بسازید"
 
 #: resources/templates/labels.php:60
 msgctxt "a campaign design's name"
 msgid "Fix-it Friday"
-msgstr "جمعه تعمیرات"
+msgstr "جمعه تعمیر"
 
 #: resources/templates/labels.php:61
 msgctxt "a campaign design's name"
 msgid "From the ground up"
-msgstr "از پایه"
+msgstr "از دل خاک"
 
 #: resources/templates/labels.php:62
 msgctxt "a campaign design's name"
@@ -6650,17 +6650,17 @@ msgstr "انجمن سگ‌های خوب"
 #: resources/templates/labels.php:63
 msgctxt "a campaign design's name"
 msgid "Listen closer"
-msgstr "با دقت بیشتر گوش کنید"
+msgstr "با دقت گوش کنید"
 
 #: resources/templates/labels.php:64
 msgctxt "a campaign design's name"
 msgid "Listening party"
-msgstr "مهمانی شنیدن موسیقی"
+msgstr "مهمانی شنیدن"
 
 #: resources/templates/labels.php:65
 msgctxt "a campaign design's name"
 msgid "Make it yours"
-msgstr "آن را مال خود کنید"
+msgstr "از آن خودتان کنید"
 
 #: resources/templates/labels.php:66
 msgctxt "a campaign design's name"
@@ -6670,7 +6670,7 @@ msgstr "کارگاه باز"
 #: resources/templates/labels.php:67
 msgctxt "a campaign design's name"
 msgid "Out of office"
-msgstr "خارج از دفتر"
+msgstr "بیرون از دفتر"
 
 #: resources/templates/labels.php:68
 msgctxt "a campaign design's name"
@@ -6690,12 +6690,12 @@ msgstr "یادداشت‌های یکشنبه آرام"
 #: resources/templates/labels.php:71
 msgctxt "a campaign design's name"
 msgid "Soft science"
-msgstr "علم ملایم"
+msgstr "علم لطیف"
 
 #: resources/templates/labels.php:72
 msgctxt "a campaign design's name"
 msgid "Start a conversation"
-msgstr "گفت‌وگو را شروع کنید"
+msgstr "گفتگو را شروع کنید"
 
 #: resources/templates/labels.php:73
 msgctxt "a campaign design's name"
@@ -6730,7 +6730,7 @@ msgstr "کارت آخر هفته طولانی"
 #: resources/templates/labels.php:79
 msgctxt "a campaign design's name"
 msgid "The next chapter"
-msgstr "فصل بعد"
+msgstr "فصل بعدی"
 
 #: resources/templates/labels.php:80
 msgctxt "a campaign design's name"
@@ -6740,22 +6740,22 @@ msgstr "اتاق اشیا"
 #: resources/templates/labels.php:81
 msgctxt "a campaign design's name"
 msgid "The scenic route"
-msgstr "مسیر خوش‌منظره"
+msgstr "راه خوش‌منظره"
 
 #: resources/templates/labels.php:82
 msgctxt "a campaign design's name"
 msgid "The small-start studio"
-msgstr "استودیوی شروع‌های کوچک"
+msgstr "استودیوی شروع کوچک"
 
 #: resources/templates/labels.php:83
 msgctxt "a campaign design's name"
 msgid "The useful sale"
-msgstr "حراج مفید"
+msgstr "حراج کاربردی"
 
 #: resources/templates/labels.php:84
 msgctxt "a campaign design's name"
 msgid "Your kind of weekend"
-msgstr "آخر هفته باب میل شما"
+msgstr "آخر هفته‌ای به سلیقه شما"
 
 #: resources/templates/labels.php:85
 msgctxt "a campaign design's name"
@@ -6765,7 +6765,7 @@ msgstr "دیوار نمایشگاه"
 #: resources/templates/labels.php:85
 msgctxt "a screen of a campaign design"
 msgid "Exhibition invitation"
-msgstr "دعوت‌نامه نمایشگاه"
+msgstr "دعوت به نمایشگاه"
 
 #: resources/templates/labels.php:86
 msgctxt "a campaign design's name"
@@ -6790,17 +6790,17 @@ msgstr "تمام‌صفحه دوبخشی"
 #: resources/templates/labels.php:90
 msgctxt "a campaign design's name"
 msgid "Gift edit"
-msgstr "منتخب هدیه"
+msgstr "گزیده هدیه"
 
 #: resources/templates/labels.php:90
 msgctxt "a screen of a campaign design"
 msgid "Their interests"
-msgstr "علایق او"
+msgstr "علایقشان"
 
 #: resources/templates/labels.php:90
 msgctxt "a screen of a campaign design"
 msgid "Your budget"
-msgstr "بودجه شما"
+msgstr "بودجه"
 
 #: resources/templates/labels.php:90
 msgctxt "a screen of a campaign design"
@@ -6815,12 +6815,12 @@ msgstr "مدار هدیه"
 #: resources/templates/labels.php:91
 msgctxt "a screen of a campaign design"
 msgid "A little gift inspiration"
-msgstr "کمی الهام برای هدیه"
+msgstr "کمی ایده برای هدیه"
 
 #: resources/templates/labels.php:91
 msgctxt "a screen of a campaign design"
 msgid "Your gift direction"
-msgstr "مسیر انتخاب هدیه شما"
+msgstr "مسیر هدیه شما"
 
 #: resources/templates/labels.php:92
 msgctxt "a campaign design's name"
@@ -6835,12 +6835,12 @@ msgstr "یادآوری سبد خرید"
 #: resources/templates/labels.php:94
 msgctxt "a campaign design's name"
 msgid "Strip that hands over a code"
-msgstr "نوار باریکی که کد می‌دهد"
+msgstr "نواری که کد می‌دهد"
 
 #: resources/templates/labels.php:95
 msgctxt "a campaign design's name"
 msgid "Inline signpost"
-msgstr "تابلوی راهنما داخل محتوا"
+msgstr "تابلوی داخل محتوا"
 
 #: resources/templates/labels.php:96
 msgctxt "a campaign design's name"
@@ -6850,7 +6850,7 @@ msgstr "راهنمای محتوا با ثبت‌نام اختیاری"
 #: resources/templates/labels.php:96
 msgctxt "a screen of a campaign design"
 msgid "Your interests"
-msgstr "علایق شما"
+msgstr "علاقه‌های شما"
 
 #: resources/templates/labels.php:96
 msgctxt "a screen of a campaign design"
@@ -6875,7 +6875,7 @@ msgstr "محصول‌یاب"
 #: resources/templates/labels.php:97
 msgctxt "a screen of a campaign design"
 msgid "What are you shopping for?"
-msgstr "دنبال چه چیزی هستید؟"
+msgstr "دنبال چه هستید؟"
 
 #: resources/templates/labels.php:97
 msgctxt "a screen of a campaign design"
@@ -6890,12 +6890,12 @@ msgstr "نتیجه شما"
 #: resources/templates/labels.php:98
 msgctxt "a campaign design's name"
 msgid "Relevant service enquiry"
-msgstr "درخواست خدمت مرتبط"
+msgstr "درخواست خدمات مرتبط"
 
 #: resources/templates/labels.php:98
 msgctxt "a screen of a campaign design"
 msgid "What do you need?"
-msgstr "به چه چیزی نیاز دارید؟"
+msgstr "چه نیازی دارید؟"
 
 #: resources/templates/labels.php:98
 msgctxt "a screen of a campaign design"
@@ -6910,7 +6910,7 @@ msgstr "اطلاعات تماس"
 #: resources/templates/labels.php:99
 msgctxt "a campaign design's name"
 msgid "Kind words"
-msgstr "سخنان محبت‌آمیز"
+msgstr "حرف‌های خوب"
 
 #: resources/templates/labels.php:99
 #: resources/templates/labels.php:101
@@ -6927,17 +6927,17 @@ msgstr "میز کار کیت"
 #: resources/templates/labels.php:100
 msgctxt "a screen of a campaign design"
 msgid "Your experience"
-msgstr "تجربه شما"
+msgstr "تجربه"
 
 #: resources/templates/labels.php:100
 msgctxt "a screen of a campaign design"
 msgid "Your next project"
-msgstr "پروژه بعدی شما"
+msgstr "پروژه بعدی"
 
 #: resources/templates/labels.php:100
 msgctxt "a screen of a campaign design"
 msgid "Your kit"
-msgstr "کیت شما"
+msgstr "کیت"
 
 #: resources/templates/labels.php:101
 msgctxt "a campaign design's name"
@@ -6967,12 +6967,12 @@ msgstr "پولاروید"
 #: resources/templates/labels.php:106
 msgctxt "a campaign design's name"
 msgid "Editorial split"
-msgstr "دوبخشی مجله‌ای"
+msgstr "دوستونی مجله‌ای"
 
 #: resources/templates/labels.php:107
 msgctxt "a campaign design's name"
 msgid "Flash over a picture"
-msgstr "پیشنهاد برق‌آسا روی تصویر"
+msgstr "حراج فوری روی تصویر"
 
 #: resources/templates/labels.php:108
 msgctxt "a campaign design's name"
@@ -6982,7 +6982,7 @@ msgstr "پیشنهاد دوستونی"
 #: resources/templates/labels.php:109
 msgctxt "a campaign design's name"
 msgid "Product trio"
-msgstr "سه‌گانه محصول"
+msgstr "سه‌تایی محصولات"
 
 #: resources/templates/labels.php:110
 msgctxt "a campaign design's name"
@@ -6997,7 +6997,7 @@ msgstr "مرحله پروژه"
 #: resources/templates/labels.php:110
 msgctxt "a screen of a campaign design"
 msgid "Your next step"
-msgstr "گام بعدی شما"
+msgstr "قدم بعدی شما"
 
 #: resources/templates/labels.php:111
 msgctxt "a campaign design's name"
@@ -7007,17 +7007,17 @@ msgstr "مسیر مطالعه"
 #: resources/templates/labels.php:111
 msgctxt "a screen of a campaign design"
 msgid "Choose a subject"
-msgstr "یک موضوع انتخاب کنید"
+msgstr "موضوع"
 
 #: resources/templates/labels.php:111
 msgctxt "a screen of a campaign design"
 msgid "Your starting point"
-msgstr "نقطه شروع شما"
+msgstr "نقطه شروع"
 
 #: resources/templates/labels.php:111
 msgctxt "a screen of a campaign design"
 msgid "Your reading path"
-msgstr "مسیر مطالعه شما"
+msgstr "مسیر مطالعه"
 
 #: resources/templates/labels.php:112
 msgctxt "a campaign design's name"
@@ -7038,7 +7038,7 @@ msgstr "اطلاعات شما"
 #: resources/templates/labels.php:114
 msgctxt "a campaign design's name"
 msgid "Service directory"
-msgstr "فهرست خدمات"
+msgstr "راهنمای خدمات"
 
 #: resources/templates/labels.php:114
 msgctxt "a screen of a campaign design"
@@ -7048,22 +7048,22 @@ msgstr "پروژه شما"
 #: resources/templates/labels.php:114
 msgctxt "a screen of a campaign design"
 msgid "Suggested next step"
-msgstr "گام بعدی پیشنهادی"
+msgstr "قدم بعد"
 
 #: resources/templates/labels.php:115
 msgctxt "a campaign design's name"
 msgid "Studio invitation"
-msgstr "دعوت‌نامه استودیو"
+msgstr "دعوت به استودیو"
 
 #: resources/templates/labels.php:115
 msgctxt "a screen of a campaign design"
 msgid "Invitation"
-msgstr "دعوت‌نامه"
+msgstr "دعوت"
 
 #: resources/templates/labels.php:116
 msgctxt "a campaign design's name"
 msgid "Corner card with reasons"
-msgstr "کارت گوشه با دلایل"
+msgstr "کارت گوشه با دلیل‌ها"
 
 #: resources/templates/labels.php:117
 msgctxt "a campaign design's name"
@@ -7073,7 +7073,7 @@ msgstr "کارت گوشه با کد"
 #: resources/templates/labels.php:118
 msgctxt "a campaign design's name"
 msgid "Corner nudge"
-msgstr "یادآوری گوشه"
+msgstr "یادآور گوشه"
 
 #: resources/templates/labels.php:119
 msgctxt "a campaign design's name"
@@ -7098,22 +7098,22 @@ msgstr "فضا و کاربرد"
 #: resources/templates/labels.php:121
 msgctxt "a screen of a campaign design"
 msgid "Ideas for your space"
-msgstr "ایده‌هایی برای فضای شما"
+msgstr "ایده‌های فضا"
 
 #: resources/templates/labels.php:122
 msgctxt "a campaign design's name"
 msgid "Useful detail bar"
-msgstr "نوار جزئیات مفید"
+msgstr "نوار نکته کاربردی"
 
 #: resources/templates/labels.php:123
 msgctxt "a campaign design's name"
 msgid "Ticker line"
-msgstr "نوار خبر متحرک"
+msgstr "خط خبری"
 
 #: resources/templates/labels.php:124
 msgctxt "a campaign design's name"
 msgid "The advent letter"
-msgstr "نامه روزشمار کریسمس"
+msgstr "نامه پیش از کریسمس"
 
 #: resources/templates/labels.php:125
 msgctxt "a campaign design's name"
@@ -7123,12 +7123,12 @@ msgstr "پس از ساعت کاری در کارگاه"
 #: resources/templates/labels.php:126
 msgctxt "a campaign design's name"
 msgid "All wrapped up"
-msgstr "همه‌چیز کادوپیچ شد"
+msgstr "کادوپیچ و آماده"
 
 #: resources/templates/labels.php:127
 msgctxt "a campaign design's name"
 msgid "Before the bow"
-msgstr "پیش از پاپیون"
+msgstr "پیش از بستن روبان"
 
 #: resources/templates/labels.php:128
 msgctxt "a campaign design's name"
@@ -7138,7 +7138,7 @@ msgstr "فصلی تازه و روشن"
 #: resources/templates/labels.php:129
 msgctxt "a campaign design's name"
 msgid "See you by the fire"
-msgstr "کنار آتش می‌بینیم‌تان"
+msgstr "کنار آتش می‌بینیمتان"
 
 #: resources/templates/labels.php:130
 msgctxt "a campaign design's name"
@@ -7168,12 +7168,12 @@ msgstr "آخرین درخشش کوچک"
 #: resources/templates/labels.php:135
 msgctxt "a campaign design's name"
 msgid "First light access"
-msgstr "دسترسی در نخستین روشنایی"
+msgstr "دسترسی سپیده‌دم"
 
 #: resources/templates/labels.php:136
 msgctxt "a campaign design's name"
 msgid "The first page"
-msgstr "صفحه نخست"
+msgstr "صفحه اول"
 
 #: resources/templates/labels.php:137
 msgctxt "a campaign design's name"
@@ -7183,7 +7183,7 @@ msgstr "کارگاه هدیه"
 #: resources/templates/labels.php:138
 msgctxt "a campaign design's name"
 msgid "Hello, twenty twenty-seven"
-msgstr "سلام، ۲۰۲۷"
+msgstr "سلام، دو هزار و بیست و هفت"
 
 #: resources/templates/labels.php:139
 msgctxt "a campaign design's name"
@@ -7198,7 +7198,7 @@ msgstr "باغ نیمه‌شب"
 #: resources/templates/labels.php:141
 msgctxt "a campaign design's name"
 msgid "The ornament edit"
-msgstr "منتخب تزئینات"
+msgstr "گزیده زینت‌ها"
 
 #: resources/templates/labels.php:142
 msgctxt "a campaign design's name"
@@ -7243,7 +7243,7 @@ msgstr "گره‌خورده با کمی شادی"
 #: resources/templates/labels.php:150
 msgctxt "a campaign design's name"
 msgid "Winter hours"
-msgstr "ساعت‌های زمستانی"
+msgstr "ساعت کاری زمستان"
 
 #: resources/templates/labels.php:151
 msgctxt "a campaign design's name"

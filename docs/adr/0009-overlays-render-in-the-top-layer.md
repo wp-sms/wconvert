@@ -91,6 +91,8 @@ top layer does not enter the auction.
   matter of templates using logical properties. Verified at 44 of 44 under a real
   `fa_IR` locale. An iframe would have been the exception, needing `dir` and `lang`
   copied in by hand.
+  _Amended by [ADR 0184](0184-right-to-left-needs-more-than-logical-properties.md): the container
+  still needs nothing, but real Persian showed the templates need more than logical properties._
 - **Isolation is not a budget question.** The four strategies span 128 bytes
   gzipped, complete with a11y and the template's CSS; the recommendation is 2,098
   bytes against #9's 8KB loader budget. About 870 bytes of that is the template's own

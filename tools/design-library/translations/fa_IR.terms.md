@@ -45,6 +45,8 @@ A button stays an instruction to the site: `Send me the guide` → `راهنما
 - **Stay as written:** prices and currency signs (`$49`), coupon codes (`SAVE10`), URLs,
   sample emails (`you@example.com`), code (`wconvert/get-campaign`, `design_id`,
   `wcv_display_session_v1`, shortcodes, file names).
+- **A price carries a left-to-right mark (U+200E) before its sign**, and after a trailing `+`.
+  Without it, right-to-left text shows `£40` as `40£` and `$100+` as `+100$`.
 - **Dates stay Gregorian.** A sale's days: `November 27–30` → `۲۷ تا ۳۰ نوامبر`.
 - **Stay in Latin:** WConvert, Pro, WordPress, WooCommerce, provider and service names
   (Mailchimp, Google, Zapier, Plausible and the like), technical abbreviations (URL, CSS,

@@ -1117,7 +1117,7 @@ msgstr "فروشگاه را ببینید"
 #. heading text
 #: pro/modules/display-types/templates/bar-announcement.json pro/modules/display-types/templates/slide-in-nudge.json pro/modules/display-types/playbooks/delivery-announcement.php
 msgid "Free UK delivery over £40"
-msgstr "ارسال رایگان در بریتانیا برای خرید بالای £40"
+msgstr "ارسال رایگان در بریتانیا برای خرید بالای ‎£40"
 
 #. design name, at most 120 bytes
 #: pro/modules/display-types/templates/bar-code.json
@@ -1932,7 +1932,7 @@ msgstr "بلک فرایدی / ارسال"
 #. text text
 #: pro/modules/display-types/templates/campaign-free-delivery-label.json pro/modules/display-types/playbooks/campaign-free-delivery-label.php
 msgid "DELIVERY\nON ORDERS $100+"
-msgstr "ارسال\nبرای سفارش‌های $100+"
+msgstr "ارسال\nبرای سفارش‌های ‎$100+‎"
 
 #. design name, at most 120 bytes
 #: pro/modules/display-types/templates/campaign-free-delivery-label.json pro/modules/display-types/playbooks/campaign-free-delivery-label.php
@@ -2752,7 +2752,7 @@ msgstr "با هم بهتر"
 #. text text
 #: pro/modules/display-types/templates/everyday-better-together.json pro/modules/display-types/playbooks/everyday-better-together.php
 msgid "Choose any two everyday socks for £20. A little comfort, doubled."
-msgstr "دو جفت جوراب روزمره دلخواه را به قیمت £20 انتخاب کنید. کمی راحتی، دو برابر."
+msgstr "دو جفت جوراب روزمره دلخواه را به قیمت ‎£20 انتخاب کنید. کمی راحتی، دو برابر."
 
 #. button label
 #: pro/modules/display-types/templates/everyday-better-together.json pro/modules/display-types/playbooks/everyday-better-together.php
@@ -2762,7 +2762,7 @@ msgstr "جفت خوبم را پیدا کنید"
 #. heading text
 #: pro/modules/display-types/templates/everyday-better-together.json pro/modules/display-types/playbooks/everyday-better-together.php
 msgid "for £20"
-msgstr "به قیمت £20"
+msgstr "به قیمت ‎£20"
 
 #. text text
 #: pro/modules/display-types/templates/everyday-better-together.json pro/modules/display-types/playbooks/everyday-better-together.php
@@ -5272,7 +5272,7 @@ msgstr "چیزهای خوب در راه است. با ۲۰٪ تخفیف گزید�
 #. heading text
 #: pro/modules/display-types/templates/winter-hello-2027.json pro/modules/display-types/playbooks/winter-hello-2027.php
 msgid "HELLO,\n2027."
-msgstr "سلام،\n۲۰۲۷."
+msgstr "سلام،\n۲۰۲۷"
 
 #. design name, at most 120 bytes
 #: pro/modules/display-types/templates/winter-hello-2027.json pro/modules/display-types/playbooks/winter-hello-2027.php
@@ -5907,7 +5907,7 @@ msgstr "نقطه شروع قهوه شما"
 #. answer choice, at most 120 bytes
 #: pro/modules/journeys/templates/gift-edit.json
 msgid "£30 to £60"
-msgstr "£30 تا £60"
+msgstr "‎£30 تا ‎£60"
 
 #. eyebrow text
 #: pro/modules/journeys/templates/gift-edit.json pro/modules/journeys/playbooks/gift-finder.php
@@ -6042,7 +6042,7 @@ msgstr "علایقشان"
 #. answer choice, at most 120 bytes
 #: pro/modules/journeys/templates/gift-edit.json
 msgid "Up to £30"
-msgstr "تا £30"
+msgstr "تا ‎£30"
 
 #. question label
 #: pro/modules/journeys/templates/gift-edit.json
@@ -6052,7 +6052,7 @@ msgstr "به چه علاقه دارند؟"
 #. question label
 #: pro/modules/journeys/templates/gift-edit.json
 msgid "What is your gift budget?"
-msgstr "بودجه چقدر است؟"
+msgstr "بودجه چقدر؟"
 
 #. screen name, at most 120 bytes
 #: pro/modules/journeys/templates/gift-edit.json
@@ -10132,7 +10132,7 @@ msgstr "جزئیات ارسال از همان ابتدا"
 #. text text
 #: resources/templates/library/inline-benefits.json
 msgid "Free delivery over £40"
-msgstr "ارسال رایگان برای خرید بالای £40"
+msgstr "ارسال رایگان برای خرید بالای ‎£40"
 
 #. text text
 #: resources/templates/library/inline-benefits.json
@@ -13392,7 +13392,7 @@ msgstr "بلک فرایدی به‌علاوه یک"
 #. text text
 #: tools/design-library/hosted/templates/campaign-black-friday-plus-one.json tools/design-library/hosted/playbooks/campaign-black-friday-plus-one.php
 msgid "Gift on orders $75+. One per order, subject to availability."
-msgstr "هدیه برای سفارش‌های $75 و بیشتر. هر سفارش یک هدیه، تا زمان موجود بودن."
+msgstr "هدیه برای سفارش‌های ‎$75 و بیشتر. هر سفارش یک هدیه، تا زمان موجود بودن."
 
 #. text emphasis
 #: tools/design-library/hosted/templates/campaign-black-friday-plus-one.json tools/design-library/hosted/playbooks/campaign-black-friday-plus-one.php
@@ -13412,7 +13412,7 @@ msgstr "خرید از رویداد هدیه"
 #. text text
 #: tools/design-library/hosted/templates/campaign-black-friday-plus-one.json tools/design-library/hosted/playbooks/campaign-black-friday-plus-one.php
 msgid "With orders\nof $75 or more."
-msgstr "با سفارش‌های\n$75 و بیشتر."
+msgstr "با سفارش‌های\n‎$75 و بیشتر."
 
 #. heading text
 #: tools/design-library/hosted/templates/campaign-black-friday-plus-one.json tools/design-library/hosted/playbooks/campaign-black-friday-plus-one.php
@@ -13437,7 +13437,7 @@ msgstr "ارسال رایگان."
 #. text text
 #: tools/design-library/hosted/templates/campaign-delivery-buddy.json tools/design-library/hosted/playbooks/campaign-delivery-buddy.php
 msgid "Get free standard shipping when your order reaches $75."
-msgstr "وقتی سفارش شما به $75 برسد، ارسال عادی رایگان می‌شود."
+msgstr "وقتی سفارش شما به ‎$75 برسد، ارسال عادی رایگان می‌شود."
 
 #. heading text
 #: tools/design-library/hosted/templates/campaign-delivery-buddy.json tools/design-library/hosted/playbooks/campaign-delivery-buddy.php
@@ -13447,7 +13447,7 @@ msgstr "خبر خوب."
 #. text text
 #: tools/design-library/hosted/templates/campaign-delivery-buddy.json tools/design-library/hosted/playbooks/campaign-delivery-buddy.php
 msgid "Orders $75+. Standard shipping to eligible destinations."
-msgstr "سفارش‌های $75 و بیشتر. ارسال عادی به مقصدهای مشمول."
+msgstr "سفارش‌های ‎$75 و بیشتر. ارسال عادی به مقصدهای مشمول."
 
 #. eyebrow text
 #: tools/design-library/hosted/templates/campaign-delivery-buddy.json tools/design-library/hosted/playbooks/campaign-delivery-buddy.php
@@ -13457,7 +13457,7 @@ msgstr "حد ارسال رایگان"
 #. eyebrow text
 #: tools/design-library/hosted/templates/campaign-extra-gift.json tools/design-library/hosted/playbooks/campaign-extra-gift.php
 msgid "A LITTLE EXTRA / ON ORDERS $75+"
-msgstr "هدیه‌ای کوچک / برای سفارش‌های $75 و بیشتر"
+msgstr "هدیه‌ای کوچک / برای سفارش‌های ‎$75 و بیشتر"
 
 #. design name, at most 120 bytes
 #: tools/design-library/hosted/templates/campaign-extra-gift.json tools/design-library/hosted/playbooks/campaign-extra-gift.php
@@ -13482,7 +13482,7 @@ msgstr "یک دلیل دیگر.\nهدیه‌ای از طرف ما."
 #. text text
 #: tools/design-library/hosted/templates/campaign-extra-gift.json tools/design-library/hosted/playbooks/campaign-extra-gift.php
 msgid "Receive a travel-size moisturizer with orders of $75 or more."
-msgstr "با سفارش‌های $75 و بیشتر، یک مرطوب‌کننده سایز سفری دریافت کنید."
+msgstr "با سفارش‌های ‎$75 و بیشتر، یک مرطوب‌کننده سایز سفری دریافت کنید."
 
 #. button label
 #: tools/design-library/hosted/templates/campaign-extra-gift.json tools/design-library/hosted/playbooks/campaign-extra-gift.php
@@ -14032,7 +14032,7 @@ msgstr "آسانسور قیمت"
 #. text text
 #: tools/design-library/hosted/templates/campaign-price-elevator.json tools/design-library/hosted/playbooks/campaign-price-elevator.php
 msgid "Selected favorites are 40% off. A $100 item becomes $60."
-msgstr "محبوب‌های منتخب ۴۰٪ تخفیف دارند. کالای $100 می‌شود $60."
+msgstr "محبوب‌های منتخب ۴۰٪ تخفیف دارند. کالای ‎$100 می‌شود ‎$60."
 
 #. button label
 #: tools/design-library/hosted/templates/campaign-price-elevator.json tools/design-library/hosted/playbooks/campaign-price-elevator.php
@@ -14042,7 +14042,7 @@ msgstr "خرید با افت قیمت"
 #. text text
 #: tools/design-library/hosted/templates/campaign-price-elevator.json tools/design-library/hosted/playbooks/campaign-price-elevator.php
 msgid "WAS $100"
-msgstr "قبلاً $100"
+msgstr "قبلاً ‎$100"
 
 #. text text
 #: tools/design-library/hosted/templates/campaign-private-preview.json tools/design-library/hosted/playbooks/campaign-private-preview.php
@@ -14137,17 +14137,17 @@ msgstr "پلکان صرفه‌جویی"
 #. eyebrow text
 #: tools/design-library/hosted/templates/campaign-savings-staircase.json tools/design-library/hosted/playbooks/campaign-savings-staircase.php
 msgid "SPEND $100"
-msgstr "خرید $100"
+msgstr "خرید ‎$100"
 
 #. eyebrow text
 #: tools/design-library/hosted/templates/campaign-savings-staircase.json tools/design-library/hosted/playbooks/campaign-savings-staircase.php
 msgid "SPEND $200"
-msgstr "خرید $200"
+msgstr "خرید ‎$200"
 
 #. eyebrow text
 #: tools/design-library/hosted/templates/campaign-savings-staircase.json tools/design-library/hosted/playbooks/campaign-savings-staircase.php
 msgid "SPEND $300"
-msgstr "خرید $300"
+msgstr "خرید ‎$300"
 
 #. heading text
 #: tools/design-library/hosted/templates/campaign-savings-staircase.json tools/design-library/hosted/playbooks/campaign-savings-staircase.php
@@ -14282,7 +14282,7 @@ msgstr "قیمت بلک فرایدی"
 #. text text
 #: tools/design-library/hosted/templates/campaign-tech-price-sheet.json tools/design-library/hosted/playbooks/campaign-tech-price-sheet.php
 msgid "Example item reduced from $120 to $84. Nov 27–30."
-msgstr "کالای نمونه، از $120 به $84 کاهش یافته. ۲۷ تا ۳۰ نوامبر."
+msgstr "کالای نمونه، از ‎$120 به ‎$84 کاهش یافته. ۲۷ تا ۳۰ نوامبر."
 
 #. eyebrow text
 #: tools/design-library/hosted/templates/campaign-tech-price-sheet.json tools/design-library/hosted/playbooks/campaign-tech-price-sheet.php
@@ -14307,7 +14307,7 @@ msgstr "میز کارتان را ارتقا دهید"
 #. text text
 #: tools/design-library/hosted/templates/campaign-tech-price-sheet.json tools/design-library/hosted/playbooks/campaign-tech-price-sheet.php
 msgid "WAS $120"
-msgstr "قبلاً $120"
+msgstr "قبلاً ‎$120"
 
 #. description of a decoration, at most 80 bytes
 #: tools/design-library/hosted/templates/campaign-turn-it-up.json
@@ -14372,7 +14372,7 @@ msgstr "ماه"
 #. text text
 #: tools/design-library/hosted/templates/campaign-twelve-month-deal.json tools/design-library/hosted/playbooks/campaign-twelve-month-deal.php
 msgid "New annual plans. First year $120. Renews at $240/year unless cancelled."
-msgstr "طرح‌های سالانه جدید. سال اول $120. تمدید با $240 در سال، مگر اینکه لغو کنید."
+msgstr "طرح‌های سالانه جدید. سال اول ‎$120. تمدید با ‎$240 در سال، مگر اینکه لغو کنید."
 
 #. design name, at most 120 bytes
 #: tools/design-library/hosted/templates/campaign-twelve-month-deal.json tools/design-library/hosted/playbooks/campaign-twelve-month-deal.php
@@ -14382,7 +14382,7 @@ msgstr "پیشنهاد دوازده‌ماهه"
 #. text text
 #: tools/design-library/hosted/templates/campaign-twelve-month-deal.json tools/design-library/hosted/playbooks/campaign-twelve-month-deal.php
 msgid "WAS $240"
-msgstr "قبلاً $240"
+msgstr "قبلاً ‎$240"
 
 #. eyebrow text
 #: tools/design-library/hosted/templates/campaign-twelve-month-deal.json tools/design-library/hosted/playbooks/campaign-twelve-month-deal.php

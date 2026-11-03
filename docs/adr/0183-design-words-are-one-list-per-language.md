@@ -102,3 +102,5 @@ word shared with the admin would drag the admin's language along.
   real alt-only edit is left behind when switching design, since the two cannot be told apart.
 - `campaign-friday-pass` sits within bytes of its byte cap in any language, so its words set
   `Offer` to `Deal` in both, and its decorative barcode's label is short.
+  _Persian cannot fit at all, even with its shortest wording, so `HostedDesignWordsTest`
+  names it as the one exception for `fa_IR` ([ADR 0184](0184-right-to-left-needs-more-than-logical-properties.md))._

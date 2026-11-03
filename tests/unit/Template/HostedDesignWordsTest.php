@@ -27,6 +27,14 @@ use WConvert\Template\TemplateVocabulary;
 #[CoversNothing]
 final class HostedDesignWordsTest extends TestCase
 {
+    /**
+     * A design a language cannot fit, named so a new one still fails. `campaign-friday-pass`
+     * measures 1,277 B in English and holds three Persian words, and no Persian wording
+     * for them reaches the cap. Nothing at runtime reads the cap (ADR 0184). The test fails
+     * on a design that fits too, so an entry cannot outlive its reason.
+     */
+    private const OVER_THE_CAP = ['fa_IR' => ['campaign-friday-pass']];
+
     private const ROOT = __DIR__ . '/../../../';
     private const HOSTED = self::ROOT . 'tools/design-library/hosted/';
 
@@ -103,7 +111,7 @@ final class HostedDesignWordsTest extends TestCase
             if ($bytes > DesignBudget::PER_DESIGN) $over[$id] = $bytes;
         }
 
-        $this->assertSame([], $over, 'gzipped bytes against a ' . DesignBudget::PER_DESIGN . ' B cap in ' . $locale);
+        $this->assertSame(self::OVER_THE_CAP[$locale] ?? [], array_keys($over), 'designs over the ' . DesignBudget::PER_DESIGN . ' B cap in ' . $locale . ': ' . json_encode($over));
     }
 
     #[DataProvider('locales')]

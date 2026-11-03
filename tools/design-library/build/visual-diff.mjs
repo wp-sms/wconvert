@@ -119,7 +119,13 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
       for (const entry of candidates) {
         const changed = [];
         for (const width of [1200, 375]) {
-          const old = await shots(before, entry, width), now = await shots(after, entry, width);
+          let old = await shots(before, entry, width), now = await shots(after, entry, width);
+          // The first screenshot of a picture can antialias its rounded corners differently from
+          // every later one, so a difference counts only if it survives a second look.
+          if (now.some((shot, index) => shot.hash !== old[index]?.hash)) {
+            old = await shots(before, entry, width);
+            now = await shots(after, entry, width);
+          }
           now.forEach((shot, index) => { if (shot.hash !== old[index]?.hash) changed.push({ label: shot.label, before: old[index]?.png, after: shot.png }); });
         }
         report[changed.length ? 'review' : 'carried'].push(entry.id);
