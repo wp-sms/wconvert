@@ -1,4 +1,4 @@
-import { ReportNavigationProvider, ReportShortcuts, useReportJump } from './ReportNavigation';
+import { ReportNavigationProvider, ReportShortcuts, ReportTarget, useReportJump } from './ReportNavigation';
 import { DeliveryAttention } from './DeliveryAttention';
 import { CommerceReport, type CommerceSummary } from './extensions';
 import { Interests } from './Interests';
@@ -285,6 +285,7 @@ function DashboardContent({
               )
             }
           />
+          {payload && <ReportShortcuts />}
           {hasGoals && (
             <Button
               variant="outline"
@@ -297,7 +298,6 @@ function DashboardContent({
           )}
         </div>
       </PageAction>
-      {payload && <ReportShortcuts />}
       {updating && payload && (
         <p className="wa-muted" role="status">
           {__('Updating report…', 'wconvert')}
@@ -405,6 +405,7 @@ function DashboardContent({
             </p>
           )}
           <Insights items={insights} query={accepted} level={2} />
+          <ReportTarget name="goals" label={__('Results by goal', 'wconvert')}>
           <div className="wa-section-heading">
             <h2>{__('Results by goal', 'wconvert')}</h2>
           </div>
@@ -472,6 +473,7 @@ function DashboardContent({
               );
             })}
           </div>
+          </ReportTarget>
         </>
       ) : payload && selection.experiment && card && optin ? (
         <Experiment
@@ -525,7 +527,7 @@ function DashboardContent({
       {/* No campaign yet is no sales to link, so no placeholder for them either. */}
       {payload && payload.goals.length > 0 && (overview || (optin && !selection.experiment)) && <CommerceReport period={payload} campaignNames={Object.fromEntries(payload.goals.flatMap(goal => goal.optins.map(campaign => [campaign.id, campaign.name])))} optinId={overview ? undefined : optin?.id} onSummary={overview ? setSales : undefined} />}
       {payload && optin && !selection.experiment && <><JourneyReport id={optin.id} period={payload} /><Interests id={optin.id} period={payload} /></>}
-      {payload && overview && payload.goals.length > 0 && <MonthlyTargets report={targets} reference={referenceOf(payload)} />}
+      {payload && overview && payload.goals.length > 0 && <ReportTarget name="targets" label={__('Monthly targets', 'wconvert')}><MonthlyTargets report={targets} reference={referenceOf(payload)} /></ReportTarget>}
       {payload && payload.goals.length > 0 && (
         <Disclosure variant="inline" title={__('How these numbers work', 'wconvert')} className="wa-help">
           {/* A glossary to scan: the term, then one short line (ADR 0132). */}

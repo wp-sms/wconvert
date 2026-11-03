@@ -68,8 +68,6 @@
   .wa-report-details { padding-inline: 12px; }
 }
 
-.wa-report-shortcuts { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-block: 16px 24px; }
-.wa-report-shortcuts > span { font-size: var(--text-note); margin-inline-end: 4px; }
 .wa-report-target { min-inline-size: 0; scroll-margin-block-start: 64px; }
 .wa-report-target:focus-visible { outline: 2px solid var(--ring); outline-offset: 4px; border-radius: 6px; }
 

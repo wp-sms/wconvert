@@ -30,6 +30,7 @@ import { formatDecimal } from '../lib/format';
 import { families, rangeLabel } from './reporting';
 import { ActivityChart } from './ActivityChart';
 import { withValue } from './Insights';
+import { ReportTarget } from './ReportNavigation';
 
 /**
  * The report's three states in the campaign list's words (GUIDELINES §20): a
@@ -301,6 +302,7 @@ export function GoalDetail({
           )}
         </p>
       )}
+      <ReportTarget name="performance" label={__('Performance', 'wconvert')}>
       <div className="wa-panel">
         <Totals card={card} numbers={numbers} previous={prior} />
         <ActivityChart
@@ -312,6 +314,7 @@ export function GoalDetail({
         />
         {!optin && <Reconciliation card={card} />}
       </div>
+      </ReportTarget>
       {card.action === 'add_to_cart' && <div className="wa-panel wa-handoff">
         <div><h3>{__('Items added to basket', 'wconvert')}</h3><p className="wa-muted">{__('All confirmed additions. Adding two extras counts twice here and once in Basket additions. These are not purchases.', 'wconvert')}</p></div>
         <strong>{formatCount(numbers.items_added ?? 0)}</strong>
@@ -375,12 +378,12 @@ export function GoalDetail({
           onRefresh={onRefresh}
         />
       ) : (
-        <>
+        <ReportTarget name="campaigns" label={__('Campaigns', 'wconvert')}>
           <div className="wa-section-heading">
             <h3>{__('Campaign contributions', 'wconvert')}</h3>
           </div>
           <CampaignTable cards={[card]} payload={payload} query={query} />
-        </>
+        </ReportTarget>
       )}
     </section>
   );

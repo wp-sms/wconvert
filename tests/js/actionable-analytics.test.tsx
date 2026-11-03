@@ -1,4 +1,4 @@
-import { afterEach, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import apiFetch from '@wordpress/api-fetch';
@@ -104,23 +104,41 @@ it('explains multiple answers beside the counts without opening help', async () 
   expect(screen.getByText('Multiple answers allowed; percentages can exceed 100%.')).toBeVisible();
 });
 
-it('jumps to a mounted report with keyboard focus and removes unavailable shortcuts', async () => {
-  const scroll = vi.fn();
+describe('Jump to (ADR 0185)', () => {
   const content = (sales: boolean) => <ReportNavigationProvider><ReportShortcuts />
     {sales && <ReportTarget name="sales" label="Sales"><h2>Campaign sales</h2></ReportTarget>}
     <ReportTarget name="activity" label="Screen activity"><h2>Activity</h2></ReportTarget>
     <ReportTarget name="answers" label="Answers"><h2>Saved answers</h2></ReportTarget>
   </ReportNavigationProvider>;
-  const view = render(content(true));
-  const button = screen.getByRole('button', { name: 'Sales' });
-  const target = document.getElementById(button.getAttribute('aria-controls')!)!;
-  target.scrollIntoView = scroll;
-  await userEvent.click(button);
-  expect(target).toHaveFocus();
-  expect(scroll).toHaveBeenCalledWith({ block: 'start' });
-  view.rerender(content(false));
-  expect(screen.queryByRole('button', { name: 'Sales' })).not.toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Answers' })).toBeInTheDocument();
+  const options = () => screen.getAllByRole('menuitem').map(item => item.textContent);
+
+  it('lists only the mounted reports, and moves focus to the chosen one rather than back to the button', async () => {
+    const view = render(content(true));
+    const trigger = screen.getByRole('button', { name: 'Jump to' });
+    await userEvent.click(trigger);
+    expect(options()).toEqual(['Sales', 'Screen activity', 'Answers']);
+    const target = screen.getByRole('group', { name: 'Sales' });
+    target.scrollIntoView = vi.fn();
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Sales' }));
+    await waitFor(() => expect(target).toHaveFocus());
+    expect(target.scrollIntoView).toHaveBeenCalledWith({ block: 'start' });
+    view.rerender(content(false));
+    await userEvent.click(trigger);
+    expect(options()).toEqual(['Screen activity', 'Answers']);
+  });
+
+  it('gives focus back to the button when nothing is chosen', async () => {
+    render(content(true));
+    const trigger = screen.getByRole('button', { name: 'Jump to' });
+    await userEvent.click(trigger);
+    await userEvent.keyboard('{Escape}');
+    await waitFor(() => expect(trigger).toHaveFocus());
+  });
+
+  it('is not offered with fewer than two reports', () => {
+    render(<ReportNavigationProvider><ReportShortcuts /><ReportTarget name="answers" label="Answers"><h2>Saved answers</h2></ReportTarget></ReportNavigationProvider>);
+    expect(screen.queryByRole('button', { name: 'Jump to' })).toBeNull();
+  });
 });
 
 it('asks every campaign report for the window the overview accepted (ADR 0132)', async () => {

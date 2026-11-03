@@ -63,3 +63,19 @@ made a merchant hunt for them. A problem looked like every other card.
    while the line did not, which put the dates on the wrong ends (§15). The drawing
    and tooltip stay hidden from assistive technology: the exact-numbers table is
    that route.
+
+6. **Jump to is one menu in the page header.** A row of its own took height on
+   every report and wrapped on a phone. It is now a quiet "Jump to" button beside
+   Export CSV, on the existing dropdown menu, and choosing a section moves focus
+   to that section. The menu earns its place with sections the row lacked: Results
+   by goal and Monthly targets on the overview, Performance and Campaigns on a
+   report. It lists what is mounted, in the order it stands on the page, and is
+   not offered with fewer than two sections.
+
+## Consequences
+
+- A fall now looks like bad news, though a smaller number is not always a fault.
+  It stays on the figure, with its number, so it can be read as a fact.
+- The Analytics page holds one more shape of a report: Campaign sales may be a
+  closed row, so anything that reaches into it has to open it first, through
+  `onJump`.

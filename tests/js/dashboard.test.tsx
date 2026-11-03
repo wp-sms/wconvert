@@ -700,6 +700,34 @@ describe('a change against the previous period (ADR 0185)', () => {
   });
 });
 
+describe('Jump to on each report (ADR 0185)', () => {
+  const sections = async () => {
+    await userEvent.click(await screen.findByRole('button', { name: 'Jump to' }));
+    return screen.getAllByRole('menuitem').map((item) => item.textContent);
+  };
+
+  it('lists the overview in page order', async () => {
+    api.readReport.mockResolvedValue(payload());
+    render(<Dashboard />);
+    expect(await sections()).toEqual(['Results by goal', 'Monthly targets']);
+  });
+
+  it('lists a goal report in page order', async () => {
+    const data = payload();
+    api.readReport.mockResolvedValue(data);
+    render(<Dashboard query={{ goal: data.goals[0].goal }} />);
+    expect(await sections()).toEqual(['Performance', 'Campaigns']);
+  });
+
+  it('sits in the page header, not in a row of its own', async () => {
+    api.readReport.mockResolvedValue(payload());
+    render(<Dashboard />);
+    const trigger = await screen.findByRole('button', { name: 'Jump to' });
+    expect(trigger.closest('.wa-header-actions')).not.toBeNull();
+    expect(document.querySelector('.wa-report-shortcuts')).toBeNull();
+  });
+});
+
 describe('the report period (ADR 0132)', () => {
   it('reads Today live, labelled so far, and refuses the comparison with its reason', async () => {
     const live = { ...payload(), from: '2026-09-14', to: '2026-09-14', days: 1, complete_days: false, previous: undefined, insights: [] };
