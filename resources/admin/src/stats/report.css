@@ -68,12 +68,18 @@
   .wa-report-details { padding-inline: 12px; }
 }
 
-.wa-report-shortcuts { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-block: 16px 24px; }
-.wa-report-shortcuts > span { font-size: var(--text-note); margin-inline-end: 4px; }
 .wa-report-target { min-inline-size: 0; scroll-margin-block-start: 64px; }
 .wa-report-target:focus-visible { outline: 2px solid var(--ring); outline-offset: 4px; border-radius: 6px; }
 
 .wa-report-store-total { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-block: 8px 0 !important; }
+
+/* A switched-off Campaign sales: one row in the region header's own measure, and the region's body when opened. */
+.wconvert-disclosure.wa-sales-fold { border-radius: var(--radius-md); overflow: clip; }
+.wa-sales-fold > summary { padding: 10px 16px; }
+.wa-sales-fold-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
+.wa-sales-fold-name { flex: 1; min-inline-size: min(180px, 100%); }
+.wa-sales-fold-name > * { display: block; }
+.wconvert-disclosure--card > .wa-sales-fold-body { display: block; padding: 0; }
 
 /* Product names need the full card width in narrow reports and editor dialogs. */
 @media (max-width: 900px) {

@@ -1,4 +1,4 @@
-import { afterEach, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import apiFetch from '@wordpress/api-fetch';
@@ -24,6 +24,29 @@ it('shows at most three observations with inspectable denominators and a scoped 
   expect(screen.getByText('1 more campaign needs attention. Open a goal to see it.')).toBeInTheDocument();
   expect(screen.queryByText(/apply automatically/i)).not.toBeInTheDocument();
 });
+it('marks both problem cards with an amber header and leaves their rows white (ADR 0185)', async () => {
+  const item: Insight = { rule_id: 'no_appearances', fingerprint: 'none', optin_id: 'campaign', goal: 'grow_email_list', name: 'Newsletter', title: 'Not shown in this period', note: 'Review display rules.', result_label: 'Email submissions', rate_label: 'Email submission rate', limitation: 'Cause unknown.', action: 'display', facts: { current: { appearances: 0, results: 0, rate: null }, previous: null }, periods: { from: '2026-09-01', to: '2026-09-30', previous_from: null, previous_to: null } };
+  vi.mocked(readDestinations).mockResolvedValue({ destinations: [{ id: 'mail', label: 'Newsletter', availability: 'ready', health: { consecutive_failures: 2, skipped_captures: 0, last_error_at: null, last_skipped_at: null } }], failures: [] } as unknown as DestinationsPayload);
+  render(<><Insights items={[item]} query={{ days: 30 }} /><DeliveryAttention /></>);
+  for (const name of ['Needs attention', 'Sending needs attention']) {
+    const heading = await screen.findByRole('heading', { name });
+    const header = heading.closest('[data-slot="region-header"]')!;
+    expect(header).toHaveClass('bg-warning-tint');
+    expect(header.querySelector('.wconvert-region-icon')).toHaveClass('bg-warning-surface', 'text-warning');
+    expect(header.closest('section')).toHaveClass('border-warning-edge');
+    expect(header.closest('section')).not.toHaveClass('bg-warning-tint');
+    // With no second line, the title centres on its icon rather than hanging from the top.
+    expect(header.firstElementChild).toHaveClass('items-center');
+  }
+});
+
+it('keeps the amber header when sending could not be checked', async () => {
+  vi.mocked(readDestinations).mockRejectedValue(new Error('offline'));
+  render(<DeliveryAttention />);
+  const heading = await screen.findByRole('heading', { name: 'Sending needs attention' });
+  expect(heading.closest('[data-slot="region-header"]')).toHaveClass('bg-warning-tint');
+});
+
 it('refuses journey numbers from a different reporting period', async () => {
   vi.mocked(apiFetch).mockResolvedValue({ from: '2026-09-01', to: '2026-09-07', rows: [], definitions: {}, days: 7 });
   render(<JourneyReport id="campaign" period={{ from: '2026-09-24', to: '2026-09-30', days: 7 }} />);
@@ -83,23 +106,41 @@ it('explains multiple answers beside the counts without opening help', async () 
   expect(screen.getByText('Multiple answers allowed; percentages can exceed 100%.')).toBeVisible();
 });
 
-it('jumps to a mounted report with keyboard focus and removes unavailable shortcuts', async () => {
-  const scroll = vi.fn();
+describe('Jump to (ADR 0185)', () => {
   const content = (sales: boolean) => <ReportNavigationProvider><ReportShortcuts />
     {sales && <ReportTarget name="sales" label="Sales"><h2>Campaign sales</h2></ReportTarget>}
     <ReportTarget name="activity" label="Screen activity"><h2>Activity</h2></ReportTarget>
     <ReportTarget name="answers" label="Answers"><h2>Saved answers</h2></ReportTarget>
   </ReportNavigationProvider>;
-  const view = render(content(true));
-  const button = screen.getByRole('button', { name: 'Sales' });
-  const target = document.getElementById(button.getAttribute('aria-controls')!)!;
-  target.scrollIntoView = scroll;
-  await userEvent.click(button);
-  expect(target).toHaveFocus();
-  expect(scroll).toHaveBeenCalledWith({ block: 'start' });
-  view.rerender(content(false));
-  expect(screen.queryByRole('button', { name: 'Sales' })).not.toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Answers' })).toBeInTheDocument();
+  const options = () => screen.getAllByRole('menuitem').map(item => item.textContent);
+
+  it('lists only the mounted reports, and moves focus to the chosen one rather than back to the button', async () => {
+    const view = render(content(true));
+    const trigger = screen.getByRole('button', { name: 'Jump to' });
+    await userEvent.click(trigger);
+    expect(options()).toEqual(['Sales', 'Screen activity', 'Answers']);
+    const target = screen.getByRole('group', { name: 'Sales' });
+    target.scrollIntoView = vi.fn();
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Sales' }));
+    await waitFor(() => expect(target).toHaveFocus());
+    expect(target.scrollIntoView).toHaveBeenCalledWith({ block: 'start' });
+    view.rerender(content(false));
+    await userEvent.click(trigger);
+    expect(options()).toEqual(['Screen activity', 'Answers']);
+  });
+
+  it('gives focus back to the button when nothing is chosen', async () => {
+    render(content(true));
+    const trigger = screen.getByRole('button', { name: 'Jump to' });
+    await userEvent.click(trigger);
+    await userEvent.keyboard('{Escape}');
+    await waitFor(() => expect(trigger).toHaveFocus());
+  });
+
+  it('is not offered with fewer than two reports', () => {
+    render(<ReportNavigationProvider><ReportShortcuts /><ReportTarget name="answers" label="Answers"><h2>Saved answers</h2></ReportTarget></ReportNavigationProvider>);
+    expect(screen.queryByRole('button', { name: 'Jump to' })).toBeNull();
+  });
 });
 
 it('asks every campaign report for the window the overview accepted (ADR 0132)', async () => {

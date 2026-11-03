@@ -1,11 +1,11 @@
-import { ReportNavigationProvider, ReportShortcuts, useReportJump } from './ReportNavigation';
+import { ReportNavigationProvider, ReportShortcuts, ReportTarget, useReportJump } from './ReportNavigation';
 import { DeliveryAttention } from './DeliveryAttention';
 import { CommerceReport, type CommerceSummary } from './extensions';
 import { Interests } from './Interests';
 import { Insights } from './Insights';
 import { ProductActivityReport } from './ProductActivityReport';
 import { JourneyReport } from './JourneyReport';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import {
   ArrowDown,
@@ -23,6 +23,7 @@ import { PageError, Region, RegionErrorState } from '../shell/Region';
 import { Disclosure } from '../shell/Disclosure';
 import { EmptyState } from '../shell/EmptyState';
 import { GUIDES, docsUrl } from '../shell/docs';
+import { InfoTip } from '../shell/InfoTip';
 import { CheckRow } from '../shell/CheckRow';
 import { DateRangePicker, type DatePreset, type DateRange } from '../shell/DateRangePicker';
 import {
@@ -39,7 +40,7 @@ import { periodOf, readReport, type DashboardPayload, type GoalReport, type Peri
 import { formatCount, formatRate } from './format';
 import { countsNothing } from '../goals/countsNothing';
 import { families, rangeLabel, reportCSV } from './reporting';
-import { CampaignTable, Change, changeOf, Experiment, GoalDetail } from './ReportDetails';
+import { CampaignTable, Change, ChangeValue, changeOf, Experiment, GoalDetail } from './ReportDetails';
 import './analytics.css';
 import { AnalyticsSkeleton } from './AnalyticsSkeleton';
 import {
@@ -253,6 +254,7 @@ function DashboardContent({
     <div className="wconvert-analytics">
       <PageAction>
         <div className="wa-header-actions">
+          {payload && <ReportShortcuts />}
           <DateRangePicker
             key={pickerValue.preset === 'custom' ? `${pickerValue.from}:${pickerValue.to}` : 'preset'}
             label={__('Report period', 'wconvert')}
@@ -288,6 +290,7 @@ function DashboardContent({
           {hasGoals && (
             <Button
               variant="outline"
+              className="wa-export"
               disabled={!payload || updating}
               onClick={exportReport}
             >
@@ -297,7 +300,6 @@ function DashboardContent({
           )}
         </div>
       </PageAction>
-      {payload && <ReportShortcuts />}
       {updating && payload && (
         <p className="wa-muted" role="status">
           {__('Updating report…', 'wconvert')}
@@ -332,10 +334,6 @@ function DashboardContent({
       )}
       {/* A re-read keeps the report on screen, dimmed under its line, as Leads' rows do (§12). */}
       <div className={updating && payload ? 'wa-report-sheet opacity-60' : 'wa-report-sheet'} aria-busy={(updating && payload !== null) || undefined}>
-      {/* A window through today is compared while today is still running, so its changes read a little low (ADR 0177). */}
-      {payload && previous && payload.complete_days === false && payload.goals.length > 0 && (
-        <p className="wa-muted wa-compare-note">{__('Includes today so far', 'wconvert')}</p>
-      )}
       {payload && compare && payload.previous && !comparable && payload.goals.length > 0 && (
         <p className="wa-muted wa-compare-note">
           {sprintf(
@@ -374,30 +372,35 @@ function DashboardContent({
           <section className="wa-impact-grid" aria-label={__('Overall impact', 'wconvert')}>
             {/* One rule for every impact: no goal, no count and nothing earlier is no card (ADR 0116). */}
             {payload.impact.filter((item) => item.goals.length > 0 || item.count > 0 || priorCount(item.id) > 0).map((item, index) => (
-              <a
+              <ImpactCard
                 key={item.id}
-                className={`wa-impact ${index === 0 ? 'wa-impact-primary' : ''}`}
-                href={reportHref({
-                  ...periodOf(payload),
-                  impact: item.id,
-                  compare: selection.compare,
-                })}
+                primary={index === 0}
+                label={item.label}
+                note={item.note}
               >
-                <span className="wa-impact-label">
-                  {item.label}
-                  <ArrowUpRight aria-hidden="true" className="rtl:-scale-x-100" />
-                </span>
-                <strong>{formatCount(item.count)}</strong>
-                {previous && (
-                  <Change
-                    current={item.count}
-                    previous={
-                      previous.impact.find((p) => p.id === item.id)?.count
-                    }
-                  />
-                )}
-                <small>{item.note}</small>
-              </a>
+                <a
+                  className="wa-impact-main"
+                  href={reportHref({
+                    ...periodOf(payload),
+                    impact: item.id,
+                    compare: selection.compare,
+                  })}
+                >
+                  <span className="wa-impact-label">
+                    <span className="wa-impact-name">{item.label}</span>
+                    <ArrowUpRight aria-hidden="true" className="rtl:-scale-x-100" />
+                  </span>
+                  <strong>{formatCount(item.count)}</strong>
+                  {previous && (
+                    <Change
+                      current={item.count}
+                      previous={
+                        previous.impact.find((p) => p.id === item.id)?.count
+                      }
+                    />
+                  )}
+                </a>
+              </ImpactCard>
             ))}
             {sales && <SalesCard summary={sales} />}
           </section>
@@ -409,6 +412,7 @@ function DashboardContent({
             </p>
           )}
           <Insights items={insights} query={accepted} level={2} />
+          <ReportTarget name="goals" label={__('Results by goal', 'wconvert')}>
           <div className="wa-section-heading">
             <h2>{__('Results by goal', 'wconvert')}</h2>
           </div>
@@ -456,7 +460,7 @@ function DashboardContent({
                       {goalChange && (
                         <>
                           {' · '}
-                          <span className={`wa-change ${goalChange.up ? 'wa-change-up' : ''}`}>{goalChange.text}</span>
+                          <span className="wa-change"><ChangeValue change={goalChange} /></span>
                         </>
                       )}
                       {' · '}
@@ -476,6 +480,7 @@ function DashboardContent({
               );
             })}
           </div>
+          </ReportTarget>
         </>
       ) : payload && selection.experiment && card && optin ? (
         <Experiment
@@ -529,7 +534,7 @@ function DashboardContent({
       {/* No campaign yet is no sales to link, so no placeholder for them either. */}
       {payload && payload.goals.length > 0 && (overview || (optin && !selection.experiment)) && <CommerceReport period={payload} campaignNames={Object.fromEntries(payload.goals.flatMap(goal => goal.optins.map(campaign => [campaign.id, campaign.name])))} optinId={overview ? undefined : optin?.id} onSummary={overview ? setSales : undefined} />}
       {payload && optin && !selection.experiment && <><JourneyReport id={optin.id} period={payload} /><Interests id={optin.id} period={payload} /></>}
-      {payload && overview && payload.goals.length > 0 && <MonthlyTargets report={targets} reference={referenceOf(payload)} />}
+      {payload && overview && payload.goals.length > 0 && <ReportTarget name="targets" label={__('Monthly targets', 'wconvert')}><MonthlyTargets report={targets} reference={referenceOf(payload)} /></ReportTarget>}
       {payload && payload.goals.length > 0 && (
         <Disclosure variant="inline" title={__('How these numbers work', 'wconvert')} className="wa-help">
           {/* A glossary to scan: the term, then one short line (ADR 0132). */}
@@ -539,12 +544,29 @@ function DashboardContent({
               [__('Clicks', 'wconvert'), __('Offer and cart clicks show interest, not purchases or recovered revenue.', 'wconvert')],
               [__('Rates', 'wconvert'), __('Submissions or clicks ÷ shown: 5 from 100 shown is 5%. A dash means not shown.', 'wconvert')],
               [__('Email handoffs', 'wconvert'), __('Emails accepted for sending, counted on the send day — not inbox arrivals or downloads.', 'wconvert')],
+              [__('Today', 'wconvert'), __('Today is still running, so a period ending today can read a little low against the one before.', 'wconvert')],
               [__('History', 'wconvert'), __('Totals stay when a campaign is unpublished or deleted, or old submissions are removed.', 'wconvert')],
             ].map(([term, meaning]) => <div key={term}><dt>{term}</dt><dd>{meaning}</dd></div>)}
           </dl>
         </Disclosure>
       )}
       </div>
+    </div>
+  );
+}
+
+/**
+ * A headline: its figure is the link, and what it counts waits in a tip so the
+ * row reads as numbers (ADR 0185). The tip stands beside the link rather than in
+ * it, because a button inside a link cannot be reached by keyboard.
+ */
+function ImpactCard({ primary = false, label, note, children }: { primary?: boolean; label: string; note: string; children: ReactNode }) {
+  return (
+    <div className={`wa-impact ${primary ? 'wa-impact-primary' : ''}`}>
+      {children}
+      <span className="wa-impact-tip">
+        <InfoTip label={sprintf(/* translators: %s: the name of a headline number, e.g. “Submissions”. */ __('About %s', 'wconvert'), label)}>{note}</InfoTip>
+      </span>
     </div>
   );
 }
@@ -560,18 +582,19 @@ function SalesCard({ summary }: { summary: CommerceSummary }) {
     ? formatMoney(summary.amount, summary.currency)
     : null;
   return (
-    <button type="button" className="wa-impact wa-impact-sales" aria-controls={target?.controls} onClick={() => target?.jump()}>
-      <span className="wa-impact-label">
-        {__('Linked sales', 'wconvert')}
-        <ArrowDown aria-hidden="true" />
-      </span>
-      <strong>{amount ?? formatCount(summary.orders)}</strong>
-      <span className="wa-change">
-        {amount
-          ? sprintf(/* translators: %s: how many paid orders were linked to a signup or click, e.g. “12”. */ _n('%s order', '%s orders', summary.orders, 'wconvert'), formatCount(summary.orders))
-          : _n('Linked order; the amount is in Campaign sales', 'Linked orders; amounts are in Campaign sales', summary.orders, 'wconvert')}
-      </span>
-      <small>{__('Paid orders after a signup or click. Linked, not caused.', 'wconvert')}</small>
-    </button>
+    <ImpactCard label={__('Linked sales', 'wconvert')} note={__('Paid orders after a signup or click. Linked, not caused.', 'wconvert')}>
+      <button type="button" className="wa-impact-main wa-impact-sales" aria-controls={target?.controls} onClick={() => target?.jump()}>
+        <span className="wa-impact-label">
+          <span className="wa-impact-name">{__('Linked sales', 'wconvert')}</span>
+          <ArrowDown aria-hidden="true" />
+        </span>
+        <strong>{amount ?? formatCount(summary.orders)}</strong>
+        <span className="wa-change">
+          {amount
+            ? sprintf(/* translators: %s: how many paid orders were linked to a signup or click, e.g. “12”. */ _n('%s order', '%s orders', summary.orders, 'wconvert'), formatCount(summary.orders))
+            : _n('Linked order; the amount is in Campaign sales', 'Linked orders; amounts are in Campaign sales', summary.orders, 'wconvert')}
+        </span>
+      </button>
+    </ImpactCard>
   );
 }

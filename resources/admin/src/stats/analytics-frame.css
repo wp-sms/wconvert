@@ -30,24 +30,42 @@
   margin: 8px 0 28px;
 }
 .wa-impact {
+  position: relative;
+  display: flex;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 2px);
+}
+/* The whole card is the link; only the tip sits on top of it. */
+.wa-impact-main {
+  flex: 1;
+  min-inline-size: 0;
   display: flex;
   flex-direction: column;
   text-decoration: none !important;
   color: var(--foreground) !important;
   text-align: start;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: calc(var(--radius) + 2px);
+  border-radius: inherit;
   padding: 20px;
-  min-block-size: 185px;
 }
 /* Linked sales jumps within the page, so it is a button dressed as its neighbours. */
-button.wa-impact {
+button.wa-impact-main {
+  background: none;
+  border: 0;
   font: inherit;
   cursor: pointer;
 }
 .wa-impact-sales > .wa-change {
   margin-block-start: 0;
+}
+/* Clear of the arrow at the label's end, with the label kept out from under it. */
+.wa-impact-tip {
+  position: absolute;
+  inset-block-start: 14px;
+  inset-inline-end: 44px;
+}
+.wa-impact-name {
+  padding-inline-end: 30px;
 }
 .wa-impact:hover,
 .wa-goal-card:hover {
@@ -74,25 +92,36 @@ button.wa-impact {
   font-variant-numeric: tabular-nums;
   margin: 12px 0 4px;
 }
-.wa-impact small {
-  font-size: var(--text-note);
-  line-height: 1.5;
-  color: var(--muted-foreground);
-  margin-block-start: 14px;
-}
 .wa-impact-primary {
   background: var(--card);
 }
 .wa-impact-primary strong {
   color: var(--action);
 }
-/* A rise is good news; a fall is neutral text with its sign, never amber (§14). */
+/* The figure takes the colour, always with its arrow; the words after it stay muted (§5, ADR 0185). A fall is red, never amber, which means the site is holding something back (§14). */
 .wa-change {
   font-size: var(--text-micro);
   color: var(--muted-foreground);
 }
-.wa-change-up {
+/* Two classes, to outrank the goal card's `span > span`. */
+.wa-change .wa-change-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: inherit;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.wa-change-value svg {
+  inline-size: 12px;
+  block-size: 12px;
+  flex-shrink: 0;
+}
+.wa-change .wa-change-up {
   color: var(--success);
+}
+.wa-change .wa-change-down {
+  color: var(--destructive);
 }
 .wa-section-heading {
   display: flex;
@@ -176,9 +205,12 @@ button.wa-impact {
   }
 }
 @media (max-width: 600px) {
-  .wa-impact {
+  .wa-impact-main {
     padding: 16px;
-    min-block-size: 175px;
+  }
+  .wa-impact-tip {
+    inset-block-start: 10px;
+    inset-inline-end: 40px;
   }
   .wa-impact strong {
     font-size: var(--text-metric);

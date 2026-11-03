@@ -23,9 +23,10 @@ export function AnalyticsSkeleton() {
       <div className="wa-impact-grid" aria-hidden="true">
         {[0, 1, 2].map((card) => (
           <div key={card} className={card === 0 ? 'wa-impact wa-impact-primary' : 'wa-impact'}>
-            <span className="wa-impact-label"><Skeleton className="h-[1lh] w-28" /></span>
-            <strong><Skeleton className="h-[1lh] w-20" /></strong>
-            <small><Skeleton className="h-[1lh] w-full max-w-48" /></small>
+            <div className="wa-impact-main">
+              <span className="wa-impact-label"><Skeleton className="h-[1lh] w-28" /></span>
+              <strong><Skeleton className="h-[1lh] w-20" /></strong>
+            </div>
           </div>
         ))}
       </div>

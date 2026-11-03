@@ -121,6 +121,16 @@ export function formatDay(day: string): string {
 }
 
 /**
+ * A calendar day on a chart, e.g. "Oct 3": the year only when it is not the one
+ * `today` falls in, or when no `today` is known.
+ */
+export function formatChartDay(day: string, today?: string): string {
+  const sameYear = day.slice(0, 4) === today?.slice(0, 4);
+  return new Intl.DateTimeFormat(siteLocale(), { day: 'numeric', month: 'short', ...(sameYear ? {} : { year: 'numeric' }), timeZone: 'UTC' })
+    .format(new Date(`${day}T12:00:00Z`));
+}
+
+/**
  * Any stored date or ISO instant as the site's calendar day, e.g.
  * "Mar 3, 2027" — for a date that is a day, like an end date, rather than a
  * moment.

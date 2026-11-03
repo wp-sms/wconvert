@@ -190,6 +190,118 @@ for (const mode of modes) for (const direction of ['ltr', 'rtl']) {
   });
 }
 
+/*
+ * Nothing above opens a goal report or reads its chart, so these do (ADR 0185).
+ * Each one has the fixture's report handed a finding, because whether the seeded
+ * numbers trip a rule depends on the random days they drew.
+ */
+const FINDING = {
+  rule_id: 'no_appearances', fingerprint: 'visual', optin_id: 'visual', goal: 'grow_email_list', name: 'Visual check',
+  result_label: 'Email submissions', rate_label: 'Email submission rate', title: 'Not shown in this period', note: 'Review display rules.',
+  limitation: 'The cause is unknown.', action: 'display',
+  facts: { current: { appearances: 0, results: 0, rate: null }, previous: null },
+  periods: { from: '2026-09-01', to: '2026-09-30', previous_from: null, previous_to: null },
+};
+
+async function openReadableReport(browser, width, direction = 'ltr') {
+  const context = await browser.newContext({ baseURL, storageState: auth, viewport: { width, height: 1000 } });
+  await context.addCookies([{ name: 'wconvert_ds_dir', value: direction, url: baseURL }]);
+  const page = await context.newPage();
+  await page.route(/wconvert(?:%2F|\/)v1(?:%2F|\/)dashboard\b/, async (route) => {
+    const response = await route.fetch();
+    const report = await response.json();
+    await route.fulfill({ response, json: { ...report, insights: [FINDING] } });
+  });
+  await page.goto('/wp-admin/admin.php?page=wconvert#analytics');
+  // `a`, because the skeleton draws the same class on a plain box.
+  await expect(page.locator('a.wa-goal-card').first()).toBeVisible();
+  // A later read may still be on its way when a test ends.
+  return { page, close: async () => { await page.unrouteAll({ behavior: 'ignoreErrors' }); await context.close(); } };
+}
+
+const noSidewaysScroll = async (page) => expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+
+for (const [width, dates] of [[1440, 5], [360, 3]]) {
+  test(`analytics at ${width}: the chart reaches the plot's edges and reads one day`, async ({ browser }, info) => {
+    const { close, page } = await openReadableReport(browser, width);
+    try {
+      await noSidewaysScroll(page);
+      await page.locator('a.wa-goal-card').first().click();
+      const plot = page.locator('.wa-chart-plot');
+      await expect(plot).toBeVisible();
+      await noSidewaysScroll(page);
+      const edges = await page.evaluate(() => {
+        const box = document.querySelector('.wa-chart-plot').getBoundingClientRect();
+        const lines = [...document.querySelectorAll('.wa-current-line')].map((line) => line.getBoundingClientRect());
+        return { start: Math.min(...lines.map((line) => line.left)) - box.left, end: box.right - Math.max(...lines.map((line) => line.right)) };
+      });
+      expect(Math.abs(edges.start)).toBeLessThanOrEqual(1);
+      expect(Math.abs(edges.end)).toBeLessThanOrEqual(1);
+      await expect(page.locator('.wa-chart-dates > span')).toHaveCount(dates);
+      const text = await page.evaluate(() => getComputedStyle(document.querySelector('.wa-chart text')).fontSize);
+      const tip = page.locator('.wa-chart-tip');
+      await expect(tip).toHaveCount(0);
+      const box = await plot.boundingBox();
+      for (const along of [0.02, 0.5, 0.98]) {
+        await page.mouse.move(box.x + box.width * along, box.y + box.height / 2);
+        await expect(tip).toBeVisible();
+        const shown = await tip.boundingBox();
+        expect(shown.x).toBeGreaterThanOrEqual(box.x - 1);
+        expect(shown.x + shown.width).toBeLessThanOrEqual(box.x + box.width + 1);
+        await noSidewaysScroll(page);
+      }
+      await screenshot(page, info, 'chart-hover');
+      await expect(page.locator('.wa-chart-cursor')).toHaveCount(1);
+      await page.mouse.move(0, 0);
+      await expect(tip).toHaveCount(0);
+      // Real pixels, not a scaled drawing: the same size at every width.
+      expect(text).toBe('11px');
+    } finally { await close(); }
+  });
+}
+
+test('analytics: a problem card has an amber header over white rows', async ({ browser }, info) => {
+  const { close, page } = await openReadableReport(browser, 1440);
+  try {
+    const header = page.locator('[data-slot="region-header"]').filter({ hasText: 'Needs attention' });
+    await expect(header).toHaveCSS('background-color', 'rgb(254, 248, 234)');
+    await expect(header.locator('.wconvert-region-icon')).toHaveCSS('background-color', 'rgb(253, 236, 200)');
+    const card = page.locator('section').filter({ has: header });
+    await expect(card).toHaveCSS('border-top-color', 'rgb(239, 220, 180)');
+    await expect(card).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+    await screenshot(page, info, 'needs-attention');
+  } finally { await close(); }
+});
+
+test('analytics: Jump to sits in the header and focuses the section it names', async ({ browser }) => {
+  const { close, page } = await openReadableReport(browser, 1440);
+  try {
+    const trigger = page.getByRole('button', { name: 'Jump to' });
+    const exportButton = page.getByRole('button', { name: 'Export CSV' });
+    expect((await trigger.boundingBox()).y).toBe((await exportButton.boundingBox()).y);
+    expect((await trigger.boundingBox()).x).toBeLessThan((await page.locator('.wconvert-date-picker__trigger').boundingBox()).x);
+    await trigger.click();
+    await page.getByRole('menuitem', { name: 'Results by goal' }).click();
+    await expect(page.getByRole('group', { name: 'Results by goal' })).toBeFocused();
+  } finally { await close(); }
+});
+
+test('analytics in right-to-left: the dates sit under their own end of the line', async ({ browser }, info) => {
+  const { close, page } = await openReadableReport(browser, 1440, 'rtl');
+  try {
+    await page.locator('a.wa-goal-card').first().click();
+    await expect(page.locator('.wa-chart-plot')).toBeVisible();
+    const ends = await page.evaluate(() => {
+      const box = document.querySelector('.wa-chart-plot').getBoundingClientRect();
+      const dates = [...document.querySelectorAll('.wa-chart-dates > span')].map((date) => date.getBoundingClientRect());
+      return { first: dates[0].left - box.left, last: box.right - dates.at(-1).right };
+    });
+    expect(Math.abs(ends.first)).toBeLessThanOrEqual(1);
+    expect(Math.abs(ends.last)).toBeLessThanOrEqual(1);
+    await screenshot(page, info, 'chart-rtl');
+  } finally { await close(); }
+});
+
 async function layerChecks(page, layer) {
   await expect(layer).toBeVisible();
   await expect(layer).toHaveCSS('background-color', 'rgb(255, 255, 255)');

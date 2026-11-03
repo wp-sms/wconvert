@@ -10,7 +10,6 @@ import { CheckRow } from '../shell/CheckRow';
 import { DataTable, DataTableActions, DataTableActionsColumn, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '../shell/DataTable';
 import { DateRangePicker, presetLabel, type DateRange } from '../shell/DateRangePicker';
 import { EmptyState } from '../shell/EmptyState';
-import { Field } from '../shell/Field';
 import { OptionStrip } from '../shell/OptionStrip';
 import { Region, RegionBody, RegionError, RegionErrorState } from '../shell/Region';
 import { ListFoot, PageSteps } from '../shell/ListFoot';
@@ -462,13 +461,14 @@ function HistoryFilters({ query, optins, onApply }: { query: LeadQuery; optins: 
       <PickerSearch id="wconvert-lead-search" label={__('Search submissions', 'wconvert')} maxLength={254} value={draft.search} onChange={(search) => setDraft({ ...draft, search })} placeholder={__('Name, email, phone or message', 'wconvert')} />
       <Button type="submit" variant="outline"><Search aria-hidden="true" className="sm:hidden" /><span className="max-sm:sr-only">{__('Search', 'wconvert')}</span></Button>
     </div>
-    <Field label={__('Campaign', 'wconvert')} htmlFor="wconvert-lead-optin" className="grow basis-28 sm:grow-0 sm:basis-auto">
-      <NativeSelect id="wconvert-lead-optin" className="w-full sm:w-64" value={draft.optinId} onChange={(event) => apply({ ...draft, optinId: event.target.value })}>
+    {/* "All campaigns" says what it filters, so its name is for a screen reader alone. */}
+    <div className="grow basis-28 sm:grow-0 sm:basis-auto">
+      <NativeSelect id="wconvert-lead-optin" aria-label={__('Campaign', 'wconvert')} className="w-full sm:w-64" value={draft.optinId} onChange={(event) => apply({ ...draft, optinId: event.target.value })}>
         <option value="">{__('All campaigns', 'wconvert')}</option>
         {missing && <option value={draft.optinId}>{optins === null ? __('Selected campaign', 'wconvert') : __('Deleted campaign', 'wconvert')}</option>}
         {(optins ?? []).map((optin) => <option key={optin.id} value={optin.id}>{optin.name.trim() || __('Unnamed campaign', 'wconvert')}</option>)}
       </NativeSelect>
-    </Field>
+    </div>
     <DateRangePicker label={__('Period', 'wconvert')} value={rangeOf(query, today)} presets={today === null ? ['all'] : ['all', ...LEAD_PRESETS]}
       summary={windowSummary(query)} today={today} onChange={(range) => apply(draft, windowOf(range, today))} />
     {queryKeyOf(query) !== '{}' && <Button type="button" variant="link" onClick={() => { setDraft(draftOf({})); onApply({}); }}>{__('Clear filters', 'wconvert')}</Button>}

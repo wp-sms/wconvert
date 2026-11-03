@@ -131,8 +131,11 @@ colour.
   wells, and `--accent` for hover. Do not tint whole cards nearly the same color as the canvas.
   `--border` (`#DEDAD1`) separates surfaces; muted text is `#6B6056`.
 - **Semantic colors retain their meaning**: destructive failure, success
-  converted, warning suspended or nearly-limit, info neutral fact. Each one
-  has a `--*-surface` token. Never use a percentage wash of the hue: on this
+  converted, warning suspended or nearly-limit, info neutral fact. In Analytics
+  alone, destructive also marks a fall against the previous period, always with
+  an arrow and its number, beside success for a rise, and warning also heads
+  its two problem cards, as a pale solid strip and edge (`--warning-tint`,
+  `--warning-edge`) over white rows (ADR 0185). Each one has a `--*-surface` token. Never use a percentage wash of the hue: on this
   warm palette, an amber wash is indistinguishable from the canvas. Status always
   includes text; do not use hue alone to distinguish it from the brand.
 - **Two edge tokens, because they are two jobs.** `--border` draws dividers and
@@ -172,6 +175,8 @@ stack edge-to-edge tinted panels or repeat the same shared-change warning.
   Do not target descendant headings with screen-specific padding overrides.
   The destination card draws its own in the same slot and type roles, because
   its description carries a link and `RegionHeader`'s is a string (ADR 0182).
+  Campaign sales' closed row does too, because a `Disclosure`'s summary line
+  cannot hold an icon and a badge beside two lines of text (ADR 0185).
 - `DialogContent` and `AlertDialogContent` default to `--card`, including portals
   outside the admin mount. Popovers and menus use the white `--popover` surface.
   Neutral inset notices use solid `--surface`, not translucent `bg-muted/*` fills.
@@ -659,6 +664,9 @@ Three places had collapsed them.
 | **Green** (`success`) | It is working. | *Working* (a destination: the badge answers the merchant's question, the record is the "Last sent" line beside it; ADR 0182) |
 | **Red** (`destructive`) | It is broken. | *Failing* |
 
+Analytics' two problem headers also use amber, for "look here" (ADR 0185). A
+figure's own fall there is red with an arrow, never amber.
+
 Amber previously meant *suspended*, *paused*, *needs a plugin* **and** *buy Pro*
 depending which screen a merchant was on. `StartingPoints` had the rule written
 in a comment and was following it; `GoalCard`, `Gallery` and the Destinations
@@ -721,7 +729,8 @@ The exceptions, and they are the only ones:
   mirror them a second time. The words on each card still take the page's
   direction. The design stage is the same case (ADR 0170): `place()` mirrors a
   slide-in's corner, the stage is the `ltr` scroll box, and its page takes the
-  admin's direction back.
+  admin's direction back. So is the Analytics chart (ADR 0185): time runs left to
+  right, its block is `ltr`, and its tooltip's words take the direction back.
 
 **A directional glyph is mirrored.** A Back arrow, a submenu chevron, a
 disclosure twist, the corner arrow marking an A/B arm — `rtl:-scale-x-100` in a

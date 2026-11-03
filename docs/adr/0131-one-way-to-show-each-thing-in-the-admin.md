@@ -97,7 +97,9 @@ found the system intact and its application drifted:
    reason; those move to `micro` or `note`. *Amended by [ADR 0136](0136-one-panel-grammar.md): a builder field's
    one line of help is a `hint`, 12/400 muted; its label is `note` at 500.*
 10. **Decided by existing rules, now applied everywhere:** red only for delete
-    and remove (`ConfirmDialog` is `default` unless a caller opts in);
+    and remove (`ConfirmDialog` is `default` unless a caller opts in; *amended by
+    [ADR 0185](0185-analytics-reads-at-a-glance.md): that is about actions, and a
+    figure's fall in Analytics is red too, with its arrow*);
     destructive confirms are `AlertDialog`s that say what survives; more than
     two row actions go in a ⋯ menu; a refusal is `aria-disabled` with its
     reason (*amended by [ADR 0139](0139-one-option-menu-and-sentence-rows.md): a short reason on screen and the full sentence in

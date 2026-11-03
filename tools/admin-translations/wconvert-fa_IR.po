@@ -10891,12 +10891,6 @@ msgstr "ترافیک برای مقایسه کافی است؛ با این حال 
 msgid "too early to call: fewer than %s shown per variant"
 msgstr "برای نتیجه‌گیری زود است: کمتر از %s نمایش برای هر نسخه"
 
-#. translators: 1: results, 2: times shown.
-#: public/admin/chunk-2dRxxHZc.js:27
-#, js-format
-msgid "%1$s ÷ %2$s shown"
-msgstr "%1$s ÷ %2$s نمایش"
-
 #: public/admin/chunk-2dRxxHZc.js:27
 msgid "Goal report"
 msgstr "گزارش هدف"
@@ -11368,10 +11362,6 @@ msgstr "بارگذاری این دوره ممکن نشد. آخرین گزارش 
 #: public/admin/chunk-2dRxxHZc.js:73
 msgid "Overall impact"
 msgstr "تأثیر کلی"
-
-#: public/admin/chunk-2dRxxHZc.js:71
-msgid "Includes today so far"
-msgstr "شامل امروز تا این لحظه"
 
 #. translators: %s: the earlier date range being compared against, e.g. “Sep 1 – 30, 2026”.
 #: public/admin/chunk-2dRxxHZc.js:73
@@ -22574,10 +22564,6 @@ msgid "Picture unavailable offline"
 msgstr "تصویر در حالت آفلاین در دسترس نیست"
 
 #: public/admin/chunk-DdOzknjs.js:1
-msgid "Report sections"
-msgstr "بخش‌های گزارش"
-
-#: public/admin/chunk-DdOzknjs.js:1
 msgid "Jump to"
 msgstr "رفتن به"
 
@@ -24969,3 +24955,24 @@ msgstr "سایدبار"
 msgctxt "block keyword"
 msgid "footer"
 msgstr "فوتر"
+
+#: resources/admin/src/stats/ReportDetails.tsx
+msgid "Up"
+msgstr "افزایش"
+
+#: resources/admin/src/stats/ReportDetails.tsx
+msgid "Down"
+msgstr "کاهش"
+
+#: resources/admin/src/stats/ReportDetails.tsx
+#, js-format
+msgid "%s pts"
+msgstr "%s واحد درصد"
+
+#: resources/admin/src/stats/ReportDetails.tsx
+msgid "Performance"
+msgstr "عملکرد"
+
+#: resources/admin/src/stats/Dashboard.tsx
+msgid "Today is still running, so a period ending today can read a little low against the one before."
+msgstr "امروز هنوز تمام نشده است، پس بازه‌ای که به امروز می‌رسد ممکن است کمی پایین‌تر از بازه قبلی دیده شود."

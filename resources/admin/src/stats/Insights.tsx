@@ -22,7 +22,7 @@ export interface Insight {
  * A translated sentence with a figure in it, the figure kept as markup: the
  * `%s` decides where it goes, so a language can put it first.
  */
-function withValue(template: string, figure: ReactNode): ReactNode {
+export function withValue(template: string, figure: ReactNode): ReactNode {
   const [before, after = ''] = template.split('%s');
   return <>{before}{figure}{after}</>;
 }
@@ -32,8 +32,8 @@ export function Insights({ items, query, level = 3 }: { items: Insight[]; query:
   if (!items.length) return null;
   const Title = level === 2 ? 'h3' : 'h4';
   const more = items.length - 3;
-  return <ReportTarget name="attention" label={__('Needs attention', 'wconvert')}><Region className="wa-report">
-    <RegionHeader title={__('Needs attention', 'wconvert')} level={level} icon={<ListChecks />} />
+  return <ReportTarget name="attention" label={__('Needs attention', 'wconvert')}><Region tone="attention" className="wa-report">
+    <RegionHeader tone="attention" title={__('Needs attention', 'wconvert')} level={level} icon={<ListChecks />} />
     <div className="wa-insights">{items.slice(0, 3).map(item => {
       const metric = item.rule_id === 'lower_rate' ? 'rate' : 'appearances';
       const value = (facts: Facts) => metric === 'rate' ? formatRate(facts.rate) : formatCount(facts.appearances);

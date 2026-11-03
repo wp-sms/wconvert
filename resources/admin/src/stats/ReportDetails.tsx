@@ -1,6 +1,6 @@
 import { useId, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { Eye, EyeOff, Search, Split } from 'lucide-react';
+import { ArrowDown, ArrowUp, Eye, EyeOff, Search, Split } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { PickerSearch } from '../discovery/PickerSearch';
 import { ListFoot } from '../shell/ListFoot';
@@ -29,6 +29,8 @@ import { countsNothing } from '../goals/countsNothing';
 import { formatDecimal } from '../lib/format';
 import { families, rangeLabel } from './reporting';
 import { ActivityChart } from './ActivityChart';
+import { withValue } from './Insights';
+import { ReportTarget } from './ReportNavigation';
 
 /**
  * The report's three states in the campaign list's words (GUIDELINES §20): a
@@ -41,26 +43,73 @@ const STATUS: Record<OptinReport['status'], OptinStatus> = {
   historical: 'deleted',
 };
 
+/** A figure's move against the previous period, and the words to write it in. */
+export type PeriodChange = { text: string; direction: 'up' | 'down' | 'flat' | 'new' };
+
+const directionOf = (move: number): PeriodChange['direction'] => (move === 0 ? 'flat' : move > 0 ? 'up' : 'down');
+
 /**
- * A change against the previous period, as a signed percentage — or "New this
- * period" from nothing, and nothing at all for nothing → nothing, because "No
- * change" under a zero says nothing a merchant can use (ADR 0132).
+ * A change against the previous period, as a percentage and a direction — or
+ * "New this period" from nothing, and nothing at all for nothing → nothing,
+ * because "No change" under a zero says nothing a merchant can use (ADR 0132).
+ * A change that rounds to 0% is flat: an arrow on it would claim a move the
+ * figure denies.
  */
-export function changeOf(current: number, previous: number): { text: string; up: boolean } | null {
+export function changeOf(current: number, previous: number): PeriodChange | null {
   if (previous === 0)
-    return current === 0 ? null : { text: __('New this period', 'wconvert'), up: false };
+    return current === 0 ? null : { text: __('New this period', 'wconvert'), direction: 'new' };
   const delta = (current - previous) / previous;
+  return { text: formatRate(Math.abs(delta)), direction: directionOf(Math.round(delta * 1000)) };
+}
+
+/**
+ * The rate's change in percentage points, because a percentage of a percentage
+ * reads as nonsense, or nothing when either rate is missing: nothing shown is
+ * no rate at all, not 0% (ADR 0185).
+ */
+export function rateChange(current: number | null, previous: number | null): PeriodChange | null {
+  if (current === null || previous === null) return null;
+  const points = Math.round((current - previous) * 1000) / 10;
   return {
-    text: `${delta > 0 ? '+' : delta < 0 ? '−' : ''}${formatRate(Math.abs(delta))}`,
-    up: delta > 0,
+    text: sprintf(
+      /* translators: %s: a difference between two rates in percentage points, e.g. “0.6”. */
+      __('%s pts', 'wconvert'),
+      formatDecimal(Math.abs(points)),
+    ),
+    direction: directionOf(points),
   };
 }
 
 /**
- * A change against the previous period, with its sign. A fall is not amber:
- * amber means the site is holding something back (§14), and a lower number is
- * a fact, not a fault — so it reads as neutral text.
+ * The one way a change is drawn: green up, red down, always with an arrow and
+ * the number, so colour is never the only signal, and words for a screen reader
+ * (ADR 0185, §5). No change and a first period have no direction, so they stay
+ * neutral with no arrow.
  */
+export function ChangeValue({ change }: { change: PeriodChange }) {
+  const { direction, text } = change;
+  if (direction !== 'up' && direction !== 'down') return <span className="wa-change-value">{text}</span>;
+  const Arrow = direction === 'up' ? ArrowUp : ArrowDown;
+  return (
+    <span className={`wa-change-value wa-change-${direction}`}>
+      <Arrow aria-hidden="true" />
+      <span className="sr-only">{direction === 'up' ? __('Up', 'wconvert') : __('Down', 'wconvert')}</span>
+      {text}
+    </span>
+  );
+}
+
+function ChangeLine({ change }: { change: PeriodChange }) {
+  return (
+    <span className="wa-change">
+      {change.direction === 'new'
+        ? <ChangeValue change={change} />
+        : withValue(/* translators: %s: a change against the previous period, e.g. “12%”. */ __('%s vs previous period', 'wconvert'), <ChangeValue change={change} />)}
+    </span>
+  );
+}
+
+/** A count's change against the previous period, or why there is none. */
 export function Change({
   current,
   previous,
@@ -75,14 +124,7 @@ export function Change({
       </span>
     );
   const change = changeOf(current, previous);
-  if (!change) return null;
-  return (
-    <span className={`wa-change ${change.up ? 'wa-change-up' : ''}`}>
-      {previous === 0
-        ? change.text
-        : sprintf(/* translators: %s: a percentage change, e.g. “+12%”. */ __('%s vs previous period', 'wconvert'), change.text)}
-    </span>
-  );
+  return change && <ChangeLine change={change} />;
 }
 
 /**
@@ -157,6 +199,7 @@ function Totals({
 }) {
   // A message's result is its Impressions, already the Shown tile (ADR 0163).
   const message = countsNothing(card);
+  const rateMove = previous && !message ? rateChange(numbers.conversion_rate, previous.conversion_rate) : null;
   return (
     <dl className="wa-numbers">
       {!message && <div>
@@ -184,14 +227,7 @@ function Totals({
           {card.rate_label}
         </dt>
         <dd>{formatRate(numbers.conversion_rate)}</dd>
-        {!message && <small>
-          {sprintf(
-            /* translators: 1: results, 2: times shown. */
-            __('%1$s ÷ %2$s shown', 'wconvert'),
-            formatCount(numbers.conversions),
-            formatCount(numbers.impressions),
-          )}
-        </small>}
+        {rateMove && <ChangeLine change={rateMove} />}
       </div>
     </dl>
   );
@@ -259,6 +295,7 @@ export function GoalDetail({
           )}
         </p>
       )}
+      <ReportTarget name="performance" label={__('Performance', 'wconvert')}>
       <div className="wa-panel">
         <Totals card={card} numbers={numbers} previous={prior} />
         <ActivityChart
@@ -267,9 +304,11 @@ export function GoalDetail({
           numbers={numbers}
           previous={prior}
           partialDay={payload.complete_days === false ? payload.today : undefined}
+          today={payload.today}
         />
         {!optin && <Reconciliation card={card} />}
       </div>
+      </ReportTarget>
       {card.action === 'add_to_cart' && <div className="wa-panel wa-handoff">
         <div><h3>{__('Items added to basket', 'wconvert')}</h3><p className="wa-muted">{__('All confirmed additions. Adding two extras counts twice here and once in Basket additions. These are not purchases.', 'wconvert')}</p></div>
         <strong>{formatCount(numbers.items_added ?? 0)}</strong>
@@ -333,12 +372,12 @@ export function GoalDetail({
           onRefresh={onRefresh}
         />
       ) : (
-        <>
+        <ReportTarget name="campaigns" label={__('Campaigns', 'wconvert')}>
           <div className="wa-section-heading">
             <h3>{__('Campaign contributions', 'wconvert')}</h3>
           </div>
           <CampaignTable cards={[card]} payload={payload} query={query} />
-        </>
+        </ReportTarget>
       )}
     </section>
   );

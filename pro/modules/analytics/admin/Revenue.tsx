@@ -2,13 +2,14 @@ import { DataTable, DataTableHead, DataTableBody, DataTableRow, DataTableColumn,
 import { ReportTarget } from '@/stats/ReportNavigation';
 import { ShoppingBag, SlidersHorizontal } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Disclosure } from '@/shell/Disclosure';
 import { RegionSkeleton } from '@/shell/RegionSkeleton';
 import { EmptyState } from '@/shell/EmptyState';
 import { GuideLink } from '@/shell/GuideLink';
 import { InfoTip } from '@/shell/InfoTip';
 import { ReportDisclosure } from '@/stats/ReportDisclosure';
 import { reportHref } from '@/nav';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import apiFetch from '@wordpress/api-fetch';
 import { __, sprintf } from '@wordpress/i18n';
 import { Region, RegionHeader, RegionBody, RegionFooter, RegionError, RegionErrorState } from '@/shell/Region';
@@ -64,6 +65,19 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
   const [retry, setRetry] = useState(0);
   const toggle = useRef<HTMLButtonElement>(null);
   const windowQuery = periodParams(periodOf(period)).toString();
+  // Whether the collapsed section is open, and what a save found it as (ADR 0185).
+  const [expanded, setExpanded] = useState(false);
+  const [foldedAtSave, setFoldedAtSave] = useState<boolean | null>(null);
+  const expand = useCallback(() => setExpanded(true), []);
+  const refocusToggle = useRef(false);
+  // A new report decides for itself: what a save or a click found holds for this one only.
+  useEffect(() => { setFoldedAtSave(null); setExpanded(false); }, [windowQuery, optinId]);
+  // A busy button is `disabled` (§14), which drops the focus it held, so it comes back when the save ends.
+  useEffect(() => {
+    if (busy || !refocusToggle.current) return;
+    refocusToggle.current = false;
+    if (document.activeElement === document.body) toggle.current?.focus();
+  }, [busy]);
   useEffect(() => {
     const controller = new AbortController();
     setUpdating(true); setError('');
@@ -77,6 +91,7 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
       if (controller.signal.aborted) return;
       const reason = cause instanceof Error && cause.message === MISMATCH ? '' : messageOf(cause);
       setError(sprintf(/* translators: %s: the reason loading failed, as the server gave it; may be empty. */ __('Could not load campaign sales for these dates. %s', 'wconvert-pro'), reason).trim());
+      setExpanded(true);
     }).finally(() => { if (!controller.signal.aborted) setUpdating(false); });
     return () => controller.abort();
   }, [period.from, period.to, windowQuery, optinId, retry]); // eslint-disable-line react-hooks/exhaustive-deps -- keyed on the dates, not the period object, so a new object for the same window does not refetch
@@ -91,10 +106,21 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
     onSummary?.(summaryOrders > 0 ? { orders: summaryOrders, amount: summaryAmount, currency: summaryCurrency } : null);
   }, [onSummary, summaryOrders, summaryAmount, summaryCurrency]);
   useEffect(() => () => onSummary?.(null), [onSummary]);
+  // Off with nothing to read in these dates, this is one closed row (ADR 0185).
+  // A store that never set up tracking has no saved address, so `site_matches`
+  // is false there too: only a store with a `since` can have had its address
+  // change. A report too large to total has not said that nothing was linked.
+  const nothingToRead = !!report && !report.settings.enabled && (report.settings.since === null || (report.site_matches && report.complete === true && (report.linked_orders ?? 0) === 0));
+  // A failure is never folded away, because nothing here hides one (see RegionError).
+  // A save does not rebuild the section under the merchant: turning tracking off
+  // keeps it open with its confirmation, and turning it on from the closed row
+  // keeps the row. A store's first setup still swaps its steps for the report.
+  const folded = !error && !saveFailure && (foldedAtSave ?? nothingToRead);
   async function change(enabled: boolean) {
-    setBusy(true); setSaveFailure(null);
+    refocusToggle.current = true;
+    setBusy(true); setSaveFailure(null); setFoldedAtSave(folded);
     try { const saved = await apiFetch<{ settings: Report['settings'] }>({ path: '/wconvert/v1/revenue', method: 'POST', data: { enabled } }); setReport(previous => previous ? { ...previous, settings: saved.settings, site_matches: true } : previous); setRetry(n => n + 1); }
-    catch (cause) { setSaveFailure({ enabled, message: sprintf(/* translators: %s: the reason the request failed, as the server gave it. */ __('Could not save the tracking setting. %s', 'wconvert-pro'), messageOf(cause)) }); }
+    catch (cause) { setExpanded(true); setSaveFailure({ enabled, message: sprintf(/* translators: %s: the reason the request failed, as the server gave it. */ __('Could not save the tracking setting. %s', 'wconvert-pro'), messageOf(cause)) }); }
     finally { setBusy(false); }
   }
   if (!report && !error) return <RegionSkeleton label={__('Campaign sales', 'wconvert-pro')} className="wa-report" icon={<ShoppingBag />} description lines={3} />;
@@ -105,8 +131,10 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
   const status = !enabled ? __('Tracking is off', 'wconvert-pro') : !report.consent_ready ? __('Needs consent setup', 'wconvert-pro') : __('Tracking is on', 'wconvert-pro');
   // Turning tracking off is confirmed; turning it on is the setup step itself.
   const trackingControl = report && !optinId ? <Button ref={toggle} variant={firstSetup ? 'default' : 'outline'} disabled={busy} onClick={() => enabled ? setConfirmOff(true) : void change(true)}>{busy ? __('Saving…', 'wconvert-pro') : enabled ? __('Turn off tracking', 'wconvert-pro') : __('Turn on tracking', 'wconvert-pro')}</Button> : null;
-  return <ReportTarget name="sales" label={__('Sales', 'wconvert-pro')}><Region className="wa-report">
-    <RegionHeader title={__('Campaign sales', 'wconvert-pro')} icon={<ShoppingBag />} description={__('Paid orders linked to your campaigns.', 'wconvert-pro')} trailing={report && <Badge variant={enabled && !report.consent_ready ? 'warning' : 'outline'}>{status}</Badge>} />
+  const title = __('Campaign sales', 'wconvert-pro');
+  const description = __('Paid orders linked to your campaigns.', 'wconvert-pro');
+  const badge = report && <Badge variant={enabled && !report.consent_ready ? 'warning' : 'outline'}>{status}</Badge>;
+  const body = <>
     {saveFailure && <RegionError message={saveFailure.message} onRetry={() => void change(saveFailure.enabled)} />}
     {error && <Failure message={error} onRetry={() => setRetry(n => n + 1)} />}
     {report && <>
@@ -167,7 +195,22 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
       onConfirm={() => void change(false)}
       returnFocusTo={toggle}
     />
-  </Region></ReportTarget>;
+  </>;
+  return <ReportTarget name="sales" label={__('Sales', 'wconvert-pro')} onJump={expand}>
+    {folded
+      ? <Disclosure
+          className="wa-report wa-sales-fold"
+          bodyClassName="wa-sales-fold-body"
+          open={expanded}
+          onToggle={setExpanded}
+          title={<span className="wa-sales-fold-row">
+            <span className="wconvert-region-icon" aria-hidden="true"><ShoppingBag /></span>
+            <span className="wa-sales-fold-name"><span className="text-heading font-semibold">{title}</span><span className="wa-muted">{description}</span></span>
+            {badge}
+          </span>}
+        >{body}</Disclosure>
+      : <Region className="wa-report"><RegionHeader title={title} icon={<ShoppingBag />} description={description} trailing={badge} />{body}</Region>}
+  </ReportTarget>;
 }
 
 function SalesTotals({ report }: { report: Report }) {
