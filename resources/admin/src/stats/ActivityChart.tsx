@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent } from 'react';
 import { __ } from '@wordpress/i18n';
 import { useDirection } from '../hooks/useDirection';
-import { formatDay } from '../lib/format';
+import { formatChartDay, formatDay } from '../lib/format';
 import { DataTable, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '../shell/DataTable';
 import { Disclosure } from '../shell/Disclosure';
 import { OptionStrip } from '../shell/OptionStrip';
@@ -74,12 +74,15 @@ export function ActivityChart({
   numbers,
   previous,
   partialDay,
+  today,
 }: {
   label: string;
   numbers: Numbers;
   previous?: Numbers;
   /** The site day still in progress, when the window ends on it. */
   partialDay?: string;
+  /** The site's day, which decides the current year: a date in it needs no year. */
+  today?: string;
 }) {
   const [metric, setMetric] = useState<Metric>('results');
   const [plot, width] = usePlotWidth();
@@ -248,13 +251,13 @@ export function ActivityChart({
               {/* The words take the page's direction back, as the Flow map's cards do. */}
               <div dir={direction}>
                 <div className="wa-chart-tip-row">
-                  <span>{formatDay(point.day)}</span>
+                  <span>{formatChartDay(point.day, today)}</span>
                   <strong>{format(point.value)}</strong>
                 </div>
                 {point.day === partialDay && <div className="wa-chart-tip-today">{todaySoFar}</div>}
                 {previous && (
                   <div className="wa-chart-tip-row wa-chart-tip-prior">
-                    <span>{priorPoint ? formatDay(priorPoint.day) : '—'}</span>
+                    <span>{priorPoint ? formatChartDay(priorPoint.day, today) : '—'}</span>
                     <strong>{format(priorPoint?.value ?? null)}</strong>
                   </div>
                 )}
@@ -269,7 +272,7 @@ export function ActivityChart({
               className={index === 0 ? 'wa-chart-date-first' : index === current.length - 1 ? 'wa-chart-date-last' : undefined}
               style={{ insetInlineStart: x(index, current.length) }}
             >
-              <bdi>{formatDay(current[index].day)}</bdi>
+              <bdi>{formatChartDay(current[index].day, today)}</bdi>
             </span>
           ))}
         </div>

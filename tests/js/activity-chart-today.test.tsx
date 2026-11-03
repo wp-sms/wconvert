@@ -118,6 +118,33 @@ describe('reading one day off the chart (ADR 0185)', () => {
   });
 });
 
+describe('the year on a chart date (ADR 0185)', () => {
+  const across = {
+    impression_by_day: { '2026-12-31': 40, '2027-01-01': 42 },
+    conversion_by_day: { '2026-12-31': 4, '2027-01-01': 5 },
+  } as unknown as Numbers;
+  const dates = () => [...document.querySelectorAll('.wa-chart-dates > span')].map((date) => date.textContent);
+
+  it('leaves it off a date in the current year', () => {
+    render(<ActivityChart label="Submissions" numbers={numbers} today="2026-11-01" />);
+    expect(dates()).toEqual(['Oct 30', 'Oct 31', 'Nov 1']);
+    pointer('pointermove', document.querySelector('.wa-chart-plot')!, { clientX: 0 });
+    expect(document.querySelector('.wa-chart-tip')).toHaveTextContent('Oct 30');
+    expect(document.querySelector('.wa-chart-tip')).not.toHaveTextContent('2026');
+  });
+
+  it('keeps it on a date from another year, so a window across New Year says so', () => {
+    render(<ActivityChart label="Submissions" numbers={across} today="2027-01-01" />);
+    expect(dates()).toEqual(['Dec 31, 2026', 'Jan 1']);
+  });
+
+  it('keeps it in the exact-numbers table, which is the record', async () => {
+    render(<ActivityChart label="Submissions" numbers={numbers} today="2026-11-01" />);
+    await userEvent.click(screen.getByText('View exact daily numbers'));
+    expect(screen.getByRole('cell', { name: 'Oct 30, 2026' })).toBeInTheDocument();
+  });
+});
+
 describe('drawing to the panel (ADR 0185)', () => {
   const measureAs = (width: number) => {
     vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({ width, left: 0 } as DOMRect);

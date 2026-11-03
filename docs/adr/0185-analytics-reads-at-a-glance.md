@@ -73,7 +73,8 @@ made a merchant hunt for them. A problem looked like every other card.
    same and `touch-action: pan-y` leaves scrolling to the browser. About five dates
    run under a wide plot and three under a narrow one, each at its day's pixel,
    and one fewer where that divides the period exactly: seven days get four dates,
-   because five would leave gaps that visibly differ.
+   because five would leave gaps that visibly differ. A chart date carries its year
+   only when that is not the site's current year; the exact-numbers table keeps it.
    The chart block is `dir="ltr"`, because its date row flipped in right-to-left
    while the line did not, which put the dates on the wrong ends (§15). Each date
    and the tooltip's words take their own direction back, or a Persian date's
