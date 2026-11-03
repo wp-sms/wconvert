@@ -4,7 +4,7 @@
   --frame-ink:#302720; --frame-text:#faf6ed; --frame-muted:#c9bfb1; --frame-edge:#4a3f36;
   --frame-tint:#433830; --frame-line:#8a7d70; --frame-signal:#e2f475;
   --frame-gutter:48px; --page-action-height:3rem;
-  min-block-size:calc(100dvh - var(--wp-admin--admin-bar--height, 32px)); display:flex; flex-direction:column;
+  min-block-size:max(calc(100dvh - var(--wp-admin--admin-bar--height, 32px)), var(--wconvert-menu-floor, 0px)); display:flex; flex-direction:column;
 }
 #wconvert-admin .wconvert-panel-nav { background:var(--frame-ink); color:var(--frame-text); border:0; }
 #wconvert-admin .wconvert-masthead { min-block-size:78px; display:flex; align-items:center; gap:24px; padding-inline:var(--frame-gutter); }
