@@ -228,14 +228,6 @@ function Totals({
         </dt>
         <dd>{formatRate(numbers.conversion_rate)}</dd>
         {rateMove && <ChangeLine change={rateMove} />}
-        {!message && <small>
-          {sprintf(
-            /* translators: 1: results, 2: times shown. */
-            __('%1$s ÷ %2$s shown', 'wconvert'),
-            formatCount(numbers.conversions),
-            formatCount(numbers.impressions),
-          )}
-        </small>}
       </div>
     </dl>
   );

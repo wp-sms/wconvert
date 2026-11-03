@@ -73,10 +73,6 @@
   letter-spacing: -1px;
   font-variant-numeric: tabular-nums;
 }
-.wa-numbers small {
-  font-size: var(--text-micro);
-  color: var(--muted-foreground);
-}
 .wa-trend {
   padding: 23px;
 }
@@ -350,7 +346,6 @@
 }
 @media (max-width: 600px) {
   .wa-numbers dt,
-  .wa-numbers small,
   .wa-numbers .wa-change {
     font-size: var(--text-micro);
   }

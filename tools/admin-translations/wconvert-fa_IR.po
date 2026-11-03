@@ -10891,12 +10891,6 @@ msgstr "ترافیک برای مقایسه کافی است؛ با این حال 
 msgid "too early to call: fewer than %s shown per variant"
 msgstr "برای نتیجه‌گیری زود است: کمتر از %s نمایش برای هر نسخه"
 
-#. translators: 1: results, 2: times shown.
-#: public/admin/chunk-2dRxxHZc.js:27
-#, js-format
-msgid "%1$s ÷ %2$s shown"
-msgstr "%1$s ÷ %2$s نمایش"
-
 #: public/admin/chunk-2dRxxHZc.js:27
 msgid "Goal report"
 msgstr "گزارش هدف"

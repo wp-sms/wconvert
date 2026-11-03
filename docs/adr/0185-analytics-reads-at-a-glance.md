@@ -55,7 +55,8 @@ made a merchant hunt for them. A problem looked like every other card.
    (§14). A Needs attention row about a falling rate sits under an amber header
    because the header says "look here", not because the number is held back.
    The Rate tile gains its own change in percentage points, and shows nothing
-   when either rate is missing.
+   when either rate is missing. It loses its "356 ÷ 5,010 shown" line: both figures
+   stand on the tiles beside it, and "How these numbers work" says how a rate is made.
 
 4. **"Includes today so far" is removed from every report.** It stood above each
    period ending today, which is nearly every period, and so it said nothing on

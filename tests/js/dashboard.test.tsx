@@ -687,6 +687,7 @@ describe('a change against the previous period (ADR 0185)', () => {
     render(<Dashboard query={{ goal: data.goals[0].goal }} />);
     const tile = (await screen.findByText(data.goals[0].rate_label)).closest('div')!;
     expect(tile).toHaveTextContent('Down0.6 pts vs previous period');
+    expect(tile).not.toHaveTextContent('÷');
     expect(tile.querySelector('.wa-change-down')).not.toBeNull();
   });
 
