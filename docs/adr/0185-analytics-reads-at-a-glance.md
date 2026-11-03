@@ -91,6 +91,13 @@ made a merchant hunt for them. A problem looked like every other card.
    report. It lists what is mounted, in the order it stands on the page, and is
    not offered with fewer than two sections.
 
+7. **A headline card's description moves into a tip.** The row of cards should read
+   as numbers, and each description was two or three lines under every one. The
+   figure and its change stay on the card, and the words wait behind an `InfoTip`.
+   The tip stands beside the link rather than inside it, because a button inside a
+   link is unreachable by keyboard. Linked sales' "Linked, not caused." moves with
+   its description; the Campaign sales section it jumps to still says so at rest.
+
 ## Consequences
 
 - A fall now looks like bad news, though a smaller number is not always a fault.

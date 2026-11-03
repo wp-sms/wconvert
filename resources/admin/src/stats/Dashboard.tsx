@@ -5,7 +5,7 @@ import { Interests } from './Interests';
 import { Insights } from './Insights';
 import { ProductActivityReport } from './ProductActivityReport';
 import { JourneyReport } from './JourneyReport';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import {
   ArrowDown,
@@ -23,6 +23,7 @@ import { PageError, Region, RegionErrorState } from '../shell/Region';
 import { Disclosure } from '../shell/Disclosure';
 import { EmptyState } from '../shell/EmptyState';
 import { GUIDES, docsUrl } from '../shell/docs';
+import { InfoTip } from '../shell/InfoTip';
 import { CheckRow } from '../shell/CheckRow';
 import { DateRangePicker, type DatePreset, type DateRange } from '../shell/DateRangePicker';
 import {
@@ -371,30 +372,35 @@ function DashboardContent({
           <section className="wa-impact-grid" aria-label={__('Overall impact', 'wconvert')}>
             {/* One rule for every impact: no goal, no count and nothing earlier is no card (ADR 0116). */}
             {payload.impact.filter((item) => item.goals.length > 0 || item.count > 0 || priorCount(item.id) > 0).map((item, index) => (
-              <a
+              <ImpactCard
                 key={item.id}
-                className={`wa-impact ${index === 0 ? 'wa-impact-primary' : ''}`}
-                href={reportHref({
-                  ...periodOf(payload),
-                  impact: item.id,
-                  compare: selection.compare,
-                })}
+                primary={index === 0}
+                label={item.label}
+                note={item.note}
               >
-                <span className="wa-impact-label">
-                  {item.label}
-                  <ArrowUpRight aria-hidden="true" className="rtl:-scale-x-100" />
-                </span>
-                <strong>{formatCount(item.count)}</strong>
-                {previous && (
-                  <Change
-                    current={item.count}
-                    previous={
-                      previous.impact.find((p) => p.id === item.id)?.count
-                    }
-                  />
-                )}
-                <small>{item.note}</small>
-              </a>
+                <a
+                  className="wa-impact-main"
+                  href={reportHref({
+                    ...periodOf(payload),
+                    impact: item.id,
+                    compare: selection.compare,
+                  })}
+                >
+                  <span className="wa-impact-label">
+                    <span className="wa-impact-name">{item.label}</span>
+                    <ArrowUpRight aria-hidden="true" className="rtl:-scale-x-100" />
+                  </span>
+                  <strong>{formatCount(item.count)}</strong>
+                  {previous && (
+                    <Change
+                      current={item.count}
+                      previous={
+                        previous.impact.find((p) => p.id === item.id)?.count
+                      }
+                    />
+                  )}
+                </a>
+              </ImpactCard>
             ))}
             {sales && <SalesCard summary={sales} />}
           </section>
@@ -550,6 +556,22 @@ function DashboardContent({
 }
 
 /**
+ * A headline: its figure is the link, and what it counts waits in a tip so the
+ * row reads as numbers (ADR 0185). The tip stands beside the link rather than in
+ * it, because a button inside a link cannot be reached by keyboard.
+ */
+function ImpactCard({ primary = false, label, note, children }: { primary?: boolean; label: string; note: string; children: ReactNode }) {
+  return (
+    <div className={`wa-impact ${primary ? 'wa-impact-primary' : ''}`}>
+      {children}
+      <span className="wa-impact-tip">
+        <InfoTip label={sprintf(/* translators: %s: the name of a headline number, e.g. “Submissions”. */ __('About %s', 'wconvert'), label)}>{note}</InfoTip>
+      </span>
+    </div>
+  );
+}
+
+/**
  * Linked sales as a fifth headline (ADR 0132), for stores whose sales report
  * is complete and has linked orders. It jumps to Campaign sales rather than
  * leaving the page, and keeps the qualifier: linked, not caused.
@@ -560,18 +582,19 @@ function SalesCard({ summary }: { summary: CommerceSummary }) {
     ? formatMoney(summary.amount, summary.currency)
     : null;
   return (
-    <button type="button" className="wa-impact wa-impact-sales" aria-controls={target?.controls} onClick={() => target?.jump()}>
-      <span className="wa-impact-label">
-        {__('Linked sales', 'wconvert')}
-        <ArrowDown aria-hidden="true" />
-      </span>
-      <strong>{amount ?? formatCount(summary.orders)}</strong>
-      <span className="wa-change">
-        {amount
-          ? sprintf(/* translators: %s: how many paid orders were linked to a signup or click, e.g. “12”. */ _n('%s order', '%s orders', summary.orders, 'wconvert'), formatCount(summary.orders))
-          : _n('Linked order; the amount is in Campaign sales', 'Linked orders; amounts are in Campaign sales', summary.orders, 'wconvert')}
-      </span>
-      <small>{__('Paid orders after a signup or click. Linked, not caused.', 'wconvert')}</small>
-    </button>
+    <ImpactCard label={__('Linked sales', 'wconvert')} note={__('Paid orders after a signup or click. Linked, not caused.', 'wconvert')}>
+      <button type="button" className="wa-impact-main wa-impact-sales" aria-controls={target?.controls} onClick={() => target?.jump()}>
+        <span className="wa-impact-label">
+          <span className="wa-impact-name">{__('Linked sales', 'wconvert')}</span>
+          <ArrowDown aria-hidden="true" />
+        </span>
+        <strong>{amount ?? formatCount(summary.orders)}</strong>
+        <span className="wa-change">
+          {amount
+            ? sprintf(/* translators: %s: how many paid orders were linked to a signup or click, e.g. “12”. */ _n('%s order', '%s orders', summary.orders, 'wconvert'), formatCount(summary.orders))
+            : _n('Linked order; the amount is in Campaign sales', 'Linked orders; amounts are in Campaign sales', summary.orders, 'wconvert')}
+        </span>
+      </button>
+    </ImpactCard>
   );
 }

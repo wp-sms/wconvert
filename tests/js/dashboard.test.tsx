@@ -701,6 +701,22 @@ describe('a change against the previous period (ADR 0185)', () => {
   });
 });
 
+describe('a headline card (ADR 0185)', () => {
+  it('keeps its description in a tip beside the link rather than on the card', async () => {
+    api.readReport.mockResolvedValue(payload());
+    render(<Dashboard />);
+    const link = await screen.findByRole('link', { name: /^Submissions/ });
+    const note = payload().impact.find((item) => item.id === 'leads')!.note;
+    expect(screen.queryByText(note)).toBeNull();
+    const tip = screen.getByRole('button', { name: 'About Submissions' });
+    // Beside the link, because a button inside a link is not something a keyboard can reach.
+    expect(link).not.toContainElement(tip);
+    await userEvent.click(tip);
+    expect(await screen.findByText(note)).toBeVisible();
+    expect(link).toHaveAttribute('href');
+  });
+});
+
 describe('Jump to on each report (ADR 0185)', () => {
   const sections = async () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Jump to' }));
@@ -856,7 +872,9 @@ describe('what the overview says', () => {
       const card = await screen.findByRole('button', { name: /^Linked sales/ });
       expect(card).toHaveTextContent('€1,240.00');
       expect(card).toHaveTextContent('18 orders');
-      expect(card).toHaveTextContent('Linked, not caused.');
+      await userEvent.click(screen.getByRole('button', { name: 'About Linked sales' }));
+      expect(await screen.findByText(/Linked, not caused\./)).toBeVisible();
+      await userEvent.keyboard('{Escape}');
       const target = document.getElementById(card.getAttribute('aria-controls')!)!;
       target.scrollIntoView = vi.fn();
       await userEvent.click(card);
