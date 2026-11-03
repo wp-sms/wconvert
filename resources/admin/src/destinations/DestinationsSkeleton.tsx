@@ -25,7 +25,7 @@ export function DestinationsSkeleton({ mode }: { mode: 'settings' | 'issues' }) 
     <div className="flex flex-col gap-5">
       <div className="min-w-0">
         <h2 className="m-0 text-heading font-semibold">{__('Destinations', 'wconvert')}</h2>
-        <Description className="mt-1">{__('Reusable places to send submissions. Each campaign picks its own in the Destinations tab.', 'wconvert')}</Description>
+        <Description className="mt-1">{__('Reusable places to send submissions. Campaigns pick theirs in the Destinations tab.', 'wconvert')}</Description>
       </div>
       <DestinationCardsSkeleton />
     </div>

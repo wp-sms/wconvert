@@ -56,7 +56,7 @@ function SecretField({ label, value, description, guide }: { label: string; valu
     <div id={`${id}-note`} className="flex items-start gap-2 rounded-md bg-info-surface p-3 text-note text-foreground">
       <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-info" />
       <p className="m-0">
-        {__('This is the only time it is shown. Copy it into your own code now; if you lose it, regenerate a new one.', 'wconvert')}
+        {__('Shown only once. Copy it now. If you lose it, regenerate it.', 'wconvert')}
         {description && <>{' '}{description}</>}
         {guide && <>{' '}<GuideLink href={guide}>{__('How to verify', 'wconvert')}</GuideLink></>}
       </p>

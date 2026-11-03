@@ -118,7 +118,7 @@ export function DestinationSettingsForm({
       setSchema(result.settings_schema);
       setDraft(toDraft(result.settings_schema, destination?.settings ?? {}));
     }).catch(() => {
-      if (active) setMetadataError(__('Could not load choices from this account. Check the connection and try again.', 'wconvert'));
+      if (active) setMetadataError(__('Could not load this account’s choices. Check the connection and try again.', 'wconvert'));
     }).finally(() => { if (active) setLoadingSchema(false); });
     return () => { active = false; };
   }, [type, selectedConnection, destination, refreshSchema]);
@@ -183,7 +183,7 @@ export function DestinationSettingsForm({
           <div className="flex items-start gap-3 rounded-md border border-border bg-surface p-4">
             <ProviderMark type={type} className="mt-0.5 size-5 shrink-0" />
             <p className="m-0">
-              {sprintf(/* translators: %s: a service, e.g. “Mailchimp”. */ __('Connect a %s account to choose where leads go. One account can serve several destinations.', 'wconvert'), type.label)}
+              {sprintf(/* translators: %s: a service, e.g. “Mailchimp”. */ __('Connect a %s account to choose where leads go.', 'wconvert'), type.label)}
             </p>
           </div>
         </AdminDialogBody>
@@ -254,7 +254,7 @@ export function DestinationSettingsForm({
                 {empty
                   ? <Description>{sprintf(
                     /* translators: 1: a setting's name, e.g. “Audience”. 2: a service, e.g. “Mailchimp”. */
-                    __('No %1$s choices were found in this account. Create one in %2$s, then refresh choices.', 'wconvert'),
+                    __('No %1$s in this account. Create one in %2$s, then refresh choices.', 'wconvert'),
                     field.label, type.label,
                   )}</Description>
                   : <SettingsControl

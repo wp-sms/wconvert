@@ -229,7 +229,7 @@ describe('health, on the card that has it', () => {
   /** Free keeps the saved route and names no product (ADR 0116). */
   it('names no product for a locked route on a free install', () => {
     listed([destination({ id: 'a', type: 'paid', label: 'Paid route', availability: 'locked' })], ['a'], [type({ id: 'paid', label: 'Paid', tier: 'pro' })]);
-    expect(within(card('Paid route')).getByText('This destination type isn’t available on this site, so submissions are kept in WConvert and not sent.')).toBeVisible();
+    expect(within(card('Paid route')).getByText('Not available here, so submissions are kept in WConvert and not sent.')).toBeVisible();
     expect(within(card('Paid route')).getByText('Not available')).toBeVisible();
     expect(within(card('Paid route')).queryByText(/WConvert Pro/)).toBeNull();
   });

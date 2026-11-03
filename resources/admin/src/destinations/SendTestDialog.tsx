@@ -110,16 +110,16 @@ export function SendTestDialog({
           <AdminDialogBody className="flex flex-col gap-4">
             <Field label={__('Test email address', 'wconvert')} htmlFor={`${id}-email`} hintId={`${id}-sample`}
               hint={questions !== null && questions.length > 0
-                ? __('Only this address and the sample answers below are sent — no name or phone.', 'wconvert')
+                ? __('Sends this address, sample answers and placeholder details, including name and phone.', 'wconvert')
                 : sendsInterest
-                  ? __('Only this address and any interest value below are sent — no name or phone.', 'wconvert')
+                  ? __('Sends only this address and any interest value. No name or phone.', 'wconvert')
                   : __('Only this email address is sent — no name or phone.', 'wconvert')}>
               <Input ref={sample} id={`${id}-email`} type="email" required autoComplete="email" disabled={busy || sent}
                 value={email} onChange={(event) => { setEmail(event.target.value); edited(); }}
                 aria-describedby={`${id}-sample ${id}-effect`} />
             </Field>
             {sendsInterest && <Field label={__('Test interest value (optional)', 'wconvert')} htmlFor={`${id}-interest`} hintId={`${id}-interest-help`}
-              hint={__('One of your form’s option values. It is written to the mapped field for new subscribers only.', 'wconvert')}>
+              hint={__('One of your form’s option values, written for new subscribers only.', 'wconvert')}>
               <Input id={`${id}-interest`} value={interest} disabled={busy || sent}
                 onChange={(event) => { setInterest(event.target.value); edited(); }} aria-describedby={`${id}-interest-help`} />
             </Field>}
@@ -139,8 +139,8 @@ export function SendTestDialog({
                 result's to say, beside the result, not a caveat read first.
               */}
               {type?.forwards_submission
-                ? __('The test really sends, marked as a test, so your receiver may run — but it creates no lead.', 'wconvert')
-                : __('Use an address you own. The test really sends — it may add a contact or send an email — but creates no lead.', 'wconvert')}
+                ? __('Really sends, marked as a test; your receiver may run. No lead.', 'wconvert')
+                : __('Use your own address. It may add a contact or send email, but creates no lead.', 'wconvert')}
             </p>
             {settingsDirty && <p className="m-0 text-note text-warning">{__('Uses the saved settings. Save your changes first to test them.', 'wconvert')}</p>}
             {result !== null && <TestReportAlert report={result} />}

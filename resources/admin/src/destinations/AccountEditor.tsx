@@ -177,7 +177,7 @@ export function AccountEditor({ types, connections, usage, onChange, onAddDestin
                 <OptionItem icon={Trash2} destructive name={__('Remove', 'wconvert')}
                   refused={usedBy.length > 0 ? refusal(__('In use', 'wconvert'), sprintf(
                     /* translators: %s: how many destinations use this account. */
-                    _n('Used by %s destination. Remove it or move it to another account first.', 'Used by %s destinations. Remove them or move them to another account first.', usedBy.length, 'wconvert'),
+                    _n('Used by %s destination. Remove it or move it to another account.', 'Used by %s destinations. Remove them or move them to another account.', usedBy.length, 'wconvert'),
                     formatCount(usedBy.length),
                   )) : null}
                   onSelect={() => { trigger.current = menus.current.get(account.id) ?? null; setRemoving(account); }} />
@@ -213,7 +213,7 @@ export function AccountEditor({ types, connections, usage, onChange, onAddDestin
               <CircleCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-success" />
               {/* A forwarding type has no "where in" it: the whole submission goes to one URL. */}
               {editing.type.forwards_submission
-                ? __('Connected. Add a destination, then turn it on in a campaign and send a test there.', 'wconvert')
+                ? __('Connected. Add a destination, turn it on in a campaign, then test.', 'wconvert')
                 : sprintf(
                   /* translators: %s: a service, e.g. “Mailchimp”. */
                   __('Connected. Add a destination to choose where in %s new leads go.', 'wconvert'),
@@ -247,7 +247,7 @@ export function AccountEditor({ types, connections, usage, onChange, onAddDestin
       variant="destructive" title={__('Remove this account?', 'wconvert')}
       description={removing ? sprintf(
         /* translators: %s: an account's name. */
-        __('The saved credentials for “%s” are deleted from this site. Leads already in WConvert stay.', 'wconvert'),
+        __('Deletes credentials for “%s” from this site. Leads already in WConvert stay.', 'wconvert'),
         removing.label,
       ) : ''}
       confirmLabel={__('Remove account', 'wconvert')} returnFocusTo={trigger}

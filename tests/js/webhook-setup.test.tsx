@@ -126,7 +126,7 @@ describe('a connected webhook account', () => {
     const secret = within(dialog).getByLabelText('Signing secret');
     expect(secret).toHaveValue(SECRET);
     expect(secret).toHaveAttribute('readonly');
-    expect(dialog).toHaveTextContent('Connected. Add a destination, then turn it on in a campaign and send a test there.');
+    expect(dialog).toHaveTextContent('Connected. Add a destination, turn it on in a campaign, then test.');
     expect(dialog).toHaveTextContent('This is the only time it is shown.');
     expect(dialog).toHaveTextContent('Receivers that ignore it are fine.');
     expect(within(dialog).getByRole('link', { name: /How to verify/ })).toHaveAttribute('href', WEBHOOK.connection_schema.signing_secret.guide);

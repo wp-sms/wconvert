@@ -344,7 +344,7 @@ describe('the destinations screen', () => {
 
     render(<Destinations />);
 
-    expect(await screen.findByText('This destination type isn’t available on this site, so submissions are kept in WConvert and not sent.')).toBeInTheDocument();
+    expect(await screen.findByText('Not available here, so submissions are kept in WConvert and not sent.')).toBeInTheDocument();
     expect(screen.getByText('Not available')).toBeInTheDocument();
     expect(screen.queryByText(/WConvert Pro/)).not.toBeInTheDocument();
   });

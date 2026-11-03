@@ -37,7 +37,7 @@ const summaryOf = (receiver: Receiver): string => ({
 const urlHintOf = (receiver: Receiver): string => ({
   zapier: __('Webhooks by Zapier → Catch Hook. Copy the URL it shows.', 'wconvert-pro'),
   make: __('In Make, add Webhooks → Custom webhook and copy its address.', 'wconvert-pro'),
-  n8n: __('A Webhook node with method POST. Set Respond to Immediately, or a slow workflow is sent again.', 'wconvert-pro'),
+  n8n: __('POST Webhook node. Set Respond to Immediately, or slow workflows are resent.', 'wconvert-pro'),
   code: __('Any address that accepts a JSON POST.', 'wconvert-pro'),
 })[receiver];
 
@@ -199,7 +199,7 @@ export function WebhookConnectionForm({ type, account, title, meta, back, onSave
         </Field>
         {warnPlain && <Alert id={field('url-warn')} role="status" className="border-warning/30 bg-warning-surface text-warning">
           <TriangleAlert aria-hidden="true" />
-          <AlertTitle className="line-clamp-none">{__('http:// isn’t encrypted, so your header and every lead travel readable. Use https://.', 'wconvert-pro')}</AlertTitle>
+          <AlertTitle className="line-clamp-none">{__('http:// isn’t encrypted: your header and every lead travel readable. Use https://.', 'wconvert-pro')}</AlertTitle>
         </Alert>}
 
         {!editing && receiver === 'make' && <Field label={__('API key (optional)', 'wconvert-pro')}
@@ -242,7 +242,7 @@ export function WebhookConnectionForm({ type, account, title, meta, back, onSave
     </AdminDialogBody>
     {confirming
       // The question takes the footer's place, never a dialog over this one (§9).
-      ? <AdminDialogFooter error={error} note={<span role="status">{__('Regenerate now? The next request is signed with the new secret, and your receiver refuses it until you update it there.', 'wconvert-pro')}</span>}>
+      ? <AdminDialogFooter error={error} note={<span role="status">{__('Your receiver refuses requests until it has the new secret. Regenerate now?', 'wconvert-pro')}</span>}>
         <Button type="button" variant="outline" disabled={busy} onClick={() => setConfirming(false)}>{__('Keep current', 'wconvert-pro')}</Button>
         <Button type="button" variant="destructive" disabled={busy} onClick={regenerate}>
           {busy ? __('Regenerating…', 'wconvert-pro') : __('Regenerate secret', 'wconvert-pro')}
