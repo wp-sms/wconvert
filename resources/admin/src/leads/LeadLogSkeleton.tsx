@@ -19,7 +19,6 @@ import { Region, RegionBody } from '../shell/Region';
  */
 export function LeadLogSkeleton() {
   const bar = (className: string, height = 'var(--control-height)') => <Skeleton className={className} style={{ blockSize: height }} />;
-  const label = <Skeleton className="h-[1lh] w-20 text-body leading-snug" />;
   return <div className="flex flex-col gap-5">
     <Region label={__('Submissions', 'wconvert')}>
       <span role="status" className="sr-only">{__('Loading submissions…', 'wconvert')}</span>
@@ -30,8 +29,8 @@ export function LeadLogSkeleton() {
           </div>
           <div className="flex flex-wrap items-end gap-3">
             <div className="flex min-w-0 flex-1 basis-full gap-2 sm:basis-64">{bar('min-w-0 flex-1')}{bar('w-24 shrink-0 max-sm:w-9')}</div>
-            <div className="flex min-w-0 grow basis-28 flex-col gap-1.5 sm:grow-0 sm:basis-auto">{label}{bar('w-full sm:w-64')}</div>
-            <div className="flex min-w-0 flex-col gap-1.5">{label}{bar('w-32')}</div>
+            <div className="flex min-w-0 grow basis-28 flex-col sm:grow-0 sm:basis-auto">{bar('w-full sm:w-64')}</div>
+            {bar('w-32')}
           </div>
         </RegionBody>
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border px-4 py-2.5">
