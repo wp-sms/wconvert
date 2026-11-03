@@ -71,7 +71,7 @@ export function ResultProductFilter({ value, onChange }: { value: Filter; onChan
       {addRefused && <span id={addReason} className="sr-only">{value.category_id ? __('Finish this filter first.', 'wconvert-pro') : __('Choose a category first.', 'wconvert-pro')}</span>}
       <Button variant="outline" {...refusable(addRefused ? addReason : null, () => onChange({ ...value, attributes: [...value.attributes, { taxonomy: '', term_id: 0 }] }))}>{__('Add attribute filter', 'wconvert-pro')}</Button>
     </>}
-    <small>{__('Uses global WooCommerce attributes. Shoppers choose size or other options on the product page.', 'wconvert-pro')}</small>
+    <small>{__('Uses global WooCommerce attributes. Shoppers choose options on the product page.', 'wconvert-pro')}</small>
     {new Set(value.attributes.map(item => item.taxonomy)).size < value.attributes.length && <p role="alert">{__('Use each attribute only once.', 'wconvert-pro')}</p>}
     <Disclosure variant="inline" onToggle={setCuration} title={__('Pin or exclude', 'wconvert-pro')}
       summary={sprintf(/* translators: 1: how many products are pinned to show first for this quiz result, 2: how many products are left out of it. */ __('%1$s pinned, %2$s excluded', 'wconvert-pro'), formatCount(value.pinned_ids?.length ?? 0), formatCount(value.excluded_ids?.length ?? 0))}>

@@ -10,9 +10,9 @@ export function duplicateGraphScreenReason(tree: TemplateTree, id: string): stri
   const screen = tree.steps.find(item => item.id === id);
   if (!tree.graph || !screen) return __('Choose a screen.', 'wconvert-pro');
   if (['result', 'acknowledgement'].includes(screen.kind) || walkNodes(screen.content).some(node => ['field', 'consent'].includes(node.type) || node.type === 'button' && 'action' in node && node.action === 'submit'))
-    return __('For results, endings or forms, add a screen with its own lines and form settings.', 'wconvert-pro');
+    return __('Results, endings and forms can’t be duplicated. Add a new screen instead.', 'wconvert-pro');
   if (tree.graph.edges.some(edge => edge.from === id && edge.kind === 'answer') || !tree.graph.edges.some(edge => edge.from === id && edge.kind === 'default'))
-    return __('For screens with several lines, add a new screen and choose its lines.', 'wconvert-pro');
+    return __('Screens with several lines can’t be duplicated. Add a new one instead.', 'wconvert-pro');
   return null;
 }
 export function duplicateGraphScreen(tree: TemplateTree, id: string): TemplateTree {

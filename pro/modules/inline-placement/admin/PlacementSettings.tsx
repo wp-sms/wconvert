@@ -73,8 +73,8 @@ export default function PlacementSettings({ optinId, published, config, vocabula
       <p id={`${id}-confirm`} ref={title} tabIndex={-1} className="wconvert-placement-confirm__title">
         {confirm === 'lock' ? __('Switch to content lock?', 'wconvert-pro') : __('Switch to automatic placement?', 'wconvert-pro')}</p>
       <p className="wconvert-display-hint">{confirm === 'lock'
-        ? __('A content lock covers the article as the page loads, so it has to open right away. This also changes:', 'wconvert-pro')
-        : __('Automatic placement adds the form to the page as it loads, so it has to open right away. This also changes:', 'wconvert-pro')}</p>
+        ? __('It must open right away to cover the article. Also changes:', 'wconvert-pro')
+        : __('It loads with the page, so it opens right away. Also changes:', 'wconvert-pro')}</p>
       <ul className="wconvert-placement-confirm__changes">
         {changesFor(confirm).map(change => <li key={change.question}>
           <span className="wconvert-placement-confirm__question">{change.question}</span>
@@ -126,7 +126,7 @@ function Automatic({ id, placement, compatible, priority, onPlacement, onPriorit
       <ChoiceChips label={__('Position in the content', 'wconvert-pro')} value={placement.position} options={positions}
         onChange={next => onPlacement(next === 'after_paragraph' ? { position: 'after_paragraph', paragraph: 3, fallback: 'after_content' } : { position: next })} />
       {placement.position === 'after_paragraph' && !validParagraph && <p role="alert" className="wconvert-quick-picks__error">{__('Enter a whole paragraph number from 1 to 100.', 'wconvert-pro')}</p>}
-      {placement.position === 'after_product_summary' && <p className="wconvert-display-hint">{__('Classic WooCommerce themes only. For a block theme, choose Manual and add the block to the product template.', 'wconvert-pro')}</p>}
+      {placement.position === 'after_product_summary' && <p className="wconvert-display-hint">{__('Classic themes only. For block themes, use Manual in the product template.', 'wconvert-pro')}</p>}
     </div>
     {placement.position === 'after_paragraph' && <Field label={__('If there are fewer paragraphs', 'wconvert-pro')} htmlFor={`${id}-fallback`}>
       <NativeSelect id={`${id}-fallback`} className="self-start" value={placement.fallback ?? 'after_content'} onChange={event => onPlacement({ ...placement, fallback: event.target.value })}>

@@ -46,7 +46,7 @@ export function ThenSelect({ tree, step, onChange, onUpgrade, onBranch }: {
         {order.map(index => <option key={tree.steps[index].id} value={tree.steps[index].id} disabled={!reachable(tree.steps[index].id)}>{tree.steps[index].name}</option>)}
       </NativeSelect>
     </FactRow>
-    {box ? <PanelHint>{sprintf(/* translators: %s: a screen's name. */ __('Visitors with any matching answer go through the follow-ups. The rest go straight to “%s”.', 'wconvert-pro'), tree.steps.find(item => item.id === box.next)?.name ?? '')}</PanelHint>
+    {box ? <PanelHint>{sprintf(/* translators: %s: a screen's name. */ __('Matching answers go through the follow-ups. All other answers go to “%s”.', 'wconvert-pro'), tree.steps.find(item => item.id === box.next)?.name ?? '')}</PanelHint>
       : next?.when && skipTo && <PanelHint>{sprintf(/* translators: 1: a rule. 2, 3: screen names. */ __('Only visitors with %1$s see “%2$s”. All other answers go to “%3$s”.', 'wconvert-pro'),
         conditionText(tree, next.when), next.name, tree.steps.find(item => item.id === skipTo)?.name ?? '')}</PanelHint>}
     {onBranch && <button type="button" className="wconvert-panel-link" onClick={onBranch}>{__('Send some answers to a different screen', 'wconvert-pro')}</button>}

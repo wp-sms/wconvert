@@ -132,12 +132,12 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
       </NativeSelect></label>
     </li>}</ol>
     {overlap && <p className="wconvert-panel-warn" role="status">{overlap.answers[0] === overlap.answers[1]
-      ? sprintf(/* translators: 1: an answer. 2, 3: line numbers. */ __('Lines %2$s and %3$s both use “%1$s”. Visitors who pick it take line %2$s.', 'wconvert-pro'), overlap.answers[0], formatCount(overlap.first + 1), formatCount(overlap.second + 1))
+      ? sprintf(/* translators: 1: an answer. 2, 3: line numbers. */ __('Lines %2$s and %3$s both use “%1$s”. Line %2$s wins.', 'wconvert-pro'), overlap.answers[0], formatCount(overlap.first + 1), formatCount(overlap.second + 1))
       : sprintf(/* translators: 1, 2: answers. */ __('Someone who picks both “%1$s” and “%2$s” takes the first line: %1$s.', 'wconvert-pro'), overlap.answers[0], overlap.answers[1])}</p>}
     {questionAfterSave && <PanelHint>{__('Ask questions before this save so their answers are included.', 'wconvert-pro')}</PanelHint>}
     {fallback && sources.length > 0 && onAdd && <div className="wconvert-journey-next-actions"><button type="button" onClick={() => onAdd('followup')}>{__('Add a follow-up question', 'wconvert-pro')}</button><button type="button" onClick={() => onAdd('branch')}>{__('Send some answers to a different screen', 'wconvert-pro')}</button></div>}
     {fallback && sources.length > 0 && targets.length > 0 && !onAdd && <button type="button" className="wconvert-panel-link" onClick={add}>{__('Send some answers to a different screen', 'wconvert-pro')}</button>}
-    {!sources.length && <PanelHint>{__('Add a choice question before this screen to send answers to different screens.', 'wconvert-pro')}</PanelHint>}
+    {!sources.length && <PanelHint>{__('Add a choice question before this screen to send answers elsewhere.', 'wconvert-pro')}</PanelHint>}
     {screen.when && <div className="wconvert-journey-settings__skip">
       {/* A skipped screen continues where it would have; choosing a screen here is an override (ADR 0135). */}
       <FieldHeading label={__('If skipped', 'wconvert-pro')} htmlFor={`${skipId}-skip`} tip={__('Skipped screens don’t collect answers or save details.', 'wconvert-pro')} />

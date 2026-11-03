@@ -98,7 +98,7 @@ export function GraphScreenInsert({ tree, source, kind: initialKind, initialLoca
         {([
           ['continue', __('Everyone on this line', 'wconvert-pro'), __('Every visitor on this line sees the new screen.', 'wconvert-pro')],
           ['followup', __('Only if…', 'wconvert-pro'), __('Only visitors whose answer matches see it. Other follow-ups are still asked.', 'wconvert-pro')],
-          ['branch', __('Send some answers to a different screen', 'wconvert-pro'), __('First match wins, top to bottom. All other answers stay on this line.', 'wconvert-pro')],
+          ['branch', __('Send some answers to a different screen', 'wconvert-pro'), __('First match wins. All other answers stay on this line.', 'wconvert-pro')],
         ] as const).map(([value, label, detail]) => {
           const off = value === 'followup' && existing || value === 'branch' && (!fallback || !graphChoiceSources(tree, source).length);
           return <label key={value} className="wconvert-radio-card" htmlFor={`${id}-intent-${value}`}><input id={`${id}-intent-${value}`} aria-labelledby={`${id}-intent-${value}-name`} aria-describedby={`${id}-intent-${value}-hint`} type="radio" name={`${id}-intent`} checked={intent === value}
@@ -110,8 +110,8 @@ export function GraphScreenInsert({ tree, source, kind: initialKind, initialLoca
           <option value="" disabled>{__('Choose a location…', 'wconvert-pro')}</option>
           {locations.map(item => <option key={item.id} value={item.id} disabled={existing ? item.id === 'entry' : !!insertionUnavailable(item, effectiveKind)}>{item.label}{!existing && insertionUnavailable(item, effectiveKind) ? ` — ${insertionUnavailable(item, effectiveKind)}` : ''}</option>)}
         </NativeSelect></Field> : null}
-      {initialAnswer && !location && <p>{__('This answer is on more than one line. Choose where this follow-up belongs.', 'wconvert-pro')}</p>}
-      {initialAnswer && location && !question && <p role="status">{__('This answer is not available here. Choose a location after its question, or change the condition.', 'wconvert-pro')} <button type="button" onClick={() => setAdvanced(true)}>{__('Change condition', 'wconvert-pro')}</button></p>}
+      {initialAnswer && !location && <p>{__('This answer has more than one line. Choose where this follow-up goes.', 'wconvert-pro')}</p>}
+      {initialAnswer && location && !question && <p role="status">{__('This answer is not available here. Choose a location after its question.', 'wconvert-pro')} <button type="button" onClick={() => setAdvanced(true)}>{__('Change condition', 'wconvert-pro')}</button></p>}
       {initialAnswer && question && !advanced && <div className="wconvert-insert-condition"><strong>{sprintf(/* translators: 1: a question. 2: “is” or “includes”. 3: an answer. */ __('Only if “%1$s” %2$s “%3$s”', 'wconvert-pro'), question.label, question?.answer_type === 'multi' ? __('includes', 'wconvert-pro') : __('is', 'wconvert-pro'), anyOf(answers.map(value => question?.options?.find(option => option.value === value)?.label ?? value)))}</strong><button type="button" onClick={() => setAdvanced(true)}>{__('Change condition', 'wconvert-pro')}</button></div>}
       {needsCondition && (!initialAnswer || advanced) && <>
         <Field label={intent === 'branch' ? __('Send them when the answer to', 'wconvert-pro') : __('Only if the answer to', 'wconvert-pro')} htmlFor={`${id}-question`}>
@@ -125,7 +125,7 @@ export function GraphScreenInsert({ tree, source, kind: initialKind, initialLoca
             onChange={event => setAnswers(event.target.checked ? [...answers, option.value] : answers.filter(value => value !== option.value))} />)}
         </fieldset>
       </>}
-      {existing ? <><Field label={__('Line goes to', 'wconvert-pro')} htmlFor={`${id}-target`}><NativeSelect id={`${id}-target`} value={target} onChange={event => setTarget(event.target.value)}><option value="">{__('Choose a screen…', 'wconvert-pro')}</option>{validTargets.map(screen => <option key={screen.id} value={screen.id}>{screen.name}</option>)}</NativeSelect></Field><p>{!validTargets.length ? __('No other screen can follow this line without making a loop. Add a new screen instead.', 'wconvert-pro') : __('Screens that would make a loop aren’t listed. You’ll check any screens or forms this change skips before it applies.', 'wconvert-pro')}</p></> : <>
+      {existing ? <><Field label={__('Line goes to', 'wconvert-pro')} htmlFor={`${id}-target`}><NativeSelect id={`${id}-target`} value={target} onChange={event => setTarget(event.target.value)}><option value="">{__('Choose a screen…', 'wconvert-pro')}</option>{validTargets.map(screen => <option key={screen.id} value={screen.id}>{screen.name}</option>)}</NativeSelect></Field><p>{!validTargets.length ? __('Any other screen would make a loop. Add a new screen instead.', 'wconvert-pro') : __('Screens that would make a loop aren’t listed.', 'wconvert-pro')}</p></> : <>
         {(!initialAnswer || advanced) && <div className="wconvert-graph-insert__types wconvert-radio-cards" role="group" aria-label={__('Screen type', 'wconvert-pro')}>
           {([
             ['input', CircleHelp, __('Ask a question', 'wconvert-pro'), __('Learn something before continuing', 'wconvert-pro')],
@@ -144,15 +144,15 @@ export function GraphScreenInsert({ tree, source, kind: initialKind, initialLoca
           })}
         </div>}
         {capture ? <div className="wconvert-graph-insert__summary"><strong>{__('Contact collection', 'wconvert-pro')}</strong>
-          <p>{captures.length ? __('Use an existing form to keep one combined submission. You’ll check any follow-ups this line skips.', 'wconvert-pro') : __('Contact fields need a form and consent settings. They cannot be added as an ordinary question.', 'wconvert-pro')}</p>
+          <p>{captures.length ? __('Use an existing form to keep one combined submission.', 'wconvert-pro') : __('Contact fields need a form and consent settings, not an ordinary question.', 'wconvert-pro')}</p>
           {captures.map(screen => <button type="button" key={screen.id} onClick={() => { if (screen.id === location?.target) { onEditCapture?.(screen.id); return; } setCapture(false); setExisting(true); setTarget(screen.id); }} disabled={screen.id === location?.target && !onEditCapture}>{sprintf(screen.id === location?.target ? /* translators: %s: the name of a screen with a form, e.g. “Get your results”. */ __('Edit existing %s', 'wconvert-pro') : /* translators: %s: the name of a screen with a form, e.g. “Get your results”. */ __('Use %s', 'wconvert-pro'), screen.name)}<ArrowRight aria-hidden="true" size={14} className="rtl:-scale-x-100"/></button>)}
           {onCapture && <Button type="button" variant="outline" onClick={onCapture}>{__('Set up optional form', 'wconvert-pro')}</Button>}
-          {!captures.length && !onCapture && <p>{__('Select your existing contact screen to edit its fields, or choose a signup starting point for a new campaign.', 'wconvert-pro')}</p>}
+          {!captures.length && !onCapture && <p>{__('Edit your contact screen’s fields, or start a new signup campaign.', 'wconvert-pro')}</p>}
         </div> : <>
         <Field label={kind === 'input' ? __('Question', 'wconvert-pro') : __('Screen name', 'wconvert-pro')} htmlFor={`${id}-name`}><Input id={`${id}-name`} maxLength={120} value={name} placeholder={intent === 'followup' ? __('Relevant follow-up', 'wconvert-pro') : kind === 'content' ? __('A helpful message', 'wconvert-pro') : kind === 'ending' ? __('All done', 'wconvert-pro') : __('A follow-up question', 'wconvert-pro')} onChange={event => setName(event.target.value)} /></Field>
         {kind === 'input' && <Field label={__('Answer type', 'wconvert-pro')} htmlFor={`${id}-answer-type`}><NativeSelect id={`${id}-answer-type`} value={answerType} onChange={event => setAnswerType(event.target.value as QuestionNode['answer_type'])}><option value="single">{__('Choose one', 'wconvert-pro')}</option><option value="multi">{__('Choose several', 'wconvert-pro')}</option><option value="text">{__('Short answer', 'wconvert-pro')}</option></NativeSelect></Field>}
         {location?.sharedHidden && intent !== 'branch' && (!initialAnswer || advanced) && <CheckRow className="wconvert-check" checked={includeHidden} onChange={event => setIncludeHidden(event.target.checked)} label={sprintf(/* translators: %s: a screen's name. */ __('Also check this screen when “%s” is skipped', 'wconvert-pro'), tree.steps.find(item => item.id === location.source)?.name ?? '')} />}
-        {kind === 'ending' && intent !== 'followup' && <p>{skipsForm ? __('Visitors who finish here don’t save their details. That’s fine for an early ending such as “Not a fit”: it reads “Ends without saving details”.', 'wconvert-pro') : __('This is a closing screen. It doesn’t save details.', 'wconvert-pro')}</p>}
+        {kind === 'ending' && intent !== 'followup' && <p>{skipsForm ? __('Finishing here saves no details. That’s fine for an early ending.', 'wconvert-pro') : __('This is a closing screen. It doesn’t save details.', 'wconvert-pro')}</p>}
         {unavailable && <div role="status"><p>{unavailable}</p>{suggested && <Button type="button" variant="outline" onClick={() => { setLocationId(suggested.id); setChangeLocation(false); }}>{sprintf(/* translators: %s: a screen's name, e.g. “Skin type”. */ __('Add before %s', 'wconvert-pro'), tree.steps.find(screen => screen.id === suggested.target)?.name ?? '')}</Button>}</div>}
         </>}
       </>}

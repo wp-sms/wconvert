@@ -1145,7 +1145,7 @@ it('asks for placement when a multi-answer choice does not determine a single br
   render(<JourneyEditor displayType="popup" embedded editorCanvas={<div />} {...questionPanel(at)} tree={original} step={at} onSelect={() => {}} onChange={change} />);
   await addFollowup(user, 'My home');
   await user.type(screen.getByRole('textbox', { name: 'Question' }), 'When would you like to start?');
-  expect(screen.getByText('This answer is on more than one line. Choose where this follow-up belongs.')).toBeInTheDocument();
+  expect(screen.getByText('This answer has more than one line. Choose where this follow-up goes.')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Add follow-up' })).toHaveAttribute('aria-disabled', 'true');
   const home = original.graph!.edges.find(edge => edge.from === 'scope' && edge.kind === 'answer')!;
   await user.selectOptions(screen.getByRole('combobox', { name: 'Where' }), `edge:${home.id}`);
