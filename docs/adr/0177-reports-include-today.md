@@ -30,8 +30,10 @@ did not.
 3. **Every window but Today keeps its comparison** with the same number of days
    before it. The current window holds a partial day, so its change reads a
    little low (at most 1/7 for seven days, about 3% for thirty). One muted line,
-   "Includes today so far", sits with the comparison. Today alone still has no
-   comparison. A site with nothing earlier shows "Nothing to compare in …", not
+   "Includes today so far", sits with the comparison. *(Amended by
+   [0185](0185-analytics-reads-at-a-glance.md): the line is gone; "How these
+   numbers work" carries the fact, and the chart still marks the running day.)*
+   Today alone still has no comparison. A site with nothing earlier shows "Nothing to compare in …", not
    a change.
 4. **The chart marks the running day.** Its last segment is dashed and its last
    point hollow, so a partial day does not read as a drop; the point and the

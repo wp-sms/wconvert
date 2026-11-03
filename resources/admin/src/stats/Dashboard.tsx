@@ -332,10 +332,6 @@ function DashboardContent({
       )}
       {/* A re-read keeps the report on screen, dimmed under its line, as Leads' rows do (§12). */}
       <div className={updating && payload ? 'wa-report-sheet opacity-60' : 'wa-report-sheet'} aria-busy={(updating && payload !== null) || undefined}>
-      {/* A window through today is compared while today is still running, so its changes read a little low (ADR 0177). */}
-      {payload && previous && payload.complete_days === false && payload.goals.length > 0 && (
-        <p className="wa-muted wa-compare-note">{__('Includes today so far', 'wconvert')}</p>
-      )}
       {payload && compare && payload.previous && !comparable && payload.goals.length > 0 && (
         <p className="wa-muted wa-compare-note">
           {sprintf(
@@ -539,6 +535,7 @@ function DashboardContent({
               [__('Clicks', 'wconvert'), __('Offer and cart clicks show interest, not purchases or recovered revenue.', 'wconvert')],
               [__('Rates', 'wconvert'), __('Submissions or clicks ÷ shown: 5 from 100 shown is 5%. A dash means not shown.', 'wconvert')],
               [__('Email handoffs', 'wconvert'), __('Emails accepted for sending, counted on the send day — not inbox arrivals or downloads.', 'wconvert')],
+              [__('Today', 'wconvert'), __('Today is still running, so a period ending today can read a little low against the one before.', 'wconvert')],
               [__('History', 'wconvert'), __('Totals stay when a campaign is unpublished or deleted, or old submissions are removed.', 'wconvert')],
             ].map(([term, meaning]) => <div key={term}><dt>{term}</dt><dd>{meaning}</dd></div>)}
           </dl>

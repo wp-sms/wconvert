@@ -804,17 +804,13 @@ describe('what the overview says', () => {
     expect(screen.queryByText(/appears tomorrow/)).not.toBeInTheDocument();
   });
 
-  it('compares a window through today and says it includes today so far (ADR 0177)', async () => {
+  it('compares a window through today without a line about it, and explains today in the help (ADR 0185)', async () => {
     api.readReport.mockResolvedValue({ ...payload(), from: '2026-08-16', to: '2026-09-14', complete_days: false });
     render(<Dashboard />);
-    expect(await screen.findByText('Includes today so far')).toBeInTheDocument();
-  });
-
-  it('says nothing about today on a complete window', async () => {
-    api.readReport.mockResolvedValue(payload());
-    render(<Dashboard />);
-    await screen.findAllByText(/Email submissions/);
+    await userEvent.click(await screen.findByText('How these numbers work'));
     expect(screen.queryByText('Includes today so far')).not.toBeInTheDocument();
+    expect(screen.getByText('Today', { selector: 'dt' }).nextElementSibling).toHaveTextContent('still running');
+    expect(document.querySelectorAll('.wa-impact .wa-change').length).toBeGreaterThan(0);
   });
 
   it('lifts linked sales into the headlines, qualified, and jumps to Campaign sales', async () => {

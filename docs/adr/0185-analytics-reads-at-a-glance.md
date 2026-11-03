@@ -1,7 +1,7 @@
 # 0185: Analytics reads at a glance
 
 Accepted 2026-11-03. Amends [0132](0132-every-screen-answers-its-first-question.md)
-decision 25.
+decision 25 and [0177](0177-reports-include-today.md) decisions 3 and 4.
 
 ## Context
 
@@ -43,3 +43,9 @@ made a merchant hunt for them. A problem looked like every other card.
    on the figure and does not spread to the card, and it is never amber (§14).
    The Rate tile gains its own change in percentage points, and shows nothing
    when either rate is missing.
+
+4. **"Includes today so far" is removed from every report.** It stood above each
+   period ending today, which is nearly every period, and so it said nothing on
+   any of them. The fact moves to a "Today" entry in "How these numbers work";
+   the chart's dashed last segment stays, and its hover and table still say
+   "Today so far".
