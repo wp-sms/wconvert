@@ -1,4 +1,4 @@
-import { useId, useRef, useState } from 'react';
+import { useId, useRef, useState, type ReactNode } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { ArrowDown, ArrowUp, Eye, EyeOff, Search, Split } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -140,6 +140,18 @@ export const bestFirst = (arms: OptinReport[]): OptinReport[] =>
   [...arms].sort((a, b) => (b.conversion_rate ?? -1) - (a.conversion_rate ?? -1));
 
 /** One sentence that reads two variants against each other, with how far to trust it. */
+/** What a report is about, with its description one press away (ADR 0187). */
+export function ReportTitle({ name, children }: { name: string; children: ReactNode }) {
+  return (
+    <div className="wa-section-heading">
+      <div className="wa-section-title">
+        <h2><bdi>{name}</bdi></h2>
+        <InfoTip label={sprintf(/* translators: %s: a report's title, e.g. “Submissions”. */ __('About %s', 'wconvert'), name)}>{children}</InfoTip>
+      </div>
+    </div>
+  );
+}
+
 function VariantDifference({ arms }: { arms: OptinReport[] }) {
   const [lead, next] = arms.filter((arm) => arm.conversion_rate !== null);
   if (!lead || !next)
@@ -709,17 +721,12 @@ export function Experiment({
       <p className="wa-eyebrow wa-eyebrow-lead">
         {__('A/B comparison and variant history', 'wconvert')}
       </p>
-      <div className="wa-section-heading">
-        <div className="wa-section-title">
-          <h2><bdi>{family.root.name}</bdi></h2>
-          <InfoTip label={sprintf(/* translators: %s: a campaign's name, e.g. “Spring sale”. */ __('About %s', 'wconvert'), family.root.name)}>
-            {__(
-              'Results cover the selected dates, including past uses of each design. They do not prove a winner.',
-              'wconvert',
-            )}
-          </InfoTip>
-        </div>
-      </div>
+      <ReportTitle name={family.root.name}>
+        {__(
+          'Results cover the selected dates, including past uses of each design. They do not prove a winner.',
+          'wconvert',
+        )}
+      </ReportTitle>
       <VariantDifference arms={arms} />
       <div className="wa-experiment-grid">
         {arms.map((arm) => (

@@ -5705,7 +5705,6 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 @media (max-width: 639px) { .wconvert-facts.wconvert-lead-facts > div { grid-template-columns: minmax(0, 1fr); gap: .125rem; } }
 /* ⓘ beside a heading keeps its 32px target without making that line taller. */
 .wconvert-lead-group__head .wconvert-info-trigger,
-.wa-section-title .wconvert-info-trigger,
 [data-slot=region-header] :is(h2, h3) + .wconvert-info-trigger { margin-block: -.375rem; }
 .wconvert-setup-glance h3 { margin: 0 0 .5rem; font-size: var(--text-heading); font-weight: 600; }
 .wconvert-setup-optional { margin: 0; color: var(--muted-foreground); font-size: var(--text-note); }

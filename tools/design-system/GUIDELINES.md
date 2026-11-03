@@ -77,7 +77,7 @@ controls have a **2.75rem / 44px** floor, including menus and native inputs.
 | `micro` | 12 / 600 / 0.04em | table headers, chips, badges, stat labels |
 | `note` | 13 | descriptions, notes, help text; a builder field's label at 500 |
 | `hint` | 12 / 400 | the one line of help under a builder field (ADR 0136) |
-| `body` | 14 | the body of the admin |
+| `body` | 14 | the body of the admin; at 600, a report's title above its table (ADR 0187) |
 | `heading` | 16 | a region heading, a card title, an editor panel's title (a section inside a panel is `body` 600, ADR 0136) |
 | `section` | 20 / 600 | reading-page section headings |
 | `metric` | 36 / 600 | dashboard impact and target totals |
@@ -187,8 +187,8 @@ stack edge-to-edge tinted panels or repeat the same shared-change warning.
 - `InfoTip` owns contextual help in Analytics, Leads, the builder's panels and campaign dialogs (ADR 0136, ADR 0183): a 16px Info glyph in a
   32px control, expanded for coarse pointers by the shared control rules. Its
   popover handles viewport edges, Escape dismissal and returning keyboard focus.
-  Beside a title it takes -6px of block margin, so its 32px target does not
-  make the line taller. An Analytics section title and its tip are
+  Beside a reading page's title it takes -6px of block margin, so its 32px
+  target does not make the line taller. A report's title and its tip are
   `.wa-section-title`, 14px above the table (ADR 0187).
 - The header navigation divider spans the row; individual navigation and plan
   elements do not draw disconnected pieces of the same line.
