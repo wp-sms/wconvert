@@ -135,7 +135,8 @@ function Automatic({ id, placement, compatible, priority, onPlacement, onPriorit
       </NativeSelect>
     </Field>}
     <Field label={__('Priority', 'wconvert-pro')} htmlFor={`${id}-priority`} hintId={`${id}-priority-help`}
-      hint={__('From 0 to 100. One automatic campaign shows per page, the highest priority first. A campaign placed by hand always comes first.', 'wconvert-pro')}>
+      hint={__('From 0 to 100. The highest shows.', 'wconvert-pro')}
+      tip={__('One automatic campaign shows per page. A campaign also placed by hand shows there instead.', 'wconvert-pro')}>
       <Input id={`${id}-priority`} className="w-24" type="number" min={0} max={100} value={priority} aria-describedby={`${id}-priority-help`}
         onChange={event => onPriority(Math.max(0, Math.min(100, Math.trunc(Number(event.target.value) || 0))))} />
     </Field>

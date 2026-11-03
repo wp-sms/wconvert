@@ -3,6 +3,7 @@ import { useId } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ExternalLink } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import { InfoTip } from '../shell/InfoTip';
 import { adminSettings } from '../settings';
 import { useDirection } from '../hooks/useDirection';
 import { physicalPlacementLabel } from './PlacementControl';
@@ -37,12 +38,16 @@ export function PlacementGuidance({ optinId, optinName, displayType, placement, 
 
   return (
     <section className="wconvert-placement" aria-labelledby={`${id}-title`}>
-      <h3 id={`${id}-title`}>{inline ? __('Place this campaign on a page', 'wconvert') : __('Check where it appears', 'wconvert')}</h3>
+      <div className="flex items-center gap-1">
+        <h3 id={`${id}-title`}>{inline ? __('Place this campaign on a page', 'wconvert') : __('Check where it appears', 'wconvert')}</h3>
+        {inline && contentLock != null && <InfoTip label={__('About the content lock', 'wconvert')}>
+          <span className="block">{__('Keep your introduction above the divider. For a bonus with public content after it, use the “WConvert content lock” section instead. Use one lock per page.', 'wconvert')}</span>
+          <span className="mt-2 block">{__('Content stays readable if the form can’t load. An unlock lasts 30 days in that browser.', 'wconvert')}</span>
+        </InfoTip>}
+      </div>
       {inline && contentLock != null ? <>
         <p>{__('Add the “WConvert lock from here” divider and choose this campaign.', 'wconvert')}</p>
-        <p>{__('Keep your introduction above the divider. For a bonus with public content afterward, use the “WConvert content lock” section instead. Use one lock per page.', 'wconvert')}</p>
         <p>{__('For the classic editor, wrap a complete region with:', 'wconvert')} <code>{`[wconvert_content_lock id="${optinId}"]…[/wconvert_content_lock]`}</code></p>
-        <p>{__('The selected content stays readable when the form is unavailable. Successful access is remembered in this browser for 30 days.', 'wconvert')}</p>
       </> : automatic && !isFreeInstall() ? <>
         <p>{automatic}</p>
         <p>{__('Follows its display rules, no block needed. A manual embed takes precedence.', 'wconvert')}</p>

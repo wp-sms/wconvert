@@ -61,9 +61,7 @@ export function ChangeGoalDialog({ open, onOpenChange, goals, current, duplicate
       {picked === null ? <>
         <AdminDialogHeader
           title={duplicate ? __('Duplicate for another goal', 'wconvert') : __('Change goal', 'wconvert')}
-          meta={duplicate
-            ? __('The original keeps its published version and all its results.', 'wconvert')
-            : __('Choose what this draft should achieve. You can adjust its design before publishing.', 'wconvert')} />
+          meta={duplicate ? __('The original keeps its published version and all its results.', 'wconvert') : undefined} />
         <AdminDialogBody>
           {goals.status === 'loading' ? <ChoiceSkeleton status={__('Loading goals…', 'wconvert')} />
             : goals.status === 'failed' ? <RegionErrorState message={__('The goals could not be loaded.', 'wconvert')} onRetry={onRetry} />

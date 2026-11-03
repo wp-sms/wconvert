@@ -330,13 +330,12 @@ export function GoalDetail({
         <div className="wa-panel wa-handoff">
           <div>
             <p className="wa-eyebrow">{__('After submission', 'wconvert')}</p>
-            <h3>{__('Email handoffs', 'wconvert')}</h3>
-            <p className="wa-muted">
-              {__(
-                'Sends can land on a later day and resends count again, so a difference is not a queue or failure count.',
-                'wconvert',
-              )}
-            </p>
+            <div className="wa-section-title">
+              <h3>{__('Email handoffs', 'wconvert')}</h3>
+              <InfoTip label={sprintf(/* translators: %s: a report's title, e.g. “Submissions”. */ __('About %s', 'wconvert'), __('Email handoffs', 'wconvert'))}>
+                {__('Later-day sends and resends count, so a difference is not a queue or failure count.', 'wconvert')}
+              </InfoTip>
+            </div>
           </div>
           <div>
             <strong>{formatCount(numbers.deliveries)}</strong>
@@ -722,10 +721,8 @@ export function Experiment({
         {__('A/B comparison and variant history', 'wconvert')}
       </p>
       <ReportTitle name={family.root.name}>
-        {__(
-          'Results cover the selected dates, including past uses of each design. They do not prove a winner.',
-          'wconvert',
-        )}
+        <span className="block">{__('Results cover the selected dates, including past uses of each design. They do not prove a winner.', 'wconvert')}</span>
+        <span className="mt-2 block">{__('Each variant counts once in goal totals. Visitors are assigned per browser, not per person.', 'wconvert')}</span>
       </ReportTitle>
       <VariantDifference arms={arms} />
       <div className="wa-experiment-grid">
@@ -770,12 +767,6 @@ export function Experiment({
           </div>
         ))}
       </div>
-      <p className="wa-notice">
-        {__(
-          'Each variant counts once in goal totals. Visitors are assigned per browser, not per person.',
-          'wconvert',
-        )}
-      </p>
       <ConfirmDialog
         open={chosen !== null}
         onOpenChange={(open) => {

@@ -197,13 +197,13 @@ final class DisplayPlan
             if (($group['match'] ?? 'any') === 'all') {
                 $adStatuses = array_column(array_filter($group['rules'], static fn ($rule) => $rule['type'] === 'ad_blocking'), 'value');
                 if (in_array('detected', $adStatuses, true) && in_array('not_detected', $adStatuses, true)) {
-                    $issues[] = __('Ad blocking cannot be both detected and not detected. Use ANY or change the values.', 'wconvert');
+                    $issues[] = __('Ad blocking is set both ways. Use ANY or change the values.', 'wconvert');
                 }
             }
             $bothWays = array_filter($asked, static fn (array $ways): bool => count($ways) === 2) !== [];
             if (($group['match'] ?? 'any') === 'all' && ($devices === [] || $bothWays || (in_array(true, $signedIn, true) && in_array(false, $signedIn, true)))) $issues[] = __('These audience requirements contradict each other. Use ANY or change the values.', 'wconvert');
             if (($group['match'] ?? 'any') === 'all' && ($gestures > 1 || ($idle && $gestures > 0))) {
-                $issues[] = __('Use ANY for alternative gestures. Inactivity and a leaving gesture cannot be required together.', 'wconvert');
+                $issues[] = __('Require only one of leaving, scrolling up or inactivity, or use ANY.', 'wconvert');
             }
         }
         return $issues;

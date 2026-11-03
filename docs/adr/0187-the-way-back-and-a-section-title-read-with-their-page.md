@@ -21,6 +21,6 @@ The link's slot was inside `.wconvert-page-actions`, so the heading's toolbar ru
 
 ## Consequences
 
-Nothing uses `RegionHeader`'s `tip` yet. The admin copy pass moves descriptions into it.
+[ADR 0188](0188-the-admin-says-it-in-twelve-words.md)'s copy pass moved descriptions into `RegionHeader`'s `tip`, and gave `Field` and `SwitchSetting` the same prop.
 
 jsdom cannot see any of this geometry, so a test only pins where the link and the tip are. The sizes were measured on WordPress.

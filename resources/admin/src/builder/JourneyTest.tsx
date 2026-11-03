@@ -313,7 +313,6 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
     <aside className="wconvert-journey-test__side" aria-label={__('What happened', 'wconvert')}>
       {changeToCheck && <section className="wconvert-journey-test__change" aria-label={__('Change to check', 'wconvert')}><p>{__('Testing your change:', 'wconvert')} <strong>{changeToCheck.screenName}</strong> {changeToCheck.text}</p><Disclosure variant="inline" title={__('Suggested checks', 'wconvert')}><ul>{changeTestGuide(tree, changeToCheck.screenId).map(check => <li key={check}>{check}</li>)}</ul><p>{__('Cases to try, not proof a rule is reachable or wins.', 'wconvert')}</p></Disclosure></section>}
       <div className="wconvert-journey-test__status"><h3>{__('What happened', 'wconvert')}</h3><small data-complete={complete || undefined}>{complete ? __('Finished', 'wconvert') : __('In progress', 'wconvert')}</small></div>
-      {visited.length === 1 && !complete && <p>{__('Use the form as a visitor would. Each screen you reach is listed here.', 'wconvert')}</p>}
       <ol className="wconvert-journey-test__timeline" aria-label={__('Visited screens', 'wconvert')}>
         {visited.map((at, index) => <li key={tree.steps[at].id} data-current={at === step} aria-current={at === step ? 'step' : undefined}>
           <span className="wconvert-journey-test__number" aria-hidden="true">{at === step ? index + 1 : <Check size={12} />}</span>

@@ -24,12 +24,12 @@ export function GraphCaptureInsert({ tree, primaryChannel, source, onInsert, onC
       {plan.reason ? <p id={`${id}-refusal`} role="status">{plan.reason}</p> : <>
         {/* The visitor's outcome first, then the control that changes it (§22). */}
         {selected && <div className="wconvert-graph-insert__summary"><strong>{selected.label}</strong><p>{selected.detail}</p></div>}
-        <Field label={__('Insert after the main signup', 'wconvert-pro')} htmlFor={`${id}-location`}>
+        <Field label={__('Insert after the main signup', 'wconvert-pro')} htmlFor={`${id}-location`}
+          tip={__('Only visitors on this line see it. Signing up and “No thanks” both continue to the same screen. The main signup is already saved and isn’t sent again.', 'wconvert-pro')}>
         <NativeSelect id={`${id}-location`} value={locationId} onChange={event => setLocationId(event.target.value)}>
           <option value="" disabled>{__('Choose a line…', 'wconvert-pro')}</option>
           {plan.locations.map(location => <option key={location.id} value={location.id}>{location.label}</option>)}
         </NativeSelect></Field>
-        <p>{__('Only visitors on this line see it. Signing up and “No thanks” both continue to the same screen, and the main signup is not sent again. Check its consent text and Destinations afterwards.', 'wconvert-pro')}</p>
       </>}
     </AdminDialogBody>
     <AdminDialogFooter back={<Button type="button" variant="outline" onClick={onCancel}>{__('Cancel', 'wconvert-pro')}</Button>}

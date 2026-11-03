@@ -1153,7 +1153,7 @@ function Failures({ failures, destinations }: { failures: DestinationsPayload['f
     <Region>
       <RegionHeader
         title={__('Submissions that weren’t sent', 'wconvert')}
-        description={__('Each was rejected on its own, apart from any outage. The latest 200 are kept.', 'wconvert')}
+        tip={__('Each was rejected on its own, apart from any outage. Only the latest 200 are kept.', 'wconvert')}
       />
       <DataTable>
         <DataTableHead>

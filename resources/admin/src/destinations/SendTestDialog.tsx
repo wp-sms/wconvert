@@ -113,7 +113,9 @@ export function SendTestDialog({
                 ? __('Sends this address, sample answers and placeholder details, including name and phone.', 'wconvert')
                 : sendsInterest
                   ? __('Sends only this address and any interest value. No name or phone.', 'wconvert')
-                  : __('Only this email address is sent — no name or phone.', 'wconvert')}>
+                  : type?.forwards_submission
+                    ? __('Sends this address and placeholder details, including name and phone.', 'wconvert')
+                    : __('Only this email address is sent — no name or phone.', 'wconvert')}>
               <Input ref={sample} id={`${id}-email`} type="email" required autoComplete="email" disabled={busy || sent}
                 value={email} onChange={(event) => { setEmail(event.target.value); edited(); }}
                 aria-describedby={`${id}-sample ${id}-effect`} />

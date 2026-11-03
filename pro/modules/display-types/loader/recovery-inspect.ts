@@ -27,7 +27,7 @@ export function recoveryExplanation(entry: Recoverable, decision: Decision): str
   };
   if (blocked) return say(blocked, blockedEnglish[blocked] ?? '') + fallback;
   if (matchMedia(`(max-width: ${A_NARROW_DESIGN})`).matches && entry.teaser.mobile?.visible === false) return say('mobile', 'Reopen button hidden by the mobile visibility setting.') + fallback;
-  if (store.active?.[0] === entry.id && store.active[1] === familyOf(entry)) return say('available', 'Recovery available: restore the reminder before automatic overlays. A visitor’s click bypasses automatic triggers, view limits, cooldown and dismissal settings.') + fallback;
+  if (store.active?.[0] === entry.id && store.active[1] === familyOf(entry)) return say('available', 'Reopen button available. A click skips triggers, view limits, cooldown and dismissal.') + fallback;
   if (decision.overlayDone && !decision.shown.has(entry.id)) return say('another', 'Another overlay owns this page; the reopen button cannot claim its place.') + fallback;
   return say('waiting', 'Reopen button appears only after this Campaign is shown and deliberately dismissed.') + fallback;
 }

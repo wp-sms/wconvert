@@ -12,12 +12,12 @@ export function contentLockExplanation(entry: PayloadEntry): string | undefined 
   if (!region) return say('none', 'Content lock: no supported region on this page; content remains readable.');
   switch (region.dataset.wconvertLockState) {
     case 'locked': return say('locked', 'Content lock active: the selected region will open after acknowledged form capture.');
-    case 'captured': return say('captured', 'Content unlocked after successful capture. Access is remembered for this Campaign in this browser for 30 days.');
-    case 'remembered': return say('remembered', 'Content is readable because this browser remembers a successful unlock. No new conversion is recorded.');
+    case 'captured': return say('captured', 'Unlocked after submission. This browser remembers this campaign’s unlock for 30 days.');
+    case 'remembered': return say('remembered', 'Readable: this browser remembers an unlock. No new conversion is recorded.');
     case 'unavailable': return say('unavailable', 'Content stays readable: the Campaign was not eligible at initial page readiness.');
-    case 'invalid': return say('invalid', 'Content stays readable: check nesting, active embeds, or an earlier manual anchor for the same Campaign.');
+    case 'invalid': return say('invalid', 'Still readable: check nesting, active embeds, or this campaign’s earlier manual anchor.');
     case 'another': return say('another', 'Content stays readable: another content lock owns this page’s single locker slot.');
-    case 'fallback': return say('fallback', 'Content stays readable because the gate is unavailable. This fallback does not count as a conversion.');
-    default: return say('configured', 'Content lock is configured; verify the live region and capture on this page.');
+    case 'fallback': return say('fallback', 'Content stays readable: gate unavailable. Not counted as a conversion.');
+    default: return say('configured', 'Content lock is set up. Test the live region and form here.');
   }
 }
