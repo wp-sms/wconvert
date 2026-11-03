@@ -67,16 +67,16 @@ msgid "Test stream Measurement ID (G-…)"
 msgstr "Measurement ID جریان آزمایشی (G-…)"
 
 #: modules/analytics/src/Hooks.php:106
-msgid "Plausible sends WConvert Test to the site configured by your installed script. Use a dedicated test site and verify receipt in Plausible."
-msgstr "Plausible رویداد WConvert Test را به سایتی می‌فرستد که در اسکریپت نصب‌شده شما تنظیم شده است. از یک سایت آزمایشی جداگانه استفاده کنید و دریافت آن را در Plausible بررسی کنید."
+msgid "Plausible sends WConvert Test to your script’s site. Use a test site."
+msgstr "Plausible رویداد WConvert Test را به سایت تنظیم‌شده در اسکریپت شما می‌فرستد. از یک سایت آزمایشی استفاده کنید."
 
 #: modules/analytics/src/Hooks.php:106
-msgid "GTM sends to the stream configured in your container. Use a test workspace/property."
-msgstr "GTM به جریانی می‌فرستد که در کانتینر شما تنظیم شده است. از یک فضای کاری یا پراپرتی آزمایشی استفاده کنید."
+msgid "GTM sends to your container’s stream. Use a test workspace or property."
+msgstr "GTM به جریان کانتینر شما می‌فرستد. از یک فضای کاری یا پراپرتی آزمایشی استفاده کنید."
 
 #: modules/analytics/src/Hooks.php:107
-msgid "Handed off does not confirm receipt. Verify wconvert_test in GA DebugView or Realtime."
-msgstr "«تحویل داده شد» به معنای تأیید دریافت نیست. برای بررسی wconvert_test به این بخش‌ها بروید: GA DebugView یا Realtime."
+msgid "Handed off doesn’t confirm receipt. Check wconvert_test in GA DebugView or Realtime."
+msgstr "«تحویل داده شد» به معنای تأیید دریافت نیست. wconvert_test را در GA DebugView یا Realtime بررسی کنید."
 
 #: modules/analytics/src/Hooks.php:108
 msgid "Close analytics check"
@@ -321,16 +321,16 @@ msgid "Choose an available main product for these recommendations."
 msgstr "برای این پیشنهادها یک محصول اصلی موجود انتخاب کنید."
 
 #: modules/cart-recovery/src/CommerceContext.php:137
-msgid "For a block theme, place the campaign block in the product template and choose Manual placement."
-msgstr "در پوسته بلوکی، بلوک کمپین را در قالب محصول قرار دهید و «جایگذاری دستی» را انتخاب کنید."
+msgid "Block theme: add the campaign block to the product template, choose Manual placement."
+msgstr "پوسته بلوکی: بلوک کمپین را به قالب محصول اضافه کنید و «جایگذاری دستی» را انتخاب کنید."
 
 #: modules/cart-recovery/src/CommerceContext.php:141
 msgid "Choose up to six available catalog products for the recommendations."
 msgstr "برای پیشنهادها حداکثر ۶ محصول موجود از کاتالوگ انتخاب کنید."
 
 #: modules/cart-recovery/src/CommerceContext.php:152
-msgid "Choose at least one available simple product that supports Add to cart. Products requiring options use their product page."
-msgstr "دست‌کم یک محصول ساده موجود انتخاب کنید که از «افزودن به سبد خرید» پشتیبانی کند. محصولاتی که به انتخاب گزینه نیاز دارند از برگه محصول خود استفاده می‌کنند."
+msgid "Choose at least one available simple product that supports Add to cart."
+msgstr "دست‌کم یک محصول ساده موجود انتخاب کنید که از «افزودن به سبد خرید» پشتیبانی کند."
 
 #: modules/cart-recovery/src/CommerceContext.php:320
 #: public/admin/chunk-VCPpXaIF.js:51
@@ -358,8 +358,8 @@ msgstr "بررسی محصولات انجام نشد. دوباره تلاش کن�
 
 #: modules/cart-recovery/src/ProductHealth.php:23
 #: modules/journeys/src/ResultProducts.php:67
-msgid "A pinned product is unavailable or does not match. Review this result’s pins."
-msgstr "یک محصول سنجاق‌شده در دسترس نیست یا مطابقت ندارد. سنجاق‌های این نتیجه را بررسی کنید."
+msgid "A pinned product is unavailable or does not match. Review the pins."
+msgstr "یک محصول سنجاق‌شده در دسترس نیست یا مطابقت ندارد. سنجاق‌ها را بررسی کنید."
 
 #: modules/cart-recovery/src/ProductHealth.php:24
 #: modules/journeys/src/ResultProducts.php:68
@@ -380,20 +380,20 @@ msgid "The main product is unavailable. Review it in the editor."
 msgstr "محصول اصلی در دسترس نیست. آن را در ویرایشگر بررسی کنید."
 
 #: modules/cart-recovery/src/ProductHealth.php:35
-msgid "Products depend on the visitor’s basket. Check a sample visit in the editor."
-msgstr "محصولات به سبد خرید بازدیدکننده بستگی دارند. یک بازدید نمونه را در ویرایشگر بررسی کنید."
+msgid "Products depend on the basket. Check a sample visit in the editor."
+msgstr "محصولات به سبد خرید بستگی دارند. یک بازدید نمونه را در ویرایشگر بررسی کنید."
 
 #: modules/cart-recovery/src/ProductHealth.php:41
 msgid "Products are available. Display rules and the visitor’s basket still apply."
 msgstr "محصولات موجود است. قوانین نمایش و سبد خرید بازدیدکننده همچنان اعمال می‌شوند."
 
 #: modules/cart-recovery/src/ProductHealth.php:43
-msgid "None of these products supports Add to cart here. Change products or use View product."
-msgstr "هیچ‌یک از این محصولات اینجا از «افزودن به سبد خرید» پشتیبانی نمی‌کند. محصولات را تغییر دهید یا از «مشاهده محصول» استفاده کنید."
+msgid "None support Add to cart here. Change products or use View product."
+msgstr "هیچ‌یک اینجا از «افزودن به سبد خرید» پشتیبانی نمی‌کند. محصولات را تغییر دهید یا از «مشاهده محصول» استفاده کنید."
 
 #: modules/cart-recovery/src/ProductHealth.php:44
-msgid "No cross-sells are set for the main product. Add them in WooCommerce or choose products here."
-msgstr "برای محصول اصلی فروش متقابلی تنظیم نشده است. آن را در WooCommerce اضافه کنید یا همین‌جا محصولات را انتخاب کنید."
+msgid "Main product has no cross-sells. Add some in WooCommerce or choose products."
+msgstr "محصول اصلی فروش متقابل ندارد. آن را در WooCommerce اضافه کنید یا محصولات را انتخاب کنید."
 
 #: modules/cart-recovery/src/ProductHealth.php:45
 msgid "No recommendations are available. Review the selected products."
@@ -695,12 +695,12 @@ msgid "The receiver refused the request. Check the webhook’s key or headers."
 msgstr "گیرنده درخواست را نپذیرفت. کلید یا هدرهای وب‌هوک را بررسی کنید."
 
 #: modules/destinations/src/WebhookDestinationType.php:163
-msgid "The receiver or its firewall blocked the request. Check its key, headers or bot protection."
-msgstr "گیرنده یا فایروال آن درخواست را مسدود کرد. کلید، هدرها یا محافظت در برابر ربات آن را بررسی کنید."
+msgid "Blocked by the receiver or firewall. Check key, headers or bot protection."
+msgstr "گیرنده یا فایروال درخواست را مسدود کرد. کلید، هدرها یا محافظت در برابر ربات را بررسی کنید."
 
 #: modules/destinations/src/WebhookDestinationType.php:164
-msgid "The receiver no longer accepts this URL. The Zap or scenario may be off or deleted."
-msgstr "گیرنده دیگر این URL را نمی‌پذیرد. ممکن است Zap یا سناریو خاموش یا حذف شده باشد."
+msgid "URL not found: its Zap or scenario may be off or deleted."
+msgstr "URL پیدا نشد: ممکن است Zap یا سناریوی آن خاموش یا حذف شده باشد."
 
 #: modules/destinations/src/WebhookDestinationType.php:165
 msgid "The receiver is temporarily unavailable."
@@ -711,8 +711,8 @@ msgid "The receiver rejected this submission."
 msgstr "گیرنده این ثبت فرم را رد کرد."
 
 #: modules/destinations/src/WebhookDestinationType.php:173
-msgid "The receiver’s security certificate is invalid. Fix it on the receiver; WConvert only sends over a valid one."
-msgstr "گواهی امنیتی گیرنده نامعتبر است. آن را در سمت گیرنده اصلاح کنید؛ WConvert فقط با گواهی معتبر ارسال می‌کند."
+msgid "The receiver’s security certificate is invalid. Fix it on the receiver."
+msgstr "گواهی امنیتی گیرنده نامعتبر است. آن را در سمت گیرنده اصلاح کنید."
 
 #: modules/destinations/src/WebhookDestinationType.php:175
 msgid "The receiver could not be reached. The result may be uncertain."
@@ -723,8 +723,8 @@ msgid "Enter a full webhook URL starting with https:// or http://."
 msgstr "یک URL کامل وب‌هوک وارد کنید که با https:// یا http:// شروع شود."
 
 #: modules/destinations/src/WebhookDestinationType.php:183
-msgid "This URL points at a private or local network address, which WConvert does not send to."
-msgstr "این URL به یک آدرس شبکه خصوصی یا محلی اشاره می‌کند و WConvert به چنین آدرسی ارسال نمی‌کند."
+msgid "WConvert does not send to private or local network addresses like this."
+msgstr "WConvert به چنین آدرس‌های شبکه خصوصی یا محلی ارسال نمی‌کند."
 
 #: modules/destinations/src/WebhookDestinationType.php:184
 msgid "This URL’s host could not be found. Check the address."
@@ -6090,8 +6090,8 @@ msgid "Please use a different email address."
 msgstr "لطفاً از آدرس ایمیل دیگری استفاده کنید."
 
 #: modules/spam-filters/src/SpamFilters.php:73
-msgid "Enter up to 100 valid addresses or exact domains per list, one per line. Wildcards are not supported."
-msgstr "در هر فهرست حداکثر ۱۰۰ آدرس معتبر یا دامنه دقیق وارد کنید، هر کدام در یک خط. نویسه‌های عام پشتیبانی نمی‌شوند."
+msgid "Enter up to 100 valid addresses or exact domains per list, one per line. No wildcards."
+msgstr "در هر فهرست حداکثر ۱۰۰ آدرس معتبر یا دامنه دقیق وارد کنید، هر کدام در یک خط. بدون نویسه عام."
 
 #: resources/templates/labels.php:5
 msgctxt "a campaign design's name"
@@ -7261,12 +7261,12 @@ msgid "Wrapped in colour"
 msgstr "پیچیده در رنگ"
 
 #: src/Admin/ProAdminEnqueue.php:226
-msgid "WConvert Pro could not load its admin screen, so WConvert is showing you the free one. Everything you have already set up is still running. Reinstall WConvert Pro to restore it."
-msgstr "WConvert Pro نتوانست صفحه مدیریت خود را بارگذاری کند، بنابراین WConvert نسخه رایگان آن را به شما نشان می‌دهد. هر چیزی که قبلاً تنظیم کرده‌اید همچنان در حال اجراست. برای بازگرداندن آن، WConvert Pro را دوباره نصب کنید."
+msgid "WConvert Pro could not load its admin screen, so this is the free one. Everything still runs. Reinstall WConvert Pro."
+msgstr "WConvert Pro نتوانست صفحه مدیریت خود را بارگذاری کند، بنابراین این نسخه رایگان است. همه چیز همچنان در حال اجراست. WConvert Pro را دوباره نصب کنید."
 
 #: src/Boot/BootGuard.php:91
-msgid "WConvert Pro did not start: it supplies features to the WConvert plugin, and WConvert is not active. Activate WConvert."
-msgstr "WConvert Pro اجرا نشد: این افزونه قابلیت‌هایی به افزونه WConvert اضافه می‌کند و WConvert فعال نیست. WConvert را فعال کنید."
+msgid "WConvert Pro did not start: WConvert is not active. Activate WConvert."
+msgstr "WConvert Pro اجرا نشد: WConvert فعال نیست. WConvert را فعال کنید."
 
 #. translators: 1: required WConvert version, 2: installed WConvert version.
 #: src/Boot/BootGuard.php:97
@@ -7277,12 +7277,12 @@ msgstr "WConvert Pro اجرا نشد: به WConvert نسخه %1$s یا جدید�
 #. translators: 1: installed WConvert version string, 2: version WConvert Pro requires.
 #: src/Boot/BootGuard.php:106
 #, php-format
-msgid "WConvert Pro did not start: it could not read the versions it compares. WConvert reports \"%1$s\" and WConvert Pro requires \"%2$s\". Reinstall both plugins."
-msgstr "WConvert Pro اجرا نشد: نتوانست نسخه‌هایی را که با هم مقایسه می‌کند بخواند. WConvert نسخه «%1$s» را گزارش می‌دهد و WConvert Pro به «%2$s» نیاز دارد. هر دو افزونه را دوباره نصب کنید."
+msgid "WConvert Pro did not start: it could not read WConvert \"%1$s\" or its required \"%2$s\". Reinstall both plugins."
+msgstr "WConvert Pro اجرا نشد: نتوانست نسخه «%1$s» از WConvert یا نسخه الزامی «%2$s» را بخواند. هر دو افزونه را دوباره نصب کنید."
 
 #: src/Bootstrap.php:76
-msgid "WConvert Pro cannot be activated for the whole network. Activate it on each site instead, from that site's Plugins screen."
-msgstr "WConvert Pro را نمی‌توان برای کل شبکه فعال کرد. به‌جای آن، در هر سایت از صفحه افزونه‌های همان سایت فعالش کنید."
+msgid "WConvert Pro cannot be network-activated. Activate it from each site’s Plugins screen."
+msgstr "WConvert Pro را نمی‌توان برای کل شبکه فعال کرد. آن را در هر سایت از صفحه افزونه‌های همان سایت فعال کنید."
 
 #: src/Bootstrap.php:77
 msgid "Plugin not activated"
@@ -7330,8 +7330,8 @@ msgid "Reopen button hidden by the mobile visibility setting."
 msgstr "دکمه باز کردن دوباره با تنظیم نمایش در موبایل پنهان شده است."
 
 #: src/Frontend/ProInspectorLabels.php:45
-msgid "Recovery available: restore the reminder before automatic overlays. A visitor’s click bypasses automatic triggers, view limits, cooldown and dismissal settings."
-msgstr "بازیابی در دسترس است: یادآور پیش از لایه‌های خودکار روی صفحه بازیابی می‌شود. کلیک بازدیدکننده زمان‌های نمایش خودکار، سقف نمایش، فاصله انتظار و تنظیمات بستن را نادیده می‌گیرد."
+msgid "Reopen button available. A click skips triggers, view limits, cooldown and dismissal."
+msgstr "دکمه باز کردن دوباره در دسترس است. کلیک، زمان‌های نمایش خودکار، سقف نمایش، فاصله انتظار و بستن را نادیده می‌گیرد."
 
 #: src/Frontend/ProInspectorLabels.php:46
 msgid "Another overlay owns this page; the reopen button cannot claim its place."
@@ -7350,36 +7350,36 @@ msgid "Content lock active: the selected region will open after acknowledged for
 msgstr "قفل محتوا فعال است: بخش انتخاب‌شده پس از تأیید ثبت فرم باز می‌شود."
 
 #: src/Frontend/ProInspectorLabels.php:53
-msgid "Content unlocked after successful capture. Access is remembered for this Campaign in this browser for 30 days."
-msgstr "قفل محتوا پس از ثبت موفق فرم باز شد. این دسترسی برای این کمپین در این مرورگر تا ۳۰ روز به یاد سپرده می‌شود."
+msgid "Unlocked after submission. This browser remembers this campaign’s unlock for 30 days."
+msgstr "قفل پس از ثبت فرم باز شد. این مرورگر باز شدن قفل این کمپین را تا ۳۰ روز به یاد می‌سپارد."
 
 #: src/Frontend/ProInspectorLabels.php:54
-msgid "Content is readable because this browser remembers a successful unlock. No new conversion is recorded."
-msgstr "محتوا قابل خواندن است، چون این مرورگر باز شدن موفق قفل را به یاد دارد. تبدیل جدیدی ثبت نمی‌شود."
+msgid "Readable: this browser remembers an unlock. No new conversion is recorded."
+msgstr "قابل خواندن: این مرورگر باز شدن قفل را به یاد دارد. تبدیل جدیدی ثبت نمی‌شود."
 
 #: src/Frontend/ProInspectorLabels.php:55
 msgid "Content stays readable: the Campaign was not eligible at initial page readiness."
 msgstr "محتوا قابل خواندن می‌ماند: کمپین هنگام آماده شدن اولیه برگه واجد شرایط نبود."
 
 #: src/Frontend/ProInspectorLabels.php:56
-msgid "Content stays readable: check nesting, active embeds, or an earlier manual anchor for the same Campaign."
-msgstr "محتوا قابل خواندن می‌ماند: تودرتو بودن، جاسازی‌های فعال یا لنگر دستی قبلی برای همین کمپین را بررسی کنید."
+msgid "Still readable: check nesting, active embeds, or this campaign’s earlier manual anchor."
+msgstr "همچنان قابل خواندن است: تودرتو بودن، جاسازی‌های فعال یا لنگر دستی قبلی این کمپین را بررسی کنید."
 
 #: src/Frontend/ProInspectorLabels.php:57
 msgid "Content stays readable: another content lock owns this page’s single locker slot."
 msgstr "محتوا قابل خواندن می‌ماند: قفل محتوای دیگری تنها جایگاه قفل این برگه را گرفته است."
 
 #: src/Frontend/ProInspectorLabels.php:58
-msgid "Content stays readable because the gate is unavailable. This fallback does not count as a conversion."
-msgstr "محتوا قابل خواندن می‌ماند، چون قفل در دسترس نیست. این حالت جایگزین، تبدیل حساب نمی‌شود."
+msgid "Content stays readable: gate unavailable. Not counted as a conversion."
+msgstr "محتوا قابل خواندن می‌ماند: قفل در دسترس نیست. تبدیل حساب نمی‌شود."
 
 #: src/Frontend/ProInspectorLabels.php:59
-msgid "Content lock is configured; verify the live region and capture on this page."
-msgstr "قفل محتوا پیکربندی شده است؛ بخش زنده و ثبت فرم را در این برگه بررسی کنید."
+msgid "Content lock is set up. Test the live region and form here."
+msgstr "قفل محتوا تنظیم شده است. بخش زنده و فرم را در اینجا آزمایش کنید."
 
 #: src/Frontend/ProLoaderEnqueue.php:164
-msgid "WConvert Pro’s front-end script is missing, so its premium triggers and rules are not running. Your campaigns still display. Reinstall WConvert Pro to restore it."
-msgstr "اسکریپت سمت بازدیدکننده WConvert Pro وجود ندارد، بنابراین زمان‌های نمایش و قوانین پریمیوم آن اجرا نمی‌شوند. کمپین‌های شما همچنان نمایش داده می‌شوند. برای بازگرداندن آن، WConvert Pro را دوباره نصب کنید."
+msgid "WConvert Pro’s front-end script is missing, so premium triggers and rules are not running. Campaigns still display."
+msgstr "اسکریپت سمت بازدیدکننده WConvert Pro وجود ندارد، بنابراین زمان‌های نمایش و قوانین پریمیوم اجرا نمی‌شوند. کمپین‌ها همچنان نمایش داده می‌شوند."
 
 #: src/Frontend/ProLoaderEnqueue.php:169
 msgid "How to reinstall"
@@ -7856,48 +7856,48 @@ msgid "Invalid premium design request. Preview the design again."
 msgstr "درخواست طرح پریمیوم نامعتبر است. طرح را دوباره پیش‌نمایش کنید."
 
 #: src/License/TemplateDownloads.php:66
-msgid "Premium template downloads are not configured for this catalog. Installed designs are still available."
-msgstr "دانلود قالب‌های پریمیوم برای این کاتالوگ تنظیم نشده است. طرح‌های نصب‌شده همچنان در دسترس هستند."
+msgid "Premium downloads are not configured for this catalog. Installed designs still work."
+msgstr "دانلودهای پریمیوم برای این کاتالوگ تنظیم نشده است. طرح‌های نصب‌شده همچنان کار می‌کنند."
 
 #: src/License/TemplateDownloads.php:72
-msgid "Connect your WConvert Pro licence in Settings → License to download premium templates."
-msgstr "برای دانلود قالب‌های پریمیوم، لایسنس WConvert Pro خود را در تنظیمات ← لایسنس متصل کنید."
+msgid "Connect your license in Settings → License to download premium templates."
+msgstr "برای دانلود قالب‌های پریمیوم، لایسنس خود را در تنظیمات ← لایسنس متصل کنید."
 
 #: src/License/TemplateDownloads.php:83
 #: src/License/TemplateDownloads.php:135
-msgid "Template access could not be verified. Try again later. Installed designs are still available."
-msgstr "دسترسی به قالب تأیید نشد. بعداً دوباره تلاش کنید. طرح‌های نصب‌شده همچنان در دسترس هستند."
+msgid "Could not verify template access. Try again later. Installed designs still work."
+msgstr "دسترسی به قالب تأیید نشد. بعداً دوباره تلاش کنید. طرح‌های نصب‌شده همچنان کار می‌کنند."
 
 #. translators: %d: seconds until downloads can be tried again.
 #: src/License/TemplateDownloads.php:110
 #: src/License/TemplateDownloads.php:122
 #, php-format
-msgid "Template downloads are temporarily unavailable. Try again in %d seconds. Installed designs are still available."
-msgstr "دانلود قالب‌ها موقتاً در دسترس نیست. %d ثانیه دیگر دوباره تلاش کنید. طرح‌های نصب‌شده همچنان در دسترس هستند."
+msgid "Template downloads unavailable. Try again in %d seconds. Installed designs still work."
+msgstr "دانلود قالب‌ها در دسترس نیست. %d ثانیه دیگر دوباره تلاش کنید. طرح‌های نصب‌شده همچنان کار می‌کنند."
 
 #: src/License/TemplateDownloads.php:112
-msgid "The template server could not be reached. Try again later. Installed designs are still available."
-msgstr "اتصال به سرور قالب‌ها برقرار نشد. بعداً دوباره تلاش کنید. طرح‌های نصب‌شده همچنان در دسترس هستند."
+msgid "Template server unreachable. Try again later. Installed designs still work."
+msgstr "اتصال به سرور قالب‌ها برقرار نشد. بعداً دوباره تلاش کنید. طرح‌های نصب‌شده همچنان کار می‌کنند."
 
 #: src/License/TemplateDownloads.php:115
 msgid "The template server response is too large."
 msgstr "پاسخ سرور قالب‌ها بیش از حد بزرگ است."
 
 #: src/License/TemplateDownloads.php:126
-msgid "Premium template access is unavailable. Contact the person managing your licence. Installed designs still work."
-msgstr "دسترسی به قالب‌های پریمیوم در دسترس نیست. با فردی که لایسنس شما را مدیریت می‌کند تماس بگیرید. طرح‌های نصب‌شده همچنان کار می‌کنند."
+msgid "Premium templates unavailable. Ask whoever manages your license. Installed designs still work."
+msgstr "قالب‌های پریمیوم در دسترس نیستند. از فردی که لایسنس شما را مدیریت می‌کند بپرسید. طرح‌های نصب‌شده همچنان کار می‌کنند."
 
 #: src/License/TemplateDownloads.php:129
-msgid "Your licence could not be verified. Check Settings → License before downloading premium templates."
-msgstr "لایسنس شما تأیید نشد. پیش از دانلود قالب‌های پریمیوم، تنظیمات ← لایسنس را بررسی کنید."
+msgid "Your license could not be verified. Check Settings → License."
+msgstr "لایسنس شما تأیید نشد. تنظیمات ← لایسنس را بررسی کنید."
 
 #: src/License/TemplateDownloads.php:130
-msgid "Renew your WConvert Pro licence to download new premium templates. Installed designs still work."
-msgstr "برای دانلود قالب‌های پریمیوم جدید، لایسنس WConvert Pro خود را تمدید کنید. طرح‌های نصب‌شده همچنان کار می‌کنند."
+msgid "Renew your license to download new premium templates. Installed designs still work."
+msgstr "برای دانلود قالب‌های پریمیوم جدید، لایسنس خود را تمدید کنید. طرح‌های نصب‌شده همچنان کار می‌کنند."
 
 #: src/License/TemplateDownloads.php:131
-msgid "This licence cannot download premium templates. Check Settings → License or contact support. Installed designs still work."
-msgstr "این لایسنس نمی‌تواند قالب‌های پریمیوم را دانلود کند. تنظیمات ← لایسنس را بررسی کنید یا با پشتیبانی تماس بگیرید. طرح‌های نصب‌شده همچنان کار می‌کنند."
+msgid "This license cannot download premium templates. Check Settings → License or contact support."
+msgstr "این لایسنس نمی‌تواند قالب‌های پریمیوم را دانلود کند. تنظیمات ← لایسنس را بررسی کنید یا با پشتیبانی تماس بگیرید."
 
 #: src/License/TemplateDownloads.php:132
 msgid "Activate this website in Settings → License before downloading premium templates."
@@ -7908,8 +7908,8 @@ msgid "Template access expired. Preview the design again."
 msgstr "دسترسی به قالب منقضی شده است. طرح را دوباره پیش‌نمایش کنید."
 
 #: src/License/TemplateDownloads.php:134
-msgid "This template file is no longer available. Refresh the library and try again."
-msgstr "این فایل قالب دیگر در دسترس نیست. کتابخانه را تازه‌سازی کنید و دوباره تلاش کنید."
+msgid "This template file is gone. Refresh the library and try again."
+msgstr "این فایل قالب دیگر وجود ندارد. کتابخانه را تازه‌سازی کنید و دوباره تلاش کنید."
 
 #: public/admin/chunk-BF-hlmvm.js:1
 msgid "Dismiss reminder"
@@ -7956,25 +7956,25 @@ msgstr "برای این کمپین خاموش است"
 msgid "Loading site analytics…"
 msgstr "در حال بارگذاری آمار سایت…"
 
-#: public/admin/chunk-BgRAD_F8.js:1
-msgid "Published preferences apply to enabled external analytics and campaign sales, subject to consent."
-msgstr "ترجیحات منتشرشده، در صورت وجود رضایت، روی آمار خارجی فعال و فروش کمپین اعمال می‌شوند."
+#: public/admin/chunk-ZDgJvnwt.js:1
+msgid "Once published, applies to enabled analytics and campaign sales, subject to consent."
+msgstr "پس از انتشار، در صورت وجود رضایت، روی آمار فعال و فروش کمپین اعمال می‌شود."
 
 #: public/admin/chunk-BgRAD_F8.js:1
 msgid "External analytics is off. Campaign sales has a separate site setting."
 msgstr "آمار خارجی خاموش است. فروش کمپین تنظیم جداگانه‌ای در سایت دارد."
 
-#: public/admin/chunk-BgRAD_F8.js:1
-msgid "Off excludes this campaign from external analytics and sales attribution. Its own results still count."
-msgstr "با خاموش کردن، این کمپین از آمار خارجی و انتساب فروش کنار گذاشته می‌شود. نتایج خود کمپین همچنان شمرده می‌شوند."
+#: public/admin/chunk-ZDgJvnwt.js:1
+msgid "Off: no external analytics or sales attribution. Its own results still count."
+msgstr "خاموش: بدون آمار خارجی یا انتساب فروش. نتایج خود کمپین همچنان شمرده می‌شوند."
 
 #: public/admin/chunk-BgRAD_F8.js:1
 msgid "Public analytics label (optional)"
 msgstr "برچسب عمومی آمار (اختیاری)"
 
-#: public/admin/chunk-BgRAD_F8.js:1
-msgid "Sent to your analytics provider, so use no personal information. Leave blank for a neutral label. Save and publish to apply."
-msgstr "این برچسب به سرویس آمار شما ارسال می‌شود، پس از اطلاعات شخصی استفاده نکنید. برای برچسب خنثی، آن را خالی بگذارید. برای اعمال، ذخیره و منتشر کنید."
+#: public/admin/chunk-ZDgJvnwt.js:1
+msgid "Sent to your analytics provider, so use no personal information."
+msgstr "به سرویس آمار شما ارسال می‌شود، پس از اطلاعات شخصی استفاده نکنید."
 
 #: public/admin/chunk-BGu8F0hF.js:1
 msgid "Analytics integrations"
@@ -8061,9 +8061,9 @@ msgstr "ID اندازه‌گیری"
 msgid "About the Measurement ID"
 msgstr "درباره Measurement ID"
 
-#: public/admin/chunk-BGu8F0hF.js:7
-msgid "Use the G- ID of the web stream already installed on this site. WConvert does not install a Google tag."
-msgstr "از ID نوع G- همان جریان وبی استفاده کنید که از قبل روی این سایت نصب شده است. WConvert تگ Google نصب نمی‌کند."
+#: public/admin/chunk-Qsvg6oNu.js:7
+msgid "Use your installed web stream’s G- ID. WConvert installs no Google tag."
+msgstr "از ID نوع G- جریان وب نصب‌شده خود استفاده کنید. WConvert تگ Google نصب نمی‌کند."
 
 #: public/admin/chunk-BGu8F0hF.js:7
 msgid "Uses your installed Plausible script. Custom events count toward Plausible usage."
@@ -8105,9 +8105,9 @@ msgstr "درباره مدیریت رضایت"
 msgid "Requires an initialized WP Consent API integration. Missing or denied permission withholds events; earlier events are not replayed."
 msgstr "به یکپارچه‌سازی راه‌اندازی‌شده WP Consent API نیاز دارد. اگر اجازه‌ای وجود نداشته باشد یا رد شود، رویدادها ارسال نمی‌شوند و رویدادهای قبلی هم دوباره ارسال نخواهند شد."
 
-#: public/admin/chunk-BGu8F0hF.js:7
-msgid "WConvert sends events without checking consent in this mode. Choose this only when your existing Plausible setup matches your site’s collection policy."
-msgstr "در این حالت، WConvert رویدادها را بدون بررسی رضایت ارسال می‌کند. این گزینه را فقط زمانی انتخاب کنید که تنظیمات فعلی Plausible شما با سیاست جمع‌آوری داده‌های سایتتان سازگار باشد."
+#: public/admin/chunk-Qsvg6oNu.js:7
+msgid "Choose this only when your Plausible setup matches your site’s collection policy."
+msgstr "این گزینه را فقط زمانی انتخاب کنید که تنظیمات Plausible شما با سیاست جمع‌آوری داده‌های سایتتان سازگار باشد."
 
 #: public/admin/chunk-BGu8F0hF.js:7
 msgid "Choose this only if consent is already configured in your tag or container. WConvert cannot verify permission in this mode and never grants consent. Advanced Google Consent Mode may send cookieless requests."
@@ -8188,9 +8188,9 @@ msgstr "ذخیره یکپارچه‌سازی آمار"
 msgid "Test analytics"
 msgstr "آزمایش آمار"
 
-#: public/admin/chunk-BGu8F0hF.js:9
-msgid "Inspect a page with a campaign. Events stay local until you send a test."
-msgstr "برگه‌ای را که کمپین دارد بررسی کنید. رویدادها تا زمانی که آزمایشی نفرستید، محلی می‌مانند."
+#: public/admin/chunk-Qsvg6oNu.js:9
+msgid "Choose a campaign page. Events stay local until you send a test."
+msgstr "برگه‌ای را که کمپین دارد انتخاب کنید. رویدادها تا زمانی که آزمایشی نفرستید، محلی می‌مانند."
 
 #: public/admin/chunk-BGu8F0hF.js:9
 msgid "Website page URL"
@@ -8200,9 +8200,9 @@ msgstr "URL برگه سایت"
 msgid "Tests go to the site configured by your Plausible script. Use a dedicated test site, clear page caches, and verify WConvert Test in Plausible."
 msgstr "آزمایش‌ها به سایتی ارسال می‌شوند که در اسکریپت Plausible شما پیکربندی شده است. از یک سایت آزمایشی اختصاصی استفاده کنید، کش برگه‌ها را پاک کنید و WConvert Test را در Plausible بررسی کنید."
 
-#: public/admin/chunk-BGu8F0hF.js:9
-msgid "Use a test property and clear any page/CDN cache first. Verify receipt in GA DebugView."
-msgstr "ابتدا از یک property آزمایشی استفاده کنید و کش برگه و شبکه توزیع محتوا را پاک کنید. دریافت را در این ابزار بررسی کنید: GA DebugView."
+#: public/admin/chunk-Qsvg6oNu.js:9
+msgid "Use a test property, clear page/CDN caches, then check GA DebugView."
+msgstr "از یک property آزمایشی استفاده کنید، کش برگه و شبکه توزیع محتوا را پاک کنید و سپس GA DebugView را بررسی کنید."
 
 #: public/admin/chunk-BGu8F0hF.js:9
 #: public/admin/chunk-CpN2Muhi.js:1
@@ -8314,9 +8314,9 @@ msgstr "ابتدا این کمپین را منتشر کنید. قفل فقط ک�
 msgid "Lock the rest of an article"
 msgstr "قفل کردن بقیه مقاله"
 
-#: public/admin/chunk-BWGiP_XN.js:1
-msgid "Add a “WConvert lock from here” divider to the article and choose this campaign. Everything below it is covered until the visitor signs up. Use one lock per page."
-msgstr "یک جداکننده «قفل WConvert از اینجا» به مقاله اضافه کنید و این کمپین را انتخاب کنید. همه چیز پس از آن تا زمان ثبت‌نام بازدیدکننده پوشیده می‌ماند. در هر برگه فقط از یک قفل استفاده کنید."
+#: public/admin/chunk-T6oz5qYD.js:1
+msgid "Add the “WConvert lock from here” divider, then choose this campaign."
+msgstr "جداکننده «قفل WConvert از اینجا» را اضافه کنید و سپس این کمپین را انتخاب کنید."
 
 #: public/admin/chunk-BWGiP_XN.js:1
 msgid "Lock one section"
@@ -8330,9 +8330,9 @@ msgstr "در عوض، فقط همان بخش را داخل بلوک «قفل م�
 msgid "Classic editor shortcode"
 msgstr "کد کوتاه ویرایشگر کلاسیک"
 
-#: public/admin/chunk-BWGiP_XN.js:1
-msgid "Replace the ellipsis with your content. Keep both shortcode tags around the complete section."
-msgstr "به‌جای سه‌نقطه، محتوای خود را قرار دهید. هر دو تگ کد کوتاه را در دو طرف کل بخش نگه دارید."
+#: public/admin/chunk-T6oz5qYD.js:1
+msgid "Replace the ellipsis with the section. Keep both shortcode tags around it."
+msgstr "به‌جای سه‌نقطه، بخش مورد نظر را قرار دهید. هر دو تگ کد کوتاه را در دو طرف آن نگه دارید."
 
 #: public/admin/chunk-BWGiP_XN.js:1
 msgid "Visitors who sign up keep access for 30 days in this browser."
@@ -8383,13 +8383,13 @@ msgstr "به قفل محتوا تغییر کند؟"
 msgid "Switch to automatic placement?"
 msgstr "به جایگذاری خودکار تغییر کند؟"
 
-#: public/admin/chunk-BWGiP_XN.js:1
-msgid "A content lock covers the article as the page loads, so it has to open right away. This also changes:"
-msgstr "قفل محتوا هنگام بارگذاری برگه روی مقاله قرار می‌گیرد، بنابراین باید فوراً باز شود. این موارد هم تغییر می‌کنند:"
+#: public/admin/chunk-T6oz5qYD.js:1
+msgid "It must open right away to cover the article. Also changes:"
+msgstr "باید فوراً باز شود تا روی مقاله قرار بگیرد. این موارد هم تغییر می‌کنند:"
 
-#: public/admin/chunk-BWGiP_XN.js:1
-msgid "Automatic placement adds the form to the page as it loads, so it has to open right away. This also changes:"
-msgstr "جایگذاری خودکار هنگام بارگذاری برگه فرم را به آن اضافه می‌کند، بنابراین باید فوراً باز شود. این موارد هم تغییر می‌کنند:"
+#: public/admin/chunk-T6oz5qYD.js:1
+msgid "It loads with the page, so it opens right away. Also changes:"
+msgstr "همراه برگه بارگذاری می‌شود، بنابراین فوراً باز می‌شود. این موارد هم تغییر می‌کنند:"
 
 #: public/admin/chunk-BWGiP_XN.js:1
 msgid "becomes"
@@ -8449,9 +8449,9 @@ msgstr "موقعیت در محتوا"
 msgid "Enter a whole paragraph number from 1 to 100."
 msgstr "شماره پاراگراف را با یک عدد صحیح از ۱ تا ۱۰۰ وارد کنید."
 
-#: public/admin/chunk-BWGiP_XN.js:3
-msgid "Classic WooCommerce themes only. For a block theme, choose Manual and add the block to the product template."
-msgstr "فقط برای پوسته‌های کلاسیک WooCommerce است. برای پوسته بلوکی، «دستی» را انتخاب کنید و بلوک را به قالب محصول اضافه کنید."
+#: public/admin/chunk-T6oz5qYD.js:3
+msgid "Classic themes only. For block themes, use Manual in the product template."
+msgstr "فقط پوسته‌های کلاسیک. برای پوسته‌های بلوکی، از «دستی» در قالب محصول استفاده کنید."
 
 #: public/admin/chunk-BWGiP_XN.js:3
 msgid "If there are fewer paragraphs"
@@ -8469,9 +8469,9 @@ msgstr "در آن برگه نمایش داده نشود"
 msgid "Priority"
 msgstr "اولویت"
 
-#: public/admin/chunk-BWGiP_XN.js:3
-msgid "From 0 to 100. One automatic campaign shows per page, the highest priority first. A campaign placed by hand always comes first."
-msgstr "از ۰ تا ۱۰۰. در هر برگه یک کمپین خودکار نمایش داده می‌شود و اولویت بالاتر مقدم است. کمپینی که دستی جایگذاری شده باشد همیشه اول می‌آید."
+#: public/admin/chunk-T6oz5qYD.js:3
+msgid "From 0 to 100. The highest shows."
+msgstr "از ۰ تا ۱۰۰. بالاترین نمایش داده می‌شود."
 
 #: public/admin/chunk-BWGiP_XN.js:3
 msgid "Using a page builder or a custom layout? Choose Manual instead."
@@ -8484,9 +8484,9 @@ msgid "%1$s stays valid until %2$s, after this campaign ends on %3$s."
 msgstr "%1$s تا %2$s معتبر می‌ماند، یعنی حتی پس از پایان این کمپین در %3$s."
 
 #. translators: 1: a coupon code, 2: the date and time the campaign ends.
-#: public/admin/chunk-CaxBGOhe.js:5
+#: public/admin/chunk-CyWoaQUL.js:5
 #, js-format
-msgid "%1$s never expires, so it keeps working after this campaign ends on %2$s."
+msgid "%1$s never expires, so it works after this campaign ends on %2$s."
 msgstr "%1$s هرگز منقضی نمی‌شود، بنابراین پس از پایان این کمپین در %2$s هم کار می‌کند."
 
 #: public/admin/chunk-CaxBGOhe.js:5
@@ -8494,10 +8494,10 @@ msgid "Apply in WooCommerce"
 msgstr "اعمال در WooCommerce"
 
 #. translators: 1: the coupon code the link applies, 2: the code the block shows.
-#: public/admin/chunk-CaxBGOhe.js:7
+#: public/admin/chunk-CyWoaQUL.js:7
 #, js-format
-msgid "This link applies %1$s, but the block shows %2$s. Press Apply in WooCommerce to match them."
-msgstr "این پیوند %1$s را اعمال می‌کند، اما بلوک %2$s را نشان می‌دهد. برای یکسان شدن آن‌ها، «اعمال در WooCommerce» را بزنید."
+msgid "This link applies %1$s, not the block’s %2$s. Press Apply in WooCommerce."
+msgstr "این پیوند %1$s را اعمال می‌کند، نه %2$s بلوک را. «اعمال در WooCommerce» را بزنید."
 
 #: public/admin/chunk-CpN2Muhi.js:1
 msgid "Your own code"
@@ -8527,9 +8527,9 @@ msgstr "Webhooks by Zapier → Catch Hook. URL نمایش‌داده‌شده ر
 msgid "In Make, add Webhooks → Custom webhook and copy its address."
 msgstr "در Make، گزینه Webhooks → Custom webhook را اضافه کنید و آدرس آن را کپی کنید."
 
-#: public/admin/chunk-CpN2Muhi.js:1
-msgid "A Webhook node with method POST. Set Respond to Immediately, or a slow workflow is sent again."
-msgstr "یک Webhook node با روش POST. گزینه Respond را روی Immediately بگذارید، وگرنه درخواست گردش‌کارهای کند دوباره ارسال می‌شود."
+#: public/admin/chunk-BfQ6l1Gf.js:1
+msgid "POST Webhook node. Set Respond to Immediately, or slow workflows are resent."
+msgstr "یک Webhook node با روش POST. گزینه Respond را روی Immediately بگذارید، وگرنه گردش‌کارهای کند دوباره ارسال می‌شوند."
 
 #: public/admin/chunk-CpN2Muhi.js:1
 msgid "Any address that accepts a JSON POST."
@@ -8594,9 +8594,9 @@ msgstr "نحوه تأیید"
 msgid "Stored; enter a replacement"
 msgstr "ذخیره شده؛ مقدار جایگزین را وارد کنید"
 
-#: public/admin/chunk-CpN2Muhi.js:11
-msgid "http:// isn’t encrypted, so your header and every lead travel readable. Use https://."
-msgstr "http:// رمزگذاری نشده است، پس هدر شما و اطلاعات همه مشتریان بالقوه به‌صورت خوانا منتقل می‌شوند. از https:// استفاده کنید."
+#: public/admin/chunk-BfQ6l1Gf.js:11
+msgid "http:// isn’t encrypted: your header and every lead travel readable. Use https://."
+msgstr "http:// رمزگذاری نشده است: هدر شما و اطلاعات همه مشتریان بالقوه به‌صورت خوانا منتقل می‌شوند. از https:// استفاده کنید."
 
 #: public/admin/chunk-CpN2Muhi.js:11
 msgid "API key (optional)"
@@ -8632,9 +8632,9 @@ msgstr "ذخیره شده است. فقط هنگام ساخت نمایش داده
 msgid "Regenerate"
 msgstr "تولید دوباره"
 
-#: public/admin/chunk-CpN2Muhi.js:13
-msgid "Regenerate now? The next request is signed with the new secret, and your receiver refuses it until you update it there."
-msgstr "همین حالا دوباره تولید شود؟ درخواست بعدی با رمز جدید امضا می‌شود و تا زمانی که رمز را در گیرنده به‌روزرسانی نکنید، گیرنده آن را رد می‌کند."
+#: public/admin/chunk-BfQ6l1Gf.js:13
+msgid "Your receiver refuses requests until it has the new secret. Regenerate now?"
+msgstr "گیرنده شما تا زمانی که رمز جدید را نداشته باشد درخواست‌ها را رد می‌کند. همین حالا دوباره تولید شود؟"
 
 #: public/admin/chunk-CpN2Muhi.js:13
 msgid "Keep current"
@@ -8754,14 +8754,14 @@ msgid "Set in wp-config.php"
 msgstr "تنظیم‌شده در wp-config.php"
 
 #. translators: %s: the paid product's name, e.g. “WConvert Pro”.
-#: public/admin/chunk-CYscD2td.js:7
+#: public/admin/chunk-B1nSWW0O.js:7
 #, js-format
-msgid "WordPress can’t read the saved key. This usually happens after the site’s security keys change. Updates stopped until you do; %s features keep working."
-msgstr "WordPress نمی‌تواند کلید ذخیره‌شده را بخواند. این معمولاً پس از تغییر کلیدهای امنیتی سایت رخ می‌دهد. تا زمانی که این مشکل را برطرف کنید به‌روزرسانی‌ها متوقف هستند؛ قابلیت‌های %s همچنان کار می‌کنند."
+msgid "WordPress can’t read the saved key. Updates stopped; %s features keep working."
+msgstr "WordPress نمی‌تواند کلید ذخیره‌شده را بخواند. به‌روزرسانی‌ها متوقف شده‌اند؛ قابلیت‌های %s همچنان کار می‌کنند."
 
-#: public/admin/chunk-CYscD2td.js:9
-msgid "Updates are off on this copy. Staging and local copies don’t use a site, and the live site isn’t touched."
-msgstr "به‌روزرسانی‌ها در این نسخه خاموش هستند. نسخه‌های آزمایشی و محلی سهمی از سایت‌های لایسنس نمی‌گیرند و به سایت اصلی دست زده نمی‌شود."
+#: public/admin/chunk-B1nSWW0O.js:9
+msgid "Updates are off. Copies use no site; the live site stays untouched."
+msgstr "به‌روزرسانی‌ها خاموش هستند. نسخه‌ها سهمی از سایت‌های لایسنس نمی‌گیرند و به سایت اصلی دست زده نمی‌شود."
 
 #. translators: %s: the domain the license is still activated on, e.g. “shop.example.com”.
 #: public/admin/chunk-CYscD2td.js:13
@@ -8769,9 +8769,9 @@ msgstr "به‌روزرسانی‌ها در این نسخه خاموش هستن�
 msgid "The license is still on %s, so updates are off here."
 msgstr "لایسنس هنوز روی %s است، بنابراین به‌روزرسانی‌ها در اینجا خاموش هستند."
 
-#: public/admin/chunk-CYscD2td.js:13
-msgid "Your license doesn’t list this site any more, so updates are off here. Activate it here to turn them back on."
-msgstr "لایسنس شما دیگر این سایت را در فهرست خود ندارد، بنابراین به‌روزرسانی‌ها در اینجا خاموش هستند. برای روشن کردن دوباره آن‌ها، لایسنس را در اینجا فعال کنید."
+#: public/admin/chunk-B1nSWW0O.js:13
+msgid "Updates are off here. Activate this site to turn them back on."
+msgstr "به‌روزرسانی‌ها در اینجا خاموش هستند. برای روشن کردن دوباره آن‌ها، این سایت را فعال کنید."
 
 #: public/admin/chunk-CYscD2td.js:13
 msgid "Updates and support stopped."
@@ -8972,9 +8972,9 @@ msgstr "این کلید برای محصول دیگری است."
 msgid "This license expired."
 msgstr "این لایسنس منقضی شده است."
 
-#: public/admin/chunk-CYscD2td.js:51
-msgid "All sites on this license are in use. Free one in your account, then try again."
-msgstr "همه سایت‌های این لایسنس در حال استفاده هستند. یکی را در حساب خود آزاد کنید و دوباره تلاش کنید."
+#: public/admin/chunk-B1nSWW0O.js:51
+msgid "All sites on this license are in use. Free one first."
+msgstr "همه سایت‌های این لایسنس در حال استفاده هستند. ابتدا یکی را آزاد کنید."
 
 #: public/admin/chunk-CYscD2td.js:51
 msgid "This license was turned off."
@@ -8989,18 +8989,18 @@ msgstr[0] "تلاش‌ها بیش از حد بوده است. %s دقیقه دی�
 msgstr[1] "تلاش‌ها بیش از حد بوده است. %s دقیقه دیگر دوباره تلاش کنید."
 
 #. translators: %s: the license server's address, e.g. “my.wconvert.io”.
-#: public/admin/chunk-CYscD2td.js:55
+#: public/admin/chunk-B1nSWW0O.js:55
 #, js-format
-msgid "Could not reach the license server. Some hosts block outgoing connections. Ask yours to allow %s."
-msgstr "دسترسی به سرور لایسنس ممکن نشد. برخی میزبان‌ها اتصال‌های خروجی را مسدود می‌کنند. از میزبان خود بخواهید %s را مجاز کند."
+msgid "Could not reach the license server. Ask your host to allow %s."
+msgstr "دسترسی به سرور لایسنس ممکن نشد. از میزبان خود بخواهید %s را مجاز کند."
 
 #: public/admin/chunk-CYscD2td.js:55
 msgid "The license key is set in wp-config.php. Change it there."
 msgstr "کلید لایسنس در این فایل تنظیم شده است: wp-config.php. آن را همان‌جا تغییر دهید."
 
-#: public/admin/chunk-CYscD2td.js:55
-msgid "Another administrator is signing in to the account. Try again when they’re done."
-msgstr "مدیر دیگری در حال ورود به حساب است. پس از پایان کار او دوباره تلاش کنید."
+#: public/admin/chunk-B1nSWW0O.js:55
+msgid "Another administrator is signing in to the account. Try again afterward."
+msgstr "مدیر دیگری در حال ورود به حساب است. پس از آن دوباره تلاش کنید."
 
 #: public/admin/chunk-CYscD2td.js:55
 msgid "That license isn’t on this account any more."
@@ -9092,9 +9092,9 @@ msgstr "%1$s از %2$s استفاده شده"
 msgid "No free site"
 msgstr "بدون ظرفیت خالی"
 
-#: public/admin/chunk-CYscD2td.js:73
-msgid "Every license on this account is in use. Free a site in your account, then come back."
-msgstr "همه لایسنس‌های این حساب در حال استفاده هستند. یک سایت را در حساب خود آزاد کنید و سپس برگردید."
+#: public/admin/chunk-B1nSWW0O.js:73
+msgid "Every license on this account is in use. Free a site first."
+msgstr "همه لایسنس‌های این حساب در حال استفاده هستند. ابتدا یک سایت را آزاد کنید."
 
 #: public/admin/chunk-CYscD2td.js:73
 #: public/admin/chunk-CYscD2td.js:83
@@ -9218,9 +9218,9 @@ msgid "until %s"
 msgstr "تا %s"
 
 #. translators: 1: the newest WConvert Pro version, e.g. “2.4.0”, 2: the version this site has.
-#: public/admin/chunk-CYscD2td.js:89
+#: public/admin/chunk-B1nSWW0O.js:89
 #, js-format
-msgid "Version %1$s is out. This site stays on %2$s until updates are back."
+msgid "Version %1$s is out. This site stays on %2$s until updates return."
 msgstr "نسخه %1$s منتشر شده است. این سایت تا بازگشت به‌روزرسانی‌ها روی نسخه %2$s می‌ماند."
 
 #. translators: %s: the WConvert Pro version this site has, e.g. “2.3.1”.
@@ -9431,8 +9431,8 @@ msgstr "اکنون بررسی لایسنس ممکن نشد. %s"
 msgid "The new key is active"
 msgstr "کلید جدید فعال است"
 
-#: public/admin/chunk-CYscD2td.js:121
-msgid "The old key’s site could not be freed. Free it from your account."
+#: public/admin/chunk-B1nSWW0O.js:121
+msgid "Could not free the old key’s site. Free it from your account."
 msgstr "سایت کلید قدیمی آزاد نشد. آن را از حساب خود آزاد کنید."
 
 #. translators: %s: how many sites would use the license, counting this one.
@@ -9514,10 +9514,10 @@ msgid "Remove %s?"
 msgstr "%s حذف شود؟"
 
 #. translators: 1: a site's domain on the license, e.g. “example.com”. 2: the paid product's name, e.g. “WConvert Pro”.
-#: public/admin/chunk-CYscD2td.js:145
+#: public/admin/chunk-B1nSWW0O.js:145
 #, js-format
-msgid "Frees one site on your license. %1$s stops getting updates; its %2$s features keep working."
-msgstr "یک سایت را در لایسنس شما آزاد می‌کند. %1$s دیگر به‌روزرسانی دریافت نمی‌کند؛ قابلیت‌های %2$s آن همچنان کار می‌کنند."
+msgid "Frees one site. %1$s stops getting updates; its %2$s features keep working."
+msgstr "یک سایت را آزاد می‌کند. %1$s دیگر به‌روزرسانی دریافت نمی‌کند؛ قابلیت‌های %2$s آن همچنان کار می‌کنند."
 
 #. translators: %s: a site's domain on the license, e.g. “example.com”.
 #: public/admin/chunk-CYscD2td.js:147
@@ -9539,9 +9539,9 @@ msgstr "یک سایت را در لایسنس شما آزاد می‌کند. قا
 msgid "Removed from this site"
 msgstr "از این سایت حذف شد"
 
-#: public/admin/chunk-CYscD2td.js:149
-msgid "The license server could not be reached, so the site may still count. Free it from your account."
-msgstr "دسترسی به سرور لایسنس ممکن نشد، بنابراین ممکن است این سایت هنوز شمرده شود. آن را از حساب خود آزاد کنید."
+#: public/admin/chunk-B1nSWW0O.js:149
+msgid "License server unreachable: site may still count. Free it from your account."
+msgstr "دسترسی به سرور لایسنس ممکن نشد: ممکن است این سایت هنوز شمرده شود. آن را از حساب خود آزاد کنید."
 
 #: public/admin/chunk-CYscD2td.js:149
 msgid "One site on your license is free."
@@ -9556,21 +9556,21 @@ msgstr "قوانین فهرست‌شده را یکی‌یکی ویرایش کن�
 msgid "Keep at least two choices. Add another choice before removing this one."
 msgstr "دست‌کم دو گزینه را نگه دارید. پیش از حذف این گزینه، گزینه دیگری اضافه کنید."
 
-#: public/admin/chunk-VCPpXaIF.js:1
-msgid "Some rules combine this answer with other choices or comparisons. Edit those rules below first so other visitors keep the intended behavior."
-msgstr "برخی قوانین این پاسخ را با گزینه‌ها یا مقایسه‌های دیگر ترکیب کرده‌اند. ابتدا آن قوانین را در پایین ویرایش کنید تا رفتار مورد نظر برای سایر بازدیدکنندگان حفظ شود."
+#: public/admin/chunk-p9uJ7s4t.js:1
+msgid "Some rules combine this answer with others. Edit those rules first."
+msgstr "برخی قوانین این پاسخ را با موارد دیگر ترکیب کرده‌اند. ابتدا آن قوانین را ویرایش کنید."
 
-#: public/admin/chunk-VCPpXaIF.js:1
-msgid "A follow-up goes different ways. Choose where its line goes before retiring this answer."
-msgstr "یک پیگیری به مسیرهای مختلف می‌رود. پیش از کنار گذاشتن این پاسخ، مشخص کنید خط آن به کجا برود."
+#: public/admin/chunk-p9uJ7s4t.js:1
+msgid "A follow-up goes different ways. Choose where its line goes first."
+msgstr "یک پیگیری به مسیرهای مختلف می‌رود. ابتدا مشخص کنید خط آن به کجا برود."
 
 #: public/admin/chunk-VCPpXaIF.js:1
 msgid "Review the affected follow-up before removing it."
 msgstr "پیش از حذف، پیگیری مربوطه را بررسی کنید."
 
-#: public/admin/chunk-VCPpXaIF.js:1
-msgid "A screen no line reaches needs somewhere to go. Check its lines first."
-msgstr "مرحله‌ای که هیچ خطی به آن نمی‌رسد باید جایی برای رفتن داشته باشد. ابتدا خط‌های آن را بررسی کنید."
+#: public/admin/chunk-p9uJ7s4t.js:1
+msgid "A screen no line reaches needs somewhere to go. Check its lines."
+msgstr "مرحله‌ای که هیچ خطی به آن نمی‌رسد باید جایی برای رفتن داشته باشد. خط‌های آن را بررسی کنید."
 
 #: public/admin/chunk-VCPpXaIF.js:1
 #: public/admin/chunk-VCPpXaIF.js:15
@@ -9796,9 +9796,9 @@ msgstr "ابتدا یک دسته‌بندی انتخاب کنید."
 msgid "Add attribute filter"
 msgstr "افزودن فیلتر ویژگی"
 
-#: public/admin/chunk-VCPpXaIF.js:13
-msgid "Uses global WooCommerce attributes. Shoppers choose size or other options on the product page."
-msgstr "از ویژگی‌های سراسری WooCommerce استفاده می‌کند. خریداران اندازه یا گزینه‌های دیگر را در برگه محصول انتخاب می‌کنند."
+#: public/admin/chunk-p9uJ7s4t.js:13
+msgid "Uses global WooCommerce attributes. Shoppers choose options on the product page."
+msgstr "از ویژگی‌های سراسری WooCommerce استفاده می‌کند. خریداران گزینه‌ها را در برگه محصول انتخاب می‌کنند."
 
 #: public/admin/chunk-VCPpXaIF.js:13
 msgid "Use each attribute only once."
@@ -9987,9 +9987,9 @@ msgstr "در غیر این صورت، این مرحله رد می‌شود."
 msgid "How answer conditions work"
 msgstr "شرط‌های پاسخ چگونه کار می‌کنند"
 
-#: public/admin/chunk-VCPpXaIF.js:15
-msgid "A skipped or unanswered question never matches, including “is not” and “does not include”. Only answered questions are compared."
-msgstr "پرسشی که رد شده یا بی‌پاسخ مانده هرگز منطبق نمی‌شود، حتی با «نیست» و «شامل نمی‌شود». فقط پرسش‌های پاسخ‌داده‌شده مقایسه می‌شوند."
+#: public/admin/chunk-p9uJ7s4t.js:15
+msgid "Unanswered questions never match, even “is not” or “does not include”."
+msgstr "پرسش‌های بی‌پاسخ هرگز منطبق نمی‌شوند، حتی با «برابر نیست با» یا «شامل نمی‌شود»."
 
 #: public/admin/chunk-VCPpXaIF.js:15
 msgid "Skipped visitors go on to the following screen without checking these lines."
@@ -10049,10 +10049,10 @@ msgstr "حذف خط"
 msgid "Send some answers to a different screen"
 msgstr "ارسال برخی پاسخ‌ها به مرحله‌ای دیگر"
 
-#: public/admin/chunk-VCPpXaIF.js:17
-#: public/admin/chunk-VCPpXaIF.js:101
-msgid "Add a choice question before this screen to send answers to different screens."
-msgstr "برای ارسال پاسخ‌ها به مرحله‌های مختلف، پیش از این مرحله یک پرسش گزینه‌ای اضافه کنید."
+#: public/admin/chunk-p9uJ7s4t.js:17
+#: public/admin/chunk-p9uJ7s4t.js:101
+msgid "Add a choice question before this screen to send answers elsewhere."
+msgstr "برای ارسال پاسخ‌ها به جای دیگر، پیش از این مرحله یک پرسش گزینه‌ای اضافه کنید."
 
 #. translators: %s: screen names.
 #: public/admin/chunk-VCPpXaIF.js:19
@@ -10068,10 +10068,10 @@ msgid "Check this change"
 msgstr "بررسی این تغییر"
 
 #. translators: %s: a comma-separated list of screen names, e.g. “Welcome, Results”.
-#: public/admin/chunk-VCPpXaIF.js:21
+#: public/admin/chunk-p9uJ7s4t.js:21
 #, js-format
-msgid "These screens would become unreachable: %s. They stay in the draft, but visitors cannot reach or submit from them. You can Undo after applying."
-msgstr "این مرحله‌ها دیگر قابل دسترسی نخواهند بود: %s. آن‌ها در پیش‌نویس می‌مانند، اما بازدیدکنندگان نمی‌توانند به آن‌ها برسند یا از آن‌ها فرمی ثبت کنند. پس از اعمال تغییر می‌توانید با «برگرداندن» آن را لغو کنید."
+msgid "No line would reach %s. They stay in the draft, unseen."
+msgstr "هیچ خطی به %s نمی‌رسد. آن‌ها در پیش‌نویس می‌مانند، اما دیده نمی‌شوند."
 
 #: public/admin/chunk-VCPpXaIF.js:21
 #: public/admin/chunk-VCPpXaIF.js:105
@@ -10117,9 +10117,9 @@ msgstr "پرسش‌های این مرحله"
 msgid "Answer type"
 msgstr "نوع پاسخ"
 
-#: public/admin/chunk-VCPpXaIF.js:27
-msgid "Changing it asks you to review the rules that use these answers. Renaming a choice keeps its lines."
-msgstr "با تغییر آن، از شما خواسته می‌شود قوانینی را که از این پاسخ‌ها استفاده می‌کنند بررسی کنید. تغییر نام یک گزینه، خط‌های آن را حفظ می‌کند."
+#: public/admin/chunk-p9uJ7s4t.js:27
+msgid "Changing it means reviewing its rules. Renaming a choice keeps its lines."
+msgstr "تغییر آن یعنی بررسی قوانینش. تغییر نام یک گزینه، خط‌های آن را حفظ می‌کند."
 
 #: public/admin/chunk-VCPpXaIF.js:27
 msgid "First option"
@@ -10137,17 +10137,17 @@ msgstr "بررسی تغییر نوع پاسخ"
 msgid "Review the affected conditions"
 msgstr "بررسی شرط‌های تحت تأثیر"
 
-#: public/admin/chunk-VCPpXaIF.js:27
-msgid "Short answers cannot keep rules based on selected choices. Edit the rules below first, then change the answer type."
-msgstr "پاسخ‌های کوتاه نمی‌توانند قوانین مبتنی بر گزینه‌های انتخاب‌شده را نگه دارند. ابتدا قوانین زیر را ویرایش کنید و سپس نوع پاسخ را تغییر دهید."
+#: public/admin/chunk-p9uJ7s4t.js:27
+msgid "Short answers cannot keep choice rules. Edit the rules below first."
+msgstr "پاسخ‌های کوتاه نمی‌توانند قوانین مبتنی بر گزینه را نگه دارند. ابتدا قوانین زیر را ویرایش کنید."
 
-#: public/admin/chunk-VCPpXaIF.js:27
-msgid "Choice labels and lines will stay. Condition operators will be updated. Choosing several answers can match several rules; the top-to-bottom order still applies to answer lines and results. Try the form after this change."
-msgstr "برچسب گزینه‌ها و خط‌ها باقی می‌مانند. عملگرهای شرط به‌روزرسانی می‌شوند. انتخاب چند پاسخ می‌تواند با چند قانون منطبق شود؛ ترتیب بالا به پایین همچنان برای خط‌های پاسخ و نتایج اعمال می‌شود. پس از این تغییر، فرم را امتحان کنید."
+#: public/admin/chunk-p9uJ7s4t.js:27
+msgid "Choices and lines stay. Visitors can match several rules. Try the form."
+msgstr "گزینه‌ها و خط‌ها باقی می‌مانند. بازدیدکنندگان می‌توانند با چند قانون منطبق شوند. فرم را امتحان کنید."
 
-#: public/admin/chunk-VCPpXaIF.js:27
-msgid "Some conditions compare several choices at once. Edit those conditions to use one choice each before switching to Choose one."
-msgstr "برخی شرط‌ها چند گزینه را هم‌زمان مقایسه می‌کنند. پیش از تغییر به «انتخاب یک گزینه»، آن شرط‌ها را طوری ویرایش کنید که هر کدام فقط از یک گزینه استفاده کنند."
+#: public/admin/chunk-p9uJ7s4t.js:27
+msgid "Some conditions compare several choices. Edit them to use one each first."
+msgstr "برخی شرط‌ها چند گزینه را مقایسه می‌کنند. ابتدا آن‌ها را طوری ویرایش کنید که هر کدام فقط از یک گزینه استفاده کنند."
 
 #: public/admin/chunk-VCPpXaIF.js:27
 msgid "Apply answer type change"
@@ -10221,21 +10221,21 @@ msgstr "اکنون هیچ قانونی از «%s» استفاده نمی‌کن�
 msgid "This answer"
 msgstr "این پاسخ"
 
-#: public/admin/chunk-VCPpXaIF.js:39
-msgid "Review the rules below. Replace this answer with another choice, or stop offering it and review what will be removed."
-msgstr "قوانین زیر را بررسی کنید. این پاسخ را با گزینه دیگری جایگزین کنید، یا ارائه آن را متوقف کنید و مواردی را که حذف می‌شوند بررسی کنید."
+#: public/admin/chunk-p9uJ7s4t.js:39
+msgid "Edit the rules below, replace this answer, or stop offering it."
+msgstr "قوانین زیر را ویرایش کنید، این پاسخ را جایگزین کنید، یا ارائه آن را متوقف کنید."
 
-#: public/admin/chunk-VCPpXaIF.js:39
-msgid "Your rule changes are kept. You can now remove this choice without changing other behavior."
-msgstr "تغییرات قوانین شما حفظ شده است. اکنون می‌توانید این گزینه را بدون تغییر رفتارهای دیگر حذف کنید."
+#: public/admin/chunk-p9uJ7s4t.js:39
+msgid "You can now remove this choice without changing anything else."
+msgstr "اکنون می‌توانید این گزینه را بدون تغییر چیز دیگری حذف کنید."
 
 #: public/admin/chunk-VCPpXaIF.js:39
 msgid "Stop offering this answer…"
 msgstr "توقف ارائه این پاسخ…"
 
-#: public/admin/chunk-VCPpXaIF.js:39
-msgid "Review the matching behavior that will be removed with this choice. Other choices and saved leads stay unchanged."
-msgstr "رفتارهای منطبقی را که همراه این گزینه حذف می‌شوند بررسی کنید. گزینه‌های دیگر و مشتریان بالقوه ذخیره‌شده بدون تغییر می‌مانند."
+#: public/admin/chunk-p9uJ7s4t.js:39
+msgid "Other choices and saved leads stay unchanged."
+msgstr "گزینه‌های دیگر و مشتریان بالقوه ذخیره‌شده بدون تغییر می‌مانند."
 
 #: public/admin/chunk-VCPpXaIF.js:39
 msgid "Also remove"
@@ -10337,9 +10337,9 @@ msgstr "نتایج"
 msgid "How results are chosen"
 msgstr "نتایج چگونه انتخاب می‌شوند"
 
-#: public/admin/chunk-VCPpXaIF.js:43
-msgid "First match wins, top to bottom. All other answers see the last one. Move results to change the order."
-msgstr "اولین مورد منطبق اعمال می‌شود، از بالا به پایین. همه پاسخ‌های دیگر نتیجه آخر را می‌بینند. برای تغییر ترتیب، نتایج را جابه‌جا کنید."
+#: public/admin/chunk-p9uJ7s4t.js:43
+msgid "First match wins, top to bottom. All other answers see the last."
+msgstr "اولین مورد منطبق اعمال می‌شود، از بالا به پایین. همه پاسخ‌های دیگر نتیجه آخر را می‌بینند."
 
 #: public/admin/chunk-VCPpXaIF.js:43
 #: public/admin/chunk-VCPpXaIF.js:61
@@ -10347,9 +10347,9 @@ msgid "Add result"
 msgstr "افزودن نتیجه"
 
 #. translators: 1: a result's heading, 2: another result's heading.
-#: public/admin/chunk-VCPpXaIF.js:45
+#: public/admin/chunk-p9uJ7s4t.js:45
 #, js-format
-msgid "“%1$s” and “%2$s” may match the same answers. The one listed first wins."
+msgid "“%1$s” and “%2$s” may match the same answers. The first listed wins."
 msgstr "«%1$s» و «%2$s» ممکن است با پاسخ‌های یکسانی منطبق شوند. موردی که اول فهرست شده اعمال می‌شود."
 
 #: public/admin/chunk-VCPpXaIF.js:45
@@ -10472,9 +10472,9 @@ msgstr "مشخص کنید چه کسانی این نتیجه را ببینند. �
 msgid "Result heading"
 msgstr "عنوان نتیجه"
 
-#: public/admin/chunk-VCPpXaIF.js:59
-msgid "Checked after your existing results, before all other answers. You can move it afterward."
-msgstr "پس از نتایج موجود و پیش از «همه پاسخ‌های دیگر» بررسی می‌شود. بعداً می‌توانید آن را جابه‌جا کنید."
+#: public/admin/chunk-p9uJ7s4t.js:59
+msgid "Checked after your existing results, before all other answers."
+msgstr "پس از نتایج موجود و پیش از «همه پاسخ‌های دیگر» بررسی می‌شود."
 
 #. translators: %s: an existing result's heading.
 #: public/admin/chunk-VCPpXaIF.js:61
@@ -10545,29 +10545,29 @@ msgstr "پیش از نتیجه و ثبت‌نام، با یک مرحله پرس�
 msgid "Show the signup to everyone on this line before changing result access."
 msgstr "پیش از تغییر دسترسی به نتیجه، ثبت‌نام را به همه بازدیدکنندگان این خط نشان دهید."
 
-#: public/admin/chunk-VCPpXaIF.js:65
-msgid "Place the required email field on the signup screen before changing result access."
-msgstr "پیش از تغییر دسترسی به نتیجه، فیلد الزامی ایمیل را در مرحله ثبت‌نام قرار دهید."
+#: public/admin/chunk-p9uJ7s4t.js:65
+msgid "Put the required email field on the signup screen first."
+msgstr "ابتدا فیلد الزامی ایمیل را در مرحله ثبت‌نام قرار دهید."
 
 #. translators: 1: the screen that comes first, 2: the screen that should follow it; both are screen names.
-#: public/admin/chunk-VCPpXaIF.js:67
+#: public/admin/chunk-p9uJ7s4t.js:67
 #, js-format
-msgid "Send one line for all answers straight from “%1$s” to “%2$s”. Move any answer lines after both screens first."
-msgstr "یک خط برای همه پاسخ‌ها را مستقیم از «%1$s» به «%2$s» بفرستید. ابتدا خط‌های پاسخ را به بعد از هر دو مرحله منتقل کنید."
+msgid "Send one line from “%1$s” to “%2$s”. Move answer lines after both."
+msgstr "یک خط را از «%1$s» به «%2$s» بفرستید. خط‌های پاسخ را به بعد از هر دو منتقل کنید."
 
 #. translators: 1: the screen a line starts from, 2: the screen that line enters, 3: the screen it should go to instead; all are screen names.
-#: public/admin/chunk-VCPpXaIF.js:69
+#: public/admin/chunk-p9uJ7s4t.js:69
 #, js-format
-msgid "The line from “%1$s” enters “%2$s” separately. Send it to “%3$s” first so both screens move together."
-msgstr "خط «%1$s» جداگانه وارد «%2$s» می‌شود. ابتدا آن را به «%3$s» بفرستید تا هر دو مرحله با هم جابه‌جا شوند."
+msgid "The line from “%1$s” enters “%2$s” separately. Send it to “%3$s” first."
+msgstr "خط «%1$s» جداگانه وارد «%2$s» می‌شود. ابتدا آن را به «%3$s» بفرستید."
 
-#: public/admin/chunk-VCPpXaIF.js:69
-msgid "This result uses an answer collected on the signup screen. Move that question to an earlier screen before showing the result first."
-msgstr "این نتیجه از پاسخی استفاده می‌کند که در مرحله ثبت‌نام جمع‌آوری می‌شود. پیش از نمایش نتیجه در ابتدا، آن پرسش را به مرحله‌ای قبل‌تر منتقل کنید."
+#: public/admin/chunk-p9uJ7s4t.js:69
+msgid "This result uses an answer from signup. Move that question earlier."
+msgstr "این نتیجه از پاسخی در مرحله ثبت‌نام استفاده می‌کند. آن پرسش را به مرحله‌ای قبل‌تر منتقل کنید."
 
-#: public/admin/chunk-VCPpXaIF.js:69
-msgid "This result contains a signup reward. Move the reward after the signup before showing the result first."
-msgstr "این نتیجه شامل پاداش ثبت‌نام است. پیش از نمایش نتیجه در ابتدا، پاداش را به بعد از ثبت‌نام منتقل کنید."
+#: public/admin/chunk-p9uJ7s4t.js:69
+msgid "This result contains a signup reward. Move the reward after the signup."
+msgstr "این نتیجه شامل پاداش ثبت‌نام است. پاداش را به بعد از ثبت‌نام منتقل کنید."
 
 #. translators: %s: the first screen's name, e.g. “Welcome”.
 #: public/admin/chunk-VCPpXaIF.js:71
@@ -10613,9 +10613,9 @@ msgstr "همه بازدیدکنندگان این خط."
 msgid "Choose a line after the first screen."
 msgstr "خطی بعد از مرحله اول انتخاب کنید."
 
-#: public/admin/chunk-VCPpXaIF.js:75
-msgid "Ask this question before visitors submit their details so its answer is saved with them."
-msgstr "این پرسش را پیش از آنکه بازدیدکنندگان اطلاعات خود را ثبت کنند بپرسید تا پاسخ آن همراه اطلاعاتشان ذخیره شود."
+#: public/admin/chunk-p9uJ7s4t.js:75
+msgid "Ask this before visitors submit their details, so the answer is saved."
+msgstr "این را پیش از آنکه بازدیدکنندگان اطلاعات خود را ثبت کنند بپرسید تا پاسخ ذخیره شود."
 
 #: public/admin/chunk-VCPpXaIF.js:75
 msgid "Choose a line after a choice question."
@@ -10644,13 +10644,13 @@ msgstr "ثبت‌نام دوم اختیاری برای کمپین‌های فه�
 msgid "Keep one required primary signup before adding an optional second signup."
 msgstr "پیش از افزودن ثبت‌نام دوم اختیاری، یک ثبت‌نام اصلی الزامی را نگه دارید."
 
-#: public/admin/chunk-VCPpXaIF.js:75
-msgid "This campaign already collects that contact channel. Review its existing fields before adding another signup."
-msgstr "این کمپین از قبل این راه تماس را جمع‌آوری می‌کند. پیش از افزودن ثبت‌نام دیگر، فیلدهای موجود آن را بررسی کنید."
+#: public/admin/chunk-p9uJ7s4t.js:75
+msgid "This campaign already collects that contact channel. Review its existing fields first."
+msgstr "این کمپین از قبل این راه تماس را جمع‌آوری می‌کند. ابتدا فیلدهای موجود آن را بررسی کنید."
 
-#: public/admin/chunk-VCPpXaIF.js:75
-msgid "Add a line after the main form first. Visitors must complete that signup before reaching the optional one."
-msgstr "ابتدا خطی بعد از فرم اصلی اضافه کنید. بازدیدکنندگان باید پیش از رسیدن به ثبت‌نام اختیاری، آن ثبت‌نام را کامل کنند."
+#: public/admin/chunk-p9uJ7s4t.js:75
+msgid "First add a line after the main form. This signup goes there."
+msgstr "ابتدا خطی بعد از فرم اصلی اضافه کنید. این ثبت‌نام آنجا قرار می‌گیرد."
 
 #: public/admin/chunk-VCPpXaIF.js:75
 #: public/admin/chunk-VCPpXaIF.js:81
@@ -10782,9 +10782,9 @@ msgstr "هر بازدیدکننده‌ای که روی این خط باشد مر
 msgid "Only visitors whose answer matches see it. Other follow-ups are still asked."
 msgstr "فقط بازدیدکنندگانی که پاسخشان منطبق باشد آن را می‌بینند. پیگیری‌های دیگر همچنان پرسیده می‌شوند."
 
-#: public/admin/chunk-VCPpXaIF.js:81
-msgid "First match wins, top to bottom. All other answers stay on this line."
-msgstr "اولین مورد منطبق اعمال می‌شود، از بالا به پایین. همه پاسخ‌های دیگر روی این خط می‌مانند."
+#: public/admin/chunk-p9uJ7s4t.js:81
+msgid "First match wins. All other answers stay on this line."
+msgstr "اولین مورد منطبق اعمال می‌شود. همه پاسخ‌های دیگر روی این خط می‌مانند."
 
 #: public/admin/chunk-VCPpXaIF.js:81
 msgid "Needs a choice question before this screen."
@@ -10802,13 +10802,13 @@ msgstr "خطی که تغییر می‌کند"
 msgid "Choose a location…"
 msgstr "یک محل انتخاب کنید…"
 
-#: public/admin/chunk-VCPpXaIF.js:81
-msgid "This answer is on more than one line. Choose where this follow-up belongs."
-msgstr "این پاسخ روی بیش از یک خط است. مشخص کنید این پیگیری به کدام خط تعلق دارد."
+#: public/admin/chunk-p9uJ7s4t.js:81
+msgid "This answer has more than one line. Choose where this follow-up goes."
+msgstr "این پاسخ بیش از یک خط دارد. مشخص کنید این پیگیری به کجا برود."
 
-#: public/admin/chunk-VCPpXaIF.js:81
-msgid "This answer is not available here. Choose a location after its question, or change the condition."
-msgstr "این پاسخ در اینجا در دسترس نیست. محلی بعد از پرسش آن انتخاب کنید یا شرط را تغییر دهید."
+#: public/admin/chunk-p9uJ7s4t.js:81
+msgid "This answer is not available here. Choose a location after its question."
+msgstr "این پاسخ در اینجا در دسترس نیست. محلی بعد از پرسش آن انتخاب کنید."
 
 #: public/admin/chunk-VCPpXaIF.js:81
 #: public/admin/chunk-VCPpXaIF.js:83
@@ -10850,13 +10850,13 @@ msgstr "خط می‌رود به"
 msgid "Choose a screen…"
 msgstr "یک مرحله انتخاب کنید…"
 
-#: public/admin/chunk-VCPpXaIF.js:83
-msgid "No other screen can follow this line without making a loop. Add a new screen instead."
-msgstr "هیچ مرحله دیگری نمی‌تواند بدون ایجاد حلقه پس از این خط بیاید. به جای آن یک مرحله جدید اضافه کنید."
+#: public/admin/chunk-p9uJ7s4t.js:83
+msgid "Any other screen would make a loop. Add a new screen instead."
+msgstr "هر مرحله دیگری حلقه ایجاد می‌کند. به جای آن یک مرحله جدید اضافه کنید."
 
-#: public/admin/chunk-VCPpXaIF.js:83
-msgid "Screens that would make a loop aren’t listed. You’ll check any screens or forms this change skips before it applies."
-msgstr "مرحله‌هایی که حلقه ایجاد می‌کنند فهرست نشده‌اند. پیش از اعمال این تغییر، مرحله‌ها یا فرم‌هایی را که رد می‌کند بررسی خواهید کرد."
+#: public/admin/chunk-p9uJ7s4t.js:83
+msgid "Screens that would make a loop aren’t listed."
+msgstr "مرحله‌هایی که حلقه ایجاد می‌کنند فهرست نشده‌اند."
 
 #: public/admin/chunk-VCPpXaIF.js:83
 msgid "Screen type"
@@ -10894,13 +10894,13 @@ msgstr "برای پیگیری در دسترس نیست."
 msgid "Contact collection"
 msgstr "جمع‌آوری اطلاعات تماس"
 
-#: public/admin/chunk-VCPpXaIF.js:83
-msgid "Use an existing form to keep one combined submission. You’ll check any follow-ups this line skips."
-msgstr "از یک فرم موجود استفاده کنید تا فقط یک ثبت فرم یکپارچه داشته باشید. پیگیری‌هایی را که این خط رد می‌کند بررسی خواهید کرد."
+#: public/admin/chunk-p9uJ7s4t.js:83
+msgid "Use an existing form to keep one combined submission."
+msgstr "از یک فرم موجود استفاده کنید تا فقط یک ثبت فرم یکپارچه داشته باشید."
 
-#: public/admin/chunk-VCPpXaIF.js:83
-msgid "Contact fields need a form and consent settings. They cannot be added as an ordinary question."
-msgstr "فیلدهای تماس به فرم و تنظیمات رضایت نیاز دارند. نمی‌توان آن‌ها را مانند یک پرسش معمولی اضافه کرد."
+#: public/admin/chunk-p9uJ7s4t.js:83
+msgid "Contact fields need a form and consent settings, not an ordinary question."
+msgstr "فیلدهای تماس به فرم و تنظیمات رضایت نیاز دارند، نه یک پرسش معمولی."
 
 #. translators: %s: the name of a screen with a form, e.g. “Get your results”.
 #: public/admin/chunk-VCPpXaIF.js:84
@@ -10918,9 +10918,9 @@ msgstr "استفاده از %s"
 msgid "Set up optional form"
 msgstr "راه‌اندازی فرم اختیاری"
 
-#: public/admin/chunk-VCPpXaIF.js:85
-msgid "Select your existing contact screen to edit its fields, or choose a signup starting point for a new campaign."
-msgstr "برای ویرایش فیلدها، مرحله تماس موجود خود را انتخاب کنید، یا برای کمپین جدید یک نقطه شروع ثبت‌نام انتخاب کنید."
+#: public/admin/chunk-p9uJ7s4t.js:85
+msgid "Edit your contact screen’s fields, or start a new signup campaign."
+msgstr "فیلدهای مرحله تماس خود را ویرایش کنید، یا یک کمپین ثبت‌نام جدید شروع کنید."
 
 #: public/admin/chunk-VCPpXaIF.js:85
 msgid "Screen name"
@@ -10952,9 +10952,9 @@ msgstr "پاسخ کوتاه"
 msgid "Also check this screen when “%s” is skipped"
 msgstr "این مرحله وقتی «%s» رد شد هم بررسی شود"
 
-#: public/admin/chunk-VCPpXaIF.js:87
-msgid "Visitors who finish here don’t save their details. That’s fine for an early ending such as “Not a fit”: it reads “Ends without saving details”."
-msgstr "بازدیدکنندگانی که اینجا مسیر را تمام می‌کنند اطلاعاتشان را ذخیره نمی‌کنند. این برای پایان زودهنگامی مانند «مناسب نیست» اشکالی ندارد: روی آن نوشته می‌شود «بدون ذخیره اطلاعات پایان می‌یابد»."
+#: public/admin/chunk-p9uJ7s4t.js:87
+msgid "Finishing here saves no details. That’s fine for an early ending."
+msgstr "پایان مسیر در اینجا اطلاعاتی را ذخیره نمی‌کند. این برای پایان زودهنگام اشکالی ندارد."
 
 #: public/admin/chunk-VCPpXaIF.js:87
 msgid "This is a closing screen. It doesn’t save details."
@@ -10994,9 +10994,9 @@ msgstr "افزودن ثبت‌نام ایمیلی اختیاری"
 msgid "Add optional SMS signup"
 msgstr "افزودن ثبت‌نام SMS اختیاری"
 
-#: public/admin/chunk-VCPpXaIF.js:89
-msgid "The main signup is saved first. This optional one adds contact details and consent to the same lead only when the visitor submits it."
-msgstr "ثبت‌نام اصلی ابتدا ذخیره می‌شود. این ثبت‌نام اختیاری فقط وقتی بازدیدکننده آن را ثبت کند، اطلاعات تماس و رضایت را به همان مشتری بالقوه اضافه می‌کند."
+#: public/admin/chunk-p9uJ7s4t.js:89
+msgid "Adds contact details and consent to the same lead, only if submitted."
+msgstr "اطلاعات تماس و رضایت را به همان مشتری بالقوه اضافه می‌کند، فقط اگر ثبت شود."
 
 #: public/admin/chunk-VCPpXaIF.js:89
 msgid "Insert after the main signup"
@@ -11006,9 +11006,9 @@ msgstr "درج پس از ثبت‌نام اصلی"
 msgid "Choose a line…"
 msgstr "یک خط انتخاب کنید…"
 
-#: public/admin/chunk-VCPpXaIF.js:89
-msgid "Only visitors on this line see it. Signing up and “No thanks” both continue to the same screen, and the main signup is not sent again. Check its consent text and Destinations afterwards."
-msgstr "فقط بازدیدکنندگان این خط آن را می‌بینند. ثبت‌نام و «نه، ممنون» هر دو به همان مرحله می‌روند و ثبت‌نام اصلی دوباره ارسال نمی‌شود. پس از آن، متن رضایت و مقصدهای آن را بررسی کنید."
+#: public/admin/chunk-p9uJ7s4t.js:89
+msgid "Only visitors on this line see it. Signing up and “No thanks” both continue to the same screen. The main signup is already saved and isn’t sent again."
+msgstr "فقط بازدیدکنندگان این خط آن را می‌بینند. ثبت‌نام و «نه، ممنون» هر دو به همان مرحله می‌روند. ثبت‌نام اصلی از قبل ذخیره شده است و دوباره ارسال نمی‌شود."
 
 #: public/admin/chunk-VCPpXaIF.js:89
 msgid "Add form"
@@ -11018,13 +11018,13 @@ msgstr "افزودن فرم"
 msgid "Choose a screen."
 msgstr "یک مرحله انتخاب کنید."
 
-#: public/admin/chunk-VCPpXaIF.js:89
-msgid "For results, endings or forms, add a screen with its own lines and form settings."
-msgstr "برای نتیجه‌ها، پایان‌ها یا فرم‌ها، مرحله‌ای با خط‌ها و تنظیمات فرم خودش اضافه کنید."
+#: public/admin/chunk-p9uJ7s4t.js:89
+msgid "Results, endings and forms can’t be duplicated. Add a new screen instead."
+msgstr "نتیجه‌ها، پایان‌ها و فرم‌ها قابل تکثیر نیستند. به جای آن یک مرحله جدید اضافه کنید."
 
-#: public/admin/chunk-VCPpXaIF.js:89
-msgid "For screens with several lines, add a new screen and choose its lines."
-msgstr "برای مرحله‌هایی با چند خط، یک مرحله جدید اضافه کنید و خط‌های آن را انتخاب کنید."
+#: public/admin/chunk-p9uJ7s4t.js:89
+msgid "Screens with several lines can’t be duplicated. Add a new one instead."
+msgstr "مرحله‌هایی با چند خط قابل تکثیر نیستند. به جای آن یک مرحله جدید اضافه کنید."
 
 #: public/admin/chunk-VCPpXaIF.js:89
 msgid "Duplicate or move"
@@ -11034,17 +11034,17 @@ msgstr "تکثیر یا جابه‌جایی"
 msgid "Duplicate after this screen"
 msgstr "تکثیر پس از این مرحله"
 
-#: public/admin/chunk-VCPpXaIF.js:89
-msgid "This screen can’t move to another line. Change where it goes with Then."
-msgstr "این مرحله را نمی‌توان به خط دیگری برد. مقصد آن را با «سپس» تغییر دهید."
+#: public/admin/chunk-p9uJ7s4t.js:89
+msgid "This screen can’t move to another line. Use Then instead."
+msgstr "این مرحله را نمی‌توان به خط دیگری برد. به جای آن از «سپس» استفاده کنید."
 
 #: public/admin/chunk-VCPpXaIF.js:89
 msgid "Move to line"
 msgstr "انتقال به خط"
 
-#: public/admin/chunk-VCPpXaIF.js:89
-msgid "Moves this screen between the selected screens and joins its old line back up. You can undo this."
-msgstr "این مرحله را بین مرحله‌های انتخاب‌شده می‌برد و خط قبلی‌اش را دوباره به هم وصل می‌کند. می‌توانید این کار را برگردانید."
+#: public/admin/chunk-p9uJ7s4t.js:89
+msgid "Moves it to the chosen line and rejoins its old line."
+msgstr "آن را به خط انتخاب‌شده می‌برد و خط قبلی‌اش را دوباره به هم وصل می‌کند."
 
 #: public/admin/chunk-VCPpXaIF.js:89
 msgid "Choose a line first."
@@ -11111,10 +11111,10 @@ msgid "Choose where visitors go after this screen."
 msgstr "انتخاب کنید بازدیدکنندگان پس از این مرحله به کجا بروند."
 
 #. translators: 1: an answer. 2, 3: line numbers.
-#: public/admin/chunk-VCPpXaIF.js:99
+#: public/admin/chunk-p9uJ7s4t.js:99
 #, js-format
-msgid "Lines %2$s and %3$s both use “%1$s”. Visitors who pick it take line %2$s."
-msgstr "خط‌های %2$s و %3$s هر دو از «%1$s» استفاده می‌کنند. بازدیدکنندگانی که آن را انتخاب کنند از خط %2$s می‌روند."
+msgid "Lines %2$s and %3$s both use “%1$s”. Line %2$s wins."
+msgstr "خط‌های %2$s و %3$s هر دو از «%1$s» استفاده می‌کنند. خط %2$s اعمال می‌شود."
 
 #. translators: 1, 2: answers.
 #: public/admin/chunk-VCPpXaIF.js:101
@@ -11169,10 +11169,10 @@ msgid "The campaign ends here"
 msgstr "کمپین اینجا پایان می‌یابد"
 
 #. translators: %s: a screen's name.
-#: public/admin/chunk-VCPpXaIF.js:107
+#: public/admin/chunk-p9uJ7s4t.js:107
 #, js-format
-msgid "Visitors with any matching answer go through the follow-ups. The rest go straight to “%s”."
-msgstr "بازدیدکنندگانی که پاسخ منطبقی داشته باشند پیگیری‌ها را می‌بینند. بقیه مستقیم به «%s» می‌روند."
+msgid "Matching answers go through the follow-ups. All other answers go to “%s”."
+msgstr "پاسخ‌های منطبق از پیگیری‌ها می‌گذرند. همه پاسخ‌های دیگر به «%s» می‌روند."
 
 #. translators: 1: a rule. 2, 3: screen names.
 #: public/admin/chunk-VCPpXaIF.js:109
@@ -11203,15 +11203,15 @@ msgstr "پیگیری اضافه شد. پاسخ منطبق را زیر «فقط �
 msgid "Add a choice question here or earlier before making a conditional follow-up."
 msgstr "پیش از ساختن پیگیری شرطی، اینجا یا در مرحله‌های قبل یک پرسش گزینه‌ای اضافه کنید."
 
-#: public/admin/chunk-VCPpXaIF.js:111
-msgid "Screen added on this line. The line keeps its answer and its place in the order."
-msgstr "مرحله روی این خط اضافه شد. پاسخ خط و جایگاهش در ترتیب تغییری نکرده است."
+#: public/admin/chunk-p9uJ7s4t.js:111
+msgid "Screen added on this line."
+msgstr "مرحله روی این خط اضافه شد."
 
 #. translators: %s: the name of the screen this line already led to, e.g. “Thank you”.
-#: public/admin/chunk-VCPpXaIF.js:113
+#: public/admin/chunk-p9uJ7s4t.js:113
 #, js-format
-msgid "Screen added on this line. Its answer and where it goes next (%s) are kept."
-msgstr "مرحله روی این خط اضافه شد. پاسخ آن و مقصد بعدی‌اش (%s) حفظ شده است."
+msgid "Screen added on this line. It still leads to %s."
+msgstr "مرحله روی این خط اضافه شد. همچنان به %s می‌رود."
 
 #: public/admin/chunk-VCPpXaIF.js:113
 msgid "Needs a choice question first"
@@ -11241,25 +11241,25 @@ msgstr "افزودن پیگیری مرتبط"
 msgid "Let answers choose the next screen"
 msgstr "اجازه دهید پاسخ‌ها مرحله بعد را انتخاب کنند"
 
-#: public/admin/chunk-VCPpXaIF.js:113
-msgid "Answers can now choose the next screen. Undo goes back to one screen after another."
-msgstr "اکنون پاسخ‌ها می‌توانند مرحله بعد را انتخاب کنند. با برگرداندن، مرحله‌ها دوباره پشت سر هم می‌آیند."
+#: public/admin/chunk-p9uJ7s4t.js:113
+msgid "Answers can now choose the next screen."
+msgstr "اکنون پاسخ‌ها می‌توانند مرحله بعد را انتخاب کنند."
 
 #: public/admin/chunk-VCPpXaIF.js:113
 msgid "Add screen"
 msgstr "افزودن مرحله"
 
-#: public/admin/chunk-VCPpXaIF.js:113
-msgid "This screen now chooses its own next screen. Undo goes back to one screen after another."
-msgstr "این مرحله اکنون خودش مرحله بعد را انتخاب می‌کند. با برگرداندن، مرحله‌ها دوباره پشت سر هم می‌آیند."
+#: public/admin/chunk-p9uJ7s4t.js:113
+msgid "This screen now chooses its own next screen."
+msgstr "این مرحله اکنون خودش مرحله بعد را انتخاب می‌کند."
 
 #: public/admin/chunk-VCPpXaIF.js:113
 msgid "Follow-up order"
 msgstr "ترتیب پیگیری‌ها"
 
-#: public/admin/chunk-VCPpXaIF.js:113
-msgid "Other lines lead into these follow-ups. Check them in Flow before changing the order."
-msgstr "خط‌های دیگری به این پیگیری‌ها می‌رسند. پیش از تغییر ترتیب، آن‌ها را در مسیر بررسی کنید."
+#: public/admin/chunk-p9uJ7s4t.js:113
+msgid "Other lines lead into these follow-ups. Check them before changing the order."
+msgstr "خط‌های دیگری به این پیگیری‌ها می‌رسند. پیش از تغییر ترتیب، آن‌ها را بررسی کنید."
 
 #: public/admin/chunk-VCPpXaIF.js:113
 msgid "Visitors see matching questions in this order. Other lines stay the same."
@@ -11287,25 +11287,25 @@ msgstr "زمانی که بازدیدکنندگان نتیجه خود را می�
 msgid "About result access"
 msgstr "درباره دسترسی به نتیجه"
 
-#: public/admin/chunk-VCPpXaIF.js:115
-msgid "Changing this moves signup before or after the result, and you can undo the whole change. Mention required contact details on the first screen."
-msgstr "با تغییر این گزینه، ثبت‌نام به پیش یا پس از نتیجه منتقل می‌شود و می‌توانید کل تغییر را برگردانید. در مرحله اول به الزامی بودن اطلاعات تماس اشاره کنید."
+#: public/admin/chunk-p9uJ7s4t.js:115
+msgid "Changing this moves signup before or after the result."
+msgstr "با تغییر این گزینه، ثبت‌نام به پیش یا پس از نتیجه منتقل می‌شود."
 
 #: public/admin/chunk-VCPpXaIF.js:115
 msgid "Immediately after the questions"
 msgstr "بلافاصله پس از پرسش‌ها"
 
-#: public/admin/chunk-VCPpXaIF.js:115
-msgid "Result moved before contact details. Signup is optional and visitors may finish without submitting."
-msgstr "نتیجه به پیش از اطلاعات تماس منتقل شد. ثبت‌نام اختیاری است و بازدیدکنندگان می‌توانند بدون ثبت اطلاعات کار را تمام کنند."
+#: public/admin/chunk-p9uJ7s4t.js:115
+msgid "Result moved before contact details. Visitors may finish without submitting."
+msgstr "نتیجه به پیش از اطلاعات تماس منتقل شد. بازدیدکنندگان می‌توانند بدون ثبت اطلاعات کار را تمام کنند."
 
 #: public/admin/chunk-VCPpXaIF.js:115
 msgid "After required contact details"
 msgstr "پس از اطلاعات تماس الزامی"
 
-#: public/admin/chunk-VCPpXaIF.js:115
-msgid "Contact details are now required before the result. Tell visitors on the first screen."
-msgstr "اکنون اطلاعات تماس پیش از نتیجه الزامی است. این را در مرحله اول به بازدیدکنندگان بگویید."
+#: public/admin/chunk-p9uJ7s4t.js:115
+msgid "The result now needs contact details. Tell visitors on the first screen."
+msgstr "اکنون نتیجه به اطلاعات تماس نیاز دارد. این را در مرحله اول به بازدیدکنندگان بگویید."
 
 #: public/admin/chunk-VCPpXaIF.js:115
 msgid "Remove answer lines before changing when results appear."
@@ -11386,9 +11386,9 @@ msgstr "ثبت‌نام با ایمیل"
 msgid "Sign up for SMS"
 msgstr "ثبت‌نام برای SMS"
 
-#: public/admin/chunk-VCPpXaIF.js:127
-msgid "Optional signup added. Review its consent and destinations before publishing. The main signup stays saved when visitors skip this step."
-msgstr "ثبت‌نام اختیاری اضافه شد. پیش از انتشار، رضایت و مقصدهای آن را بررسی کنید. اگر بازدیدکنندگان از این مرحله رد شوند، ثبت‌نام اصلی همچنان ذخیره می‌ماند."
+#: public/admin/chunk-p9uJ7s4t.js:127
+msgid "Optional signup added. Review its consent and Destinations before publishing."
+msgstr "ثبت‌نام اختیاری اضافه شد. پیش از انتشار، رضایت و مقصدهای آن را بررسی کنید."
 
 #: public/admin/chunk-VCPpXaIF.js:127
 msgid "Check this change before applying it."
@@ -11398,9 +11398,9 @@ msgstr "پیش از اعمال این تغییر، آن را بررسی کنید
 msgid "Line updated. Check its order under “Where visitors go next”."
 msgstr "خط به‌روزرسانی شد. ترتیب آن را زیر «مقصد بعدی بازدیدکنندگان» بررسی کنید."
 
-#: public/admin/chunk-VCPpXaIF.js:127
-msgid "Screen added at the chosen location. Review its content and where it continues in screen settings."
-msgstr "مرحله در محل انتخاب‌شده اضافه شد. محتوای آن و ادامه مسیرش را در تنظیمات مرحله بررسی کنید."
+#: public/admin/chunk-p9uJ7s4t.js:127
+msgid "Screen added. Review its content and where it goes next."
+msgstr "مرحله اضافه شد. محتوای آن و ادامه مسیرش را بررسی کنید."
 
 #: public/admin/chunk-W1OCF5P0.js:1
 msgid "Product image"
@@ -11555,8 +11555,8 @@ msgstr "در حال به‌روزرسانی… تاریخ‌های قبلی نم
 msgid "Finish consent setup to link new orders."
 msgstr "برای مرتبط شدن سفارش‌های جدید، تنظیم رضایت را کامل کنید."
 
-#: public/admin/chunk-zsd8kMRj.js:5
-msgid "The site address changed. Turn on tracking again in Tracking & setup below."
+#: public/admin/chunk-DSxjM7hU.js:5
+msgid "Site address changed. Turn tracking on again in Tracking & setup below."
 msgstr "آدرس سایت تغییر کرده است. ردیابی را دوباره در بخش «ردیابی و راه‌اندازی» در پایین روشن کنید."
 
 #: public/admin/chunk-zsd8kMRj.js:5
@@ -11567,21 +11567,21 @@ msgstr "جمع فروش هنوز بارگذاری نشده است."
 msgid "Choose a shorter period"
 msgstr "یک دوره کوتاه‌تر انتخاب کنید"
 
-#: public/admin/chunk-zsd8kMRj.js:5
-msgid "This report is too large to total safely. No partial totals are shown."
-msgstr "این گزارش بزرگ‌تر از آن است که بتوان جمع آن را با اطمینان محاسبه کرد. جمع ناقص نمایش داده نمی‌شود."
+#: public/admin/chunk-DSxjM7hU.js:5
+msgid "This report is too large to total. No partial totals are shown."
+msgstr "این گزارش بزرگ‌تر از آن است که بتوان جمع آن را محاسبه کرد. جمع ناقص نمایش داده نمی‌شود."
 
 #: public/admin/chunk-zsd8kMRj.js:5
 msgid "No linked orders in this period"
 msgstr "در این بازه سفارش مرتبطی وجود ندارد"
 
-#: public/admin/chunk-zsd8kMRj.js:5
-msgid "With tracking on and statistics consent granted, a signup or click can link a checkout within 30 minutes."
-msgstr "وقتی ردیابی روشن باشد و رضایت آماری داده شده باشد، هر ثبت‌نام یا کلیک می‌تواند با یک تسویه‌حساب در بازه ۳۰ دقیقه مرتبط شود."
+#: public/admin/chunk-DSxjM7hU.js:5
+msgid "A consented signup or click can link a checkout within 30 minutes."
+msgstr "ثبت‌نام یا کلیک همراه با رضایت می‌تواند با یک تسویه‌حساب در بازه ۳۰ دقیقه مرتبط شود."
 
-#: public/admin/chunk-zsd8kMRj.js:5
-msgid "Linked after a signup or eligible click within 30 minutes. A link does not prove the campaign caused the sale."
-msgstr "پس از یک ثبت‌نام یا کلیک واجد شرایط، در بازه ۳۰ دقیقه مرتبط شده است. این ارتباط ثابت نمی‌کند که فروش نتیجه کمپین بوده است."
+#: public/admin/chunk-DSxjM7hU.js:5
+msgid "A link does not prove the campaign caused the sale."
+msgstr "این ارتباط ثابت نمی‌کند که فروش نتیجه کمپین بوده است."
 
 #. translators: %s: how many eligible paid orders the store had, e.g. “1,204”.
 #: public/admin/chunk-zsd8kMRj.js:7
@@ -11602,10 +11602,10 @@ msgid "View linked orders"
 msgstr "مشاهده سفارش‌های مرتبط"
 
 #. translators: %s: the most linked orders listed, e.g. “50”.
-#: public/admin/chunk-zsd8kMRj.js:9
+#: public/admin/chunk-DSxjM7hU.js:9
 #, js-format
-msgid "Up to %s recent linked orders. Open an order to review it in WooCommerce."
-msgstr "حداکثر %s سفارش مرتبط اخیر. برای بررسی هر سفارش، آن را در WooCommerce باز کنید."
+msgid "Up to %s recent linked orders."
+msgstr "حداکثر %s سفارش مرتبط اخیر."
 
 #: public/admin/chunk-zsd8kMRj.js:9
 msgid "Linked orders"
@@ -11666,17 +11666,17 @@ msgstr "آخرین تعامل · بازه ۳۰ دقیقه‌ای"
 msgid "An accepted signup, offer click, cart-return click or quiz result-link click can link one checkout in the same WooCommerce session. Being shown, dismissals and coupon copies do not qualify."
 msgstr "ثبت‌نام پذیرفته‌شده، کلیک روی پیشنهاد، کلیک بازگشت به سبد خرید یا کلیک روی پیوند نتیجه کوییز می‌تواند با یک تسویه‌حساب در همان نشست WooCommerce مرتبط شود. نمایش داده شدن، بستن کمپین و کپی کردن کد تخفیف واجد شرایط نیستند."
 
-#: public/admin/chunk-zsd8kMRj.js:11
-msgid "Product totals after discounts and product refunds. Tax, shipping and fees are excluded. Currencies stay separate; an unallocated refund makes the amount unavailable."
-msgstr "جمع محصولات پس از تخفیف‌ها و استرداد محصولات. مالیات، هزینه ارسال و کارمزدها حساب نمی‌شوند. ارزها جدا می‌مانند؛ استردادی که به محصولی تخصیص نیافته باشد باعث می‌شود مبلغ در دسترس نباشد."
+#: public/admin/chunk-DSxjM7hU.js:11
+msgid "After discounts and product refunds, excluding tax, shipping and fees."
+msgstr "پس از تخفیف‌ها و استرداد محصولات، بدون مالیات، هزینه ارسال و کارمزدها."
 
 #: public/admin/chunk-zsd8kMRj.js:11
 msgid "Paid orders only"
 msgstr "فقط سفارش‌های پرداخت‌شده"
 
-#: public/admin/chunk-zsd8kMRj.js:11
-msgid "Orders use their paid date. Later refunds update that original period. Unpaid, failed and cancelled orders are excluded. Unmarked gateway test payments may be included."
-msgstr "سفارش‌ها با تاریخ پرداختشان حساب می‌شوند. استردادهای بعدی همان بازه اصلی را به‌روزرسانی می‌کنند. سفارش‌های پرداخت‌نشده، ناموفق و لغوشده حساب نمی‌شوند. پرداخت‌های آزمایشی درگاه که علامت‌گذاری نشده‌اند ممکن است حساب شوند."
+#: public/admin/chunk-DSxjM7hU.js:11
+msgid "Later refunds update the original period. Unmarked gateway test payments may count."
+msgstr "استردادهای بعدی همان بازه اصلی را به‌روزرسانی می‌کنند. پرداخت‌های آزمایشی درگاه که علامت‌گذاری نشده‌اند ممکن است حساب شوند."
 
 #: public/admin/chunk-zsd8kMRj.js:11
 msgid "Sales require statistics consent. Other devices and later sessions are not linked."
@@ -11686,9 +11686,9 @@ msgstr "فروش به رضایت آماری نیاز دارد. دستگاه‌ه
 msgid "Turn off sales tracking?"
 msgstr "ردیابی فروش خاموش شود؟"
 
-#: public/admin/chunk-zsd8kMRj.js:11
-msgid "New orders stop being linked to your campaigns. Orders already linked stay in this report."
-msgstr "سفارش‌های جدید دیگر با کمپین‌های شما مرتبط نمی‌شوند. سفارش‌هایی که قبلاً مرتبط شده‌اند در این گزارش می‌مانند."
+#: public/admin/chunk-DSxjM7hU.js:11
+msgid "New orders won’t link to campaigns. Linked orders stay in this report."
+msgstr "سفارش‌های جدید با کمپین‌ها مرتبط نمی‌شوند. سفارش‌های مرتبط در این گزارش می‌مانند."
 
 #: public/admin/chunk-zsd8kMRj.js:11
 msgid "Linked sales"
@@ -11887,3 +11887,7 @@ msgstr "محتوایی را که باید نمایش داده شود بنویس�
 #: public/blocks/content-lock.js:5
 msgid "Content lock ends"
 msgstr "پایان قفل محتوا"
+
+#: public/admin/chunk-T6oz5qYD.js:3
+msgid "One automatic campaign shows per page. A campaign also placed by hand shows there instead."
+msgstr "در هر برگه یک کمپین خودکار نمایش داده می‌شود. کمپینی که دستی هم جایگذاری شده باشد به‌جای آن در آنجا نمایش داده می‌شود."

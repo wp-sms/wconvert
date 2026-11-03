@@ -78,7 +78,7 @@ try {
   crossNode.main_product_id = base.products[3];
   const created = await client.post(route, { headers, data: { name: 'Product warning example', goal: 'promote_offer', config: cross } });
   assert.equal(created.status(), 201, await created.text()); const extra = await created.json();
-  assert.match((await health([extra.id]))[0].checks[0].message, /No cross-sells are set/);
+  assert.match((await health([extra.id]))[0].checks[0].message, /Main product has no cross-sells/);
   crossNode.main_product_id = base.private_accessory;
   await draft(extra.id, cross);
   assert.match((await health([extra.id]))[0].checks[0].message, /main product is unavailable/);
