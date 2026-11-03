@@ -86,13 +86,30 @@ button.wa-impact {
 .wa-impact-primary strong {
   color: var(--action);
 }
-/* A rise is good news; a fall is neutral text with its sign, never amber (§14). */
+/* The figure takes the colour, always with its arrow; the words after it stay muted (§5, ADR 0185). A fall is red, never amber, which means the site is holding something back (§14). */
 .wa-change {
   font-size: var(--text-micro);
   color: var(--muted-foreground);
 }
-.wa-change-up {
+/* Two classes, to outrank the goal card's `span > span`. */
+.wa-change .wa-change-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: inherit;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.wa-change-value svg {
+  inline-size: 12px;
+  block-size: 12px;
+  flex-shrink: 0;
+}
+.wa-change .wa-change-up {
   color: var(--success);
+}
+.wa-change .wa-change-down {
+  color: var(--destructive);
 }
 .wa-section-heading {
   display: flex;

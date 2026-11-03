@@ -43,6 +43,7 @@ vi.mock('../../resources/admin/src/optins/api', () => ({
   declareWinner: api.declareWinner,
 }));
 import { Dashboard } from '../../resources/admin/src/stats/Dashboard';
+import { Change, changeOf, rateChange } from '../../resources/admin/src/stats/ReportDetails';
 
 const numbers = (n = 12, shown = 100): Numbers => ({
   headline: n,
@@ -622,15 +623,81 @@ it('explains publication after the selected dates without implying a display pro
   expect(screen.queryByRole('heading', { name: 'Needs attention' })).not.toBeInTheDocument();
 });
 
-it('shows a fall as neutral text with its sign, and a rise as a gain', async () => {
-  const data = payload();
-  data.previous!.impact = data.impact.map((i) => ({ ...i, count: i.id === 'leads' ? 24 : 50 }));
-  api.readReport.mockResolvedValue(data);
-  render(<Dashboard />);
-  const fall = (await screen.findByRole('link', { name: /^Submissions/ })).querySelector('.wa-change')!;
-  expect(fall).toHaveTextContent('−50% vs previous period');
-  expect(fall).not.toHaveClass('wa-change-up');
-  expect(screen.getByRole('link', { name: /^Shown/ }).querySelector('.wa-change')).toHaveClass('wa-change-up');
+describe('a change against the previous period (ADR 0185)', () => {
+  it('reads as a direction, and only a real move has one', () => {
+    expect(changeOf(120, 100)).toEqual({ text: '20%', direction: 'up' });
+    expect(changeOf(50, 100)).toEqual({ text: '50%', direction: 'down' });
+    expect(changeOf(100, 100)).toEqual({ text: '0%', direction: 'flat' });
+    // Rounds to 0%, so an arrow would claim a move the figure denies.
+    expect(changeOf(100001, 100000)).toEqual({ text: '0%', direction: 'flat' });
+    expect(changeOf(5, 0)).toEqual({ text: 'New this period', direction: 'new' });
+    expect(changeOf(0, 0)).toBeNull();
+  });
+
+  it('reads a rate in percentage points, and says nothing when either rate is missing', () => {
+    expect(rateChange(0.046, 0.04)).toEqual({ text: '0.6 pts', direction: 'up' });
+    expect(rateChange(0.04, 0.046)).toEqual({ text: '0.6 pts', direction: 'down' });
+    expect(rateChange(0.04, 0.04)).toEqual({ text: '0 pts', direction: 'flat' });
+    expect(rateChange(0.04004, 0.04)).toEqual({ text: '0 pts', direction: 'flat' });
+    expect(rateChange(null, 0.04)).toBeNull();
+    expect(rateChange(0.04, null)).toBeNull();
+  });
+
+  it('shows a fall in red and a rise in green, each with an arrow and words for a screen reader', async () => {
+    const data = payload();
+    data.previous!.impact = data.impact.map((i) => ({ ...i, count: i.id === 'leads' ? 24 : 50 }));
+    api.readReport.mockResolvedValue(data);
+    render(<Dashboard />);
+    const fall = (await screen.findByRole('link', { name: /^Submissions/ })).querySelector('.wa-change')!;
+    expect(fall).toHaveTextContent('Down50% vs previous period');
+    expect(fall.querySelector('.wa-change-down svg.lucide-arrow-down')).not.toBeNull();
+    expect(within(fall as HTMLElement).getByText('Down')).toHaveClass('sr-only');
+    const rise = screen.getByRole('link', { name: /^Shown/ }).querySelector('.wa-change')!;
+    expect(rise).toHaveTextContent(/^Up.*% vs previous period$/);
+    expect(rise.querySelector('.wa-change-up svg.lucide-arrow-up')).not.toBeNull();
+    // The words after the figure stay muted: only the figure takes the colour.
+    expect(rise).not.toHaveClass('wa-change-up');
+  });
+
+  it('keeps no change and a first period neutral, with no arrow', async () => {
+    render(<>
+      <Change current={10} previous={10} />
+      <Change current={10} previous={0} />
+    </>);
+    const lines = [...document.querySelectorAll('.wa-change')].map((line) => line.textContent);
+    expect(lines).toEqual(['0% vs previous period', 'New this period']);
+    expect(document.querySelector('svg')).toBeNull();
+    expect(document.querySelector('.wa-change-up, .wa-change-down')).toBeNull();
+  });
+
+  it('writes the goal card the same way', async () => {
+    const data = payload();
+    data.previous!.goals = [{ ...data.goals[0], conversions: data.goals[0].conversions * 2 }];
+    api.readReport.mockResolvedValue(data);
+    render(<Dashboard />);
+    const card = (await screen.findAllByRole('link')).find((link) => link.classList.contains('wa-goal-card'))!;
+    expect(card.querySelector('.wa-change-down svg.lucide-arrow-down')).not.toBeNull();
+    expect(card).toHaveTextContent('Down50%');
+  });
+
+  it('puts a change on the Rate tile of a report', async () => {
+    const data = payload();
+    data.previous!.goals = [{ ...data.goals[0], conversion_rate: (data.goals[0].conversion_rate ?? 0) + 0.006 }];
+    api.readReport.mockResolvedValue(data);
+    render(<Dashboard query={{ goal: data.goals[0].goal }} />);
+    const tile = (await screen.findByText(data.goals[0].rate_label)).closest('div')!;
+    expect(tile).toHaveTextContent('Down0.6 pts vs previous period');
+    expect(tile.querySelector('.wa-change-down')).not.toBeNull();
+  });
+
+  it('puts no change on the Rate tile when the earlier rate is missing', async () => {
+    const data = payload();
+    data.previous!.goals = [{ ...data.goals[0], conversion_rate: null }];
+    api.readReport.mockResolvedValue(data);
+    render(<Dashboard query={{ goal: data.goals[0].goal }} />);
+    const tile = (await screen.findByText(data.goals[0].rate_label)).closest('div')!;
+    expect(tile.querySelector('.wa-change')).toBeNull();
+  });
 });
 
 describe('the report period (ADR 0132)', () => {
@@ -724,7 +791,7 @@ describe('what the overview says', () => {
     render(<Dashboard />);
     const card = await screen.findByRole('link', { name: /Grow my email list/ });
     expect(card).toHaveTextContent('105 Email submissions');
-    expect(card).toHaveTextContent('2.3% of 4,653 shown · +11.7% · 1 campaign');
+    expect(card).toHaveTextContent('2.3% of 4,653 shown · Up11.7% · 1 campaign');
     expect(screen.queryByText(/conversion rate/i)).toBeNull();
   });
 

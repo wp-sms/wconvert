@@ -131,7 +131,9 @@ colour.
   wells, and `--accent` for hover. Do not tint whole cards nearly the same color as the canvas.
   `--border` (`#DEDAD1`) separates surfaces; muted text is `#6B6056`.
 - **Semantic colors retain their meaning**: destructive failure, success
-  converted, warning suspended or nearly-limit, info neutral fact. Each one
+  converted, warning suspended or nearly-limit, info neutral fact. In Analytics
+  alone, destructive also marks a fall against the previous period, always with
+  an arrow and its number, beside success for a rise (ADR 0185). Each one
   has a `--*-surface` token. Never use a percentage wash of the hue: on this
   warm palette, an amber wash is indistinguishable from the canvas. Status always
   includes text; do not use hue alone to distinguish it from the brand.

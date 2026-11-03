@@ -39,7 +39,7 @@ import { periodOf, readReport, type DashboardPayload, type GoalReport, type Peri
 import { formatCount, formatRate } from './format';
 import { countsNothing } from '../goals/countsNothing';
 import { families, rangeLabel, reportCSV } from './reporting';
-import { CampaignTable, Change, changeOf, Experiment, GoalDetail } from './ReportDetails';
+import { CampaignTable, Change, ChangeValue, changeOf, Experiment, GoalDetail } from './ReportDetails';
 import './analytics.css';
 import { AnalyticsSkeleton } from './AnalyticsSkeleton';
 import {
@@ -456,7 +456,7 @@ function DashboardContent({
                       {goalChange && (
                         <>
                           {' · '}
-                          <span className={`wa-change ${goalChange.up ? 'wa-change-up' : ''}`}>{goalChange.text}</span>
+                          <span className="wa-change"><ChangeValue change={goalChange} /></span>
                         </>
                       )}
                       {' · '}

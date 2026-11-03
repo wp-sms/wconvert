@@ -33,3 +33,13 @@ made a merchant hunt for them. A problem looked like every other card.
    `site_matches` alone cannot mean "the address changed": a store that never
    set up tracking saved no address, so it reads false there as well. Only a
    store with a `since` date counts.
+
+3. **A fall is red, with an arrow.** This reverses the rule that a fall reads as
+   neutral text. A change is one shared `ChangeValue`: Lucide's arrow and the
+   number in `--success` or `--destructive`, hidden words for a screen reader,
+   and "vs previous period" still muted. No change and "New this period" have no
+   direction, so they stay neutral with no arrow, and so does a change that
+   rounds to 0%. A fall does not mean anything is broken, which is why it stays
+   on the figure and does not spread to the card, and it is never amber (§14).
+   The Rate tile gains its own change in percentage points, and shows nothing
+   when either rate is missing.

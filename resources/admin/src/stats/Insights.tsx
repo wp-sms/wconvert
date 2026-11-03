@@ -22,7 +22,7 @@ export interface Insight {
  * A translated sentence with a figure in it, the figure kept as markup: the
  * `%s` decides where it goes, so a language can put it first.
  */
-function withValue(template: string, figure: ReactNode): ReactNode {
+export function withValue(template: string, figure: ReactNode): ReactNode {
   const [before, after = ''] = template.split('%s');
   return <>{before}{figure}{after}</>;
 }
