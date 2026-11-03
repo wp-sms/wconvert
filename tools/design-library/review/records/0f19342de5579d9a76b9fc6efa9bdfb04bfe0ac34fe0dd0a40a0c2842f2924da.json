@@ -1,0 +1,47 @@
+{
+  "id": "remote-walkthrough-request",
+  "revision": "9e328b23d346cbb8ef130120f2bb2fcd3537543cfe0ae281801f427aa1144556",
+  "base_id": "4a7a0d8bbf8bb712edf6b317a3f926ac045dee0856201268df3e1884f09c0c85",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer origin/main and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-11-03T05:07:02Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/remote-walkthrough-request-320.png",
+          "sha256": "705ce7415844a1de474eb94dea34779db0f23c7de16c35558b477349f3f8d34f"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/remote-walkthrough-request-1440.png",
+          "sha256": "207e2b2d743aa2d1ee36ebec3ab7af83613f9a2e9781010d54f0ebb305075a16"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/review.md",
+          "sha256": "438777d237ee10d12f22d764d859c4d671cd876f0b72e0bcaf0afc84d211265e"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "30c7764d8e1a150bdc7441c3911f7e8da31476cf95a1c628e9b2f5185d21b79a"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "30c7764d8e1a150bdc7441c3911f7e8da31476cf95a1c628e9b2f5185d21b79a"
+        }
+      ]
+    }
+  },
+  "record_id": "0f19342de5579d9a76b9fc6efa9bdfb04bfe0ac34fe0dd0a40a0c2842f2924da"
+}

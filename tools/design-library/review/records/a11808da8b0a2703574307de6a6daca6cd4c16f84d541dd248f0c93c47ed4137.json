@@ -1,0 +1,75 @@
+{
+  "id": "collection-everyday-extraordinary",
+  "revision": "f50d76b5aef3a0e15200deb74953c94560b8262577446993c96d9bed1a1fa5dd",
+  "base_id": "0d67290402b6ec2f49453d3cfb6a1dc79e98b2942986b8d1dcd475c5bd2c2cf3",
+  "decision": "approved",
+  "reviewer": "Renderer carry (ADR 0156)",
+  "note": "Every setup in it pixel-identical under the new renderer and carried by templates:visual-diff; items, order and words unchanged; only setup revisions moved. Not a new review.",
+  "at": "2026-11-03T05:07:02Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/translation-check.md",
+          "sha256": "6a810fb9f790835cf4061568441ea0106f3f61ec427ae3a652a6878a89479e29"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/collection.json",
+          "sha256": "93719f9d62bcbd7a8ba979285b393a09062b47f99ab87ac9aed9cb35f51ad72e"
+        },
+        {
+          "path": "docs/reviews/visual-diff-2026-10-24/collections-carry-031e66237b8265ce7bc935d28e5eb45786fc894c.md",
+          "sha256": "e241e1ab27138e90b7291748e2fa876e7c1e4fb8776493a24bc60dac59951e19"
+        },
+        {
+          "path": "docs/reviews/visual-diff-2026-10-24/collections-carry-d7688edf.md",
+          "sha256": "38ade91c10201b60b4309c8376b30c292ac272397f33071d839ee9ac86cc681d"
+        },
+        {
+          "path": "docs/reviews/visual-diff-2026-10-24/collections-carry-dc915bdc.md",
+          "sha256": "8a39fd64cf89b9af6826a794b4a4b162218fa9717eb334158c22e15411775608"
+        },
+        {
+          "path": "docs/reviews/artwork-files-2026-10-25/review.md",
+          "sha256": "0e54364a8329f533e5cd2b242eaaea66efa597708b966208ca8fbbf4c0e84fd8"
+        },
+        {
+          "path": "docs/reviews/artwork-files-2026-10-25/metrics.json",
+          "sha256": "e904c4ea78c22461814a39d6aed271846adca8012074b2587b150456078c3809"
+        },
+        {
+          "path": "docs/reviews/visual-diff-2026-11-03/collections-carry-origin-main.md",
+          "sha256": "fd4edc92463995412f4afd2eb24efb648b1b7893a0f410bd5129d692068d1d47"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/translation-check.md",
+          "sha256": "6a810fb9f790835cf4061568441ea0106f3f61ec427ae3a652a6878a89479e29"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "cc7ccb4050bfcf7985d270710cfedd362fc187b7213597526d8fb39c3791ce98"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/everyday-2026-10-24/translation-check.md",
+          "sha256": "6a810fb9f790835cf4061568441ea0106f3f61ec427ae3a652a6878a89479e29"
+        },
+        {
+          "path": "docs/reviews/everyday-2026-10-24/results.json",
+          "sha256": "cc7ccb4050bfcf7985d270710cfedd362fc187b7213597526d8fb39c3791ce98"
+        }
+      ]
+    }
+  },
+  "record_id": "a11808da8b0a2703574307de6a6daca6cd4c16f84d541dd248f0c93c47ed4137"
+}

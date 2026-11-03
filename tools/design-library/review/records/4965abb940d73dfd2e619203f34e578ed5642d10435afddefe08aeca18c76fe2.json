@@ -1,0 +1,59 @@
+{
+  "id": "drop-alerts",
+  "revision": "5af1abf0b5dd97d9082c0635ede4a5088cb6a92ed8345654ba3060e4dbf131b7",
+  "base_id": "17f474f38376f9083cc172f6a68df45de741b32b4d4ea970d74ed9f129ca8e48",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer origin/main and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-11-03T05:07:02Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/drop-alerts-320.png",
+          "sha256": "d5a51569c5a3f54fa378d280b98c2aea29c48a3716ab5be6ff073d26e4ec648e"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/drop-alerts-1440.png",
+          "sha256": "5318191646082ded645086667c73732bde1234523c05f73f10c5e522d626b0bb"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/review.md",
+          "sha256": "438777d237ee10d12f22d764d859c4d671cd876f0b72e0bcaf0afc84d211265e"
+        },
+        {
+          "path": "docs/reviews/wsms-hint-carry-2026-10-30/carry.json",
+          "sha256": "ba50106b0dac1720a3628a306987781fd7e61bdc737e0ac05f679444becdc23a"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "30c7764d8e1a150bdc7441c3911f7e8da31476cf95a1c628e9b2f5185d21b79a"
+        },
+        {
+          "path": "docs/reviews/wsms-hint-carry-2026-10-30/carry.json",
+          "sha256": "ba50106b0dac1720a3628a306987781fd7e61bdc737e0ac05f679444becdc23a"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "30c7764d8e1a150bdc7441c3911f7e8da31476cf95a1c628e9b2f5185d21b79a"
+        },
+        {
+          "path": "docs/reviews/wsms-hint-carry-2026-10-30/carry.json",
+          "sha256": "ba50106b0dac1720a3628a306987781fd7e61bdc737e0ac05f679444becdc23a"
+        }
+      ]
+    }
+  },
+  "record_id": "4965abb940d73dfd2e619203f34e578ed5642d10435afddefe08aeca18c76fe2"
+}

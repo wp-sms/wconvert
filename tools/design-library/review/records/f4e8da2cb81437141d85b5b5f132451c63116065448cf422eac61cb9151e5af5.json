@@ -1,0 +1,47 @@
+{
+  "id": "holiday-service-hours",
+  "revision": "15f0d8f92ad78781271d99b0f02fdb45f5d2149a7789ddc7e61f2bf141ddeda7",
+  "base_id": "e8a54c25ed63255037e1e2ed2977b2f3a4860ab3c010d437b76c9bb8f0ab64d4",
+  "decision": "revise",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer origin/main and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-11-03T05:07:02Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/holiday-service-hours-320.png",
+          "sha256": "023abb9557d7465160d55a3edc0599973cfac3687c60e7876692efd6b3763bf5"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/holiday-service-hours-1440.png",
+          "sha256": "8e56df555eb4f05d91bc5b76a4c21b5be58e25efc893ad2107809eec71d2831b"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "f4e8da2cb81437141d85b5b5f132451c63116065448cf422eac61cb9151e5af5"
+}

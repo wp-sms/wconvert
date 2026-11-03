@@ -1,0 +1,55 @@
+{
+  "id": "winter-gift-atelier",
+  "revision": "677f81ccd9eef4c7597c6ddbed3807b40ab3864532eb66a1bf1d8c0d375f6c74",
+  "base_id": "95bcdecc640719110cc80a5dde581187c639ae08c1ee7dab043f9ff5925b6add",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer origin/main and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-11-03T05:07:02Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/README.md",
+          "sha256": "e32164865c0bf6712dde1d154a928fe71d5d18b69171fbc1ea8e41c201bf60cf"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-320-3.jpg",
+          "sha256": "2e030529e3fdc716b9592ad5e535863dd5d6a8ab5fb4cf8f2d8ef9fde260bc22"
+        },
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/entry-1000-3.jpg",
+          "sha256": "e1abe92dff5411a09efb2f1263c3df4ff8cfd8ab25827c06e03c59fae1dfec4b"
+        },
+        {
+          "path": "docs/reviews/artwork-files-2026-10-25/review.md",
+          "sha256": "0e54364a8329f533e5cd2b242eaaea66efa597708b966208ca8fbbf4c0e84fd8"
+        },
+        {
+          "path": "docs/reviews/artwork-files-2026-10-25/metrics.json",
+          "sha256": "e904c4ea78c22461814a39d6aed271846adca8012074b2587b150456078c3809"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/winter-fidelity-2026-10-23/results.json",
+          "sha256": "22179880a5d572da92f785741537bbdc6a3600f66915047cd1e9e053ba3e9cac"
+        }
+      ]
+    }
+  },
+  "record_id": "3e7474111b703c1e8a5f28bf81e6cbcbab150ba46db4c4c8f273520568f9f2ae"
+}

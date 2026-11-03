@@ -1,0 +1,47 @@
+{
+  "id": "basket-product-help",
+  "revision": "8ef7632e3da2bc2fdbf5e4a7d15eec42b94f0fa34cd6d67fd79fe091fff38f15",
+  "base_id": "99f494a06e9678c820d22b044616b8a21cae3d8fdc019b153cf53ad6dc0ba32a",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer origin/main and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-11-03T05:07:02Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/basket-product-help-320.png",
+          "sha256": "ac5d892e76140c247094a949a9aa66e08c98ea9dbd0d68b55a3ad18070db77f6"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/basket-product-help-1440.png",
+          "sha256": "a3d4b83b22f7cc7b0cd6cc0a28e6d4e9f78c18809126e7ab7fa013a76243b570"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/review.md",
+          "sha256": "438777d237ee10d12f22d764d859c4d671cd876f0b72e0bcaf0afc84d211265e"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "30c7764d8e1a150bdc7441c3911f7e8da31476cf95a1c628e9b2f5185d21b79a"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "30c7764d8e1a150bdc7441c3911f7e8da31476cf95a1c628e9b2f5185d21b79a"
+        }
+      ]
+    }
+  },
+  "record_id": "7ea645121deb2f7c5c3aa518b4b38d6392aa862c05cfb187357350610aeddd14"
+}

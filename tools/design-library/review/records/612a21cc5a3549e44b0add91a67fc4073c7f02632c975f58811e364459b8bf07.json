@@ -1,0 +1,47 @@
+{
+  "id": "remote-consultation-details",
+  "revision": "81332ec76f9f28b87883bb62241a9d93e9760fe0fc68ca147deba69ccb6dd9a4",
+  "base_id": "b84392b837ccaaecb279adb0a654bb496ec1081b86600039c36ab24bc60b9c8e",
+  "decision": "revise",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer origin/main and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-11-03T05:07:02Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/remote-consultation-details-320.png",
+          "sha256": "b74ce99f8cc19869f0ba4b7721f0ea600073ff612a237f82273a017fc906d4b9"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/remote-consultation-details-1440.png",
+          "sha256": "69885fa636c551c04807bef02c4ae938ef71821626966f2ff594ab35135b4e6b"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "612a21cc5a3549e44b0add91a67fc4073c7f02632c975f58811e364459b8bf07"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "assembly-guidance",
+  "revision": "5236c6d561293d0435bb4f03c2f4a14141dd22d6d8ae11e40bcf89c9eeff32fb",
+  "base_id": "85d728135fd8b7bcc227111b0bbcdf7d09f2ef206970b9dbd5acb2075ba859a5",
+  "decision": "revise",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer origin/main and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-11-03T05:07:02Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/assembly-guidance-320.png",
+          "sha256": "79497dadfff1100b68f226aac9b04ae2a51c4b286d1378b2eeb171409d51babc"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/assembly-guidance-1440.png",
+          "sha256": "996f329f58addc86ad149682eac9f9c10a5d5bcd27d13e82ac28f00ca5046a66"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "72f5aee1f5edb29b016ecb811065862697f4e7106e8f1f31f8fa098dcdc68fff"
+}

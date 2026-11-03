@@ -1,0 +1,47 @@
+{
+  "id": "care-clinic-request",
+  "revision": "5af5e75491f5e06b5501e0bf1a66cf2e54a5bb6552f373d76c1f57584edabebd",
+  "base_id": "90055780c9f7e932f5974d57053192037da8696c54fca11a495a399004f31076",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical output from baseline renderer origin/main and the current renderer for unchanged content, every screen at 1200 and 375 px with the close control, an error and the countdown drawn. Both renderers used the same currently bundled local font files. This verifies layout under the intended faces, not historical font delivery; the new local delivery restores those faces when remote fonts are disabled. Not a new review.",
+  "at": "2026-11-03T05:07:02Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/care-clinic-request-320.png",
+          "sha256": "281fb0e5c9ab0148913ec7ed9b3db17fdec072ba410e5e577cf6258fb50b1041"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/care-clinic-request-1440.png",
+          "sha256": "dcb437d5e05d2bdb9b7e236ec81a2d9edc871d3c4e4234adbae44138da99de9a"
+        },
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/review.md",
+          "sha256": "438777d237ee10d12f22d764d859c4d671cd876f0b72e0bcaf0afc84d211265e"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "30c7764d8e1a150bdc7441c3911f7e8da31476cf95a1c628e9b2f5185d21b79a"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/held-designs-2026-10-25/results.json",
+          "sha256": "30c7764d8e1a150bdc7441c3911f7e8da31476cf95a1c628e9b2f5185d21b79a"
+        }
+      ]
+    }
+  },
+  "record_id": "a2272742abe32306be4e255d9cc1a9d14e0841f2feebd70b44a010df1b3a363a"
+}
