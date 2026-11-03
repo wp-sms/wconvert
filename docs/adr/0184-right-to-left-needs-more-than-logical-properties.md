@@ -37,6 +37,8 @@ showed five things logical properties cannot reach:
 - **The loader budgets go up, approved by the user:** Free from 18,672 B to 18,752 B and Pro from
   32,064 B to 32,096 B. These rules take each loader up 85 B on Node 22, to 18,750 B and 32,084 B,
   and 59 B of that is the padding. Dropping the padding fix was the alternative.
+  *Amended by [ADR 0186](0186-the-country-list-follows-its-field.md): the Pro phone page's base in
+  `bin/check-phone.mjs`, which followed this budget, now rises 96 B on its own, to 30,816 B.*
 - **`campaign-friday-pass` is the one named exception** to the per-design cap in Persian. It is
   1,277 B in English, its three Persian words cost more than the 3 B left, and the cap is only
   read at authoring time. Slimming the design would have meant republishing the online library.

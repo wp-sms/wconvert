@@ -70,14 +70,33 @@ export function enhancePhones(root: HTMLElement, shadow: ShadowRoot, defaultCoun
         portal.style.font = computed.font;
         for (const key of ['--wc-fg', '--wc-border', '--wc-bg', '--wc-input-bg', '--wc-radius']) portal.style.setProperty(key, computed.getPropertyValue(key));
         dialog.setAttribute('aria-label', word('select', 'Select country'));
-        // The library's above placement assumes a 300px list. Anchor its bottom
-        // instead, so filtering to a shorter list keeps it beside the field.
-        dialog.style.setProperty('--wc-phone-anchor-bottom', `${window.innerHeight - mount.getBoundingClientRect().top}px`);
+        if (!dialog.classList.contains('lpi__dropdown--fullscreen')) {
+          // The library lines up with the trigger and assumes a 300px list. Follow
+          // the field instead, anchoring the bottom above it so filtering to a
+          // shorter list keeps it beside the field. Under 500px wide is fullscreen,
+          // so 280px always fits.
+          const field = mount.getBoundingClientRect();
+          const above = dialog.classList.contains('lpi__dropdown--above');
+          const width = Math.max(field.width, 280);
+          const { style } = dialog;
+          style.width = `${width}px`;
+          style.left = `${Math.min(field.left, document.documentElement.clientWidth - width - 8)}px`;
+          style.maxHeight = `${Math.min(300, (above ? field.top : window.innerHeight - field.bottom) - 8)}px`;
+          if (above) { style.top = 'auto'; style.bottom = `${window.innerHeight - field.top}px`; }
+        }
         const close = dialog.querySelector<HTMLButtonElement>('.lpi__close');
         if (close) { close.textContent = word('close', 'Close'); close.setAttribute('aria-label', word('closeSelector', 'Close country selector')); }
         const search = dialog.querySelector<HTMLInputElement>('.lpi__search');
         if (search) { search.placeholder = word('search', 'Search…'); search.setAttribute('aria-label', word('searchCountries', 'Search countries')); }
-        dialog.querySelector('.lpi__list')?.setAttribute('aria-label', word('countries', 'Countries'));
+        const list = dialog.querySelector<HTMLElement>('.lpi__list')!;
+        list.setAttribute('aria-label', word('countries', 'Countries'));
+        // The library scrolled to this row before the field's font changed the rows' height.
+        list.querySelector('.lpi__option--highlighted')?.scrollIntoView?.({ block: 'nearest' });
+        // The library closes the list on any window scroll, so the page must not
+        // take the wheel. overscroll-behavior only covers a list that can scroll.
+        dialog.addEventListener('wheel', (event) => {
+          if (!list.contains(event.target as Node) || list.scrollHeight <= list.clientHeight) event.preventDefault();
+        }, { passive: false });
         const live = dialog.querySelector<HTMLElement>('.lpi__sr-only');
         if (live) {
           const translate = () => {
@@ -116,7 +135,7 @@ export function enhancePhones(root: HTMLElement, shadow: ShadowRoot, defaultCoun
   }
   if (originals.length === 0) { portal.remove(); return undefined; }
   const style = document.createElement('style');
-  style.textContent = `${styles}\n.wc-phone .lpi__arrow{display:flex;align-items:center;opacity:1;font-size:inherit}.wc-phone .lpi{--lpi-bg:var(--wc-input-bg,var(--wc-bg,#fff));--lpi-text-color:var(--wc-fg,#111827);--lpi-border-color:var(--wc-border,#e5e7eb);--lpi-border-radius:var(--wc-radius,.5rem);--lpi-input-height:2.9rem;font:inherit;direction:ltr}.wc-phone .lpi__input.wc-input{inline-size:0;box-shadow:none;border:0;border-radius:0;background:transparent;padding:0 var(--lpi-spacing,8px);font:inherit}.wc-phone-portal .lpi__option-dial{direction:ltr;unicode-bidi:isolate}.wc-phone-portal .lpi__dropdown{min-width:min(280px,calc(100vw - 2rem));--lpi-text-color:var(--wc-fg,#111827);--lpi-border-color:var(--wc-border,#e5e7eb)}.wc-phone-portal .lpi__dropdown--above:not(.lpi__dropdown--fullscreen){top:auto!important;bottom:var(--wc-phone-anchor-bottom)!important}.wc-phone .lpi__input[aria-invalid]{outline:2px solid #b91c1c}`;
+  style.textContent = `${styles}\n.wc-phone .lpi__arrow{display:flex;align-items:center;opacity:1;font-size:inherit}.wc-phone .lpi{--lpi-bg:var(--wc-input-bg,var(--wc-bg,#fff));--lpi-text-color:var(--wc-fg,#111827);--lpi-border-color:var(--wc-border,#e5e7eb);--lpi-border-radius:var(--wc-radius,.5rem);--lpi-input-height:2.9rem;font:inherit;direction:ltr}.wc-phone .lpi__input.wc-input{inline-size:0;box-shadow:none;border:0;border-radius:0;background:transparent;padding:0 var(--lpi-spacing,8px);font:inherit}.lpi__option-dial{direction:ltr;unicode-bidi:isolate}.lpi__list{overscroll-behavior:contain}.lpi__dropdown{min-width:min(280px,calc(100vw - 2rem));--lpi-text-color:var(--wc-fg,#111827);--lpi-border-color:var(--wc-border,#e5e7eb)}.wc-phone .lpi__input[aria-invalid]{outline:2px solid #b91c1c}`;
   shadow.appendChild(style);
   const cleanup = () => {
     for (const { input, mount, phone, observer, disconnectLive, hint } of originals) {

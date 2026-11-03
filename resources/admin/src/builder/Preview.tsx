@@ -335,9 +335,9 @@ export function Preview({ template, displayType = 'inline', step = 0, selected =
 
     const bound: (() => void)[] = [];
 
-    const on = (target: HTMLElement, type: string, handle: (event: Event) => void) => {
-      target.addEventListener(type, handle);
-      bound.push(() => target.removeEventListener(type, handle));
+    const on = (target: HTMLElement, type: string, handle: (event: Event) => void, capture = false) => {
+      target.addEventListener(type, handle, capture);
+      bound.push(() => target.removeEventListener(type, handle, capture));
     };
 
     /*
@@ -374,6 +374,17 @@ export function Preview({ template, displayType = 'inline', step = 0, selected =
 
       pressing = false;
 
+      /*
+       * A press on the phone field's country picker selects the field, as any
+       * press here does, and goes no further. The stage's scale makes the
+       * library's fixed list resolve against the stage, which clips it, and the
+       * library's scroll to the selected country then moves the stage's page.
+       * Hence the capture: the library listens on the button itself.
+       */
+      if (target instanceof Element && target.closest('.lpi__trigger')) {
+        event.stopPropagation();
+      }
+
       if (key === null) {
         return;
       }
@@ -388,7 +399,7 @@ export function Preview({ template, displayType = 'inline', step = 0, selected =
       onSelect(key);
       // The solid selection replaces the dashed hover hint.
       setHint(null);
-    });
+    }, true);
 
     on(root, 'pointerover', (event) => {
       const target = event.target;
