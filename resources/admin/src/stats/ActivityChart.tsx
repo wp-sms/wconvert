@@ -23,10 +23,18 @@ export function nearestDay(position: number, width: number, days: number): numbe
   return Math.min(days - 1, Math.max(0, Math.round((position / width) * (days - 1))));
 }
 
-/** Which days get a date under the line: about five across a wide plot, three across a narrow one. */
+/**
+ * Which days get a date under the line: about five across a wide plot, three
+ * across a narrow one. One fewer that divides the period exactly beats a set
+ * whose gaps visibly differ, as seven days in five dates would. Over a long
+ * period, rounding a gap by a day cannot be seen.
+ */
 export function dateTicks(days: number, width: number): number[] {
   const wanted = width < NARROW_WIDTH ? 3 : 5;
   if (days <= wanted) return Array.from({ length: days }, (_, index) => index);
+  for (let count = wanted; count >= 3; count--) {
+    if ((days - 1) % (count - 1) === 0) return Array.from({ length: count }, (_, index) => (index * (days - 1)) / (count - 1));
+  }
   return Array.from({ length: wanted }, (_, index) => Math.round((index * (days - 1)) / (wanted - 1)));
 }
 
@@ -261,7 +269,7 @@ export function ActivityChart({
               className={index === 0 ? 'wa-chart-date-first' : index === current.length - 1 ? 'wa-chart-date-last' : undefined}
               style={{ insetInlineStart: x(index, current.length) }}
             >
-              {formatDay(current[index].day)}
+              <bdi>{formatDay(current[index].day)}</bdi>
             </span>
           ))}
         </div>

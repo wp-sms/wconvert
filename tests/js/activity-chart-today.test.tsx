@@ -129,6 +129,12 @@ describe('drawing to the panel (ADR 0185)', () => {
     expect(dateTicks(30, 300)).toEqual([0, 15, 29]);
   });
 
+  it('spaces the dates exactly when the period divides evenly', () => {
+    expect(dateTicks(7, 960)).toEqual([0, 2, 4, 6]);
+    expect(dateTicks(9, 960)).toEqual([0, 2, 4, 6, 8]);
+    expect(dateTicks(7, 300)).toEqual([0, 3, 6]);
+  });
+
   it('never repeats a date in a short period', () => {
     expect(dateTicks(3, 960)).toEqual([0, 1, 2]);
     expect(dateTicks(4, 300)).toEqual([0, 2, 3]);
@@ -165,8 +171,10 @@ describe('drawing to the panel (ADR 0185)', () => {
     expect(dates.map((date) => parseFloat(date.style.insetInlineStart))).toEqual([0, 150, 290]);
   });
 
-  it('keeps time running left to right in a right-to-left admin', () => {
+  it('keeps time running left to right in a right-to-left admin, with the words of each date isolated', () => {
     render(<ActivityChart label="Submissions" numbers={numbers} />);
     expect(document.querySelector('.wa-chart-block')).toHaveAttribute('dir', 'ltr');
+    // In an ltr block a Persian date's digits otherwise split around its month.
+    expect(document.querySelectorAll('.wa-chart-dates bdi')).toHaveLength(3);
   });
 });

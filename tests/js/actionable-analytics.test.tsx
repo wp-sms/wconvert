@@ -35,6 +35,8 @@ it('marks both problem cards with an amber header and leaves their rows white (A
     expect(header.querySelector('.wconvert-region-icon')).toHaveClass('bg-warning');
     expect(header.closest('section')).toHaveClass('border-warning');
     expect(header.closest('section')).not.toHaveClass('bg-warning-surface');
+    // With no second line, the title centres on its icon rather than hanging from the top.
+    expect(header.firstElementChild).toHaveClass('items-center');
   }
 });
 
