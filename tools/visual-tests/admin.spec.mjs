@@ -264,10 +264,10 @@ test('analytics: a problem card has an amber header over white rows', async ({ b
   const { close, page } = await openReadableReport(browser, 1440);
   try {
     const header = page.locator('[data-slot="region-header"]').filter({ hasText: 'Needs attention' });
-    await expect(header).toHaveCSS('background-color', 'rgb(253, 236, 200)');
-    await expect(header.locator('.wconvert-region-icon')).toHaveCSS('background-color', 'rgb(138, 90, 0)');
+    await expect(header).toHaveCSS('background-color', 'rgb(254, 248, 234)');
+    await expect(header.locator('.wconvert-region-icon')).toHaveCSS('background-color', 'rgb(253, 236, 200)');
     const card = page.locator('section').filter({ has: header });
-    await expect(card).toHaveCSS('border-top-color', 'rgb(138, 90, 0)');
+    await expect(card).toHaveCSS('border-top-color', 'rgb(239, 220, 180)');
     await expect(card).toHaveCSS('background-color', 'rgb(255, 255, 255)');
     await screenshot(page, info, 'needs-attention');
   } finally { await close(); }

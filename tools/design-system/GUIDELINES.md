@@ -134,8 +134,8 @@ colour.
   converted, warning suspended or nearly-limit, info neutral fact. In Analytics
   alone, destructive also marks a fall against the previous period, always with
   an arrow and its number, beside success for a rise, and warning also heads
-  its two problem cards, as a solid strip with an amber icon well over white
-  rows (ADR 0185). Each one has a `--*-surface` token. Never use a percentage wash of the hue: on this
+  its two problem cards, as a pale solid strip and edge (`--warning-tint`,
+  `--warning-edge`) over white rows (ADR 0185). Each one has a `--*-surface` token. Never use a percentage wash of the hue: on this
   warm palette, an amber wash is indistinguishable from the canvas. Status always
   includes text; do not use hue alone to distinguish it from the brand.
 - **Two edge tokens, because they are two jobs.** `--border` draws dividers and

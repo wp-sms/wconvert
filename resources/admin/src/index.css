@@ -82,6 +82,8 @@
   --color-info: var(--info);
   --color-success-surface: var(--success-surface);
   --color-warning-surface: var(--warning-surface);
+  --color-warning-tint: var(--warning-tint);
+  --color-warning-edge: var(--warning-edge);
   --color-destructive-surface: var(--destructive-surface);
   --color-info-surface: var(--info-surface);
   --color-link: var(--link);
@@ -427,6 +429,9 @@
    */
   --success-surface: #e6f2e9;
   --warning-surface: #fdecc8;
+  /* A problem card's header, quieter than a badge's surface, and its edge (ADR 0185). Solid, for the reason above. */
+  --warning-tint: #fef8ea;
+  --warning-edge: #efdcb4;
   --destructive-surface: #fbe6e3;
   --info-surface: var(--ice);
 

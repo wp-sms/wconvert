@@ -23,8 +23,8 @@ import { cn } from '../lib/utils';
  * heading. A region that renders a {@see RegionHeader} does not need it: the
  * heading is already the name, and passing both spells one thing twice.
  *
- * `tone="attention"` is a card reporting a problem (ADR 0185): an amber edge
- * here and an amber strip on its {@see RegionHeader}, which takes the same
+ * `tone="attention"` is a card reporting a problem (ADR 0185): a pale amber edge
+ * here and a pale amber strip on its {@see RegionHeader}, which takes the same
  * prop. The rows stay white, so only the header says "look here". The solid
  * tokens, never a wash of the hue (§5), and on the component because Tailwind's
  * utilities are `!important`, so a report's own stylesheet could not repaint
@@ -47,7 +47,7 @@ export function Region({
   return (
     <section
       aria-label={label}
-      className={cn('overflow-clip rounded-md border bg-card', tone === 'attention' ? 'border-warning' : 'border-border', className)}
+      className={cn('overflow-clip rounded-md border bg-card', tone === 'attention' ? 'border-warning-edge' : 'border-border', className)}
     >
       {children}
     </section>
@@ -93,9 +93,9 @@ export function RegionHeader({
   const Heading = level === 3 ? 'h3' : 'h2';
 
   return (
-    <div data-slot="region-header" className={cn('flex flex-wrap items-start justify-between gap-x-4 gap-y-1 border-b px-4 py-2.5', tone === 'attention' ? 'border-warning bg-warning-surface' : 'border-border')}>
+    <div data-slot="region-header" className={cn('flex flex-wrap items-start justify-between gap-x-4 gap-y-1 border-b px-4 py-2.5', tone === 'attention' ? 'border-warning-edge bg-warning-tint' : 'border-border')}>
       <div className={cn('flex min-w-0 flex-1 gap-3', description === undefined ? 'items-center' : 'items-start')}>
-        {icon && <span className={cn('wconvert-region-icon', tone === 'attention' && 'bg-warning text-card')} aria-hidden="true">{icon}</span>}
+        {icon && <span className={cn('wconvert-region-icon', tone === 'attention' && 'bg-warning-surface text-warning')} aria-hidden="true">{icon}</span>}
         <div className="min-w-0">
           <Heading className="m-0 text-heading font-semibold leading-tight tracking-tight text-foreground">
             {title}

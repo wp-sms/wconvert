@@ -31,10 +31,10 @@ it('marks both problem cards with an amber header and leaves their rows white (A
   for (const name of ['Needs attention', 'Sending needs attention']) {
     const heading = await screen.findByRole('heading', { name });
     const header = heading.closest('[data-slot="region-header"]')!;
-    expect(header).toHaveClass('bg-warning-surface');
-    expect(header.querySelector('.wconvert-region-icon')).toHaveClass('bg-warning');
-    expect(header.closest('section')).toHaveClass('border-warning');
-    expect(header.closest('section')).not.toHaveClass('bg-warning-surface');
+    expect(header).toHaveClass('bg-warning-tint');
+    expect(header.querySelector('.wconvert-region-icon')).toHaveClass('bg-warning-surface', 'text-warning');
+    expect(header.closest('section')).toHaveClass('border-warning-edge');
+    expect(header.closest('section')).not.toHaveClass('bg-warning-tint');
     // With no second line, the title centres on its icon rather than hanging from the top.
     expect(header.firstElementChild).toHaveClass('items-center');
   }
@@ -44,7 +44,7 @@ it('keeps the amber header when sending could not be checked', async () => {
   vi.mocked(readDestinations).mockRejectedValue(new Error('offline'));
   render(<DeliveryAttention />);
   const heading = await screen.findByRole('heading', { name: 'Sending needs attention' });
-  expect(heading.closest('[data-slot="region-header"]')).toHaveClass('bg-warning-surface');
+  expect(heading.closest('[data-slot="region-header"]')).toHaveClass('bg-warning-tint');
 });
 
 it('refuses journey numbers from a different reporting period', async () => {

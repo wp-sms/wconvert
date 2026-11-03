@@ -13,8 +13,9 @@ made a merchant hunt for them. A problem looked like every other card.
 
 1. **A problem card has an amber header.** Needs attention and Sending needs
    attention, including Sending's failed read, take `tone="attention"`: the
-   header strip is `--warning-surface`, the card edge and icon well are
-   `--warning`, and the rows stay white. The whole card is not tinted, because
+   header strip is `--warning-tint`, the card edge `--warning-edge`, the icon well
+   `--warning-surface` with an amber glyph, and the rows stay white. The first
+   version used `--warning-surface` and solid `--warning` and read too loud. The whole card is not tinted, because
    tinting a card that holds several tables and buttons says nothing more than
    the header does and costs the reading of everything in it. This widens amber
    past "the site is holding this back" (§5, §14) to "look here" on these two
