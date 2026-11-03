@@ -24,4 +24,4 @@ Country search stays with the library: [lite-phone-input#3](https://github.com/w
 
 On the editor's canvas the country picker does not open, and a press selects the field like any other (`resources/admin/src/builder/Preview.tsx`). The canvas scales its design, so the list's fixed position resolves against the stage, which clips it, and the library's scroll to the selected row moved the stage's page and left a gap. The picker is a thing to try in the preview, not to edit on the canvas.
 
-In the editor's preview, the list sits about 80px right and 45px down from the field. Its `top` is the library's own value, which this ADR does not change, so the offset predates it. It matches the corner of the preview's dialog, which suggests the dialog is what `position: fixed` resolves against. Not fixed here.
+In the editor's preview, the list sat about 80px right and 45px down from the field, because the dialog's centring `translate` made it what the fixed list was placed against, and clipped by. That dialog now centres with `inset` and auto margins instead (`JourneyEditor.tsx`).

@@ -1219,6 +1219,13 @@ it('keeps unsent visitor inputs across Preview’s two tabs, and offers no third
   expect(email).toHaveValue('draft@example.test');
 });
 
+it('centres Preview without translate, so a fixed list inside it is placed against the window', async () => {
+  render(<JourneyEditor displayType="popup" embedded editorCanvas={<div>Canvas</div>} tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} testRequest={1} />);
+  const dialog = await screen.findByRole('dialog', { name: 'Preview' });
+  expect(dialog).toHaveClass('translate-none', 'inset-0', 'm-auto');
+  expect(dialog.className).not.toMatch(/translate-[xy]-/);
+});
+
 it('offers a free install linear screens only, with no question, condition or path control', async () => {
   delete window.wconvertAdmin;
   const user = userEvent.setup();

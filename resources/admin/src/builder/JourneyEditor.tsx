@@ -720,7 +720,8 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
     </AlertDialog>
     {authoring.dialogs}
     <Dialog open={testOpen} onOpenChange={value => { setTestOpen(value); if (!value) { setTestChange(undefined); onTestExit?.(); onTestClose?.(); } if (!value && !embedded) setOpen(true); }}>
-      <AdminDialogContent size="lg" className="wconvert-journey-test-dialog" onOpenAutoFocus={event => { event.preventDefault(); testHeading.current?.focus(); }}
+      {/* Centred without `translate`, which would make this dialog what the phone field's fixed country list is placed against, and clipped by. */}
+      <AdminDialogContent size="lg" className="wconvert-journey-test-dialog inset-0 m-auto translate-none" onOpenAutoFocus={event => { event.preventDefault(); testHeading.current?.focus(); }}
         onCloseAutoFocus={event => {
           event.preventDefault();
           const restore = () => (returnToTestTrigger.current ? externalTestTrigger.current?.isConnected ? externalTestTrigger.current : findTrigger.current : settingsHeading.current)?.focus();
