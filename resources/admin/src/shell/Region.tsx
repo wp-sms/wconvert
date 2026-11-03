@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { CircleAlert } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 import { Button } from '../components/ui/button';
 import { Description } from './Description';
+import { InfoTip } from './InfoTip';
 import { cn } from '../lib/utils';
 
 /**
@@ -74,10 +75,14 @@ export function Region({
  * the builder's destination regions put **Add destination** on the heading,
  * where a toolbar holding only it would repeat the region's own boundary, and
  * Settings' Accounts region does the same with **Connect an account**.
+ *
+ * `tip` is what `description` would say when the merchant can act without it:
+ * an InfoTip beside the title, named after it (ADR 0136, ADR 0187).
  */
 export function RegionHeader({
   title,
   description,
+  tip,
   level = 2,
   trailing,
   icon,
@@ -85,6 +90,7 @@ export function RegionHeader({
 }: {
   title: string;
   description?: string;
+  tip?: ReactNode;
   level?: 2 | 3;
   trailing?: ReactNode;
   icon?: ReactNode;
@@ -97,9 +103,12 @@ export function RegionHeader({
       <div className={cn('flex min-w-0 flex-1 gap-3', description === undefined ? 'items-center' : 'items-start')}>
         {icon && <span className={cn('wconvert-region-icon', tone === 'attention' && 'bg-warning-surface text-warning')} aria-hidden="true">{icon}</span>}
         <div className="min-w-0">
-          <Heading className="m-0 text-heading font-semibold leading-tight tracking-tight text-foreground">
-            {title}
-          </Heading>
+          <div className="flex items-center gap-1">
+            <Heading className="m-0 text-heading font-semibold leading-tight tracking-tight text-foreground">
+              {title}
+            </Heading>
+            {tip !== undefined && <InfoTip label={sprintf(/* translators: %s: a section title, e.g. “Results”. */ __('About %s', 'wconvert'), title)}>{tip}</InfoTip>}
+          </div>
           {description !== undefined && (
             <Description className="mt-1">{description}</Description>
           )}

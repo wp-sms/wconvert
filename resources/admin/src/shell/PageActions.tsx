@@ -59,12 +59,14 @@ export function PageAction({ children }: { children: ReactNode }) {
  * Sending issues, this on an occasion, and a link in the body on a report.
  *
  * It portals for the reason {@see PageAction} does: a report's way back keeps
- * the window it loaded, which is the screen's state and not the frame's.
+ * the window it loaded, which is the screen's state and not the frame's. Its
+ * target is outside `.wconvert-page-actions`, whose rules would make it a 48px
+ * toolbar button (ADR 0187).
  */
 export function PageBack({ href, children }: { href: string; children: ReactNode }) {
   const slot = useContext(PageActionSlot);
   const link = (
-    <Button asChild variant="ghost" className="-ms-3 self-start">
+    <Button asChild variant="ghost" className="wconvert-page-back flex w-fit">
       <a href={href}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{children}</a>
     </Button>
   );

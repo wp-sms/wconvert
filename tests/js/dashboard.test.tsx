@@ -717,6 +717,38 @@ describe('a headline card (ADR 0185)', () => {
   });
 });
 
+describe('a report’s section title (ADR 0187)', () => {
+  it('names the number and keeps its description in a tip beside the title', async () => {
+    api.readReport.mockResolvedValue(payload());
+    render(<Dashboard query={{ impact: 'leads' }} />);
+    const title = await screen.findByRole('heading', { level: 2, name: 'Submissions' });
+    const note = payload().impact.find((item) => item.id === 'leads')!.note;
+    expect(screen.queryByText(note)).toBeNull();
+    const tip = screen.getByRole('button', { name: 'About Submissions' });
+    expect(title.parentElement).toContainElement(tip);
+    await userEvent.click(tip);
+    expect(await screen.findByText(note)).toBeVisible();
+    await userEvent.keyboard('{Escape}');
+    expect(tip).toHaveFocus();
+  });
+
+  it('keeps “not a proven winner” one press from the A/B report’s title', async () => {
+    api.readReport.mockResolvedValue({
+      ...payload(),
+      goals: [goal([
+        { ...row('email'), name: 'Variant A', ...numbers(24, 999) },
+        { ...row('arm'), parent_id: 'email', name: 'Variant B', ...numbers(31, 999) },
+      ])],
+    });
+    render(<Dashboard query={{ experiment: 'email' }} />);
+    const title = await screen.findByRole('heading', { level: 2, name: 'Variant A' });
+    expect(screen.queryByText(/They do not prove a winner/)).toBeNull();
+    const tip = within(title.parentElement!).getByRole('button', { name: 'About Variant A' });
+    await userEvent.click(tip);
+    expect(await screen.findByText(/They do not prove a winner/)).toBeVisible();
+  });
+});
+
 describe('Jump to on each report (ADR 0185)', () => {
   const sections = async () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Jump to' }));

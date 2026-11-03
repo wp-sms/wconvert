@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
-import { RegionError, RegionErrorState } from '../../resources/admin/src/shell/Region';
+import { RegionError, RegionErrorState, RegionHeader } from '../../resources/admin/src/shell/Region';
 
 /**
  * **A region's error is a whole sentence, and `AlertTitle` ships
@@ -34,5 +34,19 @@ describe('a region error', () => {
     render(<RegionErrorState message={LONG} hint="Reload the page to try again." />);
 
     expect(screen.getByText(LONG)).toHaveClass('line-clamp-none');
+  });
+});
+
+describe('a region header’s tip', () => {
+  it('stands beside the title, named after it', () => {
+    render(<RegionHeader title="Accounts" tip="What an account is." />);
+    const tip = screen.getByRole('button', { name: 'About Accounts' });
+    expect(screen.getByRole('heading', { level: 2, name: 'Accounts' }).nextElementSibling).toBe(tip);
+    expect(screen.queryByText('What an account is.')).toBeNull();
+  });
+
+  it('draws no control without one', () => {
+    render(<RegionHeader title="Accounts" />);
+    expect(screen.queryByRole('button')).toBeNull();
   });
 });

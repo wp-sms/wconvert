@@ -47,7 +47,7 @@ with one change: field hints one step smaller.
    Otherwise keep one line of at most twelve words only if it changes what the
    merchant does next. Otherwise it is an InfoTip beside the label or section
    title. The InfoTip of 0131 now serves the builder as well as Analytics and
-   Leads.
+   Leads. Amended by [ADR 0187](0187-the-way-back-and-a-section-title-read-with-their-page.md): outside the builder's panels, the rung beside a section title is `RegionHeader`'s `tip` or an Analytics report's `.wa-section-title`.
 3. **Checkboxes are `CheckRow` with `.wconvert-check`**: 0131 §7's row. The
    `wconvert-setting-toggle`, `__check` and bare labels are gone from the
    panels and the insert dialog. Shown or hidden is the element header's eye,

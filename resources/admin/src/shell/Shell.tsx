@@ -87,17 +87,19 @@ export function Shell({
               {!navigable ? (
                 <div ref={setTarget} />
               ) : (
-                <div className="wconvert-page-actions flex flex-wrap items-center gap-x-3 gap-y-2">
-                  <div className="wconvert-page-copy">
-                    <div ref={setBackTarget} className="contents" />
-                    <h1 className="m-0 wconvert-page-title text-foreground">
-                      {pageTitle ?? page?.title ?? SECTIONS.find((entry) => entry.id === section)?.label}
-                    </h1>
-                    {!hideDescription && <Description className="wconvert-page-description">{pageDescription ?? (page ? page.description : section && descriptionFor(section))}</Description>}
+                <>
+                  <div ref={setBackTarget} className="contents" />
+                  <div className="wconvert-page-actions flex flex-wrap items-center gap-x-3 gap-y-2">
+                    <div className="wconvert-page-copy">
+                      <h1 className="m-0 wconvert-page-title text-foreground">
+                        {pageTitle ?? page?.title ?? SECTIONS.find((entry) => entry.id === section)?.label}
+                      </h1>
+                      {!hideDescription && <Description className="wconvert-page-description">{pageDescription ?? (page ? page.description : section && descriptionFor(section))}</Description>}
+                    </div>
+                    {actions}
+                    <div ref={setTarget} className="contents" />
                   </div>
-                  {actions}
-                  <div ref={setTarget} className="contents" />
-                </div>
+                </>
               )}
             </div>
           </div>

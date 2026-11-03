@@ -130,6 +130,22 @@ button.wa-impact-main {
   gap: 14px;
   margin: 24px 0 14px;
 }
+/* A section title and its ⓘ stay together, at any width (ADR 0187). */
+.wa-section-title {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-inline-size: 0;
+}
+/* A long campaign name wraps instead of pushing its ⓘ off a phone. */
+.wa-section-title h2 {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+/* Beside the title, its 32px target does not make the line taller. */
+.wa-section-title .wconvert-info-trigger {
+  margin-block: -0.375rem;
+}
 .wa-goal-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

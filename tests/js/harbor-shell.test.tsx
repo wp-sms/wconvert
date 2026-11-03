@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Shell } from '../../resources/admin/src/shell/Shell';
-import { PageAction } from '../../resources/admin/src/shell/PageActions';
+import { PageAction, PageBack } from '../../resources/admin/src/shell/PageActions';
 
 afterEach(() => { delete window.wconvertAdmin; vi.unstubAllGlobals(); });
 
@@ -39,6 +39,14 @@ it('omits the service footer and visible page heading during creation', () => {
   expect(screen.queryByRole('contentinfo')).toBeNull();
   expect(screen.getByRole('heading', { level: 1 })).toHaveClass('sr-only');
   expect(screen.queryByRole('link', { name: 'View website' })).toBeNull();
+});
+
+it('puts the way back above the title and outside the toolbar, whose rules would resize it (ADR 0187)', () => {
+  render(<Shell section="analytics"><PageBack href="#overview">Overall impact</PageBack><p>Report</p></Shell>);
+  const back = screen.getByRole('link', { name: 'Overall impact' });
+  expect(back.closest('.wconvert-panel-heading')).not.toBeNull();
+  expect(back.closest('.wconvert-page-actions')).toBeNull();
+  expect(back.compareDocumentPosition(screen.getByRole('heading', { level: 1 })) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 });
 
 describe('height floor from the wp-admin menu', () => {

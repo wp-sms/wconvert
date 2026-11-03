@@ -40,7 +40,7 @@ import { periodOf, readReport, type DashboardPayload, type GoalReport, type Peri
 import { formatCount, formatRate } from './format';
 import { countsNothing } from '../goals/countsNothing';
 import { families, rangeLabel, reportCSV } from './reporting';
-import { CampaignTable, Change, ChangeValue, changeOf, Experiment, GoalDetail } from './ReportDetails';
+import { CampaignTable, Change, ChangeValue, changeOf, Experiment, GoalDetail, ReportTitle } from './ReportDetails';
 import './analytics.css';
 import { AnalyticsSkeleton } from './AnalyticsSkeleton';
 import {
@@ -506,10 +506,7 @@ function DashboardContent({
         />
       ) : payload && impact ? (
         <>
-          <div className="wa-intro">
-            <h2>{impact.label}</h2>
-            <p className="wa-muted">{impact.note}</p>
-          </div>
+          <ReportTitle name={impact.label}>{impact.note}</ReportTitle>
           <CampaignTable
             cards={scopedCards}
             payload={payload}
