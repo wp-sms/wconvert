@@ -157,7 +157,7 @@ export function ActivateCard({ license, onActivateKey, onKeyEdit, onChanged, bus
             ))}
           </fieldset>
           {picked === undefined && <p id="wconvert-license-none-free" className="wconvert-license-hint">
-            {__('Every license on this account is in use. Free a site in your account, then come back.', 'wconvert-pro')} <Ext href={license.urls.sites}>{__('Manage sites', 'wconvert-pro')}</Ext>
+            {__('Every license on this account is in use. Free a site first.', 'wconvert-pro')} <Ext href={license.urls.sites}>{__('Manage sites', 'wconvert-pro')}</Ext>
           </p>}
           <div className="wconvert-license-actions">
             <Button disabled={choosing !== null} {...refusable(picked === undefined ? 'wconvert-license-none-free' : null, () => picked && choose(picked.id))}>

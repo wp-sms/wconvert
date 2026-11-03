@@ -95,7 +95,7 @@ export function EmailReports({ onEditingStateChange }: { onEditingStateChange?: 
 
   return (
     <Region>
-      <RegionHeader title={title} description={__('Every Monday morning: last week’s totals, your best campaign, and anything worth a look.', 'wconvert')} />
+      <RegionHeader title={title} description={__('Every Monday morning: last week’s totals and your best campaign.', 'wconvert')} />
       <RegionBody className="flex flex-col gap-5">
         <CheckRow
           label={__('Send me a weekly summary', 'wconvert')}
@@ -107,14 +107,14 @@ export function EmailReports({ onEditingStateChange }: { onEditingStateChange?: 
         />
         {enabled && <>
           <Field label={__('Send to', 'wconvert')} htmlFor={`${id}-to`} hintId={`${id}-to-hint`}
-            hint={__('Starts as your site’s admin email. Separate more than one address with commas.', 'wconvert')}>
+            hint={__('Separate more than one address with commas.', 'wconvert')}>
             <Input id={`${id}-to`} type="text" inputMode="email" autoComplete="email" className="max-w-md" value={recipients}
               placeholder={saved.default_recipient} aria-describedby={`${id}-to-hint`} data-setting="weekly-summary-recipients"
               disabled={saving} onChange={(event) => { setRecipients(event.target.value); edited(); }} />
           </Field>
           <p className="m-0 text-note text-muted-foreground">
             {saved.waiting_for_publish
-              ? __('The first one goes out the Monday after your first campaign is published.', 'wconvert')
+              ? __('The first goes out the Monday after your first campaign is published.', 'wconvert')
               : saved.next_send
                 ? sprintf(/* translators: %s: a date and time, e.g. “Nov 2, 2026, 9:00 AM”. */ __('Next summary: %s, in your site’s time zone.', 'wconvert'), formatWhen(saved.next_send, 'detail'))
                 : null}
@@ -123,7 +123,7 @@ export function EmailReports({ onEditingStateChange }: { onEditingStateChange?: 
       </RegionBody>
       <RegionFooter className="flex flex-wrap items-center justify-end gap-3">
         <p role="status" className="m-0 min-w-0 flex-1 basis-64 text-note text-muted-foreground">
-          {tested !== null && sprintf(/* translators: %s: the addresses the test went to. */ __('Test sent to %s. Not there in a few minutes? Check spam, then your site’s email setup.', 'wconvert'), tested)}
+          {tested !== null && sprintf(/* translators: %s: the addresses the test went to. */ __('Test sent to %s. Missing? Check spam, then your site’s email setup.', 'wconvert'), tested)}
         </p>
         <div className="ms-auto flex flex-wrap items-center justify-end gap-3">
           {enabled && (

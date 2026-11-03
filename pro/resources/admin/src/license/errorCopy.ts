@@ -37,7 +37,7 @@ export function errorCopy(error: LicenseError, { host = 'my.wconvert.io', fromCo
       return { text: __('This license expired.', 'wconvert-pro'), ways: ['renew'] };
     case 'activation_limit_reached':
     case 'not_enough_seats':
-      return { text: __('All sites on this license are in use. Free one in your account, then try again.', 'wconvert-pro'), ways: ['sites', 'upgrade', 'retry'] };
+      return { text: __('All sites on this license are in use. Free one first.', 'wconvert-pro'), ways: ['sites', 'upgrade', 'retry'] };
     case 'key_disabled':
     case 'license_suspended':
       return { text: __('This license was turned off.', 'wconvert-pro'), ways: ['support'] };
@@ -48,14 +48,14 @@ export function errorCopy(error: LicenseError, { host = 'my.wconvert.io', fromCo
     case 'network_error':
     case 'server_error':
     case 'invalid_response':
-      return { text: sprintf(/* translators: %s: the license server's address, e.g. “my.wconvert.io”. */ __('Could not reach the license server. Some hosts block outgoing connections. Ask yours to allow %s.', 'wconvert-pro'), host), ways: ['retry', 'guide'] };
+      return { text: sprintf(/* translators: %s: the license server's address, e.g. “my.wconvert.io”. */ __('Could not reach the license server. Ask your host to allow %s.', 'wconvert-pro'), host), ways: ['retry', 'guide'] };
     case 'account_expired':
     case 'token_expired':
       return { text: __('Your sign-in timed out. Sign in again.', 'wconvert-pro'), ways: [] };
     case 'key_from_constant':
       return { text: __('The license key is set in wp-config.php. Change it there.', 'wconvert-pro'), ways: [] };
     case 'sign_in_other_user':
-      return { text: __('Another administrator is signing in to the account. Try again when they’re done.', 'wconvert-pro'), ways: [] };
+      return { text: __('Another administrator is signing in to the account. Try again afterward.', 'wconvert-pro'), ways: [] };
     case 'license_not_on_account':
       return { text: __('That license isn’t on this account any more.', 'wconvert-pro'), ways: ['retry'] };
     default:

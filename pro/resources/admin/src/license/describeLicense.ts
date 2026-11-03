@@ -101,11 +101,11 @@ export function describeLicense(license: LicensePayload, now = Date.now()): Lice
   switch (license.state) {
     case 'key_unreadable':
       card = hero('danger', 'key', __('Enter your license key again', 'wconvert-pro'),
-        sprintf(/* translators: %s: the paid product's name, e.g. “WConvert Pro”. */ __('WordPress can’t read the saved key. This usually happens after the site’s security keys change. Updates stopped until you do; %s features keep working.', 'wconvert-pro'), tierProductName('pro')), 'rekey');
+        sprintf(/* translators: %s: the paid product's name, e.g. “WConvert Pro”. */ __('WordPress can’t read the saved key. Updates stopped; %s features keep working.', 'wconvert-pro'), tierProductName('pro')), 'rekey');
       break;
     case 'copy':
       card = hero('info', 'globe', sprintf(/* translators: %s: the live site's domain this site was copied from, e.g. “shop.example.com”. */ __('This is a copy of %s', 'wconvert-pro'), license.domain_change?.was ?? ''),
-        __('Updates are off on this copy. Staging and local copies don’t use a site, and the live site isn’t touched.', 'wconvert-pro'), 'activate_copy');
+        __('Updates are off. Copies use no site; the live site stays untouched.', 'wconvert-pro'), 'activate_copy');
       break;
     case 'moved':
       card = hero('warning', 'globe', sprintf(/* translators: %s: the domain this site was on before, e.g. “shop.example.com”. */ __('This site moved from %s', 'wconvert-pro'), license.domain_change?.was ?? ''),
@@ -113,7 +113,7 @@ export function describeLicense(license: LicensePayload, now = Date.now()): Lice
       break;
     case 'not_activated_here':
       card = hero('warning', 'globe', __('This site isn’t on your license', 'wconvert-pro'),
-        `${__('Your license doesn’t list this site any more, so updates are off here. Activate it here to turn them back on.', 'wconvert-pro')} ${keepWorking}`, 'activate_here');
+        `${__('Updates are off here. Activate this site to turn them back on.', 'wconvert-pro')} ${keepWorking}`, 'activate_here');
       break;
     case 'disabled':
       card = hero('danger', 'alert', __('This license was turned off', 'wconvert-pro'), `${__('Updates and support stopped.', 'wconvert-pro')} ${keepWorking}`, 'support');

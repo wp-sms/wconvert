@@ -79,7 +79,7 @@ it('offers one way to try a failed first read again', async () => {
 it('pauses forms over unavailable saved filters without naming a product', async () => {
   vi.mocked(apiFetch).mockResolvedValue({ ...saved, rules_configured: true });
   render(<SpamProtection />);
-  expect(await screen.findByText('Forms are paused: saved email filters aren’t available on this site. Remove the filters to resume.')).toBeInTheDocument();
+  expect(await screen.findByText('Forms are paused: saved email filters aren’t available on this site.')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Remove unavailable filters' })).toBeInTheDocument();
   expect(screen.queryByText(/WConvert Pro/)).not.toBeInTheDocument();
 });
