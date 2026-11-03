@@ -79,7 +79,7 @@ export function HowOften({ frequency, priority, overlay, custom, reopenEnabled, 
         <Input id="wconvert-priority" className="w-24" type="number" value={priority === 0 ? '' : priority} aria-describedby="wconvert-priority-help"
           onChange={event => { const next = Number(event.target.value); onPriority(event.target.value === '' || !Number.isFinite(next) ? 0 : Math.trunc(next)); }} />
       </label>
-      <p id="wconvert-priority-help" className="text-note text-muted-foreground">{__('Higher numbers open first. A popup that is already open keeps its place.', 'wconvert')}</p>
+      <p id="wconvert-priority-help" className="text-note text-muted-foreground">{__('Higher numbers open first. An open popup stays open.', 'wconvert')}</p>
     </DisclosureCard>}
     <SiteLimitsNote />
   </div>;

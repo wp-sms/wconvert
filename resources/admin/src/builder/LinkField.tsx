@@ -127,8 +127,8 @@ export const LinkField = forwardRef<HTMLInputElement, LinkFieldProps>(function L
   };
 
   const note = searching ? __('Searching…', 'wconvert')
-    : failed ? __('Search could not be completed. Try again, or press Enter in the link field.', 'wconvert')
-      : hits.length === 0 ? __('No published page, post or product matches. Try another name, or paste a link.', 'wconvert')
+    : failed ? __('Search failed. Try again, or press Enter in the link field.', 'wconvert')
+      : hits.length === 0 ? __('No published page, post or product matches. Paste a link instead.', 'wconvert')
         : '';
 
   return (

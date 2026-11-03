@@ -277,7 +277,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   const write = (next: TemplateTree, index: number) => { selectedId.current = next.steps[index]?.id; setInspecting(true); onChange(referencedJourney(next)); onSelect(index); };
   const move = (from: number, to: number) => {
     const next = movedScreen(tree, from, to);
-    if (next === tree) { setSaid(__('Keep the main signup before the optional signup, and the thank-you screen last.', 'wconvert')); return; }
+    if (next === tree) { setSaid(__('Main signup goes before the optional one; the thank-you screen stays last.', 'wconvert')); return; }
     write(next, to);
     setSaid(sprintf(/* translators: 1: a screen's name, e.g. “Skin type”, 2: its new position in the journey, e.g. 3. */ __('%1$s moved to screen %2$s.', 'wconvert'), tree.steps[from].name, formatCount(to + 1)));
   };
@@ -395,8 +395,8 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
     const target = next.steps.findIndex(screen => screen.id === destination);
     write(next, target >= 0 ? target : 0);
     setRequestedSection('content'); setMobilePane('details'); setConfirmGraphRemoval(false);
-    setSaid(optionalRemoval ? __('Optional form removed. Check the remaining screens. Undo restores the form and its lines.', 'wconvert')
-      : __('Screen removed. Check the remaining lines. Undo restores the screen and its lines.', 'wconvert'));
+    setSaid(optionalRemoval ? __('Optional form removed. Check the remaining screens.', 'wconvert')
+      : __('Screen removed. Check the remaining lines.', 'wconvert'));
   };
   const duplicate = () => {
     const steps = [...tree.steps];
@@ -500,7 +500,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
             </OptionListContent>
           </Popover>}
         </div>
-          {!journeys && usesJourneyElements(tree) && <div className="wconvert-journey-settings__warning" role="status"><p>{__('This design uses elements this site can’t display. This campaign can’t be published, and a live copy is paused; your draft keeps saving. Remove them to publish.', 'wconvert')}</p>
+          {!journeys && usesJourneyElements(tree) && <div className="wconvert-journey-settings__warning" role="status"><p>{__('To publish, remove elements this site can’t display. Any live copy pauses.', 'wconvert')}</p>
             {/* One undoable edit to everything this site can't show (ADR 0147). */}
             {straight && (isRefusal(straight)
               ? <><Button type="button" variant="outline" aria-disabled="true" aria-describedby={`${id}-straight`}>{__('Make it a straight campaign', 'wconvert')}</Button>
@@ -667,14 +667,14 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
             : submission?.required === false
               ? tree.submissions[0]?.id === submission.id
                 ? __('Visitors may skip this signup and finish without saving contact details.', 'wconvert')
-                : __('Adds details to the same lead. Visitors can skip this signup; their earlier signup stays saved.', 'wconvert')
+                : __('Adds to the same lead. Skipping keeps their earlier signup saved.', 'wconvert')
               : submission
                 ? current.kind === 'input' && tree.steps.some(screen => screen.kind === 'result')
-                  ? __('Visitors must submit their details here before seeing the result. An accepted save creates one submission.', 'wconvert')
-                  : __('Saves the signup or request here, even if the visitor leaves a later screen.', 'wconvert')
+                  ? __('Visitors must submit their details here before seeing the result.', 'wconvert')
+                  : __('Saves here, even if the visitor leaves on a later screen.', 'wconvert')
                 : current.kind === 'result'
-                  ? __('Shows the selected result. Viewing it does not save contact details or create a submission.', 'wconvert')
-                : __('New answers stay on this page until the visitor submits. Going to the next screen does not save new details.', 'wconvert')}</p></Disclosure>}
+                  ? __('Viewing the result saves no contact details and creates no submission.', 'wconvert')
+                : __('New answers stay unsaved until the visitor submits.', 'wconvert')}</p></Disclosure>}
           {authoring.nextSummary}
           {authoring.route && slim && tree.graph && !questionPath && (tree.graph.edges.some(edge => edge.from === current.id && edge.kind !== 'default') || !!current.when) && <PanelSection><Disclosure variant="inline" className="wconvert-screen-paths"
             open={panelSection === 'paths' || undefined} title={__('Lines', 'wconvert')} summary={sprintf(/* translators: %s: how many paths leave this screen. */ _n('%s line', '%s lines', tree.graph.edges.filter(edge => edge.from === current.id && edge.kind !== 'hidden').length, 'wconvert'), formatCount(tree.graph.edges.filter(edge => edge.from === current.id && edge.kind !== 'hidden').length))}>{authoring.route}</Disclosure></PanelSection>}
@@ -690,16 +690,16 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
         </QuestionPanelContext.Provider>
         <div className={embedded && !said ? 'sr-only' : 'wconvert-journey-dialog__footer wconvert-toolbar'}><p role="status">{said}</p>{said && onUndo && <Button type="button" variant="ghost" onClick={onUndo}>{__('Undo change', 'wconvert')}</Button>}{said && <Button type="button" variant="outline" onClick={() => { setTestChange(notice); setTestMode('journey'); setTestOpen(true); }}>{__('Test this change', 'wconvert')}</Button>}{!embedded && <DialogClose asChild><Button variant="outline">{__('Done', 'wconvert')}</Button></DialogClose>}</div>
         <ConfirmDialog variant="destructive" open={deleting} onOpenChange={setDeleting} title={sprintf(/* translators: %s: a screen's name, e.g. “Skin type”. */ __('Delete “%s”?', 'wconvert'), current.name)} returnFocusTo={deleteTrigger}
-          description={__('Other screens, their lines and saved leads stay. Undo brings this screen back.', 'wconvert')}
+          description={__('Other screens, their lines and saved leads stay. Undo restores this screen.', 'wconvert')}
           confirmLabel={__('Delete screen', 'wconvert')} onConfirm={() => { setDeleting(false); remove(); }} />
         <ConfirmDialog variant="destructive" open={confirmRemoval} onOpenChange={setConfirmRemoval} title={__('Remove this optional form?', 'wconvert')}
-          description={sprintf(/* translators: %s: a comma-separated list of the optional signup's screen names, e.g. “Get updates, Thanks”. */ __('Removes %s, with its contact fields, consent and signup settings. Other screens and saved leads stay. Undo restores this draft edit.', 'wconvert'), tree.steps.filter(s => removal.screens.includes(s.id)).map(s => s.name).join(', '))}
+          description={sprintf(/* translators: %s: a comma-separated list of the optional signup's screen names, e.g. “Get updates, Thanks”. */ __('Removes %s. Other screens and saved leads stay. Undo restores this edit.', 'wconvert'), tree.steps.filter(s => removal.screens.includes(s.id)).map(s => s.name).join(', '))}
           confirmLabel={__('Remove form', 'wconvert')} onConfirm={remove} />
         <ConfirmDialog open={straightening} onOpenChange={setStraightening} title={__('Make it a straight campaign?', 'wconvert')}
-          description={__('Removes the questions, results, answer lines and “Only if…” this site can’t display, and the screens that only asked questions. The rest stay in the order the Flow map shows. Undo brings it all back.', 'wconvert')}
+          description={__('Removes all this site can’t display, including question-only screens. Undo restores it.', 'wconvert')}
           confirmLabel={__('Make it straight', 'wconvert')} onConfirm={() => {
             setStraightening(false);
-            if (straight && !isRefusal(straight)) { write(straight, 0); setSaid(__('Now one screen after another. Check what the campaign still needs before publishing.', 'wconvert')); }
+            if (straight && !isRefusal(straight)) { write(straight, 0); setSaid(__('Now one screen after another. Check what it still needs before publishing.', 'wconvert')); }
           }} />
   </>;
   return <>
@@ -743,7 +743,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
           </TabsList>}
           {/* Kept mounted, so a run survives a look at Who sees it. */}
           <TabsContent value="journey" forceMount className="wconvert-journey-test-dialog__body data-[state=inactive]:hidden">
-            <JourneyTest onClose={closeTest} active={previewMode === 'journey'} changeToCheck={testChange} onShowPath={(screens, edges) => { setSamplePath(screens); setSampleEdges(edges); setInspecting(false); setMobilePane('map'); setView('flow'); leaveTest(); setOpen(true); setSaid(__('The screens and lines visited in your test are highlighted. Future screens are not predicted.', 'wconvert')); }} template={testTemplate} deliveryMode={deliveryMode} destinationSummary={destinationSummary}
+            <JourneyTest onClose={closeTest} active={previewMode === 'journey'} changeToCheck={testChange} onShowPath={(screens, edges) => { setSamplePath(screens); setSampleEdges(edges); setInspecting(false); setMobilePane('map'); setView('flow'); leaveTest(); setOpen(true); setSaid(__('Your test’s screens and lines are highlighted. Future screens are not predicted.', 'wconvert')); }} template={testTemplate} deliveryMode={deliveryMode} destinationSummary={destinationSummary}
               onEdit={(index, focus) => { returnToTestTrigger.current = false; select(index); leaveTest(); setOpen(true); if (focus === 'condition') setReferenceRequest({ screenId: tree.steps[index].id, section: 'content', serial: --referenceSerial.current }); }} />
           </TabsContent>
           {whoSeesIt && <TabsContent value="visit" className="wconvert-preview-tabs__visit wconvert-sample-dialog">{whoSeesIt(closeTest)}</TabsContent>}

@@ -81,7 +81,7 @@ export default function SampleVisit({ value, vocabulary, onClose, onOpenSection,
       : preview.error ? { status: 'fail', reason: __('The sample basket could not be checked.', 'wconvert') }
         : !preview.result ? { status: 'checking' }
           : !preview.result.eligible || (cartRequired && preview.result.rules[requiredCartId] !== true)
-            ? { status: 'fail', reason: __('This basket does not meet the campaign’s basket requirements or has no eligible recommendations.', 'wconvert') }
+            ? { status: 'fail', reason: __('This basket fails the campaign’s requirements or has no eligible recommendations.', 'wconvert') }
             : { status: 'pass', answers: Object.fromEntries(cartRules.map(rule => [String(rule.id),
               preview.result!.state === 'blocked' ? 'blocked' : preview.result!.rules[String(rule.id)] ?? false] as [string, Answer])) };
   const result = checkVisit(value, vocabulary, visitor, basketCheck, act);

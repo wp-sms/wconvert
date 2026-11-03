@@ -21,7 +21,7 @@ export function JourneyArrivalSummary({ tree, step, onSelectPath }: {
   return <Disclosure variant="inline" className="wconvert-journey-arrival" key={screen.id}
     title={sources.size === 1 ? sprintf(/* translators: %s: the name of the one screen that leads here, e.g. “Skin type”. */ __('Arrives from %s', 'wconvert'), tree.steps.find(item => item.id === incoming[0].from)?.name ?? __('Removed screen', 'wconvert'))
       : sprintf(/* translators: %s: how many different screens lead to this one. */ _n('Arrives from %s screen', 'Arrives from %s screens', sources.size, 'wconvert'), formatCount(sources.size))}>
-    <p>{__('First match wins on each line in; this screen’s “Only if…” is checked on arrival.', 'wconvert')}</p>
+    <p>{__('First match wins. This screen’s “Only if…” is checked on arrival.', 'wconvert')}</p>
     <ul>{incoming.map(edge => {
       const from = tree.steps.findIndex(item => item.id === edge.from);
       if (from < 0) return null;

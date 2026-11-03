@@ -43,31 +43,31 @@ export function SampleBasket({ value, onChange, result, error, onRetry, products
   const reason: Record<string, string> = {
     unknown: __('The sample basket is unavailable or consent is not given.', 'wconvert'),
     main_required: __('Choose an available main product in the recommendation settings.', 'wconvert'),
-    different_product: __('Choose the matching viewed product for this sample. Recommendations use the product page even when the basket is empty.', 'wconvert'),
+    different_product: __('Choose the matching viewed product for this sample.', 'wconvert'),
     different_basket: __('The main product is not in this sample basket.', 'wconvert'),
     empty: __('Add a product to the sample basket to see suggestions.', 'wconvert'),
-    no_relationships: __('No WooCommerce cross-sells are configured for the selected main product or basket products. Add linked cross-sells in WooCommerce, or choose products yourself.', 'wconvert'),
-    no_direct_add: __('No extras can be added directly. Choose an available simple product, or use Open product page.', 'wconvert'),
+    no_relationships: __('No cross-sells for these products. Add them in WooCommerce, or choose products.', 'wconvert'),
+    no_direct_add: __('Choose an available simple product, or use Open the product page.', 'wconvert'),
     none_selected: __('Choose recommendation products in your draft first.', 'wconvert'),
     unavailable: __('All suggestions are already in the basket or are unavailable to buy.', 'wconvert'),
   };
   return <section aria-labelledby="wconvert-sample-basket" className="space-y-3">
     <h3 id="wconvert-sample-basket">{__('Sample basket', 'wconvert')}</h3>
-    <p className="wconvert-sample-help">{__('These are pretend basket contents and totals. Product categories, relationships and availability come from your store. Nothing is added to a real basket.', 'wconvert')}</p>
+    <p className="wconvert-sample-help">{__('Pretend basket, real product data. Nothing is added to a real basket.', 'wconvert')}</p>
     <label>{__('Basket status', 'wconvert')}<NativeSelect value={value.state} onChange={event => onChange({ ...value, state: event.target.value as Basket['state'] })}>
       <option value="known">{__('Known basket', 'wconvert')}</option><option value="unknown">{__('Basket unavailable', 'wconvert')}</option><option value="blocked">{__('Consent not given', 'wconvert')}</option>
     </NativeSelect></label>
-    {products?.context === 'product' && <fieldset className="space-y-3"><legend>{__('Viewed product', 'wconvert')}</legend><CommercePicker recommendations compact max={1} searchLabel={__('Find viewed product', 'wconvert')} value={value.viewed_product_id ? [value.viewed_product_id] : []} onChange={ids => onChange({ ...value, viewed_product_id: ids[0] ?? 0 })}/><p className="wconvert-sample-help">{__('Choose a product page. This does not add it to the sample basket.', 'wconvert')}</p></fieldset>}
+    {products?.context === 'product' && <fieldset className="space-y-3"><legend>{__('Viewed product', 'wconvert')}</legend><CommercePicker recommendations compact max={1} searchLabel={__('Find viewed product', 'wconvert')} value={value.viewed_product_id ? [value.viewed_product_id] : []} onChange={ids => onChange({ ...value, viewed_product_id: ids[0] ?? 0 })}/><p className="wconvert-sample-help">{__('Choose a product page. It is not added to the sample basket.', 'wconvert')}</p></fieldset>}
     <CommercePicker value={value.items.map(item => item.id)} onChange={ids => onChange({ ...value, items: ids.map(id => value.items.find(item => item.id === id) ?? { id, quantity: 1 }) })}
       itemControls={(id, name) => <label>{__('Quantity', 'wconvert')}<Input className="w-24" type="number" min={1} max={10000} step={1} aria-label={sprintf(/* translators: %s: a product's name in the sample basket, e.g. “Blue T-shirt”. */ __('Quantity for %s', 'wconvert'), name)} value={value.items.find(item => item.id === id)?.quantity ?? 1}
         onChange={event => onChange({ ...value, items: value.items.map(item => item.id === id ? { ...item, quantity: Math.max(1, Math.min(10000, Math.floor(Number(event.target.value) || 1))) } : item) })} /></label>} />
     <label>{__('Merchandise amount after discounts', 'wconvert')}<Input type="number" min={0} max={1000000000} step="any" value={value.amount} onChange={event => onChange({ ...value, amount: Number(event.target.value) })} /></label>
-    <p className="wconvert-sample-help">{result?.currency ?? ''} · {__('Enter a pretend amount, excluding shipping and tax. It is not calculated from product prices.', 'wconvert')}</p>
+    <p className="wconvert-sample-help">{result?.currency ?? ''} · {__('Pretend amount, excluding shipping and tax. Not calculated from product prices.', 'wconvert')}</p>
     {legacyTotal && <label>{__('Basket total including shipping and tax', 'wconvert')}<Input type="number" min={0} max={1000000000} step="any" value={value.total} onChange={event => onChange({ ...value, total: Number(event.target.value) })} /></label>}
     {/* The verdict beside this says "Checking…", so the wait has no second voice here. */}
     {error && <div role="alert" className="flex flex-wrap items-center gap-3"><span>{__('Could not test this basket. Review the values, then try again.', 'wconvert')}</span><TryAgain onClick={onRetry} /></div>}
     {products && <div className="space-y-3"><h4>{__('Recommendations for this sample visit', 'wconvert')}</h4>
-      <p className="wconvert-sample-help">{__('Product availability preview only. The campaign also needs to pass the display rules above. No clicks or sales are recorded.', 'wconvert')}</p>
+      <p className="wconvert-sample-help">{__('Availability preview. Display rules still apply. No clicks or sales are recorded.', 'wconvert')}</p>
       {!result && !error && <Skeleton aria-hidden="true" className="h-[1lh] w-64 max-w-full" />}
       {result && !result.cards.length && <p>{reason[result.reason] ?? __('No eligible suggestions.', 'wconvert')}</p>}
       {!!result?.cards.length && <ul className="grid gap-3 sm:grid-cols-3">{result.cards.map(card => <li className="min-w-0 rounded-md border p-3 space-y-2" key={card.id}>

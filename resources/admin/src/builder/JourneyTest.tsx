@@ -219,7 +219,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
           const id = button.dataset.submission ?? '';
           if (failNextRef.current) { setAnswers(currentAnswers); failNextRef.current = false; setFailNext(false); setFeedback(__('Submission not confirmed. The visitor stays here and can try again.', 'wconvert')); return; }
           const snapshot = testCaptureSnapshot(tree, step, id, currentAnswers, draft);
-          if (!snapshot) { setAnswers(currentAnswers); setFeedback(__('This save is incomplete or was not reached in this visit. Check its contact fields and submission settings before testing again.', 'wconvert')); return; }
+          if (!snapshot) { setAnswers(currentAnswers); setFeedback(__('Save incomplete or not reached. Check its contact fields and submission settings.', 'wconvert')); return; }
           setAccepted(previous => previous.includes(id) ? previous : [...previous, id]);
           setSnapshots(previous => ({ ...previous, [id]: previous[id] ?? snapshot }));
           setAcceptedQuestions(previous => [...new Set([...previous, ...snapshot.questionIds])]);
@@ -228,7 +228,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
             setDelivery(previous => ({ ...previous, [id]: deliveryFailed ? 'failed' : 'queued' }));
             failDeliveryNextRef.current = false; setFailDeliveryNext(false);
           }
-          setFeedback(__('Save accepted in this test. The visitor can continue; no real lead or destination request was created.', 'wconvert'));
+          setFeedback(__('Save accepted. No real lead or destination request was created.', 'wconvert'));
         } else if (button.dataset.action === 'skip') {
           const id = button.dataset.submission ?? '';
           const submission = tree.submissions.find(item => item.id === id);
@@ -236,7 +236,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
           for (const field of [...submission.fields, ...submission.consents]) delete draft[field];
           setCaptureValues(draft);
           setSkipped(previous => previous.includes(id) ? previous : [...previous, id]);
-          setFeedback(__('Optional signup skipped. No new details were saved; earlier accepted saves are unchanged.', 'wconvert'));
+          setFeedback(__('Optional signup skipped. No new details saved; earlier saves are unchanged.', 'wconvert'));
         } else setFeedback('');
         move(1, currentAnswers);
       }
@@ -311,7 +311,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
     {productHost && (shownResult?.product_ids?.length || shownResult?.product_filter) && createPortal(<>{shownResult.product_filter && productState === 'selected' ? <LiveProductMatches filter={shownResult.product_filter} /> : <TestProducts count={shownResult.product_filter ? 3 : shownResult.product_ids?.length ?? 0}
       state={productState} onRetry={() => setProductState('selected')} />}{shownResult.product_action === 'add_to_cart' && productState === 'selected' && <TestCartAction key={shownResult.id} />}</>, productHost)}
     <aside className="wconvert-journey-test__side" aria-label={__('What happened', 'wconvert')}>
-      {changeToCheck && <section className="wconvert-journey-test__change" aria-label={__('Change to check', 'wconvert')}><p>{__('Testing your change:', 'wconvert')} <strong>{changeToCheck.screenName}</strong> {changeToCheck.text}</p><Disclosure variant="inline" title={__('Suggested checks', 'wconvert')}><ul>{changeTestGuide(tree, changeToCheck.screenId).map(check => <li key={check}>{check}</li>)}</ul><p>{__('These are cases to try, not proof that a rule is reachable or wins. Earlier answers and the top-to-bottom order still apply.', 'wconvert')}</p></Disclosure></section>}
+      {changeToCheck && <section className="wconvert-journey-test__change" aria-label={__('Change to check', 'wconvert')}><p>{__('Testing your change:', 'wconvert')} <strong>{changeToCheck.screenName}</strong> {changeToCheck.text}</p><Disclosure variant="inline" title={__('Suggested checks', 'wconvert')}><ul>{changeTestGuide(tree, changeToCheck.screenId).map(check => <li key={check}>{check}</li>)}</ul><p>{__('Cases to try, not proof a rule is reachable or wins.', 'wconvert')}</p></Disclosure></section>}
       <div className="wconvert-journey-test__status"><h3>{__('What happened', 'wconvert')}</h3><small data-complete={complete || undefined}>{complete ? __('Finished', 'wconvert') : __('In progress', 'wconvert')}</small></div>
       {visited.length === 1 && !complete && <p>{__('Use the form as a visitor would. Each screen you reach is listed here.', 'wconvert')}</p>}
       <ol className="wconvert-journey-test__timeline" aria-label={__('Visited screens', 'wconvert')}>
@@ -341,7 +341,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
         <ol>{shownSubmissions.map(submission => <li key={submission.id} className="wconvert-journey-test__checkpoint"><div><strong>{tree.steps.find(screen => walkNodes(screen.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit' && 'submission' in node && node.submission === submission.id))?.name ?? __('Signup', 'wconvert')}</strong><span>{accepted.includes(submission.id) ? __('Accepted in test', 'wconvert') : __('Skipped', 'wconvert')}</span></div>
           {accepted.includes(submission.id) && <>
             <small>{deliveryMode === 'connected' ? delivery[submission.id] === 'failed'
-              ? __('Destination delivery failed in this simulation. The accepted save remains; try delivery again without resubmitting.', 'wconvert')
+              ? __('Delivery failed in this simulation. The save remains; no need to resubmit.', 'wconvert')
               : __('Destination delivery is queued in this simulation.', 'wconvert')
               : deliveryMode === 'local' ? __('This would be stored in WConvert only.', 'wconvert')
                 : __('No destination is configured for this test.', 'wconvert')}</small>
@@ -356,22 +356,22 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
         </li>)}</ol>
         <small>{__('No real submission or delivery occurred.', 'wconvert')}</small>
       </section>}
-      {complete && <p className="wconvert-journey-test__complete">{accepted.length ? __('This visit is complete. Start over to try another.', 'wconvert') : __('This visit is complete, and no contact details were submitted. Start over to try another.', 'wconvert')}</p>}
+      {complete && <p className="wconvert-journey-test__complete">{accepted.length ? __('This visit is complete. Start over to try another.', 'wconvert') : __('Visit complete, no contact details submitted. Start over to try another.', 'wconvert')}</p>}
       {/* Every way to make the run go wrong, folded into one place (ADR 0138). */}
       {(failable || hasProducts) && <Disclosure variant="inline" className="wconvert-test-diagnostics" title={__('Simulate a problem', 'wconvert')}>
         {failable && <>
-          <p>{__('Applies to the next submission only. A failed save keeps the visitor here so they can try again.', 'wconvert')}</p>
+          <p>{__('A failed save keeps the visitor here so they can try again.', 'wconvert')}</p>
           <CheckRow checked={failNext} onChange={event => { failNextRef.current = event.target.checked; setFailNext(event.target.checked); }} label={__('Simulate failure on next submission', 'wconvert')} />
           {deliveryMode === 'connected' && <CheckRow checked={failDeliveryNext} onChange={event => { failDeliveryNextRef.current = event.target.checked; setFailDeliveryNext(event.target.checked); }} label={__('Simulate delivery failure after next accepted save', 'wconvert')} />}
         </>}
         {hasProducts && <fieldset><legend>{__('Products on this result', 'wconvert')}</legend>
           {(['selected', 'empty', 'error'] as const).map(value => <CheckRow key={value} type="radio" name="product-state" checked={productState === value} onChange={() => setProductState(value)} label={value === 'selected' ? __('Available', 'wconvert') : value === 'empty' ? __('None available', 'wconvert') : __('Loading error', 'wconvert')} />)}
-          <p>{shownResult?.product_filter ? __('Available shows live matches. The other options simulate problems. No activity is counted.', 'wconvert') : __('This test does not fetch your catalog. Retry simulates a successful response; check actual prices and stock on your website.', 'wconvert')}</p>
+          <p>{shownResult?.product_filter ? __('Available shows live matches; the others simulate problems. No activity is counted.', 'wconvert') : __('Not your real catalog. Check actual prices and stock on your website.', 'wconvert')}</p>
         </fieldset>}
       </Disclosure>}
       <p className="wconvert-journey-test__scope">{destinationSummary && tree.submissions.length > 0 ? sprintf(
         /* translators: %s: where this campaign's leads go, e.g. “Mailchimp”. */
-        __('Checks screens, answers and required fields. Destination setup: %s; delivery here is simulated.', 'wconvert'), destinationSummary) : __('Checks screens, answers and required fields. Nothing is saved, sent or counted.', 'wconvert')}</p>
+        __('Checks screens, answers and required fields. Destination setup: %s; delivery is simulated.', 'wconvert'), destinationSummary) : __('Checks screens, answers and required fields. Nothing is saved, sent or counted.', 'wconvert')}</p>
     </aside>
     <AdminDialogFooter className="wconvert-preview-test__footer" note={__('Uses your unsaved draft.', 'wconvert')}
       back={onClose && <Button variant="outline" onClick={onClose}>{__('Done', 'wconvert')}</Button>}>

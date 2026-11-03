@@ -157,7 +157,7 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
             <h3>{__('Drop your template file here', 'wconvert')}</h3>
             <p>{__('A .wconvert.zip file exported from WConvert', 'wconvert')}</p>
             <Button disabled={busy} onClick={() => fileInput.current?.click()}><ArrowUpFromLine aria-hidden="true" />{__('Choose file', 'wconvert')}</Button>
-            <small>{sprintf(/* translators: %s: the largest file size allowed, in megabytes, e.g. “8”. */ __('Up to %s MB · Images included in the file travel with it', 'wconvert'), formatCount(Math.floor(status.max_bytes / 1048576)))}</small>
+            <small>{sprintf(/* translators: %s: the largest file size allowed, in megabytes, e.g. “8”. */ __('Up to %s MB', 'wconvert'), formatCount(Math.floor(status.max_bytes / 1048576)))}</small>
           </div>
 
         </div>}
@@ -183,7 +183,7 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
                   <li><Check aria-hidden="true" /><div><strong>{__('Your latest edits', 'wconvert')}</strong><p>{__('Includes changes you haven’t saved yet', 'wconvert')}</p></div></li>
                 </ul>
               </section>
-              <div className="wconvert-transfer__note"><h3>{__('Design only', 'wconvert')}</h3><p>{__('Campaign settings, connections, and leads stay on this site. Some features may not be available on the receiving site.', 'wconvert')}</p></div>
+              <div className="wconvert-transfer__note"><h3>{__('Design only', 'wconvert')}</h3><p>{__('Campaign settings, connections and leads stay here. Some features may not transfer.', 'wconvert')}</p></div>
               {hasProblems && <section className="wconvert-transfer__warning"><h3><TriangleAlert aria-hidden="true" />{__('Some images can’t be included', 'wconvert')}</h3><ul>{Object.entries(problems).map(([slot, message]) => <li key={slot}>{message}</li>)}</ul><p>{__('Continue without these images, or cancel and replace them in the editor.', 'wconvert')}</p></section>}
             </> : <>
               <fieldset className="wconvert-transfer__section wconvert-transfer__content wconvert-radio-cards" disabled={busy}><legend>{__('Content to use', 'wconvert')}</legend>

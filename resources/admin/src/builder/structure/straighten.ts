@@ -21,10 +21,10 @@ export function straightenedJourney(tree: TemplateTree): TemplateTree | Refusal 
     .filter(screen => screen.kind !== 'result' && (!asks(screen) || collects(screen)))
     .map(plainScreen);
   if (steps.length === 0) {
-    return { short: __('Nothing would be left', 'wconvert'), reason: __('Every screen in this design asks a question or shows a result. Start from another template instead.', 'wconvert') };
+    return { short: __('Nothing would be left', 'wconvert'), reason: __('Every screen asks a question or shows a result. Choose another template.', 'wconvert') };
   }
   if (steps.length > 7) {
-    return { short: __('Up to 7 screens', 'wconvert'), reason: __('A straight campaign holds up to 7 screens. Delete screens until 7 are left, then try again.', 'wconvert') };
+    return { short: __('Up to 7 screens', 'wconvert'), reason: __('A straight campaign holds up to 7 screens. Delete down to 7.', 'wconvert') };
   }
   steps[0] = { ...steps[0], content: withoutBackButtons(steps[0].content) };
   // The first signup becomes the required one, so it loses the "No thanks" a result-first quiz gave it.

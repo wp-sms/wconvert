@@ -143,17 +143,17 @@ function offeredHere(type: string): boolean {
  * for its ⓘ. Functions, so `__()` runs after the locale has loaded.
  */
 const REFUSALS = {
-  products: () => ({ short: __('Only on a single offer screen', 'wconvert'), reason: __('Use one product recommendation block as the action of a single offer screen.', 'wconvert') }),
+  products: () => ({ short: __('Only on a single offer screen', 'wconvert'), reason: __('Use one product recommendation block as a single offer screen’s action.', 'wconvert') }),
   recommendations: () => ({ short: __('Recommendations are the action here', 'wconvert'), reason: __('This campaign converts through its recommendations.', 'wconvert') }),
   link: () => ({ short: __('Already has its link', 'wconvert'), reason: __('This design already has its converting link.', 'wconvert') }),
   followup: () => ({ short: __('Only after the signup', 'wconvert'), reason: __('Resource links belong after capture.', 'wconvert') }),
   contact: () => ({ short: __('Only on a question screen', 'wconvert'), reason: __('Add contact fields to a question screen.', 'wconvert') }),
   questionScreen: () => ({ short: __('Only on a question screen', 'wconvert'), reason: __('Add questions to a question screen.', 'wconvert') }),
   questionBoundary: () => ({ short: __('Only before the result or signup', 'wconvert'), reason: __('Add questions on a screen before the result or contact submission.', 'wconvert') }),
-  tenOnPath: () => ({ short: __('Line already has ten questions', 'wconvert'), reason: __('Adding here would put more than ten questions on one line. Use a separate line or remove a question from that line.', 'wconvert') }),
+  tenOnPath: () => ({ short: __('Line already has ten questions', 'wconvert'), reason: __('A line holds ten questions. Use another line, or remove a question.', 'wconvert') }),
   tenInJourney: () => ({ short: __('Already has ten questions', 'wconvert'), reason: __('This campaign already has ten questions on one line.', 'wconvert') }),
   everyField: () => ({ short: __('Every field is already here', 'wconvert'), reason: __('Every kind of detail this vocabulary can capture is already on the form.', 'wconvert') }),
-  column: () => ({ short: __('Screens are already columns', 'wconvert'), reason: __('A step is already a column. Add one inside a Row, to group blocks into a single item.', 'wconvert') }),
+  column: () => ({ short: __('Screens are already columns', 'wconvert'), reason: __('Add a column inside a Row, to group blocks into one item.', 'wconvert') }),
 } as const;
 
 type Refusal = keyof typeof REFUSALS;

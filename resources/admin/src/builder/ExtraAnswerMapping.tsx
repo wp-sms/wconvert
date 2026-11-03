@@ -48,8 +48,8 @@ export function ExtraAnswerMapping({ destination, providerLabel, submissionId, t
   const issueFor = (source: AnswerSource) => {
     const target = value[source.id];
     if (!target || !fields) return null;
-    if (!fields.some((field) => field.value === target && compatible(source, field))) return __('This field is unavailable or has an incompatible type. Choose another field or keep this answer in WConvert only.', 'wconvert');
-    if (selected.some((other) => other.id !== source.id && value[other.id] === target)) return __('This field is used more than once. Choose a different field for each answer.', 'wconvert');
+    if (!fields.some((field) => field.value === target && compatible(source, field))) return __('Field unavailable or wrong type. Choose another or keep it in WConvert.', 'wconvert');
+    if (selected.some((other) => other.id !== source.id && value[other.id] === target)) return __('Used more than once. Choose a different field for each answer.', 'wconvert');
     return null;
   };
   const hasIssues = orphaned.length > 0 || selected.some(issueFor);
@@ -70,7 +70,7 @@ export function ExtraAnswerMapping({ destination, providerLabel, submissionId, t
         {!error && <Button type="button" variant="ghost" disabled={busy} onClick={() => setRefresh((old) => old + 1)}>{busy && fields ? __('Refreshing fields…', 'wconvert') : __('Refresh fields', 'wconvert')}</Button>}
       </div>
       {error && (fields
-        ? <RegionError message={__('Could not refresh fields. Showing the last loaded fields; testing is unavailable until they load.', 'wconvert')} action={<TryAgain busy={busy} onClick={() => setRefresh((old) => old + 1)} />} />
+        ? <RegionError message={__('Could not refresh. These are the last loaded fields. Testing is off.', 'wconvert')} action={<TryAgain busy={busy} onClick={() => setRefresh((old) => old + 1)} />} />
         : <RegionErrorState message={__('Could not load fields.', 'wconvert')} hint={error} action={<TryAgain busy={busy} onClick={() => setRefresh((old) => old + 1)} />} />)}
       {!fields && !error && busy && <RegionSkeleton label={__('fields', 'wconvert')} lines={Math.min(eligible.length, 3)} />}
       {fields && <fieldset disabled={busy || !!error} className="@container m-0 min-w-0 border-0 p-0" aria-label={__('Answer mappings', 'wconvert')} aria-busy={busy}>
@@ -92,11 +92,11 @@ export function ExtraAnswerMapping({ destination, providerLabel, submissionId, t
         </div>
       </fieldset>}
       {selected.some((source) => source.type === 'boolean') && destination.settings.existing_contact !== 'update' && <div className="flex flex-wrap items-center gap-3 rounded-md bg-surface p-3">
-        <Description className="min-w-0 flex-1 basis-56">{__('Existing contacts keep their current details. Choose Update mapped fields in destination settings to add new interests too.', 'wconvert')}</Description>
+        <Description className="min-w-0 flex-1 basis-56">{__('Existing contacts keep their details. Choose Update mapped fields to add interests.', 'wconvert')}</Description>
         {onSettings && <Button type="button" variant="outline" onClick={(event) => onSettings(event.currentTarget)}>{__('Destination settings', 'wconvert')}</Button>}
       </div>}
       {orphaned.length > 0 && <div className="flex flex-col items-start gap-2">
-        <p role="alert" className="m-0 text-note text-warning">{__('Some mapped answers are no longer in this signup. Remove their mappings before publishing.', 'wconvert')}</p>
+        <p role="alert" className="m-0 text-note text-warning">{__('Some mapped answers are gone from this signup. Remove them before publishing.', 'wconvert')}</p>
         <Button type="button" variant="outline" onClick={() => onChange(Object.fromEntries(Object.entries(value).filter(([source]) => !orphaned.includes(source))))}>{__('Remove unavailable answers', 'wconvert')}</Button>
       </div>}
       {fields && selected.length > 0 && !hasIssues && !busy && !error &&

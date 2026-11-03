@@ -1245,7 +1245,7 @@ it('offers a free install linear screens only, with no question, condition or pa
   expect(tree.steps).toHaveLength(3);
   expect(tree.graph).toBeUndefined();
   expect(tree.steps.some(item => item.paths || item.when || walkNodes(item.content).some(node => node.type === 'question'))).toBe(false);
-  expect(screen.queryByText('This design uses elements this site can’t display. This campaign can’t be published, and a live copy is paused; your draft keeps saving. Remove them to publish.')).not.toBeInTheDocument();
+  expect(screen.queryByText('To publish, remove elements this site can’t display. Any live copy pauses.')).not.toBeInTheDocument();
 });
 
 it('tells a free install it cannot display a journey draft, without naming Pro', async () => {
@@ -1253,7 +1253,7 @@ it('tells a free install it cannot display a journey draft, without naming Pro',
   const user = userEvent.setup();
   render(<Editor initial={finder.tree as TemplateTree} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  expect(screen.getByText('This design uses elements this site can’t display. This campaign can’t be published, and a live copy is paused; your draft keeps saving. Remove them to publish.')).toBeInTheDocument();
+  expect(screen.getByText('To publish, remove elements this site can’t display. Any live copy pauses.')).toBeInTheDocument();
   expect(screen.queryByText(/WConvert Pro|requires Pro|needs Pro|upgrade/i)).not.toBeInTheDocument();
   // An imported journey is not edited further on a free install.
   expect(screen.queryByRole('heading', { name: 'Results' })).not.toBeInTheDocument();

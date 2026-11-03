@@ -495,7 +495,7 @@ export function convertCapture(draft: { readonly config: Config; readonly goal: 
   if (target.capture === 'none') {
     if (offer.state === 'none') return { reason: __('This campaign has no form.', 'wconvert') };
     const removed = removeForm(template.tree, target.link);
-    if (!removed) return { reason: __('This form has no button that sends it. Add one, then try again.', 'wconvert') };
+    if (!removed) return { reason: __('This form has no button that sends it. Add one first.', 'wconvert') };
     const goal = goalFor(context.goals, draft.goal, target, removed.link !== null);
     if (!goal) return { reason: __('No goal fits this design.', 'wconvert') };
     // Nothing is captured, so nothing is sent: every route and mapping goes.

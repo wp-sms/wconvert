@@ -21,7 +21,7 @@ export function FontNotice({ template }: { template: Template }) {
   return <PanelHint>
     {sprintf(
       /* translators: %s: comma-separated font family names, e.g. "DM Sans, Archivo Black". */
-      _n('This design uses %s. A substitute font is shown until you install it or enable Google Fonts.', 'This design uses %s. Substitute fonts are shown until you install them or enable Google Fonts.', missing.length, 'wconvert'),
+      _n('Until you install %s or enable Google Fonts, a substitute font shows.', 'Until you install %s or enable Google Fonts, substitute fonts show.', missing.length, 'wconvert'),
       missing.map(font => font.family).join(', '),
     )}{' '}
     <a href={site.font_library_url ?? 'https://wordpress.org/documentation/article/the-font-library/'} target="_blank" rel="noreferrer">{__('Install fonts', 'wconvert')}</a>{' · '}

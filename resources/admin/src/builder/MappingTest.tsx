@@ -70,7 +70,7 @@ export function MappingTest({ destination, fields, sources, mapping }: {
             <Input id={`${id}-${group.answer.id}`} type="text" maxLength={500} value={String(sample[group.answer.id] ?? '')} onChange={(event) => { invalidate(); setSample({ ...sample, [group.answer!.id]: event.target.value }); }} />
           </div>}
         </fieldset>)}
-        <Description>{__('Blank answers and unchecked interests are omitted; they do not clear existing values.', 'wconvert')}</Description>
+        <Description>{__('Blank answers and unchecked interests are left out; existing values stay.', 'wconvert')}</Description>
         <div><Button type="button" variant="outline" onClick={() => void previewDraft()}>{busy === 'preview' ? __('Preparing preview…', 'wconvert') : __('Preview data', 'wconvert')}</Button></div>
       </fieldset>
       {preview && <div className="flex min-w-0 flex-col gap-3 rounded-md border border-border bg-surface p-3 text-note" aria-live="polite">
@@ -80,7 +80,7 @@ export function MappingTest({ destination, fields, sources, mapping }: {
           <dt className="text-muted-foreground">{__('Email', 'wconvert')}</dt><dd className="m-0">{preview.email}</dd>
           {Object.entries(preview.mapped).map(([target, text]) => <MappingValue key={target} label={fields.find((field) => field.value === target)?.label ?? target} text={text} />)}
         </dl>
-        {Object.keys(preview.mapped).length === 0 && <Description>{__('No extra answers in this sample. Enter an answer above to check its mapping.', 'wconvert')}</Description>}
+        {Object.keys(preview.mapped).length === 0 && <Description>{__('No extra answers in this sample. Enter one above to check it.', 'wconvert')}</Description>}
         <Description>{destination.settings.existing_contact === 'update' ? __('If this contact exists, mapped fields may be updated.', 'wconvert') : __('If this contact exists, its details are kept.', 'wconvert')}</Description>
         <Description>{__('A test sends a real contact and may add it to the selected audience or list and trigger automations. Use your own address.', 'wconvert')}</Description>
         <div><Button type="button" disabled={busy !== null || report?.outcome === 'success' || Object.keys(preview.mapped).length === 0} onClick={() => void sendDraft()}>{busy === 'send' ? __('Sending test contact…', 'wconvert') : __('Send test contact', 'wconvert')}</Button></div>

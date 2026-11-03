@@ -123,7 +123,7 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
         {parts.dates && <> {phrase(parts.dates)}</>}
       </p>
     </div>
-    {!plan && <div role="alert" className="wconvert-display-repair"><p>{__('This draft uses an older development rule format. Review and replace its display setup before saving or publishing.', 'wconvert')}</p>
+    {!plan && <div role="alert" className="wconvert-display-repair"><p>{__('This draft’s rules are outdated. Set them up before saving or publishing.', 'wconvert')}</p>
       <Button onClick={() => update(incompletePlan())}>{__('Set up display rules', 'wconvert')}</Button></div>}
     <div className="wconvert-display-grid">
       <nav aria-label={__('Display rules', 'wconvert')}>

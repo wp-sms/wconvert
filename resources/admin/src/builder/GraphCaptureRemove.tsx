@@ -22,7 +22,7 @@ export function GraphCaptureRemove({ tree, submissionId, onRemove, onCancel }: {
   return <>
     <AlertDialogHeader>
       <AlertDialogTitle>{__('Remove this optional form?', 'wconvert')}</AlertDialogTitle>
-      <AlertDialogDescription>{__('Removes the screens collecting this signup, with their contact fields, consent and save or skip buttons. Other screens and saved leads stay. Undo restores this draft edit.', 'wconvert')}</AlertDialogDescription>
+      <AlertDialogDescription>{__('Other screens and saved leads stay. Undo restores this draft edit.', 'wconvert')}</AlertDialogDescription>
     </AlertDialogHeader>
     <div className="wconvert-graph-insert__body wconvert-graph-remove__body">
       {plan.reason ? <p id={`${id}-refusal`} role="status">{plan.reason}</p> : plan.routes.map((route, index) => <div className="wconvert-graph-insert__summary" key={route.from}>
@@ -36,7 +36,7 @@ export function GraphCaptureRemove({ tree, submissionId, onRemove, onCancel }: {
       </div>)}
       {!plan.reason && !plan.routes.length && <p>{__('No lines into it need to change.', 'wconvert')}</p>}
       <strong>{__('Screens to remove', 'wconvert')}</strong><ul>{plan.screens.map(screen => <li key={screen.id}><bdi>{screen.name}</bdi></li>)}</ul>
-      <p>{__('Questions and other content on these screens are removed too. Review any wording that invites visitors to this signup.', 'wconvert')}</p>
+      <p>{__('Removes all their content. Check wording that invites visitors to this signup.', 'wconvert')}</p>
       <div aria-live="polite">{impact && <p className="wconvert-graph-insert__summary">{impact}</p>}</div>
     </div>
     {refusal && !plan.reason && <p id={`${id}-refusal`} className="m-0 text-note text-muted-foreground">{refusal}</p>}

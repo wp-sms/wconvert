@@ -78,7 +78,7 @@ describe('inspecting a design before replacing the draft', () => {
     ] }] }) };
     const onPrepare = vi.fn().mockResolvedValue(amount);
     detail({ onPrepare });
-    expect(await screen.findByText('Add the offer amount for this design. Your previous headline is not a discount figure.')).toBeInTheDocument();
+    expect(await screen.findByText('Add the offer amount. Your previous headline is not a discount figure.')).toBeInTheDocument();
     expect(drawn().querySelector('[data-role="offer_amount"]')?.textContent).toBe('');
   });
 

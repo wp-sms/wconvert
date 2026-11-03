@@ -246,11 +246,11 @@ export function screenMoveRefusal(tree: TemplateTree, from: number, to: number):
   if (movedScreen(tree, from, to) !== tree) return null;
   if (to < 0) return { short: __('Already first', 'wconvert'), reason: __('This is the first screen.', 'wconvert') };
   if (from >= tree.steps.length - 1 || to >= tree.steps.length - 1) {
-    return { short: __('The last screen stays last', 'wconvert'), reason: __('The last screen is where visitors finish, so it stays at the end.', 'wconvert') };
+    return { short: __('The last screen stays last', 'wconvert'), reason: __('Visitors finish on the last screen, so it stays there.', 'wconvert') };
   }
   return {
     short: __('Would break the screen order', 'wconvert'),
-    reason: __('Questions come before the screens that use their answers, the main signup before the optional one, and the thank-you screen last.', 'wconvert'),
+    reason: __('Order: questions before screens using them, main signup before optional, thank-you last.', 'wconvert'),
   };
 }
 
@@ -283,7 +283,7 @@ export function whyScreenStays(tree: TemplateTree, index: number, journeys = tru
     return { short: __('A line leads here', 'wconvert'), reason: __('Another screen’s line leads here. Change that line first.', 'wconvert') };
   }
   if (journeys && walkNodes(screen.content).some(n => n.type === 'question' && 'id' in n && usedBy(tree, n.id as string).length > 0)) {
-    return { short: __('Other screens use its answers', 'wconvert'), reason: __('Answers on this screen are used by rules on other screens. Update those rules first.', 'wconvert') };
+    return { short: __('Other screens use its answers', 'wconvert'), reason: __('Update the rules that use this screen’s answers first.', 'wconvert') };
   }
   if (tree.submissions.find(sub => submissionScreen(tree, sub.id) === index)?.required) {
     return { short: __('Saves the main signup', 'wconvert'), reason: __('This screen saves the campaign’s main signup, so it stays.', 'wconvert') };

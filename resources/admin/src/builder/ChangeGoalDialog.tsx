@@ -62,7 +62,7 @@ export function ChangeGoalDialog({ open, onOpenChange, goals, current, duplicate
         <AdminDialogHeader
           title={duplicate ? __('Duplicate for another goal', 'wconvert') : __('Change goal', 'wconvert')}
           meta={duplicate
-            ? __('Choose a goal for a new draft. The original keeps its published version and all its results.', 'wconvert')
+            ? __('The original keeps its published version and all its results.', 'wconvert')
             : __('Choose what this draft should achieve. You can adjust its design before publishing.', 'wconvert')} />
         <AdminDialogBody>
           {goals.status === 'loading' ? <ChoiceSkeleton status={__('Loading goals…', 'wconvert')} />
@@ -78,12 +78,12 @@ export function ChangeGoalDialog({ open, onOpenChange, goals, current, duplicate
           meta={duplicate ? __('A new draft copy for this goal', 'wconvert') : __('The new goal for this draft', 'wconvert')} />
         <AdminDialogBody className="grid gap-3">
           <p id={saveNoteId} className="m-0 text-body">{duplicate
-            ? __('The copy starts with your current name and draft edits, including design, display rules and destinations. Its results start at zero. The original is unchanged, and nothing is published automatically.', 'wconvert')
-            : __('This saves the current name and all draft edits, including design, display rules and destinations. It does not publish the draft. Undo cannot reverse this, and it clears the current Undo and Redo history.', 'wconvert')}</p>
+            ? __('Copies your draft edits. Results start at zero. The original stays unchanged.', 'wconvert')
+            : __('Doesn’t publish. Undo can’t reverse this. It clears Undo and Redo history.', 'wconvert')}</p>
           <p className="m-0 text-note">{picked.outcome.requirement}</p>
           <p className="m-0 text-note text-muted-foreground">{duplicate
             ? __('Review the copied draft before publishing it, especially its fields and destinations.', 'wconvert')
-            : __('You can change the goal until first publish. After that, duplicate for another goal to keep reporting history stable.', 'wconvert')}</p>
+            : __('After first publish, the goal is fixed; duplicate for another goal.', 'wconvert')}</p>
         </AdminDialogBody>
         <AdminDialogFooter
           back={<Button type="button" variant="outline" disabled={saving} onClick={() => { setError(null); setPicked(null); }}>

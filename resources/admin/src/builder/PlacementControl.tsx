@@ -117,7 +117,7 @@ export function PlacementControl({
       {displayType === 'floating_bar' && selected === 'block_start' && (
         <p className="wconvert-overlay-placement__note">
           {__(
-            'A top bar moves the page down when it appears. Check it with your site header before publishing.',
+            'A top bar moves the page down. Check your site header.',
             'wconvert',
           )}
         </p>

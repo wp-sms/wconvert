@@ -39,14 +39,14 @@ export function PlacementGuidance({ optinId, optinName, displayType, placement, 
     <section className="wconvert-placement" aria-labelledby={`${id}-title`}>
       <h3 id={`${id}-title`}>{inline ? __('Place this campaign on a page', 'wconvert') : __('Check where it appears', 'wconvert')}</h3>
       {inline && contentLock != null ? <>
-        <p>{__('Add the “WConvert lock from here” divider and choose this campaign. Content after it stays locked until submission.', 'wconvert')}</p>
+        <p>{__('Add the “WConvert lock from here” divider and choose this campaign.', 'wconvert')}</p>
         <p>{__('Keep your introduction above the divider. For a bonus with public content afterward, use the “WConvert content lock” section instead. Use one lock per page.', 'wconvert')}</p>
         <p>{__('For the classic editor, wrap a complete region with:', 'wconvert')} <code>{`[wconvert_content_lock id="${optinId}"]…[/wconvert_content_lock]`}</code></p>
         <p>{__('The selected content stays readable when the form is unavailable. Successful access is remembered in this browser for 30 days.', 'wconvert')}</p>
       </> : automatic && !isFreeInstall() ? <>
         <p>{automatic}</p>
-        <p>{__('After publishing, it is placed in matching WordPress posts and pages when its display rules allow it. No block or shortcode is needed. A manual embed takes precedence.', 'wconvert')}</p>
-        <p>{__('Check a matching article on your site. Page builders and custom layouts may need manual placement.', 'wconvert')}</p>
+        <p>{__('Follows its display rules, no block needed. A manual embed takes precedence.', 'wconvert')}</p>
+        <p>{__('Check an article. Page builders and custom layouts may need manual placement.', 'wconvert')}</p>
       </> : inline ? (
         <>
           {!published && <p>{__('Publish this campaign first so it becomes available in the page editor.', 'wconvert')}</p>}
@@ -55,11 +55,11 @@ export function PlacementGuidance({ optinId, optinName, displayType, placement, 
             <li>{optinName
               ? sprintf(/* translators: %s: the Optin name in the page editor's picker. */ __('Add the “WConvert campaign” block and choose “%s”.', 'wconvert'), optinName)
               : __('Add the “WConvert campaign” block and select this campaign by its name.', 'wconvert')}</li>
-            <li>{__('Update the page, then open it on your site to check the placement.', 'wconvert')}</li>
+            <li>{__('Update the page, then check it on your site.', 'wconvert')}</li>
           </ol>
           <Shortcode optinId={optinId} />
           <p className="text-note text-muted-foreground">
-            {__('The block or shortcode places it on the page. Its display rules, schedule and visitor settings still decide whether it appears.', 'wconvert')}
+            {__('Display rules, schedule and visitor settings still decide whether it appears.', 'wconvert')}
           </p>
         </>
       ) : (
@@ -76,9 +76,9 @@ export function PlacementGuidance({ optinId, optinName, displayType, placement, 
             </a>
           </Button>
           <p id={`${id}-check-note`} className="text-note text-muted-foreground">
-            {everywhere ? __('Opens display checks for the published version in your signed-in session. It does not show draft edits or simulate a signed-out visitor.', 'wconvert')
-              : __('It only shows on the pages its rules name, so open one of those. Display checks cover the published version in your signed-in session.', 'wconvert')}
-            {inline && !automatic && <> {__('For an inline form, also check the page where you placed its block or shortcode.', 'wconvert')}</>}
+            {everywhere ? __('Checks the published version while signed in, not drafts or signed-out visitors.', 'wconvert')
+              : __('Open a page its rules name. Shows the published version, signed in.', 'wconvert')}
+            {inline && !automatic && <> {__('Also check the page where you placed its block or shortcode.', 'wconvert')}</>}
           </p>
         </div>
       )}

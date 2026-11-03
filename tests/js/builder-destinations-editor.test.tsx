@@ -483,7 +483,7 @@ describe('what this save point needs before publishing', () => {
 
   it('keeps forwarding optional for an enquiry with no handoff requirement', () => {
     editor(ready([]), [], [], { outcome: { ...CAPTURE_OUTCOME, audience_channel: null } });
-    expect(screen.getByText('Leads stay in WConvert. Add a destination only if you want to send them on.')).toBeVisible();
+    expect(screen.getByText('Optional. Leads stay in WConvert either way.')).toBeVisible();
     expect(screen.queryByText(/Before you can publish/)).not.toBeInTheDocument();
   });
 

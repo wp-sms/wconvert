@@ -43,9 +43,9 @@ export function OpeningEditor({ value, types, onChange, heldBy }: { value: Openi
         <input type="number" min={0} max={3600} value={value.minimum_seconds ?? 0} onChange={event => onChange({ ...value, minimum_seconds: Number(event.target.value) })} />
         {__('seconds on the page', 'wconvert')}</label>
       <p className="wconvert-display-hint">{__('Earlier exits and scroll-ups don’t count', 'wconvert')}
-        <InfoTip label={__('About the minimum time', 'wconvert')}>{__('Early exit or scroll-up activity is ignored. The visitor must repeat it after this delay.', 'wconvert')}</InfoTip></p>
+        <InfoTip label={__('About the minimum time', 'wconvert')}>{__('The visitor must leave or scroll up again after this delay.', 'wconvert')}</InfoTip></p>
     </DisclosureCard>}
     {value.mode === 'click' && <p className="wconvert-display-hint">{__('Use an ID, class or attribute', 'wconvert')}
-      <InfoTip label={__('About the selector', 'wconvert')}>{__('Point to the button or link with an ID, class, tag or attribute selector, such as #signup, .offer-button or [data-offer]. Pseudo-classes such as :hover are not supported.', 'wconvert')}</InfoTip></p>}
+      <InfoTip label={__('About the selector', 'wconvert')}>{__('Examples: #signup, .offer-button, [data-offer]. Pseudo-classes such as :hover are not supported.', 'wconvert')}</InfoTip></p>}
   </>;
 }

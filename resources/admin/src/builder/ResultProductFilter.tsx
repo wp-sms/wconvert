@@ -25,7 +25,7 @@ export function LiveProductMatches({ filter }: { filter: Filter }) {
   if (state.error) return <div><p role="alert">{__('Matches could not load. Check your category and filters, then try again.', 'wconvert')}</p><TryAgain onClick={() => setRetry(retry + 1)} /></div>;
   if (!state.items.length) return <p role="status">{__('No available matches. Visitors can still use the result’s link.', 'wconvert')}</p>;
   const missingPins = (filter.pinned_ids ?? []).some(id => !filter.excluded_ids?.includes(id) && !state.items.some(item => item.id === id));
-  return <>{missingPins && <p role="status">{__('A pinned product is unavailable or does not match. Other matches appear below.', 'wconvert')}</p>}<ul className="wc-products-list wconvert-product-matches">{state.items.map(product => <li key={product.id}>
+  return <>{missingPins && <p role="status">{__('A pinned product is unavailable or does not match. Others appear below.', 'wconvert')}</p>}<ul className="wc-products-list wconvert-product-matches">{state.items.map(product => <li key={product.id}>
     {product.images?.[0]?.thumbnail && <img src={product.images[0].thumbnail} alt="" width="40" height="40" />}
     <a href={product.permalink} target="_blank" rel="noreferrer">{product.name}</a>
   </li>)}</ul></>;
