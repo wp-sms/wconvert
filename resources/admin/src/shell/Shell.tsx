@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from 'react';
+import { useMemo, useRef, useState, type ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import { SECTIONS, hashFor, type SectionId } from '../nav';
 import { adminSettings } from '../settings';
@@ -8,6 +8,7 @@ import './header.css';
 import { BrandMark, PlanBadge } from './Brand';
 import { HeaderTools } from './HeaderTools';
 import { Footer } from './Footer';
+import { useAdminMenuFloor } from './useAdminMenuFloor';
 import { preloadSection } from '../sectionLoaders';
 import type { ExtraPage } from '../extraPages';
 
@@ -43,9 +44,14 @@ export function Shell({
   const banded = !hidePageHeading && (navigable || bareHeader);
   const slot = useMemo(() => ({ present: banded, target, backTarget }), [banded, target, backTarget]);
   const tier = adminSettings()?.installedTier ?? 'free';
+  const footed = navigable && !hidePageHeading;
+  const panel = useRef<HTMLDivElement>(null);
+  // The floor exists to put the footer at the page's bottom; with none, there is nothing to carry down.
+  useAdminMenuFloor(panel, footed);
   return (
     <PageActionSlotProvider value={slot}>
       <div
+        ref={panel}
         data-measure={wide ? 'wide' : 'default'}
         data-section={section}
         className="wconvert-panel font-sans text-body leading-normal text-foreground"
@@ -102,7 +108,7 @@ export function Shell({
           )}
           {children}
         </main>
-        {navigable && !hidePageHeading && <Footer currentPage={page?.id} />}
+        {footed && <Footer currentPage={page?.id} />}
       </div>
     </PageActionSlotProvider>
   );
