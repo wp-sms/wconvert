@@ -29,6 +29,8 @@
 /* Tighter than ADR 0097 drew it: content starts ~70px higher on every reading screen (ADR 0132). */
 #wconvert-admin .wconvert-page-heading { padding:28px var(--frame-gutter) 22px; }
 #wconvert-admin .wconvert-page-copy { flex:1; min-inline-size:0; }
+/* The arrow's edge sits on the title's: 12px of the link's padding and 3px of space inside the glyph (ADR 0187). */
+#wconvert-admin .wconvert-page-back { margin-inline-start:-15px; margin-block-end:4px; }
 #wconvert-admin .wconvert-page-title { font-size:var(--text-display); font-weight:500; line-height:1.1; letter-spacing:-.035em; overflow-wrap:anywhere; }
 #wconvert-admin .wconvert-page-description { margin-block-start:6px; }
 #wconvert-admin .wconvert-panel-main { padding:0 var(--frame-gutter) 36px; flex:1; }

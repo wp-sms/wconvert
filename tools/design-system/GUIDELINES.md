@@ -177,6 +177,8 @@ stack edge-to-edge tinted panels or repeat the same shared-change warning.
   its description carries a link and `RegionHeader`'s is a string (ADR 0182).
   Campaign sales' closed row does too, because a `Disclosure`'s summary line
   cannot hold an icon and a badge beside two lines of text (ADR 0185).
+  Its `tip` puts a description the merchant can act without into an `InfoTip`
+  beside the title (ADR 0187).
 - `DialogContent` and `AlertDialogContent` default to `--card`, including portals
   outside the admin mount. Popovers and menus use the white `--popover` surface.
   Neutral inset notices use solid `--surface`, not translucent `bg-muted/*` fills.
@@ -185,6 +187,9 @@ stack edge-to-edge tinted panels or repeat the same shared-change warning.
 - `InfoTip` owns contextual help in Analytics, Leads, the builder's panels and campaign dialogs (ADR 0136, ADR 0183): a 16px Info glyph in a
   32px control, expanded for coarse pointers by the shared control rules. Its
   popover handles viewport edges, Escape dismissal and returning keyboard focus.
+  Beside a title it takes -6px of block margin, so its 32px target does not
+  make the line taller. An Analytics section title and its tip are
+  `.wa-section-title`, 14px above the table (ADR 0187).
 - The header navigation divider spans the row; individual navigation and plan
   elements do not draw disconnected pieces of the same line.
 - A `Button` keeps `data-slot="button"` under a Radix trigger's `asChild`, so
@@ -463,8 +468,9 @@ protection's *No activity yet* stays a line.
   screen already holds the list. Leads applies on Enter, with a Search button,
   because each apply is a server query and a half-typed address reads as a
   different filter from a whole one. Help's plain GET form is ADR 0144's.
-- **A way back** is `PageBack`: one ghost link above the title. Leads hides the
-  section's description on purpose (ADR 0091).
+- **A way back** is `PageBack`: one ghost link above the title, outside the
+  heading's toolbar, with its arrow on the title's edge (ADR 0187). Leads hides
+  the section's description on purpose (ADR 0091).
 - **A settings footer** is, in order: the error, `SaveStatus`, **Cancel changes**
   while dirty, Save. A save's error goes beside Save and nowhere else.
 - **A re-read that keeps its rows** dims them under a status line (§12).

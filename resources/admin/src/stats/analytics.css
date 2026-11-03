@@ -26,8 +26,12 @@
   font-weight: 600;
   margin-bottom: 8px;
 }
-.wa-intro {
-  padding: 24px 0 15px;
+/* It opens the A/B report, standing where a section heading's top margin would. */
+.wconvert-analytics .wa-eyebrow-lead {
+  margin-block: 24px 4px;
+}
+.wa-eyebrow-lead + .wa-section-heading {
+  margin-block-start: 0;
 }
 .wa-header-actions {
   display: flex;
@@ -233,6 +237,10 @@
 }
 .wa-campaigns {
   margin: 18px 0;
+}
+/* The heading's 14px is the gap; the two margins would collapse to this one's 18. */
+.wa-section-heading + .wa-campaigns {
+  margin-block-start: 0;
 }
 .wa-campaign-name {
   color: var(--action);

@@ -506,9 +506,11 @@ function DashboardContent({
         />
       ) : payload && impact ? (
         <>
-          <div className="wa-intro">
-            <h2>{impact.label}</h2>
-            <p className="wa-muted">{impact.note}</p>
+          <div className="wa-section-heading">
+            <div className="wa-section-title">
+              <h2>{impact.label}</h2>
+              <InfoTip label={sprintf(/* translators: %s: the name of a headline number, e.g. “Submissions”. */ __('About %s', 'wconvert'), impact.label)}>{impact.note}</InfoTip>
+            </div>
           </div>
           <CampaignTable
             cards={scopedCards}

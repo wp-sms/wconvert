@@ -41,7 +41,9 @@ it('shows affected destination count only for known problems and returns from di
   expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Sending issues');
   // One way back on every screen: above the title, not among its actions.
   const back = screen.getByRole('link', { name: 'Back to leads' });
-  expect(back.closest('.wconvert-page-copy')).not.toBeNull();
+  expect(back.closest('.wconvert-panel-heading')).not.toBeNull();
+  expect(back.closest('.wconvert-page-actions')).toBeNull();
+  expect(back.compareDocumentPosition(screen.getByRole('heading', { level: 1 })) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   await userEvent.click(back);
   expect(await screen.findByText('Submission table')).toBeInTheDocument();
   expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Leads');

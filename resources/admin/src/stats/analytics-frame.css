@@ -130,6 +130,13 @@ button.wa-impact-main {
   gap: 14px;
   margin: 24px 0 14px;
 }
+/* A section title and its ⓘ stay together, at any width (ADR 0187). */
+.wa-section-title {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-inline-size: 0;
+}
 .wa-goal-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

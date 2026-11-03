@@ -9,6 +9,7 @@ import { Region, RegionBody, RegionError, TryAgain } from '../shell/Region';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { DataTable, DataTableActions, DataTableActionsColumn, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '../shell/DataTable';
 import { EmptyState } from '../shell/EmptyState';
+import { InfoTip } from '../shell/InfoTip';
 import { Toolbar } from '../shell/Toolbar';
 import { messageOf } from '../shell/loadable';
 import { StatusBadge } from '../optins/StatusBadge';
@@ -705,17 +706,19 @@ export function Experiment({
   };
   return (
     <section>
-      <div className="wa-intro">
-        <p className="wa-eyebrow">
-          {__('A/B comparison and variant history', 'wconvert')}
-        </p>
-        <h2><bdi>{family.root.name}</bdi></h2>
-        <p className="wa-muted">
-          {__(
-            'Results cover the selected dates, including past uses of each design. They do not prove a winner.',
-            'wconvert',
-          )}
-        </p>
+      <p className="wa-eyebrow wa-eyebrow-lead">
+        {__('A/B comparison and variant history', 'wconvert')}
+      </p>
+      <div className="wa-section-heading">
+        <div className="wa-section-title">
+          <h2><bdi>{family.root.name}</bdi></h2>
+          <InfoTip label={sprintf(/* translators: %s: a campaign's name, e.g. “Spring sale”. */ __('About %s', 'wconvert'), family.root.name)}>
+            {__(
+              'Results cover the selected dates, including past uses of each design. They do not prove a winner.',
+              'wconvert',
+            )}
+          </InfoTip>
+        </div>
       </div>
       <VariantDifference arms={arms} />
       <div className="wa-experiment-grid">
