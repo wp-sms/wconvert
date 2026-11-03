@@ -991,6 +991,6 @@ it('keeps the overview’s reports at one heading level under the page', async (
 it('draws no empty actions card for a deleted campaign with nothing to act on', async () => {
   api.readReport.mockResolvedValue({ ...payload(), goals: [{ ...goal([row('email', 'historical')]), action: 'click' }] });
   render(<Dashboard query={{ optinId: 'email' }} />);
-  await screen.findByText('This campaign was deleted. Its results stay here, and it can no longer be edited.');
+  await screen.findByText('This campaign was deleted. Results stay here, but it can’t be edited.');
   expect(screen.queryByRole('region', { name: 'Campaign actions' })).toBeNull();
 });

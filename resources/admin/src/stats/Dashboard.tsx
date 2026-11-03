@@ -309,7 +309,7 @@ function DashboardContent({
         <PageError
           message={sprintf(
             /* translators: %s: the error message explaining why the report failed to load. */ __(
-              'Could not load that period. Showing the last report and its dates. %s',
+              'Could not load that period. Showing the last report and dates. %s',
               'wconvert',
             ),
             refreshError,
@@ -520,7 +520,7 @@ function DashboardContent({
             title={__('This report is not available', 'wconvert')}
           >
             {__(
-              'Go back to Overall impact to choose a goal or campaign. A campaign that was never published has no report.',
+              'Choose a report from Overall impact. A never-published campaign has none.',
               'wconvert',
             )}
           </EmptyState>
@@ -537,12 +537,12 @@ function DashboardContent({
           {/* A glossary to scan: the term, then one short line (ADR 0132). */}
           <dl className="wa-help-terms">
             {[
-              [__('Submissions', 'wconvert'), __('One per form fill. Repeats count again, so not unique people or confirmed subscribers.', 'wconvert')],
+              [__('Submissions', 'wconvert'), __('One per form fill, repeats included: not unique people or confirmed subscribers.', 'wconvert')],
               [__('Clicks', 'wconvert'), __('Offer and cart clicks show interest, not purchases or recovered revenue.', 'wconvert')],
-              [__('Rates', 'wconvert'), __('Submissions or clicks ÷ shown: 5 from 100 shown is 5%. A dash means not shown.', 'wconvert')],
-              [__('Email handoffs', 'wconvert'), __('Emails accepted for sending, counted on the send day — not inbox arrivals or downloads.', 'wconvert')],
-              [__('Today', 'wconvert'), __('Today is still running, so a period ending today can read a little low against the one before.', 'wconvert')],
-              [__('History', 'wconvert'), __('Totals stay when a campaign is unpublished or deleted, or old submissions are removed.', 'wconvert')],
+              [__('Rates', 'wconvert'), __('Submissions or clicks ÷ shown. A dash means not shown.', 'wconvert')],
+              [__('Email handoffs', 'wconvert'), __('Emails accepted for sending, by send day. Not inbox arrivals or downloads.', 'wconvert')],
+              [__('Today', 'wconvert'), __('Still running, so periods ending today can read low against earlier ones.', 'wconvert')],
+              [__('History', 'wconvert'), __('Totals stay after unpublishing or deleting a campaign, or removing old submissions.', 'wconvert')],
             ].map(([term, meaning]) => <div key={term}><dt>{term}</dt><dd>{meaning}</dd></div>)}
           </dl>
         </Disclosure>

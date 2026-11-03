@@ -60,8 +60,8 @@ export function ProductActivityReport({ id, period }: { id: string; period?: Rep
         <div className="wa-report-meta"><span>{formatRange(report.from, report.to)}</span>{!period && <span>{__('Includes today', 'wconvert')}</span>}{updating && <span role="status">{__('Updating… Previous dates shown.', 'wconvert')}</span>}</div>
         {report.since && <p className="wa-muted">{sprintf(/* translators: %s: a date, e.g. “Nov 27, 2026”. */ __('Tracking started %s. Earlier product activity is unavailable.', 'wconvert'), formatDay(report.since))}</p>}
         {!report.collecting && <p className="wa-report-notice">{__('Tracking is unavailable. Saved activity is still shown.', 'wconvert')}</p>}
-        {report.recorded_from && report.recorded_from !== report.from && report.recorded_from !== report.since && <p className="wa-report-notice">{sprintf(/* translators: %s: a date range, e.g. “Sep 9 – Oct 8, 2026”. */ __('Available activity: %s. The rest of this period is not recorded or has expired.', 'wconvert'), formatRange(report.recorded_from, report.to))}</p>}
-        {report.truncated ? <EmptyState icon={Package} title={__('Choose a shorter period', 'wconvert')}>{__('More than 100 products have activity. Narrow the dates to see a complete table.', 'wconvert')}</EmptyState>
+        {report.recorded_from && report.recorded_from !== report.from && report.recorded_from !== report.since && <p className="wa-report-notice">{sprintf(/* translators: %s: a date range, e.g. “Sep 9 – Oct 8, 2026”. */ __('Available activity: %s. The rest is not recorded or has expired.', 'wconvert'), formatRange(report.recorded_from, report.to))}</p>}
+        {report.truncated ? <EmptyState icon={Package} title={__('Choose a shorter period', 'wconvert')}>{__('More than 100 products have activity.', 'wconvert')}</EmptyState>
           : !report.recorded_from ? <EmptyState icon={Package} title={__('No product data for these dates', 'wconvert')}>{__('Choose dates after tracking started and within the last 90 days.', 'wconvert')}</EmptyState>
           : report.rows.length === 0 ? <EmptyState icon={Package} title={__('No product activity recorded', 'wconvert')}>{__('Activity appears when shoppers see or use recommendations. Previews do not count.', 'wconvert')}</EmptyState>
           : <DataTable className="wa-product-table" label={__('Recommended product activity', 'wconvert')}>
@@ -76,8 +76,8 @@ export function ProductActivityReport({ id, period }: { id: string; period?: Rep
       </RegionBody>
       <ReportDisclosure title={__('What these numbers mean', 'wconvert')}>
         <p>{__('Shown counts a visible product card. Clicked counts a product-page link. Each counts once per product each time the campaign is shown. Added counts WooCommerce-confirmed additions, not button presses or purchases.', 'wconvert')}</p>
-        <p>{__('These are recorded actions, not unique shoppers. Totals can differ from campaign results. Product names are current; sales remain at campaign level.', 'wconvert')}</p>
-        <p>{sprintf(/* translators: %s: how many days product activity is kept. */ __('Product activity is kept for %s days. Tracking can miss activity when blocked or inactive; the first day may be partial. Older campaign totals stay unchanged.', 'wconvert'), formatCount(report.retention_days))}</p>
+        <p>{__('Recorded actions, not unique shoppers. Totals can differ from campaign results.', 'wconvert')}</p>
+        <p>{sprintf(/* translators: %s: how many days product activity is kept. */ __('Kept for %s days; older campaign totals stay. Tracking can miss activity.', 'wconvert'), formatCount(report.retention_days))}</p>
       </ReportDisclosure>
     </>}
   </Region></ReportTarget>;

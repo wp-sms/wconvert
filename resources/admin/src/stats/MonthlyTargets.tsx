@@ -270,7 +270,7 @@ export function MonthlyTargets({
         <Region>
           <EmptyState icon={Target} title={__('No monthly targets yet', 'wconvert')} action={edit(__('Set a monthly target', 'wconvert'))}>
             {__(
-              'Set a target for this month, such as 100 submissions, and track it here.',
+              'Set one for this month, such as 100 submissions.',
               'wconvert',
             )}
           </EmptyState>
@@ -384,7 +384,7 @@ function TargetEditor({
           <AdminDialogBody className="grid content-start gap-5">
             <p className="m-0 text-note text-muted-foreground">
               {__(
-                'Leave a field blank for no target. Results are kept either way, and targets do not carry over to next month.',
+                'Leave blank for no target. Results stay. Targets do not carry over.',
                 'wconvert',
               )}
             </p>

@@ -44,12 +44,12 @@ export function JourneyReport({ id, period }: { id: string; period?: ReportPerio
   }
   return <ReportTarget name="activity" label={__('Screen activity', 'wconvert')}><Region className="wa-report">
     <RegionHeader title={__('Signup and screen activity', 'wconvert')} level={3} icon={<Route />} description={__('See which screens were shown and which actions followed.', 'wconvert')} />
-    {failed && <Failure message={report ? __('Could not load matching screen totals. Activity below still uses its displayed dates.', 'wconvert') : __('Could not load screen activity.', 'wconvert')} onRetry={() => setRetry(n => n + 1)} />}
+    {failed && <Failure message={report ? __('Could not load matching screen totals. Activity below keeps its dates.', 'wconvert') : __('Could not load screen activity.', 'wconvert')} onRetry={() => setRetry(n => n + 1)} />}
     {report && <>
       <RegionBody>
         <div className="wa-report-meta"><span>{rangeLabel(report.from, report.to)}</span>{!period && <span>{__('Includes today', 'wconvert')}</span>}{updating && <span role="status">{__('Updating… Previous dates shown.', 'wconvert')}</span>}</div>
-        {report.rows.length === 0 ? <EmptyState icon={Route} title={__('No activity in this period', 'wconvert')}>{__('This report fills as visitors use your published campaign’s signup and question screens.', 'wconvert')}</EmptyState> : <>
-          {report.truncated && <p className="wa-report-notice">{sprintf(/* translators: %s: the most activity rows shown, “5,000”. */ __('Showing the first %s activity rows. Choose a shorter period for a complete view.', 'wconvert'), formatCount(5000))}</p>}
+        {report.rows.length === 0 ? <EmptyState icon={Route} title={__('No activity in this period', 'wconvert')}>{__('Fills as visitors use your published campaign’s signup and question screens.', 'wconvert')}</EmptyState> : <>
+          {report.truncated && <p className="wa-report-notice">{sprintf(/* translators: %s: the most activity rows shown, “5,000”. */ __('Showing the first %s rows. Choose a shorter period to see all.', 'wconvert'), formatCount(5000))}</p>}
           {channels.length > 0 && <DataTable label={__('Accepted signups', 'wconvert')}>
             <DataTableHead><DataTableColumn>{__('Signup', 'wconvert')}</DataTableColumn><DataTableColumn numeric>{__('Accepted', 'wconvert')}</DataTableColumn></DataTableHead>
             <DataTableBody>{channels.map(row => <DataTableRow key={`${row.scope}:${row.kind}`}><DataTableCell label={__('Signup', 'wconvert')}>{row.scope === 'channel:email_marketing' ? __('Email signup', 'wconvert') : __('SMS signup', 'wconvert')}</DataTableCell><DataTableCell label={__('Accepted', 'wconvert')} numeric>{formatCount(Number(row.total))}</DataTableCell></DataTableRow>)}</DataTableBody>
@@ -68,8 +68,8 @@ export function JourneyReport({ id, period }: { id: string; period?: ReportPerio
         </>}
       </RegionBody>
       <ReportDisclosure title={__('How to read this activity', 'wconvert')}>
-        <p>{__('Counts are activity, not unique visitors. The same visitor can complete, skip or dismiss different screens, so these totals do not measure abandonment.', 'wconvert')}</p>
-        <p>{__('Versions stay separate when a screen changes. A dash means no recorded activity for that action; it is not an inferred zero.', 'wconvert')}</p>
+        <p>{__('Counts are activity, not unique visitors, so totals do not measure abandonment.', 'wconvert')}</p>
+        <p>{__('Changed screens stay separate. A dash is no recorded activity, not zero.', 'wconvert')}</p>
       </ReportDisclosure>
     </>}
   </Region></ReportTarget>;

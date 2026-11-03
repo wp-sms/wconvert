@@ -36,10 +36,10 @@ export default function Campaign({ value, parentId, onChange }: CampaignAnalytic
     {/* One sentence about the site setting, not a region: a fact inside a form. */}
     {enabled.status === 'loading' ? <LineSkeleton status={__('Loading site analytics…', 'wconvert-pro')} className="text-note" />
       : enabled.status === 'failed' ? <div role="alert" className="flex flex-wrap items-center gap-3 text-note text-destructive"><span>{enabled.message}</span><TryAgain onClick={() => setRetry(n => n + 1)} /></div>
-      : <p className="m-0 text-note">{enabled.data ? __('Published preferences apply to enabled external analytics and campaign sales, subject to consent.', 'wconvert-pro') : __('External analytics is off. Campaign sales has a separate site setting.', 'wconvert-pro')}</p>}
-    <p className="m-0 text-note text-muted-foreground">{__('Off excludes this campaign from external analytics and sales attribution. Its own results still count.', 'wconvert-pro')}</p>
+      : <p className="m-0 text-note">{enabled.data ? __('Once published, applies to enabled analytics and campaign sales, subject to consent.', 'wconvert-pro') : __('External analytics is off. Campaign sales has a separate site setting.', 'wconvert-pro')}</p>}
+    <p className="m-0 text-note text-muted-foreground">{__('Off: no external analytics or sales attribution. Its own results still count.', 'wconvert-pro')}</p>
     <Field label={__('Public analytics label (optional)', 'wconvert-pro')} htmlFor={labelId} hintId={`${labelId}-hint`}
-      hint={__('Sent to your analytics provider, so use no personal information. Leave blank for a neutral label. Save and publish to apply.', 'wconvert-pro')}>
+      hint={__('Sent to your analytics provider, so use no personal information.', 'wconvert-pro')}>
       <Input id={labelId} maxLength={80} value={preference?.label ?? ''} aria-describedby={`${labelId}-hint`} onChange={e => onChange({ ...preference, label: e.target.value })} />
     </Field>
   </div>;
