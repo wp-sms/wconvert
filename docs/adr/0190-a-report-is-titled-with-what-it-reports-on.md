@@ -23,7 +23,7 @@ The other two screens with a way back already titled the page with its subject: 
 
 A goal's or a campaign's measurement line stays in the body. Every report's way back goes to the overview, including a campaign's.
 
-**`PageHeading` is how a screen titles the page.** `Shell` owns the h1 and only the screen knows the name, and only after its read. `PageHeading` registers `title`, `aside` and `description` with the frame in a layout effect, so no frame shows the section's title, and clears on unmount, so the overview gets it back. It does not portal, because the frame has to know whether to draw its own title at all. With no frame above it, it draws in place, as `PageAction` and `PageBack` do.
+**`PageHeading` is how a screen that learns its name from a read titles the page.** `Shell` owns the h1 and only the screen knows the name, and only after its read. An occasion draws its own `Shell` and Sending issues' name is fixed, so both keep `pageTitle`. `PageHeading` registers `title`, `aside` and `description` with the frame in a layout effect, so no frame shows the section's title, and clears on unmount, so the overview gets it back. It does not portal, because the frame has to know whether to draw its own title at all. With no frame above it, it draws in place, as `PageAction` and `PageBack` do.
 
 `aside` stands beside the h1 rather than in it, so a tip's button is not part of the heading's name. It is as tall as the title's first line, so it stays there when a long name wraps.
 
@@ -31,9 +31,11 @@ A goal's or a campaign's measurement line stays in the body. Every report's way 
 
 **Until the name is known the title is a bar, not "Analytics".** Otherwise every report would read "Analytics" and then swap. A screen reader still hears "Analytics", because a heading needs a name. The route says whether a line belongs under the title, so that space is held too.
 
-The bar and the link are drawn by the chunk's fallback as well as by `Dashboard`, not by `App`. The fallback unmounts when the chunk fails, so a chunk that never comes shows "Analytics" over its reload message. A bar owned by `App` would have stayed forever.
+The bar and the link are drawn by the chunk's fallback as well as by `Dashboard`, not by `App`. The fallback unmounts when the chunk fails, so a chunk that never comes shows the section's own heading over its reload message. A bar owned by `App` would have stayed forever. The link goes too, on purpose: the overview needs the same chunk, so reloading is the only thing that can help. `loading-handoff.test.tsx` pins that the fallback is what `Dashboard` draws first.
 
-**The way back is a 24px box.** The heading's top padding drops from 28px to 20px when it has one, 16px on a phone. Its padding is 6px, so its margin is -9px to keep the arrow on the title's edge. Touch keeps the admin's 44px floor, with negative margins so the layout does not move. This is one component, so an occasion and Sending issues tighten too. "Back to leads" keeps its wording.
+**A page with a way back keeps a long name on one line where it can.** A merchant's own name is often longer than the room beside the date picker and Export, so from 601px the title takes its full width and the actions move under it, at the same right edge. On a phone, what stands beside the title drops under a long name. The row holds the actions' height before they arrive, so the title does not move when the chunk lands.
+
+**The way back is a 24px box.** The heading's top padding drops from 28px to 20px when it has one, 16px on a phone. Its padding is 6px, so its margin is -9px to keep the arrow on the title's edge. Touch keeps the admin's 44px floor, with negative margins so the layout does not move. A `.wa-campaigns` table opening a report loses its top margin, so it sits under the title as any screen's content does. This is one component, so an occasion and Sending issues tighten too. "Back to leads" keeps its wording.
 
 ## Consequences
 
