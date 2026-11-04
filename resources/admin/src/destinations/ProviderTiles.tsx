@@ -125,6 +125,6 @@ export function ProviderTiles({ types, rule, suggested, onChoose }: {
       })}
     </ul>
     {/* The providers this install lacks are not drawn as tiles; they are named once, below (ADR 0147). */}
-    <ProHint medium="destinations" features={[proDestinationSummary(proDestinationNames(types))].filter((summary): summary is string => summary !== null)} />
+    <ProHint surface="destinations" features={[proDestinationSummary(proDestinationNames(types))].filter((summary): summary is string => summary !== null)} />
   </>);
 }

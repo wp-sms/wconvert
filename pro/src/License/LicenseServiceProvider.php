@@ -75,7 +75,7 @@ final class LicenseServiceProvider implements ServiceProvider
             (new AdminSurfaces($sdk))->hooks();
             (new PluginsScreen($sdk, plugin_basename(WCONVERT_PRO_MAIN_FILE)))->hooks();
             // Docs and Support under Pro's row too, by free's own class (ADR 0145).
-            (new \WConvert\Admin\PluginRowMeta(plugin_basename(WCONVERT_PRO_MAIN_FILE)))->hooks();
+            (new \WConvert\Admin\PluginRowMeta(plugin_basename(WCONVERT_PRO_MAIN_FILE), \WConvert\Support\Docs::PRO))->hooks();
             (new SiteHealth($sdk))->hooks();
         }
 

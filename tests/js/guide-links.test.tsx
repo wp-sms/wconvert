@@ -16,7 +16,7 @@ it('opens a guide in a new tab and says so', () => {
   render(<GuideLink href={docsUrl(GUIDES.retention, 'choose-policy')} />);
 
   const link = screen.getByRole('link', { name: 'Read the guide (opens in a new tab)' });
-  expect(link).toHaveAttribute('href', 'https://wconvert.io/docs/set-submission-retention/#choose-policy');
+  expect(link).toHaveAttribute('href', 'https://wconvert.io/docs/set-submission-retention/?utm_source=wp-admin&utm_medium=plugin&utm_campaign=wconvert-free&utm_content=guide#choose-policy');
   expect(link).toHaveAttribute('target', '_blank');
 });
 
@@ -25,7 +25,7 @@ it('ends a tip with its guide, so the screen at rest gains nothing', async () =>
 
   expect(screen.queryByRole('link')).toBeNull();
   await userEvent.click(screen.getByRole('button', { name: 'How answer conditions work' }));
-  expect(await screen.findByRole('link', { name: /^Read the guide/ })).toHaveAttribute('href', 'https://wconvert.io/docs/conditional-quiz-paths/');
+  expect(await screen.findByRole('link', { name: /^Read the guide/ })).toHaveAttribute('href', 'https://wconvert.io/docs/conditional-quiz-paths/?utm_source=wp-admin&utm_medium=plugin&utm_campaign=wconvert-free&utm_content=guide');
 });
 
 it('puts an empty state\'s guide under its action', () => {
@@ -42,15 +42,15 @@ it('offers the troubleshooting guide when the license server cannot be reached',
 
 /** A suspended campaign's "What to check" (ADR 0147): free never links the Pro guide. */
 it('links the missing plugin’s guide, and the Pro guide only where Pro is installed', () => {
-  expect(suspensionGuide('woocommerce', true)).toBe('https://wconvert.io/docs/#woocommerce');
+  expect(suspensionGuide('woocommerce', true)).toBe('https://wconvert.io/docs/?utm_source=wp-admin&utm_medium=plugin&utm_campaign=wconvert-free&utm_content=guide#woocommerce');
   expect(suspensionGuide(null, true)).toBeNull();
-  expect(suspensionGuide(null, false)).toBe('https://wconvert.io/docs/pro-features-unavailable/#identify-the-problem');
+  expect(suspensionGuide(null, false)).toBe('https://wconvert.io/docs/pro-features-unavailable/?utm_source=wp-admin&utm_medium=plugin&utm_campaign=wconvert-free&utm_content=guide#identify-the-problem');
 
   window.wconvertAdmin = { exportUrl: '', installedTier: 'free' };
   const { unmount } = render(<p><SuspensionGuideLink needs={null} /></p>);
   expect(screen.queryByRole('link')).toBeNull();
   unmount();
   render(<p><SuspensionGuideLink needs="woocommerce" /></p>);
-  expect(screen.getByRole('link', { name: 'What to check (opens in a new tab)' })).toHaveAttribute('href', 'https://wconvert.io/docs/#woocommerce');
+  expect(screen.getByRole('link', { name: 'What to check (opens in a new tab)' })).toHaveAttribute('href', 'https://wconvert.io/docs/?utm_source=wp-admin&utm_medium=plugin&utm_campaign=wconvert-free&utm_content=guide#woocommerce');
   delete window.wconvertAdmin;
 });

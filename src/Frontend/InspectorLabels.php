@@ -51,7 +51,7 @@ final class InspectorLabels
             // The troubleshooting guide, for the cause this report cannot see (ADR 0145).
             'guide' => [
                 'label' => __('Troubleshooting guide', 'wconvert'),
-                'url' => \WConvert\Support\Docs::url(\WConvert\Support\Docs::POPUP_NOT_SHOWING, 'common-causes'),
+                'url' => \WConvert\Support\Docs::url(\WConvert\Support\Docs::POPUP_NOT_SHOWING, 'common-causes', 'inspector'),
             ],
             'close' => __('Close', 'wconvert'),
             'collapse' => __('Collapse', 'wconvert'),

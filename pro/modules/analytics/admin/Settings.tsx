@@ -11,7 +11,8 @@ import { AdminDialog, AdminDialogBody, AdminDialogClose, AdminDialogContent, Adm
 import { formatCount } from '@/lib/format';
 import { GuideLink } from '@/shell/GuideLink';
 import { InfoTip } from '@/shell/InfoTip';
-import { GUIDES, docsUrl } from '@/shell/docs';
+import { GUIDES } from '@/shell/docs';
+import { proDocsUrl } from '../../../resources/admin/src/docs';
 import { CheckRow } from '@/shell/CheckRow';
 import { Disclosure } from '@/shell/Disclosure';
 import { Field } from '@/shell/Field';
@@ -111,7 +112,7 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
             <InfoTip label={__('About the Measurement ID', 'wconvert-pro')}>{__('Use your installed web stream’s G- ID. WConvert installs no Google tag.', 'wconvert-pro')}</InfoTip>
           </div>
           <Input id="analytics-stream" data-setting="analytics-measurement" className="max-w-sm" value={value.measurement_id} placeholder="G-XXXXXXXXXX" maxLength={22} dir="ltr" autoComplete="off" onChange={e => change({ measurement_id: e.target.value.trim().toUpperCase() })} />
-        </div> : plausible ? <p className="m-0 text-note text-muted-foreground">{__('Uses your installed Plausible script. Custom events count toward Plausible usage.', 'wconvert-pro')} <GuideLink href={docsUrl(GUIDES.externalAnalytics, 'plausible')}>{__('Plausible setup', 'wconvert-pro')}</GuideLink></p> : <p className="m-0 text-note text-muted-foreground">{__('Add the WConvert event tag to your container, then publish it.', 'wconvert-pro')} <GuideLink href={docsUrl(GUIDES.externalAnalytics, 'google-tag-manager')}>{__('GTM setup', 'wconvert-pro')}</GuideLink></p>}
+        </div> : plausible ? <p className="m-0 text-note text-muted-foreground">{__('Uses your installed Plausible script. Custom events count toward Plausible usage.', 'wconvert-pro')} <GuideLink href={proDocsUrl(GUIDES.externalAnalytics, 'plausible')}>{__('Plausible setup', 'wconvert-pro')}</GuideLink></p> : <p className="m-0 text-note text-muted-foreground">{__('Add the WConvert event tag to your container, then publish it.', 'wconvert-pro')} <GuideLink href={proDocsUrl(GUIDES.externalAnalytics, 'google-tag-manager')}>{__('GTM setup', 'wconvert-pro')}</GuideLink></p>}
 
         <div className="grid gap-2">
           <Choices label={__('Consent handling', 'wconvert-pro')} value={value.consent} onChange={consent => change({ consent })}
@@ -146,7 +147,7 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
         <AdminDialogTrigger asChild><Button variant="outline" disabled={busy} aria-disabled={testBlocked || undefined} aria-describedby={testReason}
           onClick={event => { if (testBlocked) event.preventDefault(); }}>{__('Test setup', 'wconvert-pro')}</Button></AdminDialogTrigger>
         <TestDialog page={page} onPage={setPage} testUrl={testUrl} plausible={plausible} />
-      </AdminDialog>}<GuideLink href={docsUrl(GUIDES.externalAnalytics)}>{__('Setup guide', 'wconvert-pro')}</GuideLink></div>
+      </AdminDialog>}<GuideLink href={proDocsUrl(GUIDES.externalAnalytics)}>{__('Setup guide', 'wconvert-pro')}</GuideLink></div>
       <div className="flex flex-wrap items-center gap-3">
         {dirty && on && <span id={`${ids}-unsaved`} className="text-note text-muted-foreground">{__('Save changes before testing.', 'wconvert-pro')}</span>}
         {error && <p role="alert" className="m-0 text-note text-destructive">{error}</p>}

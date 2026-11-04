@@ -2,7 +2,7 @@ import { useEffect, useId, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { Lock } from 'lucide-react';
 import { Badge } from '../../components/ui/badge';
-import { EXPLORE_PRO_URL } from '../../shell/HeaderTools';
+import { proUrl } from '../../shell/HeaderTools';
 import { renderingFor, tierName, tierProductName, unlessFree, type Rendering } from '../../goals/availability';
 import { availabilityOf, halves, picksIn, type Pick, type PickParam, type SectionId } from './picks';
 import { portableSelector } from './validation';
@@ -79,7 +79,7 @@ export function QuickPicks({ section, question, value, vocabulary, shown, onChoo
     {/* Each refused chip's own sentence, heard before it is pressed; its badge is the short form on screen. */}
     {picks.filter(each => each.rendering !== 'offer').map(each => <span key={each.pick.id} id={`${reasonId}-${each.pick.id}`} className="sr-only">{sentenceFor(each, value)}</span>)}
     <p className="wconvert-quick-picks__reason" role="status">{refusal !== undefined && <>{sentenceFor(refusal, value)}
-      {refusal.rendering === 'upsell' && <>{' '}<a href={EXPLORE_PRO_URL} target="_blank" rel="noreferrer">{__('Compare plans', 'wconvert')}</a></>}</>}</p>
+      {refusal.rendering === 'upsell' && <>{' '}<a href={proUrl('rule-picks')} target="_blank" rel="noreferrer">{__('Compare plans', 'wconvert')}</a></>}</>}</p>
   </div>;
 }
 

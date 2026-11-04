@@ -11,6 +11,36 @@
  */
 export const DOCS_URL = 'https://wconvert.io/docs/';
 
+/** Every other address on our sites. Shipped code writes none of these by hand (ADR 0189). */
+export const SITE_URL = 'https://wconvert.io/';
+export const PRICING_URL = 'https://wconvert.io/pricing/';
+export const SUPPORT_URL = 'https://wconvert.io/support/';
+export const PUBLISHER_URL = 'https://veronalabs.com/';
+
+/** The plugin that owns a link, as its `utm_campaign` (ADR 0189). */
+export type LinkProduct = 'wconvert-free' | 'wconvert-pro';
+
+/** The spots a link can sit in, as its `utm_content` (ADR 0189). PHP's twin passes the same words as plain strings. */
+export type ProSurface = 'header' | 'settings-list' | 'rule-menu' | 'rule-picks' | 'flow-map' | 'destinations' | 'campaign-menu';
+export type LinkSpot = ProSurface | 'guide' | 'help' | 'help-search' | 'footer' | 'license'
+  | 'template-card' | 'plugins-screen' | 'admin-notice' | 'inspector';
+
+/**
+ * A link's four tags. Fixed values only: never the site, the version, the user
+ * or a count, so nothing about this install leaves (G7).
+ */
+export function linkTags(content: LinkSpot, product: LinkProduct = 'wconvert-free'): Readonly<Record<string, string>> {
+  return { utm_source: 'wp-admin', utm_medium: 'plugin', utm_campaign: product, utm_content: content };
+}
+
+/** An address with its tags, placed before any `#section` so the browser still sends them. */
+export function taggedUrl(url: string, content: LinkSpot, product: LinkProduct = 'wconvert-free'): string {
+  const hash = url.indexOf('#');
+  const base = hash < 0 ? url : url.slice(0, hash);
+  const query = Object.entries(linkTags(content, product)).map(([name, value]) => `${name}=${value}`).join('&');
+  return `${base}${base.includes('?') ? '&' : '?'}${query}${hash < 0 ? '' : url.slice(hash)}`;
+}
+
 export const GUIDES = {
   firstCampaign: 'create-your-first-campaign',
   publishBlocked: 'form-rejected',
@@ -45,14 +75,14 @@ export type Guide = (typeof GUIDES)[keyof typeof GUIDES];
  */
 export const WALKTHROUGH_VIDEO = { guide: GUIDES.firstCampaign, section: 'watch-the-walkthrough' } as const;
 
-/** A guide's address, optionally at one of its section ids. */
-export function docsUrl(guide?: Guide, section?: string): string {
-  return `${DOCS_URL}${guide ? `${guide}/` : ''}${section ? `#${section}` : ''}`;
+/** A guide's address, optionally at one of its section ids, tagged with the spot it is linked from. */
+export function docsUrl(guide?: Guide, section?: string, content: LinkSpot = 'guide', product?: LinkProduct): string {
+  return taggedUrl(`${DOCS_URL}${guide ? `${guide}/` : ''}${section ? `#${section}` : ''}`, content, product);
 }
 
 /** The docs' own search, opened with `?q=` (ADR 0144). */
 export function docsSearchUrl(query: string): string {
-  return `${DOCS_URL}?q=${encodeURIComponent(query)}`;
+  return taggedUrl(`${DOCS_URL}?q=${encodeURIComponent(query)}`, 'help-search');
 }
 
 /**

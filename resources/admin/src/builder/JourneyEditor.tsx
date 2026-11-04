@@ -555,7 +555,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
             <JourneyMap issues={issues} onIssue={openIssue} tree={tree} selected={inspecting ? step : null} focusedPath={inspecting && (panelSection === 'paths' || !!elementPanel) ? pathFocus : null}
               onSelect={select} onSelectPath={openLine} samplePath={samplePath} sampleEdges={sampleEdges}
               onClearTrace={() => { setSamplePath(null); setSampleEdges(null); setSaid(__('Cleared. Every screen and line is shown again.', 'wconvert')); }}
-              onAdd={authoring.flowAdd} nudge={authoring.flowNudge ?? <ProHint medium="flow-map" features={[__('Quizzes that send answers to different screens', 'wconvert')]} />}
+              onAdd={authoring.flowAdd} nudge={authoring.flowNudge ?? <ProHint surface="flow-map" features={[__('Quizzes that send answers to different screens', 'wconvert')]} />}
               destinationSummary={destinationSummary} />
           </Suspense></FlowMapBoundary>}
           {view === 'screens' && <aside className="wconvert-journey-rail" aria-label={__('Screens', 'wconvert')}>

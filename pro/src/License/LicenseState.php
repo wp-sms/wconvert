@@ -5,6 +5,7 @@ namespace WConvert\Pro\License;
 use WConvert\Pro\Deps\VeronaLabs\WpPremiumSdk\Container\PremiumServiceProvider;
 use WConvert\Pro\Deps\VeronaLabs\WpPremiumSdk\License\KeySource;
 use WConvert\Pro\Deps\VeronaLabs\WpPremiumSdk\Support\Request;
+use WConvert\Support\Docs;
 
 defined('ABSPATH') || exit;
 
@@ -17,10 +18,6 @@ final class LicenseState
 {
     /** The states in which this site gets no update (ADR 0143); `UpdateGate` reads the same list. */
     public const NO_UPDATES = ['none', 'key_unreadable', 'moved', 'copy', 'disabled', 'expired', 'trial_ended', 'not_activated_here'];
-
-    private const CHECKOUT = 'https://wconvert.io/pricing/';
-
-    private const SUPPORT = 'https://wconvert.io/support/';
 
     /**
      * Every status the store or the SDK records for a licence that stopped for
@@ -97,7 +94,7 @@ final class LicenseState
             'last_checked_at' => null,
             'last_success_at' => null,
             'reach' => $payload['reach'],
-            'urls' => ['support' => self::SUPPORT],
+            'urls' => ['support' => Docs::tagged(Docs::SUPPORT, 'license', Docs::PRO)],
             'managed' => self::contact($contact),
         ];
     }
@@ -371,15 +368,16 @@ final class LicenseState
     private static function urls(array $license, array $renewal, string $store): array
     {
         $account = (string) ($license['manage_url'] ?? '') ?: $store . '/account';
+        $checkout = Docs::tagged(Docs::PRICING, 'license', Docs::PRO);
 
         return [
             'account' => $account,
             'renew' => (string) ($renewal['renew_url'] ?? '') ?: $account,
             'payment' => $store . '/account/billing',
             'sites' => $account,
-            'upgrade' => (string) ($license['upgrade_url'] ?? '') ?: self::CHECKOUT,
-            'checkout' => self::CHECKOUT,
-            'support' => self::SUPPORT,
+            'upgrade' => (string) ($license['upgrade_url'] ?? '') ?: $checkout,
+            'checkout' => $checkout,
+            'support' => Docs::tagged(Docs::SUPPORT, 'license', Docs::PRO),
             'downloads' => $store . '/account/downloads',
         ];
     }

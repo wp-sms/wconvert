@@ -17,7 +17,11 @@ loader-missing notice said "reinstall" with no steps.
    article the admin links to, by slug (`GUIDES`), with `docsUrl(guide,
    section?)` and `docsSearchUrl()`. It has no imports, so the block editor and
    Pro read it too. PHP has its twin, `WConvert\Support\Docs`. A slug or section
-   is added only once it exists on the website's `docs.ts`.
+   is added only once it exists on the website's `docs.ts`. *Amended by [ADR 0189](0189-links-to-our-sites-carry-one-scheme.md):
+   `docsUrl(guide, section?, content?, product?)`, and `taggedUrl()` beside it,
+   so every address the two helpers give is tagged. `docs.ts` and `Docs` are now
+   the only shipped code that writes our addresses, apart from that ADR's exempt
+   list, and a test enforces it.*
 2. **One link.** `shell/GuideLink` is a new-tab link with ↗, said aloud as
    opening a new tab. `InfoTip` and `EmptyState` take a `guide`, so most links
    live inside a tip or under an empty state's action and add nothing to a
@@ -35,7 +39,8 @@ loader-missing notice said "reinstall" with no steps.
 5. **WordPress's own surfaces.** Docs and Support under the free and Pro rows
    on the Plugins screen (`PluginRowMeta`); a "How to reinstall" link on the
    loader-missing notice; a guides section and a guide per matching FAQ answer
-   in `readme.txt`.
+   in `readme.txt`. *Amended by [ADR 0189](0189-links-to-our-sites-carry-one-scheme.md): the Plugins row is tagged `plugins-screen`
+   and names whichever plugin's row it is, and the notice is `admin-notice`.*
 
 ## Consequences
 

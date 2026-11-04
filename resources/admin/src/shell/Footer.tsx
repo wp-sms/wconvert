@@ -4,6 +4,7 @@ import { adminSettings } from '../settings';
 import { BrandMark, PlanBadge } from './Brand';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { HELP_URLS, HelpLinks } from './HeaderTools';
+import { PUBLISHER_URL, taggedUrl } from './docs';
 
 const veronaLabsLogo = new URL('../assets/branding/veronalabs.svg', import.meta.url).href;
 
@@ -42,7 +43,7 @@ export function Footer({ currentPage }: { currentPage?: string } = {}) {
     <div className="wconvert-measure wconvert-publisher-row mx-auto w-full">
       <div className="wconvert-publisher-credit">
         <span>{__('A product by', 'wconvert')}</span>
-        <a className="wconvert-publisher" href="https://veronalabs.com/" target="_blank" rel="noopener noreferrer" aria-label={__('By VeronaLabs (opens in a new tab)', 'wconvert')}>
+        <a className="wconvert-publisher" href={taggedUrl(PUBLISHER_URL, 'footer')} target="_blank" rel="noopener noreferrer" aria-label={__('By VeronaLabs (opens in a new tab)', 'wconvert')}>
           <img src={veronaLabsLogo} width="132" height="21" alt="VeronaLabs" />
         </a>
       </div>

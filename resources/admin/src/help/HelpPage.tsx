@@ -5,8 +5,8 @@ import {
   SlidersHorizontal, Users, type LucideIcon,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { HELP_URLS } from '../shell/HeaderTools';
-import { GUIDES, docsSearchUrl, docsUrl } from '../shell/docs';
+import { HELP_URLS, HelpSearchTags } from '../shell/HeaderTools';
+import { DOCS_URL, GUIDES, docsSearchUrl, docsUrl } from '../shell/docs';
 import { markSubmenuCurrent } from '../shell/menuHighlight';
 import { tierName, tierProductName } from '../goals/availability';
 import { settingsHref } from '../nav';
@@ -37,13 +37,13 @@ function topics(paid: boolean): readonly Topic[] {
 /** The docs' troubleshooting guides, in the site's order. The Pro one only where Pro is installed (ADR 0116). */
 function fixes(paid: boolean): readonly { readonly href: string; readonly title: string }[] {
   return [
-    { href: docsUrl(GUIDES.popupNotShowing), title: __('My popup does not appear', 'wconvert') },
-    { href: docsUrl(GUIDES.emailNotReceived), title: __('A signup was saved but the email never arrived', 'wconvert') },
-    { href: docsUrl(GUIDES.publishBlocked), title: __('My form is blocked, rejected or cannot be published', 'wconvert') },
-    { href: docsUrl(GUIDES.missingSubmissions), title: __('I cannot find a submission or the numbers look different', 'wconvert') },
-    { href: docsUrl(GUIDES.inlineMissing), title: __('My inline campaign or locked content is missing', 'wconvert') },
-    { href: docsUrl(GUIDES.changesNotVisible), title: __('My changes are not visible or the campaign conflicts with my site', 'wconvert') },
-    ...(paid ? [{ href: docsUrl(GUIDES.proUnavailable), title: sprintf(/* translators: %s: the paid product's name, e.g. “WConvert Pro”. */ __('%s features or license updates are unavailable', 'wconvert'), tierProductName('pro')) }] : []),
+    { href: docsUrl(GUIDES.popupNotShowing, undefined, 'help'), title: __('My popup does not appear', 'wconvert') },
+    { href: docsUrl(GUIDES.emailNotReceived, undefined, 'help'), title: __('A signup was saved but the email never arrived', 'wconvert') },
+    { href: docsUrl(GUIDES.publishBlocked, undefined, 'help'), title: __('My form is blocked, rejected or cannot be published', 'wconvert') },
+    { href: docsUrl(GUIDES.missingSubmissions, undefined, 'help'), title: __('I cannot find a submission or the numbers look different', 'wconvert') },
+    { href: docsUrl(GUIDES.inlineMissing, undefined, 'help'), title: __('My inline campaign or locked content is missing', 'wconvert') },
+    { href: docsUrl(GUIDES.changesNotVisible, undefined, 'help'), title: __('My changes are not visible or the campaign conflicts with my site', 'wconvert') },
+    ...(paid ? [{ href: docsUrl(GUIDES.proUnavailable, undefined, 'help'), title: sprintf(/* translators: %s: the paid product's name, e.g. “WConvert Pro”. */ __('%s features or license updates are unavailable', 'wconvert'), tierProductName('pro')) }] : []),
   ];
 }
 
@@ -74,13 +74,14 @@ export function HelpPage() {
   return (
     <div className="wconvert-help">
       {/* A plain GET form: the docs' search runs on wconvert.io (`docsSearchUrl`), so this needs no script and sends nothing until submitted. */}
-      <form className="wconvert-help-search" role="search" action={HELP_URLS.guides} method="get" target="_blank" rel="noreferrer">
+      <form className="wconvert-help-search" role="search" action={DOCS_URL} method="get" target="_blank" rel="noreferrer">
         <label htmlFor="wconvert-help-q" className="sr-only">{__('Search the guides on wconvert.io', 'wconvert')}</label>
         <div className="wconvert-help-search__field">
           <Search aria-hidden="true" />
           <input id="wconvert-help-q" name="q" type="search" autoComplete="off" placeholder={__('Search the guides', 'wconvert')} />
           <Button type="submit">{__('Search', 'wconvert')}<NewTab /></Button>
         </div>
+        <HelpSearchTags />
         <p className="wconvert-help-search__popular">
           <span>{__('Popular:', 'wconvert')}</span>
           {popular.map((query) => (
@@ -109,7 +110,7 @@ export function HelpPage() {
           <ul className="wconvert-help-topics">
             {topics(paid).map(({ id, icon: Icon, title, text }) => (
               <li key={id}>
-                <a href={`${HELP_URLS.guides}#${id}`} target="_blank" rel="noreferrer">
+                <a href={docsUrl(undefined, id, 'help')} target="_blank" rel="noreferrer">
                   <span className="wconvert-help-topics__icon" aria-hidden="true"><Icon /></span>
                   <strong>{title}</strong>
                   <span>{text}</span>
@@ -123,7 +124,7 @@ export function HelpPage() {
         <section className="wconvert-help-card" aria-labelledby="wconvert-help-fixes">
           <div className="wconvert-help-card__head">
             <h2 id="wconvert-help-fixes">{__('Quick fixes', 'wconvert')}</h2>
-            <a href={`${HELP_URLS.guides}#troubleshooting`} target="_blank" rel="noreferrer">{__('All', 'wconvert')}<span className="sr-only"> {__('troubleshooting guides (opens in a new tab)', 'wconvert')}</span></a>
+            <a href={docsUrl(undefined, 'troubleshooting', 'help')} target="_blank" rel="noreferrer">{__('All', 'wconvert')}<span className="sr-only"> {__('troubleshooting guides (opens in a new tab)', 'wconvert')}</span></a>
           </div>
           <ul className="wconvert-help-fixes">
             {fixes(paid).map(({ href, title }) => (
@@ -141,7 +142,7 @@ export function HelpPage() {
           <p>{__('Claude, ChatGPT or Cursor can read campaigns, report results and make drafts.', 'wconvert')}</p>
         </div>
         <div className="wconvert-help-agents__links">
-          <a href={docsUrl(GUIDES.aiAgents)} target="_blank" rel="noreferrer">{__('How to connect one', 'wconvert')}<ArrowUpRight aria-hidden="true" className="rtl:-scale-x-100" /><NewTab /></a>
+          <a href={docsUrl(GUIDES.aiAgents, undefined, 'help')} target="_blank" rel="noreferrer">{__('How to connect one', 'wconvert')}<ArrowUpRight aria-hidden="true" className="rtl:-scale-x-100" /><NewTab /></a>
           <a href={settingsHref('connections')}>{__('Settings → AI agents', 'wconvert')}</a>
         </div>
       </section>

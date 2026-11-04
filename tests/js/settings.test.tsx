@@ -304,7 +304,7 @@ it('saves campaign privacy guidance without disabling core privacy tools', async
 it('lists what Pro adds on a free install and offers no Pro-only category', async () => {
   render(<Settings group="experience" />);
   expect(screen.getByRole('heading', { name: 'More with Pro' })).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: /Explore Pro/ })).toHaveAttribute('href', 'https://wconvert.io/pricing/?utm_source=wconvert-free&utm_medium=settings-list&utm_campaign=explore-pro');
+  expect(screen.getByRole('link', { name: /Explore Pro/ })).toHaveAttribute('href', 'https://wconvert.io/pricing/?utm_source=wp-admin&utm_medium=plugin&utm_campaign=wconvert-free&utm_content=settings-list');
   expect(screen.queryByRole('link', { name: /Analytics integrations/ })).not.toBeInTheDocument();
   expect(await screen.findByRole('heading', { name: 'Display limits' })).toBeInTheDocument();
 });

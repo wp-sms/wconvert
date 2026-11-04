@@ -23,7 +23,7 @@ it('shows publisher branding without site identity and opens working footer help
   expect(screen.queryByRole('link', { name: 'A & B' })).toBeNull();
   expect(screen.queryByText(/A & B/)).toBeNull();
   expect(within(screen.getByRole('contentinfo')).getByText('Free')).toBeVisible();
-  expect(screen.getByRole('link', { name: 'By VeronaLabs (opens in a new tab)' })).toHaveAttribute('href', 'https://veronalabs.com/');
+  expect(screen.getByRole('link', { name: 'By VeronaLabs (opens in a new tab)' })).toHaveAttribute('href', 'https://veronalabs.com/?utm_source=wp-admin&utm_medium=plugin&utm_campaign=wconvert-free&utm_content=footer');
   expect(screen.getByRole('img', { name: 'VeronaLabs' })).toBeVisible();
   await userEvent.click(screen.getByRole('button', { name: 'Need a hand? Help' }));
   // Help is help: where to learn and who to ask, never a Settings shortcut.
@@ -31,7 +31,7 @@ it('shows publisher branding without site identity and opens working footer help
   expect(within(help).getByRole('link', { name: /^Getting started/ })).toBeInTheDocument();
   expect(within(help).getByRole('link', { name: /^Contact support/ })).toBeInTheDocument();
   expect(screen.queryByRole('link', { name: 'Connections & destinations' })).toBeNull();
-  expect(screen.getByRole('link', { name: 'WConvert website' })).toHaveAttribute('href', 'https://wconvert.io/');
+  expect(screen.getByRole('link', { name: 'WConvert website' })).toHaveAttribute('href', 'https://wconvert.io/?utm_source=wp-admin&utm_medium=plugin&utm_campaign=wconvert-free&utm_content=help');
 });
 
 it('omits the service footer and visible page heading during creation', () => {

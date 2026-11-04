@@ -69,7 +69,7 @@ export function AddRule({ axis, label, onAdd, autoOpen = false, onClose }: AddRu
     <OptionListContent align="start" aria-label={__('Choose a rule', 'wconvert')}>
       <OptionList search={{ value: query, onChange: setQuery, label: __('Find a rule', 'wconvert'), placeholder: __('Search rules…', 'wconvert') }}
         // Outside the listbox: arrows never land on it, Tab reaches its link (ADR 0147).
-        footer={<ProHint medium="rule-menu" className="wconvert-option-menu__hint-line" features={axis.filter(type => type.availability === 'locked').map(type => type.label)} />}>
+        footer={<ProHint surface="rule-menu" className="wconvert-option-menu__hint-line" features={axis.filter(type => type.availability === 'locked').map(type => type.label)} />}>
         {[...sections].map(([category, groups]) => <OptionGroup key={category} heading={category || null}>
           {groups.map(({ type, choices }) => <OptionItem key={type.type} icon={ruleIcon(type.type)} name={type.label}
             hint={ruleHint(type.type)} tip={ruleHelp(type.type)}
