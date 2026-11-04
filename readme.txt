@@ -8,7 +8,7 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Popup builder and optin forms for WordPress. Capture emails, phone numbers and enquiries with 150+ designs. No account, no view limits.
+Popup builder and optin forms for WordPress. Capture emails, phone numbers and enquiries with 270+ designs, 150+ free. No account, no view limits.
 
 == Description ==
 
@@ -59,9 +59,9 @@ Every setup comes with copy written for that goal. You fill in your own brand an
 * **Multistep signups.** Ask for an email first, then a phone number or a question on the next step.
 * **Mobile-friendly.** Every design works on phones as well as on desktop, and you can preview both before you publish.
 
-= 150+ ready-made designs =
+= 270+ ready-made designs =
 
-* **Over 150 designs** cover newsletters, coupons, lead magnets, enquiries, bookings and announcements. All the artwork is original and drawn in the page, so no image is loaded from another site.
+* **More than 270 designs, over 150 of them free,** cover newsletters, coupons, lead magnets, enquiries, bookings and announcements. Pictures and fonts are served from your own site, so a design loads nothing from other sites on your visitors' pages, unless you turn on Google Fonts.
 * **More than 50 designs ship inside the plugin** and work offline from day one.
 * **The rest come from the online [WConvert library](https://wconvert.io/templates/?utm_source=wordpress.org&utm_medium=plugin-directory&utm_campaign=wconvert-free&utm_content=designs)**, which you can turn off in Settings. Add a design with a click, and it then works offline like the rest. Some designs need WConvert Pro.
 * **Click any part of a design to change it**: words, colours, fields and buttons, right beside a live preview.
@@ -150,6 +150,8 @@ The admin screens, the visitor-facing loader and the editor block are built with
 * `public/protection/` comes from `resources/protection/src`
 
 To rebuild them, run `npm ci && npm run build:free` in a clone of the repository, using Node.js 22.
+
+The open-source libraries and fonts in the plugin, and their licences, are listed in [third-party-licenses.txt](https://github.com/wp-sms/wconvert/blob/main/third-party-licenses.txt).
 
 == Installation ==
 
@@ -256,124 +258,25 @@ Guide: [Deactivate or uninstall WConvert](https://wconvert.io/docs/deactivate-or
 
 == External services ==
 
-WConvert works without an account or any external service. The online design library below is WConvert's own service and is on by default; it is contacted only when an administrator opens the design picker. Nothing else below is contacted unless an administrator turns it on.
+WConvert needs no account. The online design library is on by default and is contacted only from the admin screens. The other services stay off unless an administrator turns them on.
 
-**Online design library.** The designs included in the plugin work offline and
-need nothing else. The online WConvert library at templates.wconvert.io
-is on by default. It is contacted when an administrator opens the design
-picker or follows a link to a design, and can be turned off at any time in Settings → Data & privacy, after
-which nothing is fetched. Nothing is fetched on activation, from cron, on the
-dashboard or on your site's pages. While the picker is open, WConvert checks
-for new designs at most twice a day.
+**WConvert design library (templates.wconvert.io).** Supplies the designs that don't ship inside the plugin. It is contacted when an administrator opens the design picker or follows a link to a design, checks for new designs at most twice a day, and is never contacted on your site's pages. Your server fetches design data, words and images. Free sends no licence key, site address, campaign, lead or visitor data, so the service sees only your server's IP address, plus your browser's when it loads design thumbnails. Downloads are counted per design. WConvert Pro also sends its licence key and your site's domain when you add a Pro design, and the service asks the WConvert licence server (Nexus, at https://my.wconvert.io) to issue a five-minute pass for those files.
 
-What is fetched: JSON design and setup data, the words for your site's language
-where the library has them, and PNG, JPEG or WebP images. Every
-file is checked against a SHA-256 checksum, and nothing executable or any font
-is downloaded. A design you add is stored under `wp-content/uploads/` and keeps
-working offline. Your browser loads design thumbnails from the same address with
-no referrer, so the service sees your browser's IP address.
-
-What is sent: requests from the free plugin carry no licence key, site address,
-campaign, lead or visitor data; the server's IP address, the requested address
-and a fixed user agent are all the service sees. When a design is previewed or added, the
-service counts that download for that design, with no site or visitor
-identifier. **WConvert Pro** also sends its licence key and your site's domain to
-the same service when you add a Pro design, and the service asks the WConvert
-licence server (Nexus, at https://my.wconvert.io) to issue a five-minute pass for
-those files.
-
-The service runs on Cloudflare, which processes these requests for us. Its
-request logs are kept for at most 7 days and download counts for 3 months.
-
-To turn the library off for the whole site, add
-`define( 'WCONVERT_TEMPLATE_CATALOG', false );` to `wp-config.php`, or return
-`false` from the `wconvert_template_catalog` filter. An operator can also point
-it at another catalogue address; the trusted recipient of a Pro licence key does
-not change with it.
+The service runs on Cloudflare, with request logs kept for at most 7 days and download counts for 3 months. Turn it off in Settings → Data & privacy, or with `define( 'WCONVERT_TEMPLATE_CATALOG', false );` in `wp-config.php`.
 
 Service terms: https://wconvert.io/terms/
 Privacy policy: https://wconvert.io/privacy/
 
-**Bot verification.** Hidden-field checks and submission limits are built in.
-In Settings → Spam protection, administrators may enable one verification
-service using their own account and keys: Cloudflare Turnstile Managed, Google
-reCAPTCHA v2 checkbox, or hCaptcha. No service is selected by default. Provider
-charges and quotas are separate from WConvert.
+**Bot verification (off by default).** In Settings → Spam protection, an administrator can choose one service, using their own keys. It loads when a form needs verification or during Test saved setup. Its script receives browser and network information, including the visitor's IP address. Your server sends it the verification token and your credentials, never the form's answers.
 
-The selected service loads when a form needs verification or an administrator
-runs Test saved setup. Its script receives browser and network information,
-including the visitor's IP address. WConvert sends the verification token and
-required credentials from the server to that service; it does not forward the
-form's email, phone or other captured answers. The server also checks the
-provider response before accepting a protected form. Visitors can retry failed
-verification without losing their entered fields. Administrators should review
-the selected service's terms and their site's privacy notice before enabling it.
+* Cloudflare Turnstile. Terms: https://www.cloudflare.com/website-terms/ Privacy: https://www.cloudflare.com/turnstile-privacy-policy/
+* Google reCAPTCHA. Terms: https://policies.google.com/terms Privacy: https://policies.google.com/privacy
+* hCaptcha. Terms: https://www.hcaptcha.com/terms Privacy: https://www.hcaptcha.com/privacy
 
-* Cloudflare Turnstile: https://www.cloudflare.com/products/turnstile/
-  Terms: https://www.cloudflare.com/website-terms/
-  Privacy: https://www.cloudflare.com/turnstile-privacy-policy/
-* Google reCAPTCHA: https://www.google.com/recaptcha/about/
-  Terms: https://policies.google.com/terms
-  Privacy: https://policies.google.com/privacy
-* hCaptcha: https://www.hcaptcha.com/
-  Terms: https://www.hcaptcha.com/terms
-  Privacy: https://www.hcaptcha.com/privacy
+**Google Fonts (off by default).** In Settings → Data & privacy, the site owner can turn on remote fonts. When a campaign using them is shown, or in the editor preview, the browser requests them from fonts.googleapis.com and fonts.gstatic.com. Google receives the browser's IP address and request information, and no form answers.
 
-**Optional Google Fonts.** Remote Google Fonts are disabled by default. In Settings → Data & privacy,
-the site owner can enable them after acknowledging the browser connection.
-When an eligible campaign is shown, WConvert requests only its declared, used
-fonts that are not provided by the site's font list. The active editor preview
-also loads these fonts when enabled. Selecting or importing a design does not
-enable this setting. Gallery cards do not initiate font requests.
-
-Stylesheets are requested from fonts.googleapis.com and font files from
-fonts.gstatic.com. Google receives the browser's IP address and HTTP request
-information. WConvert sends no form answers to this service. Installing fonts
-in the WordPress Font Library is the locally hosted alternative. Disabling
-remote delivery prevents new requests on freshly served pages; clear host/CDN
-page caches after changing the setting. Existing browser caches may retain fonts.
-
-Service: https://fonts.google.com/
 Terms: https://policies.google.com/terms
 Privacy: https://policies.google.com/privacy
-
-Queued resource emails are limited to one successful send per recipient and
-resource within ten minutes. Separate submissions remain separate leads.
-
-== Third-party libraries ==
-
-The built JavaScript and CSS bundle these open-source libraries. Their sources
-are installed by `npm ci` from `package-lock.json`.
-
-* React and ReactDOM 19 — MIT. The admin screens bundle their own React 19
-  rather than using the copy WordPress provides, because WordPress 6.8 ships
-  React 18. It runs only on WConvert's own admin screens; the visitor-facing
-  loader and the block editor bundle use no React of their own.
-* Radix UI (`radix-ui`) — MIT
-* React Flow (`@xyflow/react`) — MIT
-* dagre (`@dagrejs/dagre`) — MIT
-* React Flow Smart Edge (`@tisoap/react-flow-smart-edge`) — MIT
-* react-colorful — MIT
-* tailwind-merge — MIT
-* clsx — MIT
-* Tailwind CSS and tw-animate-css (generated CSS) — MIT
-* lite-phone-input — MIT; its notice ships in `resources/phone/`
-* Lucide icons (`lucide-react`) — ISC
-* class-variance-authority — Apache-2.0
-* Pragmatic drag and drop (`@atlaskit/pragmatic-drag-and-drop`) — Apache-2.0
-* DM Sans font — SIL Open Font License 1.1; its licence ships as
-  `public/admin/fonts/OFL-DM-Sans.txt`
-
-PHP:
-
-* Action Scheduler (`woocommerce/action-scheduler`), installed by Composer into
-  `vendor/` — GPL-3.0-or-later, which is compatible with this plugin's
-  GPL-2.0-or-later licence when distributed together.
-
-Template artwork: every illustration in the design library is original work
-made for WConvert, drawn as inline SVG, and licensed GPL-2.0-or-later with the
-rest of the plugin. The library contains no photographs and no third-party
-logos.
 
 == Screenshots ==
 

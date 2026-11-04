@@ -12,8 +12,8 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
-Bundled third-party code keeps its own licence; see readme.txt,
-"Third-party libraries".
+Bundled third-party code keeps its own licence; see
+third-party-licenses.txt.
 
 ===========================================================================
 

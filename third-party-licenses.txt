@@ -1,0 +1,52 @@
+Third-party code and fonts in WConvert
+
+WConvert is licensed GPL-2.0-or-later; see license.txt. What it bundles keeps
+its own licence, listed below.
+
+JAVASCRIPT AND CSS
+
+The built files in public/ bundle these open-source packages. Their sources are
+installed by `npm ci` from package-lock.json in the plugin's repository.
+
+* React and ReactDOM 19, with scheduler: MIT. The admin screens bundle their
+  own React 19 rather than using the copy WordPress provides, because
+  WordPress 6.8 ships React 18. It runs only on WConvert's own admin screens;
+  the visitor-facing loader and the block editor bundle use no React of their
+  own.
+* Radix UI (radix-ui): MIT. It brings Floating UI (@floating-ui/*),
+  aria-hidden, get-nonce, react-remove-scroll, react-remove-scroll-bar,
+  react-style-singleton, use-callback-ref and use-sidecar, all MIT, and tslib,
+  0BSD.
+* dagre (@dagrejs/dagre): MIT
+* react-colorful: MIT
+* tailwind-merge: MIT
+* clsx: MIT
+* Tailwind CSS and tw-animate-css (generated CSS): MIT
+* lite-phone-input: MIT; its notice ships in resources/phone/
+* Lucide icons (lucide-react): ISC
+* class-variance-authority: Apache-2.0
+* Pragmatic drag and drop (@atlaskit/pragmatic-drag-and-drop): Apache-2.0. It
+  brings bind-event-listener, raf-schd and @babel/runtime, all MIT.
+
+PHP
+
+* Action Scheduler (woocommerce/action-scheduler), installed by Composer into
+  vendor/: GPL-3.0-or-later, which is compatible with this plugin's
+  GPL-2.0-or-later licence when distributed together.
+
+FONTS
+
+All under the SIL Open Font License 1.1. Each licence ships beside its font.
+
+* DM Sans: public/admin/fonts/OFL-DM-Sans.txt and
+  resources/template-fonts/dmsans-OFL.txt
+* Bebas Neue: resources/template-fonts/bebasneue-OFL.txt
+* Cormorant Garamond: resources/template-fonts/cormorantgaramond-OFL.txt
+
+DESIGN ARTWORK
+
+The three pictures in resources/template-artwork/ were generated with OpenAI's
+image tools for WConvert. Their rights records allow redistribution, and they
+are distributed with the plugin under GPL-2.0-or-later. The other artwork in the
+bundled designs is drawn with SVG and CSS inside the design, and is licensed
+with the plugin.

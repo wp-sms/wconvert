@@ -714,7 +714,7 @@ if [ "$tier" = "free" ]; then
         [ -e "$entry" ] || continue
 
         case "$(basename "$entry")" in
-            "$main_file"|uninstall.php|readme.txt|license.txt|tiers.json|src|resources|public|vendor|packages) ;;
+            "$main_file"|uninstall.php|readme.txt|license.txt|third-party-licenses.txt|tiers.json|src|resources|public|vendor|packages) ;;
             *) fail "unexpected entry at the free artifact's root: $(basename "$entry") — add it to .distignore, or to the allowlist here if it must ship" ;;
         esac
     done
