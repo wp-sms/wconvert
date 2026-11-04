@@ -20,9 +20,10 @@ export const PUBLISHER_URL = 'https://veronalabs.com/';
 /** The plugin that owns a link, as its `utm_campaign` (ADR 0189). */
 export type LinkProduct = 'wconvert-free' | 'wconvert-pro';
 
-/** The spots a link can sit in, as its `utm_content` (ADR 0189). PHP's twin passes the same words. */
+/** The spots a link can sit in, as its `utm_content` (ADR 0189). PHP's twin passes the same words as plain strings. */
 export type ProSurface = 'header' | 'settings-list' | 'rule-menu' | 'rule-picks' | 'flow-map' | 'destinations' | 'campaign-menu';
-export type LinkSpot = ProSurface | 'guide' | 'help' | 'help-search' | 'footer' | 'license';
+export type LinkSpot = ProSurface | 'guide' | 'help' | 'help-search' | 'footer' | 'license'
+  | 'template-card' | 'plugins-screen' | 'admin-notice' | 'inspector';
 
 /**
  * A link's four tags. Fixed values only: never the site, the version, the user

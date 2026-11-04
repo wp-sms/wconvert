@@ -26,9 +26,12 @@ const EXEMPT: Readonly<Record<string, readonly string[]>> = {
   'src/Template/Catalog/TemplateCatalog.php': ['https://templates.wconvert.io'],
 };
 
-/** Our addresses in a file's text, JSON's `\/` included; a bare domain in prose is no link. */
+/** The readme's legal and service lines. Every other link there carries the readme's own tags. */
+const README_EXEMPT: readonly string[] = ['https://my.wconvert.io', 'https://wconvert.io/terms/', 'https://wconvert.io/privacy/'];
+
+/** Our addresses in a file's text, JSON's `\/` and scheme-relative ones included; a bare domain in prose is no link. */
 const ourAddresses = (text: string): string[] =>
-  [...text.matchAll(/https?:\\?\/\\?\/(?:[\w-]+\.)*(?:wconvert\.io|veronalabs\.com)[^\s'"`)<>\]]*/g)].map(([address]) => address.replaceAll('\\/', '/'));
+  [...text.matchAll(/(?:https?:)?\\?\/\\?\/(?:[\w-]+\.)*(?:wconvert\.io|veronalabs\.com)[^\s'"`)<>\]]*/g)].map(([address]) => address.replaceAll('\\/', '/'));
 
 function shippedFiles(path: string): string[] {
   if (extname(path)) return [path];
@@ -71,6 +74,7 @@ it('finds a link written by hand, in code or in JSON, and not a domain in prose'
   expect(ourAddresses(`href="https://wconvert.io/pricing/"`)).toEqual(['https://wconvert.io/pricing/']);
   expect(ourAddresses(`{"url":"https:\\/\\/my.wconvert.io\\/a"}`)).toEqual(['https://my.wconvert.io/a']);
   expect(ourAddresses(`const a = 'http://veronalabs.com/x?y=1';`)).toEqual(['http://veronalabs.com/x?y=1']);
+  expect(ourAddresses(`src="//wconvert.io/a.js"`)).toEqual(['//wconvert.io/a.js']);
   expect(ourAddresses('// the docs live on wconvert.io')).toEqual([]);
   expect(ourAddresses(`const a = 'https://notwconvert.io/';`)).toEqual([]);
 });
@@ -85,6 +89,12 @@ it('writes our addresses only in the helpers and the exempt list', () => {
   });
 
   expect(handWritten).toEqual([]);
+});
+
+it('tags every link in the readme with the readme’s own scheme, bar its legal and service lines', () => {
+  const untagged = ourAddresses(readFileSync(join(ROOT, 'readme.txt'), 'utf8'))
+    .filter(address => !README_EXEMPT.includes(address) && !/\?utm_source=wordpress\.org&utm_medium=plugin-directory&utm_campaign=wconvert-free&utm_content=[a-z-]+$/.test(address));
+  expect(untagged).toEqual([]);
 });
 
 it('keeps the exempt list true, so it cannot quietly outlive the links it allows', () => {

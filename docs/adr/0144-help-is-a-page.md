@@ -24,12 +24,15 @@ review gate: claude.ai/artifact/EnhKuiKMx37rYDJDLcffgE (v5).
    Analytics, Leads and Settings join the submenu between Campaigns and Help,
    and free marks the current section from the hash.*
 2. **One Help, three doors.** The header ?, the footer's Help and the page share
-   one `HELP_URLS` table. The popover gains the page's search field and *Open
+   one `HELP_URLS` table (*amended by [ADR 0189](0189-links-to-our-sites-carry-one-scheme.md): its links are tagged, so the two search
+   forms take their `action` from the bare `DOCS_URL` instead*). The popover gains the page's search field and *Open
    the Help page*, left out on the page itself. There the ? is marked current
    with the frame's tint and its citron signal, as an active tab is; an outline
    read as keyboard focus.
 3. **Search belongs to the website.** The field is a plain GET form to
-   `https://wconvert.io/docs/?q=…`, opening a new tab. The plugin bundles no
+   `https://wconvert.io/docs/?q=…`, opening a new tab. *Amended by [ADR 0189](0189-links-to-our-sites-carry-one-scheme.md): the form
+   also sends the link's four tags, as hidden fields, because a GET form drops
+   any query in its `action`.* The plugin bundles no
    index and fetches nothing. Rejected: shipping a docs snapshot (stale, and the
    owner wants the site to own search); fetching a JSON index at runtime (an
    external request that needs readme disclosure, for less than the site's own

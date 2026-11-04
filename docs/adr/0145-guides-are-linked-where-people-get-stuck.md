@@ -20,7 +20,8 @@ loader-missing notice said "reinstall" with no steps.
    is added only once it exists on the website's `docs.ts`. *Amended by [ADR 0189](0189-links-to-our-sites-carry-one-scheme.md):
    `docsUrl(guide, section?, content?, product?)`, and `taggedUrl()` beside it,
    so every address the two helpers give is tagged. `docs.ts` and `Docs` are now
-   the only shipped code that writes our addresses, and a test enforces it.*
+   the only shipped code that writes our addresses, apart from that ADR's exempt
+   list, and a test enforces it.*
 2. **One link.** `shell/GuideLink` is a new-tab link with ↗, said aloud as
    opening a new tab. `InfoTip` and `EmptyState` take a `guide`, so most links
    live inside a tip or under an empty state's action and add nothing to a
