@@ -470,8 +470,11 @@ protection's *No activity yet* stays a line.
   because each apply is a server query and a half-typed address reads as a
   different filter from a whole one. Help's plain GET form is ADR 0144's.
 - **A way back** is `PageBack`: one ghost link above the title, outside the
-  heading's toolbar, with its arrow on the title's edge (ADR 0187). Leads hides
-  the section's description on purpose (ADR 0091).
+  heading's toolbar, with its arrow on the title's edge (ADR 0187). Its box is
+  24px, 44px on touch without moving anything, and its words name the page it
+  leads to. The title under it names what this page is about, not the section
+  the tab already says: an occasion, Sending issues, a report (`PageHeading`,
+  ADR 0190). Leads hides the section's description on purpose (ADR 0091).
 - **A settings footer** is, in order: the error, `SaveStatus`, **Cancel changes**
   while dirty, Save. A save's error goes beside Save and nowhere else.
 - **A re-read that keeps its rows** dims them under a status line (§12).

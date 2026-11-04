@@ -11388,8 +11388,8 @@ msgid "This report is not available"
 msgstr "این گزارش در دسترس نیست"
 
 #: public/admin/chunk-BlnfTWcd.js:81
-msgid "Choose a report from Overall impact. A never-published campaign has none."
-msgstr "گزارشی را از «تأثیر کلی» انتخاب کنید. کمپینی که هرگز منتشر نشده باشد گزارشی ندارد."
+msgid "Choose a report from Analytics. A never-published campaign has none."
+msgstr "گزارشی را از «آمار» انتخاب کنید. کمپینی که هرگز منتشر نشده باشد گزارشی ندارد."
 
 #: public/admin/chunk-2dRxxHZc.js:77
 msgid "How these numbers work"

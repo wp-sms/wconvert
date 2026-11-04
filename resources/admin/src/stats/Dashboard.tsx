@@ -18,7 +18,7 @@ import {
   Plus,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { PageAction, PageBack } from '../shell/PageActions';
+import { PageAction, PageHeading } from '../shell/PageActions';
 import { PageError, Region, RegionErrorState } from '../shell/Region';
 import { Disclosure } from '../shell/Disclosure';
 import { EmptyState } from '../shell/EmptyState';
@@ -33,16 +33,16 @@ import {
   ready,
   type Loadable,
 } from '../shell/loadable';
-import { createHref, reportHref, type ReportQuery } from '../nav';
+import { createHref, isReportOverview, reportHref, type ReportQuery } from '../nav';
 import { siteToday } from '../leads/calendar';
 import { formatMoney } from '../lib/format';
 import { periodOf, readReport, type DashboardPayload, type GoalReport, type PeriodQuery } from './api';
 import { formatCount, formatRate } from './format';
 import { countsNothing } from '../goals/countsNothing';
 import { families, rangeLabel, reportCSV } from './reporting';
-import { CampaignTable, Change, ChangeValue, changeOf, Experiment, GoalDetail, ReportTitle } from './ReportDetails';
+import { AboutTip, CampaignTable, Change, ChangeValue, changeOf, Experiment, GoalDetail } from './ReportDetails';
 import './analytics.css';
-import { AnalyticsSkeleton } from './AnalyticsSkeleton';
+import { AnalyticsSkeleton, ReportBack, ReportHeadingSkeleton } from './AnalyticsSkeleton';
 import {
   MonthlyTargets,
   useMonthlyTargets,
@@ -196,7 +196,7 @@ function DashboardContent({
   );
   const optin = card?.optins.find((o) => o.id === focusedId);
   const impact = payload?.impact.find((i) => i.id === selection.impact);
-  const overview = !focusedId && !selection.goal && !selection.impact;
+  const overview = isReportOverview(selection);
   const targets = useMonthlyTargets(overview);
   const scopedCards = card
     ? [card]
@@ -317,6 +317,9 @@ function DashboardContent({
           onRetry={() => setRetry((n) => n + 1)}
         />
       )}
+      {!overview && <ReportBack query={accepted} />}
+      {!overview && report.status === 'loading' && <ReportHeadingSkeleton query={selection} />}
+      {!overview && report.status === 'failed' && <PageHeading title={__('Analytics', 'wconvert')} />}
       {report.status === 'failed' && (
         <Region label={__('Analytics', 'wconvert')}>
           <RegionErrorState
@@ -327,11 +330,6 @@ function DashboardContent({
       )}
       {/* What the chunk's fallback drew, so the hand-off is one shape. */}
       {report.status === 'loading' && <AnalyticsSkeleton />}
-      {payload && !overview && (
-        <PageBack href={reportHref({ ...periodOf(payload), compare: selection.compare })}>
-          {__('Overall impact', 'wconvert')}
-        </PageBack>
-      )}
       {/* A re-read keeps the report on screen, dimmed under its line, as Leads' rows do (§12). */}
       <div className={updating && payload ? 'wa-report-sheet opacity-60' : 'wa-report-sheet'} aria-busy={(updating && payload !== null) || undefined}>
       {payload && compare && payload.previous && !comparable && payload.goals.length > 0 && (
@@ -506,7 +504,7 @@ function DashboardContent({
         />
       ) : payload && impact ? (
         <>
-          <ReportTitle name={impact.label}>{impact.note}</ReportTitle>
+          <PageHeading title={<bdi>{impact.label}</bdi>} aside={<AboutTip name={impact.label}>{impact.note}</AboutTip>} />
           <CampaignTable
             cards={scopedCards}
             payload={payload}
@@ -514,17 +512,20 @@ function DashboardContent({
           />
         </>
       ) : payload && !overview ? (
-        <Region>
-          <EmptyState
-            icon={ChartColumn}
-            title={__('This report is not available', 'wconvert')}
-          >
-            {__(
-              'Choose a report from Overall impact. A never-published campaign has none.',
-              'wconvert',
-            )}
-          </EmptyState>
-        </Region>
+        <>
+          <PageHeading title={__('Analytics', 'wconvert')} />
+          <Region>
+            <EmptyState
+              icon={ChartColumn}
+              title={__('This report is not available', 'wconvert')}
+            >
+              {__(
+                'Choose a report from Analytics. A never-published campaign has none.',
+                'wconvert',
+              )}
+            </EmptyState>
+          </Region>
+        </>
       ) : null}
       {payload && !overview && <Insights items={insights} query={accepted} />}
       {payload && optin && !selection.experiment && <ProductActivityReport id={optin.id} period={payload} />}

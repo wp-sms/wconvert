@@ -10,6 +10,7 @@ import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { DataTable, DataTableActions, DataTableActionsColumn, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '../shell/DataTable';
 import { EmptyState } from '../shell/EmptyState';
 import { InfoTip } from '../shell/InfoTip';
+import { PageHeading } from '../shell/PageActions';
 import { Toolbar } from '../shell/Toolbar';
 import { messageOf } from '../shell/loadable';
 import { StatusBadge } from '../optins/StatusBadge';
@@ -139,19 +140,12 @@ export const ENOUGH_SHOWN_PER_VARIANT = 1000;
 export const bestFirst = (arms: OptinReport[]): OptinReport[] =>
   [...arms].sort((a, b) => (b.conversion_rate ?? -1) - (a.conversion_rate ?? -1));
 
-/** One sentence that reads two variants against each other, with how far to trust it. */
-/** What a report is about, with its description one press away (ADR 0187). */
-export function ReportTitle({ name, children }: { name: string; children: ReactNode }) {
-  return (
-    <div className="wa-section-heading">
-      <div className="wa-section-title">
-        <h2><bdi>{name}</bdi></h2>
-        <InfoTip label={sprintf(/* translators: %s: a report's title, e.g. “Submissions”. */ __('About %s', 'wconvert'), name)}>{children}</InfoTip>
-      </div>
-    </div>
-  );
+/** What a report is about, one press from its title (ADR 0187). */
+export function AboutTip({ name, children }: { name: string; children: ReactNode }) {
+  return <InfoTip label={sprintf(/* translators: %s: a report's title, e.g. “Submissions”. */ __('About %s', 'wconvert'), name)}>{children}</InfoTip>;
 }
 
+/** One sentence that reads two variants against each other, with how far to trust it. */
 function VariantDifference({ arms }: { arms: OptinReport[] }) {
   const [lead, next] = arms.filter((arm) => arm.conversion_rate !== null);
   if (!lead || !next)
@@ -272,15 +266,11 @@ export function GoalDetail({
     : undefined;
   return (
     <section aria-label={optin?.name ?? card.label}>
-      <div className="wa-detail-heading">
-        <div>
-          <p className="wa-eyebrow">
-            {optin ? card.label : __('Goal report', 'wconvert')}
-          </p>
-          <h2><bdi>{optin?.name ?? card.label}</bdi></h2>
-        </div>
-        {optin && <Status value={optin.status} />}
-      </div>
+      <PageHeading
+        title={<bdi>{optin?.name ?? card.label}</bdi>}
+        aside={optin && <Status value={optin.status} />}
+        description={optin && card.label}
+      />
       <p className="wa-muted">
         {numbers.deliveries === null
           ? card.measurement
@@ -332,9 +322,9 @@ export function GoalDetail({
             <p className="wa-eyebrow">{__('After submission', 'wconvert')}</p>
             <div className="wa-section-title">
               <h3>{__('Email handoffs', 'wconvert')}</h3>
-              <InfoTip label={sprintf(/* translators: %s: a report's title, e.g. “Submissions”. */ __('About %s', 'wconvert'), __('Email handoffs', 'wconvert'))}>
+              <AboutTip name={__('Email handoffs', 'wconvert')}>
                 {__('Later-day sends and resends count, so a difference is not a queue or failure count.', 'wconvert')}
-              </InfoTip>
+              </AboutTip>
             </div>
           </div>
           <div>
@@ -688,12 +678,15 @@ export function Experiment({
   const trigger = useRef<HTMLButtonElement | null>(null);
   if (!family || family.arms.length < 2)
     return (
-      <p className="wa-notice">
-        {__(
-          'No variant comparison is available for this campaign.',
-          'wconvert',
-        )}
-      </p>
+      <>
+        <PageHeading title={<bdi>{optin.name}</bdi>} />
+        <p className="wa-notice">
+          {__(
+            'No variant comparison is available for this campaign.',
+            'wconvert',
+          )}
+        </p>
+      </>
     );
   const arms = bestFirst(family.arms);
   const live = family.arms.filter((a) => a.status !== 'historical');
@@ -717,13 +710,16 @@ export function Experiment({
   };
   return (
     <section>
-      <p className="wa-eyebrow wa-eyebrow-lead">
-        {__('A/B comparison and variant history', 'wconvert')}
-      </p>
-      <ReportTitle name={family.root.name}>
-        <span className="block">{__('Results cover the selected dates, including past uses of each design. They do not prove a winner.', 'wconvert')}</span>
-        <span className="mt-2 block">{__('Each variant counts once in goal totals. Visitors are assigned per browser, not per person.', 'wconvert')}</span>
-      </ReportTitle>
+      <PageHeading
+        title={<bdi>{family.root.name}</bdi>}
+        aside={
+          <AboutTip name={family.root.name}>
+            <span className="block">{__('Results cover the selected dates, including past uses of each design. They do not prove a winner.', 'wconvert')}</span>
+            <span className="mt-2 block">{__('Each variant counts once in goal totals. Visitors are assigned per browser, not per person.', 'wconvert')}</span>
+          </AboutTip>
+        }
+        description={__('A/B comparison and variant history', 'wconvert')}
+      />
       <VariantDifference arms={arms} />
       <div className="wa-experiment-grid">
         {arms.map((arm) => (

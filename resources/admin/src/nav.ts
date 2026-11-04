@@ -197,6 +197,9 @@ export const reportHref = (query: ReportQuery = {}): string => {
     compare: query.compare === false ? '0' : undefined,
   });
 };
+/** Analytics' front page, as against a report on one number, goal, campaign or test. */
+export const isReportOverview = ({ goal, impact, optinId, experiment }: ReportQuery): boolean =>
+  !goal && !impact && !optinId && !experiment;
 /** A real calendar day in `Y-m-d`; the server checks it against its own today. */
 const isDay = (day: string | undefined): day is string => {
   if (day === undefined || !/^\d{4}-\d{2}-\d{2}$/.test(day)) return false;
