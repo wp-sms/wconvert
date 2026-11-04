@@ -51,6 +51,16 @@ describe('the chunk fallback is the screen’s own first-load state', () => {
     expectHandOff(markup(<AnalyticsSection />), markup(<Dashboard />));
   });
 
+  it('Analytics, on a report: the way back and the title are held from the chunk on (ADR 0190)', async () => {
+    const { AnalyticsSection } = await import('../../resources/admin/src/sections');
+    const { Dashboard } = await import('../../resources/admin/src/stats/Dashboard');
+    const query = { optinId: 'email', month: '2026-09' };
+    const fallback = markup(<AnalyticsSection query={query} />);
+    expect(fallback).toContain('href="#analytics?month=2026-09"');
+    expect(fallback).toMatch(/<h1[^>]*><span[^>]*data-slot="skeleton"/);
+    expectHandOff(fallback, markup(<Dashboard query={query} />));
+  });
+
   it('Leads', async () => {
     const { LeadsSection } = await import('../../resources/admin/src/sections');
     const { LeadLog } = await import('../../resources/admin/src/leads/LeadLog');

@@ -1169,7 +1169,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             >
               <CampaignOccasion value={typeof config.occasion === 'string' ? config.occasion : undefined} onChange={occasion => edit({ occasion })} />
               <CampaignAnalytics value={config.analytics} parentId={analyticsParent} onChange={analytics => edit({ analytics })} />
-              {details && id && <><ProductActivityReport id={id} /><JourneyReport id={id} /></>}
+              {/* Under the dialog's own h2, among its h3 sections. */}
+              {details && id && <><ProductActivityReport id={id} level={3} /><JourneyReport id={id} level={3} /></>}
               {entry && adminSettings()?.dev === true && (
                 <Disclosure variant="inline" title={__('Developer tools', 'wconvert')}>
                   <PayloadMeter template={entry} />

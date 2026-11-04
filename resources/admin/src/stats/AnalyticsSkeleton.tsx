@@ -1,5 +1,32 @@
 import { __ } from '@wordpress/i18n';
 import { Skeleton } from '../components/ui/skeleton';
+import { reportHref, type ReportQuery } from '../nav';
+import { PageBack, PageHeading } from '../shell/PageActions';
+
+/**
+ * A report's way back: to the overview, for the same dates and comparison. From
+ * the first frame of a report, so the title never moves down when it loads and a
+ * report that fails still has a way out (ADR 0190).
+ */
+export function ReportBack({ query }: { query: ReportQuery }) {
+  const href = reportHref({ ...query, goal: undefined, impact: undefined, optinId: undefined, experiment: undefined });
+  return <PageBack href={href}>{__('Analytics', 'wconvert')}</PageBack>;
+}
+
+/**
+ * A report's title before its name is known. A bar rather than "Analytics", so
+ * nothing swaps when the name lands, and still "Analytics" to a screen reader,
+ * because a heading needs a name. A campaign or a test has a line under its
+ * title, and the route says which this is, so the line's space is held too.
+ */
+export function ReportHeadingSkeleton({ query }: { query: ReportQuery }) {
+  return (
+    <PageHeading
+      title={<><Skeleton inline aria-hidden="true" className="block h-[1lh] w-48 max-w-full" /><span className="sr-only">{__('Analytics', 'wconvert')}</span></>}
+      description={query.optinId || query.experiment ? <Skeleton inline aria-hidden="true" className="inline-block h-[1lh] w-32 align-bottom" /> : undefined}
+    />
+  );
+}
 
 /**
  * The analytics overview before its numbers: the impact cards, the "Results

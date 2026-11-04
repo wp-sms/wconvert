@@ -2,8 +2,7 @@ import { useMemo, useRef, useState, type ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import { SECTIONS, hashFor, type SectionId } from '../nav';
 import { adminSettings } from '../settings';
-import { Description } from './Description';
-import { PageActionSlotProvider } from './PageActions';
+import { PageActionSlotProvider, PageTitle, type PageHeadingContent } from './PageActions';
 import './header.css';
 import { BrandMark, PlanBadge } from './Brand';
 import { HeaderTools } from './HeaderTools';
@@ -40,9 +39,10 @@ export function Shell({
 }) {
   const [target, setTarget] = useState<HTMLElement | null>(null);
   const [backTarget, setBackTarget] = useState<HTMLElement | null>(null);
+  const [heading, setHeading] = useState<PageHeadingContent | null>(null);
   const navigable = section !== undefined || page !== undefined;
   const banded = !hidePageHeading && (navigable || bareHeader);
-  const slot = useMemo(() => ({ present: banded, target, backTarget }), [banded, target, backTarget]);
+  const slot = useMemo(() => ({ present: banded, target, backTarget, setHeading }), [banded, target, backTarget]);
   const tier = adminSettings()?.installedTier ?? 'free';
   const footed = navigable && !hidePageHeading;
   const panel = useRef<HTMLDivElement>(null);
@@ -90,12 +90,10 @@ export function Shell({
                 <>
                   <div ref={setBackTarget} className="contents" />
                   <div className="wconvert-page-actions flex flex-wrap items-center gap-x-3 gap-y-2">
-                    <div className="wconvert-page-copy">
-                      <h1 className="m-0 wconvert-page-title text-foreground">
-                        {pageTitle ?? page?.title ?? SECTIONS.find((entry) => entry.id === section)?.label}
-                      </h1>
-                      {!hideDescription && <Description className="wconvert-page-description">{pageDescription ?? (page ? page.description : section && descriptionFor(section))}</Description>}
-                    </div>
+                    <PageTitle {...(heading ?? {
+                      title: pageTitle ?? page?.title ?? SECTIONS.find((entry) => entry.id === section)?.label,
+                      description: hideDescription ? undefined : pageDescription ?? (page ? page.description : section && descriptionFor(section)),
+                    })} />
                     {actions}
                     <div ref={setTarget} className="contents" />
                   </div>

@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Shell } from '../../resources/admin/src/shell/Shell';
-import { PageAction, PageBack } from '../../resources/admin/src/shell/PageActions';
+import { PageAction, PageBack, PageHeading } from '../../resources/admin/src/shell/PageActions';
 
 afterEach(() => { delete window.wconvertAdmin; vi.unstubAllGlobals(); });
 
@@ -42,11 +42,43 @@ it('omits the service footer and visible page heading during creation', () => {
 });
 
 it('puts the way back above the title and outside the toolbar, whose rules would resize it (ADR 0187)', () => {
-  render(<Shell section="analytics"><PageBack href="#overview">Overall impact</PageBack><p>Report</p></Shell>);
-  const back = screen.getByRole('link', { name: 'Overall impact' });
+  render(<Shell section="analytics"><PageBack href="#overview">Back to the overview</PageBack><p>Report</p></Shell>);
+  const back = screen.getByRole('link', { name: 'Back to the overview' });
   expect(back.closest('.wconvert-panel-heading')).not.toBeNull();
   expect(back.closest('.wconvert-page-actions')).toBeNull();
   expect(back.compareDocumentPosition(screen.getByRole('heading', { level: 1 })) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+});
+
+describe('a screen titling the page (ADR 0190)', () => {
+  it('replaces the section’s title and line, and gives them back when it leaves', () => {
+    const page = (report: boolean) => <Shell section="analytics">{report && <PageHeading title="Submissions" description="Under the title" />}</Shell>;
+    const { rerender } = render(page(true));
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
+    expect(screen.getByRole('heading', { level: 1, name: 'Submissions' })).toBeInTheDocument();
+    expect(screen.getByText('Under the title')).toBeInTheDocument();
+    expect(screen.queryByText('How each goal is performing.')).toBeNull();
+
+    rerender(page(false));
+    expect(screen.getByRole('heading', { level: 1, name: 'Analytics' })).toBeInTheDocument();
+    expect(screen.getByText('How each goal is performing.')).toBeInTheDocument();
+    expect(screen.queryByText('Under the title')).toBeNull();
+  });
+
+  it('draws no section line when the screen gives none', () => {
+    render(<Shell section="analytics"><PageHeading title="Submissions" /></Shell>);
+    expect(screen.queryByText('How each goal is performing.')).toBeNull();
+  });
+
+  it('keeps what stands beside the title out of the heading’s name', () => {
+    render(<Shell section="analytics"><PageHeading title="Submissions" aside={<button>About Submissions</button>} /></Shell>);
+    const title = screen.getByRole('heading', { level: 1, name: 'Submissions' });
+    expect(title).not.toContainElement(screen.getByRole('button', { name: 'About Submissions' }));
+  });
+
+  it('draws in place with no frame above it', () => {
+    render(<PageHeading title="Submissions" />);
+    expect(screen.getByRole('heading', { level: 1, name: 'Submissions' })).toBeInTheDocument();
+  });
 });
 
 describe('height floor from the wp-admin menu', () => {

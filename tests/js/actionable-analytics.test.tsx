@@ -162,3 +162,11 @@ it('reads This month through today, even on its first day (ADR 0177)', async () 
   expect(vi.mocked(apiFetch).mock.calls[0][0].path).toBe('/wconvert/v1/optins/campaign/journey-stats?month=2026-10&complete=0');
   expect(screen.queryByText(/appears tomorrow/)).not.toBeInTheDocument();
 });
+
+it('is an h2 under a report’s title and an h3 under the campaign dialog’s (ADR 0190)', async () => {
+  vi.mocked(apiFetch).mockResolvedValue({ from: '2026-09-24', to: '2026-09-30', rows: [] });
+  const view = render(<JourneyReport id="campaign" />);
+  expect(await screen.findByRole('heading', { level: 2, name: 'Signup and screen activity' })).toBeInTheDocument();
+  view.rerender(<JourneyReport id="campaign" level={3} />);
+  expect(screen.getByRole('heading', { level: 3, name: 'Signup and screen activity' })).toBeInTheDocument();
+});

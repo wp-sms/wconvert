@@ -20,7 +20,7 @@ interface ProductReport {
   rows: { id: number; name: string; shown: number; clicked: number; added: number }[];
 }
 
-export function ProductActivityReport({ id, period }: { id: string; period?: ReportPeriod }) {
+export function ProductActivityReport({ id, period, level }: { id: string; period?: ReportPeriod; level?: 2 | 3 }) {
   const from = period?.from, to = period?.to;
   // The builder passes no period and reads the server's default, today included.
   const windowQuery = period ? periodParams(periodOf(period)).toString() : '';
@@ -53,7 +53,7 @@ export function ProductActivityReport({ id, period }: { id: string; period?: Rep
   if (held && !held.available && !failed) return null;
   const Failure = report ? RegionError : RegionErrorState;
   return <ReportTarget name="products" label={__('Product activity', 'wconvert')}><Region className="wa-report">
-    <RegionHeader title={__('Product activity', 'wconvert')} level={3} icon={<Package />} description={__('See which products shoppers notice and add.', 'wconvert')} />
+    <RegionHeader title={__('Product activity', 'wconvert')} level={level} icon={<Package />} description={__('See which products shoppers notice and add.', 'wconvert')} />
     {failed && <Failure message={report ? __('Could not refresh product activity. The activity below keeps its dates.', 'wconvert') : __('Could not load product activity.', 'wconvert')} onRetry={() => setRetry(n => n + 1)} />}
     {report && <>
       <RegionBody>

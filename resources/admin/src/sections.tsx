@@ -8,7 +8,8 @@ import { sectionChunks } from './sectionLoaders';
 import { SettingsSkeleton } from './settings-page/SettingsSkeleton';
 import { ChunkBoundary } from './shell/ChunkBoundary';
 import { Shell } from './shell/Shell';
-import { AnalyticsSkeleton } from './stats/AnalyticsSkeleton';
+import { isReportOverview } from './nav';
+import { AnalyticsSkeleton, ReportBack, ReportHeadingSkeleton } from './stats/AnalyticsSkeleton';
 
 /**
  * The reading sections, each in its own chunk (ADR 0038).
@@ -48,7 +49,10 @@ function section<M, C extends ComponentType<any>>(load: () => Promise<M>, pick: 
   };
 }
 
-export const AnalyticsSection = section(sectionChunks.analytics, (module) => module.Dashboard, () => <AnalyticsSkeleton />);
+export const AnalyticsSection = section(sectionChunks.analytics, (module) => module.Dashboard, (props) => <>
+  {props?.query && !isReportOverview(props.query) && <><ReportBack query={props.query} /><ReportHeadingSkeleton query={props.query} /></>}
+  <AnalyticsSkeleton />
+</>);
 
 export const LeadsSection = section(sectionChunks.leads, (module) => module.LeadLog, () => <LeadLogSkeleton />);
 

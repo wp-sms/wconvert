@@ -7,7 +7,8 @@ import type {
   Numbers,
   OptinReport,
 } from '../../resources/admin/src/stats/api';
-import { routeFrom } from '../../resources/admin/src/nav';
+import { routeFrom, type ReportQuery } from '../../resources/admin/src/nav';
+import { Shell } from '../../resources/admin/src/shell/Shell';
 import {
   families,
   reportCSV,
@@ -193,7 +194,7 @@ describe('impact overview', () => {
     expect(
       routeFrom(
         screen
-          .getByRole('link', { name: 'Overall impact' })
+          .getByRole('link', { name: 'Analytics' })
           .getAttribute('href')!,
       ).report.month,
     ).toBe('2026-09');
@@ -719,11 +720,11 @@ describe('a headline card (ADR 0185)', () => {
   });
 });
 
-describe('a report’s section title (ADR 0187)', () => {
+describe('a report’s page title (ADR 0187, 0190)', () => {
   it('names the number and keeps its description in a tip beside the title', async () => {
     api.readReport.mockResolvedValue(payload());
     render(<Dashboard query={{ impact: 'leads' }} />);
-    const title = await screen.findByRole('heading', { level: 2, name: 'Submissions' });
+    const title = await screen.findByRole('heading', { level: 1, name: 'Submissions' });
     const note = payload().impact.find((item) => item.id === 'leads')!.note;
     expect(screen.queryByText(note)).toBeNull();
     const tip = screen.getByRole('button', { name: 'About Submissions' });
@@ -743,12 +744,127 @@ describe('a report’s section title (ADR 0187)', () => {
       ])],
     });
     render(<Dashboard query={{ experiment: 'email' }} />);
-    const title = await screen.findByRole('heading', { level: 2, name: 'Variant A' });
+    const title = await screen.findByRole('heading', { level: 1, name: 'Variant A' });
+    expect(screen.getByText('A/B comparison and variant history')).toBeInTheDocument();
     expect(screen.queryByText(/They do not prove a winner/)).toBeNull();
     const tip = within(title.parentElement!).getByRole('button', { name: 'About Variant A' });
     await userEvent.click(tip);
     expect(await screen.findByText(/They do not prove a winner/)).toBeVisible();
     expect(screen.getByText('Each variant counts once in goal totals. Visitors are assigned per browser, not per person.')).toBeVisible();
+  });
+
+  const framed = (query: ReportQuery) => render(<Shell section="analytics"><Dashboard query={query} /></Shell>);
+  const heading = () => screen.getByRole('heading', { level: 1 });
+  const back = () => within(heading().closest('.wconvert-page-heading') as HTMLElement).getByRole('link', { name: 'Analytics' });
+
+  it('names a goal, with the way back to the overview', async () => {
+    api.readReport.mockResolvedValue(payload());
+    framed({ goal: 'grow_email_list' });
+    await screen.findByRole('heading', { level: 1, name: 'Grow my email list' });
+    expect(screen.queryByText('Goal report')).toBeNull();
+    expect(screen.queryByText('How each goal is performing.')).toBeNull();
+    expect(routeFrom(back().getAttribute('href')!).report.goal).toBeUndefined();
+  });
+
+  it('names a campaign, with its status beside the title and its goal under it', async () => {
+    api.readReport.mockResolvedValue(payload());
+    framed({ optinId: 'email' });
+    const title = await screen.findByRole('heading', { level: 1, name: 'Newsletter footer' });
+    const copy = title.closest('.wconvert-page-copy') as HTMLElement;
+    expect(within(copy).getByText('Published')).toBeInTheDocument();
+    expect(within(copy).getByText('Grow my email list')).toBeInTheDocument();
+    expect(title).not.toContainElement(within(copy).getByText('Published'));
+    expect(routeFrom(back().getAttribute('href')!).report.optinId).toBeUndefined();
+  });
+
+  it('keeps how a goal is counted one press from its title', async () => {
+    api.readReport.mockResolvedValue(payload());
+    framed({ goal: 'grow_email_list' });
+    const title = await screen.findByRole('heading', { level: 1, name: 'Grow my email list' });
+    const sentence = 'Counts submitted forms, not confirmed subscribers.';
+    expect(screen.queryByText(sentence)).toBeNull();
+    const tip = screen.getByRole('button', { name: 'How Email submissions are counted' });
+    expect(title).not.toContainElement(tip);
+    expect(title.closest('.wconvert-page-copy')).toContainElement(tip);
+    await userEvent.click(tip);
+    expect(await screen.findByText(sentence)).toBeVisible();
+  });
+
+  it('keeps a campaign’s tip with its status, and says what a delivery goal’s requests prove', async () => {
+    api.readReport.mockResolvedValue({
+      ...payload(),
+      goals: [{ ...goal([{ ...row(), deliveries: 3 }]), deliveries: 3, result_label: 'Resource requests' }],
+    });
+    framed({ optinId: 'email' });
+    const title = await screen.findByRole('heading', { level: 1, name: 'Newsletter footer' });
+    const copy = within(title.closest('.wconvert-page-copy') as HTMLElement);
+    expect(copy.getByText('Published')).toBeInTheDocument();
+    await userEvent.click(copy.getByRole('button', { name: 'How Resource requests are counted' }));
+    expect(await screen.findByText(/Neither requests nor email handoffs prove inbox arrival/)).toBeVisible();
+  });
+
+  it('keeps what is true of this campaign at rest, and has no tip with nothing to say', async () => {
+    const draft = { ...goal([row('email', 'paused')]), measurement: undefined };
+    api.readReport.mockResolvedValue({ ...payload(), goals: [draft] });
+    framed({ optinId: 'email' });
+    await screen.findByRole('heading', { level: 1, name: 'Newsletter footer' });
+    expect(screen.getByText('This campaign is a draft, so not shown. Earlier results are below.')).toBeVisible();
+    expect(screen.queryByRole('button', { name: /are counted$/ })).toBeNull();
+  });
+
+  it.each([
+    ['a goal', { goal: 'grow_email_list' }],
+    ['a campaign', { optinId: 'email' }],
+    ['a number', { impact: 'leads' }],
+    ['an A/B test', { experiment: 'email' }],
+  ] as [string, ReportQuery][])('skips no heading level on %s', async (_, query) => {
+    api.readReport.mockResolvedValue({
+      ...payload(),
+      goals: [goal([
+        { ...row('email'), deliveries: 3 },
+        { ...row('arm'), parent_id: 'email', name: 'Variant B' },
+      ])],
+    });
+    framed(query);
+    await waitFor(() => expect(heading().querySelector('[data-slot=skeleton]')).toBeNull());
+    const levels = screen.getAllByRole('heading').map((title) => Number(title.tagName[1]));
+    expect(levels[0]).toBe(1);
+    levels.slice(1).forEach((level, index) => expect(level).toBeLessThanOrEqual(levels[index]! + 1));
+  });
+
+  it('leaves the overview titled for its section, with no way back', async () => {
+    api.readReport.mockResolvedValue(payload());
+    framed({});
+    await screen.findByRole('region', { name: 'Overall impact' });
+    expect(heading()).toHaveAccessibleName('Analytics');
+    expect(screen.getByText('How each goal is performing.')).toBeInTheDocument();
+    expect(within(heading().closest('.wconvert-page-heading') as HTMLElement).queryByRole('link', { name: 'Analytics' })).toBeNull();
+  });
+
+  it('holds the title and the way back while the report loads, on the selected dates', () => {
+    api.readReport.mockReturnValue(new Promise(() => undefined));
+    framed({ goal: 'grow_email_list', month: '2026-09' });
+    expect(heading().querySelector('[data-slot=skeleton]')).not.toBeNull();
+    expect(screen.queryByText('How each goal is performing.')).toBeNull();
+    expect(routeFrom(back().getAttribute('href')!).report).toMatchObject({ month: '2026-09' });
+  });
+
+  it('keeps a way back from a report that failed', async () => {
+    api.readReport.mockRejectedValue(new Error('No report'));
+    framed({ goal: 'grow_email_list' });
+    expect(await screen.findByText('No report')).toBeInTheDocument();
+    expect(heading()).toHaveAccessibleName('Analytics');
+    expect(heading().querySelector('[data-slot=skeleton]')).toBeNull();
+    expect(screen.queryByText('How each goal is performing.')).toBeNull();
+    expect(back()).toBeInTheDocument();
+  });
+
+  it('falls back to the section’s name on a report that does not exist', async () => {
+    api.readReport.mockResolvedValue(payload());
+    framed({ goal: 'nothing_here' });
+    await screen.findByText('This report is not available');
+    expect(heading()).toHaveAccessibleName('Analytics');
+    expect(back()).toBeInTheDocument();
   });
 });
 
@@ -930,7 +1046,7 @@ describe('A/B comparison', () => {
   it('reads the leader against the next, best first, and calls it too early on little traffic', async () => {
     api.readReport.mockResolvedValue({ ...payload(), goals: [arms(1000 - 1)] });
     render(<Dashboard query={{ experiment: 'email' }} />);
-    const headings = await screen.findAllByRole('heading', { level: 3 });
+    const headings = await screen.findAllByRole('heading', { level: 2 });
     expect(headings.map((h) => h.textContent)).toEqual(['Variant B', 'Variant A']);
     expect(screen.getByText(/^Variant B converts 3\.1% vs Variant A 2\.4% \(\+0\.7 pts\) — too early to call: fewer than 1,000 shown per variant$/)).toBeInTheDocument();
   });

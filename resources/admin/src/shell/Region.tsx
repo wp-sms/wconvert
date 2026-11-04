@@ -62,11 +62,10 @@ export function Region({
  * a level under it — which is also what makes a screen with two regions
  * readable by heading navigation rather than by scrolling.
  *
- * `level` exists for a screen whose regions are a repeating SET rather than a
- * list of unrelated concerns: analytics draws one region per [[Goal]], and
- * those sit under the page's own subject rather than each introducing a new
- * one. `dashboard.test.tsx` pins them at level 3, which is the same reading
- * arrived at from the other side.
+ * `level` exists for a region that sits under another heading rather than
+ * directly under the page's title: in a dialog, whose title is the h2. An
+ * Analytics report's regions do not: its h1 is the report itself, so they are h2
+ * there and h3 when the campaign dialog draws them (ADR 0190).
  *
  * `trailing` is for what belongs on the title's line and is not an action — the
  * window a set of numbers covers, a badge naming a state. Actions do not go

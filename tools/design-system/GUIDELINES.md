@@ -67,7 +67,8 @@ A rule about the toolbar belongs to the toolbar, not to each control that lands
 in one.
 
 The builder also has a **1.5rem** `--control-height-xs` for editing furniture
-(ADR 0066). It is not a reading-page density option. On coarse pointers, shared
+(ADR 0066). It is not a reading-page density option; the one 24px box on a
+reading page is the way back, a link in its own line above the title (ADR 0190). On coarse pointers, shared
 controls have a **2.75rem / 44px** floor, including menus and native inputs.
 
 ## 4. Shared type roles
@@ -77,7 +78,7 @@ controls have a **2.75rem / 44px** floor, including menus and native inputs.
 | `micro` | 12 / 600 / 0.04em | table headers, chips, badges, stat labels |
 | `note` | 13 | descriptions, notes, help text; a builder field's label at 500 |
 | `hint` | 12 / 400 | the one line of help under a builder field (ADR 0136) |
-| `body` | 14 | the body of the admin; at 600, a report's title above its table (ADR 0187) |
+| `body` | 14 | the body of the admin; at 600, a title between a report's sections (ADR 0187) |
 | `heading` | 16 | a region heading, a card title, an editor panel's title (a section inside a panel is `body` 600, ADR 0136) |
 | `section` | 20 / 600 | reading-page section headings |
 | `metric` | 36 / 600 | dashboard impact and target totals |
@@ -188,8 +189,9 @@ stack edge-to-edge tinted panels or repeat the same shared-change warning.
   32px control, expanded for coarse pointers by the shared control rules. Its
   popover handles viewport edges, Escape dismissal and returning keyboard focus.
   Beside a reading page's title it takes -6px of block margin, so its 32px
-  target does not make the line taller. A report's title and its tip are
-  `.wa-section-title`, 14px above the table (ADR 0187).
+  target does not make the line taller. A title in a report's body and its tip
+  are `.wa-section-title` (ADR 0187); a report's own title and tip are the page's
+  h1 and what stands beside it (ADR 0190).
 - The header navigation divider spans the row; individual navigation and plan
   elements do not draw disconnected pieces of the same line.
 - A `Button` keeps `data-slot="button"` under a Radix trigger's `asChild`, so
@@ -470,8 +472,12 @@ protection's *No activity yet* stays a line.
   because each apply is a server query and a half-typed address reads as a
   different filter from a whole one. Help's plain GET form is ADR 0144's.
 - **A way back** is `PageBack`: one ghost link above the title, outside the
-  heading's toolbar, with its arrow on the title's edge (ADR 0187). Leads hides
-  the section's description on purpose (ADR 0091).
+  heading's toolbar, with its arrow on the title's edge (ADR 0187). Its box is
+  24px, 44px on touch without moving anything, and its words name the page it
+  leads to. The title under it names what this page is about, not the section
+  the tab already says: an occasion, Sending issues, a report. A screen that
+  knows its name only after a read titles the page with `PageHeading` (ADR 0190).
+  Leads hides the section's description on purpose (ADR 0091).
 - **A settings footer** is, in order: the error, `SaveStatus`, **Cancel changes**
   while dirty, Save. A save's error goes beside Save and nowhere else.
 - **A re-read that keeps its rows** dims them under a status line (§12).

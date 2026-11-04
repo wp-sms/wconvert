@@ -8,14 +8,14 @@ The link's slot was inside `.wconvert-page-actions`, so the heading's toolbar ru
 
 ## Decision
 
-**The way back is outside the toolbar.** The Shell's slot for `PageBack` is above `.wconvert-page-actions`, so a heading's date picker and Export centre on the title block alone. `.wconvert-page-back` offsets the link's 12px padding and the 3px inside the arrow glyph with a logical margin, so the arrow's edge sits on the title's in both directions. `BackLink` in the builder's skeleton is outside the toolbar and keeps its own rule, so its arrow sits 3px further in.
+**The way back is outside the toolbar.** The Shell's slot for `PageBack` is above `.wconvert-page-actions`, so a heading's date picker and Export centre on the title block alone. `.wconvert-page-back` offsets the link's 12px padding and the 3px inside the arrow glyph with a logical margin, so the arrow's edge sits on the title's in both directions. *(Amended by [ADR 0190](0190-a-report-is-titled-with-what-it-reports-on.md): the link's padding is now 6px and its box 24px; the arrow still sits on the title's edge.)* `BackLink` in the builder's skeleton is outside the toolbar and keeps its own rule, so its arrow sits 3px further in.
 
-**A report's title holds a tip, not a description.** `ReportTitle` is `.wa-section-heading` holding `.wa-section-title`: the title and an `InfoTip` side by side, at any width.
+**A report's title holds a tip, not a description.** `ReportTitle` is `.wa-section-heading` holding `.wa-section-title`: the title and an `InfoTip` side by side, at any width. *(Amended by [ADR 0190](0190-a-report-is-titled-with-what-it-reports-on.md): the title and its tip moved up to the page's h1, and `ReportTitle` is gone. The tip's contents and its label below still hold; the size and spacing below describe what was replaced, and hold only for "Campaign contributions".)*
 
 - The title is `body` at 600, the look of "Results by goal" on the overview, not `section` at 20px. It introduces one table under a 36px page title.
 - The gap to the table is the heading's 14px. `.wa-campaigns` drops its top margin after a heading, because the two margins would collapse to 18px. "Campaign contributions" on a goal's report matches that rule and moves from 18px to 14px too.
 - The Submissions-style report keeps `impact.note` in the tip, labelled "About Submissions" as the overview's card is.
-- The A/B report keeps its eyebrow. Its whole description moves to the tip: that the results cover the selected dates, including past uses of each design, and that they do not prove a winner. The second fact stays at rest in the comparison line ("too early to call" or "still not proof") and in the choose-a-winner dialog (`optins/decisionCopy.ts`).
+- The A/B report keeps its eyebrow *(now the line under the page's title, ADR 0190)*. Its whole description moves to the tip: that the results cover the selected dates, including past uses of each design, and that they do not prove a winner. The second fact stays at rest in the comparison line ("too early to call" or "still not proof") and in the choose-a-winner dialog (`optins/decisionCopy.ts`).
 
 **`RegionHeader` takes `tip`.** It wraps the words in an `InfoTip` beside the title, labelled `About <title>`, with the same -6px of block margin. This is the rung of [ADR 0136](0136-one-panel-grammar.md)'s ladder for a region. The builder's panels keep `PanelSection`'s tip and its smaller trigger.
 

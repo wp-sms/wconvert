@@ -10,6 +10,7 @@ import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { DataTable, DataTableActions, DataTableActionsColumn, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '../shell/DataTable';
 import { EmptyState } from '../shell/EmptyState';
 import { InfoTip } from '../shell/InfoTip';
+import { PageHeading } from '../shell/PageActions';
 import { Toolbar } from '../shell/Toolbar';
 import { messageOf } from '../shell/loadable';
 import { StatusBadge } from '../optins/StatusBadge';
@@ -27,6 +28,7 @@ import { adminSettings } from '../settings';
 import { periodOf, type DashboardPayload, type GoalReport, type Numbers, type OptinReport } from './api';
 import { formatCount, formatRate } from './format';
 import { countsNothing } from '../goals/countsNothing';
+import { HowCountedTip } from '../goals/HowCountedTip';
 import { formatDecimal } from '../lib/format';
 import { families, rangeLabel } from './reporting';
 import { ActivityChart } from './ActivityChart';
@@ -139,19 +141,12 @@ export const ENOUGH_SHOWN_PER_VARIANT = 1000;
 export const bestFirst = (arms: OptinReport[]): OptinReport[] =>
   [...arms].sort((a, b) => (b.conversion_rate ?? -1) - (a.conversion_rate ?? -1));
 
-/** One sentence that reads two variants against each other, with how far to trust it. */
-/** What a report is about, with its description one press away (ADR 0187). */
-export function ReportTitle({ name, children }: { name: string; children: ReactNode }) {
-  return (
-    <div className="wa-section-heading">
-      <div className="wa-section-title">
-        <h2><bdi>{name}</bdi></h2>
-        <InfoTip label={sprintf(/* translators: %s: a report's title, e.g. “Submissions”. */ __('About %s', 'wconvert'), name)}>{children}</InfoTip>
-      </div>
-    </div>
-  );
+/** What a report is about, one press from its title (ADR 0187). */
+export function AboutTip({ name, children }: { name: string; children: ReactNode }) {
+  return <InfoTip label={sprintf(/* translators: %s: a report's title, e.g. “Submissions”. */ __('About %s', 'wconvert'), name)}>{children}</InfoTip>;
 }
 
+/** One sentence that reads two variants against each other, with how far to trust it. */
 function VariantDifference({ arms }: { arms: OptinReport[] }) {
   const [lead, next] = arms.filter((arm) => arm.conversion_rate !== null);
   if (!lead || !next)
@@ -270,25 +265,24 @@ export function GoalDetail({
   const family = optin
     ? families(card).find((f) => f.arms.some((a) => a.id === optin.id))
     : undefined;
+  const counted = numbers.deliveries === null
+    ? card.measurement
+    : __(
+        'Requests count submitted forms. Neither requests nor email handoffs prove inbox arrival.',
+        'wconvert',
+      );
   return (
     <section aria-label={optin?.name ?? card.label}>
-      <div className="wa-detail-heading">
-        <div>
-          <p className="wa-eyebrow">
-            {optin ? card.label : __('Goal report', 'wconvert')}
-          </p>
-          <h2><bdi>{optin?.name ?? card.label}</bdi></h2>
-        </div>
-        {optin && <Status value={optin.status} />}
-      </div>
-      <p className="wa-muted">
-        {numbers.deliveries === null
-          ? card.measurement
-          : __(
-              'Requests count submitted forms. Neither requests nor email handoffs prove inbox arrival.',
-              'wconvert',
-            )}
-      </p>
+      <PageHeading
+        title={<bdi>{optin?.name ?? card.label}</bdi>}
+        aside={
+          <>
+            {counted && <HowCountedTip number={card.result_label}>{counted}</HowCountedTip>}
+            {optin && <Status value={optin.status} />}
+          </>
+        }
+        description={optin && card.label}
+      />
       {optin?.status === 'published' && optin.published_at && optin.published_at.slice(0, 10) > payload.to && numbers.impressions === 0 && (
         <p className="wa-notice">{__('Published after these report dates. New activity appears after each day ends.', 'wconvert')}</p>
       )}
@@ -323,7 +317,7 @@ export function GoalDetail({
       </div>
       </ReportTarget>
       {card.action === 'add_to_cart' && <div className="wa-panel wa-handoff">
-        <div><h3>{__('Items added to basket', 'wconvert')}</h3><p className="wa-muted">{__('Confirmed, not purchases. Two extras count twice here, once in Basket additions.', 'wconvert')}</p></div>
+        <div><h2>{__('Items added to basket', 'wconvert')}</h2><p className="wa-muted">{__('Confirmed, not purchases. Two extras count twice here, once in Basket additions.', 'wconvert')}</p></div>
         <strong>{formatCount(numbers.items_added ?? 0)}</strong>
       </div>}
       {numbers.deliveries !== null && (
@@ -331,10 +325,10 @@ export function GoalDetail({
           <div>
             <p className="wa-eyebrow">{__('After submission', 'wconvert')}</p>
             <div className="wa-section-title">
-              <h3>{__('Email handoffs', 'wconvert')}</h3>
-              <InfoTip label={sprintf(/* translators: %s: a report's title, e.g. “Submissions”. */ __('About %s', 'wconvert'), __('Email handoffs', 'wconvert'))}>
+              <h2>{__('Email handoffs', 'wconvert')}</h2>
+              <AboutTip name={__('Email handoffs', 'wconvert')}>
                 {__('Later-day sends and resends count, so a difference is not a queue or failure count.', 'wconvert')}
-              </InfoTip>
+              </AboutTip>
             </div>
           </div>
           <div>
@@ -386,7 +380,7 @@ export function GoalDetail({
       ) : (
         <ReportTarget name="campaigns" label={__('Campaigns', 'wconvert')}>
           <div className="wa-section-heading">
-            <h3>{__('Campaign contributions', 'wconvert')}</h3>
+            <h2>{__('Campaign contributions', 'wconvert')}</h2>
           </div>
           <CampaignTable cards={[card]} payload={payload} query={query} />
         </ReportTarget>
@@ -688,12 +682,15 @@ export function Experiment({
   const trigger = useRef<HTMLButtonElement | null>(null);
   if (!family || family.arms.length < 2)
     return (
-      <p className="wa-notice">
-        {__(
-          'No variant comparison is available for this campaign.',
-          'wconvert',
-        )}
-      </p>
+      <>
+        <PageHeading title={<bdi>{optin.name}</bdi>} />
+        <p className="wa-notice">
+          {__(
+            'No variant comparison is available for this campaign.',
+            'wconvert',
+          )}
+        </p>
+      </>
     );
   const arms = bestFirst(family.arms);
   const live = family.arms.filter((a) => a.status !== 'historical');
@@ -717,20 +714,23 @@ export function Experiment({
   };
   return (
     <section>
-      <p className="wa-eyebrow wa-eyebrow-lead">
-        {__('A/B comparison and variant history', 'wconvert')}
-      </p>
-      <ReportTitle name={family.root.name}>
-        <span className="block">{__('Results cover the selected dates, including past uses of each design. They do not prove a winner.', 'wconvert')}</span>
-        <span className="mt-2 block">{__('Each variant counts once in goal totals. Visitors are assigned per browser, not per person.', 'wconvert')}</span>
-      </ReportTitle>
+      <PageHeading
+        title={<bdi>{family.root.name}</bdi>}
+        aside={
+          <AboutTip name={family.root.name}>
+            <span className="block">{__('Results cover the selected dates, including past uses of each design. They do not prove a winner.', 'wconvert')}</span>
+            <span className="mt-2 block">{__('Each variant counts once in goal totals. Visitors are assigned per browser, not per person.', 'wconvert')}</span>
+          </AboutTip>
+        }
+        description={__('A/B comparison and variant history', 'wconvert')}
+      />
       <VariantDifference arms={arms} />
       <div className="wa-experiment-grid">
         {arms.map((arm) => (
           <div className="wa-panel wa-arm" key={arm.id}>
             {failure?.arm.id === arm.id && <RegionError message={failure.message} action={<TryAgain busy={busy} onClick={() => void choose(arm)} />} />}
             <div className="wa-detail-heading">
-              <h3><bdi>{arm.name}</bdi></h3>
+              <h2><bdi>{arm.name}</bdi></h2>
               <Status value={arm.status} />
             </div>
             <Totals

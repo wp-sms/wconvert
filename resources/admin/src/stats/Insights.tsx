@@ -27,13 +27,11 @@ export function withValue(template: string, figure: ReactNode): ReactNode {
   return <>{before}{figure}{after}</>;
 }
 
-/** `level` is 2 on the overview, where it stands beside the other reports, and 3 under a report's own heading. */
-export function Insights({ items, query, level = 3 }: { items: Insight[]; query: ReportQuery; level?: 2 | 3 }) {
+export function Insights({ items, query }: { items: Insight[]; query: ReportQuery }) {
   if (!items.length) return null;
-  const Title = level === 2 ? 'h3' : 'h4';
   const more = items.length - 3;
   return <ReportTarget name="attention" label={__('Needs attention', 'wconvert')}><Region tone="attention" className="wa-report">
-    <RegionHeader tone="attention" title={__('Needs attention', 'wconvert')} level={level} icon={<ListChecks />} />
+    <RegionHeader tone="attention" title={__('Needs attention', 'wconvert')} icon={<ListChecks />} />
     <div className="wa-insights">{items.slice(0, 3).map(item => {
       const metric = item.rule_id === 'lower_rate' ? 'rate' : 'appearances';
       const value = (facts: Facts) => metric === 'rate' ? formatRate(facts.rate) : formatCount(facts.appearances);
@@ -44,7 +42,7 @@ export function Insights({ items, query, level = 3 }: { items: Insight[]; query:
         <span className="wa-report-icon" aria-hidden="true"><Icon className="size-5" /></span>
         <div className="wa-insight-copy">
           <div className="wa-insight-head">
-            <Title>{item.title}</Title>
+            <h3>{item.title}</h3>
             <span className="wa-insight-fact">
               {withValue(metric === 'rate'
                 ? /* translators: %s: a rate for the chosen period, e.g. “4.2%”. */ __('This period %s', 'wconvert')
