@@ -641,7 +641,7 @@ describe('the tree’s override count', () => {
     // shape.
     expect(boxes[0]).toHaveTextContent('2+1');
     expect(
-      within(boxes[0] as HTMLElement).getByTitle(/^2 style\(s\) for this block/),
+      within(boxes[0] as HTMLElement).getByTitle(/^2 styles for this block/),
       'the count carries its own sentence, because a bare number is a number',
     ).toBeInTheDocument();
     // And a box that sets nothing draws no chip at all, rather than a zero.

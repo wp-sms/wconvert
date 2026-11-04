@@ -131,7 +131,7 @@ final class TemplateDownloads implements CatalogTransport, CatalogImageTransport
             'key_disabled', 'license_suspended', 'license_revoked' => __('This license cannot download premium templates. Check Settings → License or contact support.', 'wconvert-pro'),
             'domain_not_allowed' => __('Activate this website in Settings → License before downloading premium templates.', 'wconvert-pro'),
             'invalid_grant' => __('Template access expired. Preview the design again.', 'wconvert-pro'),
-            'not_found' => __('This template file is gone. Refresh the library and try again.', 'wconvert-pro'),
+            'not_found' => __('This template file is gone. Choose another template.', 'wconvert-pro'),
             default => __('Could not verify template access. Try again later. Installed designs still work.', 'wconvert-pro'),
         };
         throw new \RuntimeException($message, $code === 'invalid_grant' && $status === 401 ? 401 : 0);

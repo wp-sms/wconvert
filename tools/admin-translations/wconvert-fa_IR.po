@@ -4827,10 +4827,6 @@ msgstr "پیام"
 msgid "Insert %s for the download link, or it goes at the end."
 msgstr "برای پیوند دانلود %s را وارد کنید؛ در غیر این صورت پیوند به انتها اضافه می‌شود."
 
-#: src/Destination/LeadMagnet/LeadMagnetDestinationType.php:238
-msgid "This lead has no email address to send the lead magnet to."
-msgstr "این مشتری بالقوه آدرس ایمیلی برای فرستادن هدیه ثبت‌نام ندارد."
-
 #: src/Destination/LeadMagnet/LeadMagnetDestinationType.php:244
 msgid "No lead magnet file is configured on this Destination."
 msgstr "برای این مقصد فایل هدیه ثبت‌نام تنظیم نشده است."
@@ -4869,10 +4865,6 @@ msgstr "فهرست‌های مقصد"
 #: src/Destination/MailPoet/MailPoetDestinationType.php:167
 msgid "Other list memberships stay. MailPoet controls signup confirmation."
 msgstr "عضویت‌های دیگر در فهرست‌ها می‌مانند. تأیید ثبت‌نام با MailPoet است."
-
-#: src/Destination/MailPoet/MailPoetDestinationType.php:223
-msgid "MailPoet needs an email address, and this lead has none."
-msgstr "MailPoet به آدرس ایمیل نیاز دارد و این مشتری بالقوه ایمیلی ندارد."
 
 #: src/Destination/MailPoet/MailPoetDestinationType.php:229
 msgid "No MailPoet list is configured on this Destination."
@@ -6902,8 +6894,8 @@ msgid "Enter and confirm one complete email or phone number with country code."
 msgstr "یک آدرس ایمیل کامل یا شماره تلفن همراه با کد کشور وارد و تأیید کنید."
 
 #: src/Rest/MonthlyTargetsController.php:42
-msgid "The month changed. Close this dialog and refresh targets before saving."
-msgstr "ماه تغییر کرده است. پیش از ذخیره، این پنجره را ببندید و هدف‌ها را تازه‌سازی کنید."
+msgid "The month changed. Close and reopen this dialog to continue."
+msgstr "ماه تغییر کرده است. برای ادامه، این پنجره را ببندید و دوباره باز کنید."
 
 #: src/Rest/MonthlyTargetsController.php:44
 msgid "Use whole positive counts for supported target metrics."
@@ -12227,8 +12219,8 @@ msgid "Submissions that weren’t sent"
 msgstr "ثبت‌های فرمی که ارسال نشدند"
 
 #: public/admin/chunk-BI4F3krI.js:45
-msgid "Each was rejected on its own, apart from any outage. Only the latest 200 are kept."
-msgstr "هر کدام جداگانه رد شده‌اند، جدا از هر قطعی احتمالی. فقط ۲۰۰ مورد آخر نگه‌داری می‌شوند."
+msgid "Only the latest 200 are kept."
+msgstr "فقط ۲۰۰ مورد آخر نگه‌داری می‌شوند."
 
 #: public/admin/chunk-BOwIbMkl.js:45
 #: public/admin/chunk-BOwIbMkl.js:49
@@ -15394,14 +15386,18 @@ msgstr "تبدیل‌ها اینجا شمرده می‌شوند"
 #. translators: 1: how many style settings this block carries. 2: how many more it carries for narrow widths.
 #: public/admin/chunk-BSkNSuf9.js:88
 #, js-format
-msgid "%1$s style(s) for this block and its contents, plus %2$s when narrow."
-msgstr "%1$s استایل برای این بلوک و محتوای آن، و %2$s مورد دیگر وقتی طرح باریک است."
+msgid "%1$s style for this block and its contents, plus %2$s when narrow."
+msgid_plural "%1$s styles for this block and its contents, plus %2$s when narrow."
+msgstr[0] "%1$s استایل برای این بلوک و محتوای آن، و %2$s مورد دیگر وقتی طرح باریک است."
+msgstr[1] "%1$s استایل برای این بلوک و محتوای آن، و %2$s مورد دیگر وقتی طرح باریک است."
 
 #. translators: %s: how many style settings this block carries.
 #: public/admin/chunk-BSkNSuf9.js:90
 #, js-format
-msgid "%s style(s) for this block and its contents."
-msgstr "%s استایل برای این بلوک و محتوای آن."
+msgid "%s style for this block and its contents."
+msgid_plural "%s styles for this block and its contents."
+msgstr[0] "%s استایل برای این بلوک و محتوای آن."
+msgstr[1] "%s استایل برای این بلوک و محتوای آن."
 
 #. translators: 1: a count of style settings. 2: a count of extra settings for narrow widths. Kept as digits because it is on every row of a scanned list.
 #: public/admin/chunk-CmnfSw-Y.js:92

@@ -336,8 +336,10 @@ export function BlockRow({
                     block.setsNarrow > 0
                       ? sprintf(
                           /* translators: 1: how many style settings this block carries. 2: how many more it carries for narrow widths. */
-                          __(
-                            '%1$s style(s) for this block and its contents, plus %2$s when narrow.',
+                          _n(
+                            '%1$s style for this block and its contents, plus %2$s when narrow.',
+                            '%1$s styles for this block and its contents, plus %2$s when narrow.',
+                            block.sets,
                             'wconvert',
                           ),
                           formatCount(block.sets),
@@ -345,8 +347,10 @@ export function BlockRow({
                         )
                       : sprintf(
                           /* translators: %s: how many style settings this block carries. */
-                          __(
-                            '%s style(s) for this block and its contents.',
+                          _n(
+                            '%s style for this block and its contents.',
+                            '%s styles for this block and its contents.',
+                            block.sets,
                             'wconvert',
                           ),
                           formatCount(block.sets),

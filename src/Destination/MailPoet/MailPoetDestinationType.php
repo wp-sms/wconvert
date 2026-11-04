@@ -220,7 +220,8 @@ final class MailPoetDestinationType implements DestinationType
         $email = $subject->values[CanonicalFields::EMAIL] ?? '';
 
         if (!$this->requirements()->acceptsCapture($subject->values)) {
-            return PushResult::skipped(__('MailPoet needs an email address, and this lead has none.', 'wconvert'));
+            // Plain English on purpose: PushWorker discards a skip's reason, so no merchant reads it.
+            return PushResult::skipped('MailPoet needs an email address, and this lead has none.');
         }
 
         $lists = $this->configuredLists($context);
