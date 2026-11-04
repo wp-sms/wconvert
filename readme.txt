@@ -259,7 +259,7 @@ Guide: [Deactivate or uninstall WConvert](https://wconvert.io/docs/deactivate-or
 WConvert works without an account or any external service. The online design library below is WConvert's own service and is on by default; it is contacted only when an administrator opens the design picker. Nothing else below is contacted unless an administrator turns it on.
 
 **Online design library.** The designs included in the plugin work offline and
-need nothing else. The online WConvert library at https://templates.wconvert.io
+need nothing else. The online WConvert library at templates.wconvert.io
 is on by default. It is contacted when an administrator opens the design
 picker or follows a link to a design, and can be turned off at any time in Settings → Data & privacy, after
 which nothing is fetched. Nothing is fetched on activation, from cron, on the

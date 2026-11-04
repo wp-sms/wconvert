@@ -105,7 +105,7 @@ describe('the card', () => {
     await userEvent.click(within(card).getByRole('button', { name: 'Review & publish' }));
     expect(onEdit).toHaveBeenCalledWith('01A');
     expect(within(card).getByRole('link', { name: /Watch: 3-min walkthrough/ }))
-      .toHaveAttribute('href', 'https://wconvert.io/docs/create-your-first-campaign/#watch-the-walkthrough');
+      .toHaveAttribute('href', 'https://wconvert.io/docs/create-your-first-campaign/?utm_source=wp-admin&utm_medium=plugin&utm_campaign=wconvert-free&utm_content=guide#watch-the-walkthrough');
   });
 
   it('hides for good when × is pressed', async () => {

@@ -165,7 +165,7 @@ final class ProLoaderEnqueue
             'WConvert Pro’s front-end script is missing, so premium triggers and rules are not running. Campaigns still display.',
             'wconvert-pro'
         ), [
-            'url' => Docs::url(Docs::UPDATE, 'update-the-files'),
+            'url' => Docs::url(Docs::UPDATE, 'update-the-files', 'admin-notice', Docs::PRO),
             'label' => __('How to reinstall', 'wconvert-pro'),
         ]);
     }

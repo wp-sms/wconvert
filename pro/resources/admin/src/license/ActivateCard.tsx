@@ -13,7 +13,8 @@ import { type LicensePayload } from './describeLicense';
 import { formatShortDay } from '@/lib/format';
 import { errorCopy, type Way } from './errorCopy';
 import { Ext, KeyField, KeyHint, ResultAlert } from './parts';
-import { GUIDES, docsUrl } from '@/shell/docs';
+import { GUIDES } from '@/shell/docs';
+import { proDocsUrl } from '../docs';
 
 /**
  * Nothing activated yet: sign in to the account first, a key second.
@@ -218,7 +219,7 @@ export function Ways({ ways, license, retry, signIn: startSignIn }: { ways: Way[
     upgrade: <Ext key="upgrade" href={license.urls.upgrade}>{__('Upgrade', 'wconvert-pro')}</Ext>,
     retry: <TryAgain key="retry" onClick={retry} />,
     support: <Ext key="support" href={license.urls.support}>{__('Contact support', 'wconvert-pro')}</Ext>,
-    guide: <GuideLink key="guide" href={docsUrl(GUIDES.proUnavailable, 'check-license')}>{__('Troubleshooting guide', 'wconvert-pro')}</GuideLink>,
+    guide: <GuideLink key="guide" href={proDocsUrl(GUIDES.proUnavailable, 'check-license')}>{__('Troubleshooting guide', 'wconvert-pro')}</GuideLink>,
   };
 
   return <div className="wconvert-license-actions">{ways.map((way) => door[way])}</div>;

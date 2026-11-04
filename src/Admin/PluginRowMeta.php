@@ -18,7 +18,8 @@ defined('ABSPATH') || exit;
  */
 final class PluginRowMeta
 {
-    public function __construct(private readonly string $basename)
+    /** @param string $product The plugin whose row this is, for the links' tags (ADR 0189). */
+    public function __construct(private readonly string $basename, private readonly string $product = Docs::FREE)
     {
     }
 
@@ -48,8 +49,8 @@ final class PluginRowMeta
         );
 
         return $meta + [
-            'wconvert-docs' => $link(Docs::url(), __('Docs', 'wconvert')),
-            'wconvert-support' => $link(Docs::SUPPORT, __('Support', 'wconvert')),
+            'wconvert-docs' => $link(Docs::url('', '', 'plugins-screen', $this->product), __('Docs', 'wconvert')),
+            'wconvert-support' => $link(Docs::tagged(Docs::SUPPORT, 'plugins-screen', $this->product), __('Support', 'wconvert')),
         ];
     }
 }

@@ -17,23 +17,14 @@ import { messageOf } from './loadable';
 import { whenQuiet } from '../lib/requestActivity';
 import { adminSettings } from '../settings';
 import { PlanBadge } from './Brand';
-import { DOCS_URL, GUIDES, docsUrl } from './docs';
-
-/** Where every "Explore Pro" link on a free install goes. */
-export const EXPLORE_PRO_URL = 'https://wconvert.io/pricing/';
+import { DOCS_URL, GUIDES, PRICING_URL, SITE_URL, SUPPORT_URL, docsUrl, linkTags, taggedUrl, type ProSurface } from './docs';
 
 /** WordPress's Plugins screen, where an installed but inactive Pro is activated (ADR 0147). */
 export const PLUGINS_URL = 'plugins.php';
 
-/** Which free surface a Pro link came from, as its `utm_medium` (ADR 0147). */
-export type ProMedium = 'header' | 'settings-list' | 'rule-menu' | 'flow-map' | 'destinations' | 'campaign-menu';
-
-/**
- * A Pro link, tagged with where it was. Fixed values only: never the site, the
- * version, the user or a count — nothing about this install leaves (G7).
- */
-export function proUrl(medium: ProMedium): string {
-  return `${EXPLORE_PRO_URL}?utm_source=wconvert-free&utm_medium=${medium}&utm_campaign=explore-pro`;
+/** Where every "Explore Pro" link on a free install goes, tagged with where it was (ADR 0189). */
+export function proUrl(surface: ProSurface): string {
+  return taggedUrl(PRICING_URL, surface);
 }
 
 /**
@@ -50,11 +41,19 @@ export const PORTAL_DOWNLOADS_URL = 'https://my.wconvert.io/account/downloads';
  * changelog until wconvert.io has one.
  */
 export const HELP_URLS = {
-  start: docsUrl(GUIDES.firstCampaign),
-  guides: DOCS_URL,
-  support: 'https://wconvert.io/support/',
+  start: docsUrl(GUIDES.firstCampaign, undefined, 'help'),
+  guides: docsUrl(undefined, undefined, 'help'),
+  support: taggedUrl(SUPPORT_URL, 'help'),
   changes: 'https://wordpress.org/plugins/wconvert/#developers',
 } as const;
+
+/**
+ * The tags of a search form. A GET form drops any query in its `action`, so
+ * the form's `action` is the bare `DOCS_URL` and its tags travel as fields.
+ */
+export function HelpSearchTags() {
+  return <>{Object.entries(linkTags('help-search')).map(([name, value]) => <input key={name} type="hidden" name={name} value={value} />)}</>;
+}
 
 /** The Help page's hash on the one WConvert screen (`help/page.ts`). */
 export const HELP_PAGE_ID = 'help';
@@ -269,10 +268,11 @@ export function HelpLinks({ currentPage }: { currentPage?: string } = {}) {
   return <>
     <h2>{__('Help', 'wconvert')}</h2>
     {/* The Help page's own search, one Enter away: it opens wconvert.io's docs in a new tab (ADR 0144). */}
-    <form className="wconvert-help-links__search" role="search" action={HELP_URLS.guides} method="get" target="_blank" rel="noreferrer">
+    <form className="wconvert-help-links__search" role="search" action={DOCS_URL} method="get" target="_blank" rel="noreferrer">
       <Search aria-hidden="true" />
       <input name="q" type="search" autoComplete="off" placeholder={__('Search the guides', 'wconvert')}
         aria-label={__('Search the guides on wconvert.io', 'wconvert')} />
+      <HelpSearchTags />
     </form>
     {out(HELP_URLS.start, Rocket, __('Getting started', 'wconvert'))}
     {out(HELP_URLS.guides, BookOpen, __('Guides', 'wconvert'))}
@@ -286,7 +286,7 @@ export function HelpLinks({ currentPage }: { currentPage?: string } = {}) {
           <Button asChild variant="outline"><a className="wconvert-help-links__open" href={`#${HELP_PAGE_ID}`}>{__('Open the Help page', 'wconvert')}</a></Button>
         </PopoverClose>
       )}
-      <a className="wconvert-help-links__site" href="https://wconvert.io/" target="_blank" rel="noreferrer">
+      <a className="wconvert-help-links__site" href={taggedUrl(SITE_URL, 'help')} target="_blank" rel="noreferrer">
         {__('WConvert website', 'wconvert')} <ExternalLink aria-hidden="true" className="rtl:-scale-x-100" />
       </a>
     </div>

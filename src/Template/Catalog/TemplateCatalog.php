@@ -4,6 +4,7 @@ namespace WConvert\Template\Catalog;
 
 use WConvert\Goal\Goal;
 use WConvert\Storage\OptionStore;
+use WConvert\Support\Docs;
 use WConvert\Support\Tier;
 use WConvert\Template\DesignWords;
 
@@ -90,7 +91,7 @@ final class TemplateCatalog
     /** A design's page on wconvert.io: where a locked card's one link goes. */
     public static function previewUrl(string $slug): string
     {
-        return 'https://wconvert.io/templates/' . rawurlencode($slug) . '/?utm_source=plugin&utm_medium=picker&utm_campaign=pro-design';
+        return Docs::tagged(Docs::TEMPLATES . rawurlencode($slug) . '/', 'template-card');
     }
 
     /** Kept for the admin boot data, which says whether to draw the library at all. */

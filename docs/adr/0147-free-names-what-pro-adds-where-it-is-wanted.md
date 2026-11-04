@@ -71,7 +71,7 @@ runtime. It fails on `main` as of `aeef6f95`.
    picker's line is gone; the gallery's "· Pro" option labels and locked cards
    say it, inside the modal.* Never in the dashboard, the Plugins
    screen, the block editor, admin notices, the front end or the inspector.
-5. **Bundled copy, no remote call.** Links carry fixed UTMs only (G7).
+5. **Bundled copy, no remote call.** Links carry fixed UTMs only (G7). *Amended by [ADR 0189](0189-links-to-our-sites-carry-one-scheme.md): the surface moved from `utm_medium` to `utm_content`, in one scheme for every link to our sites; the fixed-values rule stays.*
 6. **Names come from data, not copy.** Rules from the `locked` members the
    menu already holds; destination services from `tiers.json`'s
    `destinations` (Pro's types are not registered on a free install, so the
@@ -103,7 +103,9 @@ shape B): *"Also in WConvert Pro ↗: About to leave, Scrolls back up, Clicks a
 button or link."* No icon of any kind. The link names its destination, opens a
 new tab, says so to a screen reader, and its ↗ mirrors right to left.
 
-| Surface | Where | `utm_medium` |
+*Amended by [ADR 0189](0189-links-to-our-sites-carry-one-scheme.md): the last column's values are now `utm_content`, and `utm_medium` is `plugin` on all of them. "Compare plans" on a refused rule is `rule-picks`.*
+
+| Surface | Where | ~~`utm_medium`~~ `utm_content` |
 |---|---|---|
 | Add rule menu | the list menu's `footer`, outside the arrow-key list | `rule-menu` |
 | ~~Format picker~~ | ~~under the design browser's Format select~~ — gone; see rule 3 ([ADR 0171](0171-one-template-gallery.md)) | ~~`format-picker`~~ |
@@ -112,7 +114,7 @@ new tab, says so to a screen reader, and its ↗ mirrors right to left.
 | Campaign ⋯ menu | the last row, an `OptionItem` link with no feature icon | `campaign-menu` |
 
 The header link is `header` and the Settings list `settings-list`. The
-downloads link carries none: it serves people who already bought.
+downloads link carries none: it serves people who already bought. *[ADR 0189](0189-links-to-our-sites-carry-one-scheme.md) keeps that exemption for every account and license link on `my.wconvert.io`.*
 
 **5. Pro installed but inactive** (`ProHints::proInstalledInactive()`: Pro's
 file in `get_plugins()`, the user can `activate_plugins`). The hint, the header
@@ -124,7 +126,7 @@ Activate it"*, keeping its list — and link
 ## Consequences
 
 - `ProHint` and `ProHintItem` (`shell/ProHint.tsx`) are the only way a hint is
-  drawn; a new placement passes a `ProMedium` and its feature names.
+  drawn; a new placement passes a ~~`ProMedium`~~ `ProSurface` ([ADR 0189](0189-links-to-our-sites-carry-one-scheme.md)) and its feature names.
 - Content lock stays a pass-through so saved posts read cleanly; there is no
   lock in free.
 - Suspended campaigns carry `suspended_needs` (the missing plugin, or null) so

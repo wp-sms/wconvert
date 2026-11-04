@@ -5,7 +5,8 @@ import { tierProductName } from '../goals/availability';
 import { plainList } from '../lib/format';
 import { interpolate } from '../lib/interpolate';
 import { adminSettings } from '../settings';
-import { PLUGINS_URL, proUrl, type ProMedium } from './HeaderTools';
+import { PLUGINS_URL, proUrl } from './HeaderTools';
+import type { ProSurface } from './docs';
 
 /**
  * **Free names what Pro adds, where it would sit** (ADR 0147): one muted line
@@ -20,7 +21,7 @@ import { PLUGINS_URL, proUrl, type ProMedium } from './HeaderTools';
  *
  * With Pro installed but inactive it says so and leads to Plugins instead.
  */
-export function ProHint({ medium, features, className }: { medium: ProMedium; features: readonly string[]; className?: string }) {
+export function ProHint({ surface, features, className }: { surface: ProSurface; features: readonly string[]; className?: string }) {
   if (!proHintsShown() || features.length === 0) return null;
   const product = tierProductName('pro');
   const list = plainList(features);
@@ -33,7 +34,7 @@ export function ProHint({ medium, features, className }: { medium: ProMedium; fe
   }
   return <p className={classes(className)}>
     {interpolate(/* translators: 1: the product, linked, e.g. “WConvert Pro”. 2: features, e.g. “Floating bar, Slide-in, Fullscreen”. */
-      __('Also in %1$s: %2$s.', 'wconvert'), [<ProLink key="pro" medium={medium}>{product}</ProLink>, list])}
+      __('Also in %1$s: %2$s.', 'wconvert'), [<ProLink key="pro" surface={surface}>{product}</ProLink>, list])}
   </p>;
 }
 
@@ -42,21 +43,21 @@ export function ProHint({ medium, features, className }: { medium: ProMedium; fe
  * that is not an item cannot be reached by keyboard. No feature icon, so it
  * cannot pass for the action it names.
  */
-export function ProHintItem({ medium, features }: { medium: ProMedium; features: readonly string[] }) {
+export function ProHintItem({ surface, features }: { surface: ProSurface; features: readonly string[] }) {
   if (!proHintsShown() || features.length === 0) return null;
   const inactive = adminSettings()?.proInstalledInactive === true;
   const name = inactive
     ? sprintf(/* translators: 1: the product. 2: features. */ __('Also in %1$s, which is installed: %2$s. Activate it', 'wconvert'), tierProductName('pro'), plainList(features))
     : sprintf(/* translators: 1: the product. 2: features, e.g. “A/B testing”. */ __('Also in %1$s: %2$s.', 'wconvert'), tierProductName('pro'), plainList(features));
-  return <OptionItem className="wconvert-pro-hint-item" name={name} href={inactive ? PLUGINS_URL : proUrl(medium)} newTab={!inactive}
+  return <OptionItem className="wconvert-pro-hint-item" name={name} href={inactive ? PLUGINS_URL : proUrl(surface)} newTab={!inactive}
     trail={inactive ? undefined : <ArrowUpRight aria-hidden="true" className="rtl:-scale-x-100" />} />;
 }
 
 /** Whether this install and this user get the hints at all. Absent boot data reads as no. */
 export const proHintsShown = (): boolean => adminSettings()?.proHints === true;
 
-function ProLink({ medium, children }: { medium: ProMedium; children: string }) {
-  return <a href={proUrl(medium)} target="_blank" rel="noopener noreferrer">
+function ProLink({ surface, children }: { surface: ProSurface; children: string }) {
+  return <a href={proUrl(surface)} target="_blank" rel="noopener noreferrer">
     {children}<ArrowUpRight aria-hidden="true" className="wconvert-pro-hint__arrow rtl:-scale-x-100" />
     <span className="sr-only">{__('(opens in a new tab)', 'wconvert')}</span>
   </a>;

@@ -142,7 +142,7 @@ final class AdminNotices
             'The loader script is missing, so published campaigns can’t display. Reinstall WConvert.',
             'wconvert'
         ), [
-            'url' => \WConvert\Support\Docs::url(\WConvert\Support\Docs::UPDATE, 'update-the-files'),
+            'url' => \WConvert\Support\Docs::url(\WConvert\Support\Docs::UPDATE, 'update-the-files', 'admin-notice'),
             'label' => __('How to reinstall', 'wconvert'),
         ]);
     }

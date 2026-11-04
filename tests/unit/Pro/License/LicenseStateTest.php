@@ -465,8 +465,8 @@ final class LicenseStateTest extends TestCase
         $this->assertSame('https://my.wconvert.io/account/licenses/7', $urls['renew'], 'no renewal link from the store: the licence page');
         $this->assertSame('https://my.wconvert.io/account/billing', $urls['payment']);
         $this->assertSame('https://my.wconvert.io/account/downloads', $urls['downloads']);
-        $this->assertSame('https://wconvert.io/pricing/', $urls['checkout']);
-        $this->assertSame('https://wconvert.io/support/', $urls['support']);
+        $this->assertSame('https://wconvert.io/pricing/?utm_source=wp-admin&utm_medium=plugin&utm_campaign=wconvert-pro&utm_content=license', $urls['checkout']);
+        $this->assertSame('https://wconvert.io/support/?utm_source=wp-admin&utm_medium=plugin&utm_campaign=wconvert-pro&utm_content=license', $urls['support']);
     }
 
     public function testS1WithNoLicenceTheDoorsAreTheAccountAndThePlans(): void
@@ -474,7 +474,7 @@ final class LicenseStateTest extends TestCase
         $urls = $this->payload(null)['urls'];
 
         $this->assertSame('https://my.wconvert.io/account', $urls['account']);
-        $this->assertSame('https://wconvert.io/pricing/', $urls['checkout']);
+        $this->assertSame('https://wconvert.io/pricing/?utm_source=wp-admin&utm_medium=plugin&utm_campaign=wconvert-pro&utm_content=license', $urls['checkout']);
     }
 
     /**
@@ -500,7 +500,7 @@ final class LicenseStateTest extends TestCase
         $this->assertNull($payload['last_checked_at']);
         $this->assertNull($payload['last_success_at']);
         $this->assertSame(['masked' => null, 'source' => 'constant'], $payload['key']);
-        $this->assertSame(['support' => 'https://wconvert.io/support/'], $payload['urls']);
+        $this->assertSame(['support' => 'https://wconvert.io/support/?utm_source=wp-admin&utm_medium=plugin&utm_campaign=wconvert-pro&utm_content=license'], $payload['urls']);
         $this->assertStringNotContainsString('RENEW20', (string) json_encode($payload));
         $this->assertStringNotContainsString('2027', (string) json_encode($payload));
     }

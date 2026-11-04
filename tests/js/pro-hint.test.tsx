@@ -22,32 +22,32 @@ afterEach(() => { cleanup(); delete window.wconvertAdmin; });
 describe('the hint line', () => {
   it('names the features and links WConvert Pro in a new tab, tagged with where it was', () => {
     free();
-    render(<ProHint medium="flow-map" features={['Floating bar', 'Slide-in', 'Fullscreen']} />);
+    render(<ProHint surface="flow-map" features={['Floating bar', 'Slide-in', 'Fullscreen']} />);
 
     expect(screen.getByText(/^Also in/)).toHaveTextContent('Also in WConvert Pro(opens in a new tab): Floating bar, Slide-in, Fullscreen.');
     const link = screen.getByRole('link', { name: 'WConvert Pro (opens in a new tab)' });
-    expect(link).toHaveAttribute('href', 'https://wconvert.io/pricing/?utm_source=wconvert-free&utm_medium=flow-map&utm_campaign=explore-pro');
+    expect(link).toHaveAttribute('href', 'https://wconvert.io/pricing/?utm_source=wp-admin&utm_medium=plugin&utm_campaign=wconvert-free&utm_content=flow-map');
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   });
 
   it('draws nothing unless the server said so, and nothing with nothing to name', () => {
     window.wconvertAdmin = { exportUrl: '', installedTier: 'pro', proHints: false, tiers: PRO };
-    const { container, rerender } = render(<ProHint medium="rule-menu" features={['About to leave']} />);
+    const { container, rerender } = render(<ProHint surface="rule-menu" features={['About to leave']} />);
     expect(container).toBeEmptyDOMElement();
 
     window.wconvertAdmin = { exportUrl: '' };
-    rerender(<ProHint medium="rule-menu" features={['About to leave']} />);
+    rerender(<ProHint surface="rule-menu" features={['About to leave']} />);
     expect(container).toBeEmptyDOMElement();
 
     free();
-    rerender(<ProHint medium="rule-menu" features={[]} />);
+    rerender(<ProHint surface="rule-menu" features={[]} />);
     expect(container).toBeEmptyDOMElement();
   });
 
   it('says "Activate it" and leads to Plugins when Pro is installed but inactive', () => {
     free({ proInstalledInactive: true });
-    render(<ProHint medium="rule-menu" features={['About to leave']} />);
+    render(<ProHint surface="rule-menu" features={['About to leave']} />);
 
     expect(screen.getByText(/which is installed/)).toHaveTextContent('Also in WConvert Pro, which is installed: About to leave. Activate it');
     expect(screen.getByRole('link', { name: 'Activate it' })).toHaveAttribute('href', 'plugins.php');
@@ -55,10 +55,10 @@ describe('the hint line', () => {
   });
 
   it('carries only fixed values in its link', () => {
-    for (const medium of ['header', 'settings-list', 'rule-menu', 'flow-map', 'destinations', 'campaign-menu'] as const) {
-      const url = new URL(proUrl(medium));
-      expect([...url.searchParams.keys()]).toEqual(['utm_source', 'utm_medium', 'utm_campaign']);
-      expect(url.searchParams.get('utm_medium')).toBe(medium);
+    for (const surface of ['header', 'settings-list', 'rule-menu', 'rule-picks', 'flow-map', 'destinations', 'campaign-menu'] as const) {
+      const url = new URL(proUrl(surface));
+      expect([...url.searchParams.keys()]).toEqual(['utm_source', 'utm_medium', 'utm_campaign', 'utm_content']);
+      expect(url.searchParams.get('utm_content')).toBe(surface);
     }
   });
 });
@@ -115,7 +115,7 @@ describe('where its names come from', () => {
 it('is a reachable link row, last in a ⋯ menu, with no feature icon', async () => {
   free();
   render(<DropdownMenu><DropdownMenuTrigger>More</DropdownMenuTrigger><OptionMenuContent aria-label="More">
-    <ProHintItem medium="campaign-menu" features={['A/B testing']} />
+    <ProHintItem surface="campaign-menu" features={['A/B testing']} />
   </OptionMenuContent></DropdownMenu>);
   await userEvent.click(screen.getByRole('button', { name: 'More' }));
   const item = screen.getByRole('menuitem', { name: 'Also in WConvert Pro: A/B testing.' });
@@ -136,7 +136,7 @@ describe('the header and More with Pro, with Pro installed but inactive', () => 
     expect(screen.getByRole('link', { name: 'Activate it' })).toHaveAttribute('href', 'plugins.php');
   });
 
-  it('tag the Explore links with their medium otherwise', () => {
+  it('tag the Explore links with their spot otherwise', () => {
     free();
     const { unmount } = render(<HeaderTools />);
     expect(screen.getByRole('link', { name: /Explore/ })).toHaveAttribute('href', proUrl('header'));

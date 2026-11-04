@@ -79,7 +79,7 @@ final class WebhookDestinationType implements DestinationType, DeclaresRetrySche
             'url' => ['type' => 'url', 'label' => __('Webhook URL', 'wconvert-pro')],
             // Shown once, with this line and the guide, by free's generic secret panel.
             'signing_secret' => ['type' => 'secret', 'label' => __('Signing secret', 'wconvert-pro'), 'prefix' => 'whsec_',
-                'description' => __('Zapier, Make and n8n don’t check it.', 'wconvert-pro'), 'guide' => Docs::url(Docs::WEBHOOKS, 'verify-the-signature')],
+                'description' => __('Zapier, Make and n8n don’t check it.', 'wconvert-pro'), 'guide' => Docs::url(Docs::WEBHOOKS, 'verify-the-signature', 'guide', Docs::PRO)],
             'headers' => ['type' => 'headers', 'label' => __('Custom headers', 'wconvert-pro'), 'optional' => true, 'max' => 5,
                 'reserved' => self::RESERVED_HEADERS],
             // The site this Connection was made on, so a staging copy of it can say so.

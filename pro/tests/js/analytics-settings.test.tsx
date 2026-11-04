@@ -58,7 +58,7 @@ it('sets up Plausible without Google fields and asks for a fresh consent choice 
   expect(screen.getByRole('radio', { name: 'WP Consent API' })).toBeChecked();
   expect(screen.getByRole('radio', { name: 'Existing tracker' })).not.toBeChecked();
   // The site's guide, not one bundled in the plugin (ADR 0145).
-  expect(screen.getByRole('link', { name: /^Plausible setup.*opens in a new tab/ })).toHaveAttribute('href', 'https://wconvert.io/docs/external-analytics-reference/#plausible');
+  expect(screen.getByRole('link', { name: /^Plausible setup.*opens in a new tab/ })).toHaveAttribute('href', 'https://wconvert.io/docs/external-analytics-reference/?utm_source=wp-admin&utm_medium=plugin&utm_campaign=wconvert-pro&utm_content=guide#plausible');
   vi.mocked(apiFetch).mockResolvedValueOnce({ ...on, settings: { ...on.settings, route: 'plausible' } });
   fireEvent.click(screen.getByRole('button', { name: 'Save analytics integration' }));
   await waitFor(() => expect(screen.getByRole('button', { name: 'Save analytics integration' })).toBeDisabled());

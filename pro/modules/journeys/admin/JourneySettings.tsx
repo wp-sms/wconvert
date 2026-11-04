@@ -28,7 +28,8 @@ import { FieldHeading, PanelField, PanelHint, PanelSection } from '@/builder/Pan
 import { CheckRow } from '@/shell/CheckRow';
 import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { OptionItem, OptionMenuContent, refusal } from '@/components/ui/option-menu';
-import { GUIDES, docsUrl } from '@/shell/docs';
+import { GUIDES } from '@/shell/docs';
+import { proDocsUrl } from '../../../resources/admin/src/docs';
 import { AutoGrowTextarea } from '@/builder/AutoGrowTextarea';
 import { answerTypeName } from '@/builder/answerType';
 import type { QuestionReviewContext } from '@/journeyAuthoring';
@@ -108,7 +109,7 @@ export function ConditionSettings({ value, sources, onChange, required = false, 
         : required
           ? __('Otherwise, check the next result.', 'wconvert-pro')
           : __('Otherwise, skip this screen.', 'wconvert-pro')}</p>
-        <InfoTip label={__('How answer conditions work', 'wconvert-pro')} guide={docsUrl(GUIDES.quizPaths, 'separate-conditions')}>
+        <InfoTip label={__('How answer conditions work', 'wconvert-pro')} guide={proDocsUrl(GUIDES.quizPaths, 'separate-conditions')}>
           {__('Unanswered questions never match, even “is not” or “does not include”.', 'wconvert-pro')}
         </InfoTip>
       </div>

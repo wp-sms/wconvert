@@ -22,13 +22,15 @@ it('searches the docs on wconvert.io with a plain form, opening a new tab', () =
 
   const form = screen.getByRole('search');
   expect(form).toHaveAttribute('action', 'https://wconvert.io/docs/');
+  // A GET form drops any query in its action, so the tags travel as fields.
+  expect(Object.fromEntries(new FormData(form as HTMLFormElement))).toEqual({ q: '', utm_source: 'wp-admin', utm_medium: 'plugin', utm_campaign: 'wconvert-free', utm_content: 'help-search' });
   expect(form).toHaveAttribute('method', 'get');
   expect(form).toHaveAttribute('target', '_blank');
   expect(within(form).getByRole('searchbox', { name: 'Search the guides on wconvert.io' })).toHaveAttribute('name', 'q');
-  expect(within(form).getByRole('link', { name: /^Scroll trigger/ })).toHaveAttribute('href', 'https://wconvert.io/docs/?q=Scroll%20trigger');
-  expect(docsSearchUrl('a&b')).toBe('https://wconvert.io/docs/?q=a%26b');
-  expect(docsUrl(GUIDES.publishBlocked, 'publication-blockers')).toBe('https://wconvert.io/docs/form-rejected/#publication-blockers');
-  expect(docsUrl()).toBe('https://wconvert.io/docs/');
+  expect(within(form).getByRole('link', { name: /^Scroll trigger/ })).toHaveAttribute('href', 'https://wconvert.io/docs/?q=Scroll%20trigger&utm_source=wp-admin&utm_medium=plugin&utm_campaign=wconvert-free&utm_content=help-search');
+  expect(docsSearchUrl('a&b')).toBe('https://wconvert.io/docs/?q=a%26b&utm_source=wp-admin&utm_medium=plugin&utm_campaign=wconvert-free&utm_content=help-search');
+  expect(docsUrl(GUIDES.publishBlocked, 'publication-blockers')).toBe('https://wconvert.io/docs/form-rejected/?utm_source=wp-admin&utm_medium=plugin&utm_campaign=wconvert-free&utm_content=guide#publication-blockers');
+  expect(docsUrl()).toBe('https://wconvert.io/docs/?utm_source=wp-admin&utm_medium=plugin&utm_campaign=wconvert-free&utm_content=guide');
 });
 
 it('leads to the first guide, the topics, the quick fixes and support, all on wconvert.io', () => {
@@ -37,7 +39,7 @@ it('leads to the first guide, the topics, the quick fixes and support, all on wc
 
   expect(screen.getByRole('link', { name: /Create your first campaign/ })).toHaveAttribute('href', HELP_URLS.start);
   const topics = within(screen.getByRole('region', { name: 'Browse by topic' })).getAllByRole('link');
-  expect(topics.map((link) => link.getAttribute('href'))).toContain('https://wconvert.io/docs/#spam-protection');
+  expect(topics.map((link) => link.getAttribute('href'))).toContain('https://wconvert.io/docs/?utm_source=wp-admin&utm_medium=plugin&utm_campaign=wconvert-free&utm_content=help#spam-protection');
   expect(screen.getByRole('link', { name: /^Contact support/ })).toHaveAttribute('href', HELP_URLS.support);
   expect(screen.getByRole('link', { name: 'Tools → Site Health → Info' })).toHaveAttribute('href', 'site-health.php?tab=debug');
   expect(screen.getByText(/WConvert 1\.0\.0/)).toBeInTheDocument();
@@ -51,7 +53,7 @@ it('shows how to connect an AI agent and where it is allowed to publish (ADR 015
   render(<HelpPage />);
 
   const agents = screen.getByRole('region', { name: 'Connect an AI agent' });
-  expect(within(agents).getByRole('link', { name: /How to connect one/ })).toHaveAttribute('href', 'https://wconvert.io/docs/connect-an-ai-agent/');
+  expect(within(agents).getByRole('link', { name: /How to connect one/ })).toHaveAttribute('href', 'https://wconvert.io/docs/connect-an-ai-agent/?utm_source=wp-admin&utm_medium=plugin&utm_campaign=wconvert-free&utm_content=help');
   expect(within(agents).getByRole('link', { name: 'Settings → AI agents' })).toHaveAttribute('href', '#settings?group=connections');
 });
 
@@ -84,11 +86,12 @@ it('marks the header ? as current on the Help page, and its popover leaves out t
   expect(trigger).toHaveAttribute('aria-current', 'page');
   await userEvent.click(trigger);
   const help = await screen.findByRole('dialog');
-  expect(within(help).getByRole('link', { name: 'Guides (opens in a new tab)' })).toHaveAttribute('href', 'https://wconvert.io/docs/');
+  expect(within(help).getByRole('link', { name: 'Guides (opens in a new tab)' })).toHaveAttribute('href', 'https://wconvert.io/docs/?utm_source=wp-admin&utm_medium=plugin&utm_campaign=wconvert-free&utm_content=help');
   expect(within(help).queryByRole('link', { name: 'Open the Help page' })).toBeNull();
   // The menu searches the docs the same way the page does.
   const search = within(help).getByRole('search');
   expect(search).toHaveAttribute('action', 'https://wconvert.io/docs/');
+  expect(new FormData(search as HTMLFormElement).get('utm_content')).toBe('help-search');
   expect(search).toHaveAttribute('target', '_blank');
   expect(within(search).getByRole('searchbox', { name: 'Search the guides on wconvert.io' })).toHaveAttribute('name', 'q');
 });
