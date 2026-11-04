@@ -520,7 +520,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
     const design = next.template as Template | undefined;
     if (design && slotsOf(design.tree).some((slot) => slot.captures === 'interest'
       && !validDraftInterestOptions(slot.values.options))) {
-      return Promise.reject(new Error(__('Fix the interest choices before saving: each entered choice needs a label and a unique valid sent value. Your changes are still here.', 'wconvert')));
+      return Promise.reject(new Error(__('Can’t save: interest choices need a label and unique valid sent value.', 'wconvert')));
     }
     return saveOptin(
       id,
@@ -724,7 +724,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         else window.location.hash = editorHref(created.id);
       })
       .catch((cause: unknown) => {
-        throw new Error(sprintf(/* translators: %s: the error the server gave, e.g. “Sorry, you are not allowed to do that.” */ __('The copy could not be confirmed. Check the campaigns list before trying again. %s', 'wconvert'), messageOf(cause)));
+        throw new Error(sprintf(/* translators: %s: the error the server gave, e.g. “Sorry, you are not allowed to do that.” */ __('Copy not confirmed. Check the campaigns list before trying again. %s', 'wconvert'), messageOf(cause)));
       })
       .finally(() => setBusy(false));
   };
@@ -1187,7 +1187,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         open={leaving}
         onOpenChange={setLeaving}
         title={__('Leave without saving?', 'wconvert')}
-        description={__('Your unsaved changes will be lost. The last saved draft and the published version stay as they are.', 'wconvert')}
+        description={__('Unsaved changes are lost. The saved draft and published version stay.', 'wconvert')}
         confirmLabel={__('Discard changes', 'wconvert')}
         cancelLabel={__('Keep editing', 'wconvert')}
         returnFocusTo={back}
@@ -1278,7 +1278,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               else window.location.hash = editorHref(created.id);
             })
             .catch((cause: unknown) => {
-              throw new Error(sprintf(/* translators: %s: the error the server gave, e.g. “Sorry, you are not allowed to do that.” */ __('The copy could not be confirmed. Check the campaigns list before trying again. %s', 'wconvert'), messageOf(cause)));
+              throw new Error(sprintf(/* translators: %s: the error the server gave, e.g. “Sorry, you are not allowed to do that.” */ __('Copy not confirmed. Check the campaigns list before trying again. %s', 'wconvert'), messageOf(cause)));
             })
             .finally(() => setBusy(false));
         }}
@@ -1416,7 +1416,7 @@ function AttentionDot() {
  */
 function withdrawnNote(reason: string | undefined): string | null {
   if (reason === undefined) return null;
-  if (reason === 'rights') return __('This campaign’s template was withdrawn from the WConvert library over image or content rights. Your campaign keeps its copy; choose another template to replace it.', 'wconvert');
-  if (reason === 'broken') return __('This campaign’s template was withdrawn from the WConvert library because of a problem with it. Your campaign keeps its copy; choose another template to replace it.', 'wconvert');
-  return __('This campaign’s template was withdrawn from the WConvert library. Your campaign keeps its copy and keeps working.', 'wconvert');
+  if (reason === 'rights') return __('Template withdrawn over image or content rights. Your copy stays. Choose another.', 'wconvert');
+  if (reason === 'broken') return __('Template withdrawn because of a problem. Your copy stays. Choose another.', 'wconvert');
+  return __('Template withdrawn from the WConvert library. Your copy stays and keeps working.', 'wconvert');
 }

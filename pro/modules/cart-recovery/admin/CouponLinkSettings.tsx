@@ -43,7 +43,7 @@ export function expiryWarning(code: string, expiry: CouponExpiry | null): string
     return sprintf(/* translators: 1: a coupon code, 2: the date it expires, 3: the date and time the campaign ends. */ __('%1$s stays valid until %2$s, after this campaign ends on %3$s.', 'wconvert-pro'), code, expiry.expires, expiry.ends);
   }
   if (expiry.verdict === 'no_expiry') {
-    return sprintf(/* translators: 1: a coupon code, 2: the date and time the campaign ends. */ __('%1$s never expires, so it keeps working after this campaign ends on %2$s.', 'wconvert-pro'), code, expiry.ends);
+    return sprintf(/* translators: 1: a coupon code, 2: the date and time the campaign ends. */ __('%1$s never expires, so it works after this campaign ends on %2$s.', 'wconvert-pro'), code, expiry.ends);
   }
   return null;
 }
@@ -84,6 +84,6 @@ function CouponLinkControls({ code, href, endsAt, onChange }: CodeLinkProps) {
       {__('Apply in WooCommerce', 'wconvert-pro')}
     </Button>
     {warning && <PanelHint>{warning}</PanelHint>}
-    {stale && <PanelHint>{sprintf(/* translators: 1: the coupon code the link applies, 2: the code the block shows. */ __('This link applies %1$s, but the block shows %2$s. Press Apply in WooCommerce to match them.', 'wconvert-pro'), applies, code.trim())}</PanelHint>}
+    {stale && <PanelHint>{sprintf(/* translators: 1: the coupon code the link applies, 2: the code the block shows. */ __('This link applies %1$s, not the block’s %2$s. Press Apply in WooCommerce.', 'wconvert-pro'), applies, code.trim())}</PanelHint>}
   </>;
 }

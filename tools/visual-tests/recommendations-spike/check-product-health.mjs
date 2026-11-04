@@ -71,14 +71,14 @@ try {
 
   await client.get('/?wconvert_quiz_fixture=1&stock=in');
   await client.get('/?wconvert_recommendations_fixture=1&options_required=1');
-  assert.match((await health([rec.campaigns.add]))[0].checks[0].message, /None of these products supports Add to cart/);
+  assert.match((await health([rec.campaigns.add]))[0].checks[0].message, /None support Add to cart/);
   await client.get('/?wconvert_recommendations_fixture=1&options_required=0');
   const cross = (await saved(rec.campaigns.page_cross)).config;
   const crossNode = cross.template.tree.steps[0].content.children.find(node => node.type === 'products');
   crossNode.main_product_id = base.products[3];
   const created = await client.post(route, { headers, data: { name: 'Product warning example', goal: 'promote_offer', config: cross } });
   assert.equal(created.status(), 201, await created.text()); const extra = await created.json();
-  assert.match((await health([extra.id]))[0].checks[0].message, /No cross-sells are set/);
+  assert.match((await health([extra.id]))[0].checks[0].message, /Main product has no cross-sells/);
   crossNode.main_product_id = base.private_accessory;
   await draft(extra.id, cross);
   assert.match((await health([extra.id]))[0].checks[0].message, /main product is unavailable/);

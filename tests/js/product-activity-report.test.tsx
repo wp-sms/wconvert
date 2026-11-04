@@ -15,7 +15,7 @@ it('shows product actions and explains the shorter recorded period', async () =>
   expect(await screen.findByText('Coffee filter')).toBeTruthy();
   expect(screen.getByRole('columnheader', { name: 'Added' })).toBeTruthy();
   expect(screen.getByText(/Earlier product activity is unavailable/)).toBeTruthy();
-  expect(screen.queryByText(/The rest of this period/)).toBeNull();
+  expect(screen.queryByText(/The rest is not recorded/)).toBeNull();
   expect(screen.queryByText(/#42/)).toBeNull();
 });
 it('suppresses an incomplete table instead of presenting a partial ranking', async () => {

@@ -123,5 +123,5 @@ it('does not retire an exclusive path that owns contact collection', () => {
   const protectedTree = { ...quiz, steps: quiz.steps.map(step => step.id === 'grind' ? { ...step, content: { type: 'field' as const, id: 'protected-email', field: 'email', label: 'Email' } } : step) } as TemplateTree;
   const plan = retireAnswerPlan(protectedTree, 'n1', 'filter');
   expect(plan.next).toBeUndefined();
-  expect(plan.reason).toMatch(/contact details/);
+  expect(plan.reason).toMatch(/Fields, consent and save settings stay together/);
 });

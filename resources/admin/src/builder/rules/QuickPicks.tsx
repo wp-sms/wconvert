@@ -125,7 +125,7 @@ function Inline({ template, param, value, onChange, onError, errorId }: {
 
   const number = Number(draft);
   const error = param.kind === 'selector'
-    ? (draft.trim() !== '' && !portableSelector(draft) ? __('Use an ID, class, tag or attribute selector, such as #signup or .offer-button.', 'wconvert') : null)
+    ? (draft.trim() !== '' && !portableSelector(draft) ? __('Use an ID, class, tag or attribute selector, like #signup or .offer-button.', 'wconvert') : null)
     : draft === '' || !inRange(param, number)
       ? sprintf(param.whole
         ? /* translators: 1: the lowest number allowed. 2: the highest. */ __('Enter a whole number from %1$s to %2$s.', 'wconvert')

@@ -249,7 +249,7 @@ function SourceNote({
           className="wconvert-linkish"
           onClick={onRefer}
           title={__(
-            'Follow the palette instead of this exact color, so a ready-made look moves it.',
+            'Follow the palette, so a ready-made look can change this color.',
             'wconvert',
           )}
         >

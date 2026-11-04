@@ -139,7 +139,7 @@ final class AdminNotices
         }
 
         $this->add(__(
-            'WConvert has published Campaigns but its loader script is missing, so none of them can display. Reinstall the plugin to restore it.',
+            'The loader script is missing, so published campaigns can’t display. Reinstall WConvert.',
             'wconvert'
         ), [
             'url' => \WConvert\Support\Docs::url(\WConvert\Support\Docs::UPDATE, 'update-the-files'),
@@ -194,7 +194,7 @@ final class AdminNotices
 
         echo '<div class="notice notice-warning wconvert-notice"><p>';
         echo esc_html__(
-            'WConvert does not support multisite in this version. Network activation only sets up the site whose dashboard was open at the time, and any site nobody has visited the admin of will have no database tables while its front end is live. Deactivate it for the network and activate it on each site individually instead.',
+            'WConvert does not support network activation: sites nobody has opened in admin get no database tables. Deactivate it for the network, then activate it on each site.',
             'wconvert'
         );
         echo '</p></div>';

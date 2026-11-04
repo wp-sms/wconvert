@@ -19,7 +19,7 @@ export function AnalyticsIntegrationSettings(props: { onEditingStateChange?: Set
   // A free install is shown no locked feature (ADR 0116).
   if (!Component && isFreeInstall()) return null;
   return Component ? <Suspense fallback={<SettingsRegionSkeleton region="integrations" />}><Component {...props} /></Suspense>
-    : <Region><RegionHeader title={__('Analytics integrations', 'wconvert')} trailing={<Badge variant="secondary"><Lock aria-hidden="true" />{tierName('pro')}</Badge>} /><RegionBody><p className="m-0 text-note">{sprintf(/* translators: %s: the product that includes it, e.g. “WConvert Pro”. */ __('Send campaign events through your existing Google tag, GTM or Plausible script with %s.', 'wconvert'), tierProductName('pro'))}</p></RegionBody></Region>;
+    : <Region><RegionHeader title={__('Analytics integrations', 'wconvert')} trailing={<Badge variant="secondary"><Lock aria-hidden="true" />{tierName('pro')}</Badge>} /><RegionBody><p className="m-0 text-note">{sprintf(/* translators: %s: the product that includes it, e.g. “WConvert Pro”. */ __('Send campaign events through your Google tag, GTM or Plausible with %s.', 'wconvert'), tierProductName('pro'))}</p></RegionBody></Region>;
 }
 /**
  * The section before its code: the choice, its two sentences and the label

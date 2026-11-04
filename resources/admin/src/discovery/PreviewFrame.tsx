@@ -20,5 +20,5 @@ export function PreviewFrame({ template, displayType, mobile, step, result, inte
     {template ? <DesignStage size="inspect" displayType={displayType} device={mobile ? 'mobile' : 'desktop'} zoom={fitHeight ? 'fit' : 'actual'}
       step={step} result={result} interactive={interactive} source={{ live: { template } }}
       region={{ label: __('Scrollable design preview', 'wconvert'), describedBy: hintId }} onOverflow={setOverflows} /> : children}
-  </div>{scrolls && <p id={hintId} className="wconvert-preview-frame__hint">{__('Scroll inside the preview to see the rest, or choose Fit whole design.', 'wconvert')}</p>}</>;
+  </div>{scrolls && <p id={hintId} className="wconvert-preview-frame__hint">{__('Scroll the preview for the rest, or choose Fit whole design.', 'wconvert')}</p>}</>;
 }

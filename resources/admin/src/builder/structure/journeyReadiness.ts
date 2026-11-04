@@ -33,7 +33,7 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
     if (!bypass.edge || !bypass.saving.length) continue;
     const ending = tree.steps.find(screen => screen.id === bypass.endingId)?.name ?? bypass.endingId;
     issues.push({ key: bypass.key,
-      said: sprintf(/* translators: 1: the name of a result or ending screen, e.g. “Your match”, 2: the name of the screen whose form saves the visitor's details, already in quotes. */ __('A line reaches “%1$s” without saving at %2$s first. Send this line through the form.', 'wconvert'),
+      said: sprintf(/* translators: 1: the name of a result or ending screen, e.g. “Your match”, 2: the name of the screen whose form saves the visitor's details, already in quotes. */ __('A line reaches “%1$s”, skipping the form at %2$s. Send it through the form.', 'wconvert'),
         ending, bypass.saving.map(screen => `“${screen.name}”`).join(', ')),
       repair: { screenId: bypass.edge.from, section: 'paths', edgeId: bypass.edge.id,
         ...(bypass.edge.kind === 'hidden' ? { focus: 'hidden-route' as const } : {}) } });
@@ -43,7 +43,7 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
     const screenId = budget.screens[budget.screens.length - 1];
     const names = budget.screens.map(id => tree.steps.find(screen => screen.id === id)?.name ?? id).join(' → ');
     issues.push({ key: 'question-path-limit',
-      said: sprintf(/* translators: 1: how many questions one path through the screens asks, 2: the screens on that path joined by arrows, e.g. “Intro → Skin type → Result”. */ __('This line asks %1$s questions; the limit is ten: %2$s. Remove questions or move them to a separate line.', 'wconvert'), formatCount(budget.count), names),
+      said: sprintf(/* translators: 1: how many questions one path through the screens asks, 2: the screens on that path joined by arrows, e.g. “Intro → Skin type → Result”. */ __('This line has %1$s questions, limit ten: %2$s. Remove or move some.', 'wconvert'), formatCount(budget.count), names),
       repair: { screenId, section: 'content', focus: 'questions' } });
   }
   const incomplete = (condition: QuestionCondition | undefined) => !condition || !condition.clauses.length
@@ -55,15 +55,15 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
   const invalid = (condition: QuestionCondition, target: string, allowCurrent: boolean): string | null => {
     for (const clause of condition.clauses) {
       const source = questions.get(clause.question);
-      if (!source) return __('The rule refers to a question that no longer exists. Choose another question.', 'wconvert');
+      if (!source) return __('This rule’s question no longer exists. Choose another.', 'wconvert');
       const available = source.screen === target ? allowCurrent : tree.graph
         ? graphReaches(tree.graph, source.screen, target) : source.index < tree.steps.findIndex(screen => screen.id === target);
-      if (!available) return sprintf(/* translators: %s: a quiz question's text, e.g. “What is your skin type?”. */ __('“%s” cannot be answered before this rule. Reconnect its screen or choose an earlier question.', 'wconvert'), source.node.label);
-      if (source.node.answer_type === 'text') return sprintf(/* translators: %s: a quiz question's text, e.g. “What is your skin type?”. */ __('“%s” is a text question. Choose a question with answer choices for this rule.', 'wconvert'), source.node.label);
+      if (!available) return sprintf(/* translators: %s: a quiz question's text, e.g. “What is your skin type?”. */ __('“%s” isn’t answered first. Reconnect its screen or choose an earlier question.', 'wconvert'), source.node.label);
+      if (source.node.answer_type === 'text') return sprintf(/* translators: %s: a quiz question's text, e.g. “What is your skin type?”. */ __('“%s” is a text question. Choose one with answer choices.', 'wconvert'), source.node.label);
       const operators = source.node.answer_type === 'multi' ? ['includes_any', 'includes_none'] : ['is', 'is_not'];
       if (!operators.includes(clause.operator)) return sprintf(/* translators: %s: a quiz question's text, e.g. “What is your skin type?”. */ __('Choose a comparison that matches the answer type of “%s”.', 'wconvert'), source.node.label);
       if (clause.values.some(value => !source.node.options?.some(option => option.value === value)))
-        return sprintf(/* translators: %s: a quiz question's text, e.g. “What is your skin type?”. */ __('An answer used by this rule is no longer available in “%s”. Choose an available answer.', 'wconvert'), source.node.label);
+        return sprintf(/* translators: %s: a quiz question's text, e.g. “What is your skin type?”. */ __('This rule uses an answer no longer in “%s”. Choose another.', 'wconvert'), source.node.label);
     }
     return null;
   };
@@ -102,7 +102,7 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
       if (result.product_action === 'add_to_cart' && (!commerceSupported() || (!result.product_ids?.length && !result.product_filter))) issues.push({
         key: `result-cart:${screen.id}:${result.id}`, said: !commerceSupported() ? unlessFree(sprintf(
           /* translators: %s: the product that includes cart buttons, e.g. “WConvert Pro”. */
-          __('Quiz cart buttons are included with %s and need WooCommerce on this site.', 'wconvert'), tierProductName('pro'))) : sprintf(/* translators: %s: a quiz result's heading, e.g. “Oily skin”. */ __('Choose products for “%s” or use View product.', 'wconvert'), result.heading),
+          __('Quiz cart buttons need %s and WooCommerce on this site.', 'wconvert'), tierProductName('pro'))) : sprintf(/* translators: %s: a quiz result's heading, e.g. “Oily skin”. */ __('Choose products for “%s” or use View product.', 'wconvert'), result.heading),
         repair: { screenId: screen.id, section: 'content', resultId: result.id },
       });
       if (result.product_filter && (!result.product_filter.category_id || result.product_filter.attributes.some(item => !item.taxonomy || !item.term_id)
@@ -116,12 +116,12 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
       // (ADR 0133). An address with no words would be a blank button.
       if (hasLink && !hasLabel) {
         issues.push({ key: `result-link:${screen.id}:${result.id}`,
-          said: sprintf(/* translators: 1: a quiz result's heading, e.g. “Oily skin”, 2: the screen's name, e.g. “Your match”. */ __('Add words for the link button on “%1$s” (“%2$s”), or remove its address.', 'wconvert'), result.heading, screen.name),
+          said: sprintf(/* translators: 1: a quiz result's heading, e.g. “Oily skin”, 2: the screen's name, e.g. “Your match”. */ __('Label the link button on “%1$s” (“%2$s”), or remove its address.', 'wconvert'), result.heading, screen.name),
           repair: { screenId: screen.id, section: 'content', resultId: result.id, focus: 'result-link' } });
       }
       if (!result.when) {
         if (index < (screen.results?.length ?? 0) - 1) issues.push({ key: `result:${screen.id}:${index}`,
-          said: sprintf(/* translators: 1: the result's position on its screen, 2: the screen's name, e.g. “Your match”. */ __('Choose a condition for result %1$s on “%2$s”. Only the last one, for all other answers, has none.', 'wconvert'), formatCount(index + 1), screen.name),
+          said: sprintf(/* translators: 1: the result's position on its screen, 2: the screen's name, e.g. “Your match”. */ __('Result %1$s on “%2$s” needs a condition. Only the last has none.', 'wconvert'), formatCount(index + 1), screen.name),
           repair: { screenId: screen.id, section: 'content', resultId: result.id } });
         return;
       }

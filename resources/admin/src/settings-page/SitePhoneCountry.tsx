@@ -92,7 +92,7 @@ export function SitePhoneCountry({ onEditingStateChange }: { onEditingStateChang
       </p>}
       <Description id={`${id}-hint`}>{draft === ''
         ? __('Phone fields start with no country selected. Campaigns can choose their own.', 'wconvert')
-        : __('Campaigns can choose their own. A published campaign keeps the country it was published with, so republish it to use a new default.', 'wconvert')}</Description>
+        : __('Published campaigns keep their country until republished. Campaigns can choose their own.', 'wconvert')}</Description>
     </RegionBody>
     <RegionFooter className="flex flex-wrap items-center justify-end gap-3">
       {error && <p role="alert" className="m-0 text-note text-destructive">{error}</p>}

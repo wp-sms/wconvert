@@ -48,7 +48,7 @@ export function JourneyCaptureSettings({ tree, step, onChange, consentEditor, on
       </li>;
     })}</ul>
     <CheckRow className="wconvert-check" label={__('Ask for their name', 'wconvert')} checked={!!name.node} aria-disabled={name.customized || undefined}
-      hint={name.customized ? __('The name field has its own settings. Change it on its own panel.', 'wconvert') : undefined}
+      hint={name.customized ? __('Has its own settings. Change it on the name field’s panel.', 'wconvert') : undefined}
       onChange={event => { if (!name.customized) onChange(setCaptureName(tree, screen.id, event.target.checked)); }} />
     {tree.steps.some(item => walkNodes(item.content).some(node => node.type === 'question')) && <CheckRow className="wconvert-check" label={__('Let visitors review earlier answers', 'wconvert')}
       checked={screen.review_answers === true} onChange={event => onChange({ ...tree, steps: tree.steps.map((item, index) => index === step ? { ...item, review_answers: event.target.checked } : item) })} />}

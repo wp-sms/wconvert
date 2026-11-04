@@ -111,7 +111,7 @@ export function App() {
         onClose={() => navigate(route.returnTo)} />
       <ConfirmDialog open={navigation.pending} onOpenChange={(open) => { if (!open) navigation.stay(); }}
         title={__('Leave without saving?', 'wconvert')}
-        description={__('Changes since your last save will be lost. The saved campaign stays as it is.', 'wconvert')}
+        description={__('Unsaved changes are lost. The saved campaign stays as it is.', 'wconvert')}
         confirmLabel={__('Discard changes', 'wconvert')} cancelLabel={__('Keep editing', 'wconvert')}
         onConfirm={navigation.discard} returnFocusTo={navigation.returnFocusTo} />
     </>;
@@ -187,7 +187,7 @@ export function App() {
       </>}
       {section === 'settings' && <SettingsSection group={route.settingsGroup} destinationId={route.destinationId} onEditingStateChange={navigation.onEditingStateChange} />}
       <ConfirmDialog open={navigation.pending} onOpenChange={(open) => { if (!open) navigation.stay(); }}
-        title={__('Leave without saving?', 'wconvert')} description={__('Changes since your last save will be lost. What you saved stays as it is.', 'wconvert')}
+        title={__('Leave without saving?', 'wconvert')} description={__('Unsaved changes are lost. What you saved stays as it is.', 'wconvert')}
         confirmLabel={__('Discard changes', 'wconvert')} cancelLabel={__('Keep editing', 'wconvert')}
         onConfirm={navigation.discard} returnFocusTo={navigation.returnFocusTo} />
     </Shell>

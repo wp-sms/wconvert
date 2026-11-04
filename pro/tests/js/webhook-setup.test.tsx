@@ -128,7 +128,7 @@ describe('each tool stores the same webhook', () => {
     await userEvent.type(screen.getByLabelText('Webhook URL'), 'http://hook.eu1.make.com/abc');
     expect(screen.queryByText(/isn’t encrypted/)).toBeNull();
     await userEvent.type(screen.getByLabelText(/API key/), 'key-1');
-    expect(screen.getByText('http:// isn’t encrypted, so your header and every lead travel readable. Use https://.')).toBeVisible();
+    expect(screen.getByText('http:// isn’t encrypted: your header and every lead travel readable. Use https://.')).toBeVisible();
   });
 
   it('reports a typed field as a change worth asking about, and Back keeps it', async () => {
@@ -165,7 +165,7 @@ describe('editing an account', () => {
     expect(screen.getByText('Stored. Shown only when it is made.')).toBeVisible();
     await userEvent.click(screen.getByRole('button', { name: 'Regenerate' }));
     expect(screen.getAllByRole('dialog')).toHaveLength(1);
-    expect(screen.getByText(/^Regenerate now\? The next request is signed with the new secret/)).toBeVisible();
+    expect(screen.getByText(/^Your receiver refuses requests until it has the new secret\. Regenerate now\?/)).toBeVisible();
     expect(screen.queryByRole('button', { name: 'Check and save account' })).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: 'Keep current' }));
     expect(api.regenerateConnection).not.toHaveBeenCalled();

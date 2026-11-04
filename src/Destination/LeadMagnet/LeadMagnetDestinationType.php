@@ -169,7 +169,7 @@ final class LeadMagnetDestinationType implements DestinationType
                 'description' => sprintf(
                     /* translators: %s: the literal token {link}, which must not be translated. */
                     __(
-                        'Insert %s for the download link, or it will be added at the end.',
+                        'Insert %s for the download link, or it goes at the end.',
                         'wconvert'
                     ),
                     self::LINK
@@ -235,7 +235,7 @@ final class LeadMagnetDestinationType implements DestinationType
         $email = $subject->values[CanonicalFields::EMAIL] ?? '';
 
         if (!$this->requirements()->acceptsCapture($subject->values)) {
-            return PushResult::skipped(__('The Lead carries no email address, and the lead magnet goes out by email.', 'wconvert'));
+            return PushResult::skipped(__('This lead has no email address to send the lead magnet to.', 'wconvert'));
         }
 
         $link = $this->setting($context, self::FILE_URL);

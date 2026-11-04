@@ -1061,7 +1061,7 @@ describe('the inspector', () => {
     const refused = await screen.findByRole('menuitemradio', { name: /Goes somewhere else/ });
 
     expect(refused).toHaveAttribute('aria-disabled', 'true');
-    expect(refused).toHaveTextContent('second step');
+    expect(refused).toHaveTextContent('In the Look, use Change template to pick one that links away.');
     expect(refused).not.toHaveTextContent(/goal/i);
   });
 
@@ -1258,7 +1258,7 @@ describe('the verdict', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Review & publish' }));
 
     expect(screen.getByRole('heading', { name: '1 thing to review' })).toBeInTheDocument();
-    expect(screen.getByText(/hard to read on the background/)).toBeInTheDocument();
+    expect(screen.getByText(/lighter text is hard to read/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save & publish' })).toBeEnabled();
   }, 15000);
 
@@ -1279,7 +1279,7 @@ describe('the verdict', () => {
     await userEvent.click(screen.getByRole('menuitem', { name: /Duplicate/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Review & publish' }));
 
-    const problem = screen.getByRole('button', { name: /no name of its own/ });
+    const problem = screen.getByRole('button', { name: /Switching design loses your words/ });
 
     expect(problem).toBeInTheDocument();
 

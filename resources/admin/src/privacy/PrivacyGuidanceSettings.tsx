@@ -11,7 +11,8 @@ export function PrivacyGuidanceSettings({
     <SwitchSetting
       title={__('Privacy guidance', 'wconvert')}
       label={__('Show privacy guidance in the campaign editor', 'wconvert')}
-      hint={__('Adds a short privacy notice to new campaigns and checks it before publishing. Export, erasure and retention work either way.', 'wconvert')}
+      hint={__('Adds a privacy notice to new campaigns and checks it before publishing.', 'wconvert')}
+      tip={__('Export, erasure and retention work either way.', 'wconvert')}
       setting="privacy-guidance"
       saveLabel={__('Save privacy guidance', 'wconvert')}
       read={readPrivacyGuidance}

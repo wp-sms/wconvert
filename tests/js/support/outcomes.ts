@@ -2,7 +2,7 @@ import type { OutcomeContract } from '../../../resources/admin/src/goals/outcome
 
 export const CAPTURE_OUTCOME: OutcomeContract = {
   audience_channel: 'email',
-  action: 'submit', capture_any_of: ['email'], requirement: 'Use a form with a required email field before publishing.',
+  action: 'submit', capture_any_of: ['email'], requirement: 'Use a form with a required email field.',
   measurement: 'Counts email submissions, not confirmed subscribers.', proof_level: 'captured', destination_type: null, link_required: false,
 };
 export const CLICK_OUTCOME: OutcomeContract = {

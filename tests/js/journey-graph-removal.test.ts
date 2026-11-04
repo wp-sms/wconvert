@@ -62,7 +62,7 @@ it('replaces a first offer with an unconditional screen and removes its now-usel
 
 it('explains protected endings, saves and contact fields', () => {
   expect(graphRemovalPlan(base, 'received').reason).toMatch(/ending/);
-  expect(graphRemovalPlan(base, 'contact').reason).toMatch(/contact details/);
+  expect(graphRemovalPlan(base, 'contact').reason).toMatch(/Fields, consent and save settings stay together/);
   expect(graphRemovalPlan(base, 'missing').reason).toMatch(/no longer/);
 });
 

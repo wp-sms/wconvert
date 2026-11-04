@@ -12,7 +12,7 @@ it('retains accepted totals, dates and campaign links after a failed period chan
   vi.mocked(apiFetch).mockResolvedValueOnce(report);
   const view = render(<Revenue period={period} campaignNames={{ offer: 'Autumn offer' }} />);
   await screen.findByText('Linked paid orders');
-  expect(screen.getByText('Linked after a signup or eligible click within 30 minutes. A link does not prove the campaign caused the sale.')).toBeVisible();
+  expect(screen.getByText('A link does not prove the campaign caused the sale.')).toBeVisible();
   vi.mocked(apiFetch).mockRejectedValueOnce(new Error('offline'));
   view.rerender(<Revenue period={{ ...period, days: 30, from: '2026-09-01' }} campaignNames={{ offer: 'Autumn offer' }} />);
   await screen.findByRole('alert');
@@ -27,7 +27,7 @@ it('keeps a confirmed tracking setting when the following report refresh fails',
   await userEvent.click(await screen.findByText('Tracking & setup'));
   await userEvent.click(screen.getByRole('button', { name: 'Turn off tracking' }));
   const confirm = screen.getByRole('alertdialog');
-  expect(confirm).toHaveTextContent('Orders already linked stay in this report.');
+  expect(confirm).toHaveTextContent('Linked orders stay in this report.');
   await userEvent.click(within(confirm).getByRole('button', { name: 'Turn off tracking' }));
   await screen.findByRole('alert');
   expect(screen.getAllByText('Tracking is off')).toHaveLength(2);
@@ -147,7 +147,7 @@ describe('a switched-off Campaign sales section (ADR 0185)', () => {
     vi.mocked(apiFetch).mockResolvedValueOnce({ ...off, site_matches: false });
     render(<Revenue period={period} />);
     expect(await screen.findByRole('heading', { name: 'Campaign sales' })).toBeVisible();
-    expect(screen.getByText(/The site address changed/)).toBeVisible();
+    expect(screen.getByText(/Site address changed/)).toBeVisible();
   });
 
   it('stays open when a report too large to total cannot say nothing was linked', async () => {

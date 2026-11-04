@@ -150,7 +150,7 @@ export function SpamProtection({ onEditingStateChange }: { onEditingStateChange?
           </div>)}
         {!saved.rules_available && saved.rules_configured && <Alert variant="destructive" className="border-destructive/30 bg-destructive-surface">
           <CircleAlert />
-          <AlertTitle className="line-clamp-none">{__('Forms are paused: saved email filters aren’t available on this site. Remove the filters to resume.', 'wconvert')}</AlertTitle>
+          <AlertTitle className="line-clamp-none">{__('Forms are paused: saved email filters aren’t available on this site.', 'wconvert')}</AlertTitle>
           <AlertDescription><Button variant="outline" onClick={() => edit({ rules: [] })}>{__('Remove unavailable filters', 'wconvert')}</Button></AlertDescription>
         </Alert>}
       </fieldset>
@@ -172,6 +172,6 @@ export function SpamProtection({ onEditingStateChange }: { onEditingStateChange?
     /* translators: %s: a date and time. */
     __('Approximate counts since %s. They reset after 24 hours.', 'wconvert'), formatWhen(new Date(saved.diagnostics.since * 1000).toISOString(), 'detail'))} /><RegionBody>
     {counts.length === 0 ? <p className="m-0">{__('No activity yet.', 'wconvert')}</p> : <dl className="m-0 grid gap-3">{counts.map(([key, count]) => <div key={key} className="flex justify-between gap-4"><dt>{labelOf(key, reasons, __('Other checks', 'wconvert'))}</dt><dd className="m-0 tabular-nums">{formatCount(count)}</dd></div>)}</dl>}
-    <Description className="mt-4">{__('Counts show checks, not people or confirmed spam. No personal data is stored here.', 'wconvert')}</Description>
+    <Description className="mt-4">{__('Counts checks, not people or confirmed spam. No personal data stored here.', 'wconvert')}</Description>
   </RegionBody></Region></div>;
 }

@@ -23,14 +23,14 @@ it('does not flatten messages containing formatted slots into plain copy', () =>
   const input: TemplateTree = { ...tree, steps: [{ ...tree.steps[0], content: { type: 'text', text: 'Read %l', link: { label: 'our guide', href: '/guide/' } } }] };
   render(<JourneyScreenContent tree={input} step={0} onChange={() => {}}/>);
   expect(screen.queryByLabelText('Message')).not.toBeInTheDocument();
-  expect(screen.getByText(/contains formatted text or links/)).toBeInTheDocument();
+  expect(screen.getByText(/To edit this formatted message, select it on the canvas/)).toBeInTheDocument();
 });
 it('never shows a link placeholder as text to edit', () => {
   // The renderer's link mark is %s; a raw "%s" in a text box reads as a bug.
   const input: TemplateTree = { ...tree, steps: [{ ...tree.steps[0], content: { type: 'text', text: 'Unsubscribe any time. %s', link: { label: 'Privacy', href: '/privacy/' } } }] };
   render(<JourneyScreenContent tree={input} step={0} onChange={() => {}}/>);
   expect(screen.queryByLabelText('Message')).not.toBeInTheDocument();
-  expect(screen.getByText(/contains formatted text or links/)).toBeInTheDocument();
+  expect(screen.getByText(/To edit this formatted message, select it on the canvas/)).toBeInTheDocument();
 });
 
 it('inserts a conditional message without forcing a question or interrupting the shared enquiry', () => {

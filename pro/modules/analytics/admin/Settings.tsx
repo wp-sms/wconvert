@@ -108,7 +108,7 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
           options={[['gtag', __('Google tag', 'wconvert-pro')], ['gtm', __('Google Tag Manager', 'wconvert-pro')], ['plausible', __('Plausible', 'wconvert-pro')]]} />
         {value.route === 'gtag' ? <div className="grid gap-1.5">
           <div className="flex items-center gap-1"><label htmlFor="analytics-stream" className="font-medium">{__('Measurement ID', 'wconvert-pro')}</label>
-            <InfoTip label={__('About the Measurement ID', 'wconvert-pro')}>{__('Use the G- ID of the web stream already installed on this site. WConvert does not install a Google tag.', 'wconvert-pro')}</InfoTip>
+            <InfoTip label={__('About the Measurement ID', 'wconvert-pro')}>{__('Use your installed web stream’s G- ID. WConvert installs no Google tag.', 'wconvert-pro')}</InfoTip>
           </div>
           <Input id="analytics-stream" data-setting="analytics-measurement" className="max-w-sm" value={value.measurement_id} placeholder="G-XXXXXXXXXX" maxLength={22} dir="ltr" autoComplete="off" onChange={e => change({ measurement_id: e.target.value.trim().toUpperCase() })} />
         </div> : plausible ? <p className="m-0 text-note text-muted-foreground">{__('Uses your installed Plausible script. Custom events count toward Plausible usage.', 'wconvert-pro')} <GuideLink href={docsUrl(GUIDES.externalAnalytics, 'plausible')}>{__('Plausible setup', 'wconvert-pro')}</GuideLink></p> : <p className="m-0 text-note text-muted-foreground">{__('Add the WConvert event tag to your container, then publish it.', 'wconvert-pro')} <GuideLink href={docsUrl(GUIDES.externalAnalytics, 'google-tag-manager')}>{__('GTM setup', 'wconvert-pro')}</GuideLink></p>}
@@ -119,7 +119,7 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
             options={[['wp', __('WP Consent API', 'wconvert-pro')], ['site', plausible ? __('Existing tracker', 'wconvert-pro') : __('Google tag / GTM', 'wconvert-pro')]]}
             help={<InfoTip label={__('About consent handling', 'wconvert-pro')}>{value.consent === 'wp'
               ? __('Requires an initialized WP Consent API integration. Missing or denied permission withholds events; earlier events are not replayed.', 'wconvert-pro')
-              : plausible ? __('WConvert sends events without checking consent in this mode. Choose this only when your existing Plausible setup matches your site’s collection policy.', 'wconvert-pro')
+              : plausible ? __('Choose this only when your Plausible setup matches your site’s collection policy.', 'wconvert-pro')
               : __('Choose this only if consent is already configured in your tag or container. WConvert cannot verify permission in this mode and never grants consent. Advanced Google Consent Mode may send cookieless requests.', 'wconvert-pro')}</InfoTip>} />
           <p className="m-0 text-note text-muted-foreground">{value.consent === 'wp'
             ? __('Send only when your consent manager allows statistics.', 'wconvert-pro')
@@ -162,12 +162,12 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
 function TestDialog({ page, onPage, testUrl, plausible }: { page: string; onPage: (page: string) => void; testUrl: string; plausible: boolean }) {
   const id = useId();
   return <AdminDialogContent size="sm">
-    <AdminDialogHeader title={__('Test analytics', 'wconvert-pro')} meta={__('Inspect a page with a campaign. Events stay local until you send a test.', 'wconvert-pro')} />
+    <AdminDialogHeader title={__('Test analytics', 'wconvert-pro')} meta={__('Choose a campaign page. Events stay local until you send a test.', 'wconvert-pro')} />
     <AdminDialogBody className="grid content-start gap-4">
       <Field label={__('Website page URL', 'wconvert-pro')} htmlFor={`${id}-url`}>
         <Input id={`${id}-url`} type="url" dir="ltr" value={page} aria-describedby={testUrl ? undefined : `${id}-refused`} onChange={e => onPage(e.target.value)} />
       </Field>
-      <p className="m-0 text-note text-muted-foreground">{plausible ? __('Tests go to the site configured by your Plausible script. Use a dedicated test site, clear page caches, and verify WConvert Test in Plausible.', 'wconvert-pro') : __('Use a test property and clear any page/CDN cache first. Verify receipt in GA DebugView.', 'wconvert-pro')}</p>
+      <p className="m-0 text-note text-muted-foreground">{plausible ? __('Tests go to the site configured by your Plausible script. Use a dedicated test site, clear page caches, and verify WConvert Test in Plausible.', 'wconvert-pro') : __('Use a test property, clear page/CDN caches, then check GA DebugView.', 'wconvert-pro')}</p>
     </AdminDialogBody>
     <AdminDialogFooter back={<AdminDialogClose asChild><Button variant="outline">{__('Cancel', 'wconvert-pro')}</Button></AdminDialogClose>}
       note={testUrl ? undefined : <span id={`${id}-refused`} role="status">{__('Enter a URL on this website.', 'wconvert-pro')}</span>}>

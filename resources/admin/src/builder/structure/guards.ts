@@ -176,7 +176,7 @@ export function duplicationRefusal(tree: TemplateTree, path: Path): Refusal | nu
   }
 
   if (walkNodes(node).some(n => n.type === 'button' && 'action' in n && ['submit', 'link'].includes(String(n.action)))) {
-    return { short: __('Only one such button', 'wconvert'), reason: __('Keep exactly one button per submission or offer link. Add a navigation button instead.', 'wconvert') };
+    return { short: __('Only one such button', 'wconvert'), reason: __('One button per submission or offer link. Add a navigation button instead.', 'wconvert') };
   }
 
   if (typesUnder(node).includes('field')) {

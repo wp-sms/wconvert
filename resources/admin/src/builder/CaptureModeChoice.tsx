@@ -16,7 +16,7 @@ export function CaptureModeChoice({ mode, onChange, selectedCount = 0, disabled 
         <span><span id={`${id}-local`}>{__('Keep in WConvert only', 'wconvert')}</span><span id={`${id}-local-help`}>{__('Save in Leads for review or export. No automatic sending.', 'wconvert')}{selectedCount > 0 && <> {__('Clears selected destinations. Undo restores them.', 'wconvert')}</>}</span></span>
       </label>
     </div>
-    {mode === 'local' && <p role="status" className="mb-0 text-note">{__('Check your form copy. Automatic emails and texts need a separate sending setup.', 'wconvert')}</p>}
+    {mode === 'local' && <p role="status" className="mb-0 text-note">{__('Don’t promise automatic emails or texts in your form’s wording.', 'wconvert')}</p>}
     {mode !== 'local' && <p className="mb-0 text-note text-muted-foreground">{__('Your service handles subscriptions, confirmation and messages.', 'wconvert')}</p>}
   </fieldset>;
 }

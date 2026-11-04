@@ -95,7 +95,7 @@ it('separates an accepted save from failed destination delivery and retries deli
   await user.click(screen.getByRole('checkbox', { name: 'Simulate delivery failure after next accepted save' }));
   await user.click(screen.getByRole('button', { name: 'Sign up' }));
   expect(screen.getByText('Accepted in test')).toBeInTheDocument();
-  expect(screen.getByText(/Destination delivery failed in this simulation/)).toBeInTheDocument();
+  expect(screen.getByText(/Delivery failed in this simulation/)).toBeInTheDocument();
   expect(screen.getByText(/Destination setup: MailPoet/)).toBeInTheDocument();
   await user.click(screen.getByText('Submitted answers'));
   expect(screen.getByText('visitor@example.com')).toBeInTheDocument();
@@ -144,7 +144,7 @@ it('keeps a malformed imported save on its screen instead of accepting an empty 
   await user.type(screen.getByLabelText('Optional note'), 'Please keep this draft');
   await user.click(screen.getByLabelText('Consent'));
   await user.click(screen.getByRole('button', { name: 'Sign up' }));
-  expect(screen.getByRole('status')).toHaveTextContent('This save is incomplete or was not reached in this visit.');
+  expect(screen.getByRole('status')).toHaveTextContent('Save incomplete or not reached.');
   expect(screen.getByLabelText('Optional note')).toHaveValue('Please keep this draft');
   expect(screen.queryByText('Accepted in test')).not.toBeInTheDocument();
   expect(screen.getByLabelText('Email address')).toHaveValue('visitor@example.test');

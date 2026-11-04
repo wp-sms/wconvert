@@ -224,7 +224,7 @@ final class ProAdminEnqueue
     private static function noticeMissingAdminBundle(AdminNotices $notices): void
     {
         $notices->add(__(
-            'WConvert Pro could not load its admin screen, so WConvert is showing you the free one. Everything you have already set up is still running. Reinstall WConvert Pro to restore it.',
+            'WConvert Pro could not load its admin screen, so this is the free one. Everything still runs. Reinstall WConvert Pro.',
             'wconvert-pro'
         ));
     }

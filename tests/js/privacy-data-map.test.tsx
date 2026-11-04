@@ -125,7 +125,7 @@ it('shows a loading state without claiming the site has no destinations', () => 
   render(<PrivacyDataMap />);
 
   expect(screen.getByRole('status')).toHaveTextContent('Loading');
-  expect(screen.queryByText(/No destinations are set up/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/No destinations, so submissions stay in WConvert/)).not.toBeInTheDocument();
 });
 
 it('gives an empty destination list a direct way to connections', async () => {
@@ -134,7 +134,7 @@ it('gives an empty destination list a direct way to connections', async () => {
   render(<PrivacyDataMap />);
   await userEvent.click((await screen.findByText('What visitor data is stored')).closest('summary')!);
 
-  expect(await screen.findByText(/No destinations are set up/)).toBeVisible();
+  expect(await screen.findByText(/No destinations, so submissions stay in WConvert/)).toBeVisible();
   expect(screen.getByRole('link', { name: 'Set up a destination' })).toHaveAttribute('href', '#settings?group=connections');
   expect(screen.queryByRole('table', { name: 'Sent to other services' })).toBeNull();
 });

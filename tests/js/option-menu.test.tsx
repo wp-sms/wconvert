@@ -48,7 +48,7 @@ function List({ onPick = vi.fn() }: { onPick?: (name: string) => void }) {
       <OptionList search={{ value: query, onChange: setQuery, label: 'Find an element', placeholder: 'Find an element…' }}>
         {names.length > 0 && <OptionGroup heading="Text">
           {names.map(name => <OptionItem key={name} name={name} onSelect={() => onPick(name)} />)}
-          <OptionItem name="Products" refused={{ short: 'Only on a single offer screen', reason: 'Use one product recommendation block as the action of a single offer screen.' }}
+          <OptionItem name="Products" refused={{ short: 'Only on a single offer screen', reason: 'Use one product recommendation block as a single offer screen’s action.' }}
             onSelect={() => onPick('Products')} />
         </OptionGroup>}
         {names.length === 0 && <OptionEmpty what="elements" onClear={() => setQuery('')} />}
@@ -97,7 +97,7 @@ describe('list mode', () => {
     expect(refused).toHaveAttribute('aria-disabled', 'true');
     expect(refused).not.toBeDisabled();
     expect(refused).toHaveTextContent('Only on a single offer screen');
-    expect(refused).toHaveAccessibleDescription('Use one product recommendation block as the action of a single offer screen.');
+    expect(refused).toHaveAccessibleDescription('Use one product recommendation block as a single offer screen’s action.');
     refused.focus();
     await userEvent.keyboard('{Enter}');
     expect(onPick).not.toHaveBeenCalled();

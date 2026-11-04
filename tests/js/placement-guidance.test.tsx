@@ -45,8 +45,8 @@ describe('placing an inline Optin', () => {
   it('keeps display conditions explicit after publishing and distinguishes the placement page', () => {
     render(<PlacementGuidance optinId={OPTIN} displayType="inline" published />);
     expect(screen.queryByText(/Publish this campaign first/)).toBeNull();
-    expect(screen.getByText(/display rules, schedule and visitor settings still decide/)).toBeInTheDocument();
-    expect(screen.getByText(/also check the page where you placed its block or shortcode/)).toBeInTheDocument();
+    expect(screen.getByText(/Display rules, schedule and visitor settings still decide/)).toBeInTheDocument();
+    expect(screen.getByText(/Also check the page where you placed its block or shortcode/)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Check your homepage' })).toHaveAttribute('href', 'https://example.org/blog/?wconvert-inspect=1');
   });
 
@@ -80,7 +80,7 @@ describe('placing an inline Optin', () => {
     Object.defineProperty(navigator, 'clipboard', { configurable: true, value: undefined });
     render(<PlacementGuidance optinId={OPTIN} displayType="inline" published />);
     await userEvent.click(screen.getByRole('button', { name: 'Copy shortcode' }));
-    expect(await screen.findByRole('alert')).toHaveTextContent('Could not copy automatically');
+    expect(await screen.findByRole('alert')).toHaveTextContent('Could not copy.');
     expect(screen.getByRole('textbox')).toHaveFocus();
   });
 
@@ -157,14 +157,14 @@ describe('checking overlay placement', () => {
     const link = screen.getByRole('link', { name: 'Check your homepage' });
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
-    expect(link).toHaveAccessibleDescription(/published version in your signed-in session/);
-    expect(link).toHaveAccessibleDescription(/does not show draft edits/);
+    expect(link).toHaveAccessibleDescription(/published version while signed in/);
+    expect(link).toHaveAccessibleDescription(/not drafts/);
   });
 
   it('sends a campaign limited to some pages to one of them, not the homepage', () => {
     window.wconvertAdmin = { exportUrl: '', homeUrl: 'https://example.test/', inspectParam: 'wconvert-inspect' };
     render(<PlacementGuidance optinId={OPTIN} displayType="popup" published everywhere={false} />);
-    expect(screen.getByRole('link', { name: 'Check your site' })).toHaveAccessibleDescription(/only shows on the pages its rules name/);
+    expect(screen.getByRole('link', { name: 'Check your site' })).toHaveAccessibleDescription(/Open a page its rules name/);
   });
 
   it('does not offer the live-site inspector as a draft preview', () => {
@@ -212,13 +212,13 @@ describe('automatic placement saved on an install without Pro', () => {
   /** It describes manual placement and sells nothing (ADR 0116). */
   it('falls back to the manual steps on a free install', () => {
     render(<PlacementGuidance optinId={OPTIN} displayType="inline" inlinePlacement={{ position: 'before_content' }} published />);
-    expect(screen.queryByText(/After publishing, it is placed in matching/)).toBeNull();
+    expect(screen.queryByText(/Follows its display rules, no block needed/)).toBeNull();
     expect(screen.getByRole('textbox', { name: 'Shortcode for other editors' })).toHaveValue(inlineShortcode(OPTIN));
   });
 
   it('keeps the automatic explanation on a paid install', () => {
     window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
     render(<PlacementGuidance optinId={OPTIN} displayType="inline" inlinePlacement={{ position: 'before_content' }} published />);
-    expect(screen.getByText(/After publishing, it is placed in matching/)).toBeInTheDocument();
+    expect(screen.getByText(/Follows its display rules, no block needed/)).toBeInTheDocument();
   });
 });

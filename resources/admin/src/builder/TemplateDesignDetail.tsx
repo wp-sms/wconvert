@@ -157,23 +157,23 @@ export function TemplateDesignDetail({
     ? entry.display_type === 'inline'
       ? sprintf(
           /* translators: 1: current format, 2: new format, 3: campaign goal. */
-          __('Changes this campaign from %1$s to %2$s. Its goal stays “%3$s”. Place its block or shortcode before publishing.', 'wconvert'),
+          __('%1$s becomes %2$s. Goal stays “%3$s”. It needs a block or shortcode.', 'wconvert'),
           fromFormat, toFormat, goalLabel,
         )
       : sprintf(
           /* translators: 1: current format, 2: new format, 3: campaign goal. */
-          __('Changes this campaign from %1$s to %2$s. Its goal stays “%3$s”. Any saved position resets to the new format’s default; review display rules before publishing.', 'wconvert'),
+          __('%1$s becomes %2$s. Goal stays “%3$s”. Saved position resets; review display rules.', 'wconvert'),
           fromFormat, toFormat, goalLabel,
         )
     : entry.display_type === 'inline'
       ? sprintf(
           /* translators: 1: current format, 2: new format. */
-          __('Changes this campaign from %1$s to %2$s. Place its block or shortcode before publishing.', 'wconvert'),
+          __('%1$s becomes %2$s. It needs a block or shortcode.', 'wconvert'),
           fromFormat, toFormat,
         )
       : sprintf(
           /* translators: 1: current format, 2: new format. */
-          __('Changes this campaign from %1$s to %2$s. Any saved position resets to the new format’s default; review display rules before publishing.', 'wconvert'),
+          __('%1$s becomes %2$s. Saved position resets; review display rules.', 'wconvert'),
           fromFormat, toFormat,
         );
   const losesMappings = template !== undefined && !isCurrent && dropsFieldMappings(fieldMappings, template.tree);
@@ -247,12 +247,12 @@ export function TemplateDesignDetail({
             {mode === 'keep' && template && whatNeedsOfferAmount(template).map(problem => <p key={problem.said} role="status" className="text-note text-warning">{problem.said}</p>)}
             {mode === 'keep' && candidate?.value?.transfer !== undefined && (candidate.value.transfer.unplaced > 0 || candidate.value.transfer.unverified > 0) && (
               <div role="status" className="rounded-md border border-warning p-3 text-note">
-                {candidate.value.transfer.unplaced > 0 && <p className="m-0">{sprintf(/* translators: %s: how many of the campaign's pictures cannot be moved into the new design. */ _n('%s picture has no clear matching place in this template and will not carry over. Check the preview before applying.', '%s pictures have no clear matching place in this template and will not carry over. Check the preview before applying.', candidate.value.transfer.unplaced, 'wconvert'), formatCount(candidate.value.transfer.unplaced))}</p>}
-                {candidate.value.transfer.unverified > 0 && <p className="m-0">{__('The original template is unavailable, so we cannot identify your picture changes. Re-add your pictures after applying, or keep your current template.', 'wconvert')}</p>}
+                {candidate.value.transfer.unplaced > 0 && <p className="m-0">{sprintf(/* translators: %s: how many of the campaign's pictures cannot be moved into the new design. */ _n('%s picture has no clear place here and won’t carry over.', '%s pictures have no clear place here and won’t carry over.', candidate.value.transfer.unplaced, 'wconvert'), formatCount(candidate.value.transfer.unplaced))}</p>}
+                {candidate.value.transfer.unverified > 0 && <p className="m-0">{__('Your pictures won’t carry over. Re-add them after applying.', 'wconvert')}</p>}
               </div>
             )}
             <div className="wconvert-design-detail__actions">
-              {incompatibleLock && <CheckRow className="text-note" checked={disableLock} onChange={event => setDisableLock(event.target.checked)} label={__('Turn off Content lock to use this template. The selected WordPress content will remain readable.', 'wconvert')} />}
+              {incompatibleLock && <CheckRow className="text-note" checked={disableLock} onChange={event => setDisableLock(event.target.checked)} label={__('Turn off Content lock to use this template. The content stays readable.', 'wconvert')} />}
               {/* A format change is information, not the site holding something back (§14). */}
               {formatNotice && <p id={`${id}-format`} className="text-note text-muted-foreground">{formatNotice}</p>}
               {refused !== null && <p id={`${id}-refusal`} className="text-note text-warning">{refused}</p>}

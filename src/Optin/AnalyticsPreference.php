@@ -18,7 +18,7 @@ final class AnalyticsPreference
         }
         $label = trim($value['label'] ?? '');
         if (preg_match('/[<>\x00-\x1f\x7f]/u', $label) || preg_match('/^.{0,80}$/usD', $label) !== 1) {
-            throw new \InvalidArgumentException(__('Use an analytics label of up to 80 characters without markup or personal information.', 'wconvert'));
+            throw new \InvalidArgumentException(__('Analytics label: 80 characters at most, no markup or personal information.', 'wconvert'));
         }
         return ['off' => $value['off'] ?? false, 'label' => $label];
     }

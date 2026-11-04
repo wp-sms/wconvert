@@ -79,7 +79,7 @@ describe('explicit lead retention', () => {
     expect(dialog).toHaveAccessibleName('Delete submissions older than 30 days?');
     expect(dialog).toHaveTextContent('Existing and future submissions from every campaign');
     // A destructive confirm says what survives (ADR 0131).
-    expect(dialog).toHaveTextContent('Campaign totals in analytics stay.');
+    expect(dialog).toHaveTextContent('Campaign totals stay.');
     expect(within(dialog).getByRole('button', { name: 'Cancel' })).toHaveFocus();
     expect(api.saveRetention).not.toHaveBeenCalled();
     await userEvent.click(within(dialog).getByRole('button', { name: 'Delete after 30 days' }));

@@ -162,7 +162,7 @@ export function LicensePage() {
     void run(field, () => replaceKey(key), (answer) => say(
       answer.released?.removed_remotely === false ? 'warning' : 'success',
       __('The new key is active', 'wconvert-pro'),
-      answer.released?.removed_remotely === false ? __('The old key’s site could not be freed. Free it from your account.', 'wconvert-pro') : undefined,
+      answer.released?.removed_remotely === false ? __('Could not free the old key’s site. Free it from your account.', 'wconvert-pro') : undefined,
     ), field);
   };
 
@@ -221,7 +221,7 @@ export function LicensePage() {
 
   const removeOne = (site: LicenseSite) => setConfirm({
     title: sprintf(/* translators: %s: a site's domain on the license, e.g. “example.com”. */ __('Remove %s?', 'wconvert-pro'), site.domain),
-    description: sprintf(/* translators: 1: a site's domain on the license, e.g. “example.com”. 2: the paid product's name, e.g. “WConvert Pro”. */ __('Frees one site on your license. %1$s stops getting updates; its %2$s features keep working.', 'wconvert-pro'), site.domain, tierProductName('pro')),
+    description: sprintf(/* translators: 1: a site's domain on the license, e.g. “example.com”. 2: the paid product's name, e.g. “WConvert Pro”. */ __('Frees one site. %1$s stops getting updates; its %2$s features keep working.', 'wconvert-pro'), site.domain, tierProductName('pro')),
     confirm: __('Remove', 'wconvert-pro'),
     destructive: true,
     run: () => {
@@ -238,7 +238,7 @@ export function LicensePage() {
     confirm: __('Remove from this site', 'wconvert-pro'),
     destructive: true,
     run: () => void run('remove', removeLicense, (answer) => answer.released?.removed_remotely === false
-      ? say('warning', __('Removed from this site', 'wconvert-pro'), __('The license server could not be reached, so the site may still count. Free it from your account.', 'wconvert-pro'))
+      ? say('warning', __('Removed from this site', 'wconvert-pro'), __('License server unreachable: site may still count. Free it from your account.', 'wconvert-pro'))
       : say('success', __('Removed from this site', 'wconvert-pro'), __('One site on your license is free.', 'wconvert-pro'))),
   });
 

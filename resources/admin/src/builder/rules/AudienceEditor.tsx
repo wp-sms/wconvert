@@ -46,6 +46,6 @@ export function AudienceEditor({ value, types, onChange }: { value: Audience; ty
         onChange({ mode: 'groups', groups: [...groups, added] });
       }}>{__('+ Add another group', 'wconvert')}</button>
       : <p className="wconvert-display-limit">{__('Up to 5 groups', 'wconvert')}
-        <InfoTip label={__('About the group limit', 'wconvert')}>{__('A campaign can have up to five groups of visitors. Remove one to add another.', 'wconvert')}</InfoTip></p>}
+        <InfoTip label={__('About the group limit', 'wconvert')}>{__('Remove a group to add another.', 'wconvert')}</InfoTip></p>}
   </div>;
 }

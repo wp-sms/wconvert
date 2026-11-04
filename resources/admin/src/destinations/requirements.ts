@@ -62,7 +62,7 @@ export function settingsProblems(requirements: DestinationRequirements | null | 
     const value = settings[field.setting];
     const options = schema?.[field.setting]?.options;
     if (present(value, 'text') && options !== undefined && !options.some((option) => option.value === value)) {
-      problems.push(sprintf(/* translators: %s: an answer the form collects, e.g. “Interest”. */ __('The selected field for %s is unavailable. Choose another field or keep the answer only in WConvert.', 'wconvert'), field.label));
+      problems.push(sprintf(/* translators: %s: an answer the form collects, e.g. “Interest”. */ __('Field for %s unavailable. Choose another, or keep it in WConvert only.', 'wconvert'), field.label));
     }
   }
   return problems;
@@ -95,9 +95,9 @@ export function captureProblems(destination: Destination, captures: readonly Cap
   const canCaptureWithoutNeeded = captures.some((field) => ['email', 'phone'].includes(field.name) && !needed.includes(field.name));
   const alternatives = anyOf(needed.map(named));
   if (needed.length > 0 && fields.length === 0) {
-    problems.push(sprintf(/* translators: %s: what it needs, e.g. “email address or phone number”. */ __('This destination needs %s. Add it to the form, or submissions can’t be sent here.', 'wconvert'), alternatives));
+    problems.push(sprintf(/* translators: %s: what it needs, e.g. “email address or phone number”. */ __('This destination needs %s. Add it to the form to send here.', 'wconvert'), alternatives));
   } else if (fields.length > 0 && canCaptureWithoutNeeded && !fields.some((field) => field.required)) {
-    problems.push(sprintf(/* translators: %s: what it needs, e.g. “email address”. */ __('This destination needs %s, but the field is optional. Submissions without it are kept in WConvert and not sent here.', 'wconvert'), alternatives));
+    problems.push(sprintf(/* translators: %s: what it needs, e.g. “email address”. */ __('Optional %s: submissions without it are kept in WConvert, not sent here.', 'wconvert'), alternatives));
   }
   for (const field of captures) {
     if (requirements.fields.includes(field.name)) continue;
@@ -108,10 +108,10 @@ export function captureProblems(destination: Destination, captures: readonly Cap
       // Mapped in this campaign. Only a route set to update existing contacts
       // writes it for them; MailPoet has no such setting and never does.
       if (destination.settings.existing_contact !== 'update') {
-        problems.push(sprintf(/* translators: %s: a form field, e.g. “interest answer”. */ __('The %s is sent for new contacts only. Existing contacts keep their current details.', 'wconvert'), named(field.name)));
+        problems.push(sprintf(/* translators: %s: a form field, e.g. “interest answer”. */ __('The %s is sent for new contacts only.', 'wconvert'), named(field.name)));
       }
     } else {
-      problems.push(sprintf(/* translators: %s: a form field, e.g. “phone number”. */ __('The %s is saved in WConvert but is not sent by this destination.', 'wconvert'), named(field.name)));
+      problems.push(sprintf(/* translators: %s: a form field, e.g. “phone number”. */ __('The %s is saved in WConvert but not sent by this destination.', 'wconvert'), named(field.name)));
     }
   }
   return problems;

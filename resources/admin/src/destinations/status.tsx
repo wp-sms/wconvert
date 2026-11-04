@@ -73,7 +73,7 @@ export function destinationStatus(destination: Destination, type: DestinationTyp
     return {
       state: 'not_available',
       badge: <Badge variant="secondary">{__('Not available', 'wconvert')}</Badge>,
-      issue: __('This destination type isn’t available on this site, so submissions are kept in WConvert and not sent.', 'wconvert'),
+      issue: __('Not available here, so submissions are kept in WConvert and not sent.', 'wconvert'),
     };
   }
   if (destination.availability === 'locked') {
@@ -82,7 +82,7 @@ export function destinationStatus(destination: Destination, type: DestinationTyp
       badge: <Badge variant="secondary"><Lock aria-hidden="true" />{tierName(type?.tier)}</Badge>,
       issue: sprintf(
         /* translators: %s: the product that supplies it, e.g. “WConvert Pro”. */
-        __('Needs %s, so submissions are kept in WConvert and not sent until it runs.', 'wconvert'),
+        __('Needs %s. Submissions stay in WConvert, not sent, until it runs.', 'wconvert'),
         tierProductName(type?.tier),
       ),
     };
@@ -93,7 +93,7 @@ export function destinationStatus(destination: Destination, type: DestinationTyp
       badge: <Badge variant="warning">{__('Paused', 'wconvert')}</Badge>,
       issue: sprintf(
         /* translators: %s: the plugin or platform it needs, e.g. “MailPoet”. */
-        __('Needs %s on this site, so submissions are kept in WConvert and not sent until it runs.', 'wconvert'),
+        __('Needs %s here. Submissions stay in WConvert, not sent, until it runs.', 'wconvert'),
         type?.requires_label ?? __('something this site does not have', 'wconvert'),
       ),
     };

@@ -159,7 +159,7 @@ export function whatNeedsOfferAmount(template: Template): Problem[] {
   return nodesOf(template.tree).filter(block => !block.hidden).flatMap((block): Problem[] => {
     const node = nodeAt(template.tree, block.path);
     if (node?.type !== 'heading' || !('role' in node) || node.role !== 'offer_amount' || ('text' in node && node.text?.trim())) return [];
-    return [{ said: __('Add the offer amount for this design. Your previous headline is not a discount figure.', 'wconvert'), path: block.path, check: 'words' }];
+    return [{ said: __('Add the offer amount. Your previous headline is not a discount figure.', 'wconvert'), path: block.path, check: 'words' }];
   });
 }
 
@@ -171,7 +171,7 @@ function whatHasIncompleteFollowups(template: Template): Problem[] {
       ? graphRequiresScreen(template.tree.graph, template.tree.steps[acceptedAt].id, template.tree.steps[Number(node.path[0])].id)
       : Number(node.path[0]) > acceptedAt);
     if (afterSave && link.label?.trim() && safeHref(link.href?.trim()) !== null) return [];
-    return [{ said: __('Give this resource link a label and address, and place it after the form.', 'wconvert'), path: node.path, check: 'words' as const, blocksPublish: true }];
+    return [{ said: __('Add this resource link’s label and address; place it after the form.', 'wconvert'), path: node.path, check: 'words' as const, blocksPublish: true }];
   });
 }
 
@@ -203,22 +203,22 @@ function whatHasIncompleteFields(template: Template): Problem[] {
       return node.id && submission.fields.includes(node.id) && (field.captures === 'email' || field.captures === 'phone');
     });
     if (identifiers.length === 0) {
-      issues.push({ said: __('Add an email or phone field so this form can capture a lead.', 'wconvert'), path: null, check: 'captures', blocksPublish: true });
+      issues.push({ said: __('Add an email or phone field to capture a lead.', 'wconvert'), path: null, check: 'captures', blocksPublish: true });
     } else if (!identifiers.some(field => (nodeAt(template.tree, field.path) as FieldNode).required)) {
-      issues.push({ said: sprintf(/* translators: %s: the name of the screen the form is saved on. */ __('Require an email or phone field for “%s” so every saved lead has contact details.', 'wconvert'),
+      issues.push({ said: sprintf(/* translators: %s: the name of the screen the form is saved on. */ __('Require an email or phone field for “%s”.', 'wconvert'),
         template.tree.steps[submissionScreen(template.tree, submission.id)].name),
         path: identifiers[0].path, check: 'captures', blocksPublish: true });
     }
   }
   for (const field of fields.filter((field) => field.captures === 'interest')) {
     if (!validInterestOptions((nodeAt(template.tree, field.path) as FieldNode | null)?.options)) {
-      issues.push({ said: __('Set up the interest choices: every choice needs a label and a unique valid sent value.', 'wconvert'), path: field.path, check: 'captures', blocksPublish: true });
+      issues.push({ said: __('Every interest choice needs a label and a unique, valid sent value.', 'wconvert'), path: field.path, check: 'captures', blocksPublish: true });
     }
   }
   for (const field of fields.filter((field) => field.captures === 'phone')) {
     const country = (nodeAt(template.tree, field.path) as FieldNode | null)?.phone_country;
     if ((!country || country === 'site') && !phoneSiteCountry()) {
-      issues.push({ said: __('Choose a site-wide default country in Settings, or choose a starting country for this phone field.', 'wconvert'), path: field.path, check: 'captures', blocksPublish: true });
+      issues.push({ said: __('Choose this phone field’s starting country, or a site default in Settings.', 'wconvert'), path: field.path, check: 'captures', blocksPublish: true });
     }
   }
   return issues;
@@ -250,7 +250,7 @@ function whatCannotConvert(template: Template): Problem[] {
   return [
     {
       said: __(
-        'Nothing on this design counts as a conversion, so it would report zero forever. Add a button.',
+        'Nothing on this design counts as a conversion. Add a button.',
         'wconvert',
       ),
       path: null,
@@ -275,10 +275,10 @@ function whatCapturesNothing(template: Template): Problem[] {
   });
   return stranded.map(block => ({
     said: boundaries.every(at => at < 0)
-      ? __('This design has a field but no button that submits, so what a visitor types goes nowhere.', 'wconvert')
+      ? __('This design has a field but no submit button. Add one.', 'wconvert')
       : template.tree.graph && template.tree.submissions.some(submission => submission.fields.includes((nodeAt(template.tree, block.path) as FieldNode).id ?? ''))
-      ? __('Every line to this field’s form must pass its screen. Move the field onto the form’s screen or change the lines.', 'wconvert')
-      : __('Assign this field to a submission after its screen so the answer can be saved.', 'wconvert'),
+      ? __('Move this field onto its form’s screen, or send every line through.', 'wconvert')
+      : __('Assign this field to a submission after its screen so it saves.', 'wconvert'),
     path: block.path,
     check: 'captures',
     blocksPublish: true,
@@ -323,7 +323,7 @@ function whatCountsDownToNothing(template: Template, endsAt: string | undefined)
         is left is the fact and what to do about it.
       */
       said: __(
-        'This design shows a countdown, and nothing says when this campaign stops running. Set an end date, or the clock stays empty.',
+        'The countdown needs an end date. Without one, the clock stays empty.',
         'wconvert',
       ),
       path: null,
@@ -352,8 +352,8 @@ function whatLosesWords(template: Template): Problem[] {
       said: sprintf(
         /* translators: %s: how many blocks have no Slot Role of their own. */
         _n(
-          '%s block has no name of its own, so what you typed in it is lost if you switch design.',
-          '%s blocks have no name of their own, so what you typed in them is lost if you switch design.',
+          'Switching design loses your words in %s block.',
+          'Switching design loses your words in %s blocks.',
           at.length,
           'wconvert',
         ),
@@ -400,14 +400,14 @@ function whatCannotBeRead(template: Template): Problem[] {
  */
 const SAID: Readonly<Record<string, () => string>> = {
   'fg/bg': () =>
-    __('The text is hard to read on the background. Fix it in the Look.', 'wconvert'),
-  'muted/bg': () => __('The lighter text is hard to read on the background. Fix it in the Look.', 'wconvert'),
+    __('The text is hard to read. Fix it in the Look.', 'wconvert'),
+  'muted/bg': () => __('The lighter text is hard to read. Fix it in the Look.', 'wconvert'),
   'accent-fg/accent': () =>
-    __('The button’s label is hard to read on the button. Fix it in the Look.', 'wconvert'),
+    __('The button’s label is hard to read. Fix it in the Look.', 'wconvert'),
   'fg/input-bg': () =>
-    __('The text in the form fields is hard to read on their background. Fix it in the Look.', 'wconvert'),
+    __('Form field text is hard to read. Fix it in the Look.', 'wconvert'),
   'error-fg/error-bg': () =>
-    __('The error message is hard to read on its background. Fix it in the Look.', 'wconvert'),
+    __('The error message is hard to read. Fix it in the Look.', 'wconvert'),
   'close-fg/close-bg': () =>
     __('The close button is hard to see. Fix it in the Look.', 'wconvert'),
 };

@@ -24,7 +24,7 @@ export function retireAnswerPlan(original: TemplateTree, questionId: string, val
   const tree = { ...original, steps: original.steps.map(screen => ({ ...screen, ...(screen.when ? { when: narrow(screen.when) } : {}),
     ...(screen.results ? { results: screen.results.map(result => result.when ? { ...result, when: narrow(result.when) } : result) } : {}) })), graph };
   const conditions = [...tree.steps.flatMap(screen => [screen.when, ...(screen.results?.map(result => result.when) ?? [])]), ...tree.graph.edges.map(edge => edge.when)];
-  if (conditions.some(when => uses(when) && !only(when))) return blocked(__('Some rules combine this answer with other choices or comparisons. Edit those rules below first so other visitors keep the intended behavior.', 'wconvert-pro'));
+  if (conditions.some(when => uses(when) && !only(when))) return blocked(__('Some rules combine this answer with others. Edit those rules first.', 'wconvert-pro'));
   let next: TemplateTree = { ...tree, steps: tree.steps.map(screen => ({ ...screen, ...(screen.results ? { results: screen.results.filter(result => {
     if (!uses(result.when)) return true;
     removed.push(result.heading); return false;
@@ -34,7 +34,7 @@ export function retireAnswerPlan(original: TemplateTree, questionId: string, val
   }) } };
   for (const screen of tree.steps.filter(screen => uses(screen.when))) {
     const plan = graphRemovalPlan(next, screen.id);
-    if (plan.reason || !plan.preferred) return blocked(plan.reason ?? __('A follow-up goes different ways. Choose where its line goes before retiring this answer.', 'wconvert-pro'));
+    if (plan.reason || !plan.preferred) return blocked(plan.reason ?? __('A follow-up goes different ways. Choose where its line goes first.', 'wconvert-pro'));
     const removal = graphRemoval(next, screen.id, plan.preferred);
     if (!removal) return blocked(__('Review the affected follow-up before removing it.', 'wconvert-pro'));
     removed.push(screen.name); next = removal.next;
@@ -48,7 +48,7 @@ export function retireAnswerPlan(original: TemplateTree, questionId: string, val
     const screen = next.steps.find(item => item.id === id)!;
     if (plan.reason) return blocked(plan.reason);
     const removal = graphRemoval(next, id, plan.preferred || plan.targets[0]?.id);
-    if (!removal) return blocked(__('A screen no line reaches needs somewhere to go. Check its lines first.', 'wconvert-pro'));
+    if (!removal) return blocked(__('A screen no line reaches needs somewhere to go. Check its lines.', 'wconvert-pro'));
     removed.push(screen.name); next = removal.next;
   }
   const removeChoice = (node: TemplateNode): TemplateNode => {

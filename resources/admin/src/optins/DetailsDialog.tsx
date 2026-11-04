@@ -107,8 +107,8 @@ export function CampaignDetailsDialog({
     row.suspended || null,
     row.has_unpublished_changes
       ? status === 'suspended'
-        ? __('The saved draft has unpublished changes. Resolve the issue before it can show again.', 'wconvert')
-        : __('The previous version is still published. Open the editor to publish your changes.', 'wconvert')
+        ? __('Unpublished changes are saved. Resolve the issue before it can show again.', 'wconvert')
+        : __('The previous version is still published. Open the editor to publish changes.', 'wconvert')
       : null,
   ].filter((note): note is string => note !== null) : [];
   const words = asking ? decisionCopy(asking, arm, name, row?.arms.length ?? 0) : null;
@@ -236,7 +236,7 @@ export function ForDevelopers({ value, variant }: { value: string; variant: bool
     <Disclosure variant="inline" title={__('For developers', 'wconvert')}>
       <p id={`${id}-hint`} className="m-0 text-note text-muted-foreground">
         {variant
-          ? __('Page events carry this as optinId; their campaignId is the campaign this variant belongs to.', 'wconvert')
+          ? __('Page events carry this as optinId; campaignId is this variant’s campaign.', 'wconvert')
           : __('Page events identify this campaign only by this ID, as campaignId.', 'wconvert')}
       </p>
       <div className="wconvert-toolbar flex flex-wrap items-center gap-2">

@@ -211,7 +211,7 @@ function ChangeBody({ before, displayType, effective, result, copy = false, copy
       </dl>
       {link}
       {link && <dl className="wconvert-capture-box__rows">{changeRows(goalRow, copy)}</dl>}
-      {hadForm && adding && !copy && <p className="wconvert-capture-box__note">{__('This campaign had a form before. A new one is built, so earlier changes to its wording come back only with Undo.', 'wconvert')}</p>}
+      {hadForm && adding && !copy && <p className="wconvert-capture-box__note">{__('Builds a new form. Earlier form wording comes back only with Undo.', 'wconvert')}</p>}
     </>}
   </>;
 }

@@ -451,6 +451,8 @@ describe('Goal and campaign reports', () => {
     expect(
       screen.getByText('10', { selector: '.wa-handoff strong' }),
     ).toBeInTheDocument();
+    expect(screen.queryByText(/a difference is not a queue or failure count/)).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'About Email handoffs' }));
     expect(
       screen.getByText(/a difference is not a queue or failure count/),
     ).toBeInTheDocument();
@@ -746,6 +748,7 @@ describe('a report’s section title (ADR 0187)', () => {
     const tip = within(title.parentElement!).getByRole('button', { name: 'About Variant A' });
     await userEvent.click(tip);
     expect(await screen.findByText(/They do not prove a winner/)).toBeVisible();
+    expect(screen.getByText('Each variant counts once in goal totals. Visitors are assigned per browser, not per person.')).toBeVisible();
   });
 });
 
@@ -886,7 +889,7 @@ describe('what the overview says', () => {
     render(<Dashboard />);
     await userEvent.click(await screen.findByText('How these numbers work'));
     expect(screen.queryByText('Includes today so far')).not.toBeInTheDocument();
-    expect(screen.getByText('Today', { selector: 'dt' }).nextElementSibling).toHaveTextContent('still running');
+    expect(screen.getByText('Today', { selector: 'dt' }).nextElementSibling).toHaveTextContent('Still running');
     expect(document.querySelectorAll('.wa-impact .wa-change').length).toBeGreaterThan(0);
   });
 
@@ -991,6 +994,6 @@ it('keeps the overview’s reports at one heading level under the page', async (
 it('draws no empty actions card for a deleted campaign with nothing to act on', async () => {
   api.readReport.mockResolvedValue({ ...payload(), goals: [{ ...goal([row('email', 'historical')]), action: 'click' }] });
   render(<Dashboard query={{ optinId: 'email' }} />);
-  await screen.findByText('This campaign was deleted. Its results stay here, and it can no longer be edited.');
+  await screen.findByText('This campaign was deleted. Results stay here, but it can’t be edited.');
   expect(screen.queryByRole('region', { name: 'Campaign actions' })).toBeNull();
 });

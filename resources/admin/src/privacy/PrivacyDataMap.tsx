@@ -181,7 +181,7 @@ function recipientRows(data: DataMap): Recipient[] {
     service: destination.fields === null || sameWords(destination.type_label, destination.label) ? undefined : destination.type_label,
     receives: destination.fields === null ? (
       <span className="text-warning">
-        {__('Unknown: this destination’s service isn’t available on this site. Review or remove it.', 'wconvert')}
+        {__('Unknown: its service isn’t available on this site. Review or remove it.', 'wconvert')}
       </span>
     ) : destination.fields.map((field) => labelOf(field, fields, __('Other answers', 'wconvert'))).join(', '),
   }));
@@ -294,7 +294,7 @@ export function PrivacyDataMap() {
         <h3 className="m-0 text-body font-semibold">{__('Sent to other services', 'wconvert')}</h3>
         {data.destinations.length === 0 && (
           <Description>
-            {__('No destinations are set up, so submissions stay in WConvert unless you export them.', 'wconvert')}{' '}
+            {__('No destinations, so submissions stay in WConvert unless you export them.', 'wconvert')}{' '}
             <a className="underline underline-offset-2" href={settingsHref('connections')}>
               {__('Set up a destination', 'wconvert')}
             </a>

@@ -137,8 +137,8 @@ export function campaignIssues(inputs: CampaignIssueInputs): CampaignIssue[] {
     ...(contentLock != null && (overlay || inlinePlacement != null || !template || convertingActOf(template.tree)[0] !== 'submit')
       ? [issue('content-lock', __('Content lock requires an inline submission form and manual placement.', 'wconvert'), 'rules', { to: 'placement' }, true)] : []),
     ...(!overlay && inlinePlacement != null && inlinePlacementLabel(inlinePlacement) === null
-      ? [issue('inline-placement', __('Choose a valid inline position and a whole paragraph number from 1 to 100.', 'wconvert'), 'rules', { to: 'placement' }, true)] : []),
-    ...(inlineTriggerIssue ? [issue('inline-trigger', __('This placement needs “When does it open?” set to Right away. Change it, or use manual placement.', 'wconvert'), 'rules', { to: 'rules', section: 'when' }, true)] : []),
+      ? [issue('inline-placement', __('Choose an inline position and a whole paragraph number, 1 to 100.', 'wconvert'), 'rules', { to: 'placement' }, true)] : []),
+    ...(inlineTriggerIssue ? [issue('inline-trigger', __('Set “When does it open?” to Right away, or use manual placement.', 'wconvert'), 'rules', { to: 'rules', section: 'when' }, true)] : []),
     // A failed read is retried in place: reloading the page would cost unsaved edits.
     ...(outcome === null ? [issue('goal-unread', __('The goal’s requirements could not be checked.', 'wconvert'), null, { to: 'retry-goal' }, true, { offersRetry: true })] : []),
     ...addressless.map(link => issue(`address:${link.path.join('.')}`,
@@ -155,7 +155,7 @@ export function campaignIssues(inputs: CampaignIssueInputs): CampaignIssue[] {
       issue(`problem:${index}:${problem.said}`, problem.said, 'edit', problem.path !== null ? { to: 'element', path: problem.path } : { to: 'edit-design' }, true,
         { screenId: screenOf(problem.path) })),
     ...(hasDesign && bound.length > 0 && captures.length === 0
-      ? [issue('no-fields', __('This campaign needs a form field to collect leads. Choose a template with a form.', 'wconvert'), 'edit', { to: 'library' }, true)] : []),
+      ? [issue('no-fields', __('This campaign needs a form field. Choose a template with a form.', 'wconvert'), 'edit', { to: 'library' }, true)] : []),
   ];
 
   const where = destinationsSaid(bound, destinations, capturedFields(template), primaryMappings(inputs.integrationMappings, template));
@@ -174,7 +174,7 @@ export function campaignIssues(inputs: CampaignIssueInputs): CampaignIssue[] {
       ? [issue('no-delivery', __('Visitors won’t get the file until you set up the delivery email.', 'wconvert'), 'destinations', { to: 'destinations' }, false)] : []),
     ...where.problems.map(said => issue(`where:${said}`, said, 'destinations', { to: 'destinations' }, false, { section: 'where' })),
     ...(reviewsPrivacy && !inputs.policyUrl
-      ? [issue(ISSUE.policyPage, __('WordPress has no Privacy Policy page selected, so the form cannot link to it.', 'wconvert'), null, { to: 'edit-design' }, false, { section: 'privacy' })] : []),
+      ? [issue(ISSUE.policyPage, __('WordPress has no Privacy Policy page selected. The form can’t link it.', 'wconvert'), null, { to: 'edit-design' }, false, { section: 'privacy' })] : []),
     ...(reviewsPrivacy && template && visiblePolicyLinkIn(template, inputs.policyUrl) === null
       ? [issue(ISSUE.policyNotice, __('No Privacy Policy notice is shown on this form.', 'wconvert'), null, { to: 'edit-design' }, false, { section: 'privacy' })] : []),
     // A hidden checkbox opens on itself; none at all opens the design (ADR 0138).
@@ -241,7 +241,7 @@ function signupRouteIssues({ template, captureMode, submissionSettings }: Campai
     if (at < 0 || (Array.isArray(routes) && routes.length > 0)) return [];
     return [{
       key: `signup-route:${signup.id}`,
-      said: sprintf(/* translators: %s: the name of the screen with the form, e.g. “Get your results”. */ __('Choose a service for the form on “%s”, or keep all leads in WConvert only.', 'wconvert'), template.tree.steps[at].name),
+      said: sprintf(/* translators: %s: the name of the screen with the form, e.g. “Get your results”. */ __('Choose a destination for “%s”, or keep all leads in WConvert only.', 'wconvert'), template.tree.steps[at].name),
       blocks: true, tab: 'destinations', go: { to: 'destinations' }, screenId: template.tree.steps[at].id, offersKeepLocal: true,
     }];
   });

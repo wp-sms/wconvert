@@ -42,7 +42,7 @@ export function Interests({ id, period }: { id: string; period: ReportPeriod }) 
     </RegionBody>
     <ReportDisclosure title={__('About these answers', 'wconvert')}>
       <p>{__('Percentages use saved responses to each question. Anonymous answers are excluded.', 'wconvert')}</p>
-      <p>{__('Submissions are counted by the date they were made, including answers added later. Changed labels stay separate, and deleting old submissions can change these totals.', 'wconvert')}</p>
+      <p>{__('Includes later answers. Changed labels stay separate. Deleting submissions can change totals.', 'wconvert')}</p>
     </ReportDisclosure></>}
   </Region></ReportTarget>;
 }

@@ -59,7 +59,7 @@ describe('the Display rules tab', () => {
 
   it('shows a repair step for an older draft, and no Who or When picks until it is replaced', async () => {
     setup({ ...initial, display_rules: undefined });
-    expect(screen.getByRole('alert')).toHaveTextContent('older development rule format');
+    expect(screen.getByRole('alert')).toHaveTextContent('This draft’s rules are outdated.');
     await section('When does it open?');
     expect(screen.queryByRole('group', { name: 'When does it open?' })).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: 'Set up display rules' }));
@@ -149,7 +149,7 @@ describe('When', () => {
     expect(screen.getByText('Use an ID, class or attribute')).toBeVisible();
     // The whole sentence is one press away, in ⓘ.
     await userEvent.click(screen.getByRole('button', { name: 'About the selector' }));
-    expect(screen.getByText(/Point to the button or link with an ID, class, tag or attribute selector/)).toBeVisible();
+    expect(screen.getByText(/Examples: #signup, \.offer-button, \[data-offer\]/)).toBeVisible();
     await userEvent.keyboard('{Escape}');
     expect(document.querySelector('.wconvert-display-editor details:not(.wconvert-disclosure)')).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: 'Add a rule' }));

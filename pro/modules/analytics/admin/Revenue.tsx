@@ -150,16 +150,16 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
         <RegionBody>
           <div className="wa-report-meta"><span>{report.from && report.to ? formatRange(report.from, report.to) : __('Report not loaded', 'wconvert-pro')}</span><span>{__('By order paid date', 'wconvert-pro')}</span>{updating && <span role="status">{__('Updating… Previous dates shown.', 'wconvert-pro')}</span>}</div>
           {enabled && !report.consent_ready && <div className="wa-report-notice"><strong>{__('Finish consent setup to link new orders.', 'wconvert-pro')}</strong><GuideLink href={docsUrl(GUIDES.campaignSales, 'turn-on-tracking')}>{__('Setup guide', 'wconvert-pro')}</GuideLink></div>}
-          {!report.site_matches && <p className="wa-report-notice">{__('The site address changed. Turn on tracking again in Tracking & setup below.', 'wconvert-pro')}</p>}
+          {!report.site_matches && <p className="wa-report-notice">{__('Site address changed. Turn tracking on again in Tracking & setup below.', 'wconvert-pro')}</p>}
           {report.complete === undefined ? <p className="wa-muted">{__('Sales totals have not loaded yet.', 'wconvert-pro')}</p>
-            : report.complete === false ? <EmptyState icon={ShoppingBag} title={__('Choose a shorter period', 'wconvert-pro')}>{__('This report is too large to total safely. No partial totals are shown.', 'wconvert-pro')}</EmptyState>
-            : (report.linked_orders ?? 0) === 0 ? <EmptyState icon={ShoppingBag} title={__('No linked orders in this period', 'wconvert-pro')}>{__('With tracking on and statistics consent granted, a signup or click can link a checkout within 30 minutes.', 'wconvert-pro')}</EmptyState>
+            : report.complete === false ? <EmptyState icon={ShoppingBag} title={__('Choose a shorter period', 'wconvert-pro')}>{__('This report is too large to total. No partial totals are shown.', 'wconvert-pro')}</EmptyState>
+            : (report.linked_orders ?? 0) === 0 ? <EmptyState icon={ShoppingBag} title={__('No linked orders in this period', 'wconvert-pro')}>{__('A consented signup or click can link a checkout within 30 minutes.', 'wconvert-pro')}</EmptyState>
             : <SalesTotals report={report} />}
-          {report.complete && period.days > 0 && <p className="wa-muted wa-report-context">{__('Linked after a signup or eligible click within 30 minutes. A link does not prove the campaign caused the sale.', 'wconvert-pro')}</p>}
+          {report.complete && period.days > 0 && <p className="wa-muted wa-report-context">{__('A link does not prove the campaign caused the sale.', 'wconvert-pro')}</p>}
           {report.complete && period.days > 0 && <p className="wa-muted wa-report-store-total">{sprintf(/* translators: %s: how many eligible paid orders the store had, e.g. “1,204”. */ __('%s eligible paid orders across your store in this period.', 'wconvert-pro'), formatCount(report.eligible_orders ?? 0))} <InfoTip label={__('About linked orders', 'wconvert-pro')}>{__('Orders may be unlinked because consent was not granted, the interaction expired or tracking failed.', 'wconvert-pro')}</InfoTip></p>}
         </RegionBody>
         {report.complete && period.days > 0 && !!report.orders?.length && <ReportDisclosure title={__('View linked orders', 'wconvert-pro')}>
-          <p className="wa-muted">{sprintf(/* translators: %s: the most linked orders listed, e.g. “50”. */ __('Up to %s recent linked orders. Open an order to review it in WooCommerce.', 'wconvert-pro'), formatCount(50))}</p>
+          <p className="wa-muted">{sprintf(/* translators: %s: the most linked orders listed, e.g. “50”. */ __('Up to %s recent linked orders.', 'wconvert-pro'), formatCount(50))}</p>
           <DataTable label={__('Linked orders', 'wconvert-pro')}>
             <DataTableHead><DataTableColumn>{__('Order', 'wconvert-pro')}</DataTableColumn><DataTableColumn>{__('Campaign', 'wconvert-pro')}</DataTableColumn><DataTableColumn>{__('Paid on', 'wconvert-pro')}</DataTableColumn><DataTableColumn>{__('Status', 'wconvert-pro')}</DataTableColumn><DataTableColumn numeric>{__('Net product revenue', 'wconvert-pro')}</DataTableColumn></DataTableHead>
             <DataTableBody>{report.orders.map(order => <DataTableRow key={order.id}>
@@ -180,8 +180,8 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
       <ReportDisclosure title={__('How sales are linked', 'wconvert-pro')}>
         <dl className="wa-report-definitions">
           <div><dt>{__('Last interaction · 30-minute window', 'wconvert-pro')}</dt><dd>{__('An accepted signup, offer click, cart-return click or quiz result-link click can link one checkout in the same WooCommerce session. Being shown, dismissals and coupon copies do not qualify.', 'wconvert-pro')}</dd></div>
-          <div><dt>{__('Net product revenue', 'wconvert-pro')}</dt><dd>{__('Product totals after discounts and product refunds. Tax, shipping and fees are excluded. Currencies stay separate; an unallocated refund makes the amount unavailable.', 'wconvert-pro')}</dd></div>
-          <div><dt>{__('Paid orders only', 'wconvert-pro')}</dt><dd>{__('Orders use their paid date. Later refunds update that original period. Unpaid, failed and cancelled orders are excluded. Unmarked gateway test payments may be included.', 'wconvert-pro')}</dd></div>
+          <div><dt>{__('Net product revenue', 'wconvert-pro')}</dt><dd>{__('After discounts and product refunds, excluding tax, shipping and fees.', 'wconvert-pro')}</dd></div>
+          <div><dt>{__('Paid orders only', 'wconvert-pro')}</dt><dd>{__('Later refunds update the original period. Unmarked gateway test payments may count.', 'wconvert-pro')}</dd></div>
         </dl>
         <p className="wa-muted">{__('Sales require statistics consent. Other devices and later sessions are not linked.', 'wconvert-pro')}</p>
       </ReportDisclosure>
@@ -190,7 +190,7 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
       open={confirmOff}
       onOpenChange={setConfirmOff}
       title={__('Turn off sales tracking?', 'wconvert-pro')}
-      description={__('New orders stop being linked to your campaigns. Orders already linked stay in this report.', 'wconvert-pro')}
+      description={__('New orders won’t link to campaigns. Linked orders stay in this report.', 'wconvert-pro')}
       confirmLabel={__('Turn off tracking', 'wconvert-pro')}
       onConfirm={() => void change(false)}
       returnFocusTo={toggle}

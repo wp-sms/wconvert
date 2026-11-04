@@ -114,7 +114,7 @@ describe('finding a page', () => {
     picker();
     await type('draft');
 
-    await waitFor(() => expect(screen.getByText(/Only published items can be found by name/)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/No published pages or posts match/)).toBeInTheDocument());
   });
 
   it('shows loading during the debounce instead of claiming no matches before WordPress answers', async () => {
@@ -122,7 +122,7 @@ describe('finding a page', () => {
     await userEvent.type(box(), 'pri');
     expect(screen.getByRole('status')).toHaveTextContent('Searching…');
     expect(box()).toHaveAttribute('aria-busy', 'true');
-    expect(screen.queryByText(/No matching pages/)).toBeNull();
+    expect(screen.queryByText(/No published pages or posts match/)).toBeNull();
     expect(objects.searchObjects).not.toHaveBeenCalled();
     await act250();
     expect(await screen.findAllByRole('option')).toHaveLength(2);
@@ -147,10 +147,10 @@ describe('finding a page', () => {
     await waitFor(() => expect(box()).toHaveValue('Pricing (#42)'));
     await type('new page');
     const retry = await screen.findByRole('button', { name: 'Try again' });
-    expect(screen.getByRole('status')).toHaveTextContent('Search could not be completed');
+    expect(screen.getByRole('status')).toHaveTextContent('Search failed');
     expect(retry).toHaveAccessibleDescription(/press Enter/);
     expect(within(screen.getByRole('listbox')).queryByRole('button')).toBeNull();
-    expect(screen.queryByText(/No matching pages/)).toBeNull();
+    expect(screen.queryByText(/No published pages or posts match/)).toBeNull();
     expect(box()).toHaveFocus();
     await userEvent.keyboard('{Enter}');
     expect(screen.getByRole('status')).toHaveTextContent('Searching…');
@@ -393,7 +393,7 @@ describe('a value already stored', () => {
 
   it('explains a missing saved item without calling it a network error or clearing it', async () => {
     const changed = picker('42');
-    await waitFor(() => expect(box()).toHaveAccessibleDescription(/may be unpublished, deleted.*still uses it/));
+    await waitFor(() => expect(box()).toHaveAccessibleDescription(/Search can’t find page or post #42\. This rule still uses it/));
     expect(box()).toHaveValue('#42');
     expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
     expect(changed).not.toHaveBeenCalled();

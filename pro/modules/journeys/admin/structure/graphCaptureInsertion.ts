@@ -34,11 +34,11 @@ export function graphCaptureInsertion(tree: TemplateTree, primaryChannel: string
     : tree.submissions.length !== 1 || !tree.submissions[0].required
       ? __('Keep one required primary signup before adding an optional second signup.', 'wconvert-pro')
       : tree.steps.flatMap(screen => walkNodes(screen.content)).some(node => node.type === 'field' && 'name' in node && node.name === channel)
-        ? __('This campaign already collects that contact channel. Review its existing fields before adding another signup.', 'wconvert-pro') : null;
+        ? __('This campaign already collects that contact channel. Review its existing fields first.', 'wconvert-pro') : null;
   const locations = reason ? [] : graphInsertionLocations(tree).filter(location => location.id.startsWith('edge:')
     && acceptedBeforeEdge(tree, tree.submissions[0].id, location.id.slice(5)));
   return { channel, locations, reason: reason ?? (!locations.length
-    ? __('Add a line after the main form first. Visitors must complete that signup before reaching the optional one.', 'wconvert-pro') : null) };
+    ? __('First add a line after the main form. This signup goes there.', 'wconvert-pro') : null) };
 }
 
 export function addGraphCapture(tree: TemplateTree, primaryChannel: string | null | undefined, locationId: string): TemplateTree {

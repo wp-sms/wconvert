@@ -121,7 +121,7 @@ describe('reviewing before publishing', () => {
   it('blocks a list campaign until a service is ready or collect-only is explicitly chosen', async () => {
     const { rerender, supplied } = await open({ captureMode: 'connected' });
     expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
-    expect(screen.getByText(/Before you can publish, connect a service/)).toBeVisible();
+    expect(screen.getByText(/To publish, connect a service/)).toBeVisible();
     rerender(<Review {...supplied} captureMode="local" />);
     expect(screen.getByRole('button', { name: 'Publish campaign' })).not.toHaveAttribute('aria-disabled');
     expect(fact('Leads go to')).toHaveTextContent('Kept in WConvert only');
@@ -189,7 +189,7 @@ describe('reviewing before publishing', () => {
     await open({ template: LINK,
       ...(requirement === 'goal' ? { goal: ready({ ...GOAL, outcome: CAPTURE_OUTCOME }) } : { bound: ['forwarding-route'] }),
     });
-    expect(screen.getByText(requirement === 'goal' ? CAPTURE_OUTCOME.requirement : /This campaign needs a form field to collect leads/)).toBeInTheDocument();
+    expect(screen.getByText(requirement === 'goal' ? CAPTURE_OUTCOME.requirement : /This campaign needs a form field\. Choose a template with a form/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
   });
 
@@ -201,7 +201,7 @@ describe('reviewing before publishing', () => {
     ] }] }) };
     const { supplied } = await open({ template });
     expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
-    await userEvent.click(fixFor(/Set up the interest choices/));
+    await userEvent.click(fixFor(/Every interest choice needs a label/));
     expect(supplied.onGoTo).toHaveBeenCalledExactlyOnceWith([0, 'children', 1]);
     expect(supplied.onEditDesign).not.toHaveBeenCalled();
     expect(supplied.onPublish).not.toHaveBeenCalled();
@@ -229,7 +229,7 @@ describe('reviewing before publishing', () => {
   it('keeps a contrast warning advisory and routes its correction to the design in place', async () => {
     const { supplied } = await open({ template: { ...FORM, tokens: { ...FORM.tokens, muted: '#ffffff' } } });
     expect(screen.getByRole('button', { name: 'Publish campaign' })).not.toHaveAttribute('aria-disabled');
-    await userEvent.click(screen.getByRole('button', { name: /hard to read on the background/ }));
+    await userEvent.click(screen.getByRole('button', { name: /lighter text is hard to read/ }));
     await waitFor(() => expect(supplied.onEditDesign).toHaveBeenCalledOnce());
     expect(supplied.onGoToDesign).not.toHaveBeenCalled();
     expect(screen.queryByRole('dialog')).toBeNull();
@@ -400,7 +400,7 @@ describe('review actions return to the place that can resolve them', () => {
 
   it('opens the actual schedule control for a countdown warning', async () => {
     const { supplied } = await open({ template: design('deadline-panel') });
-    await userEvent.click(screen.getByRole('button', { name: /nothing says when this campaign stops running/ }));
+    await userEvent.click(screen.getByRole('button', { name: /The countdown needs an end date/ }));
     expect(supplied.onGoToSchedule).toHaveBeenCalledOnce();
     expect(supplied.onGoTo).not.toHaveBeenCalled();
     expect(screen.queryByRole('dialog')).toBeNull();

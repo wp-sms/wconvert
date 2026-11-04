@@ -157,7 +157,7 @@ function VariantDifference({ arms }: { arms: OptinReport[] }) {
   if (!lead || !next)
     return (
       <p className="wa-variant-difference">
-        {__('Too early to call: a variant has not been shown in these dates.', 'wconvert')}
+        {__('Too early to call: a variant was not shown in these dates.', 'wconvert')}
       </p>
     );
   const points = (lead.conversion_rate! - next.conversion_rate!) * 100;
@@ -285,7 +285,7 @@ export function GoalDetail({
         {numbers.deliveries === null
           ? card.measurement
           : __(
-              'Resource requests count submitted forms. Email handoffs are reported separately below; neither count proves inbox arrival.',
+              'Requests count submitted forms. Neither requests nor email handoffs prove inbox arrival.',
               'wconvert',
             )}
       </p>
@@ -295,7 +295,7 @@ export function GoalDetail({
       {optin?.status === 'paused' && (
         <p className="wa-notice">
           {__(
-            'This campaign is a draft, so it is not shown. Its earlier results are below.',
+            'This campaign is a draft, so not shown. Earlier results are below.',
             'wconvert',
           )}
         </p>
@@ -303,7 +303,7 @@ export function GoalDetail({
       {optin?.status === 'historical' && (
         <p className="wa-notice">
           {__(
-            'This campaign was deleted. Its results stay here, and it can no longer be edited.',
+            'This campaign was deleted. Results stay here, but it can’t be edited.',
             'wconvert',
           )}
         </p>
@@ -323,20 +323,19 @@ export function GoalDetail({
       </div>
       </ReportTarget>
       {card.action === 'add_to_cart' && <div className="wa-panel wa-handoff">
-        <div><h3>{__('Items added to basket', 'wconvert')}</h3><p className="wa-muted">{__('All confirmed additions. Adding two extras counts twice here and once in Basket additions. These are not purchases.', 'wconvert')}</p></div>
+        <div><h3>{__('Items added to basket', 'wconvert')}</h3><p className="wa-muted">{__('Confirmed, not purchases. Two extras count twice here, once in Basket additions.', 'wconvert')}</p></div>
         <strong>{formatCount(numbers.items_added ?? 0)}</strong>
       </div>}
       {numbers.deliveries !== null && (
         <div className="wa-panel wa-handoff">
           <div>
             <p className="wa-eyebrow">{__('After submission', 'wconvert')}</p>
-            <h3>{__('Email handoffs', 'wconvert')}</h3>
-            <p className="wa-muted">
-              {__(
-                'Sends can land on a later day and resends count again, so a difference is not a queue or failure count.',
-                'wconvert',
-              )}
-            </p>
+            <div className="wa-section-title">
+              <h3>{__('Email handoffs', 'wconvert')}</h3>
+              <InfoTip label={sprintf(/* translators: %s: a report's title, e.g. “Submissions”. */ __('About %s', 'wconvert'), __('Email handoffs', 'wconvert'))}>
+                {__('Later-day sends and resends count, so a difference is not a queue or failure count.', 'wconvert')}
+              </InfoTip>
+            </div>
           </div>
           <div>
             <strong>{formatCount(numbers.deliveries)}</strong>
@@ -415,7 +414,7 @@ function Reconciliation({ card }: { card: GoalReport }) {
       })}
       <small>
         {__(
-          'Includes each variant once. Status describes the campaign now, not when the action happened.',
+          'Includes each variant once. Status is current, not as of the action.',
           'wconvert',
         )}
       </small>
@@ -722,10 +721,8 @@ export function Experiment({
         {__('A/B comparison and variant history', 'wconvert')}
       </p>
       <ReportTitle name={family.root.name}>
-        {__(
-          'Results cover the selected dates, including past uses of each design. They do not prove a winner.',
-          'wconvert',
-        )}
+        <span className="block">{__('Results cover the selected dates, including past uses of each design. They do not prove a winner.', 'wconvert')}</span>
+        <span className="mt-2 block">{__('Each variant counts once in goal totals. Visitors are assigned per browser, not per person.', 'wconvert')}</span>
       </ReportTitle>
       <VariantDifference arms={arms} />
       <div className="wa-experiment-grid">
@@ -770,12 +767,6 @@ export function Experiment({
           </div>
         ))}
       </div>
-      <p className="wa-notice">
-        {__(
-          'Each variant counts once in goal totals. Visitors are assigned per browser, not per person.',
-          'wconvert',
-        )}
-      </p>
       <ConfirmDialog
         open={chosen !== null}
         onOpenChange={(open) => {

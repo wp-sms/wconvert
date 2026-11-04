@@ -184,7 +184,7 @@ stack edge-to-edge tinted panels or repeat the same shared-change warning.
   Neutral inset notices use solid `--surface`, not translucent `bg-muted/*` fills.
 - Native single-select fields share an explicit chevron, logical end padding and
   RTL placement. Multi-select/listbox controls keep their own affordance.
-- `InfoTip` owns contextual help in Analytics, Leads, the builder's panels and campaign dialogs (ADR 0136, ADR 0183): a 16px Info glyph in a
+- `InfoTip` owns contextual help in Analytics, Leads, Settings, Destinations, the builder's panels and campaign dialogs (ADR 0136, ADR 0183, ADR 0188): a 16px Info glyph in a
   32px control, expanded for coarse pointers by the shared control rules. Its
   popover handles viewport edges, Escape dismissal and returning keyboard focus.
   Beside a reading page's title it takes -6px of block margin, so its 32px
@@ -254,7 +254,7 @@ pointers give checkbox rows the same 44px floor as radios. The Radix
 `Checkbox` is retired, so a dialog and a page draw the same box.
 
 **One field** (`shell/Field`): label above, 6px, the control, a `note` hint
-below, an error under that. The builder's panels use its denser form,
+below, an error under that. Its `tip` stands beside the label (ADR 0188). The builder's panels use its denser form,
 `PanelField` (ADR 0136): a `note` 500 label with its InfoTip and actions on one
 row, and a 12px `hint`. **One select** (`components/ui/native-select`) and
 **one textarea** (`components/ui/textarea`), at the shared control height.
@@ -270,7 +270,8 @@ gallery body, so it remains reachable without scrolling through every card.
 ## 8. The admin speaks only when it changes what you do next
 
 Before designing a message, ask: **if the merchant did not read this, what would
-they do differently?** No answer means no message.
+they do differently?** No answer means no message. What stays is twelve words or
+fewer, unless it holds a fact ADR 0188 says must survive.
 
 - An error **names a door that is on this screen** — and comes with the door,
   not a description of where it is.

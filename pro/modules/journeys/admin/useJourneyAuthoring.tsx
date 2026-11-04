@@ -89,7 +89,7 @@ export function useJourneyAuthoring(ctx: JourneyEditorContext): JourneyAuthoring
     if (next === tree) return;
     write(next, next.steps.length - 1);
     ctx.showSection('content');
-    say(__('Screen added on this line. The line keeps its answer and its place in the order.', 'wconvert-pro'));
+    say(__('Screen added on this line.', 'wconvert-pro'));
   };
   const insertOnPath = (priority: number, kind: 'content' | 'input') => {
     if (tree.graph) {
@@ -111,7 +111,7 @@ export function useJourneyAuthoring(ctx: JourneyEditorContext): JourneyAuthoring
     steps.splice(step + 1, 0, screen);
     write({ ...tree, steps }, step + 1);
     ctx.showSection('content');
-    say(sprintf(/* translators: %s: the name of the screen this line already led to, e.g. “Thank you”. */ __('Screen added on this line. Its answer and where it goes next (%s) are kept.', 'wconvert-pro'), tree.steps.find(item => item.id === path.to)?.name ?? __('Removed screen', 'wconvert-pro')));
+    say(sprintf(/* translators: %s: the name of the screen this line already led to, e.g. “Thank you”. */ __('Screen added on this line. It still leads to %s.', 'wconvert-pro'), tree.steps.find(item => item.id === path.to)?.name ?? __('Removed screen', 'wconvert-pro')));
   };
   const addOptional = () => {
     if (tree.graph && tree.submissions.length) { insertedScreen.current = false; setAddCapture(true); return; }
@@ -134,7 +134,7 @@ export function useJourneyAuthoring(ctx: JourneyEditorContext): JourneyAuthoring
   };
   const upgrade = () => {
     onChange(upgradeToGraph(tree));
-    say(__('Answers can now choose the next screen. Undo goes back to one screen after another.', 'wconvert-pro'));
+    say(__('Answers can now choose the next screen.', 'wconvert-pro'));
   };
 
   if (!current) return { ...NO_AUTHORING, busy: !!(addKind || addCapture || pendingRoute) };
@@ -186,11 +186,11 @@ export function useJourneyAuthoring(ctx: JourneyEditorContext): JourneyAuthoring
     route: route(false),
     screenCondition: (!slim || !isFirst) && <ScreenConditionSettings key={`visibility:${current.id}`} reveal={repairRequest?.screenId === current.id && repairRequest.section === 'content' && !repairRequest.focus ? repairRequest.serial : undefined} tree={tree} step={step} onChange={onChange} onSelect={select} />,
     then: <ThenSelect tree={tree} step={step} onChange={onChange}
-      onUpgrade={next => { onChange(next); say(__('This screen now chooses its own next screen. Undo goes back to one screen after another.', 'wconvert-pro')); }}
+      onUpgrade={next => { onChange(next); say(__('This screen now chooses its own next screen.', 'wconvert-pro')); }}
       onBranch={tree.graph && choiceQuestionHere && !tree.graph.edges.some(edge => edge.from === current.id && edge.kind === 'answer') ? () => branchFrom(step) : undefined} />,
     followup: (questionId, option) => <AnswerFollowup question={questionId} option={option} onFollowup={startFollowup} />,
     followupOrder: currentFollowups && <PanelSection title={__('Follow-up order', 'wconvert-pro')}
-      tip={followupSource === undefined ? __('Other lines lead into these follow-ups. Check them in Flow before changing the order.', 'wconvert-pro') : __('Visitors see matching questions in this order. Other lines stay the same.', 'wconvert-pro')}>
+      tip={followupSource === undefined ? __('Other lines lead into these follow-ups. Check them before changing the order.', 'wconvert-pro') : __('Visitors see matching questions in this order. Other lines stay the same.', 'wconvert-pro')}>
       <FactList><FactRow label={__('Position', 'wconvert-pro')}>{sprintf(/* translators: 1: this follow-up's place. 2: how many follow-ups match. */ __('%1$s of %2$s', 'wconvert-pro'), formatCount(currentFollowups.screens.indexOf(step) + 1), formatCount(currentFollowups.screens.length))}</FactRow></FactList>
       <div className="wconvert-panel-actions">{([-1, 1] as const).map(direction => <Button key={direction} type="button" variant="outline" disabled={moveFollowup(tree, current.id, direction) === tree} onClick={() => { onChange(moveFollowup(tree, current.id, direction)); say(__('Follow-up order updated. Try it with several answers picked.', 'wconvert-pro')); }}>{direction === -1 ? __('Move up', 'wconvert-pro') : __('Move down', 'wconvert-pro')}</Button>)}
         {followupSource === undefined && <Button type="button" variant="ghost" onClick={ctx.showFlow}>{__('Review in Flow', 'wconvert-pro')}</Button>}</div>
@@ -198,16 +198,16 @@ export function useJourneyAuthoring(ctx: JourneyEditorContext): JourneyAuthoring
     result: <>
       <ResultSettings key={current.id} onResultSelect={ctx.onResultSelect} tree={tree} step={step} onChange={onChange} onAction={say} repairRequest={repairRequest?.screenId === current.id ? repairRequest : undefined} />
       {current.kind === 'result' && <PanelSection title={__('When visitors see their result', 'wconvert-pro')}
-        tipLabel={__('About result access', 'wconvert-pro')} tip={tree.submissions.length > 0 ? __('Changing this moves signup before or after the result, and you can undo the whole change. Mention required contact details on the first screen.', 'wconvert-pro') : undefined}>
+        tipLabel={__('About result access', 'wconvert-pro')} tip={tree.submissions.length > 0 ? __('Changing this moves signup before or after the result.', 'wconvert-pro') : undefined}>
         <div role="radiogroup" aria-label={__('When visitors see their result', 'wconvert-pro')} className="wconvert-panel-radios">
           <CheckRow type="radio" className="wconvert-check" name={`${id}-result-access`} label={__('Immediately after the questions', 'wconvert-pro')} aria-disabled={accessReason.immediately !== null || undefined} aria-describedby={accessReason.immediately ?? undefined} checked={tree.submissions.length === 0 || (tree.graph
             ? !tree.submissions[0].required : step < submissionScreen(tree, tree.submissions[0]?.id))}
             onChange={() => { if (accessReason.immediately === null && tree.submissions.length) { const next = resultAccess(tree, false); write(next, next.steps.findIndex(s => s.id === current.id));
-              if (next !== tree) say(__('Result moved before contact details. Signup is optional and visitors may finish without submitting.', 'wconvert-pro')); } }} />
+              if (next !== tree) say(__('Result moved before contact details. Visitors may finish without submitting.', 'wconvert-pro')); } }} />
           <CheckRow type="radio" className="wconvert-check" name={`${id}-result-access`} label={__('After required contact details', 'wconvert-pro')} aria-disabled={accessReason.required !== null || undefined} aria-describedby={accessReason.required ?? undefined}
             checked={tree.submissions.length === 1 && (tree.graph ? tree.submissions[0].required : step > submissionScreen(tree, tree.submissions[0].id))}
             onChange={() => { if (accessReason.required !== null) return; const next = resultAccess(tree, true); write(next, next.steps.findIndex(s => s.id === current.id));
-              if (next !== tree) say(__('Contact details are now required before the result. Tell visitors on the first screen.', 'wconvert-pro')); }} />
+              if (next !== tree) say(__('The result now needs contact details. Tell visitors on the first screen.', 'wconvert-pro')); }} />
         </div>
         {!tree.graph && tree.steps.some(screen => screen.paths?.length) && <PanelHint id={`${id}-access-lines`}>{__('Remove answer lines before changing when results appear.', 'wconvert-pro')}</PanelHint>}
         {tree.submissions.length > 1 && <PanelHint id={`${id}-access-one`}>{__('Keep one signup to choose when contact details are requested.', 'wconvert-pro')}</PanelHint>}
@@ -252,7 +252,7 @@ export function useJourneyAuthoring(ctx: JourneyEditorContext): JourneyAuthoring
             insertedScreen.current = true;
             write(next, submissionScreen(next, next.submissions[1]?.id));
             ctx.showSection('content'); ctx.showDetails(); setAddCapture(false);
-            say(__('Optional signup added. Review its consent and destinations before publishing. The main signup stays saved when visitors skip this step.', 'wconvert-pro'));
+            say(__('Optional signup added. Review its consent and Destinations before publishing.', 'wconvert-pro'));
           }} />}
         </AdminDialogContent>
       </Dialog>
@@ -281,7 +281,7 @@ export function useJourneyAuthoring(ctx: JourneyEditorContext): JourneyAuthoring
               insertedScreen.current = true;
               write(next, next.steps.length - 1);
               ctx.showSection('content'); ctx.showDetails(); setAddKind(null);
-              say(__('Screen added at the chosen location. Review its content and where it continues in screen settings.', 'wconvert-pro'), next.steps[next.steps.length - 1]);
+              say(__('Screen added. Review its content and where it goes next.', 'wconvert-pro'), next.steps[next.steps.length - 1]);
             }} />}
         </AdminDialogContent>
       </Dialog>

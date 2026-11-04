@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import type { Audience } from '@loader/display-rules';
 import { AudienceEditor } from '../../resources/admin/src/builder/rules/AudienceEditor';
+import { GroupEditor } from '../../resources/admin/src/builder/rules/GroupEditor';
 import type { Rule } from '../../resources/admin/src/builder/api';
 import { ruleTypes } from './support/rule-types';
 
@@ -56,6 +57,18 @@ describe('a group', () => {
     expect(screen.queryByRole('button', { name: 'Add a rule' })).toBeNull();
     expect(screen.getByText('Up to 8 rules in a group')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'About the rule limit' })).toBeInTheDocument();
+  });
+
+  it('offers another group from a full group that has a name, and only removal from one that has none', async () => {
+    const rules = Array.from({ length: 8 }, (_, at) => ({ id: `r${at}`, type: 'device', in: ['mobile'] }));
+    const { unmount } = render(<GroupEditor group={{ id: 'g', match: 'all', rules }} types={types} onChange={() => undefined} title="Group 1" />);
+    await userEvent.click(screen.getByRole('button', { name: 'About the rule limit' }));
+    expect(await screen.findByText('Add another group, or remove a rule first.')).toBeVisible();
+    unmount();
+    render(<GroupEditor group={{ id: 'g', match: 'all', rules }} types={types} onChange={() => undefined} label="What opens it" />);
+    await userEvent.click(screen.getByRole('button', { name: 'About the rule limit' }));
+    expect(await screen.findByText('Remove a rule first.')).toBeVisible();
+    expect(screen.queryByText(/another group/)).toBeNull();
   });
 
   it('says the limit in words at five groups, where the add link was', () => {

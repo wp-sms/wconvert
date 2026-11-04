@@ -26,6 +26,7 @@ export function SwitchSetting({
   title,
   label,
   hint,
+  tip,
   setting,
   saveLabel,
   read,
@@ -37,6 +38,8 @@ export function SwitchSetting({
   title: string;
   label: string;
   hint: string;
+  /** What the merchant can act without: an InfoTip beside the title. */
+  tip?: ReactNode;
   /** The `data-setting` that Search settings jumps to. */
   setting: string;
   saveLabel: string;
@@ -116,7 +119,7 @@ export function SwitchSetting({
       {enableConfirmation && <ConfirmDialog open={confirm} onOpenChange={open => { setConfirm(open); if (!open) setDraft(saved); }} title={enableConfirmation.title} description={enableConfirmation.description}
         confirmLabel={enableConfirmation.confirm} cancelLabel={enableConfirmation.cancel} returnFocusTo={saveButton}
         onConfirm={() => { setConfirm(false); void save(); }} />}
-      <RegionHeader title={title} />
+      <RegionHeader title={title} tip={tip} />
       <RegionBody>
         <CheckRow
           label={label}

@@ -15,7 +15,7 @@ export default function LockSettings({ optinId, published }: InlinePlacementProp
       <div className="wconvert-placement-row">
         <div className="wconvert-placement-row__text">
           <p className="wconvert-placement-row__title">{__('Lock the rest of an article', 'wconvert-pro')}</p>
-          <p className="wconvert-display-hint">{__('Add a “WConvert lock from here” divider to the article and choose this campaign. Everything below it is covered until the visitor signs up. Use one lock per page.', 'wconvert-pro')}</p>
+          <p className="wconvert-display-hint">{__('Add the “WConvert lock from here” divider, then choose this campaign.', 'wconvert-pro')}</p>
         </div>
       </div>
       <div className="wconvert-placement-row">
@@ -25,7 +25,7 @@ export default function LockSettings({ optinId, published }: InlinePlacementProp
         </div>
       </div>
       {published && <div className="wconvert-placement-row">
-        <ShortcodeCopy value={shortcode} label={__('Classic editor shortcode', 'wconvert-pro')} help={__('Replace the ellipsis with your content. Keep both shortcode tags around the complete section.', 'wconvert-pro')} />
+        <ShortcodeCopy value={shortcode} label={__('Classic editor shortcode', 'wconvert-pro')} help={__('Replace the ellipsis with the section. Keep both shortcode tags around it.', 'wconvert-pro')} />
       </div>}
     </div>
     <ul className="wconvert-placement-facts">

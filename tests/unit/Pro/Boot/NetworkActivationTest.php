@@ -26,7 +26,7 @@ final class NetworkActivationTest extends TestCase
         $GLOBALS['wconvertTestMultisite'] = true;
 
         $this->expectException(\WConvertTestDied::class);
-        $this->expectExceptionMessage('Activate it on each site instead');
+        $this->expectExceptionMessage('Activate it from each site’s Plugins screen');
 
         Bootstrap::activate(true);
     }

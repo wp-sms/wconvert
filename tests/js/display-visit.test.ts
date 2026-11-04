@@ -214,7 +214,7 @@ describe('the verdict', () => {
   it('warns that leaving can’t be seen on a touch screen', () => {
     const leave = base({ display_rules: { audience: { mode: 'everyone' }, opening: { mode: 'automatic', match: 'any', rules: [{ id: 'x', type: 'exit_intent' }] } } });
     expect(check(leave, { device: 'tablet' })).toMatchObject({ opens: false, headline: 'Doesn’t open on phones and tablets',
-      reason: 'Leaving can’t be detected on touch screens. Add “Leaving or scrolling back up”.' });
+      reason: 'Touch screens can’t detect leaving. Add “Leaving or scrolling back up”.' });
     expect(check(leave).headline).toBe('Opens when they try to leave');
   });
 

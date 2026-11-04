@@ -48,7 +48,7 @@ export function graphInsertionLocations(tree: TemplateTree) {
 
 export function insertionUnavailable(location: ReturnType<typeof graphInsertionLocations>[number], kind: GraphScreenKind): string | null {
   if (kind === 'ending' && location.id === 'entry') return __('Choose a line after the first screen.', 'wconvert-pro');
-  if (kind !== 'content' && kind !== 'ending' && !location.canAsk) return __('Ask this question before visitors submit their details so its answer is saved with them.', 'wconvert-pro');
+  if (kind !== 'content' && kind !== 'ending' && !location.canAsk) return __('Ask this before visitors submit their details, so the answer is saved.', 'wconvert-pro');
   if (kind === 'followup' && !location.choices.length) return __('Choose a line after a choice question.', 'wconvert-pro');
   return null;
 }

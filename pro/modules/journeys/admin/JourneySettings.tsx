@@ -109,7 +109,7 @@ export function ConditionSettings({ value, sources, onChange, required = false, 
           ? __('Otherwise, check the next result.', 'wconvert-pro')
           : __('Otherwise, skip this screen.', 'wconvert-pro')}</p>
         <InfoTip label={__('How answer conditions work', 'wconvert-pro')} guide={docsUrl(GUIDES.quizPaths, 'separate-conditions')}>
-          {__('A skipped or unanswered question never matches, including “is not” and “does not include”. Only answered questions are compared.', 'wconvert-pro')}
+          {__('Unanswered questions never match, even “is not” or “does not include”.', 'wconvert-pro')}
         </InfoTip>
       </div>
     </>}
@@ -182,10 +182,10 @@ export function RouteSettings({ tree, step, focusPath = null, onChange, onInsert
       </div>}
     </li>)}</ol>
     {sources.length > 0 && unused && paths.length < 6 && <button type="button" className="wconvert-panel-link" onClick={add}>{__('Send some answers to a different screen', 'wconvert-pro')}</button>}
-    {!sources.length && targets.length > 1 && <PanelHint>{__('Add a choice question before this screen to send answers to different screens.', 'wconvert-pro')}</PanelHint>}
+    {!sources.length && targets.length > 1 && <PanelHint>{__('Add a choice question before this screen to send answers elsewhere.', 'wconvert-pro')}</PanelHint>}
     {unreachable.length > 0 && <p className="wconvert-panel-warn" role="status">{sprintf(/* translators: %s: screen names. */ __('No line reaches %s.', 'wconvert-pro'), unreachable.join(', '))}</p>}
     <ConfirmDialog open={pending !== null} onOpenChange={open => { if (!open) setPending(null); }} title={__('Check this change', 'wconvert-pro')}
-      description={pending ? sprintf(/* translators: %s: a comma-separated list of screen names, e.g. “Welcome, Results”. */ __('These screens would become unreachable: %s. They stay in the draft, but visitors cannot reach or submit from them. You can Undo after applying.', 'wconvert-pro'), pending.disconnected.join(', ')) : ''}
+      description={pending ? sprintf(/* translators: %s: a comma-separated list of screen names, e.g. “Welcome, Results”. */ __('No line would reach %s. They stay in the draft, unseen.', 'wconvert-pro'), pending.disconnected.join(', ')) : ''}
       confirmLabel={__('Change anyway', 'wconvert-pro')} onConfirm={() => { if (pending) onChange(pending.tree); setPending(null); }} />
   </div>;
 }
@@ -264,7 +264,7 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
         <PanelField label={__('Question', 'wconvert-pro')} htmlFor={`${question.id}-label`}><AutoGrowTextarea id={`${question.id}-label`} value={question.label} maxLength={200} onChange={event => change(question.id, node => ({ ...node, label: event.target.value }), 'label')} /></PanelField>
 
         <PanelField label={__('Answer type', 'wconvert-pro')} htmlFor={`${question.id}-type`}
-          tip={refs.length > 0 ? __('Changing it asks you to review the rules that use these answers. Renaming a choice keeps its lines.', 'wconvert-pro') : undefined}>
+          tip={refs.length > 0 ? __('Changing it means reviewing its rules. Renaming a choice keeps its lines.', 'wconvert-pro') : undefined}>
           <NativeSelect id={`${question.id}-type`} value={question.answer_type} onChange={event => {
           const type = event.target.value as QuestionNode['answer_type'];
           if (refs.length) { setTypeReview({ question: question.id, type }); return; }
@@ -274,9 +274,9 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
         </NativeSelect></PanelField>
         {typeReview?.question === question.id && <section tabIndex={-1} className="wconvert-journey-answer-repair" aria-label={__('Review answer type change', 'wconvert-pro')}>
           <strong>{__('Review the affected conditions', 'wconvert-pro')}</strong>
-          <p id={`${question.id}-type-review`}>{typeReview.type === 'text' ? __('Short answers cannot keep rules based on selected choices. Edit the rules below first, then change the answer type.', 'wconvert-pro')
-            : questionTypeChange(tree, question.id, typeReview.type) ? __('Choice labels and lines will stay. Condition operators will be updated. Choosing several answers can match several rules; the top-to-bottom order still applies to answer lines and results. Try the form after this change.', 'wconvert-pro')
-            : __('Some conditions compare several choices at once. Edit those conditions to use one choice each before switching to Choose one.', 'wconvert-pro')}</p>
+          <p id={`${question.id}-type-review`}>{typeReview.type === 'text' ? __('Short answers cannot keep choice rules. Edit the rules below first.', 'wconvert-pro')
+            : questionTypeChange(tree, question.id, typeReview.type) ? __('Choices and lines stay. Visitors can match several rules. Try the form.', 'wconvert-pro')
+            : __('Some conditions compare several choices. Edit them to use one each first.', 'wconvert-pro')}</p>
           {refs.map(reference => <button type="button" key={reference.key} onClick={() => openReference(reference)}>{reference.label} · {reference.detail} <ArrowRight aria-hidden="true" className="inline size-3 rtl:-scale-x-100" /></button>)}
           <div className="wconvert-journey-answer-repair__actions"><Button type="button" {...refusable(questionTypeChange(tree, question.id, typeReview.type) ? null : `${question.id}-type-review`, () => { const next = questionTypeChange(tree, question.id, typeReview.type); if (next) onChange(next); setTypeReview(null); })}>{__('Apply answer type change', 'wconvert-pro')}</Button><Button type="button" variant="ghost" onClick={() => setTypeReview(null)}>{__('Cancel', 'wconvert-pro')}</Button></div>
         </section>}
@@ -309,10 +309,10 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
           })}
           {repair?.question === question.id && <div tabIndex={-1} className="wconvert-journey-answer-repair" role="region" aria-label={__('Review answer uses', 'wconvert-pro')}>
             <strong>{sprintf(reviewRefs.length ? /* translators: %s: an answer choice's words, e.g. “Under $50”. */ __('“%s” is used in rules', 'wconvert-pro') : /* translators: %s: an answer choice's words, e.g. “Under $50”. */ __('No rules use “%s” now', 'wconvert-pro'), question.options?.find(option => option.value === repair.value)?.label ?? __('This answer', 'wconvert-pro'))}</strong>
-            <p>{reviewRefs.length ? __('Review the rules below. Replace this answer with another choice, or stop offering it and review what will be removed.', 'wconvert-pro') : __('Your rule changes are kept. You can now remove this choice without changing other behavior.', 'wconvert-pro')}</p>
+            <p>{reviewRefs.length ? __('Edit the rules below, replace this answer, or stop offering it.', 'wconvert-pro') : __('You can now remove this choice without changing anything else.', 'wconvert-pro')}</p>
             <div>{reviewRefs.map(reference => <button type="button" key={reference.key} onClick={() => openReference(reference)}><strong>{reference.label}</strong>{' '}<small>{reference.detail} <ArrowRight aria-hidden="true" className="inline size-3 rtl:-scale-x-100" /></small></button>)}</div>
             {retirement && (question.options?.length ?? 0) > 2 && <Disclosure variant="inline" className="wconvert-answer-retirement" open={retiring} onToggle={setRetiring} title={__('Stop offering this answer…', 'wconvert-pro')}>
-              <p>{__('Review the matching behavior that will be removed with this choice. Other choices and saved leads stay unchanged.', 'wconvert-pro')}</p>
+              <p>{__('Other choices and saved leads stay unchanged.', 'wconvert-pro')}</p>
               {retirement.reason ? <p role="status">{retirement.reason}</p> : <>{retirement.removed.length > 0 && <><strong>{__('Also remove', 'wconvert-pro')}</strong><ul>{retirement.removed.map((name, index) => <li key={index}>{name}</li>)}</ul></>}<Button type="button" variant="destructive" onClick={() => { if (retirement.next) { onChange(retirement.next); setRepair(null); onAction?.(__('Choice and listed behavior removed. Test the remaining answers.', 'wconvert-pro')); } }}>{retirement.removed.length ? __('Remove choice and listed behavior', 'wconvert-pro') : __('Remove choice', 'wconvert-pro')}</Button></>}
             </Disclosure>}
             {reviewRefs.length > 0 && <label>{__('Replace its uses with', 'wconvert-pro')}<NativeSelect value={question.options?.some(option => option.value === replacement && option.value !== repair.value) ? replacement : ''} onChange={event => setReplacement(event.target.value)}>
@@ -416,9 +416,9 @@ export function ResultSettings({ tree, step, onChange: change, onAction, repairR
   // Each result's dot is its answer's color on the Flow map (ADR 0142).
   const resultColors = answerColors(tree).colors;
   return <PanelSection ref={settingsRoot} className="wconvert-journey-settings" title={__('Results', 'wconvert-pro')}
-    tipLabel={__('How results are chosen', 'wconvert-pro')} tip={__('First match wins, top to bottom. All other answers see the last one. Move results to change the order.', 'wconvert-pro')}
+    tipLabel={__('How results are chosen', 'wconvert-pro')} tip={__('First match wins, top to bottom. All other answers see the last.', 'wconvert-pro')}
     action={variants.length < 6 && sources.length > 0 ? <button type="button" onClick={() => setDraftResult({ heading: '', when: { match: 'all', clauses: [{ question: '', operator: 'is', values: [] }] } })}>{__('Add result', 'wconvert-pro')}</button> : undefined}>
-    {overlap && <p className="wconvert-panel-warn" role="status">{sprintf(/* translators: 1: a result's heading, 2: another result's heading. */ __('“%1$s” and “%2$s” may match the same answers. The one listed first wins.', 'wconvert-pro'), overlap[0].heading, overlap[1].heading)}</p>}
+    {overlap && <p className="wconvert-panel-warn" role="status">{sprintf(/* translators: 1: a result's heading, 2: another result's heading. */ __('“%1$s” and “%2$s” may match the same answers. The first listed wins.', 'wconvert-pro'), overlap[0].heading, overlap[1].heading)}</p>}
     <div className="wconvert-journey-results" role="group" aria-label={__('Possible results', 'wconvert-pro')}>
       {variants.map((variant, at) => <div className="wconvert-journey-result-card" key={variant.id}><button className="wconvert-journey-result-summary" type="button" id={`${tabsId}-result-${at}`} aria-controls={`${tabsId}-panel-${at}`}
         aria-expanded={selected?.id === variant.id} onClick={() => setSelectedId(selected?.id === variant.id ? null : variant.id)}>
@@ -472,7 +472,7 @@ export function ResultSettings({ tree, step, onChange: change, onAction, repairR
       <AdminDialogHeader title={__('Add matching result', 'wconvert-pro')} meta={__('Choose who sees this result. Nothing changes until you add it.', 'wconvert-pro')} />
       {draftResult && <><AdminDialogBody className="wconvert-graph-insert__body"><Field label={__('Result heading', 'wconvert-pro')} htmlFor={`${tabsId}-draft-heading`}><Input id={`${tabsId}-draft-heading`} value={draftResult.heading} maxLength={200} onChange={event => setDraftResult({ ...draftResult, heading: event.target.value })} /></Field>
         <ConditionSettings deliberate required purpose="result" value={draftResult.when} sources={sources} onChange={when => setDraftResult({ ...draftResult, when: when ?? { match: 'all', clauses: [] } })} />
-        <p>{__('Checked after your existing results, before all other answers. You can move it afterward.', 'wconvert-pro')}</p>
+        <p>{__('Checked after your existing results, before all other answers.', 'wconvert-pro')}</p>
         {variants.slice(0, -1).filter(result => resultReady && resultsMayOverlap(tree, result, { ...draftResult, id: 'new-result' })).map(result => <p key={result.id} role="status">{sprintf(/* translators: %s: an existing result's heading. */ __('“%s” may match the same answers and is checked first.', 'wconvert-pro'), result.heading)}</p>)}
       </AdminDialogBody><AdminDialogFooter back={<Button type="button" variant="outline" onClick={() => setDraftResult(null)}>{__('Cancel', 'wconvert-pro')}</Button>}
         note={!resultReady && <span id={`${tabsId}-add-reason`}>{__('Choose the answers that show this result.', 'wconvert-pro')}</span>}>

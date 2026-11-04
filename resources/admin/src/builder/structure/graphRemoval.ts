@@ -31,14 +31,14 @@ export function graphRemovalPlan(tree: TemplateTree, screenId: string, journeys 
   // Each refusal in two lengths: a few words for the menu row, the sentence for its ⓘ (ADR 0139).
   const refusal = !graph || !screen ? [__('No longer in the campaign', 'wconvert'), __('This screen is no longer in the campaign.', 'wconvert')]
     : screen.kind === 'result' && journeys
-      ? [__('Keeps the recommendation', 'wconvert'), __('Keep this result screen for the campaign’s recommendation. Edit its results, content or the lines into it here.', 'wconvert')]
+      ? [__('Keeps the recommendation', 'wconvert'), __('This result screen stays. Edit its results, content or incoming lines instead.', 'wconvert')]
     : screen.kind === 'acknowledgement' && tree.steps.filter(item => item.kind === 'acknowledgement').length === 1
-      ? [__('The only ending', 'wconvert'), __('Keep this ending so visitors have somewhere to finish. You can edit its content and the lines into it.', 'wconvert')]
+      ? [__('The only ending', 'wconvert'), __('Keep this ending so visitors have somewhere to finish.', 'wconvert')]
       : nodes.some(node => node.type === 'field' || node.type === 'consent' || node.type === 'button' && 'action' in node && node.action === 'submit')
-        ? [__('Collects contact details', 'wconvert'), __('This screen collects or saves contact details. Its fields, consent and save settings must stay together; it cannot be deleted here.', 'wconvert')]
-        : dependents.length && journeys ? [__('Other screens use its answers', 'wconvert'), sprintf(/* translators: %s: screen names, already joined. */ __('Answers on this screen are used by rules on: %s. Update those rules before deleting it.', 'wconvert'), dependents.map(item => item.name).join(', '))]
+        ? [__('Collects contact details', 'wconvert'), __('Fields, consent and save settings stay together. It can’t be deleted here.', 'wconvert')]
+        : dependents.length && journeys ? [__('Other screens use its answers', 'wconvert'), sprintf(/* translators: %s: screen names, already joined. */ __('Rules on %s use these answers. Update them before deleting this screen.', 'wconvert'), dependents.map(item => item.name).join(', '))]
           : (isEntry || incoming.length > 0) && !targets.length
-            ? [__('Nowhere to continue', 'wconvert'), __('There is nowhere suitable for its lines to go. Add a screen or change the lines before deleting this one.', 'wconvert')] : null;
+            ? [__('Nowhere to continue', 'wconvert'), __('Add a screen or change the lines before deleting this one.', 'wconvert')] : null;
   const reason = refusal?.[1] ?? null;
   const short = refusal?.[0] ?? null;
   return { reason, short, incoming, outgoing, isEntry, targets, preferred, needsDestination: isEntry || incoming.length > 0, questions };

@@ -125,20 +125,20 @@ export function graphResultAccessIssue(tree: TemplateTree, required: boolean): {
   if (signup.when) return issue(__('Show the signup to everyone on this line before changing result access.', 'wconvert-pro'), signup.id, 'content');
   if (!walkNodes(signup.content).some(node => node.type === 'field' && 'id' in node && submission.fields.includes(node.id ?? '')
     && 'name' in node && node.name === 'email' && 'required' in node && node.required))
-    return issue(__('Place the required email field on the signup screen before changing result access.', 'wconvert-pro'), signup.id, 'content');
+    return issue(__('Put the required email field on the signup screen first.', 'wconvert-pro'), signup.id, 'content');
   const first = required ? result : signup, second = required ? signup : result;
   const outgoing = graph.edges.filter(edge => edge.from === first.id);
   if (outgoing.length !== 1 || outgoing[0].kind !== 'default' || outgoing[0].to !== second.id)
-    return issue(sprintf(/* translators: 1: the screen that comes first, 2: the screen that should follow it; both are screen names. */ __('Send one line for all answers straight from “%1$s” to “%2$s”. Move any answer lines after both screens first.', 'wconvert-pro'), first.name, second.name), first.id);
+    return issue(sprintf(/* translators: 1: the screen that comes first, 2: the screen that should follow it; both are screen names. */ __('Send one line from “%1$s” to “%2$s”. Move answer lines after both.', 'wconvert-pro'), first.name, second.name), first.id);
   const otherIncoming = graph.edges.find(edge => edge.to === second.id && edge.id !== outgoing[0].id);
-  if (otherIncoming) return issue(sprintf(/* translators: 1: the screen a line starts from, 2: the screen that line enters, 3: the screen it should go to instead; all are screen names. */ __('The line from “%1$s” enters “%2$s” separately. Send it to “%3$s” first so both screens move together.', 'wconvert-pro'),
+  if (otherIncoming) return issue(sprintf(/* translators: 1: the screen a line starts from, 2: the screen that line enters, 3: the screen it should go to instead; all are screen names. */ __('The line from “%1$s” enters “%2$s” separately. Send it to “%3$s” first.', 'wconvert-pro'),
     tree.steps.find(screen => screen.id === otherIncoming.from)?.name ?? otherIncoming.from, second.name, first.name), otherIncoming.from);
   if (!required) {
     const questions = new Set(walkNodes(signup.content).filter(node => node.type === 'question' && 'id' in node).map(node => 'id' in node ? node.id : ''));
     if (result.results?.some(variant => variant.when?.clauses.some(clause => questions.has(clause.question))))
-      return issue(__('This result uses an answer collected on the signup screen. Move that question to an earlier screen before showing the result first.', 'wconvert-pro'), signup.id, 'content');
+      return issue(__('This result uses an answer from signup. Move that question earlier.', 'wconvert-pro'), signup.id, 'content');
     if (walkNodes(result.content, false).some(node => node.type === 'followup'))
-      return issue(__('This result contains a signup reward. Move the reward after the signup before showing the result first.', 'wconvert-pro'), result.id, 'content');
+      return issue(__('This result contains a signup reward. Move the reward after the signup.', 'wconvert-pro'), result.id, 'content');
   }
   return null;
 }

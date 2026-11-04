@@ -161,14 +161,14 @@ function whyActionIsRefused(tree: TemplateTree, action: string, act: ConvertingA
       ? {
           short: __('Needs a template that links away', 'wconvert'),
           reason: __(
-            'A template that submits has a second step for what the visitor sees afterwards, and a template that links away has none. Pick a template that links away from the Look’s Change template.',
+            'In the Look, use Change template to pick one that links away.',
             'wconvert',
           ),
         }
       : {
           short: __('Needs a template that submits', 'wconvert'),
           reason: __(
-            'A template that links away has no second step, and one that submits needs one for what the visitor sees afterwards. Pick a template that submits from the Look’s Change template.',
+            'In the Look, use Change template to pick one that submits.',
             'wconvert',
           ),
         };
@@ -178,7 +178,7 @@ function whyActionIsRefused(tree: TemplateTree, action: string, act: ConvertingA
     return {
       short: __('Remove the fields first', 'wconvert'),
       reason: __(
-        'Only the step with the submit button is a form, so the fields on it would draw and be read by nothing. Remove them first.',
+        'A link button can’t send these fields.',
         'wconvert',
       ),
     };

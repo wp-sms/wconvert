@@ -20,7 +20,7 @@ final class ProductHealth
                 if (!ResultProductSource::available($node['product_filter'])) return Health::check('warning', __('A category or attribute is missing. Update this result’s filters.', 'wconvert-pro'));
                 $cards = QuizProducts::cards($node);
                 if ($cards instanceof \WP_Error) return Health::check('unknown', __('Products could not be checked. Try again.', 'wconvert-pro'));
-                if (ResultProductSource::missingPins($node['product_filter'], array_column($cards, 'id'))) return Health::check('warning', __('A pinned product is unavailable or does not match. Review this result’s pins.', 'wconvert-pro'));
+                if (ResultProductSource::missingPins($node['product_filter'], array_column($cards, 'id'))) return Health::check('warning', __('A pinned product is unavailable or does not match. Review the pins.', 'wconvert-pro'));
                 return Health::check($cards ? 'ok' : 'warning', $cards ? __('Matching products are available.', 'wconvert-pro') : __('No available products match. Review this result’s filters.', 'wconvert-pro'));
             }
             return $this->selected(array_values(array_slice($node['product_ids'] ?? [], 0, 6)));
@@ -32,7 +32,7 @@ final class ProductHealth
             if (!$product || !CommerceContext::publicProduct($main) || !$product->is_in_stock()) return Health::check('warning', __('The main product is unavailable. Review it in the editor.', 'wconvert-pro'));
         }
         $crossSells = ($node['source'] ?? 'selected') === 'cross_sells';
-        if ($crossSells && !$main) return Health::check('context', __('Products depend on the visitor’s basket. Check a sample visit in the editor.', 'wconvert-pro'));
+        if ($crossSells && !$main) return Health::check('context', __('Products depend on the basket. Check a sample visit in the editor.', 'wconvert-pro'));
         if (!$crossSells) {
             $selected = $this->selected(array_values(array_filter(array_slice($node['product_ids'] ?? [], 0, 6), static fn (int $id): bool => $id !== $main)));
             if ($selected['state'] !== 'ok') return $selected;
@@ -40,8 +40,8 @@ final class ProductHealth
         $result = $this->commerce->recommendations($node, ['quantity' => 1, 'products' => $main ? [$main] : []], $main);
         if ($result['cards'] !== []) return Health::check('ok', __('Products are available. Display rules and the visitor’s basket still apply.', 'wconvert-pro'));
         return match ($result['reason']) {
-            'no_direct_add' => Health::check('warning', __('None of these products supports Add to cart here. Change products or use View product.', 'wconvert-pro')),
-            'no_relationships' => Health::check('warning', __('No cross-sells are set for the main product. Add them in WooCommerce or choose products here.', 'wconvert-pro')),
+            'no_direct_add' => Health::check('warning', __('None support Add to cart here. Change products or use View product.', 'wconvert-pro')),
+            'no_relationships' => Health::check('warning', __('Main product has no cross-sells. Add some in WooCommerce or choose products.', 'wconvert-pro')),
             default => Health::check('warning', __('No recommendations are available. Review the selected products.', 'wconvert-pro')),
         };
     }

@@ -76,7 +76,7 @@ export function DesignSettings({
         screens" is the InfoTip's, not a line of its own.
       */}
       <PanelHeader icon={<Palette />} title={<h3>{__('Look', 'wconvert')}</h3>}
-        tip={{ label: __('How the look applies', 'wconvert'), content: __('Shared styles apply to all screens. A screen’s own picture is labelled below. Elements with their own styles keep them; reset an element to follow the look again.', 'wconvert') }} />
+        tip={{ label: __('How the look applies', 'wconvert'), content: __('Applies to all screens. Styled elements keep their style until reset.', 'wconvert') }} />
       <Themes template={template} onChange={onChange} />
       <Tokens
         template={template}

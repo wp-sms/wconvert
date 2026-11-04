@@ -47,7 +47,7 @@ export function RecommendationSettings({ value, onChange, onPlacement, placement
       <FactList><FactRow label={__('Placement', 'wconvert')} action={onPlacement ? __('Display rules', 'wconvert') : undefined} onAction={onPlacement}>{placement ?? __('Set in Display rules', 'wconvert')}</FactRow></FactList>
     </PanelSection>
     <PanelSection title={__('Product action', 'wconvert')}
-      tip={value.action === 'add_to_cart' ? __('Adds one item; products needing options open their product page. It counts additions to the basket, not purchases.', 'wconvert') : __('Results count product clicks.', 'wconvert')}>
+      tip={value.action === 'add_to_cart' ? __('Products needing options open their page. Counts basket additions, not purchases.', 'wconvert') : __('Results count product clicks.', 'wconvert')}>
       <label className="sr-only" htmlFor={actionId}>{__('Product action', 'wconvert')}</label>
       <NativeSelect id={actionId} value={value.action ?? 'link'} onChange={event => onChange({ action: event.target.value as ProductsNode['action'] })}>
         <option value="link">{__('Open the product page', 'wconvert')}</option>

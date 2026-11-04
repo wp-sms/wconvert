@@ -53,7 +53,7 @@ it('rejects a fifth used Google family instead of losing a requirement during sa
     ...treeFixture({ steps: families.map(family => ({ type: 'stack', tokens: { font: `'${family}', serif` }, children: [] })) }),
     fonts: families.slice(0, 4).map(family => ({ family, faces: [{ weight: 400 }] })),
   } };
-  expect(() => withGoogleFont(template, { family: 'Lato', faces: [{ weight: 400 }] })).toThrow('up to four');
+  expect(() => withGoogleFont(template, { family: 'Lato', faces: [{ weight: 400 }] })).toThrow('Up to four');
   expect(template.tree.fonts).toHaveLength(4);
 });
 it('keeps decorations out of accessibility and layout flow, pauses them on close and removes them when hidden', () => {
@@ -138,7 +138,7 @@ it('does not warn about bundled campaign faces when Google delivery is disabled'
   const template = fixture();
   const view = renderReact(<FontNotice template={{ ...template, tokens: { 'heading-font': "'Bebas Neue', sans-serif" }, tree: { ...template.tree, fonts: [{ family: 'Bebas Neue', faces: [{ weight: 400 }] }] } }} />);
   await waitFor(() => expect(request).toHaveBeenCalled());
-  expect(screen.queryByText(/A substitute font is shown/)).toBeNull();
+  expect(screen.queryByText(/a substitute font shows/)).toBeNull();
   view.rerender(<FontNotice template={template} />);
-  expect(await screen.findByText(/A substitute font is shown/)).toHaveTextContent('Creepster');
+  expect(await screen.findByText(/a substitute font shows/)).toHaveTextContent('Creepster');
 });

@@ -32,10 +32,10 @@ export function SubmissionSettings({ template, primaryChannel, config, available
     title={title}
     description={description}
     emptyText={captureModeOf(config) === 'local'
-      ? __('Signups are saved only in WConvert. Add a destination to also send them on.', 'wconvert')
+      ? __('Saved only in WConvert. Add a destination to also send them on.', 'wconvert')
       : channel === 'phone'
-        ? __('Choose an SMS service for this signup, or keep all leads in WConvert only.', 'wconvert')
-        : __('Choose an email service for this signup, or keep all leads in WConvert only.', 'wconvert')}
+        ? __('Choose an SMS service, or keep all leads in WConvert only.', 'wconvert')
+        : __('Choose an email service, or keep all leads in WConvert only.', 'wconvert')}
     channel={{ channel, strict: true }}
     template={template}
     submissionId={secondary.id}

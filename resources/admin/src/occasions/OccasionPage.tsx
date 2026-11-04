@@ -231,11 +231,11 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
       <div className="flex flex-col gap-5">
         {notice && <OccasionNoticeView notice={notice} onDismiss={onDismissNotice} />}
         {error && <PageError message={error} />}
-        {refreshError && <PageError message={sprintf(/* translators: %s: the reason reading the occasion again failed, as the server gave it. */ __('This page could not refresh, so it still shows what was read before. %s', 'wconvert'), refreshError)} onRetry={() => setAttempt((n) => n + 1)} />}
+        {refreshError && <PageError message={sprintf(/* translators: %s: the reason reading the occasion again failed, as the server gave it. */ __('This page could not refresh. Showing what was read before. %s', 'wconvert'), refreshError)} onRetry={() => setAttempt((n) => n + 1)} />}
         {campaigns.length === 0 ? (
           <Region>
             <EmptyState icon={Megaphone} title={sprintf(/* translators: %s: an occasion's name. */ __('No campaigns in %s yet', 'wconvert'), occasion.name)} action={newCampaign}>
-              {sprintf(/* translators: %s: an occasion's dates. */ __('New campaigns made here start with its dates, %s. Existing campaigns join from their Details.', 'wconvert'), formatRange(occasion.start, occasion.end))}
+              {sprintf(/* translators: %s: an occasion's dates. */ __('Campaigns made here start with its dates, %s. Others join from Details.', 'wconvert'), formatRange(occasion.start, occasion.end))}
             </EmptyState>
           </Region>
         ) : <>
@@ -355,15 +355,15 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
             _n('Creates %1$s, %2$s, with a draft of its %3$s campaign. Its dates move one year. %4$s and its campaigns stay as they are.',
               'Creates %1$s, %2$s, with a draft of each of its %3$s campaigns. Their dates move one year. %4$s and its campaigns stay as they are.', campaigns.length, 'wconvert'),
             next.name, formatRange(next.start, next.end), formatCount(campaigns.length), occasion.name)}
-          {' '}{__('Dates keep the same day of the month, so a sale tied to a weekday may need its dates moved.', 'wconvert')}
+          {' '}{__('Dates keep their day of the month, so check any weekday sale.', 'wconvert')}
         </>}
         confirmLabel={__('Copy to next year', 'wconvert')} onConfirm={() => void copy()} />
       <ConfirmDialog open={asking === 'delete'} variant="destructive" onOpenChange={(open) => { if (!open) setAsking(null); }} returnFocusTo={menu}
         title={sprintf(/* translators: %s: an occasion's name. */ __('Delete %s?', 'wconvert'), occasion.name)}
         description={sprintf(
           /* translators: %s: how many campaigns the occasion holds. */
-          _n('Its %s campaign stays, with its design, dates, status and results. It just leaves this occasion.',
-            'Its %s campaigns stay, with their designs, dates, status and results. They just leave this occasion.', campaigns.length, 'wconvert'),
+          _n('Its %s campaign stays as it is. It just leaves this occasion.',
+            'Its %s campaigns stay as they are. They just leave this occasion.', campaigns.length, 'wconvert'),
           formatCount(campaigns.length))}
         confirmLabel={__('Delete occasion', 'wconvert')}
         onConfirm={() => {

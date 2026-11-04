@@ -69,7 +69,7 @@ describe('the retention line', () => {
     expect(await screen.findByText(/deleted automatically after 90 days/)).toBeInTheDocument();
 
     view.rerender(<RetentionSummary refreshKey={1} />);
-    expect(await screen.findByRole('alert')).toHaveTextContent('could not be refreshed');
+    expect(await screen.findByRole('alert')).toHaveTextContent('Could not refresh retention');
     expect(screen.getByText(/deleted automatically after 90 days/)).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));

@@ -295,7 +295,7 @@ export function checkVisit(value: DisplayRulesValue, vocabulary: RuleVocabulary,
   const unset = opening !== undefined && opening.mode !== 'immediate' && opening.rules.length === 0;
   const touch = opening !== undefined && touchBlocked(opening, visitor.device);
   if (plan && unset) reasons.push(__('Choose when it opens.', 'wconvert'));
-  if (touch) reasons.push(__('Leaving can’t be detected on touch screens. Add “Leaving or scrolling back up”.', 'wconvert'));
+  if (touch) reasons.push(__('Touch screens can’t detect leaving. Add “Leaving or scrolling back up”.', 'wconvert'));
 
   const stop = paced(value.frequency, visitor.history, visitor.daysAgo, opening?.mode ?? 'automatic');
   const often = stop === null ? 'pass' : fail(pacingReason(stop, summaryOf(summaries, 'how-often').text, act));

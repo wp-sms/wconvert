@@ -429,7 +429,7 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
         <div className="min-w-0">
           <h2 className="m-0 text-heading font-semibold">{__('Destinations', 'wconvert')}</h2>
           <Description className="mt-1">
-            {__('Reusable places to send submissions. Each campaign picks its own in the Destinations tab.', 'wconvert')}
+            {__('Reusable places to send submissions. Campaigns pick theirs in the Destinations tab.', 'wconvert')}
             {/* Only when there is something to check — a permanent link is one the merchant learns to skip. */}
             {issues > 0 && <>{' '}<a className="inline-flex items-center gap-1 font-medium underline underline-offset-2" href={sendingIssuesHref()}>
               {sprintf(/* translators: %s: number of destinations with a sending issue. */ _n('%s sending issue', '%s sending issues', issues, 'wconvert'), formatCount(issues))}
@@ -471,7 +471,7 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
                 action={mode === 'settings' ? <Button onClick={(event) => openAdd(event.currentTarget)}>
                   <Plus aria-hidden="true" />{__('Add a destination', 'wconvert')}
                 </Button> : undefined}>
-                {__('Add a destination to also send them to an email list or another service.', 'wconvert')}
+                {__('A destination also sends them to an email list or another service.', 'wconvert')}
               </EmptyState>
             </Region>
           ) : (
@@ -579,7 +579,7 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
               replaying.label,
             )}{' '}{data?.types.find((type) => type.id === replaying.type)?.forwards_submission
             // A receiver runs on every post: say what that costs, and what the stable id lets it skip (ADR 0148).
-            && <>{__('Each one is posted to the receiver again, which may run your automation and use its tasks. Those that already arrived keep their id, so a receiver that checks it can skip them.', 'wconvert')}{' '}</>}
+            && <>{__('Each is posted again, so your automation may run and use tasks. A receiver that checks the id can skip repeats.', 'wconvert')}{' '}</>}
             <GuideLink href={docsUrl(GUIDES.resend, 'understand-the-scope')}>{__('Before you send again', 'wconvert')}</GuideLink></>}
         confirmLabel={__('Send again', 'wconvert')}
         returnFocusTo={returnFocus}
@@ -599,7 +599,7 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
             ? ''
             : sprintf(
                 /* translators: %s: the name of a Destination. */
-                __('Campaigns stop sending to “%s”. Leads already in WConvert stay, and so does anything it already received.', 'wconvert'),
+                __('Campaigns stop sending to “%s”. Leads and anything it already received stay.', 'wconvert'),
                 confirming.label,
               )
         }
@@ -939,7 +939,7 @@ function Configured({
                 )}
               </AlertTitle>
               <AlertDescription>
-                <p id={`${id}-recovery`}>{__('Once this destination can send, send them again. Submissions since its last success are queued; some may arrive twice, including emails.', 'wconvert')}</p>
+                <p id={`${id}-recovery`}>{__('Once this destination can send, send them again.', 'wconvert')}</p>
                 <div className="mt-2 flex flex-col items-start gap-1">
                   <Button variant="outline" aria-disabled={replayRefusal === null ? undefined : true}
                     aria-describedby={replayRefusal === null ? `${id}-recovery` : `${id}-recovery ${id}-recovery-refused`}
@@ -972,12 +972,12 @@ function Configured({
               </AlertTitle>
               <AlertDescription>
                 <p>{__('Each is sent with its original details. No new leads are created.', 'wconvert')}</p>
-                {report.capped && <p>{__('That is the limit for one run. Send again once these have gone through.', 'wconvert')}</p>}
+                {report.capped && <p>{__('That is one run’s limit. Send again once these have gone through.', 'wconvert')}</p>}
                 {(report.needs_review ?? 0) > 0 && <p>{sprintf(
                   /* translators: %s: number of submissions. */
                   _n(
-                    '%s older submission was left out because this destination’s account, list or settings have changed since.',
-                    '%s older submissions were left out because this destination’s account, list or settings have changed since.',
+                    '%s older submission was left out: account, list or settings changed since.',
+                    '%s older submissions were left out: account, list or settings changed since.',
                     report.needs_review ?? 0,
                     'wconvert',
                   ),
@@ -1153,7 +1153,7 @@ function Failures({ failures, destinations }: { failures: DestinationsPayload['f
     <Region>
       <RegionHeader
         title={__('Submissions that weren’t sent', 'wconvert')}
-        description={__('Each was rejected on its own, apart from any outage. The latest 200 are kept.', 'wconvert')}
+        tip={__('Each was rejected on its own, apart from any outage. Only the latest 200 are kept.', 'wconvert')}
       />
       <DataTable>
         <DataTableHead>

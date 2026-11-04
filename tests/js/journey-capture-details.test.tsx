@@ -53,7 +53,7 @@ it('refuses Ask for their name while the name field has its own settings, and sa
   render(<JourneyCaptureSettings tree={customized} step={0} onChange={update} />);
   const ask = screen.getByLabelText(/Ask for their name/);
   expect(ask).toHaveAttribute('aria-disabled', 'true');
-  expect(ask).toHaveAccessibleDescription('The name field has its own settings. Change it on its own panel.');
+  expect(ask).toHaveAccessibleDescription('Has its own settings. Change it on the name field’s panel.');
   await user.click(ask);
   expect(ask).toHaveFocus();
   expect(update).not.toHaveBeenCalled();

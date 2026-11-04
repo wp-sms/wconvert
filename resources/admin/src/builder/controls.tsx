@@ -428,21 +428,21 @@ function ValueList({ id, label, value, onChange }: Omit<ParamControlProps, 'para
  * module-level constant.
  */
 const HINTS: Partial<Record<RuleParam['control'], () => string>> = {
-  path_glob: () => __('Use a path such as /pricing/ or /shop/*. The * matches any characters. Leave out the domain.', 'wconvert'),
-  text_set: () => __('Match any value listed here. Leave empty to match any visit where this parameter is present.', 'wconvert'),
+  path_glob: () => __('A path such as /pricing/ or /shop/*, no domain. * matches anything.', 'wconvert'),
+  text_set: () => __('Matches any listed value. Empty matches any visit with this parameter.', 'wconvert'),
   referrer_set: () =>
     __(
-      'The page they were on immediately before this one — not where they first found your site. A visit with no previous page counts as Direct.',
+      'Previous page, not how they first found you. None counts as Direct.',
       'wconvert',
     ),
   hours: () =>
     __(
-      'Your site’s own time, not each visitor’s. A window may run past midnight — 22:00 to 02:00 is overnight.',
+      'Your site’s time, not the visitor’s. 22:00 to 02:00 runs overnight.',
       'wconvert',
     ),
   role_set: () =>
     __(
-      'Holding any one of these is enough. Signed-out visitors hold none, so choosing any role means signed-in visitors only.',
+      'Any one is enough. Choosing a role means signed-in visitors only.',
       'wconvert',
     ),
 };

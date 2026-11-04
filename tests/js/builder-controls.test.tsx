@@ -231,8 +231,8 @@ describe('the referrer hint', () => {
     const hint = document.getElementById('wconvert-referrer-hint');
 
     expect(hint).toBeInTheDocument();
-    expect(hint?.textContent ?? '').toMatch(/immediately before/i);
-    expect(hint?.textContent ?? '').toMatch(/not where they first/i);
+    expect(hint?.textContent ?? '').toMatch(/Previous page/);
+    expect(hint?.textContent ?? '').toMatch(/not how they first found/);
   });
 
   /** The group points at it, or a screen reader never reaches the caveat. */

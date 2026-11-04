@@ -177,9 +177,9 @@ export function SlotFields({
         return (
           <PanelField key={key} label={label} htmlFor={id}
             tip={slot.type === 'field' && key === 'placeholder' && slot.captures !== 'interest' ? __('Disappears when visitors type. Use the label to say what to enter.', 'wconvert')
-              : slot.type === 'image' && key === 'alt' ? __('Describes the image for screen readers. Leave it empty if the image is decoration.', 'wconvert')
-              : signupOnly && slot.type === 'code' && key === 'text' ? __('The signup before this screen is optional. Visitors who skip it see this screen without the code. To show a code to everyone, put it on the result screen.', 'wconvert')
-              : signupOnly && slot.type === 'followup' && key === 'href' ? __('The signup before this screen is optional. Visitors who skip it see this screen without the link. To give everyone a link, add it to the result’s Link.', 'wconvert') : undefined}
+              : slot.type === 'image' && key === 'alt' ? __('For screen readers. Leave it empty if the image is decoration.', 'wconvert')
+              : signupOnly && slot.type === 'code' && key === 'text' ? __('To show a code to everyone, put it on the result screen.', 'wconvert')
+              : signupOnly && slot.type === 'followup' && key === 'href' ? __('To give everyone a link, add it to the result’s Link.', 'wconvert') : undefined}
             /*
               **The mark is where the words go, and it has to be said in the
               same breath as the box that holds them.** `emphasis` is the

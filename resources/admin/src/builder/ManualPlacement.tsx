@@ -17,7 +17,7 @@ export function ManualPlacement({ optinId, published }: { readonly optinId: stri
   const widgets = destination?.type === 'widgets';
 
   return <div className="wconvert-placement-panel">
-    {!published && <p className="wconvert-display-hint" data-attention="true">{__('Publish this campaign first. The block and the shortcode only find published campaigns.', 'wconvert')}</p>}
+    {!published && <p className="wconvert-display-hint" data-attention="true">{__('Publish this campaign first. The block and shortcode only find published campaigns.', 'wconvert')}</p>}
     <div className="wconvert-display-settings">
       <div className="wconvert-placement-row">
         <div className="wconvert-placement-row__text">
@@ -25,7 +25,7 @@ export function ManualPlacement({ optinId, published }: { readonly optinId: stri
           <p className="wconvert-display-hint">
             {__('Add the “WConvert campaign” block where you want the form to appear.', 'wconvert')}
             {blockTheme && <> {__('For a sidebar or footer, edit the template part that holds it.', 'wconvert')}</>}
-            {widgets && <> {__('For a sidebar or footer, add a Text widget to that area and paste the shortcode below.', 'wconvert')}</>}
+            {widgets && <> {__('For a sidebar or footer, paste the shortcode into a Text widget.', 'wconvert')}</>}
           </p>
         </div>
         {destination && <Button asChild variant="outline">
@@ -43,7 +43,7 @@ export function ManualPlacement({ optinId, published }: { readonly optinId: stri
 }
 
 export function Shortcode({ optinId }: { readonly optinId: string }) {
-  return <ShortcodeCopy value={inlineShortcode(optinId)} label={__('Shortcode for other editors', 'wconvert')} help={__('Use a Shortcode block, a classic Text widget, or your page builder’s shortcode element.', 'wconvert')} />;
+  return <ShortcodeCopy value={inlineShortcode(optinId)} label={__('Shortcode for other editors', 'wconvert')} help={__('Use a Shortcode block, Text widget or your page builder’s shortcode element.', 'wconvert')} />;
 }
 
 export function ShortcodeCopy({ value, label, help }: { value: string; label: string; help: string }) {
@@ -81,6 +81,6 @@ export function ShortcodeCopy({ value, label, help }: { value: string; label: st
       </Button>
     </div>
     {status === 'copied' && <p role="status" className="text-note">{__('Shortcode copied.', 'wconvert')}</p>}
-    {status === 'failed' && <p role="alert" className="text-note">{__('Could not copy automatically. The shortcode is selected; copy it with your keyboard or context menu.', 'wconvert')}</p>}
+    {status === 'failed' && <p role="alert" className="text-note">{__('Could not copy. The shortcode is selected; copy it with your keyboard.', 'wconvert')}</p>}
   </div>;
 }

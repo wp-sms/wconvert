@@ -192,13 +192,13 @@ export function ObjectPicker({ id, kind, value, onChange }: ObjectPickerProps) {
       ? sprintf(/* translators: %s: the saved page, post, category or tag's ID number. */ __('Could not load the saved selection’s name. This rule still uses #%s.', 'wconvert'), value)
       : missing
         ? kind === 'post'
-          ? sprintf(/* translators: %s: the page or post's ID number. */ __('Page or post #%s is not available by name. It may be unpublished, deleted or unavailable in WordPress search. This rule still uses it.', 'wconvert'), value)
-          : sprintf(/* translators: %s: the category or tag's ID number. */ __('Category or tag #%s is not available by name. It may have been deleted or be unavailable in WordPress search. This rule still uses it.', 'wconvert'), value)
+          ? sprintf(/* translators: %s: the page or post's ID number. */ __('Search can’t find page or post #%s. This rule still uses it.', 'wconvert'), value)
+          : sprintf(/* translators: %s: the category or tag's ID number. */ __('Search can’t find category or tag #%s. This rule still uses it.', 'wconvert'), value)
         : '';
   const searchNote = searching ? __('Searching…', 'wconvert')
-    : searchFailed ? __('Search could not be completed. Try again, or press Enter in the search field.', 'wconvert')
+    : searchFailed ? __('Search failed. Try again, or press Enter in the search field.', 'wconvert')
       : hits.length === 0 ? kind === 'post'
-        ? __('No matching pages or posts. Try another name. Only published items can be found by name.', 'wconvert')
+        ? __('No published pages or posts match. Try another name.', 'wconvert')
         : __('No matching categories or tags. Try another name.', 'wconvert')
         : '';
 

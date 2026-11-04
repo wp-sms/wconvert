@@ -12,6 +12,6 @@ describe('choosing a handoff mode', () => {
     expect(onChange).toHaveBeenCalledExactlyOnceWith('local');
     view.rerender(<CaptureModeChoice mode="local" selectedCount={0} onChange={onChange} />);
     expect(screen.queryByText(/Clears selected destinations/)).not.toBeInTheDocument();
-    expect(screen.getByRole('status')).toHaveTextContent(/Automatic emails and texts need a separate sending setup/);
+    expect(screen.getByRole('status')).toHaveTextContent(/Don’t promise automatic emails or texts/);
   });
 });

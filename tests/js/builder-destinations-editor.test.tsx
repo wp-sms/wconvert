@@ -220,16 +220,16 @@ describe('health, on the card that has it', () => {
       ['a', 'b'],
       [type({ id: 'paid', label: 'Paid', tier: 'pro' }), type({ id: 'mailpoet', label: 'MailPoet', requires: 'mailpoet', requires_label: 'MailPoet' })],
     );
-    expect(within(card('Paid route')).getByText(/Needs WConvert Pro,/)).toBeVisible();
+    expect(within(card('Paid route')).getByText(/Needs WConvert Pro\./)).toBeVisible();
     expect(within(card('Plugin route')).getByText('Paused')).toBeVisible();
-    expect(within(card('Plugin route')).getByText(/Needs MailPoet on this site/)).toBeVisible();
+    expect(within(card('Plugin route')).getByText(/Needs MailPoet here\./)).toBeVisible();
     expect(within(card('Plugin route')).getByText('Newsletter')).toBeVisible();
   });
 
   /** Free keeps the saved route and names no product (ADR 0116). */
   it('names no product for a locked route on a free install', () => {
     listed([destination({ id: 'a', type: 'paid', label: 'Paid route', availability: 'locked' })], ['a'], [type({ id: 'paid', label: 'Paid', tier: 'pro' })]);
-    expect(within(card('Paid route')).getByText('This destination type isn’t available on this site, so submissions are kept in WConvert and not sent.')).toBeVisible();
+    expect(within(card('Paid route')).getByText('Not available here, so submissions are kept in WConvert and not sent.')).toBeVisible();
     expect(within(card('Paid route')).getByText('Not available')).toBeVisible();
     expect(within(card('Paid route')).queryByText(/WConvert Pro/)).toBeNull();
   });
@@ -471,19 +471,19 @@ describe('what this save point needs before publishing', () => {
   it('makes a required unfinished handoff explicit without selecting a destination', () => {
     const onChange = vi.fn();
     editor(ready([]), [], [], { outcome: CAPTURE_OUTCOME, onChange });
-    expect(screen.getByRole('status')).toHaveTextContent('Before you can publish, connect a service or choose “Keep in WConvert only”.');
+    expect(screen.getByRole('status')).toHaveTextContent('To publish, connect a service or choose “Keep in WConvert only”.');
     expect(onChange).not.toHaveBeenCalled();
   });
 
   it('keeps the requirement while the only bound route cannot run', () => {
     editor(ready([destination({ id: 'a', label: 'Newsletter', availability: 'unavailable' })]), ['a'], [], { outcome: CAPTURE_OUTCOME });
     expect(card('Newsletter')).toBeInTheDocument();
-    expect(screen.getByText(/Before you can publish, connect a service/)).toBeVisible();
+    expect(screen.getByText(/To publish, connect a service/)).toBeVisible();
   });
 
   it('keeps forwarding optional for an enquiry with no handoff requirement', () => {
     editor(ready([]), [], [], { outcome: { ...CAPTURE_OUTCOME, audience_channel: null } });
-    expect(screen.getByText('Leads stay in WConvert. Add a destination only if you want to send them on.')).toBeVisible();
+    expect(screen.getByText('Optional. Leads stay in WConvert either way.')).toBeVisible();
     expect(screen.queryByText(/Before you can publish/)).not.toBeInTheDocument();
   });
 

@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react';
+import { __, sprintf } from '@wordpress/i18n';
 import { Label } from '../components/ui/label';
 import { cn } from '../lib/utils';
 import { Description } from './Description';
+import { InfoTip } from './InfoTip';
 
 /**
  * **The one field layout** (ADR 0131): label above, 6px, the control, then a
@@ -11,12 +13,16 @@ import { Description } from './Description';
  *
  * Pass the hint's id to the control's `aria-describedby` yourself; the field
  * does not clone its child.
+ *
+ * `tip` stands beside the label, outside it, because a button inside a label is
+ * a button that also focuses the control (ADR 0188).
  */
 export function Field({
   label,
   htmlFor,
   hint,
   hintId,
+  tip,
   error,
   className,
   children,
@@ -25,13 +31,19 @@ export function Field({
   htmlFor: string;
   hint?: ReactNode;
   hintId?: string;
+  tip?: ReactNode;
   error?: ReactNode;
   className?: string;
   children: ReactNode;
 }) {
   return (
     <div className={cn('flex min-w-0 flex-col gap-1.5', className)}>
-      <Label htmlFor={htmlFor}>{label}</Label>
+      {tip === undefined ? <Label htmlFor={htmlFor}>{label}</Label> : (
+        <span className="flex items-center gap-1">
+          <Label htmlFor={htmlFor}>{label}</Label>
+          <InfoTip label={typeof label === 'string' ? sprintf(/* translators: %s: a field label, e.g. “Answer type”. */ __('About %s', 'wconvert'), label) : __('About this field', 'wconvert')}>{tip}</InfoTip>
+        </span>
+      )}
       {children}
       {hint && <Description id={hintId}>{hint}</Description>}
       {error && <p role="alert" className="m-0 text-note text-destructive">{error}</p>}

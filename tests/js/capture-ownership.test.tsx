@@ -51,7 +51,7 @@ describe('explicit capture ownership', () => {
     const path = pathOf(tree, 'n1');
     const source = tree.steps[Number(path[0])];
     const conditional = { ...tree, steps: tree.steps.map(step => step.id === source.id ? { ...step, when: { match: 'all' as const, clauses: [] } } : step) };
-    expect(captureOwnership(conditional, path)?.choices[0].reason).toMatch(/Every line/);
+    expect(captureOwnership(conditional, path)?.choices[0].reason).toMatch(/make every line/);
     expect(withCaptureOwner(conditional, path, 'enquiry')).toBe(conditional);
   });
 
@@ -114,6 +114,6 @@ describe('capture review repairs', () => {
     const current = template();
     const skip = nodesOf(current.tree).find(block => block.action === 'skip')!;
     expect(captureReadiness({ ...current, tree: withValue(current.tree, skip.path, 'action', 'next') }, 'email')).toContainEqual(expect.objectContaining({ said: expect.stringMatching(/both Continue and Save/), path: skip.path }));
-    expect(captureReadiness({ ...current, tree: withValue(current.tree, skip.path, 'submission', 'missing') }, 'email')).toContainEqual(expect.objectContaining({ said: expect.stringMatching(/Choose a valid form/), path: skip.path }));
+    expect(captureReadiness({ ...current, tree: withValue(current.tree, skip.path, 'submission', 'missing') }, 'email')).toContainEqual(expect.objectContaining({ said: expect.stringMatching(/Choose this button’s form/), path: skip.path }));
   });
 });

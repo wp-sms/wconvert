@@ -19,7 +19,7 @@ it('names a rule source that can only be answered after the rule', () => {
     { id: 'too-early', from: 'interests', to: 'contact', kind: 'answer', when: { match: 'all', clauses: [{ question: 'n2', operator: 'is', values: ['large'] }] } },
   ] } };
   const issue = journeyReadinessIssues(tree).find(issue => issue.key === 'edge:too-early');
-  expect(issue?.said).toContain('“Garden size?” cannot be answered before this rule');
+  expect(issue?.said).toContain('“Garden size?” isn’t answered first');
   expect(issue?.repair).toEqual({ screenId: 'interests', section: 'paths', edgeId: 'too-early' });
 });
 
@@ -40,7 +40,7 @@ it('points a removed answer back to its screen visibility rule', () => {
   const tree: TemplateTree = { ...base, steps: base.steps.map(screen => screen.id === 'garden' ? { ...screen,
     when: { match: 'all', clauses: [{ question: 'n1', operator: 'includes_any', values: ['removed'] }] } } : screen) };
   const issue = journeyReadinessIssues(tree).find(issue => issue.key === 'show:garden');
-  expect(issue?.said).toContain('no longer available in “What interests you?”');
+  expect(issue?.said).toContain('no longer in “What interests you?”');
   expect(issue?.repair).toEqual({ screenId: 'garden', section: 'content' });
 });
 
@@ -77,7 +77,7 @@ it('lets a product result go without a link, but not a link without words', () =
   expect(journeyReadinessIssues(result)).toEqual([]);
   const unlabelled: TemplateTree = { ...result, steps: result.steps.map(screen => ({ ...screen, results: screen.results!.map(variant => ({ ...variant, href: '/shop/' })) })) };
   expect(journeyReadinessIssues(unlabelled)).toContainEqual({ key: 'result-link:match:default',
-    said: 'Add words for the link button on “Garden picks” (“Your match”), or remove its address.',
+    said: 'Label the link button on “Garden picks” (“Your match”), or remove its address.',
     repair: { screenId: 'match', section: 'content', resultId: 'default', focus: 'result-link' } });
   const fixed: TemplateTree = { ...unlabelled, steps: unlabelled.steps.map(screen => ({ ...screen, results: screen.results!.map(variant => ({ ...variant, link_label: 'Browse plants' })) })) };
   expect(journeyReadinessIssues(fixed)).toEqual([]);
@@ -98,5 +98,5 @@ it('locates missing result headings and conditions instead of allowing a generic
     results: [{ id: 'first', heading: '', body: '', product_ids: [] }, { id: 'fallback', heading: 'All other answers', body: '', product_ids: [] }] }] };
   const issues = journeyReadinessIssues(tree);
   expect(issues.find(issue => issue.key === 'result-heading:result:first')?.repair).toEqual({ screenId: 'result', section: 'content', resultId: 'first', focus: 'result-heading' });
-  expect(issues.find(issue => issue.key === 'result:result:0')?.said).toContain('Only the last one, for all other answers, has none');
+  expect(issues.find(issue => issue.key === 'result:result:0')?.said).toContain('Only the last has none');
 });

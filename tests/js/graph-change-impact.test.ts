@@ -9,11 +9,11 @@ const reroute = (base: TemplateTree, id: string, to: string): TemplateTree => ({
 it('names a lost required save even when all screens remain reachable', () => {
   const after = reroute(tree, 'balcony_hidden', 'received');
   expect(graphChangeImpact(tree, after)).toContain('could reach “Received” without saving at “One enquiry”');
-  expect(graphChangeImpact(tree, after)).not.toContain('unreachable');
+  expect(graphChangeImpact(tree, after)).not.toContain('could no longer reach');
 });
 it('names unreachable questions separately from a disconnected save', () => {
   const impact = graphChangeImpact(tree, reroute(tree, 'start', 'received'))!;
-  expect(impact).toContain('These screens would become unreachable:');
+  expect(impact).toContain('Visitors could no longer reach:');
   for (const name of ['Garden details', 'Indoor details', 'One enquiry']) expect(impact).toContain(name);
   expect(impact).toContain('without saving');
 });

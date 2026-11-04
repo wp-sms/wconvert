@@ -84,12 +84,12 @@ final class PublishReadiness
         }
         if (InlinePlacement::normalize($config['inline_placement']) === null) {
             return new WP_Error('wconvert_inline_placement',
-                __('Choose a valid inline position and a paragraph number from 1 to 100.', 'wconvert'), ['status' => 400]);
+                __('Choose an inline position and a paragraph number from 1 to 100.', 'wconvert'), ['status' => 400]);
         }
         $triggers = DisplayPlan::compatibilityTriggers($config['display_rules'] ?? []);
         if (count($triggers) !== 1 || ($triggers[0]['type'] ?? null) !== 'page_load') {
             return new WP_Error('wconvert_inline_trigger',
-                __('Automatic inline placement needs “When does it open?” set to Right away. Change it, or use manual placement.', 'wconvert'), ['status' => 400]);
+                __('For automatic placement, set “When does it open?” to Right away, or use manual placement.', 'wconvert'), ['status' => 400]);
         }
         return null;
     }
@@ -106,17 +106,17 @@ final class PublishReadiness
             fn (): ?WP_Error => $this->display($config),
             static fn (): ?WP_Error => $optin->hasDesign() ? null : new WP_Error(
                 self::NO_DESIGN,
-                __('Choose a template before publishing. You can keep saving this campaign as a draft.', 'wconvert'),
+                __('Choose a template before publishing.', 'wconvert'),
                 ['status' => 400]
             ),
             fn (): ?WP_Error => self::inlinePlacement($config) ?? $this->contentLock($config, $optin->id),
             static fn (): ?WP_Error => CaptureJourney::requiresPremium($config['template']['tree'] ?? []) && !JourneySupport::active()
-                ? new WP_Error('wconvert_journey_unsupported', __('This design uses elements this site can’t display. You can keep saving this campaign as a draft.', 'wconvert'), ['status' => 400])
+                ? new WP_Error('wconvert_journey_unsupported', __('This design uses elements this site can’t display.', 'wconvert'), ['status' => 400])
                 : null,
             static fn (): ?WP_Error => self::form($config, $optin->goal),
             fn (): ?WP_Error => $this->goal($config, $optin->goal),
             static fn (): ?WP_Error => PhoneCountry::resolved($config) === null
-                ? new WP_Error('wconvert_phone_country_required', __('Choose a site-wide starting country in Settings, or choose one for this phone field, before publishing.', 'wconvert'), ['status' => 400])
+                ? new WP_Error('wconvert_phone_country_required', __('Choose a starting country in Settings or on this phone field.', 'wconvert'), ['status' => 400])
                 : null,
             fn (): ?WP_Error => $this->signupDestinations($config, $optin->goal),
         ];
@@ -146,13 +146,13 @@ final class PublishReadiness
     {
         $enabled = ContentLock::normalize($config['content_lock'] ?? null) !== null;
         if ($enabled && !ContentLock::compatible($config, DisplayPlan::compatibilityTriggers($config['display_rules'] ?? []))) {
-            return new WP_Error('wconvert_content_lock', __('Content lock requires a complete inline submission form, manual placement, and only the page-load trigger.', 'wconvert'), ['status' => 400]);
+            return new WP_Error('wconvert_content_lock', __('Content lock needs a complete inline form, manual placement and only “Right away”.', 'wconvert'), ['status' => 400]);
         }
         foreach ($this->optins->otherArmsOf($id) as $arm) {
             $other = $arm->config;
             $otherEnabled = ContentLock::normalize($other['content_lock'] ?? null) !== null;
             if ($enabled !== $otherEnabled || ($otherEnabled && !ContentLock::compatible($other, DisplayPlan::compatibilityTriggers($other['display_rules'] ?? [])))) {
-                return new WP_Error('wconvert_content_lock_family', __('Every A/B variant must use the same content-lock mode and a compatible inline submission form.', 'wconvert'), ['status' => 400]);
+                return new WP_Error('wconvert_content_lock_family', __('A/B variants need the same content lock and a compatible inline form.', 'wconvert'), ['status' => 400]);
             }
         }
         return null;
@@ -164,26 +164,26 @@ final class PublishReadiness
         $issue = CaptureContract::issue($config, $goal, get_privacy_policy_url(), true);
         if ($issue === null) return null;
         $message = match ($issue) {
-            'choices' => __('Add at least one choice to the interest field before publishing. You can keep saving this campaign as a draft.', 'wconvert'),
-            'followup' => __('Give each resource link a label and address, and place it after the form. You can keep saving this campaign as a draft.', 'wconvert'),
+            'choices' => __('Add at least one choice to the interest field before publishing.', 'wconvert'),
+            'followup' => __('Place each resource link after the form, with a label and address.', 'wconvert'),
             'consent' => __('Each signup needs its required contact field and its own consent wording.', 'wconvert'),
             // A free install names no product (ADR 0116 §3); it says what a question block says.
             'quiz_cart', 'commerce_products' => (new WpProPresence())->installedTier() === Tier::Free
-                ? __('This design uses elements this site can’t display. You can keep saving this campaign as a draft.', 'wconvert')
+                ? __('This design uses elements this site can’t display.', 'wconvert')
                 : ($issue === 'quiz_cart'
-                    ? __('Quiz cart buttons need WConvert Pro and WooCommerce. Choose products for each result that uses them.', 'wconvert')
-                    : __('Product recommendations need WConvert Pro and WooCommerce. Choose products in one recommendation block on a single offer screen before publishing.', 'wconvert')),
+                    ? __('Cart buttons need WConvert Pro and WooCommerce. Choose products for each result using them.', 'wconvert')
+                    : __('Product recommendations need WConvert Pro and WooCommerce. Choose products in one block on one offer screen.', 'wconvert')),
             'products' => __('Connect WooCommerce and choose products for each matching result before publishing.', 'wconvert'),
-            'link' => __('A link in your text has no web address. Add one, or remove the link. You can keep saving this campaign as a draft.', 'wconvert'),
-            'result_link' => __('Give each result link some words for its button, or remove its address.', 'wconvert'),
-            'routes' => __('In Edit, connect every screen, give continuing screens a line for all other answers, and remove loops. You can keep saving this campaign as a draft.', 'wconvert'),
-            'capture_paths' => __('In Edit, put the required form before the result, before every later question and before any second form.', 'wconvert'),
-            'question_path_limit' => __('One line can ask at most ten questions. In Edit, remove questions from that line or move them to a separate line.', 'wconvert'),
-            'conditions' => __('In Edit, complete each rule using a question available before it. You can keep saving this campaign as a draft.', 'wconvert'),
-            'questions' => __('In Edit, complete the question text and answer choices. Choice questions need 2 to 12 named answers.', 'wconvert'),
-            'results' => __('In Edit, give each result a heading and a condition, with one result for all other answers last.', 'wconvert'),
-            'navigation' => __('Review each screen’s buttons in Edit. Continuing screens need either Continue or Save, not both. Optional saves also need No thanks.', 'wconvert'),
-            default => __('Complete the screen order, navigation and submission fields before publishing. You can keep saving this campaign as a draft.', 'wconvert'),
+            'link' => __('A text link has no web address. Add one, or remove it.', 'wconvert'),
+            'result_link' => __('Give each result link a button label, or remove its address.', 'wconvert'),
+            'routes' => __('In Edit, connect every screen, give continuing screens a line for all other answers, and remove loops.', 'wconvert'),
+            'capture_paths' => __('In Edit, put the required form before the result, later questions and any second form.', 'wconvert'),
+            'question_path_limit' => __('One line can ask at most ten questions. In Edit, remove some or move them to another line.', 'wconvert'),
+            'conditions' => __('In Edit, complete each rule using a question available before it.', 'wconvert'),
+            'questions' => __('In Edit, complete each question. Choice questions need 2 to 12 named answers.', 'wconvert'),
+            'results' => __('In Edit, give each result a heading and condition. Last result: all other answers.', 'wconvert'),
+            'navigation' => __('In Edit, continuing screens need Continue or Save, not both. Optional saves also need No thanks.', 'wconvert'),
+            default => __('Complete the screen order, navigation and submission fields before publishing.', 'wconvert'),
         };
         return new WP_Error('wconvert_optin_form_incomplete', $message, ['status' => 400, 'issue' => $issue]);
     }

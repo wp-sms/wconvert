@@ -64,7 +64,7 @@ describe('group delete', () => {
   it('asks counted, says what survives and names what is left alone', () => {
     const words = groupConfirmCopy('delete', plan('delete', [draft, live, test], noDesign));
     expect(words.title).toBe('Delete 2 campaigns?');
-    expect(words.description).toBe('They stop showing and leave this list. Their leads and results are kept. 1 will be skipped (A/B test: Test).');
+    expect(words.description).toBe('They stop showing and leave this list. Leads and results are kept. 1 will be skipped (A/B test: Test).');
     expect(words.confirmLabel).toBe('Delete 2 campaigns');
   });
 

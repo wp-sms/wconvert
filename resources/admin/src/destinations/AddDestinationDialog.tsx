@@ -133,8 +133,8 @@ export function AddDestinationDialog({
             will not go looking for it.
           */
           meta={type === null
-            ? __('Choose a service. You can add more than one destination for the same service.', 'wconvert')
-            : __('Name it and choose where submissions go. You’ll pick it in a campaign afterward.', 'wconvert')}
+            ? __('A service can have more than one destination.', 'wconvert')
+            : __('Choose where submissions go. You’ll pick it in a campaign afterward.', 'wconvert')}
         />
 
         {/*

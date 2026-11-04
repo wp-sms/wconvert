@@ -176,14 +176,14 @@ export function DestinationsEditor({
             : site.length === 0 ? (
               <div className="flex flex-col gap-2">
                 <p className="m-0 font-medium">{__('Choose a service to set up', 'wconvert')}</p>
-                {outcome && !handoffIssue && primary && <Description>{__('Leads stay in WConvert. Add a destination only if you want to send them on.', 'wconvert')}</Description>}
+                {outcome && !handoffIssue && primary && <Description>{__('Optional. Leads stay in WConvert either way.', 'wconvert')}</Description>}
                 <ProviderTiles types={types} rule={channel} suggested={suggested}
                   onChoose={(type, trigger) => { returnFocus.current = trigger; setSetup({ type: type.id }); }} />
               </div>
             ) : cards.length === 0 ? (
               <EmptyState icon={Plug} title={__('No destinations selected', 'wconvert')}
                 action={<Button ref={addButton} variant="outline" onClick={(event) => openPicker(event.currentTarget)}><Plus aria-hidden="true" />{__('Add destination', 'wconvert')}</Button>}>
-                {emptyText ?? __('Leads stay in WConvert. Add a destination to also send them to your email or SMS service.', 'wconvert')}
+                {emptyText ?? __('Add one to also send leads to your email or SMS service.', 'wconvert')}
               </EmptyState>
             ) : cards.map((destination) => (
               <DestinationCard key={destination.id} destination={destination} type={typeOf(destination)} template={template}
@@ -211,7 +211,7 @@ export function DestinationsEditor({
       {picking && <AddDestinationPicker destinations={site} types={types} connections={connections} bound={bound} rule={channel}
         suggested={suggested} returnFocusTo={returnFocus}
         description={title === undefined ? __('Choose one you already use, or set up a new one.', 'wconvert')
-          : sprintf(/* translators: %s: the signup this route is for, e.g. “Optional SMS signup”. */ __('For %s. Choose one you already use, or set up a new one.', 'wconvert'), title)}
+          : sprintf(/* translators: %s: the signup this route is for, e.g. “Optional SMS signup”. */ __('For %s.', 'wconvert'), title)}
         onClose={() => setPicking(false)}
         onPick={(id) => { returnFocus.current = null; setFocusId(id); setPicking(false); onChange([...bound, id]); }}
         onCreate={(type) => { setPicking(false); setSetup({ type: type.id }); }} />}

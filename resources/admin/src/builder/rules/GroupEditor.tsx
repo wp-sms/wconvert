@@ -66,7 +66,7 @@ export function GroupEditor({ group, types, onChange, offset = 0, match, title, 
         ? <AddRule axis={types} label={__('Add a rule', 'wconvert')} autoOpen={autoOpenAdd} onClose={onAddClosed}
           onAdd={rule => onChange({ ...group, rules: [...group.rules, freshRule(rule)] })} />
         : <p className="wconvert-display-limit">{__('Up to 8 rules in a group', 'wconvert')}
-          <InfoTip label={__('About the rule limit', 'wconvert')}>{__('A group holds up to eight rules. Add another group, or remove a rule first.', 'wconvert')}</InfoTip></p>}
+          <InfoTip label={__('About the rule limit', 'wconvert')}>{title === undefined ? __('Remove a rule first.', 'wconvert') : __('Add another group, or remove a rule first.', 'wconvert')}</InfoTip></p>}
     </div>
   </section>;
 }

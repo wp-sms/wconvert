@@ -377,10 +377,10 @@ describe('what the catalogue offers', () => {
    * because 'you cannot add a second email field' is an answer and a missing
    * menu row is not."*
    */
-  it('says why a Column at the top of a step would do nothing', () => {
+  it('says where a Column belongs when the top of a step refuses it', () => {
     const top = additionsIn(TREE, at, 'submit').find((addition) => addition.type === 'stack');
 
-    expect(top?.refused).toMatch(/already a column/i);
+    expect(top?.refused).toMatch(/inside a Row/i);
 
     // One level in — inside the row — it groups, so it is offered.
     const inside = additionsIn(TREE, { parent: ROW, key: 'children', index: 0 }, 'submit').find(
@@ -430,7 +430,7 @@ describe('what the catalogue offers', () => {
     expect(freeCapture(crowded)).toBeNull();
     expect(
       additionsIn(crowded, at, 'submit').find((addition) => addition.type === 'field')?.refused,
-    ).toMatch(/already on the form/i);
+    ).toMatch(/Every field is already here/i);
   });
 
   /**
@@ -611,9 +611,9 @@ describe('the safety net', () => {
   });
 
   it('refuses duplicating the button or a field, wherever they sit', () => {
-    expect(whyDuplicationIsRefused(TREE, BUTTON)).toMatch(/exactly one/i);
+    expect(whyDuplicationIsRefused(TREE, BUTTON)).toMatch(/One button per submission or offer link/i);
     expect(whyDuplicationIsRefused(TREE, FIELD)).toMatch(/collide/i);
-    expect(whyDuplicationIsRefused(TREE, ROW)).toMatch(/exactly one/i);
+    expect(whyDuplicationIsRefused(TREE, ROW)).toMatch(/One button per submission or offer link/i);
     expect(whyDuplicationIsRefused(TREE, HEADLINE)).toBeNull();
   });
 

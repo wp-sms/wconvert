@@ -219,6 +219,6 @@ it('explains independent entrances, conditional signup and result dependencies i
     ? { ...screen, content: { type: 'stack', children: [screen.content, { type: 'question', id: 'on-signup', label: 'Choose', answer_type: 'single', required: true, options: [{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }] }] } }
     : screen.id === 'guide' ? { ...screen, results: screen.results!.map((variant, index) => index === 0
       ? { ...variant, when: { match: 'all', clauses: [{ question: 'on-signup', operator: 'is', values: ['yes'] }] } } : variant) } : screen) };
-  expect(graphResultAccessIssue(dependent, false)).toMatchObject({ screenId: 'signup', section: 'content', message: expect.stringContaining('uses an answer collected on the signup screen') });
+  expect(graphResultAccessIssue(dependent, false)).toMatchObject({ screenId: 'signup', section: 'content', message: expect.stringContaining('uses an answer from signup') });
   expect(resultAccess(dependent, false)).toBe(dependent);
 });

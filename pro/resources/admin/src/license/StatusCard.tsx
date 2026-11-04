@@ -145,7 +145,7 @@ function UpdatesLine({ license, stopped, elsewhere }: { license: LicensePayload;
 
   if (stopped) {
     return <span className="wconvert-license-line wconvert-license-muted">{newer
-      ? sprintf(/* translators: 1: the newest WConvert Pro version, e.g. “2.4.0”, 2: the version this site has. */ __('Version %1$s is out. This site stays on %2$s until updates are back.', 'wconvert-pro'), latest, installed)
+      ? sprintf(/* translators: 1: the newest WConvert Pro version, e.g. “2.4.0”, 2: the version this site has. */ __('Version %1$s is out. This site stays on %2$s until updates return.', 'wconvert-pro'), latest, installed)
       : sprintf(/* translators: %s: the WConvert Pro version this site has, e.g. “2.3.1”. */ __('Version %s', 'wconvert-pro'), installed)}</span>;
   }
 

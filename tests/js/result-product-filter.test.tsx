@@ -94,7 +94,7 @@ it('allows excluding out-of-stock products without ordering controls', async () 
 it('explains missing pins but ignores intentionally excluded pins', async () => {
   vi.mocked(apiFetch).mockResolvedValue([{ id: 1, name: 'Match', permalink: '/match' }]);
   const { rerender } = render(<LiveProductMatches filter={{ category_id: 7, attributes: [], pinned_ids: [2] }} />);
-  await screen.findByText('A pinned product is unavailable or does not match. Other matches appear below.');
+  await screen.findByText('A pinned product is unavailable or does not match. Others appear below.');
   rerender(<LiveProductMatches filter={{ category_id: 7, attributes: [], pinned_ids: [2], excluded_ids: [2] }} />);
   await screen.findByRole('link', { name: 'Match' });
   expect(screen.queryByText(/A pinned product/)).toBeNull();

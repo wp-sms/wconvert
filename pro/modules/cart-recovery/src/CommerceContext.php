@@ -134,7 +134,7 @@ final class CommerceContext
             $issues[] = __('Choose an available main product for these recommendations.', 'wconvert-pro');
         }
         if (($config['inline_placement']['position'] ?? '') === 'after_product_summary' && wp_is_block_theme()) {
-            $issues[] = __('For a block theme, place the campaign block in the product template and choose Manual placement.', 'wconvert-pro');
+            $issues[] = __('Block theme: add the campaign block to the product template, choose Manual placement.', 'wconvert-pro');
         }
         if ($products !== null && ($products['source'] ?? 'selected') !== 'cross_sells') {
             $ids = $products['product_ids'] ?? [];
@@ -149,7 +149,7 @@ final class CommerceContext
                 return $id !== $main && $product && CartAddition::supported($product) && $product->get_status() === 'publish'
                     && $product->is_visible() && $product->is_purchasable() && $product->is_in_stock() && get_post_field('post_password', $id) === '';
             });
-            if ($supported === []) $issues[] = __('Choose at least one available simple product that supports Add to cart. Products requiring options use their product page.', 'wconvert-pro');
+            if ($supported === []) $issues[] = __('Choose at least one available simple product that supports Add to cart.', 'wconvert-pro');
         }
         return $issues;
     }

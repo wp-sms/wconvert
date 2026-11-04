@@ -81,7 +81,7 @@ export function ScreenAnswers({ tree, step, onSelect, followup }: {
     .filter(({ screen }) => screen.when?.clauses.some(clause => clause.question === question.id && clause.values.includes(value)));
   const multi = question.answer_type === 'multi';
   return <PanelSection title={multi ? __('Answers · choose several', 'wconvert') : __('Answers · choose one', 'wconvert')}
-    tip={multi ? __('Visitors can pick several. Every matching follow-up is asked, one at a time.', 'wconvert') : undefined}>
+    tip={multi ? __('Every matching follow-up is asked, one at a time.', 'wconvert') : undefined}>
     <ul className="wconvert-screen-answers">{question.options.map(option => {
       const shown = followups(option.value);
       return <li key={option.value}>
@@ -92,7 +92,7 @@ export function ScreenAnswers({ tree, step, onSelect, followup }: {
           : followup?.(question.id, option)}
       </li>;
     })}</ul>
-    {focusQuestion && focusQuestion !== question.id && <PanelHint>{__('Too many answers to color them all. Select a question to color its answers.', 'wconvert')}</PanelHint>}
+    {focusQuestion && focusQuestion !== question.id && <PanelHint>{__('Too many answers to color. Select a question to color its answers.', 'wconvert')}</PanelHint>}
   </PanelSection>;
 }
 

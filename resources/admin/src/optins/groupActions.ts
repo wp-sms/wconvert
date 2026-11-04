@@ -132,19 +132,19 @@ export function groupConfirmCopy(action: ConfirmedAction, group: GroupPlan): { t
   if (action === 'delete') {
     return {
       title: sprintf(/* translators: %s: how many campaigns. */ _n('Delete %s campaign?', 'Delete %s campaigns?', n, 'wconvert'), formatCount(n)),
-      description: __('They stop showing and leave this list. Their leads and results are kept.', 'wconvert') + skipped,
+      description: __('They stop showing and leave this list. Leads and results are kept.', 'wconvert') + skipped,
       confirmLabel: sprintf(/* translators: %s: how many campaigns. */ _n('Delete %s campaign', 'Delete %s campaigns', n, 'wconvert'), formatCount(n)),
     };
   }
   return action === 'publish'
     ? {
       title: sprintf(/* translators: %s: how many campaigns. */ _n('Publish %s campaign?', 'Publish %s campaigns?', n, 'wconvert'), formatCount(n)),
-      description: __('Each latest saved draft becomes what visitors see, subject to its display rules.', 'wconvert') + skipped,
+      description: __('Visitors see each latest saved draft, subject to its display rules.', 'wconvert') + skipped,
       confirmLabel: sprintf(/* translators: %s: how many campaigns. */ _n('Publish %s campaign', 'Publish %s campaigns', n, 'wconvert'), formatCount(n)),
     }
     : {
       title: sprintf(/* translators: %s: how many campaigns. */ _n('Unpublish %s campaign?', 'Unpublish %s campaigns?', n, 'wconvert'), formatCount(n)),
-      description: __('They stop showing and return to Draft. Their saved drafts, leads and results are kept.', 'wconvert') + skipped,
+      description: __('They return to Draft. Their saved drafts, leads and results are kept.', 'wconvert') + skipped,
       confirmLabel: sprintf(/* translators: %s: how many campaigns. */ _n('Unpublish %s campaign', 'Unpublish %s campaigns', n, 'wconvert'), formatCount(n)),
     };
 }

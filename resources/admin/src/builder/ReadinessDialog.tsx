@@ -174,11 +174,11 @@ export function ReadinessDialog({
     ? position === null && teaser == null ? undefined : { text: <>
         {position !== null && go(position, onGoToLook)}
         {teaser != null && ['popup', 'slide_in'].includes(displayType) && <span className="block text-note text-muted-foreground">{__('A reopen button follows visitors to eligible pages after they close it.', 'wconvert')}</span>}
-        {displayType === 'floating_bar' && resolvedPlacement(displayType, placement) === 'block_start' && <span className="block text-note text-muted-foreground">{__('A top bar moves the page down; check it with your site header.', 'wconvert')}</span>}
+        {displayType === 'floating_bar' && resolvedPlacement(displayType, placement) === 'block_start' && <span className="block text-note text-muted-foreground">{__('A top bar moves the page down. Check your site header.', 'wconvert')}</span>}
       </> }
     : { text: <>
         {go(contentLock != null ? __('Content lock', 'wconvert') : inlinePlacementLabel(inlinePlacement) ?? __('Where you place its block or shortcode', 'wconvert'), onGoToPlacement)}
-        {contentLock != null && <span className="block text-note text-muted-foreground">{__('Locks the selected region and remembers an unlock for 30 days in that browser. The content stays readable if the form cannot load.', 'wconvert')}</span>}
+        {contentLock != null && <span className="block text-note text-muted-foreground">{__('Unlocks last 30 days per browser. Readable if the form can’t load.', 'wconvert')}</span>}
       </> };
   // Every row is a way to the tab that changes it; Back to review returns here.
   const facts = campaignFacts({
@@ -366,7 +366,7 @@ export function ReadinessDialog({
                 <ReviewSection title={__('How it runs', 'wconvert')}>
                   <FactList facts={facts} />
                   {displayType === 'fullscreen' && (
-                    <p className="text-note text-muted-foreground">{__('Fullscreen covers the page until it is closed. Prefer a visitor action or real engagement over opening right away, and check it on mobile.', 'wconvert')}</p>
+                    <p className="text-note text-muted-foreground">{__('Fullscreen covers the page. Avoid opening right away. Check it on mobile.', 'wconvert')}</p>
                   )}
                   {bound.length > 0 && (
                     <p className="text-note text-muted-foreground">

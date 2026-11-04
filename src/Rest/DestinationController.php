@@ -230,7 +230,7 @@ final class DestinationController implements RestController
         try {
             return new WP_REST_Response(['settings_schema' => $this->schemaFor($type, $connection, $request->get_param('refresh') === '1')]);
         } catch (\Throwable $failure) {
-            return new WP_Error('wconvert_metadata_unavailable', __('Could not load the selected account’s lists. Check the account and try again.', 'wconvert'), ['status' => 503]);
+            return new WP_Error('wconvert_metadata_unavailable', __('Could not load this account’s lists. Check the account and try again.', 'wconvert'), ['status' => 503]);
         }
     }
 
@@ -292,7 +292,7 @@ final class DestinationController implements RestController
             $identity = method_exists($type, 'accountIdentity') ? $type->accountIdentity($credentials) : null;
             if ($existing !== null && $credentials !== $existing->credentials) {
                 if (!is_string($identity) || $identity === '' || !is_string($existing->accountIdentity) || !hash_equals($existing->accountIdentity, $identity)) {
-                    return new WP_Error('wconvert_account_changed', __('This key belongs to a different or unverified account. Connect it as a new account instead.', 'wconvert'), ['status' => 409]);
+                    return new WP_Error('wconvert_account_changed', __('This key belongs to a different or unverified account. Connect a new account.', 'wconvert'), ['status' => 409]);
                 }
             }
         } catch (\WConvert\Destination\ConnectionRefused $refused) {
@@ -397,7 +397,7 @@ final class DestinationController implements RestController
         $id = (string) $request->get_param('id');
         foreach ($this->destinations->all() as $destination) {
             if ($destination->connectionId === $id) {
-                return new WP_Error('wconvert_connection_in_use', __('This account is used by a destination. Reassign or remove that destination first.', 'wconvert'), ['status' => 409]);
+                return new WP_Error('wconvert_connection_in_use', __('A destination uses this account. Reassign or remove that destination first.', 'wconvert'), ['status' => 409]);
             }
         }
         if (!$this->connections->delete($id)) return $this->badConnection();
@@ -714,7 +714,7 @@ final class DestinationController implements RestController
         $interest = $request->get_param('interest');
         if ($interest !== null) {
             if (!is_string($interest) || trim($interest) === '') {
-                return $this->reported(TestReport::failed(__('Enter an interest value or leave it out of the test. Nothing has been sent.', 'wconvert')));
+                return $this->reported(TestReport::failed(__('Enter an interest value or leave it out. Nothing was sent.', 'wconvert')));
             }
             $sample['interest'] = trim($interest);
         }
@@ -909,7 +909,7 @@ final class DestinationController implements RestController
                     $issues[] = sprintf(__('The selected field for %s is unavailable. Review this destination’s mapping.', 'wconvert'), $field['label']);
                 }
             } catch (\Throwable $failure) {
-                $issues[] = __('The provider fields could not be checked. Refresh before relying on the answer mapping.', 'wconvert');
+                $issues[] = __('Provider fields could not be checked. Refresh before trusting the answer mapping.', 'wconvert');
             }
         }
         return $issues;

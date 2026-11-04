@@ -103,8 +103,8 @@ final class Hooks
             $config['environment'] = wp_get_environment_type();
             $config['labels'] = [__('Analytics check', 'wconvert-pro'), __('Local inspection only. Campaign activity is not sent from this test page.', 'wconvert-pro'),
                 __('Send synthetic test event', 'wconvert-pro'), __('Test stream Measurement ID (G-…)', 'wconvert-pro'),
-                $settings['route'] === 'plausible' ? __('Plausible sends WConvert Test to the site configured by your installed script. Use a dedicated test site and verify receipt in Plausible.', 'wconvert-pro') : __('GTM sends to the stream configured in your container. Use a test workspace/property.', 'wconvert-pro'),
-                __('Handed off does not confirm receipt. Verify wconvert_test in GA DebugView or Realtime.', 'wconvert-pro'),
+                $settings['route'] === 'plausible' ? __('Plausible sends WConvert Test to your script’s site. Use a test site.', 'wconvert-pro') : __('GTM sends to your container’s stream. Use a test workspace or property.', 'wconvert-pro'),
+                __('Handed off doesn’t confirm receipt. Check wconvert_test in GA DebugView or Realtime.', 'wconvert-pro'),
                 __('Close analytics check', 'wconvert-pro'), $settings['route'] === 'plausible' ? __('Collection delegated to the existing Plausible setup', 'wconvert-pro') : __('Consent delegated to the existing Google tag / GTM', 'wconvert-pro')];
             $config['statuses'] = [
                 'handed_off' => __('Handed off; verify receipt in analytics', 'wconvert-pro'),

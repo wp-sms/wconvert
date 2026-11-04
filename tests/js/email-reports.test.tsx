@@ -28,7 +28,7 @@ it('says it waits for the first publish', async () => {
   api.readWeeklySummary.mockResolvedValue({ ...SAVED, waiting_for_publish: true });
   render(<EmailReports />);
 
-  expect(await screen.findByText('The first one goes out the Monday after your first campaign is published.')).toBeInTheDocument();
+  expect(await screen.findByText('The first goes out the Monday after your first campaign is published.')).toBeInTheDocument();
 });
 
 it('sends a test to the addresses typed, before saving', async () => {

@@ -61,7 +61,7 @@ export function InterestOptions({ value, onEdit, onChange }: {
   return <fieldset className="wconvert-panel-field m-0 min-w-0 border-0 p-0">
     <legend className="sr-only">{__('Choices', 'wconvert')}</legend>
     <FieldHeading as="span" label={__('Choices', 'wconvert')}
-      tip={sprintf(/* translators: %s: the most choices a field may offer. */ __('Visitors choose one answer. Up to %s choices; answers stay with the lead in WConvert, so check that your destination forwards them.', 'wconvert'), formatCount(optionLimits.max_items))} />
+      tip={sprintf(/* translators: %s: the most choices a field may offer. */ __('Visitors choose one, from up to %s. Check your destination forwards answers.', 'wconvert'), formatCount(optionLimits.max_items))} />
     {options.map((option, at) => <div key={at} className="space-y-2 rounded-md border border-border p-3">
       <label className="wconvert-slot__key">{sprintf(/* translators: %s: the answer choice's position in the list, e.g. 1. */ __('Choice %s', 'wconvert'), formatCount(at + 1))}
         <input ref={(input) => { labels.current[at] = input; }} type="text" value={option.label} maxLength={optionLimits.label_max_length} onChange={(event) => update(at, 'label', event.target.value)} />
@@ -83,7 +83,7 @@ export function InterestOptions({ value, onEdit, onChange }: {
         }}>{__('Remove', 'wconvert')}</Button>
       </div>
     </div>)}
-    {!validInterestOptions(value) && <p role="status" className="text-note text-destructive">{__('Add at least one choice. Each choice needs a label and a unique valid sent value.', 'wconvert')}</p>}
+    {!validInterestOptions(value) && <p role="status" className="text-note text-destructive">{__('Add a choice. Each needs a label and unique valid sent value.', 'wconvert')}</p>}
     <button ref={addButton} type="button" className="wconvert-panel-link" {...refusable(full ? fullId : null, add)}>{__('Add choice', 'wconvert')}</button>
     {full && <PanelHint id={fullId}>{sprintf(/* translators: %s: the most choices a field may offer. */ __('Up to %s choices. Remove one to add another.', 'wconvert'), formatCount(optionLimits.max_items))}</PanelHint>}
   </fieldset>;

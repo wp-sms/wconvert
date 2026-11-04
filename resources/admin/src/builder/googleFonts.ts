@@ -19,7 +19,7 @@ export function withGoogleFont(template: Template, font?: GoogleFont): Template 
   const fonts = [...(template.tree.fonts ?? []).filter(item => item.family !== font?.family), ...(font ? [font] : [])];
   const next = { ...template, tree: { ...template.tree, fonts } };
   const used = usedGoogleFonts(next);
-  if (used.length > 4) throw new Error(__('A design can use up to four Google font families. Reuse one already selected, or install the additional font in WordPress.', 'wconvert'));
+  if (used.length > 4) throw new Error(__('Up to four Google fonts. Reuse one, or install yours in WordPress.', 'wconvert'));
   if (used.length) return { ...next, tree: { ...next.tree, fonts: used } };
   const tree = { ...template.tree };
   delete tree.fonts;

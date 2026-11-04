@@ -114,13 +114,13 @@ function stepText(id: StepId, checklist: Checklist): ReactNode {
 
   if (state === 'current') {
     return view
-      ? __('Visit your site to see it in place. Every time a visitor sees it counts.', 'wconvert')
-      : __('Visit your site to see it in place. Leads show up in Leads as they arrive.', 'wconvert');
+      ? __('Visit your site to see it in place.', 'wconvert')
+      : __('Visit your site to see it. New leads appear in Leads.', 'wconvert');
   }
 
   return view
     ? __('Once it’s live, every time a visitor sees it counts.', 'wconvert')
-    : __('When a visitor fills in the form, the lead shows up in Leads.', 'wconvert');
+    : __('Visitors who fill in the form show up in Leads.', 'wconvert');
 }
 
 /**
@@ -163,8 +163,8 @@ export function GettingStarted({
           <p className="wconvert-checklist__lede">
             {checklist.allSet
               ? (view
-                ? sprintf(/* translators: %s: a campaign's name. */ __('%s is live and has its first view. This checklist won’t show next time.', 'wconvert'), checklist.campaign ?? __('Your campaign', 'wconvert'))
-                : sprintf(/* translators: %s: a campaign's name. */ __('%s is live and has its first lead. This checklist won’t show next time.', 'wconvert'), checklist.campaign ?? __('Your campaign', 'wconvert')))
+                ? sprintf(/* translators: %s: a campaign's name. */ __('%s is live with its first view. This checklist won’t show again.', 'wconvert'), checklist.campaign ?? __('Your campaign', 'wconvert'))
+                : sprintf(/* translators: %s: a campaign's name. */ __('%s is live with its first lead. This checklist won’t show again.', 'wconvert'), checklist.campaign ?? __('Your campaign', 'wconvert')))
               : view
                 ? __('Three steps from here to your first view.', 'wconvert')
                 : __('Three steps from here to your first lead.', 'wconvert')}

@@ -92,7 +92,7 @@ final class TemplateDownloadsTest extends TestCase
     {
         $count=0;
         $GLOBALS['wconvertHttpReply'] = function () use (&$count) { $count++; return ['response'=>['code'=>429], 'headers'=>['retry-after'=>'45'], 'body'=>'{}']; };
-        for ($i=0;$i<2;$i++) { try { $this->pack($this->transport()); self::fail('Accepted rate limit'); } catch (\RuntimeException $e) { self::assertStringContainsString('temporarily unavailable',$e->getMessage()); } }
+        for ($i=0;$i<2;$i++) { try { $this->pack($this->transport()); self::fail('Accepted rate limit'); } catch (\RuntimeException $e) { self::assertStringContainsString('Template downloads unavailable',$e->getMessage()); } }
         self::assertSame(1,$count);
     }
     public function testIssuanceBackoffDoesNotInterruptAnAlreadyAuthorizedDownload(): void
@@ -104,12 +104,12 @@ final class TemplateDownloadsTest extends TestCase
             $normal = $GLOBALS['wconvertHttpReply'];
             $GLOBALS['wconvertHttpReply'] = static fn () => ['response' => ['code' => $status], 'headers' => ['retry-after' => '45'], 'body' => '{}'];
             try { $this->pack($this->transport($origin)); self::fail('Accepted unavailable issuance'); }
-            catch (\RuntimeException $e) { self::assertStringContainsString('temporarily unavailable', $e->getMessage()); }
+            catch (\RuntimeException $e) { self::assertStringContainsString('Template downloads unavailable', $e->getMessage()); }
             $GLOBALS['wconvertHttpReply'] = $normal;
             self::assertSame('file', $first->premium('premium/assets/' . self::DIGEST . '.png', 100));
             $before = count($this->requests);
             try { $this->pack($this->transport($origin)); self::fail('Ignored issuance backoff'); }
-            catch (\RuntimeException $e) { self::assertStringContainsString('temporarily unavailable', $e->getMessage()); }
+            catch (\RuntimeException $e) { self::assertStringContainsString('Template downloads unavailable', $e->getMessage()); }
             self::assertCount($before, $this->requests);
         }
     }
@@ -122,7 +122,7 @@ final class TemplateDownloadsTest extends TestCase
         $GLOBALS['wconvertHttpReply'] = static function () use (&$calls) { $calls++; return ['response' => ['code' => 503], 'headers' => ['retry-after' => '30'], 'body' => '{}']; };
         for ($i = 0; $i < 2; $i++) {
             try { $first->premium('premium/assets/' . self::DIGEST . '.png', 100); self::fail('Accepted unavailable file'); }
-            catch (\RuntimeException $e) { self::assertStringContainsString('temporarily unavailable', $e->getMessage()); }
+            catch (\RuntimeException $e) { self::assertStringContainsString('Template downloads unavailable', $e->getMessage()); }
         }
         self::assertSame(1, $calls);
     }
@@ -138,7 +138,7 @@ final class TemplateDownloadsTest extends TestCase
             };
             try { $this->pack($this->transport()); self::fail('Accepted refused managed key'); }
             catch (\RuntimeException $e) {
-                self::assertSame('Premium template access is unavailable. Contact the person managing your licence. Installed designs still work.', $e->getMessage());
+                self::assertSame('Premium templates unavailable. Ask whoever manages your license. Installed designs still work.', $e->getMessage());
             }
         }
     }
@@ -163,7 +163,7 @@ final class TemplateDownloadsTest extends TestCase
     {
         $GLOBALS['wconvertHttpReply'] = static fn () => new \WP_Error('timeout', 'private transport details');
         try { $this->pack($this->transport()); self::fail('Accepted network failure'); }
-        catch (\RuntimeException $e) { self::assertStringContainsString('could not be reached', $e->getMessage()); self::assertStringNotContainsString('private transport', $e->getMessage()); }
+        catch (\RuntimeException $e) { self::assertStringContainsString('Template server unreachable', $e->getMessage()); self::assertStringNotContainsString('private transport', $e->getMessage()); }
     }
     public function testRedirectAndOversizedResponsesAreRefused(): void
     {

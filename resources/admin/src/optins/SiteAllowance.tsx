@@ -226,7 +226,7 @@ export function SiteAllowance({
         >
           <AdminDialogHeader
             title={__('Site-wide display limits', 'wconvert')}
-            meta={__('These take effect on every campaign. Each campaign’s own display rules still apply.', 'wconvert')}
+            meta={__('Each campaign’s own display rules still apply.', 'wconvert')}
           />
           <AdminDialogBody>
             {pending.length === 0 ? (

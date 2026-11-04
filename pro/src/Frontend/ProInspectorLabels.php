@@ -42,7 +42,7 @@ final class ProInspectorLabels
             'consent' => __('Reopen button hidden: required storage consent is withheld.', 'wconvert-pro'),
             'condition' => __('Reopen button hidden: a required condition is false or unavailable.', 'wconvert-pro'),
             'mobile' => __('Reopen button hidden by the mobile visibility setting.', 'wconvert-pro'),
-            'available' => __('Recovery available: restore the reminder before automatic overlays. A visitor’s click bypasses automatic triggers, view limits, cooldown and dismissal settings.', 'wconvert-pro'),
+            'available' => __('Reopen button available. A click skips triggers, view limits, cooldown and dismissal.', 'wconvert-pro'),
             'another' => __('Another overlay owns this page; the reopen button cannot claim its place.', 'wconvert-pro'),
             'waiting' => __('Reopen button appears only after this Campaign is shown and deliberately dismissed.', 'wconvert-pro'),
         ];
@@ -50,13 +50,13 @@ final class ProInspectorLabels
         $labels['content_lock'] = [
             'none' => __('Content lock: no supported region on this page; content remains readable.', 'wconvert-pro'),
             'locked' => __('Content lock active: the selected region will open after acknowledged form capture.', 'wconvert-pro'),
-            'captured' => __('Content unlocked after successful capture. Access is remembered for this Campaign in this browser for 30 days.', 'wconvert-pro'),
-            'remembered' => __('Content is readable because this browser remembers a successful unlock. No new conversion is recorded.', 'wconvert-pro'),
+            'captured' => __('Unlocked after submission. This browser remembers this campaign’s unlock for 30 days.', 'wconvert-pro'),
+            'remembered' => __('Readable: this browser remembers an unlock. No new conversion is recorded.', 'wconvert-pro'),
             'unavailable' => __('Content stays readable: the Campaign was not eligible at initial page readiness.', 'wconvert-pro'),
-            'invalid' => __('Content stays readable: check nesting, active embeds, or an earlier manual anchor for the same Campaign.', 'wconvert-pro'),
+            'invalid' => __('Still readable: check nesting, active embeds, or this campaign’s earlier manual anchor.', 'wconvert-pro'),
             'another' => __('Content stays readable: another content lock owns this page’s single locker slot.', 'wconvert-pro'),
-            'fallback' => __('Content stays readable because the gate is unavailable. This fallback does not count as a conversion.', 'wconvert-pro'),
-            'configured' => __('Content lock is configured; verify the live region and capture on this page.', 'wconvert-pro'),
+            'fallback' => __('Content stays readable: gate unavailable. Not counted as a conversion.', 'wconvert-pro'),
+            'configured' => __('Content lock is set up. Test the live region and form here.', 'wconvert-pro'),
         ];
 
         return $labels;

@@ -135,7 +135,7 @@ describe('the card', () => {
     render(<Harness rows={[row('A', { name: 'Welcome discount', published_at: '2026-10-31 09:00:00' })]} />);
 
     expect(await screen.findByRole('heading', { name: 'You’re all set' })).toBeInTheDocument();
-    expect(screen.getByText('Welcome discount is live and has its first lead. This checklist won’t show next time.')).toBeInTheDocument();
+    expect(screen.getByText('Welcome discount is live with its first lead. This checklist won’t show again.')).toBeInTheDocument();
     await waitFor(() => expect(api.hideChecklist).toHaveBeenCalledOnce());
     expect(screen.getByRole('heading', { name: 'You’re all set' })).toBeInTheDocument();
   });

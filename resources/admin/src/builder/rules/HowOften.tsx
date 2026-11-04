@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
+import { InfoTip } from '../../shell/InfoTip';
 import { DisclosureCard } from './DisclosureCard';
 import { halves } from './picks';
 import { SiteLimitsNote } from './SiteLimitsNote';
@@ -62,7 +63,10 @@ export function HowOften({ frequency, priority, overlay, custom, reopenEnabled, 
     </div>}
 
     <div className="wconvert-display-settings" role="group" aria-labelledby="wconvert-stop-heading">
-      <p className="wconvert-display-settings__title" id="wconvert-stop-heading">{__('Stop showing it…', 'wconvert')}</p>
+      <div className="wconvert-display-settings__heading flex items-center gap-1">
+        <p className="wconvert-display-settings__title" id="wconvert-stop-heading">{__('Stop showing it…', 'wconvert')}</p>
+        {reopenEnabled && <InfoTip label={__('About the reopen button', 'wconvert')}>{__('Your reopen button skips display limits, waiting periods and closing restrictions. Completion stops it. Closing the reminder stops this campaign for the visit.', 'wconvert')}</InfoTip>}
+      </div>
       {act !== null && <CheckRow className="wconvert-display-setting" checked={frequency.stopAfterConversion !== false} onChange={event => setSwitch('stopAfterConversion', event.target.checked)}
         label={act === 'click' ? __('after they click the main button', 'wconvert') : __('after they submit the form', 'wconvert')} />}
       <CheckRow className="wconvert-display-setting" checked={frequency.stopAfterDismiss !== false} onChange={event => setSwitch('stopAfterDismiss', event.target.checked)} label={__('after they close it', 'wconvert')} />
@@ -71,7 +75,6 @@ export function HowOften({ frequency, priority, overlay, custom, reopenEnabled, 
         label={<>{before}<TotalField value={frequency.maxImpressions} disabled={!capped} onChange={count => setCount('maxImpressions', count)} />{after}</>} />
     </div>
     {frequency.maxPerSession !== undefined && frequency.stopAfterDismiss !== false && <p className="wconvert-display-hint">{__('Closing it stops it for good, not just for this visit.', 'wconvert')}</p>}
-    {reopenEnabled && <p className="wconvert-display-hint">{__('Your reopen button skips automatic display limits, waiting periods and closing restrictions. Completion stops it; closing the reminder stops this campaign for the visit.', 'wconvert')}</p>}
 
     {overlay && <DisclosureCard title={__('Popup priority', 'wconvert')}
       current={priority === 0 ? __('Opens in the usual order', 'wconvert') : sprintf(/* translators: %s: a priority number. */ __('Shows before others (%s)', 'wconvert'), formatCount(priority))}>
@@ -79,7 +82,7 @@ export function HowOften({ frequency, priority, overlay, custom, reopenEnabled, 
         <Input id="wconvert-priority" className="w-24" type="number" value={priority === 0 ? '' : priority} aria-describedby="wconvert-priority-help"
           onChange={event => { const next = Number(event.target.value); onPriority(event.target.value === '' || !Number.isFinite(next) ? 0 : Math.trunc(next)); }} />
       </label>
-      <p id="wconvert-priority-help" className="text-note text-muted-foreground">{__('Higher numbers open first. A popup that is already open keeps its place.', 'wconvert')}</p>
+      <p id="wconvert-priority-help" className="text-note text-muted-foreground">{__('Higher numbers open first. An open popup stays open.', 'wconvert')}</p>
     </DisclosureCard>}
     <SiteLimitsNote />
   </div>;
