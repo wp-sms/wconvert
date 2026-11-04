@@ -27,6 +27,6 @@ Every admin string over twelve words was put through the ladder and approved as 
 
 ## Consequences
 
-The missing-template and changed-month strings, which this pass left naming a way out nobody could find on screen, were then reworded: the first now says to choose another template, the second to close and reopen the dialog. Two destination skip reasons reach no screen, because `PushWorker` discards them. They stay as plain untranslated text, because the "no email" branches are needed and `PushResult::skipped()` requires a reason.
+The missing-template and changed-month strings, which this pass left naming a way out nobody could find on screen, were then reworded: the first now says to choose another template, the second to close and reopen the dialog. Two destination skip reasons reach no screen, because `PushWorker` discards them and a test send needs a valid email before it pushes. They stay as plain untranslated text, because the "no email" branches are needed and `PushResult::skipped()` requires a reason.
 
 The `fa_IR` catalogues were retranslated with the new strings, because gettext keys on the source string.

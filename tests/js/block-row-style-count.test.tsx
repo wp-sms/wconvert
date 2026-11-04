@@ -7,7 +7,7 @@ import type { TemplateLabels } from '../../resources/admin/src/templates/api';
 
 /** The chip's tooltip counts a block's style settings in real words, never "style(s)". */
 function tooltipFor(sets: number, setsNarrow: number): string | null {
-  const block = {
+  const block: Block = {
     path: [0, 'children', 0],
     type: 'stack',
     leaf: false,
@@ -25,7 +25,7 @@ function tooltipFor(sets: number, setsNarrow: number): string | null {
     says: null,
     holds: 0,
     holder: false,
-  } as unknown as Block;
+  };
   const { container } = render(
     <div role="treegrid">
       <BlockRow

@@ -235,7 +235,7 @@ final class LeadMagnetDestinationType implements DestinationType
         $email = $subject->values[CanonicalFields::EMAIL] ?? '';
 
         if (!$this->requirements()->acceptsCapture($subject->values)) {
-            // Plain English on purpose: PushWorker discards a skip's reason, so no merchant reads it.
+            // Plain English on purpose: PushWorker discards a skip's reason, and a test send needs a valid email before it gets here.
             return PushResult::skipped('This lead has no email address to send the lead magnet to.');
         }
 
