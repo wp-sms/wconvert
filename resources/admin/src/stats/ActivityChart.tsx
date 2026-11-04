@@ -173,7 +173,7 @@ export function ActivityChart({
   return (
     <div className="wa-trend">
       <div className="wa-trend-heading">
-        <h3>{__('Performance over time', 'wconvert')}</h3>
+        <h2>{__('Performance over time', 'wconvert')}</h2>
         <OptionStrip
           label={__('Chart metric', 'wconvert')}
           value={metric}

@@ -812,6 +812,26 @@ describe('a report’s page title (ADR 0187, 0190)', () => {
     expect(screen.queryByRole('button', { name: /are counted$/ })).toBeNull();
   });
 
+  it.each([
+    ['a goal', { goal: 'grow_email_list' }],
+    ['a campaign', { optinId: 'email' }],
+    ['a number', { impact: 'leads' }],
+    ['an A/B test', { experiment: 'email' }],
+  ] as [string, ReportQuery][])('skips no heading level on %s', async (_, query) => {
+    api.readReport.mockResolvedValue({
+      ...payload(),
+      goals: [goal([
+        { ...row('email'), deliveries: 3 },
+        { ...row('arm'), parent_id: 'email', name: 'Variant B' },
+      ])],
+    });
+    framed(query);
+    await waitFor(() => expect(heading().querySelector('[data-slot=skeleton]')).toBeNull());
+    const levels = screen.getAllByRole('heading').map((title) => Number(title.tagName[1]));
+    expect(levels[0]).toBe(1);
+    levels.slice(1).forEach((level, index) => expect(level).toBeLessThanOrEqual(levels[index]! + 1));
+  });
+
   it('leaves the overview titled for its section, with no way back', async () => {
     api.readReport.mockResolvedValue(payload());
     framed({});
@@ -1026,7 +1046,7 @@ describe('A/B comparison', () => {
   it('reads the leader against the next, best first, and calls it too early on little traffic', async () => {
     api.readReport.mockResolvedValue({ ...payload(), goals: [arms(1000 - 1)] });
     render(<Dashboard query={{ experiment: 'email' }} />);
-    const headings = await screen.findAllByRole('heading', { level: 3 });
+    const headings = await screen.findAllByRole('heading', { level: 2 });
     expect(headings.map((h) => h.textContent)).toEqual(['Variant B', 'Variant A']);
     expect(screen.getByText(/^Variant B converts 3\.1% vs Variant A 2\.4% \(\+0\.7 pts\) — too early to call: fewer than 1,000 shown per variant$/)).toBeInTheDocument();
   });

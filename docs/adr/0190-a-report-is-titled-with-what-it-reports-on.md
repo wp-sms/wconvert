@@ -41,6 +41,8 @@ The bar and the link are drawn by the chunk's fallback as well as by `Dashboard`
 
 **The way back is a 24px box.** The heading's top padding drops from 28px to 20px when it has one, 16px on a phone. Its padding is 6px, so its margin is -9px to keep the arrow on the title's edge. Touch keeps the admin's 44px floor, with negative margins so the layout does not move. Whatever opens a report loses its top margin, so it sits under the title as any screen's content does. This is one component, so an occasion and Sending issues tighten too. "Back to leads" keeps its wording.
 
+**A report's sections are h2, under its h1.** The h2 they used to sit under moved up to the title, so everything directly below it moved up a level: the chart, the handoff panels, Campaign contributions, the A/B variants, and the Needs attention, Product activity, Signup and screen activity and Answers regions. What they contain moved with them. Their sizes did not, because a heading's look here comes from where it sits. `Insights` lost its `level`, since the overview and a report now agree. Product activity and Signup and screen activity keep theirs: the campaign dialog draws them too, under its own h2, where they stay h3.
+
 ## Consequences
 
 `ReportTitle`, `.wa-eyebrow-lead` and `.wa-section-title h2` are gone. "Goal report" is no longer a string in the admin. "Overall impact" stays only as the card grid's region label, so the not-available message now says "Choose a report from Analytics".

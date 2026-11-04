@@ -317,7 +317,7 @@ export function GoalDetail({
       </div>
       </ReportTarget>
       {card.action === 'add_to_cart' && <div className="wa-panel wa-handoff">
-        <div><h3>{__('Items added to basket', 'wconvert')}</h3><p className="wa-muted">{__('Confirmed, not purchases. Two extras count twice here, once in Basket additions.', 'wconvert')}</p></div>
+        <div><h2>{__('Items added to basket', 'wconvert')}</h2><p className="wa-muted">{__('Confirmed, not purchases. Two extras count twice here, once in Basket additions.', 'wconvert')}</p></div>
         <strong>{formatCount(numbers.items_added ?? 0)}</strong>
       </div>}
       {numbers.deliveries !== null && (
@@ -325,7 +325,7 @@ export function GoalDetail({
           <div>
             <p className="wa-eyebrow">{__('After submission', 'wconvert')}</p>
             <div className="wa-section-title">
-              <h3>{__('Email handoffs', 'wconvert')}</h3>
+              <h2>{__('Email handoffs', 'wconvert')}</h2>
               <AboutTip name={__('Email handoffs', 'wconvert')}>
                 {__('Later-day sends and resends count, so a difference is not a queue or failure count.', 'wconvert')}
               </AboutTip>
@@ -380,7 +380,7 @@ export function GoalDetail({
       ) : (
         <ReportTarget name="campaigns" label={__('Campaigns', 'wconvert')}>
           <div className="wa-section-heading">
-            <h3>{__('Campaign contributions', 'wconvert')}</h3>
+            <h2>{__('Campaign contributions', 'wconvert')}</h2>
           </div>
           <CampaignTable cards={[card]} payload={payload} query={query} />
         </ReportTarget>
@@ -730,7 +730,7 @@ export function Experiment({
           <div className="wa-panel wa-arm" key={arm.id}>
             {failure?.arm.id === arm.id && <RegionError message={failure.message} action={<TryAgain busy={busy} onClick={() => void choose(arm)} />} />}
             <div className="wa-detail-heading">
-              <h3><bdi>{arm.name}</bdi></h3>
+              <h2><bdi>{arm.name}</bdi></h2>
               <Status value={arm.status} />
             </div>
             <Totals

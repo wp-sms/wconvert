@@ -15,8 +15,8 @@
   font-weight: 600;
   margin: 0;
 }
-/* A heading between the overview's reports, which are h2 too: order is the level, the look stays the h3's. */
-.wconvert-analytics .wa-section-heading h2 {
+/* A heading directly under the page's title is an h2 for the outline; what it looks like is its place on the page (ADR 0190). */
+.wconvert-analytics :is(.wa-section-heading, .wa-detail-heading, .wa-handoff, .wa-trend-heading) h2 {
   font-size: var(--text-body);
   letter-spacing: normal;
   line-height: inherit;

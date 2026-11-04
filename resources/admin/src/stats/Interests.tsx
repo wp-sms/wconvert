@@ -30,7 +30,7 @@ export function Interests({ id, period }: { id: string; period: ReportPeriod }) 
   if (!data && !error) return <RegionSkeleton label={__('Answers', 'wconvert')} className="wa-report" icon={<ChartBar />} description lines={3} />;
   const Failure = data ? RegionError : RegionErrorState;
   return <ReportTarget name="answers" label={__('Answers', 'wconvert')}><Region className="wa-report">
-    <RegionHeader title={__('Answers', 'wconvert')} level={3} icon={<ChartBar />} description={__('What visitors chose when they submitted this campaign.', 'wconvert')} />
+    <RegionHeader title={__('Answers', 'wconvert')} icon={<ChartBar />} description={__('What visitors chose when they submitted this campaign.', 'wconvert')} />
     {error && <Failure message={data ? __('Could not refresh answers. The answers below keep their dates.', 'wconvert') : __('Could not load answers.', 'wconvert')} onRetry={() => setRetry(n => n + 1)} />}
     {data && <><RegionBody>
       <div className="wa-report-meta"><span>{rangeLabel(data.from, data.to)}</span><span>{__('By submission date', 'wconvert')}</span>{updating && <span role="status">{__('Updating… Previous dates shown.', 'wconvert')}</span>}</div>
@@ -47,7 +47,7 @@ export function Interests({ id, period }: { id: string; period: ReportPeriod }) 
   </Region></ReportTarget>;
 }
 function AnswerDistribution({ title, answered, choices, multiple = false }: { title: string; answered: number; multiple?: boolean; choices: { label: string; count: number }[] }) {
-  return <div className="wa-answer-group"><div className="wa-answer-heading"><h4>{title}</h4><span className="wa-muted">{sprintf(/* translators: %s: how many submissions answered this question. */ _n('%s response', '%s responses', answered, 'wconvert'), formatCount(answered))}</span></div>
+  return <div className="wa-answer-group"><div className="wa-answer-heading"><h3>{title}</h3><span className="wa-muted">{sprintf(/* translators: %s: how many submissions answered this question. */ _n('%s response', '%s responses', answered, 'wconvert'), formatCount(answered))}</span></div>
     {multiple && <p className="wa-muted">{__('Multiple answers allowed; percentages can exceed 100%.', 'wconvert')}</p>}
     <ul className="wa-answer-bars">{choices.map((choice, i) => <li key={i}>
       <div className="wa-answer-label"><span>{choice.label}</span><span className="wa-answer-value"><strong>{sprintf(/* translators: 1: how many responses picked this answer, 2: how many responses the question had. */ __('%1$s of %2$s', 'wconvert'), formatCount(choice.count), formatCount(answered))}</strong><span className="wa-muted">{formatRate(answered > 0 ? choice.count / answered : null)}</span></span></div>

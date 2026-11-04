@@ -409,7 +409,7 @@ function DashboardContent({
                 : __('Nothing was shown in this period.', 'wconvert')}
             </p>
           )}
-          <Insights items={insights} query={accepted} level={2} />
+          <Insights items={insights} query={accepted} />
           <ReportTarget name="goals" label={__('Results by goal', 'wconvert')}>
           <div className="wa-section-heading">
             <h2>{__('Results by goal', 'wconvert')}</h2>

@@ -16,7 +16,7 @@ interface Report {
   definitions: Record<string, Record<string, { name: string; order: number }>>;
   from: string; to: string; days: number; truncated: boolean;
 }
-export function JourneyReport({ id, period }: { id: string; period?: ReportPeriod }) {
+export function JourneyReport({ id, period, level }: { id: string; period?: ReportPeriod; level?: 2 | 3 }) {
   const [stored, setReport] = useState<(Report & { campaign: string }) | null>(null);
   const report = stored?.campaign === id ? stored : null;
   const [updating, setUpdating] = useState(false);
@@ -43,7 +43,7 @@ export function JourneyReport({ id, period }: { id: string; period?: ReportPerio
     screens.set(row.scope, counts);
   }
   return <ReportTarget name="activity" label={__('Screen activity', 'wconvert')}><Region className="wa-report">
-    <RegionHeader title={__('Signup and screen activity', 'wconvert')} level={3} icon={<Route />} description={__('See which screens were shown and which actions followed.', 'wconvert')} />
+    <RegionHeader title={__('Signup and screen activity', 'wconvert')} level={level} icon={<Route />} description={__('See which screens were shown and which actions followed.', 'wconvert')} />
     {failed && <Failure message={report ? __('Could not load matching screen totals. Activity below keeps its dates.', 'wconvert') : __('Could not load screen activity.', 'wconvert')} onRetry={() => setRetry(n => n + 1)} />}
     {report && <>
       <RegionBody>
