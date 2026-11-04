@@ -7908,8 +7908,8 @@ msgid "Template access expired. Preview the design again."
 msgstr "دسترسی به قالب منقضی شده است. طرح را دوباره پیش‌نمایش کنید."
 
 #: src/License/TemplateDownloads.php:134
-msgid "This template file is gone. Refresh the library and try again."
-msgstr "این فایل قالب دیگر وجود ندارد. کتابخانه را تازه‌سازی کنید و دوباره تلاش کنید."
+msgid "This template file is gone. Choose another template."
+msgstr "این فایل قالب دیگر وجود ندارد. قالب دیگری انتخاب کنید."
 
 #: public/admin/chunk-BF-hlmvm.js:1
 msgid "Dismiss reminder"

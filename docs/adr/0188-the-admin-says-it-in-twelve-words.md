@@ -27,6 +27,6 @@ Every admin string over twelve words was put through the ladder and approved as 
 
 ## Consequences
 
-Two strings still name a way out nobody could find on screen: "Refresh the library" on a missing template file, and "refresh targets" when the month changes under an open dialog. Their reworded versions keep the door. Two destination skip reasons reach no screen, because `PushWorker` discards them, and can go when that code is next touched.
+The missing-template and changed-month strings, which this pass left naming a way out nobody could find on screen, were then reworded: the first now says to choose another template, the second to close and reopen the dialog. Two destination skip reasons reach no screen, because `PushWorker` discards them and a test send needs a valid email before it pushes. They stay as plain untranslated text, because the "no email" branches are needed and `PushResult::skipped()` requires a reason.
 
 The `fa_IR` catalogues were retranslated with the new strings, because gettext keys on the source string.

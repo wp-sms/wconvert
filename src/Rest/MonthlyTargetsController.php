@@ -39,7 +39,7 @@ final class MonthlyTargetsController implements RestController
         try {
             $this->targets->save((string) $request->get_param('month'), (array) $request->get_param('targets'), $today);
         } catch (\DomainException) {
-            return new WP_Error('wconvert_target_month_changed', __('The month changed. Close this dialog and refresh targets before saving.', 'wconvert'), ['status' => 409]);
+            return new WP_Error('wconvert_target_month_changed', __('The month changed. Close and reopen this dialog to continue.', 'wconvert'), ['status' => 409]);
         } catch (\InvalidArgumentException) {
             return new WP_Error('wconvert_invalid_targets', __('Use whole positive counts for supported target metrics.', 'wconvert'), ['status' => 400]);
         } catch (\RuntimeException) {
