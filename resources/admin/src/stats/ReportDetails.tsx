@@ -28,6 +28,7 @@ import { adminSettings } from '../settings';
 import { periodOf, type DashboardPayload, type GoalReport, type Numbers, type OptinReport } from './api';
 import { formatCount, formatRate } from './format';
 import { countsNothing } from '../goals/countsNothing';
+import { HowCountedTip } from '../goals/HowCountedTip';
 import { formatDecimal } from '../lib/format';
 import { families, rangeLabel } from './reporting';
 import { ActivityChart } from './ActivityChart';
@@ -264,21 +265,24 @@ export function GoalDetail({
   const family = optin
     ? families(card).find((f) => f.arms.some((a) => a.id === optin.id))
     : undefined;
+  const counted = numbers.deliveries === null
+    ? card.measurement
+    : __(
+        'Requests count submitted forms. Neither requests nor email handoffs prove inbox arrival.',
+        'wconvert',
+      );
   return (
     <section aria-label={optin?.name ?? card.label}>
       <PageHeading
         title={<bdi>{optin?.name ?? card.label}</bdi>}
-        aside={optin && <Status value={optin.status} />}
+        aside={
+          <>
+            {counted && <HowCountedTip number={card.result_label}>{counted}</HowCountedTip>}
+            {optin && <Status value={optin.status} />}
+          </>
+        }
         description={optin && card.label}
       />
-      <p className="wa-muted">
-        {numbers.deliveries === null
-          ? card.measurement
-          : __(
-              'Requests count submitted forms. Neither requests nor email handoffs prove inbox arrival.',
-              'wconvert',
-            )}
-      </p>
       {optin?.status === 'published' && optin.published_at && optin.published_at.slice(0, 10) > payload.to && numbers.impressions === 0 && (
         <p className="wa-notice">{__('Published after these report dates. New activity appears after each day ends.', 'wconvert')}</p>
       )}

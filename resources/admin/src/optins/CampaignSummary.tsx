@@ -8,7 +8,7 @@ import type { GoalEntry } from '../goals/api';
 import type { Loadable } from '../shell/loadable';
 import { goalSaid } from '../goals/said';
 import { FactList, type Fact } from '../shell/FactList';
-import { InfoTip } from '../shell/InfoTip';
+import { HowCountedTip } from '../goals/HowCountedTip';
 import { LineSkeleton } from '../shell/LineSkeleton';
 import type { OptinStatus } from './api';
 
@@ -45,13 +45,7 @@ export function GoalLine({ goal, goalId, also }: { readonly goal: Loadable<GoalE
 /** The sentence saying how a Goal's number is counted, folded into ⓘ (ADR 0183). */
 function MeasurementTip({ entry }: { entry: GoalEntry | null }) {
   if (!entry?.outcome) return null;
-  return (
-    <InfoTip label={sprintf(
-      /* translators: %s: what the Goal's number is called, e.g. “Quiz completions”. */
-      __('How %s are counted', 'wconvert'), entry.headline_label)}>
-      {entry.outcome.measurement}
-    </InfoTip>
-  );
+  return <HowCountedTip number={entry.headline_label}>{entry.outcome.measurement}</HowCountedTip>;
 }
 
 /**

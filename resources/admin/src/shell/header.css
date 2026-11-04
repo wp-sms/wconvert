@@ -38,7 +38,7 @@
 #wconvert-admin .wconvert-page-title-row { display:flex; align-items:flex-start; gap:10px; }
 #wconvert-admin .wconvert-page-title-row > h1 { min-inline-size:0; }
 /* As tall as the title's first line, so a tip or a status stays on it when a long name wraps. */
-#wconvert-admin .wconvert-page-title-aside { flex:none; display:flex; align-items:center; block-size:calc(var(--text-display) * 1.1); }
+#wconvert-admin .wconvert-page-title-aside { flex:none; display:flex; align-items:center; gap:8px; block-size:calc(var(--text-display) * 1.1); }
 #wconvert-admin .wconvert-page-title { font-size:var(--text-display); font-weight:500; line-height:1.1; letter-spacing:-.035em; overflow-wrap:anywhere; }
 #wconvert-admin .wconvert-page-description { margin-block-start:6px; }
 #wconvert-admin .wconvert-panel-main { padding:0 var(--frame-gutter) 36px; flex:1; }
@@ -146,6 +146,10 @@
   #wconvert-admin .wconvert-service-resource a, #wconvert-admin .wconvert-publisher { min-block-size:44px; min-inline-size:44px; }
   /* The admin's 44px touch floor applies; these margins keep the title where a mouse has it, and `relative` keeps the overlap tappable. */
   #wconvert-admin .wconvert-page-back { position:relative; margin-block:-10px -6px; }
+}
+/* A tip dropped under a long name keeps its glyph on the title's edge: its 44px target holds 14px either side of a 16px glyph. */
+@media(max-width:600px) and (pointer:coarse) {
+  #wconvert-admin .wconvert-page-title-aside > .wconvert-info-trigger:first-child { margin-inline-start:-14px; }
 }
 .wconvert-header-popover { max-inline-size:calc(100vw - 32px); }
 .wconvert-header-popover h2 { margin:0 0 12px; font-size:var(--text-heading); font-weight:600; }

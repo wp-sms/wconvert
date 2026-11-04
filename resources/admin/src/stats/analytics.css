@@ -249,8 +249,10 @@
 .wa-section-heading + .wa-campaigns {
   margin-block-start: 0;
 }
-/* Opening a Submissions-style report, it sits under the page's title as any screen's content does. */
-.wa-report-sheet > .wa-campaigns:first-child {
+/* What opens a report sits under the page's title, as any screen's content does. */
+.wa-report-sheet > .wa-campaigns:first-child,
+.wa-report-sheet > section:first-child > .wa-notice:first-child,
+.wa-report-sheet > section:first-child > .wa-report-target:first-child > .wa-panel:first-child {
   margin-block-start: 0;
 }
 .wa-campaign-name {

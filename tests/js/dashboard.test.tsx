@@ -777,6 +777,41 @@ describe('a report’s page title (ADR 0187, 0190)', () => {
     expect(routeFrom(back().getAttribute('href')!).report.optinId).toBeUndefined();
   });
 
+  it('keeps how a goal is counted one press from its title', async () => {
+    api.readReport.mockResolvedValue(payload());
+    framed({ goal: 'grow_email_list' });
+    const title = await screen.findByRole('heading', { level: 1, name: 'Grow my email list' });
+    const sentence = 'Counts submitted forms, not confirmed subscribers.';
+    expect(screen.queryByText(sentence)).toBeNull();
+    const tip = screen.getByRole('button', { name: 'How Email submissions are counted' });
+    expect(title).not.toContainElement(tip);
+    expect(title.closest('.wconvert-page-copy')).toContainElement(tip);
+    await userEvent.click(tip);
+    expect(await screen.findByText(sentence)).toBeVisible();
+  });
+
+  it('keeps a campaign’s tip with its status, and says what a delivery goal’s requests prove', async () => {
+    api.readReport.mockResolvedValue({
+      ...payload(),
+      goals: [{ ...goal([{ ...row(), deliveries: 3 }]), deliveries: 3, result_label: 'Resource requests' }],
+    });
+    framed({ optinId: 'email' });
+    const title = await screen.findByRole('heading', { level: 1, name: 'Newsletter footer' });
+    const copy = within(title.closest('.wconvert-page-copy') as HTMLElement);
+    expect(copy.getByText('Published')).toBeInTheDocument();
+    await userEvent.click(copy.getByRole('button', { name: 'How Resource requests are counted' }));
+    expect(await screen.findByText(/Neither requests nor email handoffs prove inbox arrival/)).toBeVisible();
+  });
+
+  it('keeps what is true of this campaign at rest, and has no tip with nothing to say', async () => {
+    const draft = { ...goal([row('email', 'paused')]), measurement: undefined };
+    api.readReport.mockResolvedValue({ ...payload(), goals: [draft] });
+    framed({ optinId: 'email' });
+    await screen.findByRole('heading', { level: 1, name: 'Newsletter footer' });
+    expect(screen.getByText('This campaign is a draft, so not shown. Earlier results are below.')).toBeVisible();
+    expect(screen.queryByRole('button', { name: /are counted$/ })).toBeNull();
+  });
+
   it('leaves the overview titled for its section, with no way back', async () => {
     api.readReport.mockResolvedValue(payload());
     framed({});

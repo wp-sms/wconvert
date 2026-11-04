@@ -16,12 +16,16 @@ The other two screens with a way back already titled the page with its subject: 
 |---|---|---|---|
 | Overview | none | Analytics | How each goal is performing. |
 | Submissions-style | ← Analytics | The number's name, with its tip | none |
-| Goal | ← Analytics | The goal | none |
-| Campaign | ← Analytics | The campaign, with its status | The goal |
+| Goal | ← Analytics | The goal, with how it is counted in a tip | none |
+| Campaign | ← Analytics | The campaign, with how it is counted in a tip and its status | The goal |
 | A/B test | ← Analytics | The campaign, with its tip | A/B comparison and variant history |
 | Failed, or not available | ← Analytics | Analytics | none |
 
-A goal's or a campaign's measurement line stays in the body. Every report's way back goes to the overview, including a campaign's.
+Every report's way back goes to the overview, including a campaign's.
+
+**How a goal's number is counted moves into a tip beside the title.** The sentence repeated unchanged on every campaign under a goal, and it was already an ⓘ in the campaign dialog ([ADR 0183](0183-a-campaign-dialog-opens-on-its-preview-and-its-answer.md)). The two share `HowCountedTip`. "How these numbers work" at the foot of each report still says most of it at rest, and "Items added to basket" still says "Confirmed, not purchases". A quiz's "Product clicks and purchases are separate" is only in the tip.
+
+What says something about this campaign or these dates stays at rest: a draft, deleted or published-after-these-dates notice, and "Nothing to compare".
 
 **`PageHeading` is how a screen that learns its name from a read titles the page.** `Shell` owns the h1 and only the screen knows the name, and only after its read. An occasion draws its own `Shell` and Sending issues' name is fixed, so both keep `pageTitle`. `PageHeading` registers `title`, `aside` and `description` with the frame in a layout effect, so no frame shows the section's title, and clears on unmount, so the overview gets it back. It does not portal, because the frame has to know whether to draw its own title at all. With no frame above it, it draws in place, as `PageAction` and `PageBack` do.
 
@@ -35,7 +39,7 @@ The bar and the link are drawn by the chunk's fallback as well as by `Dashboard`
 
 **A page with a way back keeps a long name on one line where it can.** A merchant's own name is often longer than the room beside the date picker and Export, so from 601px the title takes its full width and the actions move under it, at the same right edge. On a phone, what stands beside the title drops under a long name. The row holds the actions' height before they arrive, so the title does not move when the chunk lands.
 
-**The way back is a 24px box.** The heading's top padding drops from 28px to 20px when it has one, 16px on a phone. Its padding is 6px, so its margin is -9px to keep the arrow on the title's edge. Touch keeps the admin's 44px floor, with negative margins so the layout does not move. A `.wa-campaigns` table opening a report loses its top margin, so it sits under the title as any screen's content does. This is one component, so an occasion and Sending issues tighten too. "Back to leads" keeps its wording.
+**The way back is a 24px box.** The heading's top padding drops from 28px to 20px when it has one, 16px on a phone. Its padding is 6px, so its margin is -9px to keep the arrow on the title's edge. Touch keeps the admin's 44px floor, with negative margins so the layout does not move. Whatever opens a report loses its top margin, so it sits under the title as any screen's content does. This is one component, so an occasion and Sending issues tighten too. "Back to leads" keeps its wording.
 
 ## Consequences
 
