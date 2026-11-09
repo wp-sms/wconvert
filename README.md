@@ -625,7 +625,7 @@ same instant produce two.
 
 ### Verifying database behavior safely
 
-CI installs a fresh WordPress 6.8 on MySQL 8.4 and runs the stats, lead-log and
+CI installs a fresh WordPress 6.9 on MySQL 8.4 and runs the stats, lead-log and
 literal-search verifiers under PHP 8.2. Together they check MySQL's counter
 atomicity, the lead log's grouping/erasure/pruning SQL, and captured-value
 search escaping. Run the same checks only against a throwaway MySQL-backed
@@ -1174,11 +1174,11 @@ the code moves.
 [ADR 0029](docs/adr/0029-the-free-contract-is-proven-at-the-source.md) records
 which form is sanctioned and why, and `bin/plugin-check.sh` gained no flag.
 
-### Why WordPress 6.8
+### Why WordPress 6.9
 
-Free and Pro require WordPress **6.8 or later** and PHP **8.1 or later**. The
-bundled Action Scheduler 4.1.0 sets the WordPress minimum. Normal activation,
-admin boot and editor smoke checks passed on WordPress 6.8 and 7.1.1; see the
+Free and Pro require WordPress **6.9 or later** and PHP **8.1 or later**. The
+bundled Action Scheduler 4.2.0 sets the WordPress minimum. Normal activation,
+admin boot and editor smoke checks passed on WordPress 6.8 and 7.1.1 (before the minimum moved to 6.9); see the
 [compatibility review](docs/reviews/2026-09-20-content-lock-compatibility.md).
 The artifact check compares the packaged dependency requirement with the plugin
 header, and verifies that the Free readme agrees.

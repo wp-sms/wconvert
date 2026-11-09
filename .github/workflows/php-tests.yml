@@ -63,7 +63,7 @@ jobs:
         run: composer test
 
   database:
-    name: 'Database + PHPStan · WordPress 6.8 / PHP 8.2 / MySQL 8.4'
+    name: 'Database + PHPStan · WordPress 6.9 / PHP 8.2 / MySQL 8.4'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     services:
@@ -126,7 +126,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          wp core download --version=6.8 --path="$WP_PATH"
+          wp core download --version=6.9 --path="$WP_PATH"
           wp config create \
             --path="$WP_PATH" \
             --dbname=wordpress \
