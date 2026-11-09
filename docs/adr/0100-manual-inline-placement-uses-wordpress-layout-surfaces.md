@@ -44,8 +44,8 @@ manual placement of the same Campaign keeps the established contract: the first
 Anchor renders, later duplicates stay empty, and one Impression is possible.
 Different Campaigns remain independent.
 
-Free, Pro and the WordPress.org readme now require WordPress 6.8, matching the
-bundled Action Scheduler 4.1.0 minimum. Normal activation and editor smoke checks
+Free, Pro and the WordPress.org readme now require WordPress 6.9 (6.8 until Action Scheduler 4.2.0), matching the
+bundled Action Scheduler 4.2.0 minimum. Normal activation and editor smoke checks
 pass on 6.8 and 7.1.1. The old 6.2 claim failed during dependency activation;
 the historical 6.5 function boundary was never sufficient evidence of support.
 See the [compatibility review](../reviews/2026-09-20-content-lock-compatibility.md).

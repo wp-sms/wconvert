@@ -1,6 +1,6 @@
 # Admin visual contracts
 
-The suite checks the shipping admin bundle inside disposable WordPress 6.8.3
+The suite checks the shipping admin bundle inside disposable WordPress 6.9
 with PHP 8.1, real WordPress CSS and self-hosted fonts. It never connects to the
 saved Local site. Playground, Playwright and Chromium are development tools only.
 

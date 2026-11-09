@@ -1,7 +1,7 @@
 === WConvert – Popup Builder, Email Optin Forms & Lead Capture ===
 Contributors: veronalabs, mostafa.s1990, kashani
 Tags: popup, popup builder, optin form, lead capture, email list
-Requires at least: 6.8
+Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 8.1
 Stable tag: 1.1.0
