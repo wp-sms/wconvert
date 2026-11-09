@@ -4,7 +4,7 @@ Tags: popup, popup builder, optin form, lead capture, email list
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -290,10 +290,20 @@ Privacy: https://policies.google.com/privacy
 
 == Changelog ==
 
+= 1.1.0 =
+* Analytics reports are titled by what they report on, with plainer numbers and a daily chart you can read day by day.
+* Shorter, plainer copy across the admin, with help moved into tips.
+* Translations: Persian admin, and French and German for designs, setups and popup words.
+* A consistent admin: shared dialogs, loading and failure states, and controls.
+* Faster admin: each section loads on its own.
+
 = 1.0.0 =
 * First public release: a popup builder and inline optin forms created goal-first, 150+ ready-made designs, design import and export, multistep signups, a lead log with consent records and CSV export, analytics by goal with monthly targets, a MailPoet integration, and abilities for AI agents.
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+Clearer analytics, shorter copy, and Persian, French and German translations.
 
 = 1.0.0 =
 First public release.

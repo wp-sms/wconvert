@@ -5,7 +5,7 @@ defined('ABSPATH') || exit;
 $wconvertProPluginDir = dirname(__DIR__);
 
 if (!defined('WCONVERT_PRO_VERSION')) {
-    define('WCONVERT_PRO_VERSION', '1.0.0');
+    define('WCONVERT_PRO_VERSION', '1.1.0');
 }
 
 /*
@@ -23,7 +23,7 @@ if (!defined('WCONVERT_PRO_VERSION')) {
  * release workflow, in its own ticket.
  */
 if (!defined('WCONVERT_MIN_CORE')) {
-    define('WCONVERT_MIN_CORE', '0.1.0');
+    define('WCONVERT_MIN_CORE', '1.1.0');
 }
 
 if (!defined('WCONVERT_PRO_DIR')) {
