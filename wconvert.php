@@ -3,7 +3,7 @@
  * Plugin Name: WConvert – Popup Builder, Email Optin Forms & Lead Capture
  * Plugin URI: https://wconvert.io/
  * Description: Lead capture with popups and inline forms, created goal-first.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: VeronaLabs
  * Author URI: https://veronalabs.com/
  * Text Domain: wconvert
