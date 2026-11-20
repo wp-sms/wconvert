@@ -6118,12 +6118,19 @@ body .wconvert-option-menu__hint-line { padding-block: 10px 12px; padding-inline
 body .wconvert-option-menu__item.wconvert-pro-hint-item { padding-inline-start: 34px; }
 body .wconvert-pro-hint-item .wconvert-option-menu__name { color: var(--muted-foreground); font-size: var(--text-note); font-weight: 400; }
 body .wconvert-pro-hint-item .wconvert-option-menu__trail > svg { color: var(--link); }
-/* A value pill's control, under its presets or alone (ADR 0139). */
-body .wconvert-option-menu__control { display: grid; gap: 8px; padding-block: 8px 10px; padding-inline: 10px; }
+/*
+ * A value pill's control, under its presets or alone (ADR 0139). The column is
+ * pinned to the menu: an implicit track grows to its widest child, and
+ * WordPress's `.regular-text` is 25em, so a path input pushed Done past the
+ * 320px menu's clipped edge (#422). A text input fills its field rather than
+ * keep the 25em: as a percentage it no longer sizes the field's own grid track.
+ */
+body .wconvert-option-menu__control { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; padding-block: 8px 10px; padding-inline: 10px; }
 body .wconvert-option-menu__list + .wconvert-option-menu__control { border-block-start: 1px solid var(--border); }
 body .wconvert-option-menu__control .wconvert-param { display: grid; gap: 6px; margin: 0; font-size: var(--text-note); }
 body .wconvert-option-menu__control .wconvert-field-heading > :is(label, span:first-child), body .wconvert-option-menu__control .wconvert-param__name { font-size: var(--text-note); font-weight: 500; }
 body .wconvert-option-menu__control :is(input[type='text'], input[type='number'], input[type='time']) { min-block-size: 32px; max-inline-size: 100%; }
+body .wconvert-option-menu__control input[type='text'] { inline-size: 100%; }
 body .wconvert-option-menu__done { justify-self: end; min-block-size: 28px; margin: 0; padding-block: 2px; padding-inline: 12px; border: 1px solid var(--input); border-radius: var(--radius-md); background: var(--card); color: var(--foreground); font-size: var(--text-note); font-weight: 500; cursor: pointer; }
 body .wconvert-option-menu__done:is(:hover, :focus-visible) { background: var(--accent); }
 body .wconvert-rule-row__check { font-size: var(--text-note); }

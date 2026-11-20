@@ -175,6 +175,13 @@ The wp-admin menu icon (`AdminMenu::MENU_ICON`) is the same artwork as one
 monochrome path: the tile with the W knocked out by `evenodd`, then the dot.
 WordPress's `svg-painter` tints it for each admin colour scheme.
 
+> **Amended (#422):** `svg-painter` tints only once the page has loaded, and the
+> path's original `fill="black"` showed until then. The fill is now the
+> user's scheme icon colour, read on the server (`AdminMenu::menuIcon()`,
+> repainted on `admin_init` once the schemes are registered), so the tint
+> changes nothing. A fixed colour cannot match every version: WordPress 7's
+> default `modern` is `#f3f1f1` and 6.9's `fresh` is `#a7aaad`.
+
 wp.org `icon-128x128.png` and `icon-256x256.png` show the main mark on a paper
 square. The banners use paper, the mark with a Manrope wordmark, the site's
 "Turn more visits into *connections.*", and an espresso panel holding a sample

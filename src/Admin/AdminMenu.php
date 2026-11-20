@@ -69,13 +69,12 @@ final class AdminMenu
 
     /**
      * The wconvert.io mark as one monochrome path (ADR 0130): the tile with the
-     * W knocked out by `evenodd`, then the dot. WordPress's `svg-painter`
-     * rewrites the `fill` to the admin colour scheme's icon colour, so the
-     * artwork's own colours would be discarded anyway. The paths are
-     * `resources/admin/src/assets/branding/wconvert-mark.svg`.
+     * W knocked out by `evenodd`, then the dot. The paths are
+     * `resources/admin/src/assets/branding/wconvert-mark.svg`; the fill is
+     * {@see self::menuIcon()}'s to choose.
      */
     private const MENU_ICON = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
-        . '<path fill="black" fill-rule="evenodd" d="'
+        . '<path fill="%s" fill-rule="evenodd" d="'
         . 'M12 8h32c0 6.627 5.373 12 12 12v32c0 5.523-4.477 10-10 10H12C6.477 62 2 57.523 2 52V18C2 12.477 6.477 8 12 8Z'
         . 'M12 24h8l-.2 16L29 24h7l-.4 16L44 24h8L38 49h-8l.5-16L21 49h-8L12 24Z'
         . 'M49 8a7 7 0 1 0 14 0a7 7 0 1 0-14 0Z"/></svg>';
@@ -95,6 +94,9 @@ final class AdminMenu
      */
     public const PRIORITY = 10;
 
+    /** WordPress's own icon grey: its fallback when no scheme supplies one. */
+    private const ICON_GREY = '#a7aaad';
+
     private string $screenId = '';
 
     public function __construct(
@@ -105,6 +107,8 @@ final class AdminMenu
     public function hooks(): void
     {
         add_action('admin_menu', [$this, 'registerMenu']);
+        // After `register_admin_color_schemes`, which WordPress runs on admin_init at 1.
+        add_action('admin_init', [$this, 'paintMenuIcon'], 20);
         add_action('admin_enqueue_scripts', [$this, 'enqueueAssets'], self::PRIORITY);
     }
 
@@ -116,7 +120,7 @@ final class AdminMenu
             'manage_options',
             self::SLUG,
             [$this, 'renderScreen'],
-            'data:image/svg+xml;base64,' . base64_encode(self::MENU_ICON),
+            self::menuIcon(),
             26
         );
 
@@ -144,6 +148,51 @@ final class AdminMenu
      * one page, so which is `current` is decided in the browser from the hash
      * (`shell/menuHighlight.ts`).
      */
+    /**
+     * The menu icon, drawn in the colour WordPress will paint it (#422) — or
+     * WordPress's grey until the schemes exist; {@see self::paintMenuIcon()}.
+     *
+     * `svg-painter` rewrites the fill to the user's admin colour scheme, but only
+     * once the page has loaded; until then the browser paints the fill the icon
+     * came with. Drawing it in the scheme's own icon colour, read from where
+     * `wp_color_scheme_settings()` reads it, makes the repaint a no-op — so
+     * there is no flash on any scheme. A fixed colour could not do that:
+     * WordPress 7 made `modern` (`#f3f1f1`) the default, 6.9's `fresh` is
+     * `#a7aaad`, and other schemes differ again.
+     */
+    public static function menuIcon(): string
+    {
+        $schemes = $GLOBALS['_wp_admin_css_colors'] ?? [];
+        $scheme = get_user_option('admin_color');
+        $colours = is_array($schemes) && is_string($scheme) && isset($schemes[$scheme]) && is_object($schemes[$scheme])
+            ? ($schemes[$scheme]->icon_colors ?? null)
+            : null;
+        $base = is_array($colours) ? ($colours['base'] ?? null) : null;
+        // A plugin registers schemes too; only a hex colour goes into the markup.
+        $fill = is_string($base) && preg_match('/^#[0-9a-f]{3,8}$/i', $base) === 1 ? $base : self::ICON_GREY;
+
+        return 'data:image/svg+xml;base64,' . base64_encode(sprintf(self::MENU_ICON, $fill));
+    }
+
+    /**
+     * Repaints the menu entry in the user's scheme colour. `admin_menu` runs
+     * before `admin_init`, where WordPress registers the schemes, so
+     * {@see self::registerMenu()} can only draw the fallback grey; the menu is
+     * printed after both.
+     */
+    public function paintMenuIcon(): void
+    {
+        if (!isset($GLOBALS['menu']) || !is_array($GLOBALS['menu'])) {
+            return;
+        }
+
+        foreach ($GLOBALS['menu'] as $at => $item) {
+            if (is_array($item) && ($item[2] ?? null) === self::SLUG) {
+                $GLOBALS['menu'][$at][6] = self::menuIcon();
+            }
+        }
+    }
+
     public function registerSubmenu(): void
     {
         add_submenu_page(self::SLUG, __('Campaigns', 'wconvert'), __('Campaigns', 'wconvert'), 'manage_options', self::SLUG);

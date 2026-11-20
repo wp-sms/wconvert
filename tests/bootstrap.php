@@ -2444,6 +2444,16 @@ if (!function_exists('delete_transient')) {
     }
 }
 
+/** The current user's options, keyed by name — `admin_color` picks the menu icon's fill. */
+$GLOBALS['wconvertTestUserOptions'] = [];
+
+if (!function_exists('get_user_option')) {
+    function get_user_option(string $option, int $user = 0): mixed
+    {
+        return $GLOBALS['wconvertTestUserOptions'][$option] ?? false;
+    }
+}
+
 /** WordPress's submenu, recorded: the licence adds WConvert → License. */
 $GLOBALS['wconvertTestSubmenu'] = [];
 

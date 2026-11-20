@@ -11,7 +11,7 @@ import { OpeningEditor } from './OpeningEditor';
 import { QuickPicks } from './QuickPicks';
 import { pickFor, SECTIONS, switchPick, type Pick, type SectionId } from './picks';
 import { sentenceParts, type SentencePart } from './sentence';
-import { questions, summarise, type DisplayRulesValue } from './summaries';
+import { summarise, type DisplayRulesValue } from './summaries';
 import { incompletePlan } from './plan';
 import type { RuleVocabulary } from '../api';
 import { interpolate } from '../../lib/interpolate';
@@ -60,7 +60,6 @@ const sectionOf = (id: string | undefined): SectionId | undefined =>
  */
 export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onChange, reveal, placement, audienceRequirement, initialSection, onSectionChange, reopenEnabled }: DisplayRulesProps) {
   const summaries = summarise(value, vocabulary);
-  const asked = questions();
   const [active, setActive] = useState<SectionId>(() => sectionOf(initialSection) ?? summaries.find(section => section.attention)?.id ?? 'where');
   const [chosen, setChosen] = useState<Partial<Record<SectionId, string>>>({});
   const ours = useRef<string | null>(null);
@@ -105,7 +104,7 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
   const parts = sentenceParts(value, vocabulary);
   // The connecting words stay plain; each answer is a phrase that opens its question.
   const phrase = (part: SentencePart) => <Fragment key={part.section}>{interpolate(part.frame, [
-    <button type="button" className="wconvert-display-token" key={part.section} title={asked[part.section]}
+    <button type="button" className="wconvert-display-token" key={part.section}
       aria-current={active === part.section || undefined} data-attention={part.attention || undefined} onClick={() => open(part.section)}>{part.text}</button>,
   ])}</Fragment>;
   const current = summaries.find(section => section.id === active) ?? summaries[0];
