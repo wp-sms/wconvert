@@ -68,8 +68,9 @@ final class ReviewAsk
     }
 
     /**
-     * "Maybe later" is offered once. A second one, which only a stale page
-     * could send, counts as No thanks.
+     * Rate and No thanks are final. "Maybe later" is offered once: a second
+     * one counts as No thanks, and one sent after a final answer (a second
+     * tab, a stale page) changes nothing.
      */
     public function record(int $userId, string $choice, int $now): void
     {
@@ -77,7 +78,13 @@ final class ReviewAsk
             return;
         }
 
-        $value = $choice === 'later' && !str_starts_with(self::stored($userId), self::LATER)
+        $stored = self::stored($userId);
+
+        if ($stored === self::DONE) {
+            return;
+        }
+
+        $value = $choice === 'later' && !str_starts_with($stored, self::LATER)
             ? self::LATER . $now
             : self::DONE;
 

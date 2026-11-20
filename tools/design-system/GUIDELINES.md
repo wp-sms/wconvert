@@ -126,6 +126,11 @@ colour.
 
   The canvas is a near-neutral warm white, **`#F6F5F1`**, and work surfaces
   are white. It is deliberately less saturated than the site's paper.
+
+  > _Amended by [ADR 0191](../../docs/adr/0191-the-admin-asks-for-a-review-once.md):
+  > the review card is the one place outside these roles. It is a thank-you note,
+  > not a work surface: rose (`--love`) for its heart and sign-off, cream paper
+  > (`--note-paper`) with faint rose rules. Nothing else uses them._
 - **Surface roles are shared across screens.** Use `--card` (white) for cards,
   including goals and monthly targets. Use `--surface` (`#EFEDE8`) for inset
   content and table headers, `--secondary` (ice) for selected states and icon
@@ -160,6 +165,10 @@ colour.
 Shared shadow tokens are `none`. Use surface contrast and fine borders for depth,
 with 6px control corners and 8px work surfaces. No gradients or decorative motion,
 and that includes a loading placeholder: skeletons are static, never pulsing (§12).
+
+> _Amended by [ADR 0191](../../docs/adr/0191-the-admin-asks-for-a-review-once.md):
+> the review card draws its paper's rules and its folded corner with gradients and
+> has 12px corners, as the approved mockup does. It has no motion._
 This supersedes the earlier hard-offset shadow direction (ADR 0097). A ring or
 rail drawn with `box-shadow` has no blur and casts nothing, so it is a line and
 not a shadow: a selected state, a hairline around something clipped, the §15
@@ -290,6 +299,8 @@ value shown beside it, an onboarding tour on a working screen, a marketing
 line, a reassurance repeated on every card, a permanent "No unsaved changes".
 
 > _Amended by ADR 0147: **the Pro hint is the one marketing line allowed**, and it passes this section's test — without it a free merchant keeps hunting for a feature this install doesn't have. So it goes only in the list where that feature would sit (Add rule, format picker, Flow map, destinations, campaign ⋯), never on an empty state, a success screen or a dashboard._
+>
+> _Amended by [ADR 0191](../../docs/adr/0191-the-admin-asks-for-a-review-once.md): **the review card is the one other ask.** It sells nothing. After the first conversion it asks each admin, at most twice, for a wordpress.org review, at the top of Campaigns and of the Analytics overview, and an answer ends it._
 
 **Save feedback is "Saved just now", beside the Save button** (`shell/SaveStatus`,
 ADR 0131). It appears when a save succeeds and clears on the next edit, so it
@@ -821,7 +832,7 @@ Not gaps. Each was decided:
 | Toasts | a message worth showing stays on the screen |
 | WordPress admin notices | suppressed; the admin owns its page |
 | `toggle-group`, `radio-group` | native radios already do it, for free |
-| Decorative shadows, gradients and motion | Harbor uses solid surfaces and clear hierarchy |
+| Decorative shadows, gradients and motion | Harbor uses solid surfaces and clear hierarchy. The review card's paper is the one gradient ([ADR 0191](../../docs/adr/0191-the-admin-asks-for-a-review-once.md)) |
 | A dismiss control on a region's error | it clears when the next fetch succeeds |
 | A loading spinner for a region | a skeleton mirrors what is coming |
 | An ID on a screen | names, or "Deleted campaign"; the developer disclosure, the inline shortcode and the page picker are the exceptions (§8) |

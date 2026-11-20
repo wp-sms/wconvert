@@ -70,7 +70,9 @@ export function ReviewCard() {
         </div>
         <div className="wconvert-review__actions">
           <Button asChild className="wconvert-review__rate">
-            <a href={REVIEW_URL} target="_blank" rel="noreferrer" onClick={() => answer('rated')}>
+            <a href={REVIEW_URL} target="_blank" rel="noreferrer" onClick={() => answer('rated')}
+              // A middle-click opens the tab without a click event.
+              onAuxClick={(event) => { if (event.button === 1) answer('rated'); }}>
               {__('Rate WConvert', 'wconvert')}
               <ArrowUpRight aria-hidden="true" className="rtl:-scale-x-100" />
               <span className="sr-only">{__('(opens in a new tab)', 'wconvert')}</span>

@@ -109,14 +109,14 @@ final class AdminMenu
     private static ?\Closure $firstConversion = null;
 
     /**
-     * @param (\Closure(): \WConvert\Stats\StatsRepository)|null $stats
+     * @param (\Closure(): \WConvert\Milestone\Milestones)|null $milestones
      */
     public function __construct(
         private readonly AdminNotices $notices,
-        ?\Closure $stats = null,
+        ?\Closure $milestones = null,
     ) {
-        if ($stats !== null) {
-            self::$firstConversion = static fn (): ?string => $stats()->firstDays()[\WConvert\Stats\StatKind::Conversion->value] ?? null;
+        if ($milestones !== null) {
+            self::$firstConversion = static fn (): ?string => $milestones()->firstConversion();
         }
     }
 

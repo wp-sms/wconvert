@@ -89,6 +89,15 @@ final class ReviewAskTest extends TestCase
         $this->assertSame(0, $this->scans);
     }
 
+    public function testAFinalAnswerCannotBeUndoneByALaterFromAnotherTab(): void
+    {
+        $ask = new ReviewAsk();
+        $ask->record(7, 'declined', self::NOW);
+        $ask->record(7, 'later', self::NOW + 60);
+
+        $this->assertNull($ask->state(7, $this->converted(), self::NOW + 10 * ReviewAsk::WAIT));
+    }
+
     public function testEachUserDecidesForThemselves(): void
     {
         $ask = new ReviewAsk();
@@ -147,6 +156,12 @@ final class ReviewAskTest extends TestCase
         $this->assertSame('POST', $route['args']['methods']);
         $this->assertSame([Routes::class, 'canManage'], $route['args']['permission_callback']);
         $this->assertSame(ReviewAsk::CHOICES, $route['args']['args']['choice']['enum']);
+
+        $GLOBALS['wconvertTestCapabilities'] = [];
+        $this->assertFalse(Routes::canManage(), 'Someone who cannot manage WConvert is refused.');
+        $GLOBALS['wconvertTestCapabilities'] = [Routes::MANAGE_CAPABILITY];
+        $this->assertTrue(Routes::canManage());
+        $GLOBALS['wconvertTestCapabilities'] = [];
 
         $request = new WP_REST_Request('POST', '/wconvert/v1/review-ask');
         $request->set_param('choice', 'declined');

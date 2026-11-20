@@ -75,6 +75,15 @@ final class Milestones
     }
 
     /**
+     * The site's first conversion day on its own, for the review card's boot
+     * flag (ADR 0191), which needs nothing else {@see self::read()} returns.
+     */
+    public function firstConversion(): ?string
+    {
+        return $this->stats->firstDays()[StatKind::Conversion->value] ?? null;
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function read(): array

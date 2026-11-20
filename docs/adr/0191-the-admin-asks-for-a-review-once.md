@@ -1,6 +1,10 @@
 # 0191: The admin asks for a review once
 
-Accepted 2026-11-20. From issue #420.
+Accepted 2026-11-20. From issue #420. Amends
+[GUIDELINES](../../tools/design-system/GUIDELINES.md) §5 (colour roles), §6
+(gradients and corners), §8 (the one marketing line, which
+[ADR 0147](0147-free-names-what-pro-adds-where-it-is-wanted.md) set) and §18,
+each inline.
 
 Approved mockup: claude.ai/artifact/MY4VZ6U5niMSoPjk5vTopT (Note style, copy
 A, reviewed 2026-11-20).
@@ -40,7 +44,9 @@ Only people who can manage WConvert (`Routes::canManage`) see it.
 `POST /wconvert/v1/review-ask` records `rated`, `later` or `declined`. The
 boot flag `reviewAsk` says which look to show, or null.
 
-**4. The first-conversion read is cached.** The milestone is `MIN(stat_date)`
+**4. The first-conversion read is cached.** `Milestones::firstConversion()`
+reads it, injected lazily into `AdminMenu` by its provider: where nothing
+supplied it, such as a unit test, the card stays off. The milestone is `MIN(stat_date)`
 over the whole stats table ([ADR 0140](0140-measured-reads-keep-their-indexes.md)),
 and the boot flag would otherwise run it on every WConvert screen load for
 anyone who hasn't answered. The transient `wconvert_first_conversion` keeps
@@ -61,7 +67,17 @@ does not ask first whether they are happy and send only the happy ones to
 wordpress.org: that is review gating.
 
 The rose `--love` and the paper tokens are new and used only here. `--love`
-reads 5.5:1 on white, so the sign-off clears AA.
+reads 5.5:1 on white, so the sign-off clears AA. The paper's rules and its
+folded corner are gradients, and its corners are 12px. GUIDELINES §5 and §6
+otherwise forbid all three, and are amended inline: the user chose this look
+in the mockup, as a note rather than a work surface.
+
+The last look's "If you have a minute, a review would mean a lot. We won't
+ask again." is 15 words. It keeps ADR 0188's first exception: "We won't ask
+again" says what is permanent.
+
+**The card is not a marketing line.** GUIDELINES §8 allows one, the Pro hint,
+and never on a dashboard. This card sells nothing and is the one other ask.
 
 **7. The link is `https://wordpress.org/support/plugin/wconvert/reviews/#new-post`
 with no UTMs.** [ADR 0189](0189-links-to-our-sites-carry-one-scheme.md)'s
@@ -86,5 +102,9 @@ Persian catalogue, and sharing its msgid would translate both.
   Campaigns to Analytics doesn't show it again.
 - If recording the answer fails, the card comes back next visit. That is the
   safe way round.
+- Rate and No thanks are final. A "Maybe later" sent after one, from a second
+  tab, changes nothing.
+- Rate is recorded on a click or a middle-click. "Open in new tab" from the
+  context menu fires neither, so the card stays until it is answered.
 - Uninstall deletes the user meta. The transient goes with every other
   `wconvert_` transient.

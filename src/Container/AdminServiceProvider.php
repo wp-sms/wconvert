@@ -42,7 +42,7 @@ final class AdminServiceProvider implements ServiceProvider
             static fn (ServiceContainer $c): AdminMenu => new AdminMenu(
                 $c->resolve(AdminNotices::class),
                 // Lazy: only the review card's first read needs the stats table (ADR 0191).
-                $c->lazy(\WConvert\Stats\StatsRepository::class)
+                $c->lazy(\WConvert\Milestone\Milestones::class)
             )
         );
 
