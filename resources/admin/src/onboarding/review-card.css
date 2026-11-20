@@ -1,0 +1,41 @@
+/*
+ * The review card (ADR 0191): a thank-you note on lined paper with a folded
+ * corner, a rose heart seal and a team sign-off. Approved mockup:
+ * claude.ai/artifact/MY4VZ6U5niMSoPjk5vTopT (Note style).
+ *
+ * The fold is painted in the page's own background, so it reads as a corner
+ * turned down rather than a shape drawn on top.
+ */
+#wconvert-admin .wconvert-review {
+  position: relative; overflow: clip; container-type: inline-size;
+  background: var(--note-paper) repeating-linear-gradient(to bottom, transparent 0 21px, color-mix(in srgb, var(--love) 5%, transparent) 21px 22px);
+  border: 1px solid var(--note-edge); border-radius: calc(var(--radius) + 6px);
+  color: var(--foreground);
+}
+#wconvert-admin .wconvert-review__body { display: flex; align-items: center; gap: 16px; padding: 12px 20px 12px 18px; }
+/* Analytics stacks its blocks without a gap; Campaigns has one. */
+#wconvert-admin .wconvert-analytics > .wconvert-review { margin-block-end: 20px; }
+#wconvert-admin .wconvert-review::after {
+  content: ""; position: absolute; inset-block-start: 0; inset-inline-end: 0; inline-size: 22px; block-size: 22px;
+  background: linear-gradient(225deg, var(--background) 50%, var(--note-fold) 50%);
+}
+#wconvert-admin .wconvert-review:dir(rtl)::after { background: linear-gradient(135deg, var(--background) 50%, var(--note-fold) 50%); }
+#wconvert-admin .wconvert-review__seal {
+  flex: none; display: grid; place-items: center; inline-size: 40px; block-size: 40px; border-radius: 999px;
+  background: var(--love); color: var(--card); box-shadow: 0 0 0 4px var(--love-surface);
+}
+#wconvert-admin .wconvert-review__seal svg { inline-size: 16px; block-size: 16px; fill: currentColor; }
+#wconvert-admin .wconvert-review__text { flex: 1; min-inline-size: 0; }
+#wconvert-admin .wconvert-review__title { margin: 0; font-size: var(--text-heading); line-height: 1.35; font-weight: 600; letter-spacing: -0.01em; color: var(--foreground); text-wrap: balance; }
+#wconvert-admin .wconvert-review__lede { margin: 1px 0 0; font-size: var(--text-note); line-height: 1.5; color: var(--muted-foreground); text-wrap: pretty; }
+#wconvert-admin .wconvert-review__sign { margin: 3px 0 0; font-size: var(--text-note); line-height: 1.4; font-weight: 600; color: var(--love); }
+#wconvert-admin .wconvert-review__actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; }
+#wconvert-admin .wconvert-review__rate svg { inline-size: 14px; block-size: 14px; }
+
+/* By the card's own width, not the window's: the admin sidebar and the window both narrow it. */
+@container (max-width: 800px) {
+  #wconvert-admin .wconvert-review__body { flex-wrap: wrap; align-items: start; padding: 14px 16px; }
+  #wconvert-admin .wconvert-review__actions { flex-basis: 100%; margin-block-start: 4px; }
+  #wconvert-admin .wconvert-review__actions > * { flex: 1; }
+  #wconvert-admin .wconvert-review__actions > .wconvert-review__rate { flex-basis: 100%; }
+}

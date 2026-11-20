@@ -251,6 +251,8 @@ if (class_exists('ActionScheduler_QueueRunner', false)
 delete_metadata('user', 0, 'wconvert_picker_preferences_' . get_current_blog_id(), '', true);
 // Onboarding\ChecklistDismissal: who put the getting-started checklist away.
 delete_metadata('user', 0, 'wconvert_checklist_hidden_' . get_current_blog_id(), '', true);
+// Onboarding\ReviewAsk: what each admin chose on the review card.
+delete_metadata('user', 0, 'wconvert_review_ask_' . get_current_blog_id(), '', true);
 
 // Short-lived picker write leases belong only to this site's options table.
 // Static, like the statement above.

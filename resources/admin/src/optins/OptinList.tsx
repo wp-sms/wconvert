@@ -30,6 +30,7 @@ import type { Occasion } from '../discovery/api';
 import { readOccasions, type OccasionNotice } from '../occasions/api';
 import { OccasionNoticeView } from '../occasions/Notice';
 import { GettingStarted, useChecklist } from './GettingStarted';
+import { ReviewCard } from '../onboarding/ReviewCard';
 import { periodOf, readDashboard, readReport, type DashboardPayload, type PeriodQuery } from '../stats/api';
 import { nextActionOf, rowResultOf, shownLine } from './rowResult';
 import { formatCount, formatRange, labelOf, siteDay } from '../lib/format';
@@ -578,6 +579,9 @@ export function OptinList({
   const card = checklist.status === 'shown'
     ? <GettingStarted checklist={checklist.checklist} onCreate={onCreate} onEdit={onEdit} onHide={checklist.hide} />
     : null;
+  // One card at a time: the review card waits until the checklist is put
+  // away, including its "You're all set" step (ADR 0191).
+  const review = checklist.status === 'hidden' ? <ReviewCard /> : null;
   if (empty && card) return card;
   // Until the card's milestones arrive the empty site keeps the table's own
   // skeleton, so the wait is one shape and not a second placeholder before it.
@@ -588,6 +592,7 @@ export function OptinList({
   return (
     <>
     {card}
+    {review}
     <div className="wconvert-campaign-workspace" data-layout={layout}>
       {/*
         One sheet (GUIDELINES §1): the filters, the rows, the pager and the

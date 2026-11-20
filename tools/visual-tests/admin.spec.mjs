@@ -123,6 +123,34 @@ for (const mode of modes) for (const direction of ['ltr', 'rtl']) {
     });
   }
 
+  // The review card (ADR 0191), on the Analytics overview. Nothing here answers it:
+  // an answer is stored per user and would hide it from the next scenario.
+  test(`${mode.name} ${direction} review card`, async ({ browser }, info) => {
+    const context = await browser.newContext({ baseURL, storageState: auth, viewport: mode.viewport });
+    await context.tracing.start({ screenshots: true, snapshots: true, sources: true });
+    let completed = false;
+    try {
+      await context.addCookies([
+        { name: 'wconvert_ds_dir', value: direction, url: 'http://127.0.0.1:9413' },
+        { name: 'wconvert_ds_review', value: '1', url: 'http://127.0.0.1:9413' },
+      ]);
+      const page = await context.newPage();
+      const errors = [];
+      page.on('pageerror', (error) => errors.push(error.message));
+      await page.goto('/wp-admin/admin.php?page=wconvert#analytics');
+      const card = page.getByRole('region', { name: 'Thank you for using WConvert.' });
+      await expect(card).toBeVisible();
+      await expect(card.getByRole('link', { name: /^Rate WConvert/ })).toHaveAttribute('href', 'https://wordpress.org/support/plugin/wconvert/reviews/#new-post');
+      await expect(card.getByRole('button', { name: 'Maybe later', exact: true })).toBeVisible();
+      await expect(card.getByRole('button', { name: 'No thanks', exact: true })).toBeVisible();
+      await expect(page.locator('.wa-goal-card').first()).toBeVisible();
+      await commonChecks(page, direction);
+      await screenshot(page, info, 'review-card');
+      expect(errors).toEqual([]);
+      completed = true;
+    } finally { await finish(context, info, !completed); }
+  });
+
   test(`${mode.name} ${direction} dialogs and menus`, async ({ browser }, info) => {
     const context = await browser.newContext({ baseURL, storageState: auth, viewport: mode.viewport });
     await context.tracing.start({ screenshots: true, snapshots: true, sources: true });

@@ -146,6 +146,7 @@ final class CoreServiceProvider implements ServiceProvider
         MilestoneController::class,
         \WConvert\Rest\ReportController::class,
         \WConvert\Rest\GettingStartedController::class,
+        \WConvert\Rest\ReviewAskController::class,
         DestinationController::class,
         PrivacyController::class,
         \WConvert\Rest\ProtectionController::class,
@@ -736,6 +737,11 @@ final class CoreServiceProvider implements ServiceProvider
         $container->register(\WConvert\Onboarding\ChecklistDismissal::class, static fn () => new \WConvert\Onboarding\ChecklistDismissal());
         $container->register(\WConvert\Rest\GettingStartedController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\GettingStartedController(
             $c->resolve(\WConvert\Onboarding\ChecklistDismissal::class)
+        ));
+        // The review card, once someone's first conversion lands (ADR 0191).
+        $container->register(\WConvert\Onboarding\ReviewAsk::class, static fn () => new \WConvert\Onboarding\ReviewAsk());
+        $container->register(\WConvert\Rest\ReviewAskController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\ReviewAskController(
+            $c->resolve(\WConvert\Onboarding\ReviewAsk::class)
         ));
         $container->register(\WConvert\Onboarding\FirstRunRedirect::class, static fn (ServiceContainer $c) => new \WConvert\Onboarding\FirstRunRedirect(
             static fn (): bool => $c->resolve(OptinRepository::class)->names() !== []
