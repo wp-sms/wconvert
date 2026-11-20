@@ -163,6 +163,8 @@ export interface AdminSettings {
   };
   /** This user put the getting-started checklist away, with × or by finishing it (ADR 0176). */
   readonly checklistHidden?: boolean;
+  /** Which look of the review card to show this user, or null (ADR 0191). */
+  readonly reviewAsk?: 'first' | 'last' | null;
   /**
    * The header's plan badge as a link, when another bundle supplies one: where
    * it goes, words other than the plan's name, whether it is a prompt, and a

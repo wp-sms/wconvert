@@ -102,3 +102,8 @@ add_action('init', static function (): void {
     echo '<iframe title="WConvert review" width="' . $width . '" height="' . $height . '" src="' . esc_url(admin_url('admin.php?page=wconvert')) . '"></iframe>';
     exit;
 });
+
+// The review card (ADR 0191) needs only a conversion, which the seed has, so it
+// would sit on every Campaigns and Analytics shot. It shows only where a scenario
+// sets this cookie.
+add_filter('wconvert_ask_for_review', static fn (): bool => isset($_COOKIE['wconvert_ds_review']));

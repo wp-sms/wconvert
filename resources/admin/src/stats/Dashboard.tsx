@@ -42,6 +42,7 @@ import { countsNothing } from '../goals/countsNothing';
 import { families, rangeLabel, reportCSV } from './reporting';
 import { AboutTip, CampaignTable, Change, ChangeValue, changeOf, Experiment, GoalDetail } from './ReportDetails';
 import './analytics.css';
+import { ReviewCard } from '../onboarding/ReviewCard';
 import { AnalyticsSkeleton, ReportBack, ReportHeadingSkeleton } from './AnalyticsSkeleton';
 import {
   MonthlyTargets,
@@ -300,6 +301,8 @@ function DashboardContent({
           )}
         </div>
       </PageAction>
+      {/* The review card sits on the overview only, above the report (ADR 0191). */}
+      {overview && <ReviewCard />}
       {updating && payload && (
         <p className="wa-muted" role="status">
           {__('Updating report…', 'wconvert')}

@@ -99,9 +99,25 @@ final class AdminMenu
 
     private string $screenId = '';
 
+    /**
+     * The first-conversion read behind the review card (ADR 0191). Static
+     * because {@see self::settings()} is, and set by the provider: where
+     * nothing supplied it, such as a unit test, the card stays off.
+     *
+     * @var (\Closure(): ?string)|null
+     */
+    private static ?\Closure $firstConversion = null;
+
+    /**
+     * @param (\Closure(): \WConvert\Milestone\Milestones)|null $milestones
+     */
     public function __construct(
         private readonly AdminNotices $notices,
+        ?\Closure $milestones = null,
     ) {
+        if ($milestones !== null) {
+            self::$firstConversion = static fn (): ?string => $milestones()->firstConversion();
+        }
     }
 
     public function hooks(): void
@@ -419,7 +435,30 @@ final class AdminMenu
             'variants' => self::whetherTestsCanRun($manifest, $pro),
             // The getting-started checklist's one stored fact (ADR 0176).
             'checklistHidden' => (new \WConvert\Onboarding\ChecklistDismissal())->hidden(get_current_user_id()),
+            // Which look of the review card to show, or null (ADR 0191).
+            'reviewAsk' => self::reviewAsk(),
         ];
+    }
+
+    /**
+     * The stats scan runs only for someone who has never answered, and its
+     * answer is cached ({@see \WConvert\Onboarding\ReviewAsk::firstConversion()}).
+     *
+     * @return 'first'|'last'|null
+     */
+    private static function reviewAsk(): ?string
+    {
+        $read = self::$firstConversion;
+
+        if ($read === null || !\WConvert\Rest\Routes::canManage()) {
+            return null;
+        }
+
+        return (new \WConvert\Onboarding\ReviewAsk())->state(
+            get_current_user_id(),
+            static fn (): ?string => \WConvert\Onboarding\ReviewAsk::firstConversion($read),
+            time()
+        );
     }
 
     /**

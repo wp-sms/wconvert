@@ -45,10 +45,13 @@ vi.mock('../../resources/admin/src/goals/api', () => goals);
 const gettingStarted = vi.hoisted(() => ({ readMilestones: vi.fn(), hideChecklist: vi.fn() }));
 vi.mock('../../resources/admin/src/optins/gettingStartedApi', () => gettingStarted);
 
+vi.mock('../../resources/admin/src/onboarding/reviewAskApi', () => ({ recordReviewChoice: vi.fn().mockResolvedValue({}) }));
+
 vi.mock('../../resources/admin/src/optins/CampaignDetails', () => ({ default: () => null }));
 
 const { OptinList } = await import('../../resources/admin/src/optins/OptinList');
 const { resetChecklistForTests } = await import('../../resources/admin/src/optins/GettingStarted');
+const { resetReviewCardForTests } = await import('../../resources/admin/src/onboarding/ReviewCard');
 
 const OPTIN = {
   id: '01JQ00000000000000000000AA',
@@ -74,6 +77,7 @@ beforeEach(() => {
   optins.listOptins.mockResolvedValue([OPTIN]);
   gettingStarted.readMilestones.mockRejectedValue(new Error('not in this test'));
   resetChecklistForTests();
+  resetReviewCardForTests();
   gettingStarted.hideChecklist.mockResolvedValue({ hidden: true });
   goals.listGoals.mockResolvedValue([
     { id: 'grow_email_list', label: 'Grow my email list', availability: 'ready', headline_label: 'Email submissions', rate_label: 'Email submission rate',
@@ -243,6 +247,39 @@ describe('the four situations this screen has to answer', () => {
     await userEvent.click(within(card).getByRole('button', { name: 'Hide this checklist' }));
     expect(await screen.findByText('No campaigns yet')).toBeInTheDocument();
     expect(screen.getByText('Choose a goal, pick a template, and publish when you’re ready.')).toBeInTheDocument();
+  });
+
+  /** One card at a time: the review card waits for the checklist (ADR 0191). */
+  it('shows the review card once the checklist is put away', async () => {
+    window.wconvertAdmin = { exportUrl: '', reviewAsk: 'first', checklistHidden: true } as typeof window.wconvertAdmin;
+    onTestFinished(() => { delete window.wconvertAdmin; });
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    expect(await screen.findByRole('region', { name: 'Thank you for using WConvert.' })).toBeInTheDocument();
+  });
+
+  it('keeps the review card back when the checklist could not be read', async () => {
+    window.wconvertAdmin = { exportUrl: '', reviewAsk: 'first' } as typeof window.wconvertAdmin;
+    onTestFinished(() => { delete window.wconvertAdmin; });
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    expect(await screen.findByText(OPTIN.name)).toBeInTheDocument();
+    await waitFor(() => expect(gettingStarted.readMilestones).toHaveBeenCalled());
+    expect(screen.queryByRole('region', { name: 'Thank you for using WConvert.' })).toBeNull();
+  });
+
+  it('keeps the review card back while the checklist shows', async () => {
+    window.wconvertAdmin = { exportUrl: '', reviewAsk: 'first' } as typeof window.wconvertAdmin;
+    onTestFinished(() => { delete window.wconvertAdmin; });
+    gettingStarted.readMilestones.mockResolvedValue({ first_publish: '2026-10-31', first_impression: '2026-10-31', first_conversion: '2026-11-01' });
+    optins.listOptins.mockResolvedValue([{ ...OPTIN, published_at: '2026-10-31 09:00:00' }]);
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    expect(await screen.findByRole('heading', { name: 'You’re all set' })).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Thank you for using WConvert.' })).toBeNull();
   });
 
   it('renders a first failure as the region’s whole content', async () => {

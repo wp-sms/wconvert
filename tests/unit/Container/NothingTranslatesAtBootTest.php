@@ -113,6 +113,7 @@ final class NothingTranslatesAtBootTest extends TestCase
         MilestoneController::class => '/milestones',
         \WConvert\Rest\ReportController::class => '/reports/weekly',
         \WConvert\Rest\GettingStartedController::class => '/getting-started/hide',
+        \WConvert\Rest\ReviewAskController::class => '/review-ask',
         DestinationController::class => '/destinations',
         \WConvert\Rest\PrivacyController::class => '/privacy/data-map',
         \WConvert\Rest\ProtectionController::class => '/protection',

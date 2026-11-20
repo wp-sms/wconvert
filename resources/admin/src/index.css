@@ -488,6 +488,17 @@
   --ring: var(--action);
 
   /*
+   * The review card's note (ADR 0191): a rose heart on cream paper. Rose is
+   * used nowhere else; it marks thanks, not state. `--love` reads 5.5:1 on
+   * white, so the sign-off clears AA as text.
+   */
+  --love: #b83a63;
+  --love-surface: #fbe3ea;
+  --note-paper: #fffdf8;
+  --note-edge: #eadfcf;
+  --note-fold: #efe4d5;
+
+  /*
    * The chart ramp is the analytics screen's vocabulary, in the order ADR 0019
    * stores the counters: impressions, conversions, dismissals, then the
    * delivery failures ADR 0021 counts beside them, then a neutral for anything

@@ -24964,3 +24964,36 @@ msgstr "برون‌بری، پاک‌سازی و نگه‌داری در هر ح�
 #: public/admin/main--s8tBS5S.js:159
 msgid "Saving never schedules a campaign."
 msgstr "ذخیره کردن هیچ کمپینی را زمان‌بندی نمی‌کند."
+
+#: public/admin/main-CBrSnj4E.js:23
+msgid "Thank you for using WConvert."
+msgstr "از اینکه از WConvert استفاده می‌کنید، ممنونیم."
+
+#: public/admin/main-CBrSnj4E.js:23
+msgid "Thanks for sticking with WConvert."
+msgstr "ممنون که همچنان با WConvert هستید."
+
+#: public/admin/main-CBrSnj4E.js:23
+msgid "If it helps, a short review on WordPress.org means a lot."
+msgstr "اگر به کارتان آمده، یک نقد کوتاه در WordPress.org برای ما خیلی ارزشمند است."
+
+#: public/admin/main-CBrSnj4E.js:23
+msgid "If you have a minute, a review would mean a lot. We won’t ask again."
+msgstr "اگر یک دقیقه وقت دارید، نقد شما برای ما خیلی ارزشمند است. دیگر نمی‌پرسیم."
+
+#: public/admin/main-CBrSnj4E.js:23
+msgid "— the WConvert team"
+msgstr "— تیم WConvert"
+
+#: public/admin/main-CBrSnj4E.js:23
+msgid "Rate WConvert"
+msgstr "امتیاز به WConvert"
+
+#: public/admin/main-CBrSnj4E.js:23
+msgctxt "review card button"
+msgid "Maybe later"
+msgstr "شاید بعداً"
+
+#: src/Rest/ReviewAskController.php:40
+msgid "Unknown choice."
+msgstr "انتخاب ناشناخته."
