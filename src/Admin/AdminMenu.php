@@ -94,7 +94,7 @@ final class AdminMenu
      */
     public const PRIORITY = 10;
 
-    /** WordPress's own icon grey: its fallback when no scheme supplies one. */
+    /** WordPress's own icon grey: its fallback when even the default scheme is missing. */
     private const ICON_GREY = '#a7aaad';
 
     private string $screenId = '';
@@ -138,17 +138,6 @@ final class AdminMenu
     }
 
     /**
-     * WConvert → Campaigns, Analytics, Leads, Settings, Help.
-     *
-     * The first entry repeats the top level's slug, which is how WordPress
-     * renames the submenu's automatic first item: without it the list would
-     * open on a second "WConvert". The others are URLs to the same screen's
-     * hash routes (`nav.ts`), so WordPress links them as written and a new
-     * user finds every section from the sidebar too (ADR 0176). All five are
-     * one page, so which is `current` is decided in the browser from the hash
-     * (`shell/menuHighlight.ts`).
-     */
-    /**
      * The menu icon, drawn in the colour WordPress will paint it (#422) — or
      * WordPress's grey until the schemes exist; {@see self::paintMenuIcon()}.
      *
@@ -163,10 +152,12 @@ final class AdminMenu
     public static function menuIcon(): string
     {
         $schemes = $GLOBALS['_wp_admin_css_colors'] ?? [];
-        $scheme = get_user_option('admin_color');
-        $colours = is_array($schemes) && is_string($scheme) && isset($schemes[$scheme]) && is_object($schemes[$scheme])
-            ? ($schemes[$scheme]->icon_colors ?? null)
-            : null;
+        $schemes = is_array($schemes) ? $schemes : [];
+        $chosen = get_user_option('admin_color');
+        // WordPress's own fallback for an unset or unregistered scheme, which 7.0 moved.
+        $default = version_compare((string) ($GLOBALS['wp_version'] ?? '0'), '7.0-alpha', '>=') ? 'modern' : 'fresh';
+        $scheme = is_string($chosen) && isset($schemes[$chosen]) ? $schemes[$chosen] : ($schemes[$default] ?? null);
+        $colours = is_object($scheme) ? ($scheme->icon_colors ?? null) : null;
         $base = is_array($colours) ? ($colours['base'] ?? null) : null;
         // A plugin registers schemes too; only a hex colour goes into the markup.
         $fill = is_string($base) && preg_match('/^#[0-9a-f]{3,8}$/i', $base) === 1 ? $base : self::ICON_GREY;
@@ -186,6 +177,7 @@ final class AdminMenu
             return;
         }
 
+        // A `$menu` entry is a tuple: 2 is the slug, 6 the icon (`add_menu_page()`).
         foreach ($GLOBALS['menu'] as $at => $item) {
             if (is_array($item) && ($item[2] ?? null) === self::SLUG) {
                 $GLOBALS['menu'][$at][6] = self::menuIcon();
@@ -193,6 +185,17 @@ final class AdminMenu
         }
     }
 
+    /**
+     * WConvert → Campaigns, Analytics, Leads, Settings, Help.
+     *
+     * The first entry repeats the top level's slug, which is how WordPress
+     * renames the submenu's automatic first item: without it the list would
+     * open on a second "WConvert". The others are URLs to the same screen's
+     * hash routes (`nav.ts`), so WordPress links them as written and a new
+     * user finds every section from the sidebar too (ADR 0176). All five are
+     * one page, so which is `current` is decided in the browser from the hash
+     * (`shell/menuHighlight.ts`).
+     */
     public function registerSubmenu(): void
     {
         add_submenu_page(self::SLUG, __('Campaigns', 'wconvert'), __('Campaigns', 'wconvert'), 'manage_options', self::SLUG);

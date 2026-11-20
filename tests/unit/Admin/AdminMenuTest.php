@@ -20,6 +20,7 @@ final class AdminMenuTest extends TestCase
         $GLOBALS['wconvertTestSubmenu'] = [];
         $GLOBALS['wconvertTestUserOptions'] = [];
         unset($GLOBALS['_wp_admin_css_colors']);
+        $GLOBALS['wp_version'] = '7.1';
     }
 
     /**
@@ -47,6 +48,23 @@ final class AdminMenuTest extends TestCase
         $this->assertSame(['#a7aaad'], $this->fills(AdminMenu::menuIcon()));
     }
 
+    /** An unset or unregistered scheme falls back as WordPress does: `modern` from 7.0, `fresh` before it. */
+    public function testAnUnknownSchemeFallsBackToWordPresssDefault(): void
+    {
+        $GLOBALS['_wp_admin_css_colors'] = [
+            'modern' => (object) ['icon_colors' => ['base' => '#f3f1f1']],
+            'fresh' => (object) ['icon_colors' => ['base' => '#a7aaad']],
+        ];
+        $GLOBALS['wconvertTestUserOptions']['admin_color'] = 'retired';
+        $this->assertSame(['#f3f1f1'], $this->fills(AdminMenu::menuIcon()));
+
+        unset($GLOBALS['wconvertTestUserOptions']['admin_color']);
+        $this->assertSame(['#f3f1f1'], $this->fills(AdminMenu::menuIcon()));
+
+        $GLOBALS['wp_version'] = '6.9.1';
+        $this->assertSame(['#a7aaad'], $this->fills(AdminMenu::menuIcon()));
+    }
+
     /** The schemes exist only from `admin_init`, after the menu is built, so the entry is repainted there. */
     public function testTheMenuEntryIsRepaintedOnceTheSchemesExist(): void
     {
@@ -65,7 +83,7 @@ final class AdminMenuTest extends TestCase
     private function fills(string $dataUri): array
     {
         $this->assertStringStartsWith('data:image/svg+xml;base64,', $dataUri);
-        preg_match_all('/fill="([^"]*)"/', (string) base64_decode(substr($dataUri, 26), true), $matches);
+        preg_match_all('/fill="([^"]*)"/', (string) base64_decode(substr($dataUri, strlen('data:image/svg+xml;base64,')), true), $matches);
 
         return $matches[1];
     }
