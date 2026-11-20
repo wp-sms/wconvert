@@ -13,6 +13,9 @@ import { hideChecklist, readMilestones } from './gettingStartedApi';
 export type ChecklistView =
   | { status: 'pending' }
   | { status: 'hidden' }
+  // The milestones couldn't be read. Not "hidden": the review card waits for a
+  // checklist that was put away, not one that failed to load (ADR 0191).
+  | { status: 'failed' }
   | { status: 'shown'; checklist: Checklist; hide: () => void };
 
 /**
@@ -64,7 +67,8 @@ export function useChecklist(rows: readonly OptinSummary[] | null, goals: readon
     }
   }, [checklist?.allSet]);
 
-  if (hidden || milestones === 'failed') return { status: 'hidden' };
+  if (hidden) return { status: 'hidden' };
+  if (milestones === 'failed') return { status: 'failed' };
   if (checklist === null) return { status: 'pending' };
 
   return {

@@ -251,12 +251,23 @@ describe('the four situations this screen has to answer', () => {
 
   /** One card at a time: the review card waits for the checklist (ADR 0191). */
   it('shows the review card once the checklist is put away', async () => {
-    window.wconvertAdmin = { exportUrl: '', reviewAsk: 'first' } as typeof window.wconvertAdmin;
+    window.wconvertAdmin = { exportUrl: '', reviewAsk: 'first', checklistHidden: true } as typeof window.wconvertAdmin;
     onTestFinished(() => { delete window.wconvertAdmin; });
 
     render(<OptinList onEdit={() => undefined} />);
 
     expect(await screen.findByRole('region', { name: 'Thank you for using WConvert.' })).toBeInTheDocument();
+  });
+
+  it('keeps the review card back when the checklist could not be read', async () => {
+    window.wconvertAdmin = { exportUrl: '', reviewAsk: 'first' } as typeof window.wconvertAdmin;
+    onTestFinished(() => { delete window.wconvertAdmin; });
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    expect(await screen.findByText(OPTIN.name)).toBeInTheDocument();
+    await waitFor(() => expect(gettingStarted.readMilestones).toHaveBeenCalled());
+    expect(screen.queryByRole('region', { name: 'Thank you for using WConvert.' })).toBeNull();
   });
 
   it('keeps the review card back while the checklist shows', async () => {

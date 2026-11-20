@@ -102,6 +102,11 @@ Persian catalogue, and sharing its msgid would translate both.
   Campaigns to Analytics doesn't show it again.
 - If recording the answer fails, the card comes back next visit. That is the
   safe way round.
+- A checklist whose milestones couldn't be read is `failed`, not `hidden`, so
+  the review card doesn't take a failed read for a dismissal.
+- Two answers sent in the same instant can still race, since user meta has
+  no compare-and-set. The worst case is the card coming back once, 30 days
+  on, and locking per user isn't worth that.
 - Rate and No thanks are final. A "Maybe later" sent after one, from a second
   tab, changes nothing.
 - Rate is recorded on a click or a middle-click. "Open in new tab" from the

@@ -152,6 +152,7 @@ describe('the card', () => {
     api.readMilestones.mockRejectedValue(new Error('offline'));
     render(<Harness rows={[]} />);
 
-    expect(await screen.findByText('hidden')).toBeInTheDocument();
+    // Its own status, so the review card doesn't take it for a dismissal (ADR 0191).
+    expect(await screen.findByText('failed')).toBeInTheDocument();
   });
 });
