@@ -50,13 +50,13 @@ Three parts:
 
 | # | Item | WConvert today | Status |
 |---|---|---|---|
-| 1 | Promo notices fetched from Horizon | The bell shows local problems only. Nothing remote reaches the admin except the design library. | **Clash.** The bell belongs to notifications ([0143](../adr/0143-license-page-and-updater.md) §7). Help "fetches nothing" ([0144](../adr/0144-help-is-a-page.md) §4). Pro hints are "bundled copy, no remote call" ([0147](../adr/0147-free-names-what-pro-adds-where-it-is-wanted.md) rule 5; 0189 changed only the UTM key). Rules: §2a. |
+| 1 | Promo notices fetched from Horizon | The bell shows local problems only. No promotional content is fetched. The only remote content in the admin is the design library and, when an admin turns them on, Google Fonts in the editor preview (readme, External services). | **Clash.** The bell belongs to notifications ([0143](../adr/0143-license-page-and-updater.md) §7). Help "fetches nothing" ([0144](../adr/0144-help-is-a-page.md) §4). Pro hints are "bundled copy, no remote call" ([0147](../adr/0147-free-names-what-pro-adds-where-it-is-wanted.md) rule 5; 0189 changed only the UTM key). Rules: §2a. |
 | 2 | Header sale banner from Horizon | The header's "Explore Pro", or "Activate it" when Pro is installed but inactive. Bundled, fixed UTMs. | **Clash.** Free's whole upsell is the header link, the Settings list and the contextual hints ([0116](../adr/0116-free-shows-nothing-it-cannot-run.md) §2 as amended by 0147). All are bundled (0147 rule 5). |
-| 3 | Licence lifecycle | Built in `pro/src/License/`: <ul><li>a daily Nexus refresh</li><li>16 states, including `expiring`, `expired`, `trial`, `trial_ended`, `payment_failed`, `moved` and `over_limit`</li><li>an amber dot on the header plan badge and a line on the Plugins screen 14 days before the end (`LicenseState::RENEWAL_WINDOW_DAYS`, `LicenseNotice`)</li><li>a red dot once updates stop</li><li>Renew and Buy actions</li><li>status, Sites and License key cards</li></ul> | **Mostly done.** Differences: <ul><li>The reminder sits on the badge, not the bell ("The bell is never part of it", `LicenseNotice.php`).</li><li>The window is a fixed 14 days, not Nexus's reminder days.</li><li>There is no "Add another key". Pro is one tier and one key per site ([0146](../adr/0146-pro-is-one-tier.md)).</li></ul> |
+| 3 | Licence lifecycle | Built in `pro/src/License/`: <ul><li>a daily Nexus refresh</li><li>16 states, including `expiring`, `expired`, `trial`, `trial_ended`, `payment_failed`, `moved` and `over_limit`</li><li>an amber dot on the header plan badge and a line on the Plugins screen, which start:<ul><li>14 days before the end for a manual or cancelled renewal (`LicenseState.php:265`, `RENEWAL_WINDOW_DAYS`)</li><li>7 days before the end for a trial (`LicenseNotice.php:111`)</li><li>never for an auto-renewing licence, which reads as `active`</li></ul></li><li>a red dot once updates stop</li><li>Renew and Buy actions</li><li>status, Sites and License key cards</li></ul> | **Mostly done.** Differences: <ul><li>The reminder sits on the badge, not the bell ("The bell is never part of it", `LicenseNotice.php`).</li><li>The windows are fixed in code (14 days, and 7 for trials), not taken from Nexus's reminder days.</li><li>There is no "Add another key". Pro is one tier and one key per site ([0146](../adr/0146-pro-is-one-tier.md)).</li></ul> |
 | 4 | Add-ons page states | None | **Clash.** There is one Pro, in one ZIP, with no add-ons to list ([0146](../adr/0146-pro-is-one-tier.md) §5). |
 | 5 | Pricing table, money-back strip, compare in onboarding | A static "More with Pro" list in Settings and one-line contextual hints | **Clash.** Hints are "never in the dashboard … admin notices …" ([0147](../adr/0147-free-names-what-pro-adds-where-it-is-wanted.md) rule 4). The Pro hint is "never on an empty state, a success screen or a dashboard" (design-system GUIDELINES §8, as amended by 0147). First-run is the checklist card ([0176](../adr/0176-a-new-site-is-guided-to-its-first-lead.md)). |
 | 6 | wordpress.org review request | The review card ([0191](../adr/0191-the-admin-asks-for-a-review-once.md), PR #426): <ul><li>shows after the first conversion</li><li>asks at most twice, with "Maybe later" bringing it back after 30 days</li><li>an answer ends it</li><li>links `…/reviews/#new-post` with no 5-star filter</li></ul> | **Done** |
-| 7 | Zero-annoyance rules | <ul><li>Other plugins' notices are hidden on WConvert's screens only ([0035](../adr/0035-the-admin-owns-its-page.md), Consequences).</li><li>No usage data leaves the site: the readme's External services lists only the design library, bot verification and Google Fonts.</li><li>One licence reason, shown on the badge.</li><li>No menu bubble.</li></ul> | **Done**, except "soft focus rings", which nothing specifies |
+| 7 | Zero-annoyance rules | <ul><li>Other plugins' notices are hidden on WConvert's screens only ([0035](../adr/0035-the-admin-owns-its-page.md), Consequences).</li><li>No usage telemetry. The plugin sends nothing about campaigns, leads or visitors. What does reach outside services is in the readme's External services:<ul><li>The design library sees the server's IP address, and counts downloads per design.</li><li>Pro adds its licence key and domain when a Pro design is added.</li><li>Bot verification and Google Fonts are both off by default.</li></ul></li><li>One licence reason, shown on the badge.</li><li>No menu bubble.</li></ul> | **Done**, except "soft focus rings", which nothing specifies |
 | 8 | Modal rules | No upsell modal (0147 rule 3). Show-once flags per feature, e.g. the checklist's hidden flag (0176) and the review card's answer (0191). | **Done.** There is no shared registry, and with two asks none is needed yet. |
 | 9 | Sales only through the remote service | No sale text or dates in code. The only discount anywhere is Nexus's renewal coupon on the License page. | **Done in spirit.** No remote service reaches Free. |
 
@@ -121,8 +121,11 @@ Settings". Its examples:
 **What it means for WConvert:**
 
 - The review card and the Pro hints already sit inside our own page.
-- Pro's **pre-expiry** line on the Plugins screen would count as promotional
-  and be hidden there. The badge dot is unaffected.
+- Pro's **pre-expiry** line on the Plugins screen is the one message the
+  proposal's examples call promotional. The proposed runtime would not hide it
+  automatically: `PluginsScreen::row()` prints it under the plugin row, not
+  through a notice channel. A reworded Guideline 11 could still apply to it.
+  The badge dot is unaffected.
 
 Feedback closes 2026-11-30.
 
@@ -201,7 +204,7 @@ Key:
 | 2 | **Lead milestones:** first lead, 10, 100, 1,000, and best day. One line in the Analytics overview and the weekly email. Skip milestones passed before the plugin was installed. | Analytics overview, weekly summary | WooCommerce, Akismet | M | Medium (delight, and a natural lead-in to the review card) | Low | GUIDELINES §8 (a line that does not change what you do next) |
 | 3 | **One Pro line in the weekly email**, free installs only, bundled, honouring `wconvert_show_pro_hints`. | `src/Report/SummaryTemplate.php` | Wordfence | S | Medium | Low (email, not admin) | [0147](../adr/0147-free-names-what-pro-adds-where-it-is-wanted.md) rule 4, [0176](../adr/0176-a-new-site-is-guided-to-its-first-lead.md) §4 |
 | 4 | **Warn before deactivating Free while Pro is active.** Today Pro explains only afterwards (`pro/src/Boot/BootGuard.php`). | Pro's `PluginsScreen.php` | Elementor | S | Medium (support load) | Low (Pro only) | none |
-| 5 | **Renewal window from Nexus's reminder days**, if Nexus sends them, instead of the fixed 14. | `LicenseState::RENEWAL_WINDOW_DAYS` | Mostafa #3 | S | Low | none | [0143](../adr/0143-license-page-and-updater.md) §8 |
+| 5 | **Renewal window from Nexus's reminder days**, if Nexus sends them, instead of the fixed 14 (manual or cancelled renewals) and 7 (trials). | `LicenseState::RENEWAL_WINDOW_DAYS` | Mostafa #3 | S | Low | none | [0143](../adr/0143-license-page-and-updater.md) §8 |
 
 ### Worth doing
 
@@ -216,10 +219,10 @@ Key:
 
 | # | Mostafa's item | What WConvert does instead, and why | Options | Risk |
 |---|---|---|---|---|
-| 10 | Horizon promo notices (#1) | Nothing remote reaches Free's admin, and the bell is only for problems. A promo feed is not a service, so it cannot use 0175's exemption. | **a.** Keep Free bundled; put a Horizon feed in **Pro only** (renewals, announcements). **b.** An opt-in Free feed under the conditions in §2a, after asking plugins@wordpress.org. **c.** No feed. | a: low. b: medium. On by default: high. |
+| 10 | Horizon promo notices (#1) | No promotional content reaches Free's admin, and the bell is only for problems. A promo feed is not a service, so it cannot use 0175's exemption. | **a.** Keep Free bundled; put a Horizon feed in **Pro only** (renewals, announcements). **b.** An opt-in Free feed under the conditions in §2a, after asking plugins@wordpress.org. **c.** No feed. | a: low. b: medium. On by default: high. |
 | 11 | Header sale banner (#2) | The header link is bundled, with fixed UTMs. | **a.** Pro-only, from Horizon. **b.** Free gets a dated sale bundled into a release, as Yoast does, but that breaks your #9 "no sale text in code". **c.** None. | a: low. b: low rule risk, conflicts with #9. |
 | 12 | Pricing table and money-back in onboarding (#5) | First-run is a three-step checklist to the first lead. A table there is the "marketing line on a success screen" GUIDELINES §8 deletes. | **a.** Keep it out. **b.** A bundled Free-vs-Pro table behind the existing "More with Pro" list in Settings, which [RC] explicitly allows on settings screens. **c.** Onboarding, skippable. | a, b: low. c: low rule risk, but breaks our own rules. |
-| 13 | Event measurement (R&D) | No usage data leaves the site. Local first-edit evidence exists (`src/Milestone/`). | **a.** UTMs, Nexus and wp.org stats only (idea 6). **b.** Opt-in telemetry, off by default, disclosed in the readme. | a: none. b: medium. |
+| 13 | Event measurement (R&D) | No usage telemetry. Design-library download counts are the only usage signal that reaches us. Local first-edit evidence exists (`src/Milestone/`). | **a.** UTMs, Nexus and wp.org stats only (idea 6). **b.** Opt-in telemetry, off by default, disclosed in the readme. | a: none. b: medium. |
 
 ### Skip, and why
 
