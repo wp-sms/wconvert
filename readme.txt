@@ -4,7 +4,7 @@ Tags: popup, popup builder, optin form, lead capture, email list
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.1.1
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -290,7 +290,7 @@ Privacy: https://policies.google.com/privacy
 
 == Changelog ==
 
-= 1.1.1 =
+= 1.2.0 =
 * Fixed: a campaign with an emoji in it now goes live on sites whose database cannot store emoji. Before, the site kept showing the old version while the editor said it was live.
 * If the live version cannot be updated, the editor now says so instead of "It's live."
 * A one-time card asks for a wordpress.org review after your first conversion. Say no, and it does not ask again.
@@ -310,8 +310,8 @@ Privacy: https://policies.google.com/privacy
 
 == Upgrade Notice ==
 
-= 1.1.1 =
-Fixes campaigns with an emoji not going live on some databases. Requires WordPress 6.9. Settings saved by 1.1.1 cannot be read by 1.1.0, so do not roll back.
+= 1.2.0 =
+Fixes campaigns with an emoji not going live on some databases. Requires WordPress 6.9. Settings saved by 1.2.0 cannot be read by 1.1.0, so do not roll back.
 
 = 1.1.0 =
 Clearer analytics, shorter copy, and Persian, French and German translations.
