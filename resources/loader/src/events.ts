@@ -1,12 +1,14 @@
 import type { PayloadEntry } from './types';
 
 /** Public notifications carry identifiers, never submitted details or runtime objects. */
-export function notifyCampaign(entry: PayloadEntry, kind: 'open' | 'close' | 'capture'): void {
+export function notifyCampaign(entry: PayloadEntry, kind: 'open' | 'close' | 'capture' | 'cta', href?: string): void {
   document.dispatchEvent(new CustomEvent(`wconvert:${kind}`, {
     detail: Object.freeze({
       campaignId: entry.campaign ?? entry.id,
       optinId: entry.id,
       displayType: entry.display_type ?? 'popup',
+      // Only a click has somewhere it leads (#440).
+      ...href && { href },
     }),
   }));
 }
@@ -16,5 +18,6 @@ export function campaignLifecycle(entry: PayloadEntry) {
   return {
     onOpened: () => notifyCampaign(entry, 'open'),
     onClosed: () => notifyCampaign(entry, 'close'),
+    onCta: (href: string) => notifyCampaign(entry, 'cta', href),
   };
 }

@@ -4,7 +4,7 @@ test.beforeEach(async ({ page }) => {
   await page.request.get('/?wconvert_events_reset=1');
   await page.addInitScript(() => {
     window.campaignEvents = []; window.testShadows = [];
-    for (const name of ['open', 'close', 'capture']) document.addEventListener(`wconvert:${name}`, event => {
+    for (const name of ['open', 'close', 'capture', 'cta']) document.addEventListener(`wconvert:${name}`, event => {
       window.campaignEvents.push({ type: name, detail: event.detail });
     });
     const attach = Element.prototype.attachShadow;
@@ -77,6 +77,18 @@ test('slide-in interrupted closing animation never publishes a stale close', asy
   expect(await kinds(page)).toEqual(['open']);
   await page.evaluate(() => window.testShadows.find(root => root.querySelector('.wc-close')).querySelector('.wc-close').click());
   await expect.poll(() => kinds(page)).toEqual(['open', 'close']);
+});
+
+for (const display of ['popup', 'floating_bar']) test(`a ${display} link button reports one CTA click with its link, before the page changes`, async ({ page }) => {
+  await page.goto(`/?wconvert_events=link&display=${display}`);
+  await expect.poll(() => kinds(page)).toContain('open');
+  // Stay on the page so the listener's record survives the click.
+  await page.route('**/sale', route => route.fulfill({ status: 204 }));
+  await page.evaluate(() => window.testShadows.flatMap(root => [...root.querySelectorAll('a.wc-button')]).find(node => node.isConnected).click());
+  const clicks = await page.evaluate(() => window.campaignEvents.filter(event => event.type === 'cta').map(event => event.detail));
+  expect(clicks).toHaveLength(1);
+  expect(clicks[0]).toMatchObject({ displayType: display, href: expect.stringMatching(/\/sale$/) });
+  expect(clicks[0].campaignId).toBe(clicks[0].optinId);
 });
 
 test('fullscreen uses the public modal lifecycle and restores page scrolling on close', async ({ page }) => {

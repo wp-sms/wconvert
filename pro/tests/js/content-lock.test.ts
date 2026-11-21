@@ -232,3 +232,22 @@ it.each(['panel', 'stack', 'split', 'leaf'] as const)('keeps unlock feedback in 
   button.click();
   expect(document.activeElement).toBe(content);
 });
+
+it('reports a link button on the gate to the page, as every other format does', () => {
+  const access = formAccess();
+  const clicks: CustomEvent[] = [];
+  const listener = (event: Event) => { clicks.push(event as CustomEvent); };
+  document.addEventListener('wconvert:cta', listener);
+  try {
+    page();
+    run({ ...campaign, template: { tokens: {}, tree: treeFixture({ steps: [
+      { type: 'stack', children: [{ type: 'field', name: 'email' }, { type: 'button', label: 'Unlock', action: 'submit' }, { type: 'followup', label: 'Read the free chapter', href: 'https://example.com/free' }] },
+      { type: 'stack', children: [{ type: 'heading', text: 'Received' }] },
+    ] }) } });
+    const link = access().querySelector<HTMLAnchorElement>('a.wc-button')!;
+    link.addEventListener('click', event => event.preventDefault()); link.click();
+    expect(clicks.map(event => event.detail)).toEqual([{ campaignId: campaign.id, optinId: campaign.id, displayType: 'inline', href: 'https://example.com/free' }]);
+  } finally {
+    document.removeEventListener('wconvert:cta', listener);
+  }
+});

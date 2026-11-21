@@ -12,8 +12,8 @@
 //
 // Two assertions, and neither is optional:
 //
-//   1. THE BYTE BUDGET, HARD. gzip -9 on Node 22: Free 18752 B; Pro 32096 B
-//      (ADR 0139, amended; ADR 0146; ADR 0152; ADR 0155; ADR 0158; ADR 0159; ADR 0167; ADR 0168; ADR 0184), per build. It blocks rather than warns,
+//   1. THE BYTE BUDGET, HARD. gzip -9 on Node 22: Free 18800 B; Pro 32160 B
+//      (ADR 0139, amended; ADR 0146; ADR 0152; ADR 0155; ADR 0158; ADR 0159; ADR 0167; ADR 0168; ADR 0184; ADR 0110 amended by #440), per build. It blocks rather than warns,
 //      and there is no second warn band nobody would read.
 //
 //      IT WAS 8192, AND THE NUMBER MOVED ONCE, ON PURPOSE. The original was
@@ -100,7 +100,9 @@ const ROOT = process.argv[2] ? resolve(process.argv[2]) : REPO_ROOT;
 // ADR 0167: +1024 B for fixed SVG actions, ticket cutouts and bounded campaign artwork.
 // ADR 0168: +192 B for approved divider/code/text controls and aligned forms.
 // ADR 0184 (approved by the user): +80 B for right-to-left letter-spacing, slant, padding and email.
-const FREE_BYTE_BUDGET = 18752;
+// ADR 0110 amended by #440 (approved by the user): +48 B for the wconvert:cta click event;
+// main left 2 B, the event needs 44 B, measured on Node 22.
+const FREE_BYTE_BUDGET = 18800;
 // ADR 0117: +128 B for the commerce bridge; the separately capped runtime loads on demand.
 // ADR 0139: user-approved +32 B for "is not" and the cart bridge's known().
 // ADR 0139 amendment (2026-10-12, approved by Mostafa): +64 B, measured on Node 22.
@@ -110,7 +112,9 @@ const FREE_BYTE_BUDGET = 18752;
 // ADR 0159 (approved by the user): +2560 B headroom, as Free; this PR used 496 B (28,656 B).
 // ADR 0168: +128 B for opt-in compact composition and minute/vertical countdowns.
 // ADR 0184 (approved by the user): +32 B for the same rules.
-const PRO_BYTE_BUDGET = 32096;
+// ADR 0110 amended by #440 (approved by the user): +64 B for the same event;
+// main left 12 B, the event needs 65 B, measured on Node 22.
+const PRO_BYTE_BUDGET = 32160;
 
 const MANIFEST = 'resources/rules/manifest.json';
 

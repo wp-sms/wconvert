@@ -108,7 +108,7 @@ export function connectContentLock(base: PresentationSession, entries: readonly 
       const reveal = (status: string) => { if (active?.entry.id === entry.id) open(status); };
       let mounted: Mounted | undefined;
       try {
-        mounted = mount({ displayType: 'inline', template: entry.template, anchor, endsAt: entry.ends_at, googleFonts: googleFontsAllowed() });
+        mounted = mount({ displayType: 'inline', template: entry.template, anchor, endsAt: entry.ends_at, googleFonts: googleFontsAllowed(), onCta: href => notifyCampaign(entry, 'cta', href) });
         if (!mounted.mounted || entry.template.tree.submissions.length === 0) { mounted.close(); return false; }
         const view = mounted;
         if (!view.root || !captureEndpoint()) { view.close(); return false; }

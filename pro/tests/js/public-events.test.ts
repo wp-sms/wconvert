@@ -8,11 +8,12 @@ import { resultAccess } from '../../modules/journeys/admin/structure/resultAcces
 import { mountPopover } from '../../modules/display-types/loader/popover';
 import { campaignLifecycle } from '@loader/events';
 import { showReopen } from '../../modules/display-types/loader/reopen';
+import { treeFixture } from '../../../tests/js/support/journey';
 
 const listeners: Array<() => void> = [];
 function listen() {
   const events: CustomEvent[] = [];
-  for (const kind of ['open', 'close', 'capture']) {
+  for (const kind of ['open', 'close', 'capture', 'cta']) {
     const handler = (e: Event) => { events.push(e as CustomEvent); };
     document.addEventListener(`wconvert:${kind}`, handler);
     listeners.push(() => document.removeEventListener(`wconvert:${kind}`, handler));
@@ -86,4 +87,20 @@ it('keeps restored reminders silent, and reports every complete open/close cycle
   view.open(); view.open(); document.querySelector('dialog')!.close();
   view.open(); view.dispose(); view.dispose();
   expect(events.map(e => e.type)).toEqual(['wconvert:open', 'wconvert:close', 'wconvert:open', 'wconvert:close']);
+});
+
+it.each(['floating_bar', 'slide_in', 'fullscreen'])('reports a %s link button click with its link', (display_type) => {
+  const events = listen();
+  const roots: ShadowRoot[] = [];
+  const attach = Element.prototype.attachShadow;
+  vi.spyOn(Element.prototype, 'attachShadow').mockImplementation(function (this: Element, options) {
+    const root = attach.call(this, options); roots.push(root); return root;
+  });
+  const template = { tokens: {}, tree: treeFixture({ steps: [{ type: 'button', action: 'link', href: 'https://example.com/sale', label: 'Shop the sale' }] }) } as Template;
+  proPresenter.show({ id: 'promo', display_type, template }, controls());
+  const link = roots[0].querySelector<HTMLAnchorElement>('a.wc-button')!;
+  link.addEventListener('click', event => event.preventDefault()); link.click();
+  roots[0].querySelector<HTMLButtonElement>('.wc-close')?.click();
+  expect(events.filter(e => e.type === 'wconvert:cta').map(e => e.detail))
+    .toEqual([{ campaignId: 'promo', optinId: 'promo', displayType: display_type, href: 'https://example.com/sale' }]);
 });
