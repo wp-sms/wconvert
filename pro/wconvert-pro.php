@@ -10,6 +10,7 @@
  * Domain Path: /resources/languages
  * Requires at least: 6.9
  * Requires PHP: 8.1
+ * Requires Plugins: wconvert
  * License: GPL-2.0+
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */

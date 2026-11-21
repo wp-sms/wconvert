@@ -90,6 +90,10 @@ about.*
 - **The version headers are independent facts**, so neither plugin's number implies
   anything about the other's. `WCONVERT_MIN_CORE` is the only statement one makes
   about the other, which is what keeps the skew a single, checkable number.
+  *Amended by [ADR 0193](0193-pro-declares-wconvert-as-a-required-plugin.md):
+  Pro's header also says `Requires Plugins: wconvert`. That names the plugin,
+  not a version, so it adds no second number: `WCONVERT_MIN_CORE` is still the
+  only statement about which free Pro needs.*
   *Unchanged by [ADR 0056](0056-the-tier-ladder-is-a-manifest.md), and worth
   saying so because that ADR turns one Pro release into **three ZIPs**.
   `WCONVERT_MIN_CORE` stays **one constant across all three tiers**: they are one

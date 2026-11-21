@@ -1763,6 +1763,11 @@ rather than replacing it. Pro does not *unlock* premium features — it **suppli
 them. The code for exit intent, A/B testing, `floating_bar`, `slide_in` and the ESP
 [[Destination]]s exists only inside Pro, and a free install has never contained it.
 
+Pro declares free as a required plugin (`Requires Plugins: wconvert`), so
+WordPress won't activate Pro without free, and won't let free be deactivated
+from its row while Pro is active
+([ADR 0193](docs/adr/0193-pro-declares-wconvert-as-a-required-plugin.md)).
+
 A [[Licence]] buys **updates, support and new premium template downloads, never
 the installed features themselves**. An expired licence stops new downloads;
 it does not change what a running site does.
