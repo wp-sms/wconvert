@@ -4972,6 +4972,10 @@ msgstr "تغییر دیگری در حال ذخیره است. چند لحظه د�
 msgid "These settings changed in another window. Reload them before saving."
 msgstr "این تنظیمات در پنجره دیگری تغییر کرده‌اند. پیش از ذخیره آن‌ها را دوباره بارگذاری کنید."
 
+#: src/Rest/OptinController.php
+msgid "Saved, but the live version could not be updated."
+msgstr "ذخیره شد، اما نسخه فعال به‌روز نشد."
+
 #: src/Discovery/OccasionStore.php:155
 msgid "Could not save. Your previous settings are intact."
 msgstr "ذخیره نشد. تنظیمات قبلی شما دست‌نخورده باقی مانده است."
