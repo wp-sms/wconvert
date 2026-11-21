@@ -517,7 +517,7 @@ foreach ($optins as $optin) {
 // Each Optin's screens as published — what "Signup and screen activity" is
 // keyed by: `screen:<flow hash>:<screen id>`.
 $screens = [];
-foreach ((array) get_option('wconvert_published_set', []) as $entry) {
+foreach ((new \WConvert\Optin\PublishedSet(new \WConvert\Storage\WpOptionStore()))->all() as $entry) {
     $contract = $entry['payload']['capture_contract'] ?? null;
     if (is_string($contract)) {
         $screens[$entry['id']] = array_map(static fn (array $step): string => 'screen:' . $contract . ':' . $step['id'], $entry['payload']['template']['tree']['steps'] ?? []);

@@ -1975,6 +1975,45 @@ if (!function_exists('wp_kses')) {
 $GLOBALS['wconvertTestOptionTable'] = [];
 $GLOBALS['wconvertTestSiteTransients'] = [];
 
+/*
+|--------------------------------------------------------------------------
+| An options table that refuses a write, the way a real one can (#424)
+|--------------------------------------------------------------------------
+| On a utf8mb3 `wp_options`, `wpdb::process_fields()` strips every 4-byte
+| character from the serialised value, sees it changed, and returns false
+| WITHOUT sending a query. `update_option()` then returns false and nothing is
+| stored. Set `wconvertTestOptionCharset` to `'utf8mb3'` to get that: any write
+| whose serialised value holds a 4-byte UTF-8 sequence is refused.
+|
+| `wconvertTestRefusedOptions` refuses every write to the names it lists,
+| whatever the value, for a test about what happens AFTER a refusal.
+|
+| Both are cleared by `wconvertTestOptionsAccept()`.
+|
+| @var string $wconvertTestOptionCharset
+| @var list<string> $wconvertTestRefusedOptions
+*/
+$GLOBALS['wconvertTestOptionCharset'] = 'utf8mb4';
+$GLOBALS['wconvertTestRefusedOptions'] = [];
+
+/** @param mixed $value */
+function wconvertTestOptionRefused(string $name, $value): bool
+{
+    if (in_array($name, $GLOBALS['wconvertTestRefusedOptions'], true)) {
+        return true;
+    }
+
+    $serialised = is_scalar($value) ? (string) $value : serialize($value);
+
+    return $GLOBALS['wconvertTestOptionCharset'] === 'utf8mb3' && preg_match('/[\xF0-\xF7]/', $serialised) === 1;
+}
+
+function wconvertTestOptionsAccept(): void
+{
+    $GLOBALS['wconvertTestOptionCharset'] = 'utf8mb4';
+    $GLOBALS['wconvertTestRefusedOptions'] = [];
+}
+
 // Pro's version, which the licence reports beside what the store offers.
 defined('WCONVERT_PRO_VERSION') || define('WCONVERT_PRO_VERSION', '1.4.2');
 $GLOBALS['wconvertTestMultisite'] = false;
@@ -2015,7 +2054,7 @@ if (!function_exists('add_option')) {
     /** @param mixed $value */
     function add_option(string $name, $value = '', string $deprecated = '', bool|string|null $autoload = null): bool
     {
-        if (array_key_exists($name, $GLOBALS['wconvertTestOptionTable'])) {
+        if (array_key_exists($name, $GLOBALS['wconvertTestOptionTable']) || wconvertTestOptionRefused($name, $value)) {
             return false;
         }
 
@@ -2036,7 +2075,7 @@ if (!function_exists('update_option')) {
 
         $old = $GLOBALS['wconvertTestOptionTable'][$name];
 
-        if ($old === $value) {
+        if ($old === $value || wconvertTestOptionRefused($name, $value)) {
             return false;
         }
 

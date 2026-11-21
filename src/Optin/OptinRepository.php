@@ -602,6 +602,8 @@ final class OptinRepository
      *
      * @param string $parentId The test — the parentless Optin the arms hang beneath.
      * @param string $winnerId The arm that won. The parent itself is a legitimate answer.
+     *
+     * @throws PublishedSetNotSaved The row is written; the live set is not.
      */
     public function declareWinner(string $parentId, string $winnerId): bool
     {
@@ -677,7 +679,7 @@ final class OptinRepository
             );
         }
 
-        $this->rebuildPublishedSet();
+        $this->rebuildOrThrow();
 
         return true;
     }
@@ -915,6 +917,8 @@ final class OptinRepository
     /**
      * Promote the working draft onto the live one, rebuild the set, and — the
      * first time only — record that this site activated.
+     *
+     * @throws PublishedSetNotSaved The row is written; the live set is not.
      */
     public function publish(string $id): ?Optin
     {
@@ -973,7 +977,7 @@ final class OptinRepository
         // ({@see \WConvert\Stats\StatDay}).
         $this->milestones->recordFirstPublish(substr($now, 0, 10));
 
-        $this->rebuildPublishedSet();
+        $this->rebuildOrThrow();
 
         return $this->find($id);
     }
@@ -984,6 +988,8 @@ final class OptinRepository
      * `published_config` is left in place on purpose: it is the last version
      * the site actually served, so republishing is one click and not a retype.
      * `published_at` is the marker the projection reads.
+     *
+     * @throws PublishedSetNotSaved The row is written; the live set is not.
      */
     public function unpublish(string $id): ?Optin
     {
@@ -993,7 +999,7 @@ final class OptinRepository
 
         $this->db->update(Connection::TABLE_OPTINS, ['published_at' => null], ['id' => $id]);
 
-        $this->rebuildPublishedSet();
+        $this->rebuildOrThrow();
 
         return $this->find($id);
     }
@@ -1011,6 +1017,8 @@ final class OptinRepository
      * serving with nothing left on screen to stop it. Arms an earlier
      * winner already retired are skipped by {@see self::armsByParent()} and
      * keep the moment they were retired. Deleting one arm deletes that arm.
+     *
+     * @throws PublishedSetNotSaved The row is written; the live set is not.
      */
     public function delete(string $id): bool
     {
@@ -1033,7 +1041,7 @@ final class OptinRepository
             $this->db->update(Connection::TABLE_OPTINS, ['deleted_at' => $now], ['id' => $each]);
         }
 
-        $this->rebuildPublishedSet();
+        $this->rebuildOrThrow();
 
         return true;
     }
@@ -1053,11 +1061,11 @@ final class OptinRepository
      *
      * `wconvert_published_set` is the only one of WConvert's options that is
      * not normalised through a value object on the way out of storage: it
-     * holds the whole projection as a plain array, written whole and read
-     * whole (ADR 0003). Everywhere else, WConvert avoids migrations by
-     * normalising on every write against a closed vocabulary and reading
-     * tolerantly with defaults — and that fails here for one reason, which is
-     * that **nobody writes.** ADR 0003 rebuilds the set on write and never on
+     * holds the whole projection as one array, written whole and read whole
+     * (ADR 0003), and stored as ASCII JSON (ADR 0192). Everywhere else,
+     * WConvert avoids migrations by normalising on every write against a
+     * closed vocabulary and reading tolerantly with defaults — and that fails
+     * here for one reason, which is that **nobody writes.** ADR 0003 rebuilds the set on write and never on
      * read, so a plugin update that changes the projection's shape leaves
      * every stored entry at the old shape until a merchant happens to
      * republish. An Optin published once and never touched again would keep
@@ -1070,10 +1078,13 @@ final class OptinRepository
      * current DDL is what makes skipping versions free, and a stepwise
      * migration runner would give that up to solve a problem this does not
      * have.
+     *
+     * **False when the set could not be written** (#424), so the installer
+     * leaves its version unwritten and the next `admin_init` tries again.
      */
-    public function rebuildForInstall(): void
+    public function rebuildForInstall(): bool
     {
-        $this->rebuildPublishedSet();
+        return $this->rebuildPublishedSet();
     }
 
     /**
@@ -1097,6 +1108,8 @@ final class OptinRepository
      */
     public function rebuildForPolicyChange(): void
     {
+        // Nobody to tell: this runs on an option-change hook, and the next
+        // write that rebuilds tries again.
         $this->rebuildPublishedSet();
     }
 
@@ -1106,14 +1119,30 @@ final class OptinRepository
     }
 
     /**
+     * A rebuild a merchant asked for, by publishing, unpublishing, deleting or
+     * ending a test. The row is already written, so a set the table refused
+     * has to reach them as an error rather than as "It's live" (#424).
+     *
+     * @throws PublishedSetNotSaved
+     */
+    private function rebuildOrThrow(): void
+    {
+        if (!$this->rebuildPublishedSet()) {
+            throw new PublishedSetNotSaved('The published set could not be written.');
+        }
+    }
+
+    /**
      * Rebuild the published set from the table.
      *
      * Private: every caller that should reach it is in this class, and a
      * public rebuild is an invitation to call it on read.
      * {@see self::rebuildForInstall()} is the one exception, and it is named
      * so that calling it on read reads wrong.
+     *
+     * @return bool False when the table refused the set ({@see PublishedSet::replaceWith()}).
      */
-    private function rebuildPublishedSet(): void
+    private function rebuildPublishedSet(): bool
     {
         $rows = $this->db->results(
             Connection::TABLE_OPTINS,
@@ -1150,7 +1179,7 @@ final class OptinRepository
         // it returns the zone as an object and honours both halves of
         // WordPress's setting — a named zone with its own DST history, or a
         // bare UTC offset for a site that never picked one.
-        $this->publishedSet->replaceWith(
+        return $this->publishedSet->replaceWith(
             PublishedProjection::build($rows, $this->vocabulary, wp_timezone())
         );
     }

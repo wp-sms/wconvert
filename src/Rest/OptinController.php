@@ -21,6 +21,7 @@ use WConvert\Optin\OptinRepository;
 use WConvert\Optin\OverlayPlacement;
 use WConvert\Optin\PhoneCountry;
 use WConvert\Optin\PublishedSet;
+use WConvert\Optin\PublishedSetNotSaved;
 use WConvert\Optin\PublishReadiness;
 use WConvert\Optin\Schedule;
 use WConvert\Optin\SiteFrequency;
@@ -646,7 +647,11 @@ final class OptinController implements RestController
             return $refusal;
         }
 
-        $published = $this->optins->publish($id);
+        try {
+            $published = $this->optins->publish($id);
+        } catch (PublishedSetNotSaved) {
+            return self::publishedSetNotSaved();
+        }
 
         if ($published === null) {
             return self::notFound();
@@ -665,7 +670,11 @@ final class OptinController implements RestController
      */
     public function unpublish(WP_REST_Request $request)
     {
-        return self::respond($this->optins->unpublish((string) $request->get_param('id')));
+        try {
+            return self::respond($this->optins->unpublish((string) $request->get_param('id')));
+        } catch (PublishedSetNotSaved) {
+            return self::publishedSetNotSaved();
+        }
     }
 
     /**
@@ -673,8 +682,12 @@ final class OptinController implements RestController
      */
     public function destroy(WP_REST_Request $request)
     {
-        if (!$this->optins->delete((string) $request->get_param('id'))) {
-            return self::notFound();
+        try {
+            if (!$this->optins->delete((string) $request->get_param('id'))) {
+                return self::notFound();
+            }
+        } catch (PublishedSetNotSaved) {
+            return self::publishedSetNotSaved();
         }
 
         // 200 with the soft-deleted Optin, not 204. It still exists — deleting
@@ -1229,6 +1242,19 @@ final class OptinController implements RestController
                 'wconvert'
             ),
             ['status' => 400]
+        );
+    }
+
+    /**
+     * The row is saved and what visitors see is not (#424). A 500 rather than
+     * a success, because the editor's "It's live" is read off a success.
+     */
+    private static function publishedSetNotSaved(): WP_Error
+    {
+        return new WP_Error(
+            'wconvert_published_set_not_saved',
+            __('Saved, but the live version could not be updated.', 'wconvert'),
+            ['status' => 500]
         );
     }
 

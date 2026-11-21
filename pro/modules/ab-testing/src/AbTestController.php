@@ -3,6 +3,7 @@
 namespace WConvert\Pro\Module\AbTesting;
 
 use WConvert\Optin\OptinRepository;
+use WConvert\Optin\PublishedSetNotSaved;
 use WConvert\Rest\RestController;
 use WConvert\Rest\Routes;
 use WConvert\Support\Ulid;
@@ -127,10 +128,19 @@ final class AbTestController implements RestController
      */
     public function declare(WP_REST_Request $request)
     {
-        $declared = $this->optins->declareWinner(
-            (string) $request->get_param('id'),
-            (string) $request->get_param('winner')
-        );
+        try {
+            $declared = $this->optins->declareWinner(
+                (string) $request->get_param('id'),
+                (string) $request->get_param('winner')
+            );
+        } catch (PublishedSetNotSaved) {
+            // The arms are tidied in the table; the site still serves the test (#424).
+            return new WP_Error(
+                'wconvert_published_set_not_saved',
+                __('Saved, but the live version could not be updated.', 'wconvert-pro'),
+                ['status' => 500]
+            );
+        }
 
         if (!$declared) {
             return new WP_Error(

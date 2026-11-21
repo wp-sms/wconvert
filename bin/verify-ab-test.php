@@ -177,15 +177,15 @@ $verify->check(
     $entryFor($armBId)['payload'][PublishedProjection::ARM] ?? null
 );
 
-// The set is stored as a plain array in `wp_options` and read whole by the
-// front end (ADR 0003), so the triple has to survive a JSON round trip through
-// the database rather than merely existing in PHP.
+// The set is stored as ASCII JSON in `wp_options` and read whole by the front
+// end (ADR 0003, ADR 0192), so the triple has to survive the round trip
+// through the database rather than merely existing in PHP.
 $stored = get_option(PublishedSet::OPTION);
 
 $verify->check(
     'and it survives the option round trip as three scalars',
     true,
-    is_array($stored) && str_contains((string) wp_json_encode($stored), '"' . PublishedProjection::ARM . '":["' . $parent->id . '",1,2]')
+    is_string($stored) && str_contains($stored, '"' . PublishedProjection::ARM . '":["' . $parent->id . '",1,2]')
 );
 
 echo "\nTwo arms, counted apart\n";

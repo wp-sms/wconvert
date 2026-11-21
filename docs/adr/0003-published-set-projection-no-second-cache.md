@@ -7,6 +7,12 @@ transient because a transient can be evicted, and eviction lands a cold DB query
 on an uncached page load; `autoload=false` because it is payload-sized and has
 no business in `alloptions` on every admin request.
 
+*Amended by [ADR 0192](0192-options-are-stored-as-ascii-json.md): the option
+holds the projection as ASCII JSON, not a serialised PHP array. A utf8mb3
+`wp_options` refused any set holding an emoji, without an error, and froze
+every rebuild after it (#424). Rebuilding on write also reports a failure now:
+a set the table refused reaches the merchant as an error, not as "It's live."*
+
 *Bounded by [ADR 0050](0050-a-scheduled-optin-stays-in-the-published-set.md), which
 is the exclusion this ADR must NOT gain. A **scheduled** Optin is in the set
 before its window opens and stays in it after the window closes — precisely

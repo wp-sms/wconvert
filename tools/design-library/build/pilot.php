@@ -58,7 +58,7 @@ $supplied = new SuppliedRules();
 foreach (Tier::cases() as $tier) $supplied->add(...$rules->typesAt($tier, $site));
 $options = new class implements OptionStore {
     public function get(string $key, $default = null) { return $default; }
-    public function set(string $key, $value): void { throw new RuntimeException('Read-only preview'); }
+    public function set(string $key, $value): bool { throw new RuntimeException('Read-only preview'); }
 };
 // Portable previews have no merchant site. Leave offer links for site-local prefill,
 // using its explicit injection seam rather than inventing a WordPress home URL.

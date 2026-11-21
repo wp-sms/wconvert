@@ -228,7 +228,7 @@ if (($input['mode'] ?? '') === 'validate') {
         private array $data;
         public function __construct(string $source) { $this->data = [\WConvert\Template\Catalog\TemplateCatalog::SOURCE_OPTION => $source, \WConvert\Template\Catalog\TemplateCatalog::CONSENT_OPTION => 'yes']; }
         public function get(string $key, $default = null) { return $this->data[$key] ?? $default; }
-        public function set(string $key, $value): void { $this->data[$key] = $value; }
+        public function set(string $key, $value): bool { $this->data[$key] = $value; return true; }
     };
     $archive = new \WConvert\Template\Catalog\DesignArchive($input['empty_directory'] . '/templates', $validator, 'validation',
         new \WConvert\Template\Catalog\VerifiedAssets($input['empty_directory'] . '/images', 'https://local.example/images'), 'validation');

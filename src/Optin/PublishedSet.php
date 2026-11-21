@@ -41,9 +41,16 @@ final class PublishedSet
     }
 
     /**
+     * **False when the table would not take it** (#424), and then nothing is
+     * announced: `wconvert_published_set_changed` purges the page cache, and a
+     * purge after a refused write only refills it with the old set.
+     *
+     * The screen lists go first and a refused one stops the set being written,
+     * so a live entry never lacks the screen names its reports are read with.
+     *
      * @param list<array<string, mixed>> $set
      */
-    public function replaceWith(array $set): void
+    public function replaceWith(array $set): bool
     {
         foreach ($set as $entry) {
             $revision = $entry['payload']['capture_contract'] ?? null;
@@ -52,9 +59,34 @@ final class PublishedSet
             foreach ($entry['payload']['template']['tree']['steps'] ?? [] as $index => $screen) {
                 $definition[$screen['id']] = ['name' => $screen['name'], 'order' => $index];
             }
-            $this->options->set('wconvert_flow_' . $entry['id'] . '_' . $revision, $definition);
+            if (!$this->options->set(self::flowOption((string) $entry['id'], $revision), $definition)) {
+                return false;
+            }
         }
-        $this->options->set(self::OPTION, $set);
+        if (!$this->options->set(self::OPTION, $set)) {
+            return false;
+        }
         do_action('wconvert_published_set_changed');
+
+        return true;
+    }
+
+    /**
+     * The screens one published revision had, by screen id: `name` and
+     * `order`. Reports read a revision's screens here, because the Optin row
+     * only keeps the latest one.
+     *
+     * @return array<string, mixed>
+     */
+    public function flow(string $optinId, string $revision): array
+    {
+        $definition = $this->options->get(self::flowOption($optinId, $revision), []);
+
+        return is_array($definition) ? $definition : [];
+    }
+
+    private static function flowOption(string $optinId, string $revision): string
+    {
+        return 'wconvert_flow_' . $optinId . '_' . $revision;
     }
 }
