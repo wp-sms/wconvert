@@ -6,7 +6,7 @@ const analytics = size('pro/public/analytics/analytics.js');
 const cap = 4096;
 if (analytics > cap) throw new Error(`Analytics asset ${analytics} B exceeds ${cap} B`);
 console.log(`Analytics feature: ${analytics} B gzip (budget ${cap} B, enabled pages only)`);
-// The Pro loader budget from check-loader.mjs (ADR 0155, ADR 0158, ADR 0159, ADR 0168, ADR 0184, #440).
+// The Pro loader budget from check-loader.mjs (ADR 0155, ADR 0158, ADR 0159, ADR 0168, ADR 0184; ADR 0110 amended by #440).
 const base = 32160;
 const loader = size('pro/public/loader/loader.js');
 const phone = size('public/phone/phone.js');

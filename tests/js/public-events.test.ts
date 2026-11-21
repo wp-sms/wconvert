@@ -191,3 +191,13 @@ it('keeps a bare renderer preview silent when its link button is clicked', () =>
   follow(roots[0].querySelector<HTMLAnchorElement>('a.wc-button')!);
   expect(events.filter(event => event.type === 'wconvert:cta')).toEqual([]);
 });
+
+it('reports a click that lands on the label inside an arrow button', () => {
+  const events = listen();
+  const { template: offer, roots } = linkCampaign([{ type: 'button', action: 'link', icon: 'arrow', href: 'https://example.com/sale', label: 'Shop the sale' }]);
+  templatePresenter.show({ id: 'offer', display_type: 'popup', template: offer }, controls());
+  const link = roots[0].querySelector<HTMLAnchorElement>('a.wc-button')!;
+  link.addEventListener('click', event => event.preventDefault());
+  link.querySelector('span')!.click();
+  expect(events.filter(event => event.type === 'wconvert:cta').map(event => event.detail.href)).toEqual(['https://example.com/sale']);
+});

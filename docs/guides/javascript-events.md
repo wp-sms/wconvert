@@ -29,16 +29,18 @@ If the server saves a Lead but the browser never receives success, there is no
 notification at that point. This API has no replay or guaranteed delivery and
 does not replace a Destination.
 
-The CTA event covers the link button, the button shown after a submission,
-and product card buttons, in every format including inline forms. Text links
-inside a sentence, such as a privacy policy link, are not CTAs, and neither
-are Close, Submit, Next, Back or Skip. A button whose link was refused as
-unsafe has nowhere to go and fires nothing. It fires on every click, so
-it is not the same number as the conversions shown in Analytics.
+The CTA event covers every button that leads to a link: the link button, the
+button shown after a submission, a discount code's Apply button, a quiz
+result's button, and product card buttons, in every format including inline
+forms. Text links are not CTAs: a privacy policy link inside a sentence, or the
+small "View product" and "View cart" links beside an Add to cart button.
+Neither are Close, Submit, Next, Back or Skip. A button whose link was refused
+as unsafe has nowhere to go and fires nothing. It fires on every click, so it
+is not the same number as the conversions shown in Analytics.
 
 ## Event details and copying IDs
 
-Every event has a frozen `detail` object with three fields:
+Every event has a frozen `detail` object with these three fields:
 
 ```js
 {

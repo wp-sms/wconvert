@@ -468,8 +468,9 @@ A/B test cannot delete the losing [[Variant]].
 
 Live overlays notify page scripts through `wconvert:open` and `wconvert:close`.
 These describe actual presentation transitions, not changing journey screens or
-analytics impressions/dismissals. A click on a button that leads somewhere, in any
-format, notifies `wconvert:cta` with the link; it is not the counted Conversion. Campaign details can copy existing campaign
+analytics impressions/dismissals. A click on a button that leads somewhere, in
+any format, notifies `wconvert:cta` with the link; it is not the counted
+Conversion. Campaign details can copy existing campaign
 or variant IDs. See [ADR 0110](docs/adr/0110-public-browser-events-describe-campaign-outcomes.md).
 
 ### Variant
