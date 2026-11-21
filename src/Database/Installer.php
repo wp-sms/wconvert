@@ -52,8 +52,10 @@ final class Installer
      * `4`: `parent_id` on `wconvert_optins`, `idx_goal` removed, and the
      * published set narrowed to an allowlist.
      * `5`: approved statistics scope/key and JSON v2 capture projection.
+     * `6`: the published set and its screen lists stored as ASCII JSON
+     * (ADR 0192), so a set frozen by a refused emoji is written again.
      */
-    public const VERSION = '5';
+    public const VERSION = '6';
 
     public function __construct(
         private readonly OptionStore $options,
@@ -92,7 +94,9 @@ final class Installer
         // the table `dbDelta` has just brought up to date, and leaving the
         // version unwritten if it fails is what makes the next `admin_init`
         // try again rather than record a half-done upgrade as finished.
-        $this->optins->rebuildForInstall();
+        if (!$this->optins->rebuildForInstall()) {
+            return;
+        }
 
         $this->options->set(self::VERSION_OPTION, self::VERSION);
     }

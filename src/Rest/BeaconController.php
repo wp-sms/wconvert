@@ -176,8 +176,7 @@ final class BeaconController implements RestController
             $screenEvent = str_starts_with($event->kind->value, 'screen_');
             if ($screenEvent) {
                 if (preg_match('/^screen:([a-f0-9]{64}):([a-z][a-z0-9_-]{0,47})$/D', $event->scope, $parts) !== 1) { continue; }
-                $definition = get_option('wconvert_flow_' . $event->optinId . '_' . $parts[1], []);
-                if (!is_array($definition) || !isset($definition[$parts[2]])) { continue; }
+                if (!isset($this->publishedSet->flow($event->optinId, $parts[1])[$parts[2]])) { continue; }
             } elseif ($event->scope !== '') { continue; }
             if (in_array($event->kind, [\WConvert\Stats\StatKind::Conversion, \WConvert\Stats\StatKind::ResultClick], true)) {
                 $optin = PublishedOptin::findInSet($this->publishedSet->all(), $event->optinId);

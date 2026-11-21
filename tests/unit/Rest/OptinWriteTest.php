@@ -178,6 +178,43 @@ final class OptinWriteTest extends TestCase
         self::assertNull($this->optins->find($draft['id'])?->publishedAt);
     }
 
+    /**
+     * **A publish the live set could not take is not "live"** (#424). The row
+     * is saved, but visitors are served from the set, so the editor must hear
+     * that the set did not change rather than read `published_at` and say
+     * "It's live." A utf8mb3 options table refusing an emoji was the case.
+     */
+    public function testAPublishTheLiveSetRefusedIsAnError(): void
+    {
+        $draft = $this->create(Goal::GrowEmailList, ['template_id' => 'centred-card', 'capture_mode' => 'local']);
+        self::assertIsArray($draft);
+        $request = new WP_REST_Request();
+        $request->set_param('id', $draft['id']);
+        $this->publishedOptions->refused = [PublishedSet::OPTION];
+
+        $response = $this->controller->publish($request);
+
+        self::assertInstanceOf(WP_Error::class, $response);
+        self::assertSame('wconvert_published_set_not_saved', $response->get_error_code());
+        self::assertSame(500, $response->get_error_data()['status']);
+    }
+
+    /** Taking it down and deleting it change the live set too, and fail the same way. */
+    public function testAnUnpublishOrDeleteTheLiveSetRefusedIsAnError(): void
+    {
+        $draft = $this->create(Goal::GrowEmailList, ['template_id' => 'centred-card', 'capture_mode' => 'local']);
+        self::assertIsArray($draft);
+        $request = new WP_REST_Request();
+        $request->set_param('id', $draft['id']);
+        self::assertNotInstanceOf(WP_Error::class, $this->controller->publish($request));
+        $this->publishedOptions->refused = [PublishedSet::OPTION];
+
+        foreach ([$this->controller->unpublish($request), $this->controller->destroy($request)] as $response) {
+            self::assertInstanceOf(WP_Error::class, $response);
+            self::assertSame('wconvert_published_set_not_saved', $response->get_error_code());
+        }
+    }
+
     public function testUnpublishingDoesNotAllowAHistoryChangingGoalEdit(): void
     {
         $draft = $this->create(Goal::GrowEmailList, ['template_id' => 'centred-card', 'capture_mode' => 'local']);
@@ -267,6 +304,8 @@ final class OptinWriteTest extends TestCase
     /** Shared by the repository and the controller, so both milestones land in one place. */
     private FakeOptionStore $milestones;
 
+    private FakeOptionStore $publishedOptions;
+
     private \WConvert\Destination\DestinationStore $destinations;
 
     protected function tearDown(): void
@@ -281,7 +320,7 @@ final class OptinWriteTest extends TestCase
 
         $templates = TemplateVocabulary::fromManifest(self::PLUGIN_DIR);
         $vocabulary = RuleVocabulary::fromManifest(self::PLUGIN_DIR);
-        $published = new PublishedSet(new FakeOptionStore());
+        $published = new PublishedSet($this->publishedOptions = new FakeOptionStore());
 
         // A Pro install with a store, so the cart [[Goal]] is settable and the
         // refusals below are about the DESIGN rather than about availability.

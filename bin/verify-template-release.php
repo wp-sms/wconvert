@@ -37,7 +37,7 @@ $options = new class($base) implements \WConvert\Storage\OptionStore {
     /** @var array<string, mixed> */ private array $data;
     public function __construct(string $base) { $this->data = [TemplateCatalog::SOURCE_OPTION => $base . 'manifest.json', TemplateCatalog::CONSENT_OPTION => 'yes']; }
     public function get(string $key, $default = null) { return $this->data[$key] ?? $default; }
-    public function set(string $key, $value): void { $this->data[$key] = $value; }
+    public function set(string $key, $value): bool { $this->data[$key] = $value; return true; }
 };
 $transport = new class($directory, $base) implements CatalogTransport, CatalogImageTransport, CatalogPremiumTransport {
     /** @var list<string> */ public array $requests = [];

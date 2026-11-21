@@ -542,7 +542,7 @@ final class CoreServiceProvider implements ServiceProvider
         $container->register(\WConvert\Rest\ProductHealthController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\ProductHealthController($c->resolve(OptinRepository::class)));
         $container->register(\WConvert\Rest\ProductStatsController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\ProductStatsController($c->resolve(\WConvert\Stats\ProductStats::class)));
         $container->register(\WConvert\Stats\ProductStats::class, static fn (ServiceContainer $c) => new \WConvert\Stats\ProductStats($c->resolve(Connection::class)));
-        $container->register(\WConvert\Rest\JourneyStatsController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\JourneyStatsController($c->resolve(Connection::class)));
+        $container->register(\WConvert\Rest\JourneyStatsController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\JourneyStatsController($c->resolve(Connection::class), $c->resolve(PublishedSet::class)));
 
         $container->register(
             CaptureController::class,
