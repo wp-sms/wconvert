@@ -1213,6 +1213,11 @@ write one SQLite file and corrupt it, which surfaces as intermittent 500s that
 read like flaky tests rather than a broken database. It is a `server` flag only
 — the `php` subcommand below rejects it.
 
+Activate free before Pro. Pro's header declares `Requires Plugins: wconvert`
+(ADR 0193), so WordPress refuses Pro with `plugin_missing_dependencies` while
+free is inactive, and in a blueprint the `activatePlugin` step for free must
+come first.
+
 ### Proving the two replacements on a real WordPress
 
 Two `bin/verify-*.php` scripts assert what a recording stub structurally cannot:

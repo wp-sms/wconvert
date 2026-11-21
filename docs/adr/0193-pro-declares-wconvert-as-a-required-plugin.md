@@ -3,7 +3,9 @@
 Accepted 2026-11-21. From issue #433. Amends
 [ADR 0030](0030-free-and-pro-release-on-independent-tags.md) inline, where it
 says `WCONVERT_MIN_CORE` is the only statement one plugin makes about the
-other.
+other. [ADR 0015](0015-enforcement-is-by-non-registration.md) needs no note:
+it says only that a Pro refused by its min-core guard never reaches its
+provider, which still holds.
 
 ## Context
 
@@ -23,9 +25,10 @@ WordPress itself:
 
 - shows free's **Deactivate** as plain text while Pro is active, with "Required
   by: WConvert Pro" and core's note that the plugin can't be deactivated or
-  deleted until the plugins requiring it are. Free's bulk checkbox is disabled
-  too, so **Select all** + **Deactivate** turns off Pro and leaves free on.
-  Free's Delete link is hidden while Pro is installed, active or not;
+  deleted until the plugins requiring it are. While Pro is installed, active
+  or not, free's bulk checkbox is disabled, so **Select all** + **Deactivate**
+  turns off Pro and leaves free on. Free's **Delete** is plain text, with a
+  screen-reader note saying other plugins require it;
 - refuses to activate Pro unless free is active: the row reads "Requires:
   WConvert" with an install link, and `activate_plugin()` returns
   `plugin_missing_dependencies`.
