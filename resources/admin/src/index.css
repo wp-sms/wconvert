@@ -5950,6 +5950,30 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   block-size: 100dvh;
 }
+/*
+ * **Pinned to the window, beside the menu, as WordPress's own editors are
+ * (#425).** When the admin menu is taller than the window, `common.js` drops
+ * `sticky-menu` and the menu scrolls with the page, so the document grows to
+ * the menu's height. A workspace sized to the window then scrolls off with it
+ * and leaves wp-admin's grey behind. Fixed, the menu scrolls and the editor
+ * stays. The offsets are the menu's widths, as in the block editor's
+ * `.interface-interface-skeleton`. Phones keep the flow: their menu is an
+ * overlay. So does a window too short for the 560px floor, which would
+ * otherwise cut the editor's foot off with no way to scroll to it.
+ */
+@media (min-width: 783px) and (min-height: 600px) {
+  body.wconvert-editing:not(.wconvert-fullscreen, .wconvert-journey-focus) #wconvert-admin .wconvert-workspace {
+    position: fixed;
+    inset-block: var(--wp-admin--admin-bar--height, 32px) 0;
+    inset-inline: 36px 0;
+    block-size: auto;
+  }
+}
+@media (min-width: 961px) and (min-height: 600px) {
+  body.wconvert-editing:not(.wconvert-fullscreen, .wconvert-journey-focus, .folded) #wconvert-admin .wconvert-workspace {
+    inset-inline-start: 160px;
+  }
+}
 #wconvert-admin .wconvert-workspace__header {
   display: flex;
   align-items: center;
