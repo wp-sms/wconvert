@@ -6,11 +6,17 @@ Date: 2026-09-29
 
 Expose three non-cancellable native document events: `wconvert:open`,
 `wconvert:close`, and `wconvert:capture`. Live presenters supply optional
-container and journey callbacks. The renderer does not dispatch public events,
+container and journey callbacks. *(Amended 2026-11-21 by #440: a fourth,
+`wconvert:cta`, fires on every click of a button that leads somewhere — the
+link button, the button after a submission, a product card — and on no text
+link inside a sentence. Its frozen detail adds `href`, the resolved link. It
+fires per click, is not the counted Conversion, and comes from the same live
+callbacks, so previews stay silent. It raised the loader budgets by +48 B
+Free and +64 B Pro, approved by the user and measured on Node 22.)* The renderer does not dispatch public events,
 so previews remain silent. Internal screen teardown is not public close.
 
 Opening and closing describe actual overlay transitions, including reopening.
-Inline forms report only capture. Closing interrupted before hiding does not
+Inline forms report only capture *(and, since #440, CTA clicks)*. Closing interrupted before hiding does not
 end the open interval. A delayed native dialog event cannot hide a reopened
 presentation.
 
@@ -21,7 +27,7 @@ provider delivery (ADR 0073). Notification follows committed acceptance and
 does not depend on drawing the next screen.
 
 Each frozen payload contains only current `campaignId`, exact `optinId`, and
-`displayType`. Existing IDs become copyable in campaign details (*amended by
+`displayType`. *(`wconvert:cta` adds `href`, per the #440 note above.)* Existing IDs become copyable in campaign details (*amended by
 [ADR 0131](0131-one-way-to-show-each-thing-in-the-admin.md): behind a closed
 "For developers" disclosure, the one ID on any admin screen*). No new slug or
 storage. A promoted A/B winner keeps its own row ID as decided in ADR 0058;

@@ -1,6 +1,6 @@
 # JavaScript campaign events
 
-WConvert dispatches three native `CustomEvent`s on `document`. They let your
+WConvert dispatches four native `CustomEvent`s on `document`. They let your
 site react to campaigns without changing how WConvert displays or saves them.
 Available in Free and every paid tier for its supported formats.
 
@@ -9,9 +9,10 @@ Available in Free and every paid tier for its supported formats.
 | `wconvert:open` | An overlay successfully opens or reopens. Opening animations need not have finished. |
 | `wconvert:close` | That overlay finishes closing or hiding, including its closing animation. |
 | `wconvert:capture` | The successful server response confirms the first accepted Lead submission in the current journey. |
+| `wconvert:cta` | A visitor clicks a button that leads to a link. Fires on every click, before the browser follows the link. |
 
 Overlays include popup, floating bar, slide-in, and fullscreen. Inline forms
-emit capture only. Next, Back, Skip, acknowledgement/results screens, and content
+emit capture and CTA clicks only. Next, Back, Skip, acknowledgement/results screens, and content
 unlocking do not open or close a campaign. The reopen reminder alone is not an
 open campaign. A closing animation interrupted by reopening remains the same
 open interval. Navigation/page unload does not guarantee a close event.
@@ -28,6 +29,13 @@ If the server saves a Lead but the browser never receives success, there is no
 notification at that point. This API has no replay or guaranteed delivery and
 does not replace a Destination.
 
+The CTA event covers the link button, the button shown after a submission,
+and product card buttons, in every format including inline forms. Text links
+inside a sentence, such as a privacy policy link, are not CTAs, and neither
+are Close, Submit, Next, Back or Skip. A button whose link was refused as
+unsafe has nowhere to go and fires nothing. It fires on every click, so
+it is not the same number as the conversions shown in Analytics.
+
 ## Event details and copying IDs
 
 Every event has a frozen `detail` object with three fields:
@@ -39,6 +47,9 @@ Every event has a frozen `detail` object with three fields:
   displayType: 'popup'
 }
 ```
+
+`wconvert:cta` adds one field, `href`: the full address the button leads to,
+for example `'https://example.com/sale'`.
 
 Both IDs are equal for ordinary campaigns. Display types are `popup`, `inline`,
 `floating_bar`, `slide_in`, and `fullscreen`. No names, contact details, answers,
@@ -109,5 +120,23 @@ document.addEventListener('wconvert:close', closed);
 This resumes only a video the listener paused. Remove both listeners when
 tearing down your page component. Sites with their own video controls should
 also clear `pausedVideo` when the visitor explicitly chooses to stay paused.
+
+## Count promo views and clicks in Google Tag Manager
+
+```js
+window.dataLayer = window.dataLayer || [];
+function track(name) {
+  return ({ detail }) => window.dataLayer.push({
+    event: name,
+    campaign_id: detail.campaignId,
+    display_type: detail.displayType,
+    link_url: detail.href, // Only on clicks.
+  });
+}
+document.addEventListener('wconvert:open', track('wconvert_view'));
+document.addEventListener('wconvert:cta', track('wconvert_click'));
+```
+
+Inline forms have no open event, so count their views another way.
 
 WConvert does not send these events to GA4 or other external integrations.

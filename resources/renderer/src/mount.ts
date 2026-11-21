@@ -114,6 +114,12 @@ export interface MountOptions {
   readonly onOpened?: () => void;
   readonly onClosed?: () => void;
   /**
+   * A click on a button that leads somewhere: the link button, the button
+   * after a submission, a product card. Text links inside a sentence are not
+   * buttons, so a privacy policy link is not a CTA (#440).
+   */
+  readonly onCta?: (href: string) => void;
+  /**
    * The converting act, where the container can see it: a click-metered
    * Optin's CTA. A submit-metered one converts when the capture succeeds,
    * which the container cannot know (ADR 0025).
@@ -265,7 +271,10 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
     element.addEventListener('wconvert:cart-added', () => options.onConvert?.());
     element.addEventListener('click', event => {
       // Dispatch sets target before invoking us; text nodes have no closest().
-      if ((event.target as Element).closest?.('a[data-convert]')) options.onConvert?.();
+      const target = event.target as Element;
+      if (target.closest?.('a[data-convert]')) options.onConvert?.();
+      const cta = target.closest?.<HTMLAnchorElement>('a.wc-button[href]');
+      if (cta) options.onCta?.(cta.href);
     });
 
     // Painted on BIND rather than only on the interval, so a countdown is right

@@ -5,6 +5,7 @@ import { campaignLifecycle } from '@loader/events';
 import type { Template } from '@renderer/types';
 import sourceJson from '../../resources/templates/library/journey-email-then-sms.json';
 import { consentShown } from './support/designs';
+import { treeFixture } from './support/journey';
 const source = consentShown(sourceJson);
 
 const template = source as Template;
@@ -12,7 +13,7 @@ const controls = () => ({ impression: vi.fn(), dismiss: vi.fn(), convert: vi.fn(
 const listeners: Array<() => void> = [];
 function listen() {
   const events: CustomEvent[] = [];
-  for (const name of ['open', 'close', 'capture']) {
+  for (const name of ['open', 'close', 'capture', 'cta']) {
     const type = `wconvert:${name}`;
     const handler = (event: Event) => { events.push(event as CustomEvent); };
     document.addEventListener(type, handler);
@@ -137,4 +138,56 @@ it('notifies accepted capture even while hidden and before a failed acknowledgem
   for (let i = 0; i < 15; i++) await Promise.resolve();
   expect(events.map(e => e.type)).toEqual(['wconvert:open', 'wconvert:close', 'wconvert:capture']);
   expect(document.querySelector('dialog')!.open).toBe(false);
+});
+
+/** A link campaign, and the shadow root it renders into, which no page script can reach. */
+function linkCampaign(steps: readonly unknown[]): { template: Template; roots: ShadowRoot[] } {
+  const roots: ShadowRoot[] = [];
+  const attach = Element.prototype.attachShadow;
+  vi.spyOn(Element.prototype, 'attachShadow').mockImplementation(function (this: Element, options) {
+    const root = attach.call(this, options); roots.push(root); return root;
+  });
+  return { template: { tokens: {}, tree: treeFixture({ steps }) }, roots };
+}
+function follow(link: HTMLAnchorElement): void {
+  link.addEventListener('click', event => event.preventDefault(), { once: true });
+  link.click();
+}
+
+it('notifies the document once per click on a link button, with the link it leads to', () => {
+  const events = listen();
+  const { template: offer, roots } = linkCampaign([{ type: 'button', action: 'link', href: 'https://example.com/sale', label: 'Shop the sale' }]);
+  templatePresenter.show({ id: 'variant', campaign: 'parent', display_type: 'popup', template: offer }, controls());
+  const link = roots[0].querySelector<HTMLAnchorElement>('a.wc-button')!;
+  follow(link); follow(link);
+  const clicks = events.filter(event => event.type === 'wconvert:cta');
+  expect(clicks).toHaveLength(2);
+  expect(clicks[0].detail).toEqual({ campaignId: 'parent', optinId: 'variant', displayType: 'popup', href: 'https://example.com/sale' });
+  expect(Object.isFrozen(clicks[0].detail)).toBe(true);
+  expect(clicks[0].cancelable).toBe(false);
+});
+
+it('treats the button after a submission as a CTA, and not a sentence link, Close or a link that goes nowhere', () => {
+  const events = listen();
+  const { template: offer, roots } = linkCampaign([{ type: 'stack', children: [
+    { type: 'text', role: 'body', text: 'Read %s.', link: { label: 'our privacy policy', href: 'https://example.com/privacy' } },
+    { type: 'followup', label: 'Get your discount', href: 'https://example.com/discount' },
+    { type: 'button', action: 'link', href: 'javascript:alert(1)', label: 'Nowhere' },
+  ] }]);
+  templatePresenter.show({ id: 'offer', display_type: 'popup', template: offer }, controls());
+  const root = roots[0];
+  follow(root.querySelector<HTMLAnchorElement>('a[href="https://example.com/privacy"]')!);
+  root.querySelector<HTMLAnchorElement>('a.wc-button:not([href])')!.click();
+  follow(root.querySelector<HTMLAnchorElement>('a[href="https://example.com/discount"]')!);
+  root.querySelector<HTMLButtonElement>('.wc-close')?.click();
+  expect(events.filter(event => event.type === 'wconvert:cta').map(event => event.detail))
+    .toEqual([{ campaignId: 'offer', optinId: 'offer', displayType: 'popup', href: 'https://example.com/discount' }]);
+});
+
+it('keeps a bare renderer preview silent when its link button is clicked', () => {
+  const events = listen();
+  const { template: offer, roots } = linkCampaign([{ type: 'button', action: 'link', href: 'https://example.com/sale', label: 'Shop the sale' }]);
+  mount({ template: offer }).show();
+  follow(roots[0].querySelector<HTMLAnchorElement>('a.wc-button')!);
+  expect(events.filter(event => event.type === 'wconvert:cta')).toEqual([]);
 });

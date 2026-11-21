@@ -13,10 +13,11 @@ for (const [label, path, base] of [
   // ADR 0167: +1024 B for bounded artwork; both bases follow their loader budget's +2560 B.
   // ADR 0168: the approved styling and form alignment changes add 192 B to both bases.
   // ADR 0184: both bases follow their loader budget, +80 B free and +32 B Pro.
-  ['free', 'public/loader/loader.js', 18192],
+  // #440: both bases follow their loader budget, +48 B free and +64 B Pro.
+  ['free', 'public/loader/loader.js', 18240],
   // ADR 0158: the Pro base follows the Pro loader budget's +288 B.
   // ADR 0186: the country list following its field adds 96 B to the Pro base only.
-  ['pro', 'pro/public/loader/loader.js', 30816],
+  ['pro', 'pro/public/loader/loader.js', 30880],
 ]) {
   const total = size(path) + phone;
   console.log(`  ✓ ${label} phone page: ${total} B gzipped (combined ceiling ${base + cap} B)`);
