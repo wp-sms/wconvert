@@ -90,4 +90,18 @@ final class WpOptionStoreTest extends TestCase
         $this->assertTrue($store->set('wconvert_version', '6'));
         $this->assertTrue($store->set('wconvert_version', '6'));
     }
+
+    /**
+     * A number comes back from the table as a string. Writing the same number
+     * again on a later request updates no rows, and `update_option()` answers
+     * false for that. It is still stored.
+     */
+    public function testWritingTheSameNumberOnALaterRequestIsNotAFailure(): void
+    {
+        $GLOBALS['wconvertTestOptionTable']['wconvert_flag'] = '1';
+        $GLOBALS['wconvertTestRefusedOptions'] = ['wconvert_flag'];
+
+        $this->assertTrue((new WpOptionStore())->set('wconvert_flag', 1));
+        $this->assertFalse((new WpOptionStore())->set('wconvert_flag', 0));
+    }
 }

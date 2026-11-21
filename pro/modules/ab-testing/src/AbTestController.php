@@ -3,6 +3,7 @@
 namespace WConvert\Pro\Module\AbTesting;
 
 use WConvert\Optin\OptinRepository;
+use WConvert\Optin\PublishedSetNotSaved;
 use WConvert\Rest\RestController;
 use WConvert\Rest\Routes;
 use WConvert\Support\Ulid;
@@ -132,7 +133,7 @@ final class AbTestController implements RestController
                 (string) $request->get_param('id'),
                 (string) $request->get_param('winner')
             );
-        } catch (\WConvert\Optin\PublishedSetNotSaved) {
+        } catch (PublishedSetNotSaved) {
             // The arms are tidied in the table; the site still serves the test (#424).
             return new WP_Error(
                 'wconvert_published_set_not_saved',

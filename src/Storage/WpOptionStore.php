@@ -70,6 +70,12 @@ final class WpOptionStore implements OptionStore
             return true;
         }
 
-        return get_option($key, null) === $value;
+        $stored = get_option($key, null);
+
+        // A number comes back from the table as a string, so `1` is stored
+        // when the table holds `'1'`.
+        return is_scalar($value) && is_scalar($stored)
+            ? (string) $stored === (string) $value
+            : $stored === $value;
     }
 }

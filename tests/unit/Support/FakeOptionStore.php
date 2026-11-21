@@ -21,6 +21,9 @@ final class FakeOptionStore implements OptionStore
 
     public int $writes = 0;
 
+    /** @var list<string> Keys whose writes are refused, as a utf8mb3 table refuses an emoji (#424). */
+    public array $refused = [];
+
     /**
      * @param mixed $default
      * @return mixed
@@ -31,9 +34,6 @@ final class FakeOptionStore implements OptionStore
 
         return $this->values[$key] ?? $default;
     }
-
-    /** @var list<string> Keys whose writes are refused, as a utf8mb3 table refuses an emoji (#424). */
-    public array $refused = [];
 
     /**
      * @param mixed $value

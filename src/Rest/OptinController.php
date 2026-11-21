@@ -650,7 +650,7 @@ final class OptinController implements RestController
         try {
             $published = $this->optins->publish($id);
         } catch (PublishedSetNotSaved) {
-            return self::notLive();
+            return self::publishedSetNotSaved();
         }
 
         if ($published === null) {
@@ -673,7 +673,7 @@ final class OptinController implements RestController
         try {
             return self::respond($this->optins->unpublish((string) $request->get_param('id')));
         } catch (PublishedSetNotSaved) {
-            return self::notLive();
+            return self::publishedSetNotSaved();
         }
     }
 
@@ -687,7 +687,7 @@ final class OptinController implements RestController
                 return self::notFound();
             }
         } catch (PublishedSetNotSaved) {
-            return self::notLive();
+            return self::publishedSetNotSaved();
         }
 
         // 200 with the soft-deleted Optin, not 204. It still exists — deleting
@@ -1249,7 +1249,7 @@ final class OptinController implements RestController
      * The row is saved and what visitors see is not (#424). A 500 rather than
      * a success, because the editor's "It's live" is read off a success.
      */
-    private static function notLive(): WP_Error
+    private static function publishedSetNotSaved(): WP_Error
     {
         return new WP_Error(
             'wconvert_published_set_not_saved',

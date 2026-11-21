@@ -1061,11 +1061,11 @@ final class OptinRepository
      *
      * `wconvert_published_set` is the only one of WConvert's options that is
      * not normalised through a value object on the way out of storage: it
-     * holds the whole projection as one array (ASCII JSON in the table,
-     * ADR 0192), written whole and read whole (ADR 0003). Everywhere else, WConvert avoids migrations by
-     * normalising on every write against a closed vocabulary and reading
-     * tolerantly with defaults — and that fails here for one reason, which is
-     * that **nobody writes.** ADR 0003 rebuilds the set on write and never on
+     * holds the whole projection as one array, written whole and read whole
+     * (ADR 0003), and stored as ASCII JSON (ADR 0192). Everywhere else,
+     * WConvert avoids migrations by normalising on every write against a
+     * closed vocabulary and reading tolerantly with defaults — and that fails
+     * here for one reason, which is that **nobody writes.** ADR 0003 rebuilds the set on write and never on
      * read, so a plugin update that changes the projection's shape leaves
      * every stored entry at the old shape until a merchant happens to
      * republish. An Optin published once and never touched again would keep

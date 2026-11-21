@@ -37,9 +37,10 @@ else is returned as stored. An array written the old way is unserialised by
 `get_option()` and passes straight through, so nothing needs migrating. It is
 rewritten in the new format the next time it is written.
 
-**3. Nothing reads these options with `get_option()` directly.** The two
+**3. Plugin code never reads these options with `get_option()` directly.** The two
 reports that did (`BeaconController`, `JourneyStatsController`) now read screen
-lists through `PublishedSet::flow()`.
+lists through `PublishedSet::flow()`. `bin/verify-ab-test.php` reads the raw
+value on purpose, to check the stored bytes.
 
 **4. A refused write is reported.** `OptionStore::set()` returns whether the
 table now holds the value. `update_option()` also answers false for an
@@ -50,6 +51,10 @@ write fails. Publish, unpublish, delete and declaring a winner throw
 `wconvert_published_set_not_saved`. The install rebuild leaves the schema
 version unwritten, so the next `admin_init` retries. Timezone and policy
 rebuilds have nobody to tell, and the next write retries.
+
+The issue also asked for the failure to be logged. It isn't: the merchant who
+caused the write gets the error on that same request, and `error_log()` is a
+development function Plugin Check flags in a shipped plugin.
 
 **5. `Installer::VERSION` goes to 6**, so every existing set is rebuilt in the
 new format on upgrade. That also unfreezes a site already stuck on #424.
