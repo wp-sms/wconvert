@@ -241,3 +241,31 @@ Key:
 - Formal wordpress.org actions against any of the twelve. None were found.
 - Whether [PROP] will be adopted.
 - How wp.org search ranking drives installs.
+
+## Decisions (2026-11-21)
+
+**Made into issues:**
+
+| Idea | Issue |
+|---|---|
+| 10, Horizon promo notices (parked) | [#428](https://github.com/wp-sms/wconvert/issues/428) |
+| 11, Header sale banner (parked) | [#429](https://github.com/wp-sms/wconvert/issues/429) |
+| 1, the Destinations hint shows the site's own lead count | [#430](https://github.com/wp-sms/wconvert/issues/430) |
+| 2, lead-count landmarks | [#431](https://github.com/wp-sms/wconvert/issues/431) |
+| 3, one Pro line in the weekly email | [#432](https://github.com/wp-sms/wconvert/issues/432) |
+| 4, warn before deactivating Free while Pro is active | [#433](https://github.com/wp-sms/wconvert/issues/433) |
+| 5, renewal window from Nexus | [#434](https://github.com/wp-sms/wconvert/issues/434) |
+| 8, support link beside Rate | [#435](https://github.com/wp-sms/wconvert/issues/435) |
+
+**Skipped:**
+
+- 6, reading the UTMs against Nexus checkouts
+- 7, the sample report
+- 9, commenting on the core proposal
+
+**Left for Mostafa on #420:**
+
+- 12, the pricing table in onboarding
+- The add-ons page
+
+**Note for #431.** [[Milestone]] is already a glossary term. Its entry says a reached Milestone "changes nothing a merchant does next". The feature needs its own word.
