@@ -94,6 +94,8 @@ test('campaign details copy the ID by keyboard and admin previews remain silent'
   await expect(page.locator('dialog[open]')).toBeVisible();
   const id = await page.locator('#wconvert-payload').evaluate(node => JSON.parse(node.textContent)[0].id);
   await page.goto('/wp-login.php');
+  // WordPress defers initial focus; wait before typing so it cannot redirect a fill.
+  await expect(page.getByLabel('Username or Email Address')).toBeFocused();
   await page.getByLabel('Username or Email Address').fill('admin');
   await page.getByLabel('Password', { exact: true }).fill('password');
   await page.getByRole('button', { name: 'Log In', exact: true }).click();
