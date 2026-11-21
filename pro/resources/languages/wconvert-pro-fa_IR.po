@@ -42,6 +42,10 @@ msgstr ""
 msgid "There is no Optin here to test against."
 msgstr "اینجا کمپینی برای آزمون وجود ندارد."
 
+#: modules/ab-testing/src/AbTestController.php
+msgid "Saved, but the live version could not be updated."
+msgstr "ذخیره شد، اما نسخه فعال به‌روز نشد."
+
 #: modules/ab-testing/src/AbTestController.php:138
 msgid "That is not one of this test’s arms."
 msgstr "این یکی از نسخه‌های این آزمون نیست."
