@@ -94,7 +94,12 @@ Embed a preview in an iframe with `sandbox="allow-scripts"` and
 Content-Security-Policy: sandbox allow-scripts; default-src 'none'; script-src 'unsafe-inline';
   style-src 'unsafe-inline'; img-src data:; font-src data:; base-uri 'none'; form-action 'none';
   frame-ancestors <PREVIEW_EMBED_ORIGINS>
+X-Robots-Tag: noindex
 ```
+
+`noindex` keeps preview documents out of search results; it does not affect
+embedding or the page that embeds one. Do not block `/v3/previews/` in
+`robots.txt`: a crawler must fetch a preview to see the header.
 
 No same-origin, form, popup or top-navigation permission; no network; images
 and fonts are data URLs. A preview is a demonstration, not editable source.
