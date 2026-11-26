@@ -4,6 +4,10 @@ namespace WConvert\Rest;
 
 defined('ABSPATH') || exit;
 
+// Silenced for one compile-time notice on PHP 8.6; see RouteNamespace.php.
+// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+@require_once __DIR__ . '/RouteNamespace.php';
+
 /**
  * Shared REST namespace and explicit permissions for each surface.
  *
@@ -15,10 +19,8 @@ defined('ABSPATH') || exit;
  *
  * @since 0.1.0
  */
-final class Routes
+final class Routes implements RouteNamespace
 {
-    public const NAMESPACE = 'wconvert/v1';
-
     /**
      * The one capability every administration surface is gated on.
      *

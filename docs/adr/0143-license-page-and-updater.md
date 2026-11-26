@@ -131,7 +131,9 @@ nothing, and asserts no file on the front-end read path touches it.
 10. **Multisite.** Pro refuses network activation, as free does. Each subsite
     holds its own licence; there is no network page. Deleting Pro still visits
     every site of a network to release its seat (WP Statistics' uninstaller,
-    budget and all), because per-site activation is allowed.
+    budget and all), because per-site activation is allowed. **Amended:** below
+    PHP 8.1 the SDK cannot be read, so deleting Pro releases no seat and keeps
+    the stored licence, whose key a later install needs to release it.
 11. **Around the app.** WConvert Pro's row on the Plugins screen carries a
     License action link and, when the licence needs something, one line in
     WordPress's own update-message markup with one way forward — the same words

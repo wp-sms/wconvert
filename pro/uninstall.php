@@ -4,9 +4,18 @@ defined('WP_UNINSTALL_PLUGIN') || exit;
 
 // The seat first, while the key that releases it is still stored. The plugin
 // is not loaded here, so Pro's constants and autoloader are (ADR 0143).
-require_once __DIR__ . '/src/constants.php';
-require_once __DIR__ . '/src/autoload.php';
-WConvert\Pro\License\Uninstall::run();
+//
+// That code needs PHP 8.1, and this file runs on whatever the site has, so the
+// rest of it stays PHP 7 syntax. Below 8.1 the licence stays stored: its key is
+// what frees the seat, and Pro installed again on a newer PHP can still use it.
+// Only the daily check goes, by its name (RefreshCron::HOOK).
+if (version_compare(PHP_VERSION, '8.1', '>=')) {
+    require_once __DIR__ . '/src/constants.php';
+    require_once __DIR__ . '/src/autoload.php';
+    WConvert\Pro\License\Uninstall::run();
+} else {
+    wp_clear_scheduled_hook('wconvert_pro_license_refresh');
+}
 
 delete_option('wconvert_revenue');
 // Analytics\Settings::OPTION — the tracking IDs and switches (#374).

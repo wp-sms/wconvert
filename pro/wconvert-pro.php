@@ -35,6 +35,28 @@ defined('ABSPATH') || exit;
 | reaches a feature.
 */
 
+/*
+|--------------------------------------------------------------------------
+| PHP 8.1 or newer, checked before any 8.1 code is read
+|--------------------------------------------------------------------------
+| The same guard as free's, and needed separately: this file loads on its own,
+| and Pro's first enum is a parse error on PHP 8.0. This file and the notice
+| below stay PHP 7 syntax.
+*/
+if (version_compare(PHP_VERSION, '8.1', '<')) {
+    add_action('admin_notices', static function () {
+        echo '<div class="notice notice-error"><p>';
+        echo esc_html(sprintf(
+            /* translators: %s: the PHP version the site runs, for example 8.0.30. */
+            __('WConvert Pro needs PHP 8.1 or newer, and this site runs PHP %s. WConvert Pro is paused until PHP is updated. Your host can update it for you.', 'wconvert-pro'),
+            PHP_VERSION
+        ));
+        echo '</p></div>';
+    });
+
+    return;
+}
+
 require_once __DIR__ . '/src/constants.php';
 require_once __DIR__ . '/src/autoload.php';
 

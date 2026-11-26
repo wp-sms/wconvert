@@ -27,6 +27,9 @@ final class ContentLock
                 // above loads into the same `wp.i18n` first.
                 wp_set_script_translations('wconvert-content-lock-editor', 'wconvert-pro', WCONVERT_PRO_DIR . 'resources/languages');
                 $args['editor_script'] = 'wconvert-content-lock-editor';
+                if (is_wp_version_compatible('7.2')) {
+                    wp_add_inline_script('wconvert-content-lock-editor', 'window.wconvertContentLockTypeTemplate = true;', 'before');
+                }
                 $args['supports']['inserter'] = true;
             }
             return $args;

@@ -142,7 +142,7 @@ final class InlineOptinBlockTest extends TestCase
     public static function wordpressApiVersions(): iterable
     {
         yield 'declared minimum' => ['6.9', 3];
-        yield 'current release' => ['7.1', 3];
+        yield 'current release' => ['7.2', 3];
     }
 
     /**
