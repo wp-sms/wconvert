@@ -16,6 +16,10 @@ the full record for the team.
 
 - Pro: on PHP older than 8.1, WConvert Pro now shows a notice and stays paused
   instead of crashing the whole site with a parse error, as free already does.
+- Pro: deleting WConvert Pro on PHP older than 8.1 now works instead of
+  stopping with a parse error. It removes Pro's tracking settings and scheduled
+  jobs, and keeps the license on the site because its seat cannot be released
+  there.
 - Pro: on WordPress 7.2, the content lock block no longer logs a deprecation
   warning in the editor for how it adds its first paragraph.
 - PHP 8.6 no longer raises a deprecation notice for the REST namespace
