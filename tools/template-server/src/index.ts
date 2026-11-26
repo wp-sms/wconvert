@@ -80,6 +80,9 @@ export default {
           ? `sandbox allow-scripts; default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; font-src data:; base-uri 'none'; form-action 'none'; frame-ancestors ${embeddingOrigins(env.PREVIEW_EMBED_ORIGINS)}`
           : "default-src 'none'; frame-ancestors 'none'",
       });
+      // Previews are for embedding, not search results. robots.txt must not block them,
+      // or crawlers never see this. Images stay indexable: wconvert.io pages show them.
+      if (html) headers.set('X-Robots-Tag', 'noindex');
       // GET/HEAD validators use weak comparison; no Range support is advertised.
       const matches = request.headers.get('If-None-Match')?.split(',').some(tag => tag.trim() === '*' || tag.trim().replace(/^W\//, '') === object.httpEtag);
       if (matches || request.method === 'HEAD') {

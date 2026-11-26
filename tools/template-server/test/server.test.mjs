@@ -47,7 +47,10 @@ test('actual Worker/R2 runtime: v3 routes, headers, pointer revalidation and ato
       assert.equal(response.headers.get('content-type'), types[key.split('.').pop()]);
       assert.equal(response.headers.get('x-content-type-options'), 'nosniff'); assert.equal(response.headers.get('referrer-policy'), 'no-referrer');
       const head = await fetch('/' + key, { method: 'HEAD' }); assert.equal(await head.text(), ''); assert.equal(head.headers.get('content-length'), String(one.public.get(key).length));
-      assert.equal((await fetch('/' + key, { headers: { 'If-None-Match': 'W/' + response.headers.get('etag') } })).status, 304);
+      const cached = await fetch('/' + key, { headers: { 'If-None-Match': 'W/' + response.headers.get('etag') } });
+      assert.equal(cached.status, 304);
+      const robots = key.endsWith('.html') ? 'noindex' : null;
+      for (const reply of [response, head, cached]) assert.equal(reply.headers.get('x-robots-tag'), robots, key);
     }
     const double = keys.find(key => key.endsWith('@2x.webp'));
     assert.equal((await fetch('/' + double)).headers.get('content-type'), 'image/webp');
