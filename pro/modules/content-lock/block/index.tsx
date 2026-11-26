@@ -9,7 +9,16 @@ import './editor.css';
 import './Divider';
 import { ALLOWED_BLOCKS, LOCK_BLOCK, lockCount, supportedContent } from './selection';
 
+declare global { interface Window { wconvertContentLockTypeTemplate?: boolean } }
+
+/** The paragraph a new section starts with. */
+const template: [string, Record<string, unknown>][] = [['core/paragraph', { placeholder: __('Write or paste the content to reveal…', 'wconvert-pro') }]];
+
 registerBlockType(LOCK_BLOCK, {
+  // WordPress 7.2 reads the starting content from here. Older editors ignore it
+  // and need the InnerBlocks prop, which 7.2 deprecates: `ContentLock.php` says
+  // which editor this is.
+  template,
   transforms: {
     from: [{
       type: 'block', blocks: ['*'], isMultiBlock: true,
@@ -47,7 +56,7 @@ registerBlockType(LOCK_BLOCK, {
       {!value ? <Button variant="secondary" onClick={openSettings}>{__('Choose a campaign', 'wconvert-pro')}</Button> : <CampaignStatus value={value} state={state} />}
       {count > 1 && <Notice status="warning" isDismissible={false}>{__('Use one content lock section per page. Additional sections stay readable. Remove extra locks while keeping their content.', 'wconvert-pro')}</Notice>}
       {!supportedContent(content) && <Notice status="warning" isDismissible={false}>{__('This section includes unsupported blocks. Keep forms, media embeds and complex layouts outside the lock.', 'wconvert-pro')}</Notice>}
-      <InnerBlocks allowedBlocks={ALLOWED_BLOCKS} template={[["core/paragraph", { placeholder: __('Write or paste the content to reveal…', 'wconvert-pro') }]]} />
+      <InnerBlocks allowedBlocks={ALLOWED_BLOCKS} {...(window.wconvertContentLockTypeTemplate ? {} : { template })} />
       <div className="wconvert-lock-editor__boundary wconvert-lock-editor__end">{__('Content lock ends', 'wconvert-pro')}</div>
     </div>;
   },

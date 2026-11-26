@@ -40,6 +40,7 @@ declare module '@wordpress/blocks' {
     settings: {
       icon?: string;
       keywords?: string[];
+      template?: [string, Record<string, unknown>][];
       transforms?: {
         from: { type: 'block'; blocks: string[]; isMultiBlock: boolean; isMatch(attributes: unknown, blocks: BlockInstance[]): boolean; __experimentalConvert(blocks: BlockInstance[]): BlockInstance }[];
         ungroup(attributes: unknown, blocks: BlockInstance[]): BlockInstance[];

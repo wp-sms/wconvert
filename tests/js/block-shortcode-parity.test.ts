@@ -80,7 +80,7 @@ describe('the block editor and PHP agree about what things are called', () => {
    */
   it('refreshes from the route PHP registers', () => {
     const route = phpConstant(read('src/Frontend/InlineOptinBlock.php'), 'ROUTE');
-    const namespace = phpConstant(read('src/Rest/Routes.php'), 'NAMESPACE');
+    const namespace = phpConstant(read('src/Rest/RouteNamespace.php'), 'NAMESPACE');
 
     expect(read('resources/blocks/inline-optin/src/optins.ts')).toContain(`path: '/${namespace}${route}'`);
   });
